@@ -56,6 +56,10 @@ import { Tag } from "@/components/ui/tag"
       control: 'boolean',
       description: 'Make the tag clickable with hover/active states',
     },
+    selected: {
+      control: 'boolean',
+      description: 'Show selected state with ring outline',
+    },
   },
 }
 
@@ -68,6 +72,7 @@ export const Overview: Story = {
     variant: 'default',
     size: 'default',
     interactive: false,
+    selected: false,
   },
 }
 
@@ -95,6 +100,27 @@ export const Interactive: Story = {
     variant: 'default',
     interactive: true,
   },
+}
+
+export const Selected: Story = {
+  name: 'Selected',
+  args: {
+    children: 'Selected Tag',
+    variant: 'default',
+    selected: true,
+  },
+}
+
+export const SelectedStates: Story = {
+  name: 'Selected States',
+  render: () => (
+    <div className="flex flex-wrap items-center gap-4">
+      <Tag>Not Selected</Tag>
+      <Tag selected>Selected</Tag>
+      <Tag selected variant="primary">Selected Primary</Tag>
+      <Tag selected interactive>Selected & Interactive</Tag>
+    </div>
+  ),
 }
 
 export const AllVariants: Story = {

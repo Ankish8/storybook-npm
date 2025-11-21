@@ -147,13 +147,16 @@ const CSS_VARIABLES_V3 = `@tailwind base;
 
 `
 
-const getTailwindConfig = (prefix: string) => `/** @type {import('tailwindcss').Config} */
+const getTailwindConfig = (prefix: string, scopeToComponents: boolean = false) => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
   ${prefix ? `prefix: "${prefix}",` : ''}
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    ${scopeToComponents
+      ? `"./src/components/ui/**/*.{js,ts,jsx,tsx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx}",`
+      : `"./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",`}
   ],
   theme: {
     container: {
@@ -332,6 +335,13 @@ export async function init() {
       message: 'Where is your global CSS file?',
       initial: 'src/index.css',
     },
+    {
+      // Only show for Bootstrap + v3 projects (v4 uses @source directive in CSS)
+      type: (prev, values) => (hasBootstrap && values.tailwindVersion === 'v3') ? 'confirm' : null,
+      name: 'scopeTailwind',
+      message: 'Scope Tailwind to only components/ui? (recommended for Bootstrap projects)',
+      initial: true,
+    },
   ])
 
   const spinner = ora('Initializing project...').start()
@@ -464,17 +474,18 @@ export function cn(...inputs: ClassValue[]) {
 
     // Create or update tailwind.config.js with theme colors (only for v3)
     let tailwindUpdated = false
+    const scopeTailwind = response.scopeTailwind || false
     if (response.tailwindVersion === 'v3' && response.tailwindConfig) {
       const tailwindConfigPath = path.join(cwd, response.tailwindConfig)
       if (!(await fs.pathExists(tailwindConfigPath))) {
-        await fs.writeFile(tailwindConfigPath, getTailwindConfig(prefix))
+        await fs.writeFile(tailwindConfigPath, getTailwindConfig(prefix, scopeTailwind))
         tailwindUpdated = true
       } else {
         // Check if tailwind config already has the theme colors
         const existingConfig = await fs.readFile(tailwindConfigPath, 'utf-8')
         if (!existingConfig.includes('hsl(var(--destructive))') && !existingConfig.includes('hsl(var(--ring))')) {
           // Auto-update for v3
-          await fs.writeFile(tailwindConfigPath, getTailwindConfig(prefix))
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(prefix, scopeTailwind))
           tailwindUpdated = true
         }
       }
@@ -534,6 +545,9 @@ export function cn(...inputs: ClassValue[]) {
     }
     if (tailwindUpdated) {
       console.log(chalk.green(`  ✓ Updated ${response.tailwindConfig} with theme colors`))
+      if (scopeTailwind) {
+        console.log(chalk.blue(`    ℹ Tailwind scoped to components/ui only (Bootstrap can be used elsewhere)`))
+      }
     }
     if (postcssCreated) {
       console.log(chalk.green('  ✓ Created postcss.config.js'))

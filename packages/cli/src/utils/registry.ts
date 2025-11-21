@@ -164,11 +164,16 @@ const tagVariants = cva(
         true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
         false: "",
       },
+      selected: {
+        true: "ring-2 ring-[#343E55] ring-offset-1",
+        false: "",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
       interactive: false,
+      selected: false,
     },
   }
 )
@@ -178,16 +183,18 @@ export interface TagProps
     VariantProps<typeof tagVariants> {
   label?: string
   interactive?: boolean
+  selected?: boolean
 }
 
 const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, interactive, label, children, ...props }, ref) => {
+  ({ className, variant, size, interactive, selected, label, children, ...props }, ref) => {
     return (
       <span
-        className={cn(tagVariants({ variant, size, interactive, className }))}
+        className={cn(tagVariants({ variant, size, interactive, selected, className }))}
         ref={ref}
         role={interactive ? "button" : undefined}
         tabIndex={interactive ? 0 : undefined}
+        aria-selected={selected}
         {...props}
       >
         {label && (
