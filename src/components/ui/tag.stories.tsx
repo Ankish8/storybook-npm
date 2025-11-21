@@ -9,7 +9,7 @@ const meta: Meta<typeof Tag> = {
     docs: {
       description: {
         component: `
-Tag component for displaying event labels and categories. Supports optional bold label prefixes.
+Tag component for displaying event labels and categories. Supports optional bold label prefixes and interactive states.
 
 ## Import
 
@@ -52,6 +52,10 @@ import { Tag } from "@/components/ui/tag"
       control: 'text',
       description: 'The content of the tag',
     },
+    interactive: {
+      control: 'boolean',
+      description: 'Make the tag clickable with hover/active states',
+    },
   },
 }
 
@@ -63,6 +67,7 @@ export const Overview: Story = {
     children: 'After Call Event',
     variant: 'default',
     size: 'default',
+    interactive: false,
   },
 }
 
@@ -80,6 +85,15 @@ export const SimpleTag: Story = {
   args: {
     children: 'After Call Event',
     variant: 'default',
+  },
+}
+
+export const Interactive: Story = {
+  name: 'Interactive',
+  args: {
+    children: 'Click me',
+    variant: 'default',
+    interactive: true,
   },
 }
 
@@ -105,6 +119,26 @@ export const AllSizes: Story = {
   ),
 }
 
+export const InteractiveExamples: Story = {
+  name: 'Interactive Examples',
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        <Tag interactive onClick={() => alert('Tag 1 clicked')}>
+          Click me
+        </Tag>
+        <Tag interactive variant="primary" onClick={() => alert('Tag 2 clicked')}>
+          Primary Interactive
+        </Tag>
+        <Tag interactive variant="secondary" onClick={() => alert('Tag 3 clicked')}>
+          Secondary Interactive
+        </Tag>
+      </div>
+      <p className="text-xs text-gray-500">Click on the tags above to see the interaction</p>
+    </div>
+  ),
+}
+
 export const EventTags: Story = {
   name: 'Event Tags',
   render: () => (
@@ -121,15 +155,23 @@ export const EventTags: Story = {
   ),
 }
 
-export const WebhookEventsExample: Story = {
-  name: 'Webhook Events Example',
+export const WithLabelAndInteractive: Story = {
+  name: 'With Label & Interactive',
   render: () => (
-    <div className="flex flex-col gap-4 p-4 bg-white rounded-lg border">
-      <div className="text-sm text-gray-500 font-medium">Events</div>
-      <div className="flex flex-wrap gap-2">
-        <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
-        <Tag>After Call Event</Tag>
-      </div>
+    <div className="flex flex-wrap gap-2">
+      <Tag
+        label="Event:"
+        interactive
+        onClick={() => alert('Event tag clicked')}
+      >
+        Start of call
+      </Tag>
+      <Tag
+        interactive
+        onClick={() => alert('After call clicked')}
+      >
+        After Call Event
+      </Tag>
     </div>
   ),
 }

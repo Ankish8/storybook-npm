@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { Check, X, AlertCircle, Clock } from 'lucide-react'
 import { Badge } from './badge'
 
 const meta: Meta<typeof Badge> = {
@@ -48,6 +49,14 @@ import { Badge } from "@/components/ui/badge"
     children: {
       control: 'text',
       description: 'The content of the badge',
+    },
+    leftIcon: {
+      control: false,
+      description: 'Icon displayed on the left side',
+    },
+    rightIcon: {
+      control: false,
+      description: 'Icon displayed on the right side',
     },
   },
 }
@@ -114,21 +123,43 @@ export const AllSizes: Story = {
   ),
 }
 
+export const WithIcons: Story = {
+  name: 'With Icons',
+  render: () => (
+    <div className="flex flex-wrap items-center gap-4">
+      <Badge variant="active" leftIcon={<Check />}>Active</Badge>
+      <Badge variant="failed" leftIcon={<X />}>Failed</Badge>
+      <Badge variant="disabled" leftIcon={<Clock />}>Pending</Badge>
+      <Badge variant="default" leftIcon={<AlertCircle />}>Info</Badge>
+    </div>
+  ),
+}
+
+export const WithRightIcon: Story = {
+  name: 'With Right Icon',
+  render: () => (
+    <div className="flex flex-wrap items-center gap-4">
+      <Badge variant="active" rightIcon={<Check />}>Verified</Badge>
+      <Badge variant="failed" rightIcon={<X />}>Rejected</Badge>
+    </div>
+  ),
+}
+
 export const StatusExamples: Story = {
   name: 'Status Examples',
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-600 w-24">Webhook 1:</span>
-        <Badge variant="active">Active</Badge>
+        <Badge variant="active" leftIcon={<Check />}>Active</Badge>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-600 w-24">Webhook 2:</span>
-        <Badge variant="failed">Failed</Badge>
+        <Badge variant="failed" leftIcon={<X />}>Failed</Badge>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-600 w-24">Webhook 3:</span>
-        <Badge variant="disabled">Disabled</Badge>
+        <Badge variant="disabled" leftIcon={<Clock />}>Disabled</Badge>
       </div>
     </div>
   ),

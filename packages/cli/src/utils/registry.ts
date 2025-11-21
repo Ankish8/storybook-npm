@@ -115,16 +115,23 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
+}
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, leftIcon, rightIcon, children, ...props }, ref) => {
     return (
       <div
-        className={cn(badgeVariants({ variant, size, className }))}
+        className={cn(badgeVariants({ variant, size, className }), "gap-1")}
         ref={ref}
         {...props}
-      />
+      >
+        {leftIcon && <span className="[&_svg]:size-3">{leftIcon}</span>}
+        {children}
+        {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
+      </div>
     )
   }
 )
@@ -153,10 +160,15 @@ const tagVariants = cva(
         sm: "px-1.5 py-0.5 text-xs",
         lg: "px-3 py-1.5",
       },
+      interactive: {
+        true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
+        false: "",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      interactive: false,
     },
   }
 )
@@ -165,14 +177,17 @@ export interface TagProps
   extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof tagVariants> {
   label?: string
+  interactive?: boolean
 }
 
 const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, label, children, ...props }, ref) => {
+  ({ className, variant, size, interactive, label, children, ...props }, ref) => {
     return (
       <span
-        className={cn(tagVariants({ variant, size, className }))}
+        className={cn(tagVariants({ variant, size, interactive, className }))}
         ref={ref}
+        role={interactive ? "button" : undefined}
+        tabIndex={interactive ? 0 : undefined}
         {...props}
       >
         {label && (

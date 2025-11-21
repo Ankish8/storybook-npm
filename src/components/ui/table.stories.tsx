@@ -100,106 +100,6 @@ export const Overview: Story = {
   ),
 }
 
-export const WebhookTable: Story = {
-  name: 'Webhook Table',
-  render: () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[250px]">Url</TableHead>
-          <TableHead>Events</TableHead>
-          <TableHead className="w-[150px]">Created on</TableHead>
-          <TableHead className="w-[100px]">Status</TableHead>
-          <TableHead className="w-[50px]"></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <TableRow>
-          <TableCell className="font-normal text-[#333]">
-            http://api.example.com/webhooks/cal
-          </TableCell>
-          <TableCell>
-            <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
-              <Tag>After Call Event</Tag>
-            </div>
-          </TableCell>
-          <TableCell className="text-[#333]">Jan 16, 2025</TableCell>
-          <TableCell>
-            <Badge variant="active">Active</Badge>
-          </TableCell>
-          <TableCell>
-            <button className="p-1 hover:bg-gray-100 rounded">
-              <MoreVertical className="h-4 w-4 text-gray-500" />
-            </button>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-normal text-[#333]">
-            http://api.example.com/webhooks/cal
-          </TableCell>
-          <TableCell>
-            <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
-              <Tag>After Call Event</Tag>
-            </div>
-          </TableCell>
-          <TableCell className="text-[#333]">Jan 16, 2025</TableCell>
-          <TableCell>
-            <Badge variant="failed">Failed</Badge>
-          </TableCell>
-          <TableCell>
-            <button className="p-1 hover:bg-gray-100 rounded">
-              <MoreVertical className="h-4 w-4 text-gray-500" />
-            </button>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-normal text-[#333]">
-            http://api.example.com/webhooks/caxxxxl
-          </TableCell>
-          <TableCell>
-            <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
-              <Tag>After Call Event</Tag>
-              <Tag>After Call Event</Tag>
-            </div>
-          </TableCell>
-          <TableCell className="text-[#333]">Jan 14, 2025</TableCell>
-          <TableCell>
-            <Badge variant="active">Active</Badge>
-          </TableCell>
-          <TableCell>
-            <button className="p-1 hover:bg-gray-100 rounded">
-              <MoreVertical className="h-4 w-4 text-gray-500" />
-            </button>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="font-normal text-[#333]">
-            http://api.example.com/webhooks/cal
-          </TableCell>
-          <TableCell>
-            <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
-              <Tag>After Call Event</Tag>
-            </div>
-          </TableCell>
-          <TableCell className="text-[#333]">Jan 14, 2025</TableCell>
-          <TableCell>
-            <Badge variant="disabled">Disabled</Badge>
-          </TableCell>
-          <TableCell>
-            <button className="p-1 hover:bg-gray-100 rounded">
-              <MoreVertical className="h-4 w-4 text-gray-500" />
-            </button>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  ),
-}
-
 export const WithCaption: Story = {
   name: 'With Caption',
   render: () => (
@@ -310,6 +210,122 @@ export const EmptyState: Story = {
         <TableRow>
           <TableCell colSpan={3} className="text-center py-8 text-gray-500">
             No webhooks found. Create your first webhook to get started.
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  ),
+}
+
+// Examples section - shows how to compose components together
+const examplesMeta: Meta<typeof Table> = {
+  title: 'Examples/Webhook Table',
+  component: Table,
+  parameters: {
+    layout: 'padded',
+  },
+}
+
+export const WebhookTable: Story = {
+  name: 'Webhook Table',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Complete example showing how to compose Table, Badge, and Tag components together.',
+      },
+    },
+  },
+  render: () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[250px]">Url</TableHead>
+          <TableHead>Events</TableHead>
+          <TableHead className="w-[150px]">Created on</TableHead>
+          <TableHead className="w-[100px]">Status</TableHead>
+          <TableHead className="w-[50px]"></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell className="font-normal text-[#333]">
+            http://api.example.com/webhooks/cal
+          </TableCell>
+          <TableCell>
+            <div className="flex flex-wrap gap-2">
+              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag>After Call Event</Tag>
+            </div>
+          </TableCell>
+          <TableCell className="text-[#333]">Jan 16, 2025</TableCell>
+          <TableCell>
+            <Badge variant="active">Active</Badge>
+          </TableCell>
+          <TableCell>
+            <button className="p-1 hover:bg-gray-100 rounded">
+              <MoreVertical className="h-4 w-4 text-gray-500" />
+            </button>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-normal text-[#333]">
+            http://api.example.com/webhooks/cal
+          </TableCell>
+          <TableCell>
+            <div className="flex flex-wrap gap-2">
+              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag>After Call Event</Tag>
+            </div>
+          </TableCell>
+          <TableCell className="text-[#333]">Jan 16, 2025</TableCell>
+          <TableCell>
+            <Badge variant="failed">Failed</Badge>
+          </TableCell>
+          <TableCell>
+            <button className="p-1 hover:bg-gray-100 rounded">
+              <MoreVertical className="h-4 w-4 text-gray-500" />
+            </button>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-normal text-[#333]">
+            http://api.example.com/webhooks/caxxxxl
+          </TableCell>
+          <TableCell>
+            <div className="flex flex-wrap gap-2">
+              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag>After Call Event</Tag>
+              <Tag>After Call Event</Tag>
+            </div>
+          </TableCell>
+          <TableCell className="text-[#333]">Jan 14, 2025</TableCell>
+          <TableCell>
+            <Badge variant="active">Active</Badge>
+          </TableCell>
+          <TableCell>
+            <button className="p-1 hover:bg-gray-100 rounded">
+              <MoreVertical className="h-4 w-4 text-gray-500" />
+            </button>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-normal text-[#333]">
+            http://api.example.com/webhooks/cal
+          </TableCell>
+          <TableCell>
+            <div className="flex flex-wrap gap-2">
+              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag>After Call Event</Tag>
+            </div>
+          </TableCell>
+          <TableCell className="text-[#333]">Jan 14, 2025</TableCell>
+          <TableCell>
+            <Badge variant="disabled">Disabled</Badge>
+          </TableCell>
+          <TableCell>
+            <button className="p-1 hover:bg-gray-100 rounded">
+              <MoreVertical className="h-4 w-4 text-gray-500" />
+            </button>
           </TableCell>
         </TableRow>
       </TableBody>

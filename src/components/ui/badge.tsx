@@ -38,20 +38,30 @@ const badgeVariants = cva(
  * <Badge variant="active">Active</Badge>
  * <Badge variant="failed">Failed</Badge>
  * <Badge variant="disabled">Disabled</Badge>
+ * <Badge variant="active" leftIcon={<CheckIcon />}>Active</Badge>
  * ```
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  /** Icon displayed on the left side of the badge text */
+  leftIcon?: React.ReactNode
+  /** Icon displayed on the right side of the badge text */
+  rightIcon?: React.ReactNode
+}
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, ...props }, ref) => {
+  ({ className, variant, size, leftIcon, rightIcon, children, ...props }, ref) => {
     return (
       <div
-        className={cn(badgeVariants({ variant, size, className }))}
+        className={cn(badgeVariants({ variant, size, className }), "gap-1")}
         ref={ref}
         {...props}
-      />
+      >
+        {leftIcon && <span className="[&_svg]:size-3">{leftIcon}</span>}
+        {children}
+        {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
+      </div>
     )
   }
 )

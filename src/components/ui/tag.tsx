@@ -21,10 +21,15 @@ const tagVariants = cva(
         sm: "px-1.5 py-0.5 text-xs",
         lg: "px-3 py-1.5",
       },
+      interactive: {
+        true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
+        false: "",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      interactive: false,
     },
   }
 )
@@ -36,6 +41,7 @@ const tagVariants = cva(
  * ```tsx
  * <Tag>After Call Event</Tag>
  * <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+ * <Tag interactive onClick={() => console.log('clicked')}>Clickable</Tag>
  * ```
  */
 export interface TagProps
@@ -43,14 +49,18 @@ export interface TagProps
     VariantProps<typeof tagVariants> {
   /** Bold label prefix displayed before the content */
   label?: string
+  /** Make the tag clickable with hover/active states */
+  interactive?: boolean
 }
 
 const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, label, children, ...props }, ref) => {
+  ({ className, variant, size, interactive, label, children, ...props }, ref) => {
     return (
       <span
-        className={cn(tagVariants({ variant, size, className }))}
+        className={cn(tagVariants({ variant, size, interactive, className }))}
         ref={ref}
+        role={interactive ? "button" : undefined}
+        tabIndex={interactive ? 0 : undefined}
         {...props}
       >
         {label && (
