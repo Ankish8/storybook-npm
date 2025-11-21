@@ -689,6 +689,217 @@ export const Scroll: Story = {
   },
 }
 
+export const VirtualizedScroll: Story = {
+  name: 'Virtualized Scroll',
+  parameters: {
+    docs: {
+      description: {
+        story: 'This is an example of a table with 5000 rows. For large datasets, consider implementing virtualization for better performance.',
+      },
+    },
+  },
+  render: () => {
+    // Generate 100 rows for demo (in production, use virtualization library for 5000+ rows)
+    const virtualData = Array.from({ length: 100 }, (_, i) => ({
+      id: i,
+      name: `User${i}`,
+      email: `user${i}@example.com`,
+      col1: `Value ${i}-1`,
+      col2: `Value ${i}-2`,
+      col3: `Value ${i}-3`,
+      col4: `Value ${i}-4`,
+      col5: `Value ${i}-5`,
+    }))
+
+    return (
+      <div className="max-h-[300px] overflow-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Column 1</TableHead>
+              <TableHead>Column 2</TableHead>
+              <TableHead>Column 3</TableHead>
+              <TableHead>Column 4</TableHead>
+              <TableHead>Column 5</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {virtualData.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.id}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.email}</TableCell>
+                <TableCell>{row.col1}</TableCell>
+                <TableCell>{row.col2}</TableCell>
+                <TableCell>{row.col3}</TableCell>
+                <TableCell>{row.col4}</TableCell>
+                <TableCell>{row.col5}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    )
+  },
+}
+
+export const DosAndDonts: Story = {
+  name: "Do's and Don'ts",
+  parameters: {
+    docs: {
+      description: {
+        story: 'Best practices for using the Table component.',
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-12">
+      {/* Icons example */}
+      <div className="flex gap-8">
+        <div className="flex-1">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>📅 Sent on</TableHead>
+                <TableHead>📄 Subject</TableHead>
+                <TableHead>📊 Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Apr 22</TableCell>
+                <TableCell>Limited time offer: AP Process</TableCell>
+                <TableCell><Badge variant="active">In progress</Badge></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Apr 22</TableCell>
+                <TableCell>Action required: Update your AP</TableCell>
+                <TableCell><Badge variant="disabled">Queued</Badge></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Apr 22</TableCell>
+                <TableCell>Limited time offer: AP Process</TableCell>
+                <TableCell><Badge variant="active">Sent</Badge></TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-green-600 text-lg">✓</span>
+            <span className="font-medium">Do</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">If there's a need to insert an icon, use for all columns.</p>
+        </div>
+        <div className="flex-1">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sent on</TableHead>
+                <TableHead>📄 Subject</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Apr 22</TableCell>
+                <TableCell>Limited time offer: AP Process</TableCell>
+                <TableCell><Badge variant="active">In progress</Badge></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Apr 22</TableCell>
+                <TableCell>Action required: Update your AP</TableCell>
+                <TableCell><Badge variant="disabled">Queued</Badge></TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Apr 22</TableCell>
+                <TableCell>Limited time offer: AP Process</TableCell>
+                <TableCell><Badge variant="active">Sent</Badge></TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-red-600 text-lg">✗</span>
+            <span className="font-medium">Don't</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">Don't use icons if not applied to all columns titles.</p>
+        </div>
+      </div>
+
+      {/* Borders example */}
+      <div className="flex gap-8">
+        <div className="flex-1">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sent on</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Emails sent</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>2020-01-01</TableCell>
+                <TableCell>Lorem ipsum dolor</TableCell>
+                <TableCell>100</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>2022-02-02</TableCell>
+                <TableCell>This is the subject</TableCell>
+                <TableCell>99</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>2023-03-03</TableCell>
+                <TableCell>This is another subject</TableCell>
+                <TableCell>999</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-green-600 text-lg">✓</span>
+            <span className="font-medium">Do</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">If there's a need, remove only the outer border.</p>
+        </div>
+        <div className="flex-1">
+          <Table withoutBorder>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sent on</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Emails sent</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow className="border-0">
+                <TableCell>2020-01-01</TableCell>
+                <TableCell>Lorem ipsum dolor</TableCell>
+                <TableCell>100</TableCell>
+              </TableRow>
+              <TableRow className="border-0">
+                <TableCell>2022-02-02</TableCell>
+                <TableCell>This is the subject</TableCell>
+                <TableCell>99</TableCell>
+              </TableRow>
+              <TableRow className="border-0">
+                <TableCell>2023-03-03</TableCell>
+                <TableCell>This is another subject</TableCell>
+                <TableCell>999</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-red-600 text-lg">✗</span>
+            <span className="font-medium">Don't</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">Don't remove border between the rows.</p>
+        </div>
+      </div>
+    </div>
+  ),
+}
+
 export const WebhookTable: Story = {
   name: 'Webhook Table Example',
   parameters: {
