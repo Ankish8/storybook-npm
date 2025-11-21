@@ -15,6 +15,9 @@ const tagVariants = cva(
         default: "bg-[#F3F4F6] text-[#333333]",
         primary: "bg-[#343E55]/10 text-[#343E55]",
         secondary: "bg-[#E5E7EB] text-[#374151]",
+        success: "bg-[#E5FFF5] text-[#00A651]",
+        warning: "bg-[#FFF8E5] text-[#F59E0B]",
+        error: "bg-[#FFECEC] text-[#FF3B3B]",
       },
       size: {
         default: "px-2 py-1",

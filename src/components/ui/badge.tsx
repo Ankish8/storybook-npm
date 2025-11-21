@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
  * Pill-shaped badges with different colors for different states.
  */
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-full text-sm font-semibold transition-colors",
+  "inline-flex items-center justify-center rounded-full text-sm font-semibold transition-colors whitespace-nowrap",
   {
     variants: {
       variant: {
