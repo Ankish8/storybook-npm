@@ -39,25 +39,83 @@ Tables are used to organize data, making it easier to understand.
 ## Import
 
 \`\`\`tsx
-import { Table, TableHeader, TableHeaderCell TableBody, TableRow, TableCell } from "@/components/ui/table"
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 \`\`\`
 
 ## Props
 
 The Table component supports both a **composable API** (using children) and a **data-driven API** (using columns and data props).
 
-### Data-driven API
+---
 
-| Prop | Type | Description |
-|------|------|-------------|
-| columns* | TableColumn[] | Defines the columns of the table |
-| data | T[] | Array of data to display |
-| dataState | { isLoading?: boolean; isError?: boolean } | State of the data being displayed |
-| emptyState* | ReactNode | React element displayed when there is no data |
-| errorState* | ReactNode | React element displayed when there is an error |
-| size | 'sm' \\| 'md' \\| 'lg' | The row size of the table |
+### Table
 
-### TableColumn
+| Name | Description | Default | Type |
+|------|-------------|---------|------|
+| children | The child components inside the table | - | ReactNode |
+| className | A CSS class name to apply | - | string |
+| columns | Defines the columns of the table | - | TableColumn[] |
+| data | Array of data to display | - | T[] |
+| dataState | State of the data being displayed | - | { isLoading?: boolean; isError?: boolean } |
+| emptyState | React element displayed when there is no data | - | ReactNode |
+| errorState | React element displayed when there is an error | - | ReactNode |
+| size | The row size of the table | md | 'sm' \\| 'md' \\| 'lg' |
+| withoutBorder | Remove outer border from the table | false | boolean |
+
+---
+
+### TableHeader
+
+| Name | Description | Default | Type |
+|------|-------------|---------|------|
+| children | TableRow elements | - | ReactNode |
+| className | A CSS class name to apply | - | string |
+
+---
+
+### TableHead (TableHeaderCell)
+
+| Name | Description | Default | Type |
+|------|-------------|---------|------|
+| children | Header content | - | ReactNode |
+| className | A CSS class name to apply | - | string |
+| sticky | Make this column sticky on horizontal scroll | false | boolean |
+| sortDirection | Sort direction indicator | - | 'asc' \\| 'desc' \\| null |
+| infoTooltip | Show info icon with tooltip | - | string |
+
+---
+
+### TableBody
+
+| Name | Description | Default | Type |
+|------|-------------|---------|------|
+| children | TableRow elements | - | ReactNode |
+| className | A CSS class name to apply | - | string |
+
+---
+
+### TableRow
+
+| Name | Description | Default | Type |
+|------|-------------|---------|------|
+| children | TableCell elements | - | ReactNode |
+| className | A CSS class name to apply | - | string |
+| highlighted | Highlight the row with a colored background | false | boolean |
+
+---
+
+### TableCell
+
+| Name | Description | Default | Type |
+|------|-------------|---------|------|
+| children | Cell content | - | ReactNode |
+| className | A CSS class name to apply | - | string |
+| sticky | Make this cell sticky on horizontal scroll | false | boolean |
+| colSpan | Number of columns to span | - | number |
+
+---
+
+### TableColumn (for data-driven API)
 
 \`\`\`tsx
 interface TableColumn<T> {
@@ -83,11 +141,16 @@ interface TableColumn<T> {
       description: 'The row size of the table',
       table: {
         defaultValue: { summary: 'md' },
+        type: { summary: "'sm' | 'md' | 'lg'" },
       },
     },
     withoutBorder: {
       control: 'boolean',
-      description: 'If true, removes the table\'s outer border',
+      description: 'Remove outer border from the table',
+      table: {
+        defaultValue: { summary: 'false' },
+        type: { summary: 'boolean' },
+      },
     },
     columns: {
       description: 'Defines the columns of the table',
