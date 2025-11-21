@@ -9,6 +9,17 @@ const preview: Preview = {
        date: /Date$/i,
       },
     },
+    options: {
+      storySort: {
+        order: [
+          'Introduction',
+          'Getting Started',
+          'Components',
+          ['Button', 'Badge', 'Tag', 'Table'],
+          '*',
+        ],
+      },
+    },
   },
 };
 

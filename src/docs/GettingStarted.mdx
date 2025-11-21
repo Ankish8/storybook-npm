@@ -1,0 +1,236 @@
+import { Meta, Source } from '@storybook/blocks';
+
+<Meta title="Getting Started" />
+
+# Getting Started
+
+myOperator UI is a collection of reusable React components built with Tailwind CSS. Install components directly into your project with our CLI tool.
+
+## Quick Start
+
+### 1. Initialize your project
+
+Run the init command to set up your project with the necessary configuration:
+
+<Source
+  language="bash"
+  code={`npx myoperator-ui init`}
+/>
+
+This will:
+- Create a `components.json` configuration file
+- Set up Tailwind CSS with theme colors
+- Create utility functions (`cn`)
+- Configure path aliases
+
+### 2. Install dependencies
+
+Install the required peer dependencies:
+
+<Source
+  language="bash"
+  code={`npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react`}
+/>
+
+### 3. Add components
+
+Add the components you need:
+
+<Source
+  language="bash"
+  code={`npx myoperator-ui add button
+npx myoperator-ui add badge
+npx myoperator-ui add tag
+npx myoperator-ui add table`}
+/>
+
+### 4. Import and use
+
+<Source
+  language="tsx"
+  code={`import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
+export function MyComponent() {
+  return (
+    <div>
+      <Button variant="default">Click me</Button>
+      <Badge variant="active">Active</Badge>
+    </div>
+  )
+}`}
+/>
+
+---
+
+## Available Components
+
+| Component | Description | Command |
+|-----------|-------------|---------|
+| **Button** | Customizable button with variants, sizes, and icons | `npx myoperator-ui add button` |
+| **Badge** | Status indicators (active, failed, disabled) | `npx myoperator-ui add badge` |
+| **Tag** | Event labels with optional prefix | `npx myoperator-ui add tag` |
+| **Table** | Composable table with header, body, row, cell | `npx myoperator-ui add table` |
+
+---
+
+## Bootstrap Integration
+
+If you're using Bootstrap in your project, the CLI will automatically detect it and configure Tailwind to avoid conflicts.
+
+### How it works
+
+When Bootstrap is detected, you'll be asked:
+
+<Source
+  language="text"
+  code={`? Scope Tailwind to only components/ui? (recommended for Bootstrap projects) › Yes`}
+/>
+
+This configures Tailwind to only scan your UI components:
+
+<Source
+  language="javascript"
+  code={`// tailwind.config.js
+module.exports = {
+  content: [
+    "./src/components/ui/**/*.{js,ts,jsx,tsx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx}",
+  ],
+  // ...
+}`}
+/>
+
+**Result:** Use Bootstrap for layout and myOperator UI components for interactive elements without any CSS conflicts.
+
+---
+
+## Tailwind CSS Versions
+
+### Tailwind CSS v4 (Recommended)
+
+The CLI supports the latest Tailwind CSS v4 with automatic configuration.
+
+### Tailwind CSS v3
+
+For projects using Tailwind v3, the CLI will:
+- Create `tailwind.config.js` with theme colors
+- Add CSS variables to your global stylesheet
+- Configure `tailwindcss-animate` plugin
+
+---
+
+## CLI Commands
+
+### `init`
+
+Initialize your project with myOperator UI configuration.
+
+<Source
+  language="bash"
+  code={`npx myoperator-ui init`}
+/>
+
+**Options configured:**
+- Tailwind CSS version (v3 or v4)
+- Prefix for Tailwind classes (optional)
+- Components installation path
+- Utils file location
+- Global CSS file location
+
+### `add`
+
+Add a component to your project.
+
+<Source
+  language="bash"
+  code={`npx myoperator-ui add <component-name>`}
+/>
+
+**Examples:**
+
+<Source
+  language="bash"
+  code={`npx myoperator-ui add button
+npx myoperator-ui add badge tag table`}
+/>
+
+---
+
+## Project Structure
+
+After initialization, your project will have:
+
+<Source
+  language="text"
+  code={`src/
+├── components/
+│   └── ui/
+│       ├── button.tsx
+│       ├── badge.tsx
+│       ├── tag.tsx
+│       └── table.tsx
+├── lib/
+│   └── utils.ts        # cn() utility function
+└── index.css           # Global styles with CSS variables
+
+components.json         # myOperator UI configuration`}
+/>
+
+---
+
+## TypeScript Support
+
+All components are written in TypeScript with full type definitions. You get:
+
+- Autocomplete for props
+- Type checking for variants and sizes
+- IntelliSense in your IDE
+
+<Source
+  language="tsx"
+  code={`import { Button, type ButtonProps } from "@/components/ui/button"
+
+// Full type safety
+const MyButton = (props: ButtonProps) => (
+  <Button variant="default" size="lg" {...props} />
+)`}
+/>
+
+---
+
+## Customization
+
+Components use Tailwind CSS classes and can be easily customized:
+
+### 1. Override with className
+
+<Source
+  language="tsx"
+  code={`<Button className="rounded-full">Rounded Button</Button>`}
+/>
+
+### 2. Modify the component file
+
+Since components are copied to your project, you own the code and can modify it directly.
+
+### 3. Use CSS variables
+
+Components use CSS variables for colors that you can customize in your global CSS:
+
+<Source
+  language="css"
+  code={`:root {
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  /* ... customize other variables */
+}`}
+/>
+
+---
+
+## Need Help?
+
+- **GitHub Issues:** [Report bugs or request features](https://github.com/Ankish8/storybook-npm/issues)
+- **Documentation:** Browse the component stories in this Storybook
+
