@@ -12,9 +12,19 @@ import {
   TableSkeleton,
   TableEmpty,
   TableAvatar,
+  type TableColumn,
 } from './table'
 import { Badge } from './badge'
 import { Tag } from './tag'
+
+// Type for sample data
+interface EmailData {
+  date: string
+  subject: string
+  sentBy: string
+  status: string
+  emails: number
+}
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
@@ -29,19 +39,37 @@ Tables are used to organize data, making it easier to understand.
 ## Import
 
 \`\`\`tsx
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableRow,
-  TableHead,
-  TableCell,
-  TableCaption,
-  TableSkeleton,
-  TableEmpty,
-  TableAvatar,
-} from "@/components/ui/table"
+import { Table, TableHeader, TableHeaderCell TableBody, TableRow, TableCell } from "@/components/ui/table"
+\`\`\`
+
+## Props
+
+The Table component supports both a **composable API** (using children) and a **data-driven API** (using columns and data props).
+
+### Data-driven API
+
+| Prop | Type | Description |
+|------|------|-------------|
+| columns* | TableColumn[] | Defines the columns of the table |
+| data | T[] | Array of data to display |
+| dataState | { isLoading?: boolean; isError?: boolean } | State of the data being displayed |
+| emptyState* | ReactNode | React element displayed when there is no data |
+| errorState* | ReactNode | React element displayed when there is an error |
+| size | 'sm' \\| 'md' \\| 'lg' | The row size of the table |
+
+### TableColumn
+
+\`\`\`tsx
+interface TableColumn<T> {
+  id: string           // Unique identifier
+  header: ReactNode    // Header text or component
+  cell?: (row: T) => ReactNode  // Custom cell renderer
+  accessor?: keyof T   // Key to access row data
+  width?: string | number
+  sticky?: boolean
+  sortDirection?: 'asc' | 'desc' | null
+  infoTooltip?: string
+}
 \`\`\`
         `,
       },
@@ -53,10 +81,43 @@ import {
       control: 'select',
       options: ['sm', 'md', 'lg'],
       description: 'The row size of the table',
+      table: {
+        defaultValue: { summary: 'md' },
+      },
     },
     withoutBorder: {
       control: 'boolean',
       description: 'If true, removes the table\'s outer border',
+    },
+    columns: {
+      description: 'Defines the columns of the table',
+      table: {
+        type: { summary: 'TableColumn[]' },
+      },
+    },
+    data: {
+      description: 'Array of data to display in the table',
+      table: {
+        type: { summary: 'T[]' },
+      },
+    },
+    dataState: {
+      description: 'State of the data being displayed (loading or error)',
+      table: {
+        type: { summary: '{ isLoading?: boolean; isError?: boolean }' },
+      },
+    },
+    emptyState: {
+      description: 'React element displayed when there is no data',
+      table: {
+        type: { summary: 'ReactNode' },
+      },
+    },
+    errorState: {
+      description: 'React element displayed when there is an error state',
+      table: {
+        type: { summary: 'ReactNode' },
+      },
     },
   },
 }
@@ -65,40 +126,101 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // Sample data
-const sampleData = [
+const sampleData: EmailData[] = [
   { date: '2020-01-01', subject: 'Lorem ipsum dolor', sentBy: 'JD', status: 'Sent', emails: 100 },
   { date: '2023-03-03', subject: 'This is the subject This is the subject This is the sub...', sentBy: 'SP', status: 'Sent', emails: 999 },
   { date: '2022-02-02', subject: 'This is the subject', sentBy: 'ON', status: 'Sent', emails: 99 },
+]
+
+// Column definitions for data-driven API
+const columns: TableColumn<EmailData>[] = [
+  { id: 'date', header: 'Sent on', accessor: 'date' },
+  { id: 'subject', header: 'Subject', accessor: 'subject' },
+  { id: 'sentBy', header: 'Sent by', cell: (row) => <TableAvatar initials={row.sentBy} /> },
+  { id: 'status', header: 'Status', cell: (row) => <Badge variant="active">{row.status}</Badge> },
+  { id: 'emails', header: 'Emails sent', accessor: 'emails' },
 ]
 
 export const Overview: Story = {
   args: {
     size: 'md',
     withoutBorder: false,
+    columns: columns,
+    data: sampleData,
   },
-  render: ({ size, withoutBorder }) => (
-    <Table size={size} withoutBorder={withoutBorder}>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Sent on</TableHead>
-          <TableHead>Subject</TableHead>
-          <TableHead>Sent by</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Emails sent</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sampleData.map((row, i) => (
-          <TableRow key={i}>
-            <TableCell>{row.date}</TableCell>
-            <TableCell>{row.subject}</TableCell>
-            <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
-            <TableCell><Badge variant="active">{row.status}</Badge></TableCell>
-            <TableCell>{row.emails}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+  render: ({ size, withoutBorder, columns, data }) => (
+    <Table<EmailData>
+      size={size}
+      withoutBorder={withoutBorder}
+      columns={columns}
+      data={data}
+      emptyState={<div>No emails found</div>}
+    />
+  ),
+}
+
+export const DataDrivenLoading: Story = {
+  name: 'Data-driven: Loading State',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Use the dataState prop to show loading state with automatic skeleton rendering.',
+      },
+    },
+  },
+  render: () => (
+    <Table<EmailData>
+      columns={columns}
+      data={[]}
+      dataState={{ isLoading: true }}
+    />
+  ),
+}
+
+export const DataDrivenEmpty: Story = {
+  name: 'Data-driven: Empty State',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Use the emptyState prop to show a custom message when there is no data.',
+      },
+    },
+  },
+  render: () => (
+    <Table<EmailData>
+      columns={columns}
+      data={[]}
+      emptyState={
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-lg">📭</span>
+          <span>No emails found. Send your first email to get started.</span>
+        </div>
+      }
+    />
+  ),
+}
+
+export const DataDrivenError: Story = {
+  name: 'Data-driven: Error State',
+  parameters: {
+    docs: {
+      description: {
+        story: 'Use the errorState prop to show a custom error message.',
+      },
+    },
+  },
+  render: () => (
+    <Table<EmailData>
+      columns={columns}
+      data={[]}
+      dataState={{ isError: true }}
+      errorState={
+        <div className="flex flex-col items-center gap-2 text-red-500">
+          <span className="text-lg">⚠️</span>
+          <span>Failed to load data. Please try again.</span>
+        </div>
+      }
+    />
   ),
 }
 
