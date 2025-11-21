@@ -235,15 +235,211 @@ const tableVariants = cva(
   }
 )
 
-export interface TableProps
-  extends React.HTMLAttributes<HTMLTableElement>,
+/**
+ * Column definition for data-driven table
+ */
+export interface TableColumn<T = unknown> {
+  /** Unique identifier for the column */
+  id: string
+  /** Header text or component */
+  header: React.ReactNode
+  /** Function to render cell content */
+  cell?: (row: T) => React.ReactNode
+  /** Accessor key for row data */
+  accessor?: keyof T
+  /** Column width */
+  width?: string | number
+  /** Make column sticky */
+  sticky?: boolean
+  /** Sort direction */
+  sortDirection?: 'asc' | 'desc' | null
+  /** Info tooltip text */
+  infoTooltip?: string
+}
+
+/**
+ * Data state for loading/error handling
+ */
+export interface TableDataState {
+  /** Whether data is loading */
+  isLoading?: boolean
+  /** Whether there's an error */
+  isError?: boolean
+}
+
+export interface TableProps<T = unknown>
+  extends Omit<React.HTMLAttributes<HTMLTableElement>, 'children'>,
     VariantProps<typeof tableVariants> {
   /** Remove outer border from the table */
   withoutBorder?: boolean
+  /** Column definitions for data-driven mode */
+  columns?: TableColumn<T>[]
+  /** Data array for data-driven mode */
+  data?: T[]
+  /** State of data (loading or error) */
+  dataState?: TableDataState
+  /** Element to display when data is empty */
+  emptyState?: React.ReactNode
+  /** Element to display when there's an error */
+  errorState?: React.ReactNode
+  /** Unique identifier for testing */
+  "data-testid"?: string
+  /** Children for composable API */
+  children?: React.ReactNode
 }
 
-const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, size, withoutBorder, ...props }, ref) => (
+function TableInner<T>(
+  {
+    className,
+    size,
+    withoutBorder,
+    columns,
+    data,
+    dataState,
+    emptyState,
+    errorState,
+    children,
+    ...props
+  }: TableProps<T>,
+  ref: React.ForwardedRef<HTMLTableElement>
+) {
+  // Data-driven mode
+  const isDataDriven = columns && columns.length > 0
+
+  const renderContent = () => {
+    if (!isDataDriven) {
+      return children
+    }
+
+    // Handle error state
+    if (dataState?.isError && errorState) {
+      return (
+        <>
+          <TableHeader>
+            <TableRow>
+              {columns.map((col) => (
+                <TableHead
+                  key={col.id}
+                  sticky={col.sticky}
+                  sortDirection={col.sortDirection}
+                  infoTooltip={col.infoTooltip}
+                  style={col.width ? { width: col.width } : undefined}
+                >
+                  {col.header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={columns.length} className="text-center py-8">
+                {errorState}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </>
+      )
+    }
+
+    // Handle loading state
+    if (dataState?.isLoading) {
+      return (
+        <>
+          <TableHeader>
+            <TableRow>
+              {columns.map((col) => (
+                <TableHead
+                  key={col.id}
+                  sticky={col.sticky}
+                  sortDirection={col.sortDirection}
+                  infoTooltip={col.infoTooltip}
+                  style={col.width ? { width: col.width } : undefined}
+                >
+                  {col.header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableSkeleton rows={5} columns={columns.length} />
+          </TableBody>
+        </>
+      )
+    }
+
+    // Handle empty state
+    if (!data || data.length === 0) {
+      return (
+        <>
+          <TableHeader>
+            <TableRow>
+              {columns.map((col) => (
+                <TableHead
+                  key={col.id}
+                  sticky={col.sticky}
+                  sortDirection={col.sortDirection}
+                  infoTooltip={col.infoTooltip}
+                  style={col.width ? { width: col.width } : undefined}
+                >
+                  {col.header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={columns.length} className="text-center py-8 text-[#6B7280]">
+                {emptyState || "No data available"}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </>
+      )
+    }
+
+    // Render data
+    return (
+      <>
+        <TableHeader>
+          <TableRow>
+            {columns.map((col) => (
+              <TableHead
+                key={col.id}
+                sticky={col.sticky}
+                sortDirection={col.sortDirection}
+                infoTooltip={col.infoTooltip}
+                style={col.width ? { width: col.width } : undefined}
+              >
+                {col.header}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((row, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {columns.map((col) => (
+                <TableCell
+                  key={col.id}
+                  sticky={col.sticky}
+                  style={col.width ? { width: col.width } : undefined}
+                >
+                  {col.cell
+                    ? col.cell(row)
+                    : col.accessor
+                      ? String(row[col.accessor] ?? '')
+                      : null
+                  }
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </>
+    )
+  }
+
+  return (
     <div className={cn(
       "relative w-full overflow-auto",
       !withoutBorder && "rounded-lg border border-[#E5E7EB]"
@@ -252,10 +448,18 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
         ref={ref}
         className={cn(tableVariants({ size, className }))}
         {...props}
-      />
+      >
+        {renderContent()}
+      </table>
     </div>
   )
-)
+}
+
+const Table = React.forwardRef(TableInner) as <T>(
+  props: TableProps<T> & { ref?: React.ForwardedRef<HTMLTableElement> }
+) => React.ReactElement
+
+// @ts-expect-error - displayName is valid
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef<
@@ -468,6 +672,11 @@ export {
   TableEmpty,
   TableAvatar,
   tableVariants,
+}
+
+export type {
+  TableColumn,
+  TableDataState,
 }
 `, prefix)
 

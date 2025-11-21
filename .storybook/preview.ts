@@ -9,6 +9,11 @@ const preview: Preview = {
        date: /Date$/i,
       },
     },
+    docs: {
+      story: {
+        inline: true,
+      },
+    },
     options: {
       storySort: {
         order: [

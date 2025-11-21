@@ -232,8 +232,10 @@ export const Overview: Story = {
   ),
 }
 
+// Hidden from sidebar - only in docs
 export const DataDrivenLoading: Story = {
   name: 'Data-driven: Loading State',
+  tags: ['!dev'],
   parameters: {
     docs: {
       description: {
@@ -252,6 +254,7 @@ export const DataDrivenLoading: Story = {
 
 export const DataDrivenEmpty: Story = {
   name: 'Data-driven: Empty State',
+  tags: ['!dev'],
   parameters: {
     docs: {
       description: {
@@ -275,6 +278,7 @@ export const DataDrivenEmpty: Story = {
 
 export const DataDrivenError: Story = {
   name: 'Data-driven: Error State',
+  tags: ['!dev'],
   parameters: {
     docs: {
       description: {
@@ -504,6 +508,7 @@ export const Loading: Story = {
 
 export const EmptyState: Story = {
   name: 'Empty State',
+  tags: ['!dev'],
   render: () => (
     <Table>
       <TableHeader>
@@ -776,6 +781,7 @@ export const VirtualizedScroll: Story = {
 
 export const DosAndDonts: Story = {
   name: "Do's and Don'ts",
+  tags: ['!dev'],
   parameters: {
     docs: {
       description: {
@@ -930,6 +936,7 @@ export const DosAndDonts: Story = {
 
 export const WebhookTable: Story = {
   name: 'Webhook Table Example',
+  tags: ['!dev'],
   parameters: {
     docs: {
       description: {
