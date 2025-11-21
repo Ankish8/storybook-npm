@@ -22,8 +22,12 @@ export async function add(components: string[], options: AddOptions) {
     process.exit(1)
   }
 
-  // Get available components
-  const registry = await getRegistry()
+  // Get config to read prefix
+  const config = await fs.readJson(configPath)
+  const prefix = config.tailwind?.prefix || ''
+
+  // Get available components with prefix applied
+  const registry = await getRegistry(prefix)
   const availableComponents = Object.keys(registry)
 
   // If no components specified, show selection
@@ -56,8 +60,7 @@ export async function add(components: string[], options: AddOptions) {
     process.exit(1)
   }
 
-  // Get config
-  const config = await fs.readJson(configPath)
+  // Get components directory
   const componentsDir = path.join(cwd, options.path)
 
   // Confirm installation

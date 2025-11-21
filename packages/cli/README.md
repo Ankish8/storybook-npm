@@ -1,6 +1,6 @@
 # myOperator UI
 
-CLI for adding myOperator UI components to your React project.
+CLI for adding myOperator UI components to your React project. Works with both standalone projects and projects that use Bootstrap or other CSS frameworks.
 
 ## Installation
 
@@ -20,8 +20,7 @@ This will:
 - Create a `components.json` configuration file
 - Set up the utils file with the `cn` helper
 - Create the components directory
-- Create/update your global CSS with theme CSS variables
-- Create/update `tailwind.config.js` with theme color mappings
+- Create/update your global CSS with Tailwind imports
 - Create/update `postcss.config.js` with the correct Tailwind CSS PostCSS plugin
 
 ### Add components
@@ -48,7 +47,58 @@ npx myoperator-ui add button --overwrite
 
 # Custom path
 npx myoperator-ui add button -p src/ui
+
+# Check version
+npx myoperator-ui --version
 ```
+
+## Bootstrap Compatibility
+
+myOperator UI automatically detects if your project uses Bootstrap and configures Tailwind CSS to avoid conflicts.
+
+### How it works
+
+When Bootstrap is detected, the CLI:
+
+1. **Uses selective Tailwind imports** - Imports only theme and utilities, skipping Preflight (Tailwind's CSS reset) which would override Bootstrap's base styles
+
+2. **No class name conflicts** - Tailwind utility classes like `bg-[#343E55]`, `flex`, `p-4` don't overlap with Bootstrap classes like `btn`, `container`, `row`
+
+### Generated CSS for Bootstrap projects
+
+```css
+/* Selective imports to avoid Preflight conflicts with Bootstrap */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Tell Tailwind to scan component files for utility classes */
+@source "./components/**/*.{js,ts,jsx,tsx}";
+@source "./lib/**/*.{js,ts,jsx,tsx}";
+```
+
+### Note on Prefixes
+
+Tailwind CSS v4's `prefix()` option only works with the full `@import "tailwindcss"` which includes Preflight. Since Bootstrap compatibility requires skipping Preflight, prefixes are not available for Bootstrap projects.
+
+## Tailwind CSS Version Support
+
+### Tailwind CSS v4 (default)
+
+For v4 projects, the CLI generates CSS-based configuration:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-primary: hsl(222.2 47.4% 11.2%);
+  /* ... */
+}
+```
+
+### Tailwind CSS v3
+
+For v3 projects, the CLI generates the traditional configuration with `tailwind.config.js` and CSS variables.
 
 ## Available Components
 
@@ -57,7 +107,7 @@ npx myoperator-ui add button -p src/ui
 ## Requirements
 
 - React 18+
-- Tailwind CSS
+- Tailwind CSS v3 or v4
 - TypeScript (recommended)
 
 ## Dependencies
@@ -68,54 +118,25 @@ Components use these packages:
 - `clsx`
 - `tailwind-merge`
 - `lucide-react`
+
+For Tailwind v3, you'll also need:
 - `tailwindcss-animate`
-
-## CSS Variables & Theming
-
-Components use CSS variables for theming. The `init` command automatically sets up these variables in your global CSS file.
-
-### Theme Colors
-
-The following semantic colors are available:
-
-| Variable | Description |
-|----------|-------------|
-| `--background` | Page background |
-| `--foreground` | Default text color |
-| `--primary` | Primary brand color |
-| `--secondary` | Secondary color |
-| `--destructive` | Error/danger color |
-| `--muted` | Muted backgrounds |
-| `--accent` | Accent color |
-| `--border` | Border color |
-| `--ring` | Focus ring color |
-
-### Dark Mode
-
-Dark mode is supported via the `.dark` class on the root element. The CSS variables automatically switch to dark theme values.
-
-### Customizing Theme
-
-To customize colors, edit the CSS variables in your global CSS file:
-
-```css
-:root {
-  --primary: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  /* ... other variables */
-}
-```
-
-Colors use HSL format without the `hsl()` wrapper (e.g., `222.2 47.4% 11.2%`).
 
 ## PostCSS Configuration
 
-This CLI automatically sets up the correct PostCSS configuration for Tailwind CSS. The new Tailwind CSS versions require the `@tailwindcss/postcss` plugin instead of the old `tailwindcss` plugin.
+This CLI automatically sets up the correct PostCSS configuration for Tailwind CSS.
 
-### Correct PostCSS Config
+### For Tailwind v4
 
 ```javascript
-// postcss.config.js
+// postcss.config.js (ESM)
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+
+// postcss.config.js (CommonJS)
 module.exports = {
   plugins: {
     '@tailwindcss/postcss': {},
@@ -129,8 +150,6 @@ If you see this error:
 
 ```
 [plugin:vite:css] [postcss] It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin.
-The PostCSS plugin has moved to a separate package, so to continue using Tailwind CSS with PostCSS
-you'll need to install `@tailwindcss/postcss` and update your PostCSS configuration.
 ```
 
 **Fix it by:**
@@ -140,9 +159,32 @@ you'll need to install `@tailwindcss/postcss` and update your PostCSS configurat
    npm install -D @tailwindcss/postcss
    ```
 
-2. Updating your `postcss.config.js` to use the new plugin (see above)
+2. Run `npx myoperator-ui init` to automatically create the correct configuration
 
-Running `npx myoperator-ui init` will automatically create the correct configuration for you.
+## Troubleshooting
+
+### Button styles not applying
+
+Make sure you've installed the required dependencies:
+
+```bash
+npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react
+```
+
+### Styles conflict with Bootstrap
+
+If you're seeing Bootstrap styles override your components, make sure:
+
+1. You ran `npx myoperator-ui init` after adding Bootstrap
+2. The CSS file has selective imports (not `@import "tailwindcss"`)
+
+### Version mismatch
+
+To ensure you're using the latest version:
+
+```bash
+npx --yes myoperator-ui@latest init
+```
 
 ## License
 
