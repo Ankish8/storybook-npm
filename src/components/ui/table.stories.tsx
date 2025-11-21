@@ -29,9 +29,19 @@ interface EmailData {
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
   component: Table,
+  decorators: [
+    (Story) => (
+      <div className="p-6">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
-    layout: 'padded',
+    layout: 'fullscreen',
     docs: {
+      story: {
+        inline: true,
+      },
       description: {
         component: `
 Tables are used to organize data, making it easier to understand.
@@ -608,11 +618,31 @@ export const StickyColumn: Story = {
           </TableRow>
           <TableRow>
             <TableCell sticky>Cancellation request</TableCell>
-            <TableCell><Badge variant="active">Done</Badge></TableCell>
+            <TableCell><Badge variant="default">Done</Badge></TableCell>
             <TableCell>This is des...</TableCell>
             <TableCell>2024-07-12</TableCell>
             <TableCell>300</TableCell>
             <TableCell>Mark Johnson</TableCell>
+            <TableCell>Low</TableCell>
+            <TableCell>Support</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sticky>Limited time offer</TableCell>
+            <TableCell><Badge variant="failed">Stuck</Badge></TableCell>
+            <TableCell>This is des...</TableCell>
+            <TableCell>2024-08-06</TableCell>
+            <TableCell>50</TableCell>
+            <TableCell>Lucy Brown</TableCell>
+            <TableCell>High</TableCell>
+            <TableCell>Marketing</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sticky>Cancellation request</TableCell>
+            <TableCell><Badge variant="default">Done</Badge></TableCell>
+            <TableCell>This is des...</TableCell>
+            <TableCell>2024-09-05</TableCell>
+            <TableCell>400</TableCell>
+            <TableCell>Alan Turing</TableCell>
             <TableCell>Low</TableCell>
             <TableCell>Support</TableCell>
           </TableRow>
@@ -632,11 +662,11 @@ export const Scroll: Story = {
     },
   },
   render: () => {
-    const priorityColors: Record<string, string> = {
-      Urgent: '#EF4444',
-      High: '#3B82F6',
-      Normal: '#6B7280',
-      Low: '#10B981',
+    const priorityVariants: Record<string, 'active' | 'failed' | 'disabled' | 'default'> = {
+      Urgent: 'failed',
+      High: 'active',
+      Normal: 'disabled',
+      Low: 'default',
     }
 
     const statusVariants: Record<string, 'active' | 'failed' | 'disabled'> = {
@@ -672,9 +702,7 @@ export const Scroll: Story = {
               <TableRow key={i}>
                 <TableCell>{row.date}</TableCell>
                 <TableCell>
-                  <span className="px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: priorityColors[row.priority] }}>
-                    {row.priority}
-                  </span>
+                  <Badge variant={priorityVariants[row.priority]}>{row.priority}</Badge>
                 </TableCell>
                 <TableCell>{row.subject}</TableCell>
                 <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
