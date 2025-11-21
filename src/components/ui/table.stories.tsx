@@ -12,19 +12,9 @@ import {
   TableSkeleton,
   TableEmpty,
   TableAvatar,
-  type TableColumn,
 } from './table'
 import { Badge } from './badge'
 import { Tag } from './tag'
-
-// Type for sample data
-interface EmailData {
-  date: string
-  subject: string
-  sentBy: string
-  status: string
-  emails: number
-}
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
@@ -39,9 +29,6 @@ const meta: Meta<typeof Table> = {
   parameters: {
     layout: 'fullscreen',
     docs: {
-      story: {
-        inline: true,
-      },
       description: {
         component: `
 Tables are used to organize data, making it easier to understand.
@@ -49,95 +36,36 @@ Tables are used to organize data, making it easier to understand.
 ## Import
 
 \`\`\`tsx
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableSkeleton,
+  TableEmpty,
+  TableAvatar
+} from "@/components/ui/table"
 \`\`\`
 
-## Props
-
-The Table component supports both a **composable API** (using children) and a **data-driven API** (using columns and data props).
-
----
-
-### Table
-
-| Name | Description | Default | Type |
-|------|-------------|---------|------|
-| children | The child components inside the table | - | ReactNode |
-| className | A CSS class name to apply | - | string |
-| columns | Defines the columns of the table | - | TableColumn[] |
-| data | Array of data to display | - | T[] |
-| dataState | State of the data being displayed | - | { isLoading?: boolean; isError?: boolean } |
-| emptyState | React element displayed when there is no data | - | ReactNode |
-| errorState | React element displayed when there is an error | - | ReactNode |
-| size | The row size of the table | md | 'sm' \\| 'md' \\| 'lg' |
-| withoutBorder | Remove outer border from the table | false | boolean |
-
----
-
-### TableHeader
-
-| Name | Description | Default | Type |
-|------|-------------|---------|------|
-| children | TableRow elements | - | ReactNode |
-| className | A CSS class name to apply | - | string |
-
----
-
-### TableHead (TableHeaderCell)
-
-| Name | Description | Default | Type |
-|------|-------------|---------|------|
-| children | Header content | - | ReactNode |
-| className | A CSS class name to apply | - | string |
-| sticky | Make this column sticky on horizontal scroll | false | boolean |
-| sortDirection | Sort direction indicator | - | 'asc' \\| 'desc' \\| null |
-| infoTooltip | Show info icon with tooltip | - | string |
-
----
-
-### TableBody
-
-| Name | Description | Default | Type |
-|------|-------------|---------|------|
-| children | TableRow elements | - | ReactNode |
-| className | A CSS class name to apply | - | string |
-
----
-
-### TableRow
-
-| Name | Description | Default | Type |
-|------|-------------|---------|------|
-| children | TableCell elements | - | ReactNode |
-| className | A CSS class name to apply | - | string |
-| highlighted | Highlight the row with a colored background | false | boolean |
-
----
-
-### TableCell
-
-| Name | Description | Default | Type |
-|------|-------------|---------|------|
-| children | Cell content | - | ReactNode |
-| className | A CSS class name to apply | - | string |
-| sticky | Make this cell sticky on horizontal scroll | false | boolean |
-| colSpan | Number of columns to span | - | number |
-
----
-
-### TableColumn (for data-driven API)
+## Usage
 
 \`\`\`tsx
-interface TableColumn<T> {
-  id: string           // Unique identifier
-  header: ReactNode    // Header text or component
-  cell?: (row: T) => ReactNode  // Custom cell renderer
-  accessor?: keyof T   // Key to access row data
-  width?: string | number
-  sticky?: boolean
-  sortDirection?: 'asc' | 'desc' | null
-  infoTooltip?: string
-}
+<Table size="md" withoutBorder={false}>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Item 1</TableCell>
+      <TableCell><Badge variant="active">Active</Badge></TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
 \`\`\`
         `,
       },
@@ -162,142 +90,47 @@ interface TableColumn<T> {
         type: { summary: 'boolean' },
       },
     },
-    columns: {
-      description: 'Defines the columns of the table',
-      table: {
-        type: { summary: 'TableColumn[]' },
-      },
-    },
-    data: {
-      description: 'Array of data to display in the table',
-      table: {
-        type: { summary: 'T[]' },
-      },
-    },
-    dataState: {
-      description: 'State of the data being displayed (loading or error)',
-      table: {
-        type: { summary: '{ isLoading?: boolean; isError?: boolean }' },
-      },
-    },
-    emptyState: {
-      description: 'React element displayed when there is no data',
-      table: {
-        type: { summary: 'ReactNode' },
-      },
-    },
-    errorState: {
-      description: 'React element displayed when there is an error state',
-      table: {
-        type: { summary: 'ReactNode' },
-      },
-    },
   },
 }
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Sample data
-const sampleData: EmailData[] = [
+// Sample data for stories
+const sampleData = [
   { date: '2020-01-01', subject: 'Lorem ipsum dolor', sentBy: 'JD', status: 'Sent', emails: 100 },
   { date: '2023-03-03', subject: 'This is the subject This is the subject This is the sub...', sentBy: 'SP', status: 'Sent', emails: 999 },
   { date: '2022-02-02', subject: 'This is the subject', sentBy: 'ON', status: 'Sent', emails: 99 },
-]
-
-// Column definitions for data-driven API
-const columns: TableColumn<EmailData>[] = [
-  { id: 'date', header: 'Sent on', accessor: 'date' },
-  { id: 'subject', header: 'Subject', accessor: 'subject' },
-  { id: 'sentBy', header: 'Sent by', cell: (row) => <TableAvatar initials={row.sentBy} /> },
-  { id: 'status', header: 'Status', cell: (row) => <Badge variant="active">{row.status}</Badge> },
-  { id: 'emails', header: 'Emails sent', accessor: 'emails' },
 ]
 
 export const Overview: Story = {
   args: {
     size: 'md',
     withoutBorder: false,
-    columns: columns,
-    data: sampleData,
   },
-  render: ({ size, withoutBorder, columns, data }) => (
-    <Table<EmailData>
-      size={size}
-      withoutBorder={withoutBorder}
-      columns={columns}
-      data={data}
-      emptyState={<div>No emails found</div>}
-    />
-  ),
-}
-
-// Hidden from sidebar - only in docs
-export const DataDrivenLoading: Story = {
-  name: 'Data-driven: Loading State',
-  tags: ['!dev'],
-  parameters: {
-    docs: {
-      description: {
-        story: 'Use the dataState prop to show loading state with automatic skeleton rendering.',
-      },
-    },
-  },
-  render: () => (
-    <Table<EmailData>
-      columns={columns}
-      data={[]}
-      dataState={{ isLoading: true }}
-    />
-  ),
-}
-
-export const DataDrivenEmpty: Story = {
-  name: 'Data-driven: Empty State',
-  tags: ['!dev'],
-  parameters: {
-    docs: {
-      description: {
-        story: 'Use the emptyState prop to show a custom message when there is no data.',
-      },
-    },
-  },
-  render: () => (
-    <Table<EmailData>
-      columns={columns}
-      data={[]}
-      emptyState={
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-lg">📭</span>
-          <span>No emails found. Send your first email to get started.</span>
-        </div>
-      }
-    />
-  ),
-}
-
-export const DataDrivenError: Story = {
-  name: 'Data-driven: Error State',
-  tags: ['!dev'],
-  parameters: {
-    docs: {
-      description: {
-        story: 'Use the errorState prop to show a custom error message.',
-      },
-    },
-  },
-  render: () => (
-    <Table<EmailData>
-      columns={columns}
-      data={[]}
-      dataState={{ isError: true }}
-      errorState={
-        <div className="flex flex-col items-center gap-2 text-red-500">
-          <span className="text-lg">⚠️</span>
-          <span>Failed to load data. Please try again.</span>
-        </div>
-      }
-    />
+  render: ({ size, withoutBorder }) => (
+    <Table size={size} withoutBorder={withoutBorder}>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Sent on</TableHead>
+          <TableHead>Subject</TableHead>
+          <TableHead>Sent by</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Emails sent</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {sampleData.map((row, i) => (
+          <TableRow key={i}>
+            <TableCell>{row.date}</TableCell>
+            <TableCell>{row.subject}</TableCell>
+            <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
+            <TableCell><Badge variant="active">{row.status}</Badge></TableCell>
+            <TableCell>{row.emails}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   ),
 }
 
