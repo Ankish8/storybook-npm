@@ -1,0 +1,9 @@
+{
+  "src/components/ui/*.tsx": [
+    "eslint --fix",
+    "cd packages/cli && npm run generate-registry"
+  ],
+  "packages/cli/src/**/*.ts": [
+    "eslint --fix"
+  ]
+}

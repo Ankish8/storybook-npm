@@ -1,3 +1,6 @@
+// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
+// Run: npm run generate-registry
+
 export interface ComponentFile {
   name: string
   content: string
@@ -84,12 +87,27 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 // In a real implementation, this would fetch from a remote URL
 // For now, we'll embed the components directly
 export async function getRegistry(prefix: string = ''): Promise<Registry> {
-  // Badge component content
-  const badgeContent = prefixTailwindClasses(`import * as React from "react"
+  return {
+    'badge': {
+      name: 'badge',
+      description: 'A status badge component with active, failed, and disabled variants',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'badge.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Badge variants for status indicators.
+ * Pill-shaped badges with different colors for different states.
+ */
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-full text-sm font-semibold transition-colors whitespace-nowrap",
   {
@@ -113,10 +131,23 @@ const badgeVariants = cva(
   }
 )
 
+/**
+ * Badge component for displaying status indicators.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Badge variant="active">Active</Badge>
+ * <Badge variant="failed">Failed</Badge>
+ * <Badge variant="disabled">Disabled</Badge>
+ * <Badge variant="active" leftIcon={<CheckIcon />}>Active</Badge>
+ * \`\`\`
+ */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
+  /** Icon displayed on the left side of the badge text */
   leftIcon?: React.ReactNode
+  /** Icon displayed on the right side of the badge text */
   rightIcon?: React.ReactNode
 }
 
@@ -138,83 +169,357 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
 Badge.displayName = "Badge"
 
 export { Badge, badgeVariants }
-`, prefix)
-
-  // Tag component content
-  const tagContent = prefixTailwindClasses(`import * as React from "react"
+`, prefix),
+        },
+      ],
+    },
+    'button': {
+      name: 'button',
+      description: 'A customizable button component with variants, sizes, and icons',
+      dependencies: [
+            "@radix-ui/react-slot",
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'button.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const tagVariants = cva(
-  "inline-flex items-center justify-center rounded text-sm transition-colors",
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-[#F3F4F6] text-[#333333]",
-        primary: "bg-[#343E55]/10 text-[#343E55]",
-        secondary: "bg-[#E5E7EB] text-[#374151]",
-        success: "bg-[#E5FFF5] text-[#00A651]",
-        warning: "bg-[#FFF8E5] text-[#F59E0B]",
-        error: "bg-[#FFECEC] text-[#FF3B3B]",
+        default: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline:
+          "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#343E55] hover:text-white",
+        secondary:
+          "bg-[#343E55]/20 text-[#343E55] hover:bg-[#343E55]/30",
+        ghost: "hover:bg-[#343E55]/10 hover:text-[#343E55]",
+        link: "text-[#343E55] underline-offset-4 hover:underline",
       },
       size: {
-        default: "px-2 py-1",
-        sm: "px-1.5 py-0.5 text-xs",
-        lg: "px-3 py-1.5",
-      },
-      interactive: {
-        true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
-        false: "",
-      },
-      selected: {
-        true: "ring-2 ring-[#343E55] ring-offset-1",
-        false: "",
+        default: "py-2.5 px-4",
+        sm: "py-2 px-3 text-xs",
+        lg: "py-3 px-6",
+        icon: "p-2.5",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
-      interactive: false,
-      selected: false,
     },
   }
 )
 
-export interface TagProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof tagVariants> {
-  label?: string
-  interactive?: boolean
-  selected?: boolean
+/**
+ * Button component for user interactions.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Button variant="default" size="default">
+ *   Click me
+ * </Button>
+ * \`\`\`
+ */
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  /** Render as child element using Radix Slot */
+  asChild?: boolean
+  /** Icon displayed on the left side of the button text */
+  leftIcon?: React.ReactNode
+  /** Icon displayed on the right side of the button text */
+  rightIcon?: React.ReactNode
+  /** Shows loading spinner and disables button */
+  loading?: boolean
+  /** Text shown during loading state */
+  loadingText?: string
 }
 
-const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, interactive, selected, label, children, ...props }, ref) => {
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({
+    className,
+    variant,
+    size,
+    asChild = false,
+    leftIcon,
+    rightIcon,
+    loading = false,
+    loadingText,
+    children,
+    disabled,
+    ...props
+  }, ref) => {
+    const Comp = asChild ? Slot : "button"
+
     return (
-      <span
-        className={cn(tagVariants({ variant, size, interactive, selected, className }))}
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        role={interactive ? "button" : undefined}
-        tabIndex={interactive ? 0 : undefined}
-        aria-selected={selected}
+        disabled={disabled || loading}
         {...props}
       >
-        {label && (
-          <span className="font-semibold mr-1">{label}</span>
+        {loading ? (
+          <>
+            <Loader2 className="animate-spin" />
+            {loadingText || children}
+          </>
+        ) : (
+          <>
+            {leftIcon}
+            {children}
+            {rightIcon}
+          </>
         )}
-        <span className="font-normal">{children}</span>
-      </span>
+      </Comp>
     )
   }
 )
-Tag.displayName = "Tag"
+Button.displayName = "Button"
 
-export { Tag, tagVariants }
-`, prefix)
+export { Button, buttonVariants }
+`, prefix),
+        },
+      ],
+    },
+    'dropdown-menu': {
+      name: 'dropdown-menu',
+      description: 'A dropdown menu component for displaying actions and options',
+      dependencies: [
+            "@radix-ui/react-dropdown-menu",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'dropdown-menu.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { Check, ChevronRight, Circle } from "lucide-react"
 
-  // Table component content
-  const tableContent = prefixTailwindClasses(`import * as React from "react"
+import { cn } from "@/lib/utils"
+
+const DropdownMenu = DropdownMenuPrimitive.Root
+
+const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+
+const DropdownMenuGroup = DropdownMenuPrimitive.Group
+
+const DropdownMenuPortal = DropdownMenuPrimitive.Portal
+
+const DropdownMenuSub = DropdownMenuPrimitive.Sub
+
+const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
+
+const DropdownMenuSubTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
+    inset?: boolean
+  }
+>(({ className, inset, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubTrigger
+    ref={ref}
+    className={cn(
+      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-[#F3F4F6] data-[state=open]:bg-[#F3F4F6]",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  >
+    {children}
+    <ChevronRight className="ml-auto h-4 w-4" />
+  </DropdownMenuPrimitive.SubTrigger>
+))
+DropdownMenuSubTrigger.displayName =
+  DropdownMenuPrimitive.SubTrigger.displayName
+
+const DropdownMenuSubContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubContent
+    ref={ref}
+    className={cn(
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className
+    )}
+    {...props}
+  />
+))
+DropdownMenuSubContent.displayName =
+  DropdownMenuPrimitive.SubContent.displayName
+
+const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+>(({ className, sideOffset = 4, ...props }, ref) => (
+  <DropdownMenuPrimitive.Portal>
+    <DropdownMenuPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        className
+      )}
+      {...props}
+    />
+  </DropdownMenuPrimitive.Portal>
+))
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
+
+const DropdownMenuItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+    inset?: boolean
+  }
+>(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  />
+))
+DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
+
+const DropdownMenuCheckboxItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
+>(({ className, children, checked, ...props }, ref) => (
+  <DropdownMenuPrimitive.CheckboxItem
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    checked={checked}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <DropdownMenuPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </DropdownMenuPrimitive.ItemIndicator>
+    </span>
+    {children}
+  </DropdownMenuPrimitive.CheckboxItem>
+))
+DropdownMenuCheckboxItem.displayName =
+  DropdownMenuPrimitive.CheckboxItem.displayName
+
+const DropdownMenuRadioItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
+>(({ className, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.RadioItem
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <DropdownMenuPrimitive.ItemIndicator>
+        <Circle className="h-2 w-2 fill-current" />
+      </DropdownMenuPrimitive.ItemIndicator>
+    </span>
+    {children}
+  </DropdownMenuPrimitive.RadioItem>
+))
+DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
+
+const DropdownMenuLabel = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Label>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
+    inset?: boolean
+  }
+>(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Label
+    ref={ref}
+    className={cn(
+      "px-2 py-1.5 text-sm font-semibold",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  />
+))
+DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
+
+const DropdownMenuSeparator = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-[#E5E7EB]", className)}
+    {...props}
+  />
+))
+DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
+
+const DropdownMenuShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
+  return (
+    <span
+      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
+      {...props}
+    />
+  )
+}
+DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
+
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+}
+`, prefix),
+        },
+      ],
+    },
+    'table': {
+      name: 'table',
+      description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'table.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -237,6 +542,28 @@ const tableVariants = cva(
     },
   }
 )
+
+/**
+ * Table component for displaying tabular data.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Table size="md" withoutBorder>
+ *   <TableHeader>
+ *     <TableRow>
+ *       <TableHead>Name</TableHead>
+ *       <TableHead>Status</TableHead>
+ *     </TableRow>
+ *   </TableHeader>
+ *   <TableBody>
+ *     <TableRow>
+ *       <TableCell>Item 1</TableCell>
+ *       <TableCell><Badge variant="active">Active</Badge></TableCell>
+ *     </TableRow>
+ *   </TableBody>
+ * </Table>
+ * \`\`\`
+ */
 
 export interface TableProps
   extends React.HTMLAttributes<HTMLTableElement>,
@@ -472,284 +799,111 @@ export {
   TableAvatar,
   tableVariants,
 }
-`, prefix)
-
-  const buttonContent = prefixTailwindClasses(`import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
+`, prefix),
+        },
+      ],
+    },
+    'tag': {
+      name: 'tag',
+      description: 'A tag component for event labels with optional bold label prefix',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'tag.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e293b] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+/**
+ * Tag variants for event labels and categories.
+ * Rounded rectangle tags with optional bold labels.
+ */
+const tagVariants = cva(
+  "inline-flex items-center justify-center rounded text-sm transition-colors",
   {
     variants: {
       variant: {
-        default: "bg-[#343E55] text-white border-0 hover:bg-[#343E55]/90",
-        destructive:
-          "bg-[#ef4444] text-white border-0 hover:bg-[#ef4444]/90",
-        outline:
-          "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#343E55] hover:text-white",
-        secondary:
-          "bg-[#343E55]/20 text-[#343E55] border-0 hover:bg-[#343E55]/30",
-        ghost: "border-0 hover:bg-[#343E55]/10 hover:text-[#343E55]",
-        link: "text-[#343E55] border-0 underline-offset-4 hover:underline",
+        default: "bg-[#F3F4F6] text-[#333333]",
+        primary: "bg-[#343E55]/10 text-[#343E55]",
+        secondary: "bg-[#E5E7EB] text-[#374151]",
+        success: "bg-[#E5FFF5] text-[#00A651]",
+        warning: "bg-[#FFF8E5] text-[#F59E0B]",
+        error: "bg-[#FFECEC] text-[#FF3B3B]",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: "px-2 py-1",
+        sm: "px-1.5 py-0.5 text-xs",
+        lg: "px-3 py-1.5",
+      },
+      interactive: {
+        true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
+        false: "",
+      },
+      selected: {
+        true: "ring-2 ring-[#343E55] ring-offset-1",
+        false: "",
       },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
+      interactive: false,
+      selected: false,
     },
   }
 )
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
-  leftIcon?: React.ReactNode
-  rightIcon?: React.ReactNode
-  loading?: boolean
-  loadingText?: string
+/**
+ * Tag component for displaying event labels and categories.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Tag>After Call Event</Tag>
+ * <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+ * <Tag interactive onClick={() => console.log('clicked')}>Clickable</Tag>
+ * \`\`\`
+ */
+export interface TagProps
+  extends React.HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof tagVariants> {
+  /** Bold label prefix displayed before the content */
+  label?: string
+  /** Make the tag clickable with hover/active states */
+  interactive?: boolean
+  /** Show selected state with ring outline */
+  selected?: boolean
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    asChild = false,
-    leftIcon,
-    rightIcon,
-    loading = false,
-    loadingText,
-    children,
-    disabled,
-    ...props
-  }, ref) => {
-    const Comp = asChild ? Slot : "button"
-
+const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
+  ({ className, variant, size, interactive, selected, label, children, ...props }, ref) => {
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+      <span
+        className={cn(tagVariants({ variant, size, interactive, selected, className }))}
         ref={ref}
-        disabled={disabled || loading}
+        role={interactive ? "button" : undefined}
+        tabIndex={interactive ? 0 : undefined}
+        aria-selected={selected}
         {...props}
       >
-        {loading ? (
-          <>
-            <Loader2 className="animate-spin" />
-            {loadingText || children}
-          </>
-        ) : (
-          <>
-            {leftIcon}
-            {children}
-            {rightIcon}
-          </>
+        {label && (
+          <span className="font-semibold mr-1">{label}</span>
         )}
-      </Comp>
+        <span className="font-normal">{children}</span>
+      </span>
     )
   }
 )
-Button.displayName = "Button"
+Tag.displayName = "Tag"
 
-export { Button, buttonVariants }
-`, prefix)
-
-  // Dropdown Menu component content
-  const dropdownMenuContent = prefixTailwindClasses(`import * as React from "react"
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { Check, ChevronRight, Circle } from "lucide-react"
-
-import { cn } from "@/lib/utils"
-
-const DropdownMenu = DropdownMenuPrimitive.Root
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
-const DropdownMenuGroup = DropdownMenuPrimitive.Group
-const DropdownMenuPortal = DropdownMenuPrimitive.Portal
-const DropdownMenuSub = DropdownMenuPrimitive.Sub
-const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
-
-const DropdownMenuContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-md",
-        className
-      )}
-      {...props}
-    />
-  </DropdownMenuPrimitive.Portal>
-))
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
-
-const DropdownMenuItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
-    inset?: boolean
-  }
->(({ className, inset, ...props }, ref) => (
-  <DropdownMenuPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-))
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
-
-const DropdownMenuLabel = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
-    inset?: boolean
-  }
->(({ className, inset, ...props }, ref) => (
-  <DropdownMenuPrimitive.Label
-    ref={ref}
-    className={cn(
-      "px-2 py-1.5 text-sm font-semibold",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-))
-DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
-
-const DropdownMenuSeparator = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Separator
-    ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E5E7EB]", className)}
-    {...props}
-  />
-))
-DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
-
-const DropdownMenuShortcut = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
-      {...props}
-    />
-  )
-}
-DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
-
-export {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuGroup,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuRadioGroup,
-}
-`, prefix)
-
-  return {
-    button: {
-      name: 'button',
-      description: 'A customizable button component with variants, sizes, and icons',
-      dependencies: [
-        '@radix-ui/react-slot',
-        'class-variance-authority',
-        'clsx',
-        'tailwind-merge',
-        'lucide-react',
-      ],
-      files: [
-        {
-          name: 'button.tsx',
-          content: buttonContent,
+export { Tag, tagVariants }
+`, prefix),
         },
       ],
-    },
-    badge: {
-      name: 'badge',
-      description: 'A status badge component with active, failed, and disabled variants',
-      dependencies: [
-        'class-variance-authority',
-        'clsx',
-        'tailwind-merge',
-      ],
-      files: [
-        {
-          name: 'badge.tsx',
-          content: badgeContent,
-        },
-      ],
-    },
-    tag: {
-      name: 'tag',
-      description: 'A tag component for event labels with optional bold label prefix',
-      dependencies: [
-        'class-variance-authority',
-        'clsx',
-        'tailwind-merge',
-      ],
-      files: [
-        {
-          name: 'tag.tsx',
-          content: tagContent,
-        },
-      ],
-    },
-    table: {
-      name: 'table',
-      description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
-      dependencies: [
-        'class-variance-authority',
-        'clsx',
-        'tailwind-merge',
-      ],
-      files: [
-        {
-          name: 'table.tsx',
-          content: tableContent,
-        },
-      ],
-    },
-    'dropdown-menu': {
-      name: 'dropdown-menu',
-      description: 'A dropdown menu component for displaying actions and options',
-      dependencies: [
-        '@radix-ui/react-dropdown-menu',
-        'clsx',
-        'tailwind-merge',
-        'lucide-react',
-      ],
-      files: [
-        {
-          name: 'dropdown-menu.tsx',
-          content: dropdownMenuContent,
-        },
-      ],
-    },
+    }
   }
 }

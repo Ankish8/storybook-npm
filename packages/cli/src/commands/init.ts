@@ -3,6 +3,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
+import { execSync } from 'child_process'
 
 // Tailwind CSS v4 format - standalone (with Preflight)
 const CSS_VARIABLES_V4 = `@import "tailwindcss";
@@ -98,6 +99,17 @@ const CSS_VARIABLES_V3 = `@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Reset Bootstrap button styles for myOperator UI components */
+@layer components {
+  .inline-flex[class*="rounded"],
+  button.bg-\\[\\#343E55\\],
+  button.bg-\\[\\#E8EAED\\],
+  button.bg-transparent {
+    border: none;
+    box-shadow: none;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -147,18 +159,19 @@ const CSS_VARIABLES_V3 = `@tailwind base;
 
 `
 
-const getTailwindConfig = (prefix: string, scopeToComponents: boolean = false) => `/** @type {import('tailwindcss').Config} */
+const getTailwindConfig = (disablePreflight: boolean = false) => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  ${prefix ? `prefix: "${prefix}",` : ''}
   content: [
-    ${scopeToComponents
-      ? `"./src/components/ui/**/*.{js,ts,jsx,tsx}",
-    "./src/lib/**/*.{js,ts,jsx,tsx}",`
-      : `"./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",`}
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
+  ${disablePreflight
+    ? `corePlugins: {
+    preflight: false,
+  },
+  `
+    : ''}theme: {
     container: {
       center: true,
       padding: "2rem",
@@ -235,7 +248,6 @@ const DEFAULT_CONFIG = {
     css: 'src/index.css',
     baseColor: 'slate',
     cssVariables: true,
-    prefix: '',
   },
   aliases: {
     components: '@/components',
@@ -270,6 +282,8 @@ export async function init() {
   let hasBootstrap = false
   let isESM = false
 
+  let detectedTailwindVersion: 'v3' | 'v4' | null = null
+
   if (await fs.pathExists(packageJsonPath)) {
     const packageJson = await fs.readJson(packageJsonPath)
     // Detect Bootstrap
@@ -277,98 +291,135 @@ export async function init() {
     // Detect ESM
     isESM = packageJson.type === 'module'
 
+    // Detect Tailwind version from installed packages
+    const tailwindDep = packageJson.dependencies?.tailwindcss || packageJson.devDependencies?.tailwindcss
+    if (tailwindDep) {
+      // Check if it's v4 (starts with 4 or ^4)
+      if (tailwindDep.match(/^[\^~]?4/)) {
+        detectedTailwindVersion = 'v4'
+      } else if (tailwindDep.match(/^[\^~]?3/)) {
+        detectedTailwindVersion = 'v3'
+      }
+    }
+
+    // Also check for @tailwindcss/postcss which indicates v4
+    if (packageJson.dependencies?.['@tailwindcss/postcss'] || packageJson.devDependencies?.['@tailwindcss/postcss']) {
+      detectedTailwindVersion = 'v4'
+    }
+
     if (hasBootstrap) {
       console.log(chalk.blue('  ℹ Bootstrap detected - will configure Tailwind to avoid conflicts\n'))
     }
+
+    if (detectedTailwindVersion) {
+      console.log(chalk.blue(`  ℹ Tailwind CSS ${detectedTailwindVersion} detected\n`))
+    }
   }
 
-  // Get user preferences
-  const response = await prompts([
-    {
-      type: 'select',
-      name: 'tailwindVersion',
-      message: 'Which Tailwind CSS version are you using?',
-      choices: [
-        { title: 'Tailwind CSS v4 (latest)', value: 'v4' },
-        { title: 'Tailwind CSS v3', value: 'v3' },
-      ],
-      initial: 0,
-    },
-    {
-      // Skip prefix prompt for Bootstrap + v4 since prefix() doesn't work with selective imports
-      type: (prev, values) => (hasBootstrap && values.tailwindVersion === 'v4') ? null : 'confirm',
-      name: 'usePrefix',
-      message: 'Use a prefix for Tailwind classes? (recommended if using Bootstrap/other CSS frameworks)',
-      initial: hasBootstrap,
-    },
-    {
-      type: (prev, values) => {
-        // Skip if Bootstrap + v4 (can't use prefix with selective imports)
-        if (hasBootstrap && values.tailwindVersion === 'v4') return null
-        return prev ? 'text' : null
+  // Auto-detect paths
+  const detectGlobalCss = async () => {
+    const cssOptions = [
+      'src/index.css',
+      'src/styles/globals.css',
+      'src/styles/index.css',
+      'src/app/globals.css',
+      'app/globals.css',
+      'styles/globals.css',
+    ]
+    for (const css of cssOptions) {
+      if (await fs.pathExists(path.join(cwd, css))) {
+        return css
+      }
+    }
+    return 'src/index.css'
+  }
+
+  const detectTailwindConfig = async () => {
+    const configOptions = [
+      'tailwind.config.js',
+      'tailwind.config.ts',
+      'tailwind.config.mjs',
+      'tailwind.config.cjs',
+    ]
+    for (const config of configOptions) {
+      if (await fs.pathExists(path.join(cwd, config))) {
+        return config
+      }
+    }
+    return 'tailwind.config.js'
+  }
+
+  // Detect prefix from existing tailwind config
+  const detectTailwindPrefix = async (configFile: string) => {
+    const configPath = path.join(cwd, configFile)
+    if (await fs.pathExists(configPath)) {
+      const content = await fs.readFile(configPath, 'utf-8')
+      // Look for prefix: "tw-" or prefix: 'tw-'
+      const prefixMatch = content.match(/prefix:\s*['"]([^'"]+)['"]/)
+      if (prefixMatch) {
+        return prefixMatch[1]
+      }
+    }
+    return ''
+  }
+
+  const detectedCss = await detectGlobalCss()
+  const detectedTailwindConfig = await detectTailwindConfig()
+  const detectedPrefix = await detectTailwindPrefix(detectedTailwindConfig)
+
+  // Show prefix detection message
+  if (detectedPrefix) {
+    console.log(chalk.blue(`  ℹ Tailwind prefix "${detectedPrefix}" detected - components will use prefixed classes\n`))
+  }
+
+  // Get user preferences - only ask if not auto-detected
+  let tailwindVersion = detectedTailwindVersion
+
+  if (!tailwindVersion) {
+    const response = await prompts([
+      {
+        type: 'select',
+        name: 'tailwindVersion',
+        message: 'Which Tailwind CSS version are you using?',
+        choices: [
+          { title: 'Tailwind CSS v4 (latest)', value: 'v4' },
+          { title: 'Tailwind CSS v3', value: 'v3' },
+        ],
+        initial: 0,
       },
-      name: 'prefix',
-      message: 'Enter prefix for Tailwind classes:',
-      initial: 'tw',
-    },
-    {
-      type: 'text',
-      name: 'componentsPath',
-      message: 'Where would you like to install components?',
-      initial: 'src/components/ui',
-    },
-    {
-      type: 'text',
-      name: 'utilsPath',
-      message: 'Where is your utils file?',
-      initial: 'src/lib/utils.ts',
-    },
-    {
-      type: (prev, values) => values.tailwindVersion === 'v3' ? 'text' : null,
-      name: 'tailwindConfig',
-      message: 'Where is your tailwind.config.js?',
-      initial: 'tailwind.config.js',
-    },
-    {
-      type: 'text',
-      name: 'globalCss',
-      message: 'Where is your global CSS file?',
-      initial: 'src/index.css',
-    },
-    {
-      // Only show for Bootstrap + v3 projects (v4 uses @source directive in CSS)
-      type: (prev, values) => (hasBootstrap && values.tailwindVersion === 'v3') ? 'confirm' : null,
-      name: 'scopeTailwind',
-      message: 'Scope Tailwind to only components/ui? (recommended for Bootstrap projects)',
-      initial: true,
-    },
-  ])
+    ])
+    tailwindVersion = response.tailwindVersion
+  }
+
+  // Use detected/default paths
+  const componentsPath = 'src/components/ui'
+  const utilsPath = 'src/lib/utils.ts'
+  const tailwindConfig = detectedTailwindConfig
+  const globalCss = detectedCss
+  const disablePreflight = hasBootstrap // Disable preflight for Bootstrap projects
 
   const spinner = ora('Initializing project...').start()
 
   try {
-    // Determine prefix
-    const prefix = response.usePrefix ? response.prefix : ''
-
     // Create config
     const config = {
       ...DEFAULT_CONFIG,
       tailwind: {
         ...DEFAULT_CONFIG.tailwind,
-        config: response.tailwindConfig || 'tailwind.config.js',
-        css: response.globalCss,
-        prefix,
+        config: tailwindConfig,
+        css: globalCss,
+        prefix: detectedPrefix,
       },
       aliases: {
         ...DEFAULT_CONFIG.aliases,
-        ui: `@/${response.componentsPath.replace('src/', '')}`,
+        ui: `@/${componentsPath.replace('src/', '')}`,
       },
     }
 
     await fs.writeJson(configPath, config, { spaces: 2 })
 
     // Create utils file or add cn function if missing
-    const utilsPath = path.join(cwd, response.utilsPath)
+    const utilsFullPath = path.join(cwd, utilsPath)
     const cnUtilsContent = `import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -379,14 +430,14 @@ export function cn(...inputs: ClassValue[]) {
     let utilsCreated = false
     let utilsUpdated = false
 
-    if (!(await fs.pathExists(utilsPath))) {
+    if (!(await fs.pathExists(utilsFullPath))) {
       // File doesn't exist - create it with full content
-      await fs.ensureDir(path.dirname(utilsPath))
-      await fs.writeFile(utilsPath, cnUtilsContent)
+      await fs.ensureDir(path.dirname(utilsFullPath))
+      await fs.writeFile(utilsFullPath, cnUtilsContent)
       utilsCreated = true
     } else {
       // File exists - check if cn function is present
-      const existingUtils = await fs.readFile(utilsPath, 'utf-8')
+      const existingUtils = await fs.readFile(utilsFullPath, 'utf-8')
       if (!existingUtils.includes('export function cn') && !existingUtils.includes('export const cn')) {
         // cn function missing - need to add it with proper imports
         let updatedContent = existingUtils
@@ -416,20 +467,20 @@ export function cn(...inputs: ClassValue[]) {
 `
         updatedContent = updatedContent.trimEnd() + '\n' + cnFunction
 
-        await fs.writeFile(utilsPath, updatedContent)
+        await fs.writeFile(utilsFullPath, updatedContent)
         utilsUpdated = true
       }
     }
 
     // Create components directory
-    const componentsPath = path.join(cwd, response.componentsPath)
-    await fs.ensureDir(componentsPath)
+    const componentsFullPath = path.join(cwd, componentsPath)
+    await fs.ensureDir(componentsFullPath)
 
     // Create or update global CSS with CSS variables
-    const globalCssPath = path.join(cwd, response.globalCss)
+    const globalCssPath = path.join(cwd, globalCss)
     // Use Bootstrap version when Bootstrap detected to avoid Preflight conflicts
     let cssContent: string
-    if (response.tailwindVersion === 'v4') {
+    if (tailwindVersion === 'v4') {
       cssContent = hasBootstrap ? CSS_VARIABLES_V4_BOOTSTRAP : CSS_VARIABLES_V4
     } else {
       cssContent = CSS_VARIABLES_V3
@@ -444,14 +495,14 @@ export function cn(...inputs: ClassValue[]) {
       const existingCss = await fs.readFile(globalCssPath, 'utf-8')
       if (!existingCss.includes('myOperator UI') && !existingCss.includes('--mo-background:')) {
         // Auto-update for v3, prompt for v4
-        let updateCss = response.tailwindVersion === 'v3'
+        let updateCss = tailwindVersion === 'v3'
 
         if (!updateCss) {
           spinner.stop()
           const result = await prompts({
             type: 'confirm',
             name: 'updateCss',
-            message: `${response.globalCss} exists. Add myOperator UI imports to the top?`,
+            message: `${globalCss} exists. Add myOperator UI imports to the top?`,
             initial: true,
           })
           updateCss = result.updateCss
@@ -460,7 +511,7 @@ export function cn(...inputs: ClassValue[]) {
 
         if (updateCss) {
           // PREPEND to existing CSS instead of replacing
-          if (hasBootstrap || prefix) {
+          if (hasBootstrap) {
             // For Bootstrap projects, prepend the imports
             await fs.writeFile(globalCssPath, cssContent + existingCss)
           } else {
@@ -474,39 +525,59 @@ export function cn(...inputs: ClassValue[]) {
 
     // Create or update tailwind.config.js with theme colors (only for v3)
     let tailwindUpdated = false
-    const scopeTailwind = response.scopeTailwind || false
-    if (response.tailwindVersion === 'v3' && response.tailwindConfig) {
-      const tailwindConfigPath = path.join(cwd, response.tailwindConfig)
+    if (tailwindVersion === 'v3' && tailwindConfig) {
+      const tailwindConfigPath = path.join(cwd, tailwindConfig)
       if (!(await fs.pathExists(tailwindConfigPath))) {
-        await fs.writeFile(tailwindConfigPath, getTailwindConfig(prefix, scopeTailwind))
+        await fs.writeFile(tailwindConfigPath, getTailwindConfig(disablePreflight))
         tailwindUpdated = true
       } else {
         // Check if tailwind config already has the theme colors
         const existingConfig = await fs.readFile(tailwindConfigPath, 'utf-8')
         if (!existingConfig.includes('hsl(var(--destructive))') && !existingConfig.includes('hsl(var(--ring))')) {
           // Auto-update for v3
-          await fs.writeFile(tailwindConfigPath, getTailwindConfig(prefix, scopeTailwind))
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(disablePreflight))
           tailwindUpdated = true
         }
       }
     }
 
-    // Create or update postcss.config.js with new @tailwindcss/postcss plugin
+    // Create or update postcss.config.js
     const postcssConfigPath = path.join(cwd, 'postcss.config.js')
     // Use ESM or CommonJS syntax based on project type
-    const postcssConfigContent = isESM
-      ? `export default {
+    // v3 uses tailwindcss + autoprefixer, v4 uses @tailwindcss/postcss
+    let postcssConfigContent: string
+    if (tailwindVersion === 'v4') {
+      postcssConfigContent = isESM
+        ? `export default {
   plugins: {
     '@tailwindcss/postcss': {},
   },
 }
 `
-      : `module.exports = {
+        : `module.exports = {
   plugins: {
     '@tailwindcss/postcss': {},
   },
 }
 `
+    } else {
+      // Tailwind v3 uses the classic postcss plugins
+      postcssConfigContent = isESM
+        ? `export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`
+        : `module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`
+    }
 
     let postcssCreated = false
     if (!(await fs.pathExists(postcssConfigPath))) {
@@ -529,24 +600,40 @@ export function cn(...inputs: ClassValue[]) {
       }
     }
 
+    // Install required dependencies automatically
+    spinner.text = 'Installing dependencies...'
+    const deps = tailwindVersion === 'v4'
+      ? 'clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react'
+      : 'clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react tailwindcss-animate tailwindcss@^3.4.0 autoprefixer'
+
+    try {
+      execSync(`npm install ${deps}`, { cwd, stdio: 'pipe' })
+      console.log(chalk.green('\n  ✓ Installed dependencies'))
+    } catch {
+      // If npm install fails, we'll show manual instructions
+      spinner.warn('Could not install dependencies automatically')
+      console.log(chalk.yellow(`\n  Required dependencies:`))
+      console.log(chalk.cyan(`    npm install ${deps}\n`))
+    }
+
     spinner.succeed('Project initialized successfully!')
 
     console.log(chalk.green('\n  ✓ Created components.json'))
     if (utilsCreated) {
-      console.log(chalk.green(`  ✓ Created ${response.utilsPath}`))
+      console.log(chalk.green(`  ✓ Created ${utilsPath}`))
     } else if (utilsUpdated) {
-      console.log(chalk.green(`  ✓ Added cn() function to ${response.utilsPath}`))
+      console.log(chalk.green(`  ✓ Added cn() function to ${utilsPath}`))
     } else {
-      console.log(chalk.green(`  ✓ ${response.utilsPath} already has cn() function`))
+      console.log(chalk.green(`  ✓ ${utilsPath} already has cn() function`))
     }
-    console.log(chalk.green(`  ✓ Created ${response.componentsPath}`))
+    console.log(chalk.green(`  ✓ Created ${componentsPath}`))
     if (cssUpdated) {
-      console.log(chalk.green(`  ✓ Updated ${response.globalCss} with CSS variables`))
+      console.log(chalk.green(`  ✓ Updated ${globalCss} with CSS variables`))
     }
     if (tailwindUpdated) {
-      console.log(chalk.green(`  ✓ Updated ${response.tailwindConfig} with theme colors`))
-      if (scopeTailwind) {
-        console.log(chalk.blue(`    ℹ Tailwind scoped to components/ui only (Bootstrap can be used elsewhere)`))
+      console.log(chalk.green(`  ✓ Updated ${tailwindConfig} with theme colors`))
+      if (disablePreflight) {
+        console.log(chalk.blue(`    ℹ Preflight disabled for Bootstrap compatibility`))
       }
     }
     if (postcssCreated) {
@@ -555,21 +642,10 @@ export function cn(...inputs: ClassValue[]) {
     console.log('')
 
     console.log(chalk.bold('  Next steps:\n'))
-    console.log('  1. Install core dependencies:')
-    if (response.tailwindVersion === 'v4') {
-      console.log(chalk.cyan('     npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react\n'))
-    } else {
-      console.log(chalk.cyan('     npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react tailwindcss-animate\n'))
-    }
-    if (response.tailwindVersion === 'v4') {
-      console.log('  2. Add your first component:')
-      console.log(chalk.cyan('     npx myoperator-ui add button\n'))
-    } else {
-      console.log('  2. Install PostCSS plugin (if not already installed):')
-      console.log(chalk.cyan('     npm install -D @tailwindcss/postcss\n'))
-      console.log('  3. Add your first component:')
-      console.log(chalk.cyan('     npx myoperator-ui add button\n'))
-    }
+    console.log('  1. Add your first component:')
+    console.log(chalk.cyan('     npx myoperator-ui add button\n'))
+    console.log('  2. Browse all components:')
+    console.log(chalk.cyan('     https://myoperator-ui.vercel.app\n'))
   } catch (error) {
     spinner.fail('Failed to initialize project')
     console.error(error)
