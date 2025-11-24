@@ -4,6 +4,7 @@ import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry, type ComponentDefinition } from '../utils/registry.js'
+import { readConfig, configExists, getTailwindPrefix } from '../utils/config.js'
 
 interface AddOptions {
   yes: boolean
@@ -13,18 +14,21 @@ interface AddOptions {
 
 export async function add(components: string[], options: AddOptions) {
   const cwd = process.cwd()
-  const configPath = path.join(cwd, 'components.json')
 
   // Check if project is initialized
-  if (!(await fs.pathExists(configPath))) {
+  if (!(await configExists(cwd))) {
     console.log(chalk.red('\n  Error: Project not initialized.'))
     console.log(chalk.yellow('  Run `npx myoperator-ui init` first.\n'))
     process.exit(1)
   }
 
-  // Get config to read prefix
-  const config = await fs.readJson(configPath)
-  const prefix = config.tailwind?.prefix || ''
+  // Get prefix from config
+  const prefix = await getTailwindPrefix(cwd)
+  
+  // Show prefix info
+  if (prefix) {
+    console.log(chalk.blue(`\n  ℹ Applying Tailwind prefix: "${prefix}"\n`))
+  }
 
   // Get available components with prefix applied
   const registry = await getRegistry(prefix)

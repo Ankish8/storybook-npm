@@ -4,6 +4,7 @@ import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
 import { execSync } from 'child_process'
+import { DEFAULT_CONFIG, detectTailwindPrefix as detectTailwindPrefixUtil } from '../utils/config.js'
 
 // Tailwind CSS v4 format - standalone (with Preflight)
 const CSS_VARIABLES_V4 = `@import "tailwindcss";
@@ -240,21 +241,6 @@ export default {
 }
 `
 
-const DEFAULT_CONFIG = {
-  $schema: 'https://myoperator.com/schema.json',
-  style: 'default',
-  tailwind: {
-    config: 'tailwind.config.js',
-    css: 'src/index.css',
-    baseColor: 'slate',
-    cssVariables: true,
-  },
-  aliases: {
-    components: '@/components',
-    utils: '@/lib/utils',
-    ui: '@/components/ui',
-  },
-}
 
 export async function init() {
   console.log(chalk.bold('\n  Welcome to myOperator UI!\n'))
@@ -349,23 +335,9 @@ export async function init() {
     return 'tailwind.config.js'
   }
 
-  // Detect prefix from existing tailwind config
-  const detectTailwindPrefix = async (configFile: string) => {
-    const configPath = path.join(cwd, configFile)
-    if (await fs.pathExists(configPath)) {
-      const content = await fs.readFile(configPath, 'utf-8')
-      // Look for prefix: "tw-" or prefix: 'tw-'
-      const prefixMatch = content.match(/prefix:\s*['"]([^'"]+)['"]/)
-      if (prefixMatch) {
-        return prefixMatch[1]
-      }
-    }
-    return ''
-  }
-
   const detectedCss = await detectGlobalCss()
   const detectedTailwindConfig = await detectTailwindConfig()
-  const detectedPrefix = await detectTailwindPrefix(detectedTailwindConfig)
+  const detectedPrefix = await detectTailwindPrefixUtil(detectedTailwindConfig, cwd)
 
   // Show prefix detection message
   if (detectedPrefix) {
@@ -374,21 +346,46 @@ export async function init() {
 
   // Get user preferences - only ask if not auto-detected
   let tailwindVersion = detectedTailwindVersion
+  let userPrefix = detectedPrefix
+
+  const questions: any[] = []
 
   if (!tailwindVersion) {
-    const response = await prompts([
-      {
-        type: 'select',
-        name: 'tailwindVersion',
-        message: 'Which Tailwind CSS version are you using?',
-        choices: [
-          { title: 'Tailwind CSS v4 (latest)', value: 'v4' },
-          { title: 'Tailwind CSS v3', value: 'v3' },
-        ],
-        initial: 0,
-      },
-    ])
-    tailwindVersion = response.tailwindVersion
+    questions.push({
+      type: 'select',
+      name: 'tailwindVersion',
+      message: 'Which Tailwind CSS version are you using?',
+      choices: [
+        { title: 'Tailwind CSS v4 (latest)', value: 'v4' },
+        { title: 'Tailwind CSS v3', value: 'v3' },
+      ],
+      initial: 0,
+    })
+  }
+
+  // Always ask for prefix preference (even if detected)
+  questions.push({
+    type: 'text',
+    name: 'prefix',
+    message: detectedPrefix 
+      ? `Confirm Tailwind prefix (detected: "${detectedPrefix}"):`
+      : 'Enter Tailwind CSS prefix (leave empty for none):',
+    initial: detectedPrefix,
+    validate: (value: string) => {
+      // Allow empty string or valid CSS identifier
+      if (value === '' || /^[a-zA-Z_-][a-zA-Z0-9_-]*$/.test(value)) {
+        return true
+      }
+      return 'Prefix must be a valid CSS identifier (letters, numbers, hyphens, underscores)'
+    }
+  })
+
+  if (questions.length > 0) {
+    const response = await prompts(questions)
+    if (!tailwindVersion) {
+      tailwindVersion = response.tailwindVersion
+    }
+    userPrefix = response.prefix || ''
   }
 
   // Use detected/default paths
@@ -408,7 +405,7 @@ export async function init() {
         ...DEFAULT_CONFIG.tailwind,
         config: tailwindConfig,
         css: globalCss,
-        prefix: detectedPrefix,
+        prefix: userPrefix,
       },
       aliases: {
         ...DEFAULT_CONFIG.aliases,
@@ -619,6 +616,11 @@ export function cn(...inputs: ClassValue[]) {
     spinner.succeed('Project initialized successfully!')
 
     console.log(chalk.green('\n  ✓ Created components.json'))
+    if (userPrefix) {
+      console.log(chalk.blue(`    ℹ Components will use prefix: "${userPrefix}"`))
+    } else {
+      console.log(chalk.blue(`    ℹ Components will use no prefix`))
+    }
     if (utilsCreated) {
       console.log(chalk.green(`  ✓ Created ${utilsPath}`))
     } else if (utilsUpdated) {
