@@ -66,18 +66,20 @@ npx myoperator-ui add button -p src/ui
 
 Safely update installed components to the latest version with diff preview.
 
+**Important:** Always use `@latest` to ensure you get the newest component code:
+
 ```bash
-# Update a specific component
-npx myoperator-ui update button
+# Update a specific component (recommended)
+npx myoperator-ui@latest update button
 
 # Update multiple components
-npx myoperator-ui update button badge
+npx myoperator-ui@latest update button badge
 
 # Interactive selection (shows installed components)
-npx myoperator-ui update
+npx myoperator-ui@latest update
 
 # Update all installed components
-npx myoperator-ui update --all
+npx myoperator-ui@latest update --all
 ```
 
 **Options:**
@@ -94,17 +96,19 @@ npx myoperator-ui update --all
 
 ```bash
 # Preview what would change (safe - no modifications)
-npx myoperator-ui update button --dry-run
+npx myoperator-ui@latest update button --dry-run
 
 # Preview all component updates
-npx myoperator-ui update --all --dry-run
+npx myoperator-ui@latest update --all --dry-run
 
 # Update all with backups
-npx myoperator-ui update --all --backup
+npx myoperator-ui@latest update --all --backup
 
 # Force update without confirmation
-npx myoperator-ui update button -y
+npx myoperator-ui@latest update button -y
 ```
+
+> **Note:** If you see "No changes" but expect updates, make sure you're using `@latest` to get the newest package version. NPX may cache older versions.
 
 **Update Safeguards:**
 - Shows diff of changes before applying
