@@ -160,19 +160,12 @@ const CSS_VARIABLES_V3 = `@tailwind base;
 
 `
 
-const getTailwindConfig = (disablePreflight: boolean = false) => `/** @type {import('tailwindcss').Config} */
+const getTailwindConfig = (prefix: string = 'tw-') => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  ${disablePreflight
-    ? `corePlugins: {
-    preflight: false,
-  },
-  `
-    : ''}theme: {
+  prefix: "${prefix}",
+  content: ["./src/components/ui/**/*.{js,ts,jsx,tsx}"],
+  theme: {
     container: {
       center: true,
       padding: "2rem",
@@ -305,6 +298,7 @@ export async function init() {
   // Auto-detect paths
   const detectGlobalCss = async () => {
     const cssOptions = [
+      'src/App.scss',
       'src/index.css',
       'src/styles/globals.css',
       'src/styles/index.css',
@@ -317,7 +311,7 @@ export async function init() {
         return css
       }
     }
-    return 'src/index.css'
+    return 'src/App.scss'
   }
 
   const detectTailwindConfig = async () => {
@@ -367,10 +361,10 @@ export async function init() {
   questions.push({
     type: 'text',
     name: 'prefix',
-    message: detectedPrefix 
+    message: detectedPrefix
       ? `Confirm Tailwind prefix (detected: "${detectedPrefix}"):`
-      : 'Enter Tailwind CSS prefix (leave empty for none):',
-    initial: detectedPrefix,
+      : 'Enter Tailwind CSS prefix (default: tw-):',
+    initial: detectedPrefix || 'tw-',
     validate: (value: string) => {
       // Allow empty string or valid CSS identifier
       if (value === '' || /^[a-zA-Z_-][a-zA-Z0-9_-]*$/.test(value)) {
@@ -393,7 +387,6 @@ export async function init() {
   const utilsPath = 'src/lib/utils.ts'
   const tailwindConfig = detectedTailwindConfig
   const globalCss = detectedCss
-  const disablePreflight = hasBootstrap // Disable preflight for Bootstrap projects
 
   const spinner = ora('Initializing project...').start()
 
@@ -525,14 +518,14 @@ export function cn(...inputs: ClassValue[]) {
     if (tailwindVersion === 'v3' && tailwindConfig) {
       const tailwindConfigPath = path.join(cwd, tailwindConfig)
       if (!(await fs.pathExists(tailwindConfigPath))) {
-        await fs.writeFile(tailwindConfigPath, getTailwindConfig(disablePreflight))
+        await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix))
         tailwindUpdated = true
       } else {
         // Check if tailwind config already has the theme colors
         const existingConfig = await fs.readFile(tailwindConfigPath, 'utf-8')
         if (!existingConfig.includes('hsl(var(--destructive))') && !existingConfig.includes('hsl(var(--ring))')) {
           // Auto-update for v3
-          await fs.writeFile(tailwindConfigPath, getTailwindConfig(disablePreflight))
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix))
           tailwindUpdated = true
         }
       }
@@ -634,9 +627,6 @@ export function cn(...inputs: ClassValue[]) {
     }
     if (tailwindUpdated) {
       console.log(chalk.green(`  ✓ Updated ${tailwindConfig} with theme colors`))
-      if (disablePreflight) {
-        console.log(chalk.blue(`    ℹ Preflight disabled for Bootstrap compatibility`))
-      }
     }
     if (postcssCreated) {
       console.log(chalk.green('  ✓ Created postcss.config.js'))

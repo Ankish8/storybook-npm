@@ -23,10 +23,10 @@ export const DEFAULT_CONFIG: ComponentConfig = {
   style: 'default',
   tailwind: {
     config: 'tailwind.config.js',
-    css: 'src/index.css',
+    css: 'src/App.scss',
     baseColor: 'slate',
     cssVariables: true,
-    prefix: '',
+    prefix: 'tw-',
   },
   aliases: {
     components: '@/components',
