@@ -86,7 +86,13 @@ function generateRegistry() {
   for (const file of files) {
     const componentName = file.replace('.tsx', '')
     const filePath = path.join(COMPONENTS_DIR, file)
-    const content = fs.readFileSync(filePath, 'utf-8')
+    let content = fs.readFileSync(filePath, 'utf-8')
+
+    // Transform @/lib/utils import to relative path for installed components
+    content = content.replace(
+      /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
+      'import { cn } from "../../lib/utils"'
+    )
 
     // Get metadata or use defaults
     const meta = COMPONENT_META[componentName] || {
