@@ -305,6 +305,68 @@ npx myoperator-ui update --all --dry-run
 npx myoperator-ui update --all
 ```
 
+## Development Workflow (For Maintainers)
+
+### Safe Component Updates
+
+To ensure changes don't accidentally break other components:
+
+```bash
+cd packages/cli
+
+# 1. Create a snapshot BEFORE making changes
+npm run integrity:snapshot
+
+# 2. Make your changes to a component (e.g., button.tsx)
+
+# 3. Verify only the intended component changed
+node scripts/check-integrity.js verify button
+
+# 4. If check passes, build and publish
+npm run build
+npm publish
+```
+
+### Integrity Check Commands
+
+```bash
+# Create baseline snapshot of all components
+npm run integrity:snapshot
+
+# Verify no unexpected changes
+npm run integrity:verify
+
+# Verify specific component changed (others unchanged)
+node scripts/check-integrity.js verify button
+
+# Verify multiple components changed
+node scripts/check-integrity.js verify button badge
+
+# Check status of a specific component
+node scripts/check-integrity.js diff button
+```
+
+### What the Integrity Check Does
+
+1. **Creates MD5 hashes** of each component file
+2. **Compares current state** against the snapshot
+3. **Fails if unexpected changes** are detected
+4. **Passes if only expected components** changed
+
+Example output when an unexpected change is detected:
+
+```
+Component Status:
+──────────────────────────────────────────────────
+  ✓ badge - unchanged
+  ✓ button - changed (expected)
+  ⚠️  table - CHANGED (unexpected!)
+  ✓ tag - unchanged
+
+❌ INTEGRITY CHECK FAILED
+   Unexpected changes detected in: table
+```
+
 ## License
 
 MIT
