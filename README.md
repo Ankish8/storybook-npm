@@ -12,16 +12,6 @@ npx myoperator-ui init
 npx myoperator-ui add button badge table
 ```
 
-## Available Components
-
-| Component | Description |
-|-----------|-------------|
-| button | Button with variants, sizes, icons, and loading states |
-| badge | Status badges for active, failed, and disabled states |
-| tag | Labels for events with optional bold prefix |
-| table | Composable table with sticky columns, loading and empty states |
-| dropdown-menu | Dropdown menu for actions and options |
-
 ## Usage
 
 ```tsx
