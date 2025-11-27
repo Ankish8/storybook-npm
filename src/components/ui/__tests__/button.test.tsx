@@ -17,7 +17,7 @@ describe('Button', () => {
 
   it.each([
     ['default', 'bg-[#343E55]'],
-    ['destructive', 'bg-[#ef4444]'],
+    ['destructive', 'bg-destructive'],
     ['outline', 'border-[#343E55]'],
     ['secondary', 'bg-[#343E55]/20'],
     ['ghost', 'hover:bg-[#343E55]/10'],
@@ -29,15 +29,16 @@ describe('Button', () => {
   })
 
   it.each([
-    ['default', 'h-10', 'px-4'],
-    ['sm', 'h-9', 'px-3'],
-    ['lg', 'h-11', 'px-8'],
-    ['icon', 'h-10', 'w-10'],
-  ] as const)('renders %s size', (size, heightClass, widthClass) => {
+    ['default', 'py-2.5', 'px-4'],
+    ['sm', 'py-2', 'px-3'],
+    ['lg', 'py-3', 'px-6'],
+    ['icon', 'p-2.5'],
+  ] as const)('renders %s size', (size, ...expectedClasses) => {
     render(<Button size={size}>Test</Button>)
     const button = screen.getByRole('button')
-    expect(button).toHaveClass(heightClass)
-    expect(button).toHaveClass(widthClass)
+    expectedClasses.forEach(cls => {
+      if (cls) expect(button).toHaveClass(cls)
+    })
   })
 
   it('renders with left icon', () => {

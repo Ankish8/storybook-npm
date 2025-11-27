@@ -23,4 +23,6 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  // Storybook-specific rules for story files
+  ...storybook.configs['flat/recommended'],
 ])
