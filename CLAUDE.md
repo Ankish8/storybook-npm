@@ -1,5 +1,7 @@
 # myOperator UI - Claude Instructions
 
+**IMPORTANT: Never add "Co-Authored-By: Claude" or "Generated with Claude Code" to commit messages.**
+
 ## Project Structure
 
 ```
