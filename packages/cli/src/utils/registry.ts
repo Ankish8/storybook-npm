@@ -207,6 +207,8 @@ const buttonVariants = cva(
           "bg-[#343E55]/20 text-[#343E55] hover:bg-[#343E55]/30",
         ghost: "text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#333333]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
+        dashed:
+          "border border-dashed border-[#D1D5DB] bg-transparent text-[#6B7280] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#F9FAFB]",
       },
       size: {
         default: "py-2.5 px-4 [&_svg]:size-4",

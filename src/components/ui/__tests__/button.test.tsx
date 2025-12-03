@@ -22,6 +22,7 @@ describe('Button', () => {
     ['secondary', 'bg-[#343E55]/20'],
     ['ghost', 'hover:bg-[#F3F4F6]'],
     ['link', 'underline-offset-4'],
+    ['dashed', 'border-dashed'],
   ] as const)('renders %s variant', (variant, expectedClass) => {
     render(<Button variant={variant}>Test</Button>)
     const button = screen.getByRole('button')

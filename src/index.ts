@@ -125,3 +125,10 @@ export type {
   EventGroup,
   EventCategory,
 } from './components/custom/event-selector'
+
+// KeyValueInput (Custom - NOT available via CLI)
+export { KeyValueInput } from './components/custom/key-value-input'
+export type {
+  KeyValueInputProps,
+  KeyValuePair,
+} from './components/custom/key-value-input'
