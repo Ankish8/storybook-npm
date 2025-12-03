@@ -294,6 +294,540 @@ export { Button, buttonVariants }
         },
       ],
     },
+    'checkbox': {
+      name: 'checkbox',
+      description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'checkbox.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Check, Minus } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * Checkbox box variants (the outer container)
+ */
+const checkboxVariants = cva(
+  "inline-flex items-center justify-center rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      size: {
+        default: "h-5 w-5",
+        sm: "h-4 w-4",
+        lg: "h-6 w-6",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
+
+/**
+ * Icon size variants based on checkbox size
+ */
+const iconSizeVariants = cva("", {
+  variants: {
+    size: {
+      default: "h-3.5 w-3.5",
+      sm: "h-3 w-3",
+      lg: "h-4 w-4",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+})
+
+/**
+ * Label text size variants
+ */
+const labelSizeVariants = cva("", {
+  variants: {
+    size: {
+      default: "text-sm",
+      sm: "text-xs",
+      lg: "text-base",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+})
+
+export type CheckedState = boolean | "indeterminate"
+
+/**
+ * A tri-state checkbox component with label support
+ *
+ * @example
+ * \`\`\`tsx
+ * <Checkbox checked={isEnabled} onCheckedChange={setIsEnabled} />
+ * <Checkbox size="sm" disabled />
+ * <Checkbox checked="indeterminate" label="Select all" />
+ * <Checkbox label="Accept terms" labelPosition="right" />
+ * \`\`\`
+ */
+export interface CheckboxProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
+    VariantProps<typeof checkboxVariants> {
+  /** Whether the checkbox is checked, unchecked, or indeterminate */
+  checked?: CheckedState
+  /** Default checked state for uncontrolled usage */
+  defaultChecked?: boolean
+  /** Callback when checked state changes */
+  onCheckedChange?: (checked: CheckedState) => void
+  /** Optional label text */
+  label?: string
+  /** Position of the label */
+  labelPosition?: "left" | "right"
+}
+
+const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+  (
+    {
+      className,
+      size,
+      checked: controlledChecked,
+      defaultChecked = false,
+      onCheckedChange,
+      disabled,
+      label,
+      labelPosition = "right",
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
+    const [internalChecked, setInternalChecked] = React.useState<CheckedState>(defaultChecked)
+
+    const isControlled = controlledChecked !== undefined
+    const checkedState = isControlled ? controlledChecked : internalChecked
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (disabled) return
+
+      // Cycle through states: unchecked -> checked -> unchecked
+      // (indeterminate is typically set programmatically, not through user clicks)
+      const newValue = checkedState === true ? false : true
+
+      if (!isControlled) {
+        setInternalChecked(newValue)
+      }
+
+      onCheckedChange?.(newValue)
+
+      // Call external onClick if provided
+      onClick?.(e)
+    }
+
+    const isChecked = checkedState === true
+    const isIndeterminate = checkedState === "indeterminate"
+
+    const checkbox = (
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={isIndeterminate ? "mixed" : isChecked}
+        ref={ref}
+        disabled={disabled}
+        onClick={handleClick}
+        className={cn(
+          checkboxVariants({ size, className }),
+          "cursor-pointer",
+          isChecked || isIndeterminate
+            ? "bg-[#343E55] border-[#343E55] text-white"
+            : "bg-white border-[#E5E7EB] hover:border-[#9CA3AF]"
+        )}
+        {...props}
+      >
+        {isChecked && (
+          <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+        )}
+        {isIndeterminate && (
+          <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+        )}
+      </button>
+    )
+
+    if (label) {
+      return (
+        <label className="inline-flex items-center gap-2 cursor-pointer">
+          {labelPosition === "left" && (
+            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50")}>
+              {label}
+            </span>
+          )}
+          {checkbox}
+          {labelPosition === "right" && (
+            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50")}>
+              {label}
+            </span>
+          )}
+        </label>
+      )
+    }
+
+    return checkbox
+  }
+)
+Checkbox.displayName = "Checkbox"
+
+export { Checkbox, checkboxVariants }
+`, prefix),
+        },
+      ],
+    },
+    'collapsible': {
+      name: 'collapsible',
+      description: 'An expandable/collapsible section component with single or multiple mode support',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'collapsible.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { ChevronDown } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * Collapsible root variants
+ */
+const collapsibleVariants = cva("w-full", {
+  variants: {
+    variant: {
+      default: "",
+      bordered: "border border-[#E5E7EB] rounded-lg divide-y divide-[#E5E7EB]",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+})
+
+/**
+ * Collapsible item variants
+ */
+const collapsibleItemVariants = cva("", {
+  variants: {
+    variant: {
+      default: "",
+      bordered: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+})
+
+/**
+ * Collapsible trigger variants
+ */
+const collapsibleTriggerVariants = cva(
+  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "py-3",
+        bordered: "p-4 hover:bg-[#F9FAFB]",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+/**
+ * Collapsible content variants
+ */
+const collapsibleContentVariants = cva(
+  "overflow-hidden transition-all duration-300 ease-in-out",
+  {
+    variants: {
+      variant: {
+        default: "",
+        bordered: "px-4",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+// Types
+type CollapsibleType = "single" | "multiple"
+
+interface CollapsibleContextValue {
+  type: CollapsibleType
+  value: string[]
+  onValueChange: (value: string[]) => void
+  variant: "default" | "bordered"
+}
+
+interface CollapsibleItemContextValue {
+  value: string
+  isOpen: boolean
+  disabled?: boolean
+}
+
+// Contexts
+const CollapsibleContext = React.createContext<CollapsibleContextValue | null>(null)
+const CollapsibleItemContext = React.createContext<CollapsibleItemContextValue | null>(null)
+
+function useCollapsibleContext() {
+  const context = React.useContext(CollapsibleContext)
+  if (!context) {
+    throw new Error("Collapsible components must be used within a Collapsible")
+  }
+  return context
+}
+
+function useCollapsibleItemContext() {
+  const context = React.useContext(CollapsibleItemContext)
+  if (!context) {
+    throw new Error("CollapsibleTrigger/CollapsibleContent must be used within a CollapsibleItem")
+  }
+  return context
+}
+
+/**
+ * Root collapsible component that manages state
+ */
+export interface CollapsibleProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof collapsibleVariants> {
+  /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
+  type?: CollapsibleType
+  /** Controlled value - array of open item values */
+  value?: string[]
+  /** Default open items for uncontrolled usage */
+  defaultValue?: string[]
+  /** Callback when open items change */
+  onValueChange?: (value: string[]) => void
+}
+
+const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
+  (
+    {
+      className,
+      variant = "default",
+      type = "multiple",
+      value: controlledValue,
+      defaultValue = [],
+      onValueChange,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
+
+    const isControlled = controlledValue !== undefined
+    const currentValue = isControlled ? controlledValue : internalValue
+
+    const handleValueChange = React.useCallback(
+      (newValue: string[]) => {
+        if (!isControlled) {
+          setInternalValue(newValue)
+        }
+        onValueChange?.(newValue)
+      },
+      [isControlled, onValueChange]
+    )
+
+    const contextValue = React.useMemo(
+      () => ({
+        type,
+        value: currentValue,
+        onValueChange: handleValueChange,
+        variant: variant || "default",
+      }),
+      [type, currentValue, handleValueChange, variant]
+    )
+
+    return (
+      <CollapsibleContext.Provider value={contextValue}>
+        <div
+          ref={ref}
+          className={cn(collapsibleVariants({ variant, className }))}
+          {...props}
+        >
+          {children}
+        </div>
+      </CollapsibleContext.Provider>
+    )
+  }
+)
+Collapsible.displayName = "Collapsible"
+
+/**
+ * Individual collapsible item
+ */
+export interface CollapsibleItemProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof collapsibleItemVariants> {
+  /** Unique value for this item */
+  value: string
+  /** Whether this item is disabled */
+  disabled?: boolean
+}
+
+const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
+  ({ className, value, disabled, children, ...props }, ref) => {
+    const { value: openValues, variant } = useCollapsibleContext()
+    const isOpen = openValues.includes(value)
+
+    const contextValue = React.useMemo(
+      () => ({
+        value,
+        isOpen,
+        disabled,
+      }),
+      [value, isOpen, disabled]
+    )
+
+    return (
+      <CollapsibleItemContext.Provider value={contextValue}>
+        <div
+          ref={ref}
+          data-state={isOpen ? "open" : "closed"}
+          className={cn(collapsibleItemVariants({ variant, className }))}
+          {...props}
+        >
+          {children}
+        </div>
+      </CollapsibleItemContext.Provider>
+    )
+  }
+)
+CollapsibleItem.displayName = "CollapsibleItem"
+
+/**
+ * Trigger button that toggles the collapsible item
+ */
+export interface CollapsibleTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof collapsibleTriggerVariants> {
+  /** Whether to show the chevron icon */
+  showChevron?: boolean
+}
+
+const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
+  ({ className, showChevron = true, children, ...props }, ref) => {
+    const { type, value: openValues, onValueChange, variant } = useCollapsibleContext()
+    const { value, isOpen, disabled } = useCollapsibleItemContext()
+
+    const handleClick = () => {
+      if (disabled) return
+
+      let newValue: string[]
+
+      if (type === "single") {
+        // In single mode, toggle current item (close if open, open if closed)
+        newValue = isOpen ? [] : [value]
+      } else {
+        // In multiple mode, toggle the item in the array
+        newValue = isOpen
+          ? openValues.filter((v) => v !== value)
+          : [...openValues, value]
+      }
+
+      onValueChange(newValue)
+    }
+
+    return (
+      <button
+        ref={ref}
+        type="button"
+        aria-expanded={isOpen}
+        disabled={disabled}
+        onClick={handleClick}
+        className={cn(collapsibleTriggerVariants({ variant, className }))}
+        {...props}
+      >
+        <span className="flex-1">{children}</span>
+        {showChevron && (
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-300",
+              isOpen && "rotate-180"
+            )}
+          />
+        )}
+      </button>
+    )
+  }
+)
+CollapsibleTrigger.displayName = "CollapsibleTrigger"
+
+/**
+ * Content that is shown/hidden when the item is toggled
+ */
+export interface CollapsibleContentProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof collapsibleContentVariants> {}
+
+const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentProps>(
+  ({ className, children, ...props }, ref) => {
+    const { variant } = useCollapsibleContext()
+    const { isOpen } = useCollapsibleItemContext()
+    const contentRef = React.useRef<HTMLDivElement>(null)
+    const [height, setHeight] = React.useState<number | undefined>(undefined)
+
+    React.useEffect(() => {
+      if (contentRef.current) {
+        const contentHeight = contentRef.current.scrollHeight
+        setHeight(isOpen ? contentHeight : 0)
+      }
+    }, [isOpen, children])
+
+    return (
+      <div
+        ref={ref}
+        className={cn(collapsibleContentVariants({ variant, className }))}
+        style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
+        aria-hidden={!isOpen}
+        {...props}
+      >
+        <div ref={contentRef} className="pb-4">
+          {children}
+        </div>
+      </div>
+    )
+  }
+)
+CollapsibleContent.displayName = "CollapsibleContent"
+
+export {
+  Collapsible,
+  CollapsibleItem,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  collapsibleVariants,
+  collapsibleItemVariants,
+  collapsibleTriggerVariants,
+  collapsibleContentVariants,
+}
+`, prefix),
+        },
+      ],
+    },
     'dropdown-menu': {
       name: 'dropdown-menu',
       description: 'A dropdown menu component for displaying actions and options',

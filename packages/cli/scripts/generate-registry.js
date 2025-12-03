@@ -71,7 +71,26 @@ const COMPONENT_META = {
       'clsx',
       'tailwind-merge',
     ],
-  },}
+  },
+  'checkbox': {
+    description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
+    dependencies: [
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+  },
+  'collapsible': {
+    description: 'An expandable/collapsible section component with single or multiple mode support',
+    dependencies: [
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+  },
+}
 
 function generateRegistry() {
   console.log('Generating registry from source components...')

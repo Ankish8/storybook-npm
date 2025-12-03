@@ -94,3 +94,34 @@ export type { SelectFieldProps, SelectOption } from './components/ui/select-fiel
 // MultiSelect
 export { MultiSelect, multiSelectTriggerVariants } from './components/ui/multi-select'
 export type { MultiSelectProps, MultiSelectOption } from './components/ui/multi-select'
+
+// Checkbox
+export { Checkbox, checkboxVariants } from './components/ui/checkbox'
+export type { CheckboxProps, CheckedState } from './components/ui/checkbox'
+
+// Collapsible
+export {
+  Collapsible,
+  CollapsibleItem,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  collapsibleVariants,
+  collapsibleItemVariants,
+  collapsibleTriggerVariants,
+  collapsibleContentVariants,
+} from './components/ui/collapsible'
+export type {
+  CollapsibleProps,
+  CollapsibleItemProps,
+  CollapsibleTriggerProps,
+  CollapsibleContentProps,
+} from './components/ui/collapsible'
+
+// EventSelector (Custom - NOT available via CLI)
+export { EventSelector } from './components/custom/event-selector'
+export type {
+  EventSelectorProps,
+  EventItem,
+  EventGroup,
+  EventCategory,
+} from './components/custom/event-selector'
