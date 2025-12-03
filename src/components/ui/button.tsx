@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -17,14 +17,15 @@ const buttonVariants = cva(
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#343E55] hover:text-white",
         secondary:
           "bg-[#343E55]/20 text-[#343E55] hover:bg-[#343E55]/30",
-        ghost: "hover:bg-[#343E55]/10 hover:text-[#343E55]",
+        ghost: "text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#333333]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
       },
       size: {
-        default: "py-2.5 px-4",
-        sm: "py-2 px-3 text-xs",
-        lg: "py-3 px-6",
-        icon: "p-2.5",
+        default: "py-2.5 px-4 [&_svg]:size-4",
+        sm: "py-2 px-3 text-xs [&_svg]:size-3.5",
+        lg: "py-3 px-6 [&_svg]:size-5",
+        icon: "h-8 w-8 rounded-md",
+        "icon-sm": "h-7 w-7 rounded-md",
       },
     },
     defaultVariants: {

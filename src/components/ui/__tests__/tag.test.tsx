@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { Tag } from '../tag'
+import { Tag, TagGroup } from '../tag'
 
 describe('Tag', () => {
   it('renders children correctly', () => {
@@ -66,76 +66,6 @@ describe('Tag with label', () => {
   })
 })
 
-describe('Tag interactive state', () => {
-  it('is not interactive by default', () => {
-    render(<Tag data-testid="tag">Non-interactive</Tag>)
-    const tag = screen.getByTestId('tag')
-    expect(tag).not.toHaveAttribute('role')
-    expect(tag).not.toHaveAttribute('tabIndex')
-  })
-
-  it('has button role when interactive', () => {
-    render(<Tag interactive data-testid="tag">Interactive</Tag>)
-    expect(screen.getByRole('button')).toBeInTheDocument()
-  })
-
-  it('is focusable when interactive', () => {
-    render(<Tag interactive data-testid="tag">Interactive</Tag>)
-    expect(screen.getByTestId('tag')).toHaveAttribute('tabIndex', '0')
-  })
-
-  it('has hover styles when interactive', () => {
-    render(<Tag interactive data-testid="tag">Interactive</Tag>)
-    const tag = screen.getByTestId('tag')
-    expect(tag).toHaveClass('cursor-pointer')
-    expect(tag).toHaveClass('hover:bg-[#E5E7EB]')
-  })
-
-  it('has active styles when interactive', () => {
-    render(<Tag interactive data-testid="tag">Interactive</Tag>)
-    expect(screen.getByTestId('tag')).toHaveClass('active:bg-[#D1D5DB]')
-  })
-
-  it('handles click events', async () => {
-    const handleClick = vi.fn()
-    render(<Tag interactive onClick={handleClick}>Clickable</Tag>)
-
-    await screen.getByRole('button').click()
-    expect(handleClick).toHaveBeenCalledTimes(1)
-  })
-})
-
-describe('Tag selected state', () => {
-  it('is not selected by default', () => {
-    render(<Tag data-testid="tag">Not Selected</Tag>)
-    const tag = screen.getByTestId('tag')
-    expect(tag).not.toHaveClass('ring-2')
-    expect(tag).toHaveAttribute('aria-selected', 'false')
-  })
-
-  it('shows ring when selected', () => {
-    render(<Tag selected data-testid="tag">Selected</Tag>)
-    const tag = screen.getByTestId('tag')
-    expect(tag).toHaveClass('ring-2')
-    expect(tag).toHaveClass('ring-[#343E55]')
-    expect(tag).toHaveClass('ring-offset-1')
-  })
-
-  it('has aria-selected true when selected', () => {
-    render(<Tag selected data-testid="tag">Selected</Tag>)
-    expect(screen.getByTestId('tag')).toHaveAttribute('aria-selected', 'true')
-  })
-
-  it('can be both interactive and selected', () => {
-    render(<Tag interactive selected data-testid="tag">Interactive Selected</Tag>)
-    const tag = screen.getByTestId('tag')
-    expect(tag).toHaveClass('cursor-pointer')
-    expect(tag).toHaveClass('ring-2')
-    expect(tag).toHaveAttribute('role', 'button')
-    expect(tag).toHaveAttribute('aria-selected', 'true')
-  })
-})
-
 describe('Tag custom styling', () => {
   it('applies custom className', () => {
     render(<Tag className="custom-class" data-testid="tag">Custom</Tag>)
@@ -167,5 +97,96 @@ describe('Tag accessibility', () => {
   it('supports aria attributes', () => {
     render(<Tag aria-label="Custom label" data-testid="tag">Tag</Tag>)
     expect(screen.getByTestId('tag')).toHaveAttribute('aria-label', 'Custom label')
+  })
+})
+
+describe('TagGroup', () => {
+  it('renders all tags when count is less than or equal to maxVisible', () => {
+    render(
+      <TagGroup
+        tags={[
+          { value: 'Tag 1' },
+          { value: 'Tag 2' },
+        ]}
+        maxVisible={2}
+      />
+    )
+    expect(screen.getByText('Tag 1')).toBeInTheDocument()
+    expect(screen.getByText('Tag 2')).toBeInTheDocument()
+    expect(screen.queryByText(/more/)).not.toBeInTheDocument()
+  })
+
+  it('shows overflow indicator when tags exceed maxVisible', () => {
+    render(
+      <TagGroup
+        tags={[
+          { value: 'Tag 1' },
+          { value: 'Tag 2' },
+          { value: 'Tag 3' },
+          { value: 'Tag 4' },
+        ]}
+        maxVisible={2}
+      />
+    )
+    expect(screen.getByText('Tag 1')).toBeInTheDocument()
+    expect(screen.getByText('Tag 2')).toBeInTheDocument()
+    expect(screen.getByText('+2 more')).toBeInTheDocument()
+    expect(screen.queryByText('Tag 3')).not.toBeInTheDocument()
+    expect(screen.queryByText('Tag 4')).not.toBeInTheDocument()
+  })
+
+  it('renders tags with labels', () => {
+    render(
+      <TagGroup
+        tags={[
+          { label: 'Event:', value: 'Call Started' },
+        ]}
+        maxVisible={2}
+      />
+    )
+    expect(screen.getByText('Event:')).toBeInTheDocument()
+    expect(screen.getByText('Call Started')).toBeInTheDocument()
+  })
+
+  it('defaults maxVisible to 2', () => {
+    render(
+      <TagGroup
+        tags={[
+          { value: 'Tag 1' },
+          { value: 'Tag 2' },
+          { value: 'Tag 3' },
+        ]}
+      />
+    )
+    expect(screen.getByText('Tag 1')).toBeInTheDocument()
+    expect(screen.getByText('Tag 2')).toBeInTheDocument()
+    expect(screen.getByText('+1 more')).toBeInTheDocument()
+  })
+
+  it('renders single tag without overflow', () => {
+    render(
+      <TagGroup
+        tags={[
+          { label: 'IVR Event:', value: 'Menu selection' },
+        ]}
+        maxVisible={2}
+      />
+    )
+    expect(screen.getByText('IVR Event:')).toBeInTheDocument()
+    expect(screen.getByText('Menu selection')).toBeInTheDocument()
+    expect(screen.queryByText(/more/)).not.toBeInTheDocument()
+  })
+
+  it('applies custom className to container', () => {
+    render(
+      <TagGroup
+        tags={[{ value: 'Tag' }]}
+        className="custom-class"
+        data-testid="tag-group"
+      />
+    )
+    // The container div should have the class
+    const container = screen.getByText('Tag').parentElement?.parentElement
+    expect(container).toHaveClass('custom-class')
   })
 })

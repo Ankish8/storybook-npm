@@ -26,6 +26,7 @@ export {
   TableSkeleton,
   TableEmpty,
   TableAvatar,
+  TableToggle,
   tableVariants,
 } from './components/ui/table'
 export type {
@@ -36,6 +37,7 @@ export type {
   TableSkeletonProps,
   TableEmptyProps,
   TableAvatarProps,
+  TableToggleProps,
 } from './components/ui/table'
 
 // Dropdown Menu
@@ -56,3 +58,7 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from './components/ui/dropdown-menu'
+
+// Toggle
+export { Toggle, toggleVariants } from './components/ui/toggle'
+export type { ToggleProps } from './components/ui/toggle'

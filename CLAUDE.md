@@ -40,6 +40,10 @@ npm publish
 5. **Tests are REQUIRED** - Every component MUST have a corresponding test file
 6. **Stories are REQUIRED** - Every component MUST have a corresponding story file
 
+## NPM Automation Token
+
+For publishing without 2FA OTP, use the automation token stored in `~/.npmrc` or set `NPM_TOKEN` environment variable.
+
 ## Publishing Workflow
 
 ```bash
@@ -49,7 +53,7 @@ npm run integrity:snapshot          # Snapshot before changes
 node scripts/check-integrity.js verify button  # Verify (replace 'button' with component name)
 npm version patch                   # Bump version
 npm run build                       # Build (regenerates registry)
-npm publish                         # Publish to npm
+npm publish                         # Publish to npm (requires ~/.npmrc with auth token)
 git add . && git commit && git push # Commit changes
 ```
 

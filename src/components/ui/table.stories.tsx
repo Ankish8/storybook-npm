@@ -1,20 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MoreVertical, Edit, Copy, Trash } from 'lucide-react'
+import { useState } from 'react'
+import { MoreVertical, Edit, Copy, Trash, FileText } from 'lucide-react'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
   TableSkeleton,
   TableEmpty,
   TableAvatar,
+  TableToggle,
 } from './table'
 import { Badge } from './badge'
-import { Tag } from './tag'
+import { Tag, TagGroup } from './tag'
+import { Button } from './button'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -52,7 +53,8 @@ import {
   TableCell,
   TableSkeleton,
   TableEmpty,
-  TableAvatar
+  TableAvatar,
+  TableToggle
 } from "@/components/ui/table"
 \`\`\`
 
@@ -105,17 +107,38 @@ type Story = StoryObj<typeof meta>
 
 // Sample data for stories
 const sampleData = [
-  { date: '2020-01-01', subject: 'Lorem ipsum dolor', sentBy: 'JD', status: 'Sent', emails: 100 },
-  { date: '2023-03-03', subject: 'This is the subject This is the subject This is the sub...', sentBy: 'SP', status: 'Sent', emails: 999 },
-  { date: '2022-02-02', subject: 'This is the subject', sentBy: 'ON', status: 'Sent', emails: 99 },
+  { id: 1, date: '2020-01-01', subject: 'Lorem ipsum dolor', sentBy: 'JD', status: 'active', emails: 100, enabled: true },
+  { id: 2, date: '2023-03-03', subject: 'This is the subject This is the subject...', sentBy: 'SP', status: 'active', emails: 999, enabled: false },
+  { id: 3, date: '2022-02-02', subject: 'This is the subject', sentBy: 'ON', status: 'disabled', emails: 99, enabled: true },
 ]
 
-export const Overview: Story = {
-  args: {
-    size: 'md',
-    withoutBorder: false,
-  },
-  render: ({ size, withoutBorder }) => (
+const statusVariants: Record<string, 'active' | 'failed' | 'disabled'> = {
+  active: 'active',
+  failed: 'failed',
+  disabled: 'disabled',
+}
+
+// Interactive Overview component with state
+const OverviewTable = ({
+  size,
+  withoutBorder,
+  showToggle,
+  showActions
+}: {
+  size: 'sm' | 'md' | 'lg'
+  withoutBorder: boolean
+  showToggle: boolean
+  showActions: boolean
+}) => {
+  const [data, setData] = useState(sampleData)
+
+  const handleToggle = (id: number, checked: boolean) => {
+    setData(data.map(item =>
+      item.id === id ? { ...item, enabled: checked } : item
+    ))
+  }
+
+  return (
     <Table size={size} withoutBorder={withoutBorder}>
       <TableHeader>
         <TableRow>
@@ -124,20 +147,87 @@ export const Overview: Story = {
           <TableHead>Sent by</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Emails sent</TableHead>
+          {showToggle && <TableHead className="w-[80px]">Enabled</TableHead>}
+          {showActions && <TableHead className="text-right w-[120px]">Actions</TableHead>}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {sampleData.map((row, i) => (
-          <TableRow key={i}>
-            <TableCell>{row.date}</TableCell>
-            <TableCell>{row.subject}</TableCell>
+        {data.map((row) => (
+          <TableRow key={row.id}>
+            <TableCell className="text-[#6B7280]">{row.date}</TableCell>
+            <TableCell className="font-medium text-[#111827]">{row.subject}</TableCell>
             <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
-            <TableCell><Badge variant="active">{row.status}</Badge></TableCell>
-            <TableCell>{row.emails}</TableCell>
+            <TableCell>
+              <Badge variant={statusVariants[row.status]}>
+                {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+              </Badge>
+            </TableCell>
+            <TableCell className="text-[#6B7280]">{row.emails}</TableCell>
+            {showToggle && (
+              <TableCell>
+                <TableToggle
+                  checked={row.enabled}
+                  onCheckedChange={(checked) => handleToggle(row.id, checked)}
+                />
+              </TableCell>
+            )}
+            {showActions && (
+              <TableCell>
+                <div className="flex items-center justify-end gap-0.5">
+                  <Button variant="ghost" size="icon" title="View Log" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                    <FileText className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Delete"
+                    className="h-8 w-8 text-gray-400 hover:text-[#EF4444] hover:bg-[#FEF2F2]"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>
     </Table>
+  )
+}
+
+export const Overview: Story = {
+  args: {
+    size: 'md',
+    withoutBorder: false,
+  },
+  argTypes: {
+    showToggle: {
+      control: 'boolean',
+      description: 'Show toggle switch column',
+      table: {
+        defaultValue: { summary: 'false' },
+        type: { summary: 'boolean' },
+      },
+    },
+    showActions: {
+      control: 'boolean',
+      description: 'Show actions column with edit/delete buttons',
+      table: {
+        defaultValue: { summary: 'false' },
+        type: { summary: 'boolean' },
+      },
+    },
+  },
+  render: (args) => (
+    <OverviewTable
+      size={args.size || 'md'}
+      withoutBorder={args.withoutBorder || false}
+      showToggle={(args as Record<string, boolean>).showToggle || false}
+      showActions={(args as Record<string, boolean>).showActions || false}
+    />
   ),
 }
 
@@ -774,13 +864,258 @@ export const DosAndDonts: Story = {
   ),
 }
 
+// All available tags for testing
+const allEventTags = [
+  { label: "In Call Event:", value: "Call Begin, Start Dialing Agent, Agent Respond..." },
+  { label: "Whatsapp Event:", value: "message.Delivered" },
+  { label: "Call Disposition:", value: "Answered, Voicemail" },
+  { label: "After Call Event:", value: "Call ended" },
+  { label: "SMS Event:", value: "message.Sent" },
+  { label: "IVR Event:", value: "Menu selection" },
+  { label: "Queue Event:", value: "Agent assigned" },
+  { label: "Recording:", value: "Started, Stopped" },
+  { label: "Transfer Event:", value: "Warm transfer, Cold transfer" },
+  { label: "Hold Event:", value: "On hold, Resume" },
+]
+
+// Interactive component for WithStackedTags story
+const StackedTagsTable = ({
+  totalTags,
+  maxVisible,
+  showActions,
+}: {
+  totalTags: number
+  maxVisible: number
+  showActions: boolean
+}) => {
+  const tags = allEventTags.slice(0, totalTags)
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[250px]">Url</TableHead>
+          <TableHead>Events</TableHead>
+          <TableHead className="w-[150px]">Created on</TableHead>
+          <TableHead className="w-[100px]">Status</TableHead>
+          {showActions && <TableHead className="w-[100px] text-right">Actions</TableHead>}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableCell className="font-normal text-[#333] align-top">
+            http://api.example.com/webhooks/cal
+          </TableCell>
+          <TableCell className="align-top">
+            <TagGroup tags={tags} maxVisible={maxVisible} />
+          </TableCell>
+          <TableCell className="text-[#333] align-top">Jan 16, 2025</TableCell>
+          <TableCell className="align-top">
+            <Badge variant="active">Active</Badge>
+          </TableCell>
+          {showActions && (
+            <TableCell className="align-top">
+              <div className="hidden sm:flex items-center justify-end gap-0.5">
+                <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Delete"
+                  className="h-8 w-8 text-gray-400 hover:text-[#EF4444] hover:bg-[#FEF2F2]"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="sm:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="p-1 hover:bg-gray-100 rounded">
+                      <MoreVertical className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-600">
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </TableCell>
+          )}
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-normal text-[#333] align-top">
+            http://api.example.com/webhooks/sms
+          </TableCell>
+          <TableCell className="align-top">
+            <TagGroup
+              tags={[
+                { label: "After Call Event:", value: "Call ended, Voicemail" },
+                { label: "SMS Event:", value: "message.Received" },
+              ]}
+              maxVisible={maxVisible}
+            />
+          </TableCell>
+          <TableCell className="text-[#333] align-top">Jan 14, 2025</TableCell>
+          <TableCell className="align-top">
+            <Badge variant="active">Active</Badge>
+          </TableCell>
+          {showActions && (
+            <TableCell className="align-top">
+              <div className="hidden sm:flex items-center justify-end gap-0.5">
+                <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Delete"
+                  className="h-8 w-8 text-gray-400 hover:text-[#EF4444] hover:bg-[#FEF2F2]"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="sm:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="p-1 hover:bg-gray-100 rounded">
+                      <MoreVertical className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-600">
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </TableCell>
+          )}
+        </TableRow>
+        <TableRow>
+          <TableCell className="font-normal text-[#333] align-top">
+            http://api.example.com/webhooks/ivr
+          </TableCell>
+          <TableCell className="align-top">
+            <TagGroup
+              tags={[
+                { label: "IVR Event:", value: "Menu selection, Input received" },
+              ]}
+              maxVisible={maxVisible}
+            />
+          </TableCell>
+          <TableCell className="text-[#333] align-top">Jan 10, 2025</TableCell>
+          <TableCell className="align-top">
+            <Badge variant="disabled">Disabled</Badge>
+          </TableCell>
+          {showActions && (
+            <TableCell className="align-top">
+              <div className="hidden sm:flex items-center justify-end gap-0.5">
+                <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Delete"
+                  className="h-8 w-8 text-gray-400 hover:text-[#EF4444] hover:bg-[#FEF2F2]"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="sm:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="p-1 hover:bg-gray-100 rounded">
+                      <MoreVertical className="h-4 w-4 text-gray-500" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-red-600">
+                      <Trash className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </TableCell>
+          )}
+        </TableRow>
+      </TableBody>
+    </Table>
+  )
+}
+
+export const WithStackedTags: Story = {
+  name: 'With Stacked Tags',
+  parameters: {
+    docs: {
+      description: {
+        story: 'When a cell contains multiple tags, stack them vertically for better readability. Use a "+N more" indicator styled as a tag when there are too many items to display. Use the controls to test different configurations.',
+      },
+    },
+  },
+  args: {
+    size: 'md',
+  },
+  argTypes: {
+    totalTags: {
+      control: { type: 'range', min: 1, max: 10, step: 1 },
+      description: 'Total number of tags in the first row',
+      table: {
+        defaultValue: { summary: '8' },
+      },
+    },
+    maxVisible: {
+      control: { type: 'range', min: 1, max: 5, step: 1 },
+      description: 'Maximum tags to show before "+N more"',
+      table: {
+        defaultValue: { summary: '2' },
+      },
+    },
+    showActions: {
+      control: 'boolean',
+      description: 'Show action buttons column',
+      table: {
+        defaultValue: { summary: 'true' },
+      },
+    },
+  },
+  render: (args) => (
+    <StackedTagsTable
+      totalTags={(args as Record<string, number>).totalTags ?? 8}
+      maxVisible={(args as Record<string, number>).maxVisible ?? 2}
+      showActions={(args as Record<string, boolean>).showActions ?? true}
+    />
+  ),
+}
+
 export const WebhookTable: Story = {
   name: 'Webhook Table Example',
   tags: ['!dev'],
   parameters: {
     docs: {
       description: {
-        story: 'Complete example showing how to compose Table, Badge, and Tag components together.',
+        story: 'Complete example showing how to compose Table, Badge, and Tag components together with inline/wrapped tags.',
       },
     },
   },

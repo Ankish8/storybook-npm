@@ -109,7 +109,7 @@ import { cn } from "../../lib/utils"
  * Pill-shaped badges with different colors for different states.
  */
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-full text-sm font-semibold transition-colors whitespace-nowrap",
+  "inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors whitespace-nowrap",
   {
     variants: {
       variant: {
@@ -194,7 +194,7 @@ import { Loader2 } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -205,14 +205,15 @@ const buttonVariants = cva(
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#343E55] hover:text-white",
         secondary:
           "bg-[#343E55]/20 text-[#343E55] hover:bg-[#343E55]/30",
-        ghost: "hover:bg-[#343E55]/10 hover:text-[#343E55]",
+        ghost: "text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#333333]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
       },
       size: {
-        default: "py-2.5 px-4",
-        sm: "py-2 px-3 text-xs",
-        lg: "py-3 px-6",
-        icon: "p-2.5",
+        default: "py-2.5 px-4 [&_svg]:size-4",
+        sm: "py-2 px-3 text-xs [&_svg]:size-3.5",
+        lg: "py-3 px-6 [&_svg]:size-5",
+        icon: "h-8 w-8 rounded-md",
+        "icon-sm": "h-7 w-7 rounded-md",
       },
     },
     defaultVariants: {
@@ -523,6 +524,7 @@ export {
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
+import { Toggle, type ToggleProps } from "./toggle"
 
 /**
  * Table size variants for row height.
@@ -663,7 +665,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-[#6B7280] text-xs uppercase tracking-wider [&:has([role=checkbox])]:pr-0",
+        "h-12 px-4 text-left align-middle font-medium text-[#6B7280] text-sm [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-[#F9FAFB] z-10",
         sortDirection && "cursor-pointer select-none",
         className
@@ -785,6 +787,21 @@ const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
 )
 TableAvatar.displayName = "TableAvatar"
 
+/**
+ * Toggle component optimized for table cells
+ */
+export interface TableToggleProps extends Omit<ToggleProps, 'size'> {
+  /** Size of the toggle - defaults to 'sm' for tables */
+  size?: 'sm' | 'default'
+}
+
+const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
+  ({ size = 'sm', ...props }, ref) => (
+    <Toggle ref={ref} size={size} {...props} />
+  )
+)
+TableToggle.displayName = "TableToggle"
+
 export {
   Table,
   TableHeader,
@@ -797,6 +814,7 @@ export {
   TableSkeleton,
   TableEmpty,
   TableAvatar,
+  TableToggle,
   tableVariants,
 }
 `, prefix),
@@ -824,7 +842,7 @@ import { cn } from "../../lib/utils"
  * Rounded rectangle tags with optional bold labels.
  */
 const tagVariants = cva(
-  "inline-flex items-center justify-center rounded text-sm transition-colors",
+  "inline-flex items-center rounded text-sm",
   {
     variants: {
       variant: {
@@ -840,20 +858,10 @@ const tagVariants = cva(
         sm: "px-1.5 py-0.5 text-xs",
         lg: "px-3 py-1.5",
       },
-      interactive: {
-        true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
-        false: "",
-      },
-      selected: {
-        true: "ring-2 ring-[#343E55] ring-offset-1",
-        false: "",
-      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
-      interactive: false,
-      selected: false,
     },
   }
 )
@@ -865,7 +873,6 @@ const tagVariants = cva(
  * \`\`\`tsx
  * <Tag>After Call Event</Tag>
  * <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
- * <Tag interactive onClick={() => console.log('clicked')}>Clickable</Tag>
  * \`\`\`
  */
 export interface TagProps
@@ -873,21 +880,14 @@ export interface TagProps
     VariantProps<typeof tagVariants> {
   /** Bold label prefix displayed before the content */
   label?: string
-  /** Make the tag clickable with hover/active states */
-  interactive?: boolean
-  /** Show selected state with ring outline */
-  selected?: boolean
 }
 
 const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, interactive, selected, label, children, ...props }, ref) => {
+  ({ className, variant, size, label, children, ...props }, ref) => {
     return (
       <span
-        className={cn(tagVariants({ variant, size, interactive, selected, className }))}
+        className={cn(tagVariants({ variant, size, className }))}
         ref={ref}
-        role={interactive ? "button" : undefined}
-        tabIndex={interactive ? 0 : undefined}
-        aria-selected={selected}
         {...props}
       >
         {label && (
@@ -900,7 +900,245 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
 )
 Tag.displayName = "Tag"
 
-export { Tag, tagVariants }
+/**
+ * TagGroup component for displaying multiple tags with overflow indicator.
+ *
+ * @example
+ * \`\`\`tsx
+ * <TagGroup
+ *   tags={[
+ *     { label: "In Call Event:", value: "Call Begin, Start Dialing" },
+ *     { label: "Whatsapp Event:", value: "message.Delivered" },
+ *     { value: "After Call Event" },
+ *   ]}
+ *   maxVisible={2}
+ * />
+ * \`\`\`
+ */
+export interface TagGroupProps {
+  /** Array of tags to display */
+  tags: Array<{ label?: string; value: string }>
+  /** Maximum number of tags to show before overflow (default: 2) */
+  maxVisible?: number
+  /** Tag variant */
+  variant?: TagProps['variant']
+  /** Tag size */
+  size?: TagProps['size']
+  /** Additional className for the container */
+  className?: string
+}
+
+const TagGroup = ({
+  tags,
+  maxVisible = 2,
+  variant,
+  size,
+  className,
+}: TagGroupProps) => {
+  const visibleTags = tags.slice(0, maxVisible)
+  const overflowCount = tags.length - maxVisible
+
+  return (
+    <div className={cn("flex flex-col items-start gap-2", className)}>
+      {visibleTags.map((tag, index) => {
+        const isLastVisible = index === visibleTags.length - 1 && overflowCount > 0
+
+        if (isLastVisible) {
+          return (
+            <div key={index} className="flex items-center gap-2">
+              <Tag label={tag.label} variant={variant} size={size}>
+                {tag.value}
+              </Tag>
+              <Tag variant={variant} size={size}>
+                +{overflowCount} more
+              </Tag>
+            </div>
+          )
+        }
+
+        return (
+          <Tag key={index} label={tag.label} variant={variant} size={size}>
+            {tag.value}
+          </Tag>
+        )
+      })}
+    </div>
+  )
+}
+TagGroup.displayName = "TagGroup"
+
+export { Tag, TagGroup, tagVariants }
+`, prefix),
+        },
+      ],
+    },
+    'toggle': {
+      name: 'toggle',
+      description: 'A toggle/switch component for boolean inputs with on/off states',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'toggle.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * Toggle track variants (the outer container)
+ */
+const toggleVariants = cva(
+  "relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      size: {
+        default: "h-6 w-11",
+        sm: "h-5 w-9",
+        lg: "h-7 w-14",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
+
+/**
+ * Toggle thumb variants (the sliding circle)
+ */
+const toggleThumbVariants = cva(
+  "pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
+  {
+    variants: {
+      size: {
+        default: "h-5 w-5",
+        sm: "h-4 w-4",
+        lg: "h-6 w-6",
+      },
+      checked: {
+        true: "",
+        false: "translate-x-0",
+      },
+    },
+    compoundVariants: [
+      { size: "default", checked: true, className: "translate-x-5" },
+      { size: "sm", checked: true, className: "translate-x-4" },
+      { size: "lg", checked: true, className: "translate-x-7" },
+    ],
+    defaultVariants: {
+      size: "default",
+      checked: false,
+    },
+  }
+)
+
+/**
+ * A toggle/switch component for boolean inputs with on/off states
+ *
+ * @example
+ * \`\`\`tsx
+ * <Toggle checked={isEnabled} onCheckedChange={setIsEnabled} />
+ * <Toggle size="sm" disabled />
+ * <Toggle size="lg" checked label="Enable notifications" />
+ * \`\`\`
+ */
+export interface ToggleProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
+    VariantProps<typeof toggleVariants> {
+  /** Whether the toggle is checked/on */
+  checked?: boolean
+  /** Default checked state for uncontrolled usage */
+  defaultChecked?: boolean
+  /** Callback when checked state changes */
+  onCheckedChange?: (checked: boolean) => void
+  /** Optional label text */
+  label?: string
+  /** Position of the label */
+  labelPosition?: "left" | "right"
+}
+
+const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+  (
+    {
+      className,
+      size,
+      checked: controlledChecked,
+      defaultChecked = false,
+      onCheckedChange,
+      disabled,
+      label,
+      labelPosition = "right",
+      ...props
+    },
+    ref
+  ) => {
+    const [internalChecked, setInternalChecked] = React.useState(defaultChecked)
+
+    const isControlled = controlledChecked !== undefined
+    const isChecked = isControlled ? controlledChecked : internalChecked
+
+    const handleClick = () => {
+      if (disabled) return
+
+      const newValue = !isChecked
+
+      if (!isControlled) {
+        setInternalChecked(newValue)
+      }
+
+      onCheckedChange?.(newValue)
+    }
+
+    const toggle = (
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isChecked}
+        ref={ref}
+        disabled={disabled}
+        onClick={handleClick}
+        className={cn(
+          toggleVariants({ size, className }),
+          isChecked ? "bg-[#343E55]" : "bg-[#E5E7EB]"
+        )}
+        {...props}
+      >
+        <span
+          className={cn(
+            toggleThumbVariants({ size, checked: isChecked })
+          )}
+        />
+      </button>
+    )
+
+    if (label) {
+      return (
+        <label className="inline-flex items-center gap-2 cursor-pointer">
+          {labelPosition === "left" && (
+            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+              {label}
+            </span>
+          )}
+          {toggle}
+          {labelPosition === "right" && (
+            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+              {label}
+            </span>
+          )}
+        </label>
+      )
+    }
+
+    return toggle
+  }
+)
+Toggle.displayName = "Toggle"
+
+export { Toggle, toggleVariants }
 `, prefix),
         },
       ],

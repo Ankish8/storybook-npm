@@ -63,7 +63,15 @@ const COMPONENT_META = {
       'lucide-react',
     ],
   },
-}
+
+  'toggle': {
+    description: 'A toggle/switch component for boolean inputs with on/off states',
+    dependencies: [
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+    ],
+  },}
 
 function generateRegistry() {
   console.log('Generating registry from source components...')

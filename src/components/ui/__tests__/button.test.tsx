@@ -20,7 +20,7 @@ describe('Button', () => {
     ['destructive', 'bg-destructive'],
     ['outline', 'border-[#343E55]'],
     ['secondary', 'bg-[#343E55]/20'],
-    ['ghost', 'hover:bg-[#343E55]/10'],
+    ['ghost', 'hover:bg-[#F3F4F6]'],
     ['link', 'underline-offset-4'],
   ] as const)('renders %s variant', (variant, expectedClass) => {
     render(<Button variant={variant}>Test</Button>)
@@ -32,7 +32,7 @@ describe('Button', () => {
     ['default', 'py-2.5', 'px-4'],
     ['sm', 'py-2', 'px-3'],
     ['lg', 'py-3', 'px-6'],
-    ['icon', 'p-2.5'],
+    ['icon', 'h-8', 'w-8'],
   ] as const)('renders %s size', (size, ...expectedClasses) => {
     render(<Button size={size}>Test</Button>)
     const button = screen.getByRole('button')

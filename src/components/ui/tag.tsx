@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
  * Rounded rectangle tags with optional bold labels.
  */
 const tagVariants = cva(
-  "inline-flex items-center justify-center rounded text-sm transition-colors",
+  "inline-flex items-center rounded text-sm",
   {
     variants: {
       variant: {
@@ -24,20 +24,10 @@ const tagVariants = cva(
         sm: "px-1.5 py-0.5 text-xs",
         lg: "px-3 py-1.5",
       },
-      interactive: {
-        true: "cursor-pointer hover:bg-[#E5E7EB] active:bg-[#D1D5DB]",
-        false: "",
-      },
-      selected: {
-        true: "ring-2 ring-[#343E55] ring-offset-1",
-        false: "",
-      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
-      interactive: false,
-      selected: false,
     },
   }
 )
@@ -49,7 +39,6 @@ const tagVariants = cva(
  * ```tsx
  * <Tag>After Call Event</Tag>
  * <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
- * <Tag interactive onClick={() => console.log('clicked')}>Clickable</Tag>
  * ```
  */
 export interface TagProps
@@ -57,21 +46,14 @@ export interface TagProps
     VariantProps<typeof tagVariants> {
   /** Bold label prefix displayed before the content */
   label?: string
-  /** Make the tag clickable with hover/active states */
-  interactive?: boolean
-  /** Show selected state with ring outline */
-  selected?: boolean
 }
 
 const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, interactive, selected, label, children, ...props }, ref) => {
+  ({ className, variant, size, label, children, ...props }, ref) => {
     return (
       <span
-        className={cn(tagVariants({ variant, size, interactive, selected, className }))}
+        className={cn(tagVariants({ variant, size, className }))}
         ref={ref}
-        role={interactive ? "button" : undefined}
-        tabIndex={interactive ? 0 : undefined}
-        aria-selected={selected}
         {...props}
       >
         {label && (
@@ -84,4 +66,71 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
 )
 Tag.displayName = "Tag"
 
-export { Tag, tagVariants }
+/**
+ * TagGroup component for displaying multiple tags with overflow indicator.
+ *
+ * @example
+ * ```tsx
+ * <TagGroup
+ *   tags={[
+ *     { label: "In Call Event:", value: "Call Begin, Start Dialing" },
+ *     { label: "Whatsapp Event:", value: "message.Delivered" },
+ *     { value: "After Call Event" },
+ *   ]}
+ *   maxVisible={2}
+ * />
+ * ```
+ */
+export interface TagGroupProps {
+  /** Array of tags to display */
+  tags: Array<{ label?: string; value: string }>
+  /** Maximum number of tags to show before overflow (default: 2) */
+  maxVisible?: number
+  /** Tag variant */
+  variant?: TagProps['variant']
+  /** Tag size */
+  size?: TagProps['size']
+  /** Additional className for the container */
+  className?: string
+}
+
+const TagGroup = ({
+  tags,
+  maxVisible = 2,
+  variant,
+  size,
+  className,
+}: TagGroupProps) => {
+  const visibleTags = tags.slice(0, maxVisible)
+  const overflowCount = tags.length - maxVisible
+
+  return (
+    <div className={cn("flex flex-col items-start gap-2", className)}>
+      {visibleTags.map((tag, index) => {
+        const isLastVisible = index === visibleTags.length - 1 && overflowCount > 0
+
+        if (isLastVisible) {
+          return (
+            <div key={index} className="flex items-center gap-2">
+              <Tag label={tag.label} variant={variant} size={size}>
+                {tag.value}
+              </Tag>
+              <Tag variant={variant} size={size}>
+                +{overflowCount} more
+              </Tag>
+            </div>
+          )
+        }
+
+        return (
+          <Tag key={index} label={tag.label} variant={variant} size={size}>
+            {tag.value}
+          </Tag>
+        )
+      })}
+    </div>
+  )
+}
+TagGroup.displayName = "TagGroup"
+
+export { Tag, TagGroup, tagVariants }

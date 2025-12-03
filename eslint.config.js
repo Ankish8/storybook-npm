@@ -32,4 +32,11 @@ export default defineConfig([
   },
   // Storybook-specific rules for story files
   ...storybook.configs['flat/recommended'],
+  {
+    files: ['**/*.stories.tsx'],
+    rules: {
+      // Allow @storybook/react import (our project uses react-vite internally but exposes react types)
+      'storybook/no-renderer-packages': 'off',
+    },
+  },
 ])

@@ -47,7 +47,7 @@ describe('DropdownMenu', () => {
     expect(screen.getByText('Item 1')).toBeInTheDocument()
   })
 
-  it('closes menu when clicking outside', async () => {
+  it('closes menu when pressing Escape', async () => {
     const user = userEvent.setup()
     render(
       <div>
@@ -64,7 +64,7 @@ describe('DropdownMenu', () => {
     await user.click(screen.getByText('Open Menu'))
     expect(screen.getByText('Item 1')).toBeInTheDocument()
 
-    await user.click(screen.getByText('Outside'))
+    await user.keyboard('{Escape}')
     expect(screen.queryByText('Item 1')).not.toBeInTheDocument()
   })
 })

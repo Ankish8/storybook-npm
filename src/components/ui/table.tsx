@@ -2,6 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { Toggle, type ToggleProps } from "./toggle"
 
 /**
  * Table size variants for row height.
@@ -142,7 +143,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-[#6B7280] text-xs uppercase tracking-wider [&:has([role=checkbox])]:pr-0",
+        "h-12 px-4 text-left align-middle font-medium text-[#6B7280] text-sm [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-[#F9FAFB] z-10",
         sortDirection && "cursor-pointer select-none",
         className
@@ -264,6 +265,21 @@ const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
 )
 TableAvatar.displayName = "TableAvatar"
 
+/**
+ * Toggle component optimized for table cells
+ */
+export interface TableToggleProps extends Omit<ToggleProps, 'size'> {
+  /** Size of the toggle - defaults to 'sm' for tables */
+  size?: 'sm' | 'default'
+}
+
+const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
+  ({ size = 'sm', ...props }, ref) => (
+    <Toggle ref={ref} size={size} {...props} />
+  )
+)
+TableToggle.displayName = "TableToggle"
+
 export {
   Table,
   TableHeader,
@@ -276,5 +292,6 @@ export {
   TableSkeleton,
   TableEmpty,
   TableAvatar,
+  TableToggle,
   tableVariants,
 }

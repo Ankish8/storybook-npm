@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.52] - 2024-12-03
+
+### Changed
+- Updated Table component with sticky columns, sorting indicators, info tooltips, and skeleton/empty states
+- Updated Tag component with 6 color variants (default, primary, secondary, success, warning, error)
+- Updated Badge component with leftIcon/rightIcon support
+- Updated Button ghost variant styling
+- Fixed test assertions to match current component implementations
+
 ## [0.0.42] - 2024-11-21
 
 ### Fixed
