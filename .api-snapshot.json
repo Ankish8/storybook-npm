@@ -1,0 +1,242 @@
+{
+  "version": "1.0",
+  "generatedAt": "2025-12-03T12:39:17.995Z",
+  "components": {
+    "badge": {
+      "exports": [
+        "Badge",
+        "BadgeProps",
+        "badgeVariants"
+      ],
+      "interfaces": {
+        "BadgeProps": {
+          "leftIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "rightIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "badgeVariants": {}
+      }
+    },
+    "button": {
+      "exports": [
+        "Button",
+        "ButtonProps",
+        "buttonVariants"
+      ],
+      "interfaces": {
+        "ButtonProps": {
+          "asChild": {
+            "type": "boolean",
+            "optional": true
+          },
+          "leftIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "rightIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "loadingText": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "buttonVariants": {}
+      }
+    },
+    "dropdown-menu": {
+      "exports": [
+        "DropdownMenu",
+        "DropdownMenuCheckboxItem",
+        "DropdownMenuContent",
+        "DropdownMenuGroup",
+        "DropdownMenuItem",
+        "DropdownMenuLabel",
+        "DropdownMenuPortal",
+        "DropdownMenuRadioGroup",
+        "DropdownMenuRadioItem",
+        "DropdownMenuSeparator",
+        "DropdownMenuShortcut",
+        "DropdownMenuSub",
+        "DropdownMenuSubContent",
+        "DropdownMenuSubTrigger",
+        "DropdownMenuTrigger"
+      ],
+      "interfaces": {},
+      "variants": {}
+    },
+    "table": {
+      "exports": [
+        "Table",
+        "TableAvatar",
+        "TableAvatarProps",
+        "TableBody",
+        "TableCaption",
+        "TableCell",
+        "TableCellProps",
+        "TableEmpty",
+        "TableEmptyProps",
+        "TableFooter",
+        "TableHead",
+        "TableHeadProps",
+        "TableHeader",
+        "TableProps",
+        "TableRow",
+        "TableRowProps",
+        "TableSkeleton",
+        "TableSkeletonProps",
+        "TableToggle",
+        "TableToggleProps",
+        "tableVariants"
+      ],
+      "interfaces": {
+        "TableProps": {
+          "withoutBorder": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "TableRowProps": {
+          "highlighted": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "TableHeadProps": {
+          "sticky": {
+            "type": "boolean",
+            "optional": true
+          },
+          "sortDirection": {
+            "type": "'asc' | 'desc' | null",
+            "optional": true
+          },
+          "infoTooltip": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "TableCellProps": {
+          "sticky": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "TableSkeletonProps": {
+          "rows": {
+            "type": "number",
+            "optional": true
+          },
+          "columns": {
+            "type": "number",
+            "optional": true
+          }
+        },
+        "TableEmptyProps": {
+          "colSpan": {
+            "type": "number",
+            "optional": false
+          },
+          "children": {
+            "type": "React.ReactNode",
+            "optional": true
+          }
+        },
+        "TableAvatarProps": {
+          "initials": {
+            "type": "string",
+            "optional": false
+          },
+          "color": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "TableToggleProps": {
+          "size": {
+            "type": "'sm' | 'default'",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "tableVariants": {}
+      }
+    },
+    "tag": {
+      "exports": [
+        "Tag",
+        "TagGroup",
+        "TagGroupProps",
+        "TagProps",
+        "tagVariants"
+      ],
+      "interfaces": {
+        "TagProps": {
+          "label": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "TagGroupProps": {
+          "tags": {
+            "type": "Array<{ label?: string",
+            "optional": false
+          }
+        }
+      },
+      "variants": {
+        "tagVariants": {}
+      }
+    },
+    "toggle": {
+      "exports": [
+        "Toggle",
+        "ToggleProps",
+        "toggleVariants"
+      ],
+      "interfaces": {
+        "ToggleProps": {
+          "checked": {
+            "type": "boolean",
+            "optional": true
+          },
+          "defaultChecked": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onCheckedChange": {
+            "type": "(checked: boolean) => void",
+            "optional": true
+          },
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "labelPosition": {
+            "type": "\"left\" | \"right\"",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "toggleVariants": {},
+        "toggleThumbVariants": {}
+      }
+    }
+  }
+}

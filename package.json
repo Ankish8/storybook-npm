@@ -37,6 +37,8 @@
     "test:watch": "vitest",
     "create-component": "node scripts/create-component.js",
     "check-tests": "node scripts/check-component-tests.js",
+    "api:snapshot": "node scripts/generate-api-snapshot.js",
+    "api:check": "node scripts/check-breaking-changes.js",
     "prepublishOnly": "npm run build:lib",
     "prepare": "husky"
   },
