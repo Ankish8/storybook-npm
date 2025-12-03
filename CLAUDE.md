@@ -44,6 +44,10 @@ npm publish
 
 For publishing without 2FA OTP, use the automation token stored in `~/.npmrc` or set `NPM_TOKEN` environment variable.
 
+## Breaking Change Detection
+
+Pre-commit hook automatically runs `npm run api:check` on component changes. It blocks commits if breaking changes (removed exports/props/variants) are detected. If intentional, run `npm run api:snapshot` to update the baseline and document in CHANGELOG.
+
 ## Publishing Workflow
 
 ```bash
