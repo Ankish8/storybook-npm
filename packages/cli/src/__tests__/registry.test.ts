@@ -233,5 +233,73 @@ describe('Registry', () => {
       expect(content).toContain('displayName = "Table"')
       expect(content).not.toContain('displayName = "tw-Table"')
     })
+
+    it('does NOT prefix HTML attribute values like type="button"', async () => {
+      const registry = await getRegistry('tw-')
+      const toggle = registry.toggle
+      const content = toggle.files[0].content
+
+      // HTML type attributes should NOT be prefixed
+      expect(content).toContain('type="button"')
+      expect(content).not.toContain('type="tw-button"')
+    })
+
+    it('does NOT prefix role attribute values', async () => {
+      const registry = await getRegistry('tw-')
+      const toggle = registry.toggle
+      const content = toggle.files[0].content
+
+      // Role values should NOT be prefixed
+      expect(content).toContain('role="switch"')
+      expect(content).not.toContain('role="tw-switch"')
+    })
+
+    it('does NOT prefix cva variant key values like "default"', async () => {
+      const registry = await getRegistry('tw-')
+      const button = registry.button
+      const content = button.files[0].content
+
+      // cva variant values like state: "default" should NOT be prefixed
+      expect(content).toContain('variant: "default"')
+      expect(content).not.toContain('variant: "tw-default"')
+    })
+
+    it('handles text-field component without syntax corruption', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // Verify syntax is valid - no tw- prefix in JavaScript syntax
+      expect(content).not.toContain('tw-{')
+      expect(content).not.toContain('tw-}')
+      expect(content).not.toContain('tw-false')
+      expect(content).not.toContain('tw-true')
+      expect(content).not.toContain('tw-const')
+      expect(content).not.toContain('tw-=>')
+
+      // But Tailwind classes should be prefixed
+      expect(content).toContain('tw-cursor-not-allowed')
+      expect(content).toContain('tw-opacity-50')
+    })
+
+    it('preserves state values in cva defaultVariants', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // defaultVariants state value should NOT be prefixed
+      expect(content).toContain('state: "default"')
+      expect(content).not.toContain('state: "tw-default"')
+    })
+
+    it('does NOT prefix empty string values', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // Empty strings should remain empty
+      expect(content).toContain('false: ""')
+      expect(content).not.toMatch(/false:\s*"tw-"/)
+    })
   })
 })
