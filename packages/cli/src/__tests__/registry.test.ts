@@ -73,6 +73,7 @@ describe('Registry', () => {
     const validDeps = [
       '@radix-ui/react-slot',
       '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select',
       'class-variance-authority',
       'clsx',
       'tailwind-merge',

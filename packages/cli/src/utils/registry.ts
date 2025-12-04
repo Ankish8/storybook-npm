@@ -1185,8 +1185,9 @@ export {
     },
     'input': {
       name: 'input',
-      description: 'input component',
+      description: 'A text input component with error and disabled states',
       dependencies: [
+            "class-variance-authority",
             "clsx",
             "tailwind-merge"
       ],
@@ -1251,10 +1252,12 @@ export { Input, inputVariants }
     },
     'multi-select': {
       name: 'multi-select',
-      description: 'multi-select component',
+      description: 'A multi-select dropdown component with search, badges, and async loading',
       dependencies: [
+            "class-variance-authority",
             "clsx",
-            "tailwind-merge"
+            "tailwind-merge",
+            "lucide-react"
       ],
       files: [
         {
@@ -1674,10 +1677,12 @@ export { MultiSelect, multiSelectTriggerVariants }
     },
     'select-field': {
       name: 'select-field',
-      description: 'select-field component',
+      description: 'A select field with label, helper text, and validation states',
       dependencies: [
+            "@radix-ui/react-select",
             "clsx",
-            "tailwind-merge"
+            "tailwind-merge",
+            "lucide-react"
       ],
       files: [
         {
@@ -1964,10 +1969,13 @@ export { SelectField }
     },
     'select': {
       name: 'select',
-      description: 'select component',
+      description: 'A select dropdown component built on Radix UI Select',
       dependencies: [
+            "@radix-ui/react-select",
+            "class-variance-authority",
             "clsx",
-            "tailwind-merge"
+            "tailwind-merge",
+            "lucide-react"
       ],
       files: [
         {
@@ -2625,10 +2633,12 @@ export { Tag, TagGroup, tagVariants }
     },
     'text-field': {
       name: 'text-field',
-      description: 'text-field component',
+      description: 'A text field with label, helper text, icons, and validation states',
       dependencies: [
+            "class-variance-authority",
             "clsx",
-            "tailwind-merge"
+            "tailwind-merge",
+            "lucide-react"
       ],
       files: [
         {

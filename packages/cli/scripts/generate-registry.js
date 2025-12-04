@@ -91,6 +91,51 @@ const COMPONENT_META = {
       'lucide-react',
     ],
   },
+  'input': {
+    description: 'A text input component with error and disabled states',
+    dependencies: [
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+    ],
+  },
+  'select': {
+    description: 'A select dropdown component built on Radix UI Select',
+    dependencies: [
+      '@radix-ui/react-select',
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+  },
+  'multi-select': {
+    description: 'A multi-select dropdown component with search, badges, and async loading',
+    dependencies: [
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+  },
+  'select-field': {
+    description: 'A select field with label, helper text, and validation states',
+    dependencies: [
+      '@radix-ui/react-select',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+  },
+  'text-field': {
+    description: 'A text field with label, helper text, icons, and validation states',
+    dependencies: [
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+  },
   // Custom multi-file components
   'event-selector': {
     description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
