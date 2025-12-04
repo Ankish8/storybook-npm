@@ -1,0 +1,11 @@
+{
+  "extraKnownMarketplaces": {
+    "local-dev": {
+      "source": "directory",
+      "path": "."
+    }
+  },
+  "enabledPlugins": {
+    "myoperator-publish@local-dev": true
+  }
+}

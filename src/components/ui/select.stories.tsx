@@ -20,6 +20,10 @@ const meta: Meta<typeof Select> = {
         component: `
 A composable select/dropdown component built on Radix UI primitives.
 
+\`\`\`bash
+npx myoperator-ui add select
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

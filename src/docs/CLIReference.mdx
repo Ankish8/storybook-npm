@@ -64,12 +64,37 @@ npx myoperator-ui add
 
 **Options:**
 
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--all` | `-a` | Add all available components |
-| `--yes` | `-y` | Skip confirmation prompt |
-| `--overwrite` | `-o` | Overwrite existing files |
-| `--path <path>` | `-p` | Custom path (default: `src/components/ui`) |
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Option</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Short</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--all</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-a</code></td>
+      <td style={{ padding: '0.75rem' }}>Add all available components</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--yes</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-y</code></td>
+      <td style={{ padding: '0.75rem' }}>Skip confirmation prompt</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--overwrite</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-o</code></td>
+      <td style={{ padding: '0.75rem' }}>Overwrite existing files</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--path &lt;path&gt;</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-p</code></td>
+      <td style={{ padding: '0.75rem' }}>Custom path (default: <code>src/components/ui</code>)</td>
+    </tr>
+  </tbody>
+</table>
 
 **Examples:**
 
@@ -111,13 +136,42 @@ npx myoperator-ui@latest update
 
 **Options:**
 
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--all` | `-a` | Update all installed components |
-| `--yes` | `-y` | Skip confirmation prompt |
-| `--dry-run` | `-d` | Preview changes without modifying files |
-| `--backup` | `-b` | Create backup files before updating |
-| `--path <path>` | `-p` | Custom path (default: `src/components/ui`) |
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Option</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Short</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--all</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-a</code></td>
+      <td style={{ padding: '0.75rem' }}>Update all installed components</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--yes</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-y</code></td>
+      <td style={{ padding: '0.75rem' }}>Skip confirmation prompt</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--dry-run</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-d</code></td>
+      <td style={{ padding: '0.75rem' }}>Preview changes without modifying files</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--backup</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-b</code></td>
+      <td style={{ padding: '0.75rem' }}>Create backup files before updating</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--path &lt;path&gt;</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-p</code></td>
+      <td style={{ padding: '0.75rem' }}>Custom path (default: <code>src/components/ui</code>)</td>
+    </tr>
+  </tbody>
+</table>
 
 **Examples:**
 
@@ -160,21 +214,68 @@ npx myoperator-ui update --help
 
 ## Available Components
 
-| Component | Description |
-|-----------|-------------|
-| `badge` | Status badge with active, failed, and disabled variants |
-| `button` | Customizable button with variants, sizes, icons, and loading state |
-| `checkbox` | Tri-state checkbox with label support (checked, unchecked, indeterminate) |
-| `collapsible` | Expandable/collapsible section with single or multiple mode |
-| `dropdown-menu` | Dropdown menu for displaying actions and options |
-| `input` | Basic input component |
-| `multi-select` | Multi-select dropdown with search, tags, and keyboard navigation |
-| `select` | Single select dropdown component |
-| `select-field` | Select field with label, helper text, and validation states |
-| `table` | Composable table with size variants, loading/empty states, sticky columns |
-| `tag` | Tag component for event labels with optional bold label prefix |
-| `text-field` | Text input with label, icons, prefix/suffix, validation states |
-| `toggle` | Toggle/switch component for boolean inputs |
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Component</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>badge</code></td>
+      <td style={{ padding: '0.75rem' }}>Status badge with active, failed, and disabled variants</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>button</code></td>
+      <td style={{ padding: '0.75rem' }}>Customizable button with variants, sizes, icons, and loading state</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>checkbox</code></td>
+      <td style={{ padding: '0.75rem' }}>Tri-state checkbox with label support (checked, unchecked, indeterminate)</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>collapsible</code></td>
+      <td style={{ padding: '0.75rem' }}>Expandable/collapsible section with single or multiple mode</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>dropdown-menu</code></td>
+      <td style={{ padding: '0.75rem' }}>Dropdown menu for displaying actions and options</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>input</code></td>
+      <td style={{ padding: '0.75rem' }}>Basic input component</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>multi-select</code></td>
+      <td style={{ padding: '0.75rem' }}>Multi-select dropdown with search, tags, and keyboard navigation</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>select</code></td>
+      <td style={{ padding: '0.75rem' }}>Single select dropdown component</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>select-field</code></td>
+      <td style={{ padding: '0.75rem' }}>Select field with label, helper text, and validation states</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>table</code></td>
+      <td style={{ padding: '0.75rem' }}>Composable table with size variants, loading/empty states, sticky columns</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>tag</code></td>
+      <td style={{ padding: '0.75rem' }}>Tag component for event labels with optional bold label prefix</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>text-field</code></td>
+      <td style={{ padding: '0.75rem' }}>Text input with label, icons, prefix/suffix, validation states</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>toggle</code></td>
+      <td style={{ padding: '0.75rem' }}>Toggle/switch component for boolean inputs</td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
@@ -203,12 +304,32 @@ After running `init`, a `components.json` file is created in your project root:
 
 ### Configuration Options
 
-| Option | Description |
-|--------|-------------|
-| `tailwind.prefix` | CSS class prefix (default: `tw-`) for Bootstrap compatibility |
-| `tailwind.css` | Path to your global CSS file |
-| `tailwind.config` | Path to your Tailwind config file |
-| `aliases.ui` | Path alias for UI components |
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Option</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>tailwind.prefix</code></td>
+      <td style={{ padding: '0.75rem' }}>CSS class prefix (default: <code>tw-</code>) for Bootstrap compatibility</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>tailwind.css</code></td>
+      <td style={{ padding: '0.75rem' }}>Path to your global CSS file</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>tailwind.config</code></td>
+      <td style={{ padding: '0.75rem' }}>Path to your Tailwind config file</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>aliases.ui</code></td>
+      <td style={{ padding: '0.75rem' }}>Path alias for UI components</td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 

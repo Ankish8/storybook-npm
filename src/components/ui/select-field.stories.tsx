@@ -48,6 +48,10 @@ const meta: Meta<typeof SelectField> = {
         component: `
 A comprehensive select field component with label, helper text, validation states, and more.
 
+\`\`\`bash
+npx myoperator-ui add select-field
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

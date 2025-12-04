@@ -1,0 +1,14 @@
+{
+  "name": "myoperator-local",
+  "owner": {
+    "name": "ankish"
+  },
+  "description": "Local plugins for myOperator UI",
+  "plugins": [
+    {
+      "name": "myoperator-publish",
+      "description": "Automated publishing workflow for myOperator UI CLI and MCP packages",
+      "source": "./"
+    }
+  ]
+}

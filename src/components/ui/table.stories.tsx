@@ -41,6 +41,10 @@ const meta: Meta<typeof Table> = {
         component: `
 Tables are used to organize data, making it easier to understand.
 
+\`\`\`bash
+npx myoperator-ui add table
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

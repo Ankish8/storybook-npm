@@ -11,6 +11,10 @@ const meta: Meta<typeof Input> = {
         component: `
 A flexible input component for text entry with state variants.
 
+\`\`\`bash
+npx myoperator-ui add input
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

@@ -20,6 +20,10 @@ const meta: Meta<typeof Badge> = {
         component: `
 Badge component for displaying status indicators. Pill-shaped badges with different colors for different states.
 
+\`\`\`bash
+npx myoperator-ui add badge
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

@@ -12,6 +12,10 @@ const meta: Meta<typeof Checkbox> = {
         component: `
 A tri-state checkbox component with label support. Supports checked, unchecked, and indeterminate states.
 
+\`\`\`bash
+npx myoperator-ui add checkbox
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

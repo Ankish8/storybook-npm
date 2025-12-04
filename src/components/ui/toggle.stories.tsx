@@ -7,6 +7,23 @@ const meta: Meta<typeof Toggle> = {
   component: Toggle,
   parameters: {
     layout: 'centered',
+    docs: {
+      description: {
+        component: `
+A toggle switch component for binary on/off states.
+
+\`\`\`bash
+npx myoperator-ui add toggle
+\`\`\`
+
+## Import
+
+\`\`\`tsx
+import { Toggle } from "@/components/ui/toggle"
+\`\`\`
+        `,
+      },
+    },
   },
   tags: ['autodocs'],
   argTypes: {

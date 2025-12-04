@@ -268,8 +268,8 @@ function prefixClassString(classString: string, prefix: string): string {
       // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
       if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return cls
 
-      // Handle variant prefixes like hover:, focus:, sm:, etc.
-      const variantMatch = cls.match(/^([a-z][a-z0-9]*(-[a-z0-9]+)*:)+/)
+      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
+      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria)-\\[[^\\]]+\\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
         const utility = cls.slice(variants.length)
@@ -370,8 +370,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // Pattern: key: "class string" within variants/defaultVariants objects
   // Handles both unquoted keys (default:) and quoted keys ("icon-sm":)
   // But be careful not to match non-class string values
+  // IMPORTANT: [^"\\n]+ prevents matching across newlines to avoid greedy captures
   content = content.replace(
-    /(\\w+|"[^"]+"):\\s*"([^"]+)"/g,
+    /(\\w+|"[^"]+"):\\s*"([^"\\n]+)"/g,
     (match: string, key: string, value: string) => {
       // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/"/g, '')

@@ -47,6 +47,10 @@ const meta: Meta<typeof MultiSelect> = {
         component: `
 A multi-select component with tags, search, and validation states.
 
+\`\`\`bash
+npx myoperator-ui add multi-select
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

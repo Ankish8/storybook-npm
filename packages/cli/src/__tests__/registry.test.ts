@@ -200,9 +200,15 @@ describe('Registry', () => {
       const dropdown = registry['dropdown-menu']
       const content = dropdown.files[0].content
 
-      // Data attribute classes should be handled (prefix is added before data-)
-      expect(content).toContain('tw-data-[state=open]:animate-in')
-      expect(content).toContain('tw-data-[disabled]:pointer-events-none')
+      // Data attribute variants should have utility prefixed, NOT the variant
+      // Correct: data-[state=open]:tw-animate-in (prefix on utility)
+      // Wrong:   tw-data-[state=open]:animate-in (prefix on selector)
+      expect(content).toContain('data-[state=open]:tw-animate-in')
+      expect(content).toContain('data-[disabled]:tw-pointer-events-none')
+      expect(content).toContain('data-[state=open]:tw-bg-[#F3F4F6]')
+
+      // Should NOT have prefix before data-
+      expect(content).not.toMatch(/tw-data-\[/)
     })
 
     it('returns unprefixed content when no prefix provided', async () => {
@@ -319,6 +325,79 @@ describe('Registry', () => {
 
       // Default variant CSS classes should be prefixed
       expect(content).toContain('default: "tw-border')
+    })
+
+    it('prefixes classes inside cn() with nested parentheses', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // Classes inside cn() with nested function calls should be prefixed
+      expect(content).toContain('"tw-h-10 tw-px-4"')
+      expect(content).not.toContain('"h-10 px-4"')
+      expect(content).toContain('"tw-text-xs"')
+      expect(content).not.toContain('"text-xs"')
+    })
+
+    it('prefixes utility after data-[] selector, not before', async () => {
+      const registry = await getRegistry('tw-')
+      const dropdown = registry['dropdown-menu']
+      const content = dropdown.files[0].content
+
+      // Various data-[] patterns should all have prefix on utility, not selector
+      expect(content).toContain('data-[state=open]:tw-animate-in')
+      expect(content).toContain('data-[state=closed]:tw-fade-out-0')
+      expect(content).toContain('data-[side=bottom]:tw-slide-in-from-top-2')
+
+      // NEVER have prefix before data-[
+      expect(content).not.toMatch(/tw-data-\[/)
+    })
+
+    it('handles negative values with data selectors', async () => {
+      const registry = await getRegistry('tw-')
+      const dropdown = registry['dropdown-menu']
+      const content = dropdown.files[0].content
+
+      // Negative values: data-[side=left]:-translate-x-1 -> data-[side=left]:-tw-translate-x-1
+      // Check that negative prefix handling works with data selectors
+      expect(content).toContain('-tw-mx-1')
+    })
+
+    it('does not corrupt JavaScript syntax in any component', async () => {
+      const registry = await getRegistry('tw-')
+
+      for (const [, component] of Object.entries(registry)) {
+        const content = component.files[0].content
+
+        // No corrupted keywords - these should NEVER appear
+        expect(content).not.toMatch(/tw-interface\b/)
+        expect(content).not.toMatch(/tw-const\b/)
+        expect(content).not.toMatch(/tw-function\b/)
+        expect(content).not.toMatch(/tw-export\b/)
+        expect(content).not.toMatch(/tw-import\b/)
+        expect(content).not.toMatch(/tw-=>/)
+        expect(content).not.toMatch(/tw-React\b/)
+        expect(content).not.toMatch(/tw-true\b/)
+        expect(content).not.toMatch(/tw-false\b/)
+
+        // Syntax should still be valid - original keywords preserved
+        expect(content).toContain('export')
+        expect(content).toContain('import')
+      }
+    })
+
+    it('preserves interface definitions without corruption', async () => {
+      const registry = await getRegistry('tw-')
+      const tag = registry.tag
+      const content = tag.files[0].content
+
+      // Interface should not have tw- prefix
+      expect(content).toContain('interface TagProps')
+      expect(content).not.toContain('tw-interface')
+
+      // const declarations should not have tw- prefix
+      expect(content).toContain('const Tag')
+      expect(content).not.toContain('tw-const')
     })
   })
 })

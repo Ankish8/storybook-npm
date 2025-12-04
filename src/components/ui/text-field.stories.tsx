@@ -13,6 +13,10 @@ const meta: Meta<typeof TextField> = {
         component: `
 A comprehensive text field component with label, icons, validation states, and more.
 
+\`\`\`bash
+npx myoperator-ui add text-field
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

@@ -12,6 +12,10 @@ const meta: Meta<typeof Button> = {
         component: `
 Buttons trigger actions or events. Use them for form submissions, dialogs, or operations.
 
+\`\`\`bash
+npx myoperator-ui add button
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

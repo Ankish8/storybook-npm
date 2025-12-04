@@ -28,6 +28,10 @@ const meta: Meta<typeof DropdownMenu> = {
         component: `
 Displays a menu to the user — such as a set of actions or functions — triggered by a button.
 
+\`\`\`bash
+npx myoperator-ui add dropdown-menu
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

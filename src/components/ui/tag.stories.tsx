@@ -11,6 +11,10 @@ const meta: Meta<typeof Tag> = {
         component: `
 Tag component for displaying event labels and categories. Supports optional bold label prefixes.
 
+\`\`\`bash
+npx myoperator-ui add tag
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

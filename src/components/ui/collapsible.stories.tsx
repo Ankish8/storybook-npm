@@ -17,6 +17,10 @@ const meta: Meta<typeof Collapsible> = {
         component: `
 An expandable/collapsible section component with single or multiple mode support.
 
+\`\`\`bash
+npx myoperator-ui add collapsible
+\`\`\`
+
 ## Import
 
 \`\`\`tsx
