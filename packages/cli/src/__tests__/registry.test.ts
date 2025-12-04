@@ -54,8 +54,8 @@ describe('Registry', () => {
       // Should have exports
       expect(content).toContain('export')
 
-      // Should import cn utility
-      expect(content).toContain('@/lib/utils')
+      // Should import cn utility (transformed path)
+      expect(content).toContain('../../lib/utils')
 
       // Should not have Tailwind v4 syntax
       expect(content).not.toContain('@theme')
@@ -200,9 +200,9 @@ describe('Registry', () => {
       const dropdown = registry['dropdown-menu']
       const content = dropdown.files[0].content
 
-      // Data attribute classes should be handled
-      expect(content).toContain('data-[state=open]:tw-animate-in')
-      expect(content).toContain('data-[disabled]:tw-pointer-events-none')
+      // Data attribute classes should be handled (prefix is added before data-)
+      expect(content).toContain('tw-data-[state=open]:animate-in')
+      expect(content).toContain('tw-data-[disabled]:pointer-events-none')
     })
 
     it('returns unprefixed content when no prefix provided', async () => {
