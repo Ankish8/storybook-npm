@@ -7,6 +7,7 @@ import { getRegistry } from '../utils/registry.js'
 import { configExists, getTailwindPrefix } from '../utils/config.js'
 
 interface AddOptions {
+  all: boolean
   yes: boolean
   overwrite: boolean
   path: string
@@ -33,6 +34,12 @@ export async function add(components: string[], options: AddOptions) {
   // Get available components with prefix applied
   const registry = await getRegistry(prefix)
   const availableComponents = Object.keys(registry)
+
+  // If --all flag is used, add all components
+  if (options.all) {
+    components = availableComponents
+    console.log(chalk.blue(`  Adding all ${components.length} components...\n`))
+  }
 
   // If no components specified, show selection
   if (!components || components.length === 0) {

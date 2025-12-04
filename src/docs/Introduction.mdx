@@ -71,25 +71,34 @@ Seamlessly integrate with existing Bootstrap projects. Our CLI detects Bootstrap
 # Initialize your project
 npx myoperator-ui init
 
-# Add components
-npx myoperator-ui add button badge tag table
+# Add all components at once
+npx myoperator-ui add --all
+
+# Or add specific components
+npx myoperator-ui add button badge table
 ```
 
 ---
 
 ## Components
 
-### Button
-Customizable button with multiple variants, sizes, icons, and loading states.
+We offer 13 production-ready components:
 
-### Badge
-Status indicators for active, failed, and disabled states with icon support.
-
-### Tag
-Event labels with optional bold prefix and interactive/selected states.
-
-### Table
-Composable table with header, body, row, and cell sub-components.
+| Component | Description |
+|-----------|-------------|
+| **Badge** | Status indicators with active, failed, and disabled variants |
+| **Button** | Customizable button with variants, sizes, icons, and loading states |
+| **Checkbox** | Tri-state checkbox with label support |
+| **Collapsible** | Expandable/collapsible sections |
+| **Dropdown Menu** | Actions and options menu |
+| **Input** | Basic input component |
+| **Multi-Select** | Multi-select with search and tags |
+| **Select** | Single select dropdown |
+| **Select Field** | Select with label and validation |
+| **Table** | Composable table with sorting and sticky columns |
+| **Tag** | Event labels with optional bold prefix |
+| **Text Field** | Input with label, icons, and validation |
+| **Toggle** | Switch component for boolean inputs |
 
 ---
 
@@ -97,4 +106,28 @@ Composable table with header, body, row, and cell sub-components.
 
 Ready to add myOperator UI to your project?
 
-**[Getting Started →](?path=/docs/getting-started--docs)**
+<div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+  <a href="?path=/docs/getting-started--docs" style={{
+    display: 'inline-block',
+    padding: '0.75rem 1.5rem',
+    background: '#343E55',
+    color: 'white',
+    borderRadius: '6px',
+    textDecoration: 'none',
+    fontWeight: 500
+  }}>
+    Getting Started →
+  </a>
+  <a href="?path=/docs/cli-reference--docs" style={{
+    display: 'inline-block',
+    padding: '0.75rem 1.5rem',
+    background: 'transparent',
+    color: '#343E55',
+    borderRadius: '6px',
+    textDecoration: 'none',
+    fontWeight: 500,
+    border: '1px solid #343E55'
+  }}>
+    CLI Reference
+  </a>
+</div>

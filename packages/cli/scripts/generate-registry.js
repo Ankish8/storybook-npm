@@ -216,7 +216,19 @@ function looksLikeTailwindClasses(str: string): boolean {
   // Skip strings that look like paths or imports
   if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || str.includes('::')) return false
 
-  // Skip npm package names
+  // Skip npm package names - but NOT if they look like Tailwind utility classes
+  // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)
+  const tailwindUtilityPrefixes = ['text', 'bg', 'p', 'm', 'px', 'py', 'mx', 'my', 'pt', 'pb', 'pl', 'pr', 'mt', 'mb', 'ml', 'mr', 'w', 'h', 'min', 'max', 'gap', 'space', 'border', 'rounded', 'shadow', 'opacity', 'font', 'leading', 'tracking', 'z', 'inset', 'top', 'bottom', 'left', 'right', 'flex', 'grid', 'col', 'row', 'justify', 'items', 'content', 'self', 'place', 'order', 'float', 'clear', 'object', 'overflow', 'overscroll', 'scroll', 'list', 'appearance', 'cursor', 'pointer', 'resize', 'select', 'fill', 'stroke', 'table', 'caption', 'transition', 'duration', 'ease', 'delay', 'animate', 'transform', 'origin', 'scale', 'rotate', 'translate', 'skew', 'accent', 'caret', 'outline', 'ring', 'blur', 'brightness', 'contrast', 'grayscale', 'hue', 'invert', 'saturate', 'sepia', 'backdrop', 'divide', 'sr', 'not', 'snap', 'touch', 'will', 'aspect', 'container', 'columns', 'break', 'box', 'isolation', 'mix', 'filter', 'drop', 'size']
+
+  // Check if it looks like a Tailwind utility (prefix-value pattern) before npm check
+  if (str.includes('-') && !str.includes(' ')) {
+    const prefix = str.split('-')[0]
+    if (tailwindUtilityPrefixes.includes(prefix)) {
+      return true  // This is a Tailwind class, not npm package
+    }
+  }
+
+  // Skip npm package names (but we already caught Tailwind utilities above)
   if (/^(@[a-z0-9-]+\\/)?[a-z][a-z0-9-]*$/.test(str) && !str.includes(' ')) return false
 
   // Check if any word looks like a Tailwind class
@@ -306,21 +318,43 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
-  // 2. Handle cn() function calls: cn("classes", "more classes", ...)
-  content = content.replace(
-    /\\bcn\\s*\\(([^)]+)\\)/g,
-    (match: string, args: string) => {
-      const prefixedArgs = args.replace(
-        /"([^"]*)"/g,
-        (m: string, classes: string) => {
-          if (!looksLikeTailwindClasses(classes)) return m
-          const prefixed = prefixClassString(classes, prefix)
-          return \`"\${prefixed}"\`
-        }
-      )
-      return \`cn(\${prefixedArgs})\`
+  // 2. Handle cn() function calls with nested parentheses support
+  // Process cn() calls by finding them and properly matching closing parens
+  let result = ''
+  let lastIndex = 0
+  const cnRegex = /\\bcn\\s*\\(/g
+  let cnMatch
+
+  while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Add everything before this cn(
+    result += content.slice(lastIndex, cnMatch.index)
+
+    // Find matching closing paren
+    let depth = 1
+    let i = cnMatch.index + cnMatch[0].length
+    while (i < content.length && depth > 0) {
+      if (content[i] === '(') depth++
+      else if (content[i] === ')') depth--
+      i++
     }
-  )
+
+    const args = content.slice(cnMatch.index + cnMatch[0].length, i - 1)
+
+    // Prefix class strings within the cn() arguments
+    const prefixedArgs = args.replace(
+      /"([^"]*)"/g,
+      (m: string, classes: string) => {
+        if (!looksLikeTailwindClasses(classes)) return m
+        const prefixed = prefixClassString(classes, prefix)
+        return \`"\${prefixed}"\`
+      }
+    )
+
+    result += \`cn(\${prefixedArgs})\`
+    lastIndex = i
+  }
+  result += content.slice(lastIndex)
+  content = result
 
   // 3. Handle className="..." direct attributes
   content = content.replace(
@@ -334,13 +368,17 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
   // 4. Handle variant values in cva config objects
   // Pattern: key: "class string" within variants/defaultVariants objects
+  // Handles both unquoted keys (default:) and quoted keys ("icon-sm":)
   // But be careful not to match non-class string values
   content = content.replace(
-    /(\\w+):\\s*"([^"]+)"/g,
+    /(\\w+|"[^"]+"):\\s*"([^"]+)"/g,
     (match: string, key: string, value: string) => {
+      // Remove quotes from key if present for comparison
+      const cleanKey = key.replace(/"/g, '')
+
       // Skip keys that are definitely not class values
       const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
-      if (nonClassKeys.includes(key)) return match
+      if (nonClassKeys.includes(cleanKey)) return match
 
       // Only prefix if the value looks like Tailwind classes
       if (!looksLikeTailwindClasses(value)) return match

@@ -37,6 +37,9 @@ npx myoperator-ui add button
 # Add multiple components
 npx myoperator-ui add button badge table
 
+# Add all available components at once
+npx myoperator-ui add --all
+
 # Interactive selection (shows all available components)
 npx myoperator-ui add
 ```
@@ -45,6 +48,7 @@ npx myoperator-ui add
 
 | Option | Short | Description |
 |--------|-------|-------------|
+| `--all` | `-a` | Add all available components |
 | `--yes` | `-y` | Skip confirmation prompt |
 | `--overwrite` | `-o` | Overwrite existing files |
 | `--path <path>` | `-p` | Custom path (default: `src/components/ui`) |
@@ -52,6 +56,12 @@ npx myoperator-ui add
 **Examples:**
 
 ```bash
+# Add all components at once
+npx myoperator-ui add --all
+
+# Add all components, skip confirmation
+npx myoperator-ui add --all -y
+
 # Skip confirmation
 npx myoperator-ui add button -y
 
@@ -133,11 +143,19 @@ npx myoperator-ui update --help
 
 | Component | Description |
 |-----------|-------------|
-| `button` | Customizable button with variants, sizes, icons, and loading state |
 | `badge` | Status badge with active, failed, and disabled variants |
-| `tag` | Tag component for event labels with optional bold label prefix |
-| `table` | Composable table with size variants, loading/empty states, sticky columns |
+| `button` | Customizable button with variants, sizes, icons, and loading state |
+| `checkbox` | Tri-state checkbox component with label support (checked, unchecked, indeterminate) |
+| `collapsible` | Expandable/collapsible section component with single or multiple mode support |
 | `dropdown-menu` | Dropdown menu for displaying actions and options |
+| `input` | Basic input component |
+| `multi-select` | Multi-select dropdown with search, tags, and keyboard navigation |
+| `select` | Single select dropdown component |
+| `select-field` | Select field with label, helper text, and validation states |
+| `table` | Composable table with size variants, loading/empty states, sticky columns |
+| `tag` | Tag component for event labels with optional bold label prefix |
+| `text-field` | Text input with label, icons, prefix/suffix, validation states, and character count |
+| `toggle` | Toggle/switch component for boolean inputs with on/off states |
 
 ## Configuration
 

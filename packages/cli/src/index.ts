@@ -24,6 +24,7 @@ program
   .command('add')
   .description('Add a component to your project')
   .argument('[components...]', 'Components to add')
+  .option('-a, --all', 'Add all available components', false)
   .option('-y, --yes', 'Skip confirmation prompt', false)
   .option('-o, --overwrite', 'Overwrite existing files', false)
   .option('-p, --path <path>', 'Path to add components to', 'src/components/ui')

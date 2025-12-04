@@ -1,0 +1,290 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="CLI Reference" />
+
+# CLI Reference
+
+Complete reference for the myOperator UI command-line interface.
+
+---
+
+## Installation
+
+The CLI is available via npx - no global installation needed:
+
+```bash
+npx myoperator-ui [command]
+```
+
+To ensure you're using the latest version:
+
+```bash
+npx myoperator-ui@latest [command]
+```
+
+---
+
+## Commands
+
+### `init` - Initialize Project
+
+Set up myOperator UI in your project.
+
+```bash
+npx myoperator-ui init
+```
+
+**What it does:**
+- Creates a `components.json` configuration file
+- Sets up the utils file with the `cn` helper
+- Creates the components directory (`src/components/ui`)
+- Creates/updates your global CSS with Tailwind imports
+- Creates/updates `postcss.config.js` with the correct PostCSS plugin
+- Configures Tailwind with `tw-` prefix (for Bootstrap compatibility)
+
+---
+
+### `add` - Add Components
+
+Add components to your project.
+
+```bash
+# Add a specific component
+npx myoperator-ui add button
+
+# Add multiple components
+npx myoperator-ui add button badge table
+
+# Add ALL available components
+npx myoperator-ui add --all
+
+# Interactive selection (shows all available components)
+npx myoperator-ui add
+```
+
+**Options:**
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--all` | `-a` | Add all available components |
+| `--yes` | `-y` | Skip confirmation prompt |
+| `--overwrite` | `-o` | Overwrite existing files |
+| `--path <path>` | `-p` | Custom path (default: `src/components/ui`) |
+
+**Examples:**
+
+```bash
+# Add all components at once
+npx myoperator-ui add --all
+
+# Add all components, skip confirmation
+npx myoperator-ui add --all -y
+
+# Overwrite existing component
+npx myoperator-ui add button --overwrite
+
+# Add to custom directory
+npx myoperator-ui add button -p src/ui
+```
+
+---
+
+### `update` - Update Components
+
+Safely update installed components to the latest version with diff preview.
+
+> **Important:** Always use `@latest` to ensure you get the newest component code.
+
+```bash
+# Update a specific component
+npx myoperator-ui@latest update button
+
+# Update multiple components
+npx myoperator-ui@latest update button badge
+
+# Update all installed components
+npx myoperator-ui@latest update --all
+
+# Interactive selection (shows installed components)
+npx myoperator-ui@latest update
+```
+
+**Options:**
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--all` | `-a` | Update all installed components |
+| `--yes` | `-y` | Skip confirmation prompt |
+| `--dry-run` | `-d` | Preview changes without modifying files |
+| `--backup` | `-b` | Create backup files before updating |
+| `--path <path>` | `-p` | Custom path (default: `src/components/ui`) |
+
+**Examples:**
+
+```bash
+# Preview what would change (safe - no modifications)
+npx myoperator-ui@latest update button --dry-run
+
+# Preview all component updates
+npx myoperator-ui@latest update --all --dry-run
+
+# Update all with backups
+npx myoperator-ui@latest update --all --backup
+
+# Force update without confirmation
+npx myoperator-ui@latest update button -y
+```
+
+**Update Safeguards:**
+- Shows diff of changes before applying
+- `--dry-run` lets you preview without making changes
+- `--backup` creates timestamped backups (e.g., `button.tsx.backup.1700000000`)
+- Only updates components that are already installed
+- Skips components with no changes
+
+---
+
+### Help Commands
+
+```bash
+# Check CLI version
+npx myoperator-ui --version
+
+# Get help
+npx myoperator-ui --help
+npx myoperator-ui add --help
+npx myoperator-ui update --help
+```
+
+---
+
+## Available Components
+
+| Component | Description |
+|-----------|-------------|
+| `badge` | Status badge with active, failed, and disabled variants |
+| `button` | Customizable button with variants, sizes, icons, and loading state |
+| `checkbox` | Tri-state checkbox with label support (checked, unchecked, indeterminate) |
+| `collapsible` | Expandable/collapsible section with single or multiple mode |
+| `dropdown-menu` | Dropdown menu for displaying actions and options |
+| `input` | Basic input component |
+| `multi-select` | Multi-select dropdown with search, tags, and keyboard navigation |
+| `select` | Single select dropdown component |
+| `select-field` | Select field with label, helper text, and validation states |
+| `table` | Composable table with size variants, loading/empty states, sticky columns |
+| `tag` | Tag component for event labels with optional bold label prefix |
+| `text-field` | Text input with label, icons, prefix/suffix, validation states |
+| `toggle` | Toggle/switch component for boolean inputs |
+
+---
+
+## Configuration
+
+After running `init`, a `components.json` file is created in your project root:
+
+```json
+{
+  "$schema": "https://myoperator.com/schema.json",
+  "style": "default",
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "src/App.scss",
+    "baseColor": "slate",
+    "cssVariables": true,
+    "prefix": "tw-"
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui"
+  }
+}
+```
+
+### Configuration Options
+
+| Option | Description |
+|--------|-------------|
+| `tailwind.prefix` | CSS class prefix (default: `tw-`) for Bootstrap compatibility |
+| `tailwind.css` | Path to your global CSS file |
+| `tailwind.config` | Path to your Tailwind config file |
+| `aliases.ui` | Path alias for UI components |
+
+---
+
+## Bootstrap Compatibility
+
+myOperator UI automatically detects if your project uses Bootstrap and configures Tailwind CSS to avoid conflicts.
+
+### How it works
+
+When Bootstrap is detected, the CLI:
+1. Uses selective Tailwind imports (skips Preflight/reset)
+2. Applies a `tw-` prefix to all Tailwind classes
+3. Scopes Tailwind to only scan the components directory
+
+### Generated CSS for Bootstrap projects
+
+```css
+/* Selective imports to avoid Preflight conflicts with Bootstrap */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Tell Tailwind to scan component files for utility classes */
+@source "./components/**/*.{js,ts,jsx,tsx}";
+@source "./lib/**/*.{js,ts,jsx,tsx}";
+```
+
+---
+
+## Troubleshooting
+
+### Component styles not applying
+
+Make sure you've installed the required dependencies:
+
+```bash
+npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react
+```
+
+### Styles conflict with Bootstrap
+
+If Bootstrap styles override your components:
+
+1. Run `npx myoperator-ui init` after adding Bootstrap
+2. Verify the CSS file has selective imports (not `@import "tailwindcss"`)
+3. Check that `components.json` has `"prefix": "tw-"`
+
+### PostCSS Error
+
+If you see:
+
+```
+[plugin:vite:css] [postcss] It looks like you're trying to use `tailwindcss` directly as a PostCSS plugin.
+```
+
+Fix it:
+
+```bash
+npm install -D @tailwindcss/postcss
+npx myoperator-ui init  # Recreates correct config
+```
+
+### Version mismatch / No changes showing
+
+To ensure you're using the latest version:
+
+```bash
+npx myoperator-ui@latest update --all
+```
+
+NPX may cache older versions - always use `@latest` for updates.
+
+---
+
+## Next Steps
+
+- **[Getting Started →](?path=/docs/getting-started--docs)** - Quick setup guide
+- **[MCP Server →](?path=/docs/mcp-server--docs)** - AI-powered component generation
+- Browse components in the sidebar
