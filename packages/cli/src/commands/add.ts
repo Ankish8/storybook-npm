@@ -3,8 +3,8 @@ import fs from 'fs-extra'
 import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
-import { getRegistry, type ComponentDefinition } from '../utils/registry.js'
-import { readConfig, configExists, getTailwindPrefix } from '../utils/config.js'
+import { getRegistry } from '../utils/registry.js'
+import { configExists, getTailwindPrefix } from '../utils/config.js'
 
 interface AddOptions {
   yes: boolean
@@ -55,6 +55,28 @@ export async function add(components: string[], options: AddOptions) {
 
     components = selectedComponents
   }
+
+  // Normalize component names (convert PascalCase/camelCase to kebab-case)
+  const normalizeComponentName = (name: string): string => {
+    return name
+      .replace(/([a-z])([A-Z])/g, '$1-$2')  // camelCase -> kebab-case
+      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')  // XMLParser -> XML-Parser
+      .toLowerCase()
+  }
+
+  // Map user input to available components
+  components = components.map((c) => {
+    const normalized = normalizeComponentName(c)
+    // Check if normalized version exists
+    if (availableComponents.includes(normalized)) {
+      return normalized
+    }
+    // Check case-insensitive match
+    const match = availableComponents.find(
+      (available) => available.toLowerCase() === c.toLowerCase()
+    )
+    return match || c
+  })
 
   // Validate components
   const invalidComponents = components.filter((c) => !availableComponents.includes(c))

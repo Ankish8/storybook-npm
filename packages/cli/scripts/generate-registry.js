@@ -339,7 +339,7 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     /(\\w+):\\s*"([^"]+)"/g,
     (match: string, key: string, value: string) => {
       // Skip keys that are definitely not class values
-      const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'error', 'helperText', 'ariaLabel', 'ariaDescribedBy']
+      const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
       if (nonClassKeys.includes(key)) return match
 
       // Only prefix if the value looks like Tailwind classes

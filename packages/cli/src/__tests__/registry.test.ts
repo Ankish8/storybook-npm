@@ -301,5 +301,24 @@ describe('Registry', () => {
       expect(content).toContain('false: ""')
       expect(content).not.toMatch(/false:\s*"tw-"/)
     })
+
+    it('prefixes error variant values in cva', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // Error variant CSS classes should be prefixed
+      expect(content).toContain('error: "tw-border')
+      expect(content).not.toContain('error: "border border-[#FF3B3B]')
+    })
+
+    it('prefixes default variant values in cva', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // Default variant CSS classes should be prefixed
+      expect(content).toContain('default: "tw-border')
+    })
   })
 })
