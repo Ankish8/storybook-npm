@@ -1,0 +1,294 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="MCP Server" />
+
+<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+  <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>
+    MCP Server
+  </h1>
+  <p style={{ fontSize: '1.1rem', color: '#6B7280', maxWidth: '600px', margin: '0 auto' }}>
+    Enable AI assistants to install myOperator UI components using natural language.
+  </p>
+</div>
+
+---
+
+## What is MCP?
+
+The Model Context Protocol (MCP) is an open standard that allows AI assistants to access external tools and data. Our MCP server provides:
+
+- **Natural Language Installation** - Say "add a login form" and get the right components
+- **Component Discovery** - Browse all available components
+- **Metadata & Props** - Get component details and code examples
+- **shadcn-style CLI** - Uses `npx myoperator-ui add <component>`
+
+---
+
+## Quick Start
+
+```bash
+npx myoperator-mcp
+```
+
+---
+
+## Installation
+
+### Cursor (One-Click Install)
+
+Copy and paste this link in your browser:
+
+```
+cursor://anysphere.cursor-deeplink/mcp/install?name=myoperator&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIm15b3BlcmF0b3ItbWNwIl19
+```
+
+Or manually edit `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "myoperator": {
+      "command": "npx",
+      "args": ["-y", "myoperator-mcp"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+Run in your terminal:
+
+```bash
+claude mcp add myoperator -- npx -y myoperator-mcp
+```
+
+Or add to `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "myoperator": {
+      "command": "npx",
+      "args": ["-y", "myoperator-mcp"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to your Claude Desktop config:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "myoperator": {
+      "command": "npx",
+      "args": ["-y", "myoperator-mcp"]
+    }
+  }
+}
+```
+
+### VSCode (with GitHub Copilot)
+
+Add to `.vscode/mcp.json` in your project:
+
+```json
+{
+  "servers": {
+    "myoperator": {
+      "command": "npx",
+      "args": ["-y", "myoperator-mcp"]
+    }
+  }
+}
+```
+
+---
+
+## Available Tools
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Tool</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>list-components</code></td>
+      <td style={{ padding: '0.75rem' }}>Browse all available components</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>get-component-metadata</code></td>
+      <td style={{ padding: '0.75rem' }}>Get props, variants, and code examples</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>init-project</code></td>
+      <td style={{ padding: '0.75rem' }}>Initialize project for myOperator UI</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>install-component</code></td>
+      <td style={{ padding: '0.75rem' }}><strong>Install components using natural language</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## Natural Language Installation
+
+The `install-component` tool understands natural language. Ask your AI assistant:
+
+### Form Components
+
+> "Add a login form" → Installs: text-field, button, checkbox
+
+> "I need a settings form" → Installs: text-field, toggle, select-field, button
+
+> "Add a search form" → Installs: input, button
+
+### Multiple Components
+
+> "Install button, input, and select" → Installs all three
+
+> "Add table and badge" → Installs both
+
+### Specific Components
+
+> "Add button" → Installs: button
+
+> "Install the dropdown menu" → Installs: dropdown-menu
+
+### Context-Aware
+
+> "I need a data table with status badges" → Installs: table, badge
+
+> "Add an accordion section" → Installs: collapsible
+
+---
+
+## Usage Examples
+
+Once installed, ask your AI assistant:
+
+### Browse Components
+
+> "What components are available in myOperator UI?"
+
+> "List all the UI components"
+
+### Component Details
+
+> "Show me the Button component props and variants"
+
+> "What are the size options for TextField?"
+
+### Install Components
+
+> "Initialize my project for myOperator UI"
+
+> "Add a login form"
+
+> "Install the Table component"
+
+---
+
+## Components
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Component</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Button</strong></td>
+      <td style={{ padding: '0.75rem' }}>6 variants, 4 sizes, loading states, icons</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Badge</strong></td>
+      <td style={{ padding: '0.75rem' }}>Status badges (active, failed, disabled)</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Tag</strong></td>
+      <td style={{ padding: '0.75rem' }}>Event labels with bold prefix, interactive</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Table</strong></td>
+      <td style={{ padding: '0.75rem' }}>Composable table with loading skeleton</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>DropdownMenu</strong></td>
+      <td style={{ padding: '0.75rem' }}>Radix-based with keyboard navigation</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Input</strong></td>
+      <td style={{ padding: '0.75rem' }}>Text input with state variants</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>TextField</strong></td>
+      <td style={{ padding: '0.75rem' }}>Form input with label, icons, validation</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Select</strong></td>
+      <td style={{ padding: '0.75rem' }}>Composable Radix-based dropdown</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>SelectField</strong></td>
+      <td style={{ padding: '0.75rem' }}>Form select with label and validation</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>MultiSelect</strong></td>
+      <td style={{ padding: '0.75rem' }}>Multi-select with tags and search</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Checkbox</strong></td>
+      <td style={{ padding: '0.75rem' }}>Tri-state checkbox with labels</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Toggle</strong></td>
+      <td style={{ padding: '0.75rem' }}>Toggle switch for boolean inputs</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><strong>Collapsible</strong></td>
+      <td style={{ padding: '0.75rem' }}>Accordion/expandable sections</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## Related Links
+
+- [npm: myoperator-mcp](https://www.npmjs.com/package/myoperator-mcp)
+- [npm: myoperator-ui](https://www.npmjs.com/package/myoperator-ui)
+- [Model Context Protocol](https://modelcontextprotocol.io/)
+
+---
+
+## Development
+
+```bash
+# Clone the repository
+git clone https://github.com/Ankish8/storybook-npm.git
+cd storybook-npm/packages/mcp
+
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Test locally
+echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js
+```

@@ -1,6 +1,6 @@
 # myOperator MCP Server
 
-Model Context Protocol (MCP) server for the myOperator UI component library. Enables AI assistants like Claude, Cursor, and VSCode Copilot to access component metadata, code examples, and design tokens.
+Model Context Protocol (MCP) server for the myOperator UI component library. Enables AI assistants like Claude, Cursor, and VSCode Copilot to browse and install components using natural language.
 
 [![npm version](https://badge.fury.io/js/myoperator-mcp.svg)](https://www.npmjs.com/package/myoperator-mcp)
 
@@ -9,6 +9,13 @@ Model Context Protocol (MCP) server for the myOperator UI component library. Ena
 ```bash
 npx myoperator-mcp
 ```
+
+## Features
+
+- **Natural Language Installation** - Say "add a login form" and it installs the right components
+- **Component Discovery** - Browse all available components
+- **Metadata & Props** - Get component details, variants, and code examples
+- **shadcn-style CLI** - Uses `npx myoperator-ui add <component>`
 
 ## Installation & Setup
 
@@ -33,8 +40,6 @@ Or manually edit `~/.cursor/mcp.json`:
   }
 }
 ```
-
-3. Restart Cursor
 
 ### Claude Code
 
@@ -96,209 +101,93 @@ Or use Command Palette → "MCP: Add Server"
 
 ## Available Tools
 
-### Component Discovery
 | Tool | Description |
 |------|-------------|
-| `list-components` | List all available components with descriptions |
-| `get-component-metadata` | Get props, variants, dependencies for a component |
-| `get-component-examples` | Get React code examples |
-| `get-component-source` | Get full source code (copy/paste ready) |
+| `list-components` | Browse all available components |
+| `get-component-metadata` | Get props, variants, and code examples |
+| `init-project` | Initialize project for myOperator UI |
+| `install-component` | **Install components using natural language** |
 
-### Installation (like shadcn)
-| Tool | Description |
-|------|-------------|
-| `init-project` | Initialize project for myOperator UI (runs CLI) |
-| `install-component` | Install a component via CLI |
+---
 
-### Design System
-| Tool | Description |
-|------|-------------|
-| `list-design-tokens` | List design tokens (colors, spacing, radius, typography) |
-| `get-component-accessibility` | Get accessibility guidelines and ARIA attributes |
-| `get-installation-info` | Get npm package info and setup instructions |
+## Natural Language Installation
+
+The `install-component` tool understands natural language. Ask your AI assistant:
+
+### Form Components
+> "Add a login form"
+> → Installs: text-field, button, checkbox
+
+> "I need a settings form"
+> → Installs: text-field, toggle, select-field, button
+
+> "Add a search form"
+> → Installs: input, button
+
+### Multiple Components
+> "Install button, input, and select"
+> → Installs all three components
+
+> "Add table and badge"
+> → Installs both components
+
+### Specific Components
+> "Add button"
+> → Installs: button
+
+> "Install the dropdown menu"
+> → Installs: dropdown-menu
+
+### Context-Aware
+> "I need a data table with status badges"
+> → Installs: table, badge
+
+> "Add an accordion section"
+> → Installs: collapsible
 
 ---
 
 ## Usage Examples
 
-Once installed, ask your AI assistant:
-
-### Component Discovery
+### Browse Components
 
 > "What components are available in myOperator UI?"
 
-> "List all the UI components I can use"
+> "List all the UI components"
 
 ### Component Details
 
 > "Show me the Button component props and variants"
 
-> "What are the size options for the Badge component?"
+> "What are the size options for TextField?"
 
-> "How do I use the Table component with loading state?"
-
-### Code Examples
-
-> "Give me a code example for a Button with an icon"
-
-> "Show me how to create a dropdown menu"
-
-> "How do I make an interactive Tag component?"
-
-### Design Tokens
-
-> "What color tokens are available?"
-
-> "List all spacing values in the design system"
-
-> "What's the primary brand color?"
-
-### Accessibility
-
-> "What accessibility features does the DropdownMenu have?"
-
-> "How do I make the Button accessible for screen readers?"
-
-> "What keyboard shortcuts does the Table support?"
-
-### Source Code (NEW)
-
-> "Give me the full Button component source code"
-
-> "Get the utils.ts file I need"
-
-> "Get the CSS styles for the design system"
-
-### Installation (like shadcn)
+### Install Components
 
 > "Initialize my project for myOperator UI"
 
-> "Install the Button component"
+> "Add a login form" *(installs text-field, button, checkbox)*
 
-> "Add badge and table components to my project"
+> "Install the Table component"
 
 ---
 
 ## Components
 
-The MCP server provides information for these components:
-
 | Component | Description |
 |-----------|-------------|
-| **Button** | Customizable button with 6 variants, 4 sizes, loading states, and icon support |
-| **Badge** | Status badges for active, failed, disabled states |
-| **Tag** | Event labels with optional bold prefix, interactive and selectable |
-| **Table** | Composable table with size variants, loading skeleton, empty state, sticky columns |
-| **DropdownMenu** | Radix-based dropdown with full keyboard navigation |
-
----
-
-## Tool Reference
-
-### `list-components`
-
-Lists all available components.
-
-```
-Input: (none)
-Output: Array of components with name, id, description, dependencyCount
-```
-
-### `get-component-metadata`
-
-Get detailed metadata for a specific component.
-
-```
-Input: { componentName: "button" }
-Output: {
-  name, description, dependencies,
-  props (with types, defaults, descriptions),
-  variants (with options),
-  import statement
-}
-```
-
-### `get-component-examples`
-
-Get code examples for a component.
-
-```
-Input: { componentName: "button", exampleType?: "loading" }
-Output: {
-  component, import statement,
-  examples (with title, description, code)
-}
-```
-
-### `list-design-tokens`
-
-List design tokens from the design system.
-
-```
-Input: { category?: "colors" | "spacing" | "radius" | "typography" }
-Output: {
-  tokens (with name, value, cssVariable, description),
-  usage instructions
-}
-```
-
-### `get-component-accessibility`
-
-Get accessibility guidelines for a component.
-
-```
-Input: { componentName: "dropdown-menu" }
-Output: {
-  guidelines (semantic, visual, best practices),
-  ariaAttributes (with usage),
-  keyboardSupport (key → action mapping)
-}
-```
-
-### `get-component-source`
-
-Get full source code for a component (copy/paste ready).
-
-```
-Input: { componentName: "button" }  // or "utils" or "css"
-Output: {
-  component, file path, dependencies,
-  installCommand,
-  sourceCode (full implementation)
-}
-```
-
-### `get-installation-info`
-
-Get npm package info and setup instructions.
-
-```
-Input: (none)
-Output: {
-  packageName, npmUrl,
-  quickStart commands,
-  manualInstallation steps,
-  dependencies
-}
-```
-
-### `init-project`
-
-Initialize a project for myOperator UI (runs CLI command).
-
-```
-Input: { cwd?: string }
-Output: { success, command, output }
-```
-
-### `install-component`
-
-Install a component via CLI (like shadcn).
-
-```
-Input: { component: "button", cwd?: string }
-Output: { success, component, command, output }
-```
+| **Button** | 6 variants, 4 sizes, loading states, icons |
+| **Badge** | Status badges (active, failed, disabled) |
+| **Tag** | Event labels with bold prefix, interactive |
+| **Table** | Composable table with loading skeleton |
+| **DropdownMenu** | Radix-based with keyboard navigation |
+| **Input** | Text input with state variants |
+| **TextField** | Form input with label, icons, validation |
+| **Select** | Composable Radix-based dropdown |
+| **SelectField** | Form select with label and validation |
+| **MultiSelect** | Multi-select with tags and search |
+| **Checkbox** | Tri-state checkbox with labels |
+| **Toggle** | Toggle switch for boolean inputs |
+| **Collapsible** | Accordion/expandable sections |
 
 ---
 
@@ -326,7 +215,7 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | node dist/index.js
 
 ## Related
 
-- [myoperator-ui](https://www.npmjs.com/package/myoperator-ui) - CLI for adding myOperator UI components to your project
+- [myoperator-ui](https://www.npmjs.com/package/myoperator-ui) - CLI for adding myOperator UI components
 - [Model Context Protocol](https://modelcontextprotocol.io/) - Open standard for AI-tool integration
 
 ## License
