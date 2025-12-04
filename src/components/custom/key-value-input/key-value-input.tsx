@@ -12,7 +12,12 @@ const generateId = () =>
 /**
  * KeyValueInput - A component for managing key-value pairs
  *
- * This component is NOT available via CLI. Import directly from npm:
+ * Install via CLI:
+ * ```bash
+ * npx myoperator-ui add key-value-input
+ * ```
+ *
+ * Or import directly from npm:
  * ```tsx
  * import { KeyValueInput } from "@myoperator/ui"
  * ```

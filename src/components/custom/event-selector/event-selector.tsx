@@ -6,7 +6,12 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types"
 /**
  * EventSelector - A component for selecting webhook events
  *
- * This component is NOT available via CLI. Import directly from npm:
+ * Install via CLI:
+ * ```bash
+ * npx myoperator-ui add event-selector
+ * ```
+ *
+ * Or import directly from npm:
  * ```tsx
  * import { EventSelector } from "@myoperator/ui"
  * ```

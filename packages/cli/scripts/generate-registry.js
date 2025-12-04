@@ -14,8 +14,9 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Path to the source components (relative to this script)
-const COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/ui')
+// Paths to source components (relative to this script)
+const UI_COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/ui')
+const CUSTOM_COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/custom')
 const OUTPUT_FILE = path.resolve(__dirname, '../src/utils/registry.ts')
 
 // Component metadata - dependencies and descriptions
@@ -90,29 +91,62 @@ const COMPONENT_META = {
       'lucide-react',
     ],
   },
+  // Custom multi-file components
+  'event-selector': {
+    description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
+    dependencies: [
+      'clsx',
+      'tailwind-merge',
+    ],
+    // Internal component dependencies (installed automatically)
+    internalDependencies: ['checkbox', 'collapsible'],
+    // Multi-file component structure
+    isMultiFile: true,
+    directory: 'event-selector',
+    files: ['event-selector.tsx', 'event-group.tsx', 'event-item.tsx', 'types.ts'],
+    mainFile: 'event-selector.tsx',
+  },
+  'key-value-input': {
+    description: 'A component for managing key-value pairs with validation and duplicate detection',
+    dependencies: [
+      'clsx',
+      'tailwind-merge',
+      'lucide-react',
+    ],
+    // Internal component dependencies (installed automatically)
+    internalDependencies: ['button', 'input'],
+    // Multi-file component structure
+    isMultiFile: true,
+    directory: 'key-value-input',
+    files: ['key-value-input.tsx', 'key-value-row.tsx', 'types.ts'],
+    mainFile: 'key-value-input.tsx',
+  },
 }
 
 function generateRegistry() {
   console.log('Generating registry from source components...')
-  console.log(`Source directory: ${COMPONENTS_DIR}`)
+  console.log(`UI Components directory: ${UI_COMPONENTS_DIR}`)
+  console.log(`Custom Components directory: ${CUSTOM_COMPONENTS_DIR}`)
 
-  // Check if components directory exists
-  if (!fs.existsSync(COMPONENTS_DIR)) {
-    console.error(`Error: Components directory not found: ${COMPONENTS_DIR}`)
+  // Check if UI components directory exists
+  if (!fs.existsSync(UI_COMPONENTS_DIR)) {
+    console.error(`Error: UI Components directory not found: ${UI_COMPONENTS_DIR}`)
     process.exit(1)
   }
 
-  // Get all component files (exclude stories and test files)
-  const files = fs.readdirSync(COMPONENTS_DIR)
+  const components = {}
+
+  // ============================================
+  // 1. Process single-file UI components
+  // ============================================
+  const uiFiles = fs.readdirSync(UI_COMPONENTS_DIR)
     .filter(file => file.endsWith('.tsx') && !file.includes('.stories.') && !file.includes('.test.'))
 
-  console.log(`Found ${files.length} component files:`, files)
+  console.log(`Found ${uiFiles.length} UI component files:`, uiFiles)
 
-  // Read component contents
-  const components = {}
-  for (const file of files) {
+  for (const file of uiFiles) {
     const componentName = file.replace('.tsx', '')
-    const filePath = path.join(COMPONENTS_DIR, file)
+    const filePath = path.join(UI_COMPONENTS_DIR, file)
     let content = fs.readFileSync(filePath, 'utf-8')
 
     // Transform @/lib/utils import to relative path for installed components
@@ -132,6 +166,73 @@ function generateRegistry() {
       fileName: file,
       content,
       ...meta,
+    }
+  }
+
+  // ============================================
+  // 2. Process multi-file custom components
+  // ============================================
+  if (fs.existsSync(CUSTOM_COMPONENTS_DIR)) {
+    const customDirs = fs.readdirSync(CUSTOM_COMPONENTS_DIR)
+      .filter(dir => {
+        const stat = fs.statSync(path.join(CUSTOM_COMPONENTS_DIR, dir))
+        return stat.isDirectory()
+      })
+
+    console.log(`Found ${customDirs.length} custom component directories:`, customDirs)
+
+    for (const dir of customDirs) {
+      const meta = COMPONENT_META[dir]
+      if (!meta || !meta.isMultiFile) {
+        console.log(`  Skipping ${dir} (no multi-file metadata)`)
+        continue
+      }
+
+      console.log(`  Processing custom component: ${dir}`)
+
+      const componentFiles = []
+      for (const fileName of meta.files) {
+        const filePath = path.join(CUSTOM_COMPONENTS_DIR, dir, fileName)
+        if (!fs.existsSync(filePath)) {
+          console.error(`    Warning: File not found: ${filePath}`)
+          continue
+        }
+
+        let content = fs.readFileSync(filePath, 'utf-8')
+
+        // Transform @/lib/utils import to relative path (goes up to component dir, then to lib)
+        content = content.replace(
+          /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
+          'import { cn } from "../../../lib/utils"'
+        )
+
+        // Transform relative imports to sibling ui components to absolute paths
+        // e.g., import { Checkbox } from "../../ui/checkbox" -> import { Checkbox } from "../checkbox"
+        content = content.replace(
+          /from\s*["']\.\.\/\.\.\/ui\/([^"']+)["']/g,
+          'from "../$1"'
+        )
+
+        // Transform relative imports within the component directory
+        // e.g., import { EventItem } from "./event-item" stays the same
+
+        componentFiles.push({
+          name: fileName,
+          content,
+        })
+        console.log(`    Added file: ${fileName}`)
+      }
+
+      components[dir] = {
+        name: dir,
+        description: meta.description,
+        dependencies: meta.dependencies,
+        internalDependencies: meta.internalDependencies || [],
+        isMultiFile: true,
+        directory: meta.directory,
+        mainFile: meta.mainFile,
+        files: componentFiles,
+      }
     }
   }
 
@@ -157,9 +258,35 @@ function generateRegistryFile(components) {
   }
 
   const componentEntries = Object.entries(components).map(([name, comp]) => {
-    const escapedContent = escapeForTemplate(comp.content)
     const deps = JSON.stringify(comp.dependencies, null, 6).replace(/\n/g, '\n      ')
 
+    // Handle multi-file components
+    if (comp.isMultiFile) {
+      const internalDeps = JSON.stringify(comp.internalDependencies || [], null, 6).replace(/\n/g, '\n      ')
+      const filesArray = comp.files.map(file => {
+        const escapedContent = escapeForTemplate(file.content)
+        return `        {
+          name: '${file.name}',
+          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+        }`
+      }).join(',\n')
+
+      return `    '${name}': {
+      name: '${name}',
+      description: '${comp.description}',
+      dependencies: ${deps},
+      internalDependencies: ${internalDeps},
+      isMultiFile: true,
+      directory: '${comp.directory}',
+      mainFile: '${comp.mainFile}',
+      files: [
+${filesArray}
+      ],
+    }`
+    }
+
+    // Handle single-file components
+    const escapedContent = escapeForTemplate(comp.content)
     return `    '${name}': {
       name: '${name}',
       description: '${comp.description}',
@@ -186,6 +313,11 @@ export interface ComponentDefinition {
   description: string
   dependencies: string[]
   files: ComponentFile[]
+  // Multi-file component properties (optional)
+  internalDependencies?: string[]
+  isMultiFile?: boolean
+  directory?: string
+  mainFile?: string
 }
 
 export type Registry = Record<string, ComponentDefinition>

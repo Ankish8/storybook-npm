@@ -35,7 +35,7 @@ describe('Registry', () => {
 
       // Check file structure
       for (const file of component.files) {
-        expect(file.name).toMatch(/\.tsx$/)
+        expect(file.name).toMatch(/\.tsx?$/)  // .tsx or .ts files
         expect(file.content).toBeTruthy()
         expect(typeof file.content).toBe('string')
       }
@@ -46,7 +46,11 @@ describe('Registry', () => {
     const registry = await getRegistry()
 
     for (const component of Object.values(registry)) {
-      const content = component.files[0].content
+      // Get the main file content (either first file or mainFile for multi-file components)
+      const mainFile = component.isMultiFile
+        ? component.files.find(f => f.name === component.mainFile)
+        : component.files[0]
+      const content = mainFile!.content
 
       // Should have imports
       expect(content).toContain('import')
@@ -54,8 +58,9 @@ describe('Registry', () => {
       // Should have exports
       expect(content).toContain('export')
 
-      // Should import cn utility (transformed path)
-      expect(content).toContain('../../lib/utils')
+      // Should import cn utility (transformed path) - single-file or multi-file components
+      const hasCnImport = content.includes('../../lib/utils') || content.includes('../../../lib/utils')
+      expect(hasCnImport).toBe(true)
 
       // Should not have Tailwind v4 syntax
       expect(content).not.toContain('@theme')
@@ -398,6 +403,72 @@ describe('Registry', () => {
       // const declarations should not have tw- prefix
       expect(content).toContain('const Tag')
       expect(content).not.toContain('tw-const')
+    })
+  })
+
+  describe('multi-file components', () => {
+    it('includes event-selector component', async () => {
+      const registry = await getRegistry()
+      const eventSelector = registry['event-selector']
+
+      expect(eventSelector).toBeDefined()
+      expect(eventSelector.isMultiFile).toBe(true)
+      expect(eventSelector.directory).toBe('event-selector')
+      expect(eventSelector.mainFile).toBe('event-selector.tsx')
+      expect(eventSelector.files.length).toBe(4)  // main, group, item, types
+      expect(eventSelector.internalDependencies).toContain('checkbox')
+      expect(eventSelector.internalDependencies).toContain('collapsible')
+    })
+
+    it('includes key-value-input component', async () => {
+      const registry = await getRegistry()
+      const keyValueInput = registry['key-value-input']
+
+      expect(keyValueInput).toBeDefined()
+      expect(keyValueInput.isMultiFile).toBe(true)
+      expect(keyValueInput.directory).toBe('key-value-input')
+      expect(keyValueInput.mainFile).toBe('key-value-input.tsx')
+      expect(keyValueInput.files.length).toBe(3)  // main, row, types
+      expect(keyValueInput.internalDependencies).toContain('button')
+      expect(keyValueInput.internalDependencies).toContain('input')
+    })
+
+    it('transforms imports to sibling ui components correctly', async () => {
+      const registry = await getRegistry()
+      const eventSelector = registry['event-selector']
+
+      // Find the event-item file which imports Checkbox
+      const eventItem = eventSelector.files.find(f => f.name === 'event-item.tsx')
+      expect(eventItem).toBeDefined()
+
+      // Should import from sibling directory, not ../../ui/
+      expect(eventItem!.content).toContain('from "../checkbox"')
+      expect(eventItem!.content).not.toContain('from "../../ui/checkbox"')
+    })
+
+    it('prefixes tailwind classes in multi-file components', async () => {
+      const registry = await getRegistry('tw-')
+      const eventSelector = registry['event-selector']
+
+      const mainFile = eventSelector.files.find(f => f.name === 'event-selector.tsx')
+      expect(mainFile).toBeDefined()
+
+      // Classes should be prefixed
+      expect(mainFile!.content).toContain('tw-border')
+      expect(mainFile!.content).toContain('tw-rounded-lg')
+      expect(mainFile!.content).toContain('tw-flex')
+    })
+
+    it('transforms lib/utils import correctly for multi-file components', async () => {
+      const registry = await getRegistry()
+      const eventSelector = registry['event-selector']
+
+      const mainFile = eventSelector.files.find(f => f.name === 'event-selector.tsx')
+      expect(mainFile).toBeDefined()
+
+      // Should use ../../../lib/utils (going up from event-selector directory)
+      expect(mainFile!.content).toContain('from "../../../lib/utils"')
+      expect(mainFile!.content).not.toContain('@/lib/utils')
     })
   })
 })

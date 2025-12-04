@@ -117,13 +117,39 @@ export async function add(components: string[], options: AddOptions) {
   try {
     const installed: string[] = []
     const dependencies: Set<string> = new Set()
+    const installedComponents: Set<string> = new Set()
 
-    for (const componentName of components) {
+    // Helper function to install a single component
+    const installComponent = async (componentName: string) => {
+      // Skip if already installed in this session
+      if (installedComponents.has(componentName)) {
+        return
+      }
+
       const component = registry[componentName]
+      if (!component) {
+        spinner.warn(`Component ${componentName} not found in registry`)
+        return
+      }
+
+      // First, install internal dependencies (for multi-file components)
+      if (component.internalDependencies && component.internalDependencies.length > 0) {
+        spinner.text = `Installing dependencies for ${componentName}...`
+        for (const depName of component.internalDependencies) {
+          await installComponent(depName)
+        }
+      }
+
+      spinner.text = `Installing ${componentName}...`
+
+      // Determine target directory
+      const targetDir = component.isMultiFile
+        ? path.join(componentsDir, component.directory!)
+        : componentsDir
 
       // Check for existing files
       for (const file of component.files) {
-        const filePath = path.join(componentsDir, file.name)
+        const filePath = path.join(targetDir, file.name)
 
         if (await fs.pathExists(filePath)) {
           if (!options.overwrite) {
@@ -137,13 +163,25 @@ export async function add(components: string[], options: AddOptions) {
 
         // Write file
         await fs.writeFile(filePath, file.content)
-        installed.push(file.name)
+
+        // Track installed file path relative to components dir
+        const relativePath = component.isMultiFile
+          ? `${component.directory}/${file.name}`
+          : file.name
+        installed.push(relativePath)
       }
 
-      // Collect dependencies
+      // Collect npm dependencies
       if (component.dependencies) {
         component.dependencies.forEach((dep) => dependencies.add(dep))
       }
+
+      installedComponents.add(componentName)
+    }
+
+    // Install all requested components
+    for (const componentName of components) {
+      await installComponent(componentName)
     }
 
     spinner.succeed('Components installed successfully!')
