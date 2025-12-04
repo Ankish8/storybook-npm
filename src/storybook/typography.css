@@ -1,0 +1,114 @@
+/* =============================================================================
+   myOperator UI - Typography System
+   Based on Figma Style Guide - Source Sans Pro
+   ============================================================================= */
+
+/* ===== DISPLAY STYLES ===== */
+.text-display-large {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 57px;
+  line-height: 64px;
+  font-weight: 400;
+}
+
+.text-display-medium {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 45px;
+  line-height: 52px;
+  font-weight: 400;
+}
+
+.text-display-small {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 400;
+}
+
+/* ===== HEADLINE STYLES ===== */
+.text-headline-large {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 600;
+}
+
+.text-headline-medium {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+}
+
+.text-headline-small {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+/* ===== TITLE STYLES ===== */
+.text-title-large {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 18px;
+  line-height: normal;
+  font-weight: 600;
+}
+
+.text-title-medium {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  line-height: normal;
+  font-weight: 600;
+}
+
+.text-title-small {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  line-height: normal;
+  font-weight: 600;
+}
+
+/* ===== BODY STYLES ===== */
+.text-body-large {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  line-height: normal;
+  font-weight: 400;
+}
+
+.text-body-medium {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  line-height: normal;
+  font-weight: 400;
+}
+
+.text-body-small {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 12px;
+  line-height: normal;
+  font-weight: 400;
+}
+
+/* ===== LABEL STYLES ===== */
+.text-label-large {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.text-label-medium {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 12px;
+  line-height: normal;
+  font-weight: 600;
+}
+
+.text-label-small {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 10px;
+  line-height: normal;
+  font-weight: 600;
+}
