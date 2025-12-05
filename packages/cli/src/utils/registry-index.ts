@@ -1,0 +1,188 @@
+// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
+// Run: npm run generate-registry
+//
+// This file provides lazy-loading access to component registries.
+// Components are split by category for optimal loading performance.
+
+import type { Registry, ComponentDefinition, ComponentMeta } from './registry-types'
+
+import { getCoreRegistry } from './registry-core'
+import { getFormRegistry } from './registry-form'
+import { getDataRegistry } from './registry-data'
+import { getOverlayRegistry } from './registry-overlay'
+import { getFeedbackRegistry } from './registry-feedback'
+import { getLayoutRegistry } from './registry-layout'
+import { getCustomRegistry } from './registry-custom'
+
+// Component metadata (loaded immediately - small footprint)
+export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
+  'button': {
+    name: 'button',
+    description: 'A customizable button component with variants, sizes, and icons',
+    dependencies: ["@radix-ui/react-slot","class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'core',
+    internalDependencies: [],
+  },
+  'badge': {
+    name: 'badge',
+    description: 'A status badge component with active, failed, and disabled variants',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'core',
+    internalDependencies: [],
+  },
+  'input': {
+    name: 'input',
+    description: 'A text input component with error and disabled states',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'select': {
+    name: 'select',
+    description: 'A select dropdown component built on Radix UI Select',
+    dependencies: ["@radix-ui/react-select","class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'checkbox': {
+    name: 'checkbox',
+    description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'toggle': {
+    name: 'toggle',
+    description: 'A toggle/switch component for boolean inputs with on/off states',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'text-field': {
+    name: 'text-field',
+    description: 'A text field with label, helper text, icons, and validation states',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'select-field': {
+    name: 'select-field',
+    description: 'A select field with label, helper text, and validation states',
+    dependencies: ["@radix-ui/react-select","clsx","tailwind-merge","lucide-react"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'multi-select': {
+    name: 'multi-select',
+    description: 'A multi-select dropdown component with search, badges, and async loading',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'form',
+    internalDependencies: [],
+  },
+  'table': {
+    name: 'table',
+    description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'data',
+    internalDependencies: [],
+  },
+  'dropdown-menu': {
+    name: 'dropdown-menu',
+    description: 'A dropdown menu component for displaying actions and options',
+    dependencies: ["@radix-ui/react-dropdown-menu","clsx","tailwind-merge","lucide-react"],
+    category: 'overlay',
+    internalDependencies: [],
+  },
+  'tag': {
+    name: 'tag',
+    description: 'A tag component for event labels with optional bold label prefix',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'feedback',
+    internalDependencies: [],
+  },
+  'collapsible': {
+    name: 'collapsible',
+    description: 'An expandable/collapsible section component with single or multiple mode support',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'layout',
+    internalDependencies: [],
+  },
+  'event-selector': {
+    name: 'event-selector',
+    description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
+    dependencies: ["clsx","tailwind-merge"],
+    category: 'custom',
+    internalDependencies: ["checkbox","collapsible"],
+  },
+  'key-value-input': {
+    name: 'key-value-input',
+    description: 'A component for managing key-value pairs with validation and duplicate detection',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["button","input"],
+  }
+}
+
+// Available categories
+export const CATEGORIES = ["core","form","data","overlay","feedback","layout","custom"] as const
+export type Category = typeof CATEGORIES[number]
+
+/**
+ * Get metadata for all components (fast, no source code loaded)
+ */
+export function getComponentList(): ComponentMeta[] {
+  return Object.values(COMPONENT_METADATA)
+}
+
+/**
+ * Get metadata for a specific component
+ */
+export function getComponentMeta(name: string): ComponentMeta | undefined {
+  return COMPONENT_METADATA[name]
+}
+
+/**
+ * Get all components in a specific category
+ */
+export function getCategoryRegistry(category: Category, prefix: string = ''): Registry {
+  switch (category) {
+    case 'core': return getCoreRegistry(prefix)
+    case 'form': return getFormRegistry(prefix)
+    case 'data': return getDataRegistry(prefix)
+    case 'overlay': return getOverlayRegistry(prefix)
+    case 'feedback': return getFeedbackRegistry(prefix)
+    case 'layout': return getLayoutRegistry(prefix)
+    case 'custom': return getCustomRegistry(prefix)
+    default:
+      throw new Error(`Unknown category: ${category}`)
+  }
+}
+
+/**
+ * Get a single component by name (lazy loads only the needed category)
+ */
+export async function getComponent(name: string, prefix: string = ''): Promise<ComponentDefinition | undefined> {
+  const meta = COMPONENT_METADATA[name]
+  if (!meta) return undefined
+
+  const categoryRegistry = getCategoryRegistry(meta.category as Category, prefix)
+  return categoryRegistry[name]
+}
+
+/**
+ * Get the full registry (all components) - for backwards compatibility
+ * Note: This loads ALL categories into memory. Prefer getComponent() for better performance.
+ */
+export async function getRegistry(prefix: string = ''): Promise<Registry> {
+  const allComponents: Registry = {}
+
+  for (const category of CATEGORIES) {
+    const categoryRegistry = getCategoryRegistry(category, prefix)
+    Object.assign(allComponents, categoryRegistry)
+  }
+
+  return allComponents
+}
+
+// Re-export types
+export type { Registry, ComponentDefinition, ComponentMeta, ComponentFile } from './registry-types'

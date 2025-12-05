@@ -9,6 +9,14 @@ export default defineConfig({
     setupFiles: ['./src/components/ui/__tests__/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     globals: true,
+    // Parallel test execution for better performance at scale
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        minThreads: 2,
+        maxThreads: 4,
+      },
+    },
   },
   resolve: {
     alias: {

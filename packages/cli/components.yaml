@@ -1,0 +1,230 @@
+# myOperator UI Component Registry
+# This file defines all components, their categories, dependencies, and metadata.
+# Run: npm run generate-registry to regenerate registry files from this config.
+
+# =============================================================================
+# CATEGORIES
+# =============================================================================
+# Components are grouped by category for lazy-loading optimization.
+# Each category generates a separate registry-{category}.ts file.
+
+categories:
+  core:
+    description: "Essential UI primitives"
+    components:
+      - button
+      - badge
+
+  form:
+    description: "Form inputs and controls"
+    components:
+      - input
+      - select
+      - checkbox
+      - toggle
+      - text-field
+      - select-field
+      - multi-select
+
+  data:
+    description: "Data display components"
+    components:
+      - table
+
+  overlay:
+    description: "Popups, modals, menus"
+    components:
+      - dropdown-menu
+
+  feedback:
+    description: "Status and notifications"
+    components:
+      - tag
+
+  layout:
+    description: "Layout and structure components"
+    components:
+      - collapsible
+
+  custom:
+    description: "Multi-file complex components"
+    components:
+      - event-selector
+      - key-value-input
+
+# =============================================================================
+# COMPONENT DEFINITIONS
+# =============================================================================
+# Each component has: description, dependencies, and optional multi-file config
+
+components:
+  # ---------------------------------------------------------------------------
+  # CORE COMPONENTS
+  # ---------------------------------------------------------------------------
+  button:
+    description: "A customizable button component with variants, sizes, and icons"
+    category: core
+    dependencies:
+      - "@radix-ui/react-slot"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  badge:
+    description: "A status badge component with active, failed, and disabled variants"
+    category: core
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  # ---------------------------------------------------------------------------
+  # FORM COMPONENTS
+  # ---------------------------------------------------------------------------
+  input:
+    description: "A text input component with error and disabled states"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  select:
+    description: "A select dropdown component built on Radix UI Select"
+    category: form
+    dependencies:
+      - "@radix-ui/react-select"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  checkbox:
+    description: "A tri-state checkbox component with label support (checked, unchecked, indeterminate)"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  toggle:
+    description: "A toggle/switch component for boolean inputs with on/off states"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  text-field:
+    description: "A text field with label, helper text, icons, and validation states"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  select-field:
+    description: "A select field with label, helper text, and validation states"
+    category: form
+    dependencies:
+      - "@radix-ui/react-select"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  multi-select:
+    description: "A multi-select dropdown component with search, badges, and async loading"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  # ---------------------------------------------------------------------------
+  # DATA COMPONENTS
+  # ---------------------------------------------------------------------------
+  table:
+    description: "A composable table component with size variants, loading/empty states, sticky columns, and sorting support"
+    category: data
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  # ---------------------------------------------------------------------------
+  # OVERLAY COMPONENTS
+  # ---------------------------------------------------------------------------
+  dropdown-menu:
+    description: "A dropdown menu component for displaying actions and options"
+    category: overlay
+    dependencies:
+      - "@radix-ui/react-dropdown-menu"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  # ---------------------------------------------------------------------------
+  # FEEDBACK COMPONENTS
+  # ---------------------------------------------------------------------------
+  tag:
+    description: "A tag component for event labels with optional bold label prefix"
+    category: feedback
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  # ---------------------------------------------------------------------------
+  # LAYOUT COMPONENTS
+  # ---------------------------------------------------------------------------
+  collapsible:
+    description: "An expandable/collapsible section component with single or multiple mode support"
+    category: layout
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  # ---------------------------------------------------------------------------
+  # CUSTOM MULTI-FILE COMPONENTS
+  # ---------------------------------------------------------------------------
+  event-selector:
+    description: "A component for selecting webhook events with groups, categories, and tri-state checkboxes"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - checkbox
+      - collapsible
+    isMultiFile: true
+    directory: "event-selector"
+    files:
+      - "event-selector.tsx"
+      - "event-group.tsx"
+      - "event-item.tsx"
+      - "types.ts"
+    mainFile: "event-selector.tsx"
+
+  key-value-input:
+    description: "A component for managing key-value pairs with validation and duplicate detection"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - input
+    isMultiFile: true
+    directory: "key-value-input"
+    files:
+      - "key-value-input.tsx"
+      - "key-value-row.tsx"
+      - "types.ts"
+    mainFile: "key-value-input.tsx"

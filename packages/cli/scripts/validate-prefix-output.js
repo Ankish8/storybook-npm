@@ -4,6 +4,10 @@
  * This script validates the generated registry output to catch
  * any corruption in the prefix transformation.
  *
+ * Validates ALL registry files:
+ *   - registry.ts (legacy, combined)
+ *   - registry-{category}.ts (split by category)
+ *
  * Run: node scripts/validate-prefix-output.js
  */
 
@@ -14,7 +18,19 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const REGISTRY_FILE = path.resolve(__dirname, '../src/utils/registry.ts')
+const REGISTRY_DIR = path.resolve(__dirname, '../src/utils')
+
+// All registry files to validate
+const REGISTRY_FILES = [
+  'registry.ts',           // Legacy combined file
+  'registry-core.ts',
+  'registry-form.ts',
+  'registry-data.ts',
+  'registry-overlay.ts',
+  'registry-feedback.ts',
+  'registry-layout.ts',
+  'registry-custom.ts',
+]
 
 // Patterns that indicate corruption - these should NEVER appear in output
 const CORRUPTION_PATTERNS = [
@@ -45,16 +61,13 @@ const CORRUPTION_PATTERNS = [
 const MISPLACED_DATA_PREFIX = /tw-data-\[[^\]]+\]:/g
 const MISPLACED_ARIA_PREFIX = /tw-aria-\[[^\]]+\]:/g
 
-function validateRegistry() {
-  console.log('Validating prefix transformation output...')
-
-  if (!fs.existsSync(REGISTRY_FILE)) {
-    console.error('Error: Registry file not found:', REGISTRY_FILE)
-    console.error('Run `npm run generate-registry` first.')
-    process.exit(1)
+function validateFile(filePath, fileName) {
+  if (!fs.existsSync(filePath)) {
+    // Skip non-existent files (some categories may be empty)
+    return { fileName, skipped: true }
   }
 
-  const content = fs.readFileSync(REGISTRY_FILE, 'utf-8')
+  const content = fs.readFileSync(filePath, 'utf-8')
   const issues = []
 
   // Check for corruption patterns
@@ -94,27 +107,58 @@ function validateRegistry() {
     })
   }
 
-  // Report results
-  if (issues.length > 0) {
-    console.error('\n❌ Validation FAILED! Found prefix transformation issues:\n')
+  return { fileName, issues, skipped: false }
+}
 
-    for (const issue of issues) {
-      console.error(`  [${issue.type}] ${issue.desc}`)
-      console.error(`    Found: ${issue.count} occurrence(s)`)
-      if (issue.examples) {
-        console.error(`    Examples: ${issue.examples.join(', ')}`)
-      }
-      if (issue.fix) {
-        console.error(`    Fix: ${issue.fix}`)
-      }
-      console.error('')
+function validateRegistry() {
+  console.log('Validating prefix transformation output...')
+  console.log(`Checking ${REGISTRY_FILES.length} registry files...\n`)
+
+  let hasErrors = false
+  let filesChecked = 0
+  let filesSkipped = 0
+
+  for (const fileName of REGISTRY_FILES) {
+    const filePath = path.join(REGISTRY_DIR, fileName)
+    const result = validateFile(filePath, fileName)
+
+    if (result.skipped) {
+      filesSkipped++
+      continue
     }
 
+    filesChecked++
+
+    if (result.issues && result.issues.length > 0) {
+      hasErrors = true
+      console.error(`❌ ${fileName}:`)
+
+      for (const issue of result.issues) {
+        console.error(`   [${issue.type}] ${issue.desc}`)
+        console.error(`     Found: ${issue.count} occurrence(s)`)
+        if (issue.examples) {
+          console.error(`     Examples: ${issue.examples.join(', ')}`)
+        }
+        if (issue.fix) {
+          console.error(`     Fix: ${issue.fix}`)
+        }
+      }
+      console.error('')
+    } else {
+      console.log(`✓ ${fileName}`)
+    }
+  }
+
+  console.log('')
+
+  if (hasErrors) {
+    console.error('❌ Validation FAILED! Found prefix transformation issues.')
     console.error('Please fix the prefix transformation logic in generate-registry.js')
     process.exit(1)
   }
 
-  console.log('✅ Validation passed! No corruption or misplaced prefixes detected.\n')
+  console.log(`✅ Validation passed! Checked ${filesChecked} files, skipped ${filesSkipped}.`)
+  console.log('   No corruption or misplaced prefixes detected.\n')
 }
 
 validateRegistry()

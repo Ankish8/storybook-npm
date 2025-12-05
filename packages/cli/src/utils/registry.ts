@@ -226,91 +226,6 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 // For now, we'll embed the components directly
 export async function getRegistry(prefix: string = ''): Promise<Registry> {
   return {
-    'badge': {
-      name: 'badge',
-      description: 'A status badge component with active, failed, and disabled variants',
-      dependencies: [
-            "class-variance-authority",
-            "clsx",
-            "tailwind-merge"
-      ],
-      files: [
-        {
-          name: 'badge.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "../../lib/utils"
-
-/**
- * Badge variants for status indicators.
- * Pill-shaped badges with different colors for different states.
- */
-const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors whitespace-nowrap",
-  {
-    variants: {
-      variant: {
-        active: "bg-[#E5FFF5] text-[#00A651]",
-        failed: "bg-[#FFECEC] text-[#FF3B3B]",
-        disabled: "bg-[#F3F5F6] text-[#6B7280]",
-        default: "bg-[#F3F5F6] text-[#333333]",
-      },
-      size: {
-        default: "px-3 py-1",
-        sm: "px-2 py-0.5 text-xs",
-        lg: "px-4 py-1.5",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-/**
- * Badge component for displaying status indicators.
- *
- * @example
- * \`\`\`tsx
- * <Badge variant="active">Active</Badge>
- * <Badge variant="failed">Failed</Badge>
- * <Badge variant="disabled">Disabled</Badge>
- * <Badge variant="active" leftIcon={<CheckIcon />}>Active</Badge>
- * \`\`\`
- */
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
-  /** Icon displayed on the left side of the badge text */
-  leftIcon?: React.ReactNode
-  /** Icon displayed on the right side of the badge text */
-  rightIcon?: React.ReactNode
-}
-
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, leftIcon, rightIcon, children, ...props }, ref) => {
-    return (
-      <div
-        className={cn(badgeVariants({ variant, size, className }), "gap-1")}
-        ref={ref}
-        {...props}
-      >
-        {leftIcon && <span className="[&_svg]:size-3">{leftIcon}</span>}
-        {children}
-        {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
-      </div>
-    )
-  }
-)
-Badge.displayName = "Badge"
-
-export { Badge, badgeVariants }
-`, prefix),
-        },
-      ],
-    },
     'button': {
       name: 'button',
       description: 'A customizable button component with variants, sizes, and icons',
@@ -430,6 +345,359 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button"
 
 export { Button, buttonVariants }
+`, prefix),
+        },
+      ],
+    },
+    'badge': {
+      name: 'badge',
+      description: 'A status badge component with active, failed, and disabled variants',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'badge.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * Badge variants for status indicators.
+ * Pill-shaped badges with different colors for different states.
+ */
+const badgeVariants = cva(
+  "inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors whitespace-nowrap",
+  {
+    variants: {
+      variant: {
+        active: "bg-[#E5FFF5] text-[#00A651]",
+        failed: "bg-[#FFECEC] text-[#FF3B3B]",
+        disabled: "bg-[#F3F5F6] text-[#6B7280]",
+        default: "bg-[#F3F5F6] text-[#333333]",
+      },
+      size: {
+        default: "px-3 py-1",
+        sm: "px-2 py-0.5 text-xs",
+        lg: "px-4 py-1.5",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+/**
+ * Badge component for displaying status indicators.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Badge variant="active">Active</Badge>
+ * <Badge variant="failed">Failed</Badge>
+ * <Badge variant="disabled">Disabled</Badge>
+ * <Badge variant="active" leftIcon={<CheckIcon />}>Active</Badge>
+ * \`\`\`
+ */
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {
+  /** Icon displayed on the left side of the badge text */
+  leftIcon?: React.ReactNode
+  /** Icon displayed on the right side of the badge text */
+  rightIcon?: React.ReactNode
+}
+
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, variant, size, leftIcon, rightIcon, children, ...props }, ref) => {
+    return (
+      <div
+        className={cn(badgeVariants({ variant, size, className }), "gap-1")}
+        ref={ref}
+        {...props}
+      >
+        {leftIcon && <span className="[&_svg]:size-3">{leftIcon}</span>}
+        {children}
+        {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
+      </div>
+    )
+  }
+)
+Badge.displayName = "Badge"
+
+export { Badge, badgeVariants }
+`, prefix),
+        },
+      ],
+    },
+    'input': {
+      name: 'input',
+      description: 'A text input component with error and disabled states',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'input.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * Input variants for different visual states
+ */
+const inputVariants = cva(
+  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
+  {
+    variants: {
+      state: {
+        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
+        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+)
+
+/**
+ * A flexible input component for text entry with state variants.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Input placeholder="Enter your email" />
+ * <Input state="error" placeholder="Invalid input" />
+ * <Input state="success" placeholder="Valid input" />
+ * \`\`\`
+ */
+export interface InputProps
+  extends Omit<React.ComponentProps<"input">, "size">,
+    VariantProps<typeof inputVariants> {}
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, state, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={cn(inputVariants({ state, className }))}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Input.displayName = "Input"
+
+export { Input, inputVariants }
+`, prefix),
+        },
+      ],
+    },
+    'select': {
+      name: 'select',
+      description: 'A select dropdown component built on Radix UI Select',
+      dependencies: [
+            "@radix-ui/react-select",
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'select.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import * as SelectPrimitive from "@radix-ui/react-select"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Check, ChevronDown, ChevronUp } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * SelectTrigger variants matching TextField styling
+ */
+const selectTriggerVariants = cva(
+  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB] [&>span]:line-clamp-1",
+  {
+    variants: {
+      state: {
+        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
+        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+)
+
+const Select = SelectPrimitive.Root
+
+const SelectGroup = SelectPrimitive.Group
+
+const SelectValue = SelectPrimitive.Value
+
+export interface SelectTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
+    VariantProps<typeof selectTriggerVariants> {}
+
+const SelectTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  SelectTriggerProps
+>(({ className, state, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className={cn(selectTriggerVariants({ state, className }))}
+    {...props}
+  >
+    {children}
+    <SelectPrimitive.Icon asChild>
+      <ChevronDown className="size-4 text-[#6B7280] opacity-70" />
+    </SelectPrimitive.Icon>
+  </SelectPrimitive.Trigger>
+))
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+
+const SelectScrollUpButton = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.ScrollUpButton
+    ref={ref}
+    className={cn(
+      "flex cursor-default items-center justify-center py-1",
+      className
+    )}
+    {...props}
+  >
+    <ChevronUp className="size-4 text-[#6B7280]" />
+  </SelectPrimitive.ScrollUpButton>
+))
+SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
+
+const SelectScrollDownButton = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.ScrollDownButton
+    ref={ref}
+    className={cn(
+      "flex cursor-default items-center justify-center py-1",
+      className
+    )}
+    {...props}
+  >
+    <ChevronDown className="size-4 text-[#6B7280]" />
+  </SelectPrimitive.ScrollDownButton>
+))
+SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
+
+const SelectContent = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
+>(({ className, children, position = "popper", ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className={cn(
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9E9E9] shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        position === "popper" &&
+          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+        className
+      )}
+      position={position}
+      {...props}
+    >
+      <SelectScrollUpButton />
+      <SelectPrimitive.Viewport
+        className={cn(
+          "p-1",
+          position === "popper" &&
+            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+        )}
+      >
+        {children}
+      </SelectPrimitive.Viewport>
+      <SelectScrollDownButton />
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+))
+SelectContent.displayName = SelectPrimitive.Content.displayName
+
+const SelectLabel = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Label>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Label
+    ref={ref}
+    className={cn("px-4 py-1.5 text-xs font-medium text-[#6B7280]", className)}
+    {...props}
+  />
+))
+SelectLabel.displayName = SelectPrimitive.Label.displayName
+
+const SelectItem = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#333333] outline-none",
+      "hover:bg-[#F3F4F6] focus:bg-[#F3F4F6]",
+      "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    {...props}
+  >
+    <span className="absolute right-2 flex size-4 items-center justify-center">
+      <SelectPrimitive.ItemIndicator>
+        <Check className="size-4 text-[#2BBBC9]" />
+      </SelectPrimitive.ItemIndicator>
+    </span>
+    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+  </SelectPrimitive.Item>
+))
+SelectItem.displayName = SelectPrimitive.Item.displayName
+
+const SelectSeparator = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-[#E9E9E9]", className)}
+    {...props}
+  />
+))
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName
+
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+  selectTriggerVariants,
+}
 `, prefix),
         },
       ],
@@ -626,566 +894,9 @@ export { Checkbox, checkboxVariants }
         },
       ],
     },
-    'collapsible': {
-      name: 'collapsible',
-      description: 'An expandable/collapsible section component with single or multiple mode support',
-      dependencies: [
-            "class-variance-authority",
-            "clsx",
-            "tailwind-merge",
-            "lucide-react"
-      ],
-      files: [
-        {
-          name: 'collapsible.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown } from "lucide-react"
-
-import { cn } from "../../lib/utils"
-
-/**
- * Collapsible root variants
- */
-const collapsibleVariants = cva("w-full", {
-  variants: {
-    variant: {
-      default: "",
-      bordered: "border border-[#E5E7EB] rounded-lg divide-y divide-[#E5E7EB]",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-})
-
-/**
- * Collapsible item variants
- */
-const collapsibleItemVariants = cva("", {
-  variants: {
-    variant: {
-      default: "",
-      bordered: "",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-})
-
-/**
- * Collapsible trigger variants
- */
-const collapsibleTriggerVariants = cva(
-  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "py-3",
-        bordered: "p-4 hover:bg-[#F9FAFB]",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
-
-/**
- * Collapsible content variants
- */
-const collapsibleContentVariants = cva(
-  "overflow-hidden transition-all duration-300 ease-in-out",
-  {
-    variants: {
-      variant: {
-        default: "",
-        bordered: "px-4",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-)
-
-// Types
-type CollapsibleType = "single" | "multiple"
-
-interface CollapsibleContextValue {
-  type: CollapsibleType
-  value: string[]
-  onValueChange: (value: string[]) => void
-  variant: "default" | "bordered"
-}
-
-interface CollapsibleItemContextValue {
-  value: string
-  isOpen: boolean
-  disabled?: boolean
-}
-
-// Contexts
-const CollapsibleContext = React.createContext<CollapsibleContextValue | null>(null)
-const CollapsibleItemContext = React.createContext<CollapsibleItemContextValue | null>(null)
-
-function useCollapsibleContext() {
-  const context = React.useContext(CollapsibleContext)
-  if (!context) {
-    throw new Error("Collapsible components must be used within a Collapsible")
-  }
-  return context
-}
-
-function useCollapsibleItemContext() {
-  const context = React.useContext(CollapsibleItemContext)
-  if (!context) {
-    throw new Error("CollapsibleTrigger/CollapsibleContent must be used within a CollapsibleItem")
-  }
-  return context
-}
-
-/**
- * Root collapsible component that manages state
- */
-export interface CollapsibleProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleVariants> {
-  /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
-  type?: CollapsibleType
-  /** Controlled value - array of open item values */
-  value?: string[]
-  /** Default open items for uncontrolled usage */
-  defaultValue?: string[]
-  /** Callback when open items change */
-  onValueChange?: (value: string[]) => void
-}
-
-const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
-  (
-    {
-      className,
-      variant = "default",
-      type = "multiple",
-      value: controlledValue,
-      defaultValue = [],
-      onValueChange,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
-
-    const isControlled = controlledValue !== undefined
-    const currentValue = isControlled ? controlledValue : internalValue
-
-    const handleValueChange = React.useCallback(
-      (newValue: string[]) => {
-        if (!isControlled) {
-          setInternalValue(newValue)
-        }
-        onValueChange?.(newValue)
-      },
-      [isControlled, onValueChange]
-    )
-
-    const contextValue = React.useMemo(
-      () => ({
-        type,
-        value: currentValue,
-        onValueChange: handleValueChange,
-        variant: variant || "default",
-      }),
-      [type, currentValue, handleValueChange, variant]
-    )
-
-    return (
-      <CollapsibleContext.Provider value={contextValue}>
-        <div
-          ref={ref}
-          className={cn(collapsibleVariants({ variant, className }))}
-          {...props}
-        >
-          {children}
-        </div>
-      </CollapsibleContext.Provider>
-    )
-  }
-)
-Collapsible.displayName = "Collapsible"
-
-/**
- * Individual collapsible item
- */
-export interface CollapsibleItemProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleItemVariants> {
-  /** Unique value for this item */
-  value: string
-  /** Whether this item is disabled */
-  disabled?: boolean
-}
-
-const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
-  ({ className, value, disabled, children, ...props }, ref) => {
-    const { value: openValues, variant } = useCollapsibleContext()
-    const isOpen = openValues.includes(value)
-
-    const contextValue = React.useMemo(
-      () => ({
-        value,
-        isOpen,
-        disabled,
-      }),
-      [value, isOpen, disabled]
-    )
-
-    return (
-      <CollapsibleItemContext.Provider value={contextValue}>
-        <div
-          ref={ref}
-          data-state={isOpen ? "open" : "closed"}
-          className={cn(collapsibleItemVariants({ variant, className }))}
-          {...props}
-        >
-          {children}
-        </div>
-      </CollapsibleItemContext.Provider>
-    )
-  }
-)
-CollapsibleItem.displayName = "CollapsibleItem"
-
-/**
- * Trigger button that toggles the collapsible item
- */
-export interface CollapsibleTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof collapsibleTriggerVariants> {
-  /** Whether to show the chevron icon */
-  showChevron?: boolean
-}
-
-const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
-  ({ className, showChevron = true, children, ...props }, ref) => {
-    const { type, value: openValues, onValueChange, variant } = useCollapsibleContext()
-    const { value, isOpen, disabled } = useCollapsibleItemContext()
-
-    const handleClick = () => {
-      if (disabled) return
-
-      let newValue: string[]
-
-      if (type === "single") {
-        // In single mode, toggle current item (close if open, open if closed)
-        newValue = isOpen ? [] : [value]
-      } else {
-        // In multiple mode, toggle the item in the array
-        newValue = isOpen
-          ? openValues.filter((v) => v !== value)
-          : [...openValues, value]
-      }
-
-      onValueChange(newValue)
-    }
-
-    return (
-      <button
-        ref={ref}
-        type="button"
-        aria-expanded={isOpen}
-        disabled={disabled}
-        onClick={handleClick}
-        className={cn(collapsibleTriggerVariants({ variant, className }))}
-        {...props}
-      >
-        <span className="flex-1">{children}</span>
-        {showChevron && (
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-300",
-              isOpen && "rotate-180"
-            )}
-          />
-        )}
-      </button>
-    )
-  }
-)
-CollapsibleTrigger.displayName = "CollapsibleTrigger"
-
-/**
- * Content that is shown/hidden when the item is toggled
- */
-export interface CollapsibleContentProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleContentVariants> {}
-
-const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentProps>(
-  ({ className, children, ...props }, ref) => {
-    const { variant } = useCollapsibleContext()
-    const { isOpen } = useCollapsibleItemContext()
-    const contentRef = React.useRef<HTMLDivElement>(null)
-    const [height, setHeight] = React.useState<number | undefined>(undefined)
-
-    React.useEffect(() => {
-      if (contentRef.current) {
-        const contentHeight = contentRef.current.scrollHeight
-        setHeight(isOpen ? contentHeight : 0)
-      }
-    }, [isOpen, children])
-
-    return (
-      <div
-        ref={ref}
-        className={cn(collapsibleContentVariants({ variant, className }))}
-        style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
-        aria-hidden={!isOpen}
-        {...props}
-      >
-        <div ref={contentRef} className="pb-4">
-          {children}
-        </div>
-      </div>
-    )
-  }
-)
-CollapsibleContent.displayName = "CollapsibleContent"
-
-export {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-  collapsibleVariants,
-  collapsibleItemVariants,
-  collapsibleTriggerVariants,
-  collapsibleContentVariants,
-}
-`, prefix),
-        },
-      ],
-    },
-    'dropdown-menu': {
-      name: 'dropdown-menu',
-      description: 'A dropdown menu component for displaying actions and options',
-      dependencies: [
-            "@radix-ui/react-dropdown-menu",
-            "clsx",
-            "tailwind-merge",
-            "lucide-react"
-      ],
-      files: [
-        {
-          name: 'dropdown-menu.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { Check, ChevronRight, Circle } from "lucide-react"
-
-import { cn } from "../../lib/utils"
-
-const DropdownMenu = DropdownMenuPrimitive.Root
-
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
-
-const DropdownMenuGroup = DropdownMenuPrimitive.Group
-
-const DropdownMenuPortal = DropdownMenuPrimitive.Portal
-
-const DropdownMenuSub = DropdownMenuPrimitive.Sub
-
-const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
-
-const DropdownMenuSubTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
-    inset?: boolean
-  }
->(({ className, inset, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.SubTrigger
-    ref={ref}
-    className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-[#F3F4F6] data-[state=open]:bg-[#F3F4F6]",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  >
-    {children}
-    <ChevronRight className="ml-auto h-4 w-4" />
-  </DropdownMenuPrimitive.SubTrigger>
-))
-DropdownMenuSubTrigger.displayName =
-  DropdownMenuPrimitive.SubTrigger.displayName
-
-const DropdownMenuSubContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.SubContent
-    ref={ref}
-    className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      className
-    )}
-    {...props}
-  />
-))
-DropdownMenuSubContent.displayName =
-  DropdownMenuPrimitive.SubContent.displayName
-
-const DropdownMenuContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-md",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className
-      )}
-      {...props}
-    />
-  </DropdownMenuPrimitive.Portal>
-))
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
-
-const DropdownMenuItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
-    inset?: boolean
-  }
->(({ className, inset, ...props }, ref) => (
-  <DropdownMenuPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-))
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
-
-const DropdownMenuCheckboxItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
-  <DropdownMenuPrimitive.CheckboxItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    checked={checked}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <DropdownMenuPrimitive.ItemIndicator>
-        <Check className="h-4 w-4" />
-      </DropdownMenuPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </DropdownMenuPrimitive.CheckboxItem>
-))
-DropdownMenuCheckboxItem.displayName =
-  DropdownMenuPrimitive.CheckboxItem.displayName
-
-const DropdownMenuRadioItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.RadioItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <DropdownMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
-      </DropdownMenuPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </DropdownMenuPrimitive.RadioItem>
-))
-DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
-
-const DropdownMenuLabel = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
-    inset?: boolean
-  }
->(({ className, inset, ...props }, ref) => (
-  <DropdownMenuPrimitive.Label
-    ref={ref}
-    className={cn(
-      "px-2 py-1.5 text-sm font-semibold",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-))
-DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
-
-const DropdownMenuSeparator = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Separator
-    ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E5E7EB]", className)}
-    {...props}
-  />
-))
-DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
-
-const DropdownMenuShortcut = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
-      {...props}
-    />
-  )
-}
-DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
-
-export {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuGroup,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuRadioGroup,
-}
-`, prefix),
-        },
-      ],
-    },
-    'input': {
-      name: 'input',
-      description: 'A text input component with error and disabled states',
+    'toggle': {
+      name: 'toggle',
+      description: 'A toggle/switch component for boolean inputs with on/off states',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1193,16 +904,212 @@ export {
       ],
       files: [
         {
-          name: 'input.tsx',
+          name: 'toggle.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
 
 /**
- * Input variants for different visual states
+ * Toggle track variants (the outer container)
  */
-const inputVariants = cva(
+const toggleVariants = cva(
+  "relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      size: {
+        default: "h-6 w-11",
+        sm: "h-5 w-9",
+        lg: "h-7 w-14",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
+
+/**
+ * Toggle thumb variants (the sliding circle)
+ */
+const toggleThumbVariants = cva(
+  "pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
+  {
+    variants: {
+      size: {
+        default: "h-5 w-5",
+        sm: "h-4 w-4",
+        lg: "h-6 w-6",
+      },
+      checked: {
+        true: "",
+        false: "translate-x-0",
+      },
+    },
+    compoundVariants: [
+      { size: "default", checked: true, className: "translate-x-5" },
+      { size: "sm", checked: true, className: "translate-x-4" },
+      { size: "lg", checked: true, className: "translate-x-7" },
+    ],
+    defaultVariants: {
+      size: "default",
+      checked: false,
+    },
+  }
+)
+
+/**
+ * A toggle/switch component for boolean inputs with on/off states
+ *
+ * @example
+ * \`\`\`tsx
+ * <Toggle checked={isEnabled} onCheckedChange={setIsEnabled} />
+ * <Toggle size="sm" disabled />
+ * <Toggle size="lg" checked label="Enable notifications" />
+ * \`\`\`
+ */
+export interface ToggleProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
+    VariantProps<typeof toggleVariants> {
+  /** Whether the toggle is checked/on */
+  checked?: boolean
+  /** Default checked state for uncontrolled usage */
+  defaultChecked?: boolean
+  /** Callback when checked state changes */
+  onCheckedChange?: (checked: boolean) => void
+  /** Optional label text */
+  label?: string
+  /** Position of the label */
+  labelPosition?: "left" | "right"
+}
+
+const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+  (
+    {
+      className,
+      size,
+      checked: controlledChecked,
+      defaultChecked = false,
+      onCheckedChange,
+      disabled,
+      label,
+      labelPosition = "right",
+      ...props
+    },
+    ref
+  ) => {
+    const [internalChecked, setInternalChecked] = React.useState(defaultChecked)
+
+    const isControlled = controlledChecked !== undefined
+    const isChecked = isControlled ? controlledChecked : internalChecked
+
+    const handleClick = () => {
+      if (disabled) return
+
+      const newValue = !isChecked
+
+      if (!isControlled) {
+        setInternalChecked(newValue)
+      }
+
+      onCheckedChange?.(newValue)
+    }
+
+    const toggle = (
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isChecked}
+        ref={ref}
+        disabled={disabled}
+        onClick={handleClick}
+        className={cn(
+          toggleVariants({ size, className }),
+          isChecked ? "bg-[#343E55]" : "bg-[#E5E7EB]"
+        )}
+        {...props}
+      >
+        <span
+          className={cn(
+            toggleThumbVariants({ size, checked: isChecked })
+          )}
+        />
+      </button>
+    )
+
+    if (label) {
+      return (
+        <label className="inline-flex items-center gap-2 cursor-pointer">
+          {labelPosition === "left" && (
+            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+              {label}
+            </span>
+          )}
+          {toggle}
+          {labelPosition === "right" && (
+            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+              {label}
+            </span>
+          )}
+        </label>
+      )
+    }
+
+    return toggle
+  }
+)
+Toggle.displayName = "Toggle"
+
+export { Toggle, toggleVariants }
+`, prefix),
+        },
+      ],
+    },
+    'text-field': {
+      name: 'text-field',
+      description: 'A text field with label, helper text, icons, and validation states',
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'text-field.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Loader2 } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * TextField container variants for when icons/prefix/suffix are present
+ */
+const textFieldContainerVariants = cva(
+  "relative flex items-center rounded bg-white transition-all",
+  {
+    variants: {
+      state: {
+        default: "border border-[#E9E9E9] focus-within:border-[#2BBBC9]/50 focus-within:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
+        error: "border border-[#FF3B3B]/40 focus-within:border-[#FF3B3B]/60 focus-within:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+      },
+      disabled: {
+        true: "cursor-not-allowed opacity-50 bg-[#F9FAFB]",
+        false: "",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+      disabled: false,
+    },
+  }
+)
+
+/**
+ * TextField input variants (standalone without container)
+ */
+const textFieldInputVariants = cva(
   "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
   {
     variants: {
@@ -1218,34 +1125,486 @@ const inputVariants = cva(
 )
 
 /**
- * A flexible input component for text entry with state variants.
+ * A comprehensive text field component with label, icons, validation states, and more.
  *
  * @example
  * \`\`\`tsx
- * <Input placeholder="Enter your email" />
- * <Input state="error" placeholder="Invalid input" />
- * <Input state="success" placeholder="Valid input" />
+ * <TextField label="Email" placeholder="Enter your email" required />
+ * <TextField label="Username" error="Username is taken" />
+ * <TextField label="Website" prefix="https://" suffix=".com" />
  * \`\`\`
  */
-export interface InputProps
+export interface TextFieldProps
   extends Omit<React.ComponentProps<"input">, "size">,
-    VariantProps<typeof inputVariants> {}
+    VariantProps<typeof textFieldInputVariants> {
+  /** Label text displayed above the input */
+  label?: string
+  /** Shows red asterisk next to label when true */
+  required?: boolean
+  /** Helper text displayed below the input */
+  helperText?: string
+  /** Error message - shows error state with red styling */
+  error?: string
+  /** Icon displayed on the left inside the input */
+  leftIcon?: React.ReactNode
+  /** Icon displayed on the right inside the input */
+  rightIcon?: React.ReactNode
+  /** Text prefix inside input (e.g., "https://") */
+  prefix?: string
+  /** Text suffix inside input (e.g., ".com") */
+  suffix?: string
+  /** Shows character count when maxLength is set */
+  showCount?: boolean
+  /** Shows loading spinner inside input */
+  loading?: boolean
+  /** Additional class for the wrapper container */
+  wrapperClassName?: string
+  /** Additional class for the label */
+  labelClassName?: string
+  /** Additional class for the input container (includes prefix/suffix/icons) */
+  inputContainerClassName?: string
+}
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, state, type, ...props }, ref) => {
-    return (
+const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+  (
+    {
+      className,
+      wrapperClassName,
+      labelClassName,
+      inputContainerClassName,
+      state,
+      label,
+      required,
+      helperText,
+      error,
+      leftIcon,
+      rightIcon,
+      prefix,
+      suffix,
+      showCount,
+      loading,
+      maxLength,
+      value,
+      defaultValue,
+      onChange,
+      disabled,
+      id,
+      ...props
+    },
+    ref
+  ) => {
+    // Internal state for character count in uncontrolled mode
+    const [internalValue, setInternalValue] = React.useState(defaultValue ?? '')
+
+    // Determine if controlled
+    const isControlled = value !== undefined
+    const currentValue = isControlled ? value : internalValue
+
+    // Derive state from props
+    const derivedState = error ? 'error' : (state ?? 'default')
+
+    // Handle change for both controlled and uncontrolled
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!isControlled) {
+        setInternalValue(e.target.value)
+      }
+      onChange?.(e)
+    }
+
+    // Determine if we need the container wrapper (for icons/prefix/suffix)
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading
+
+    // Character count
+    const charCount = String(currentValue).length
+
+    // Generate unique IDs for accessibility
+    const generatedId = React.useId()
+    const inputId = id || generatedId
+    const helperId = \`\${inputId}-helper\`
+    const errorId = \`\${inputId}-error\`
+
+    // Determine aria-describedby
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+
+    // Render the input element
+    const inputElement = (
       <input
-        type={type}
-        className={cn(inputVariants({ state, className }))}
         ref={ref}
+        id={inputId}
+        className={cn(
+          hasAddons
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed"
+            : textFieldInputVariants({ state: derivedState, className })
+        )}
+        disabled={disabled || loading}
+        maxLength={maxLength}
+        value={isControlled ? value : undefined}
+        defaultValue={!isControlled ? defaultValue : undefined}
+        onChange={handleChange}
+        aria-invalid={!!error}
+        aria-describedby={ariaDescribedBy}
         {...props}
       />
     )
+
+    return (
+      <div className={cn("flex flex-col gap-1", wrapperClassName)}>
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={inputId}
+            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
+          >
+            {label}
+            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+          </label>
+        )}
+
+        {/* Input or Input Container */}
+        {hasAddons ? (
+          <div
+            className={cn(
+              textFieldContainerVariants({ state: derivedState, disabled: disabled || loading }),
+              "h-10 px-4",
+              inputContainerClassName
+            )}
+          >
+            {prefix && <span className="text-sm text-[#6B7280] mr-2 select-none">{prefix}</span>}
+            {leftIcon && <span className="mr-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
+            {inputElement}
+            {loading && <Loader2 className="animate-spin size-4 text-[#6B7280] ml-2 flex-shrink-0" />}
+            {!loading && rightIcon && <span className="ml-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
+            {suffix && <span className="text-sm text-[#6B7280] ml-2 select-none">{suffix}</span>}
+          </div>
+        ) : (
+          inputElement
+        )}
+
+        {/* Helper text / Error message / Character count */}
+        {(error || helperText || (showCount && maxLength)) && (
+          <div className="flex justify-between items-start gap-2">
+            {error ? (
+              <span id={errorId} className="text-xs text-[#FF3B3B]">
+                {error}
+              </span>
+            ) : helperText ? (
+              <span id={helperId} className="text-xs text-[#6B7280]">
+                {helperText}
+              </span>
+            ) : (
+              <span />
+            )}
+            {showCount && maxLength && (
+              <span
+                className={cn(
+                  "text-xs",
+                  charCount > maxLength ? "text-[#FF3B3B]" : "text-[#6B7280]"
+                )}
+              >
+                {charCount}/{maxLength}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    )
   }
 )
-Input.displayName = "Input"
+TextField.displayName = "TextField"
 
-export { Input, inputVariants }
+export { TextField, textFieldContainerVariants, textFieldInputVariants }
+`, prefix),
+        },
+      ],
+    },
+    'select-field': {
+      name: 'select-field',
+      description: 'A select field with label, helper text, and validation states',
+      dependencies: [
+            "@radix-ui/react-select",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'select-field.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import { Loader2 } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./select"
+
+export interface SelectOption {
+  /** The value of the option */
+  value: string
+  /** The display label of the option */
+  label: string
+  /** Whether the option is disabled */
+  disabled?: boolean
+  /** Group name for grouping options */
+  group?: string
+}
+
+export interface SelectFieldProps {
+  /** Label text displayed above the select */
+  label?: string
+  /** Shows red asterisk next to label when true */
+  required?: boolean
+  /** Helper text displayed below the select */
+  helperText?: string
+  /** Error message - shows error state with red styling */
+  error?: string
+  /** Disabled state */
+  disabled?: boolean
+  /** Loading state with spinner */
+  loading?: boolean
+  /** Placeholder text when no value selected */
+  placeholder?: string
+  /** Currently selected value (controlled) */
+  value?: string
+  /** Default value (uncontrolled) */
+  defaultValue?: string
+  /** Callback when value changes */
+  onValueChange?: (value: string) => void
+  /** Options to display */
+  options: SelectOption[]
+  /** Enable search/filter functionality */
+  searchable?: boolean
+  /** Search placeholder text */
+  searchPlaceholder?: string
+  /** Additional class for wrapper */
+  wrapperClassName?: string
+  /** Additional class for trigger */
+  triggerClassName?: string
+  /** Additional class for label */
+  labelClassName?: string
+  /** ID for the select */
+  id?: string
+  /** Name attribute for form submission */
+  name?: string
+}
+
+/**
+ * A comprehensive select field component with label, icons, validation states, and more.
+ *
+ * @example
+ * \`\`\`tsx
+ * <SelectField
+ *   label="Authentication"
+ *   placeholder="Select authentication method"
+ *   options={[
+ *     { value: 'none', label: 'None' },
+ *     { value: 'basic', label: 'Basic Auth' },
+ *     { value: 'bearer', label: 'Bearer Token' },
+ *   ]}
+ *   required
+ * />
+ * \`\`\`
+ */
+const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
+  (
+    {
+      label,
+      required,
+      helperText,
+      error,
+      disabled,
+      loading,
+      placeholder = "Select an option",
+      value,
+      defaultValue,
+      onValueChange,
+      options,
+      searchable,
+      searchPlaceholder = "Search...",
+      wrapperClassName,
+      triggerClassName,
+      labelClassName,
+      id,
+      name,
+    },
+    ref
+  ) => {
+    // Internal state for search
+    const [searchQuery, setSearchQuery] = React.useState("")
+
+    // Derive state from props
+    const derivedState = error ? "error" : "default"
+
+    // Generate unique IDs for accessibility
+    const generatedId = React.useId()
+    const selectId = id || generatedId
+    const helperId = \`\${selectId}-helper\`
+    const errorId = \`\${selectId}-error\`
+
+    // Determine aria-describedby
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+
+    // Group options by group property
+    const groupedOptions = React.useMemo(() => {
+      const groups: Record<string, SelectOption[]> = {}
+      const ungrouped: SelectOption[] = []
+
+      options.forEach((option) => {
+        // Filter by search query if searchable
+        if (searchable && searchQuery) {
+          if (!option.label.toLowerCase().includes(searchQuery.toLowerCase())) {
+            return
+          }
+        }
+
+        if (option.group) {
+          if (!groups[option.group]) {
+            groups[option.group] = []
+          }
+          groups[option.group].push(option)
+        } else {
+          ungrouped.push(option)
+        }
+      })
+
+      return { groups, ungrouped }
+    }, [options, searchable, searchQuery])
+
+    const hasGroups = Object.keys(groupedOptions.groups).length > 0
+
+    // Handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value)
+    }
+
+    // Reset search when dropdown closes
+    const handleOpenChange = (open: boolean) => {
+      if (!open) {
+        setSearchQuery("")
+      }
+    }
+
+    return (
+      <div className={cn("flex flex-col gap-1", wrapperClassName)}>
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={selectId}
+            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
+          >
+            {label}
+            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+          </label>
+        )}
+
+        {/* Select */}
+        <Select
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={onValueChange}
+          disabled={disabled || loading}
+          name={name}
+          onOpenChange={handleOpenChange}
+        >
+          <SelectTrigger
+            ref={ref}
+            id={selectId}
+            state={derivedState}
+            className={cn(
+              loading && "pr-10",
+              triggerClassName
+            )}
+            aria-invalid={!!error}
+            aria-describedby={ariaDescribedBy}
+          >
+            <SelectValue placeholder={placeholder} />
+            {loading && (
+              <Loader2 className="absolute right-8 size-4 animate-spin text-[#6B7280]" />
+            )}
+          </SelectTrigger>
+          <SelectContent>
+            {/* Search input */}
+            {searchable && (
+              <div className="px-2 pb-2">
+                <input
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="w-full h-8 px-3 text-sm border border-[#E9E9E9] rounded bg-white placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2BBBC9]/50"
+                  // Prevent closing dropdown when clicking input
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+              </div>
+            )}
+
+            {/* Ungrouped options */}
+            {groupedOptions.ungrouped.map((option) => (
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                disabled={option.disabled}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+
+            {/* Grouped options */}
+            {hasGroups &&
+              Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
+                <SelectGroup key={groupName}>
+                  <SelectLabel>{groupName}</SelectLabel>
+                  {groupOptions.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      disabled={option.disabled}
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              ))}
+
+            {/* No results message */}
+            {searchable &&
+              searchQuery &&
+              groupedOptions.ungrouped.length === 0 &&
+              Object.keys(groupedOptions.groups).length === 0 && (
+                <div className="py-6 text-center text-sm text-[#6B7280]">
+                  No results found
+                </div>
+              )}
+          </SelectContent>
+        </Select>
+
+        {/* Helper text / Error message */}
+        {(error || helperText) && (
+          <div className="flex justify-between items-start gap-2">
+            {error ? (
+              <span id={errorId} className="text-xs text-[#FF3B3B]">
+                {error}
+              </span>
+            ) : helperText ? (
+              <span id={helperId} className="text-xs text-[#6B7280]">
+                {helperText}
+              </span>
+            ) : null}
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+SelectField.displayName = "SelectField"
+
+export { SelectField }
 `, prefix),
         },
       ],
@@ -1675,499 +2034,6 @@ export { MultiSelect, multiSelectTriggerVariants }
         },
       ],
     },
-    'select-field': {
-      name: 'select-field',
-      description: 'A select field with label, helper text, and validation states',
-      dependencies: [
-            "@radix-ui/react-select",
-            "clsx",
-            "tailwind-merge",
-            "lucide-react"
-      ],
-      files: [
-        {
-          name: 'select-field.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Loader2 } from "lucide-react"
-
-import { cn } from "../../lib/utils"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./select"
-
-export interface SelectOption {
-  /** The value of the option */
-  value: string
-  /** The display label of the option */
-  label: string
-  /** Whether the option is disabled */
-  disabled?: boolean
-  /** Group name for grouping options */
-  group?: string
-}
-
-export interface SelectFieldProps {
-  /** Label text displayed above the select */
-  label?: string
-  /** Shows red asterisk next to label when true */
-  required?: boolean
-  /** Helper text displayed below the select */
-  helperText?: string
-  /** Error message - shows error state with red styling */
-  error?: string
-  /** Disabled state */
-  disabled?: boolean
-  /** Loading state with spinner */
-  loading?: boolean
-  /** Placeholder text when no value selected */
-  placeholder?: string
-  /** Currently selected value (controlled) */
-  value?: string
-  /** Default value (uncontrolled) */
-  defaultValue?: string
-  /** Callback when value changes */
-  onValueChange?: (value: string) => void
-  /** Options to display */
-  options: SelectOption[]
-  /** Enable search/filter functionality */
-  searchable?: boolean
-  /** Search placeholder text */
-  searchPlaceholder?: string
-  /** Additional class for wrapper */
-  wrapperClassName?: string
-  /** Additional class for trigger */
-  triggerClassName?: string
-  /** Additional class for label */
-  labelClassName?: string
-  /** ID for the select */
-  id?: string
-  /** Name attribute for form submission */
-  name?: string
-}
-
-/**
- * A comprehensive select field component with label, icons, validation states, and more.
- *
- * @example
- * \`\`\`tsx
- * <SelectField
- *   label="Authentication"
- *   placeholder="Select authentication method"
- *   options={[
- *     { value: 'none', label: 'None' },
- *     { value: 'basic', label: 'Basic Auth' },
- *     { value: 'bearer', label: 'Bearer Token' },
- *   ]}
- *   required
- * />
- * \`\`\`
- */
-const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
-  (
-    {
-      label,
-      required,
-      helperText,
-      error,
-      disabled,
-      loading,
-      placeholder = "Select an option",
-      value,
-      defaultValue,
-      onValueChange,
-      options,
-      searchable,
-      searchPlaceholder = "Search...",
-      wrapperClassName,
-      triggerClassName,
-      labelClassName,
-      id,
-      name,
-    },
-    ref
-  ) => {
-    // Internal state for search
-    const [searchQuery, setSearchQuery] = React.useState("")
-
-    // Derive state from props
-    const derivedState = error ? "error" : "default"
-
-    // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const selectId = id || generatedId
-    const helperId = \`\${selectId}-helper\`
-    const errorId = \`\${selectId}-error\`
-
-    // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
-
-    // Group options by group property
-    const groupedOptions = React.useMemo(() => {
-      const groups: Record<string, SelectOption[]> = {}
-      const ungrouped: SelectOption[] = []
-
-      options.forEach((option) => {
-        // Filter by search query if searchable
-        if (searchable && searchQuery) {
-          if (!option.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return
-          }
-        }
-
-        if (option.group) {
-          if (!groups[option.group]) {
-            groups[option.group] = []
-          }
-          groups[option.group].push(option)
-        } else {
-          ungrouped.push(option)
-        }
-      })
-
-      return { groups, ungrouped }
-    }, [options, searchable, searchQuery])
-
-    const hasGroups = Object.keys(groupedOptions.groups).length > 0
-
-    // Handle search input change
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
-    }
-
-    // Reset search when dropdown closes
-    const handleOpenChange = (open: boolean) => {
-      if (!open) {
-        setSearchQuery("")
-      }
-    }
-
-    return (
-      <div className={cn("flex flex-col gap-1", wrapperClassName)}>
-        {/* Label */}
-        {label && (
-          <label
-            htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
-          >
-            {label}
-            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
-          </label>
-        )}
-
-        {/* Select */}
-        <Select
-          value={value}
-          defaultValue={defaultValue}
-          onValueChange={onValueChange}
-          disabled={disabled || loading}
-          name={name}
-          onOpenChange={handleOpenChange}
-        >
-          <SelectTrigger
-            ref={ref}
-            id={selectId}
-            state={derivedState}
-            className={cn(
-              loading && "pr-10",
-              triggerClassName
-            )}
-            aria-invalid={!!error}
-            aria-describedby={ariaDescribedBy}
-          >
-            <SelectValue placeholder={placeholder} />
-            {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-[#6B7280]" />
-            )}
-          </SelectTrigger>
-          <SelectContent>
-            {/* Search input */}
-            {searchable && (
-              <div className="px-2 pb-2">
-                <input
-                  type="text"
-                  placeholder={searchPlaceholder}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-[#E9E9E9] rounded bg-white placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2BBBC9]/50"
-                  // Prevent closing dropdown when clicking input
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => e.stopPropagation()}
-                />
-              </div>
-            )}
-
-            {/* Ungrouped options */}
-            {groupedOptions.ungrouped.map((option) => (
-              <SelectItem
-                key={option.value}
-                value={option.value}
-                disabled={option.disabled}
-              >
-                {option.label}
-              </SelectItem>
-            ))}
-
-            {/* Grouped options */}
-            {hasGroups &&
-              Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
-                <SelectGroup key={groupName}>
-                  <SelectLabel>{groupName}</SelectLabel>
-                  {groupOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      disabled={option.disabled}
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              ))}
-
-            {/* No results message */}
-            {searchable &&
-              searchQuery &&
-              groupedOptions.ungrouped.length === 0 &&
-              Object.keys(groupedOptions.groups).length === 0 && (
-                <div className="py-6 text-center text-sm text-[#6B7280]">
-                  No results found
-                </div>
-              )}
-          </SelectContent>
-        </Select>
-
-        {/* Helper text / Error message */}
-        {(error || helperText) && (
-          <div className="flex justify-between items-start gap-2">
-            {error ? (
-              <span id={errorId} className="text-xs text-[#FF3B3B]">
-                {error}
-              </span>
-            ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#6B7280]">
-                {helperText}
-              </span>
-            ) : null}
-          </div>
-        )}
-      </div>
-    )
-  }
-)
-SelectField.displayName = "SelectField"
-
-export { SelectField }
-`, prefix),
-        },
-      ],
-    },
-    'select': {
-      name: 'select',
-      description: 'A select dropdown component built on Radix UI Select',
-      dependencies: [
-            "@radix-ui/react-select",
-            "class-variance-authority",
-            "clsx",
-            "tailwind-merge",
-            "lucide-react"
-      ],
-      files: [
-        {
-          name: 'select.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as SelectPrimitive from "@radix-ui/react-select"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, ChevronDown, ChevronUp } from "lucide-react"
-
-import { cn } from "../../lib/utils"
-
-/**
- * SelectTrigger variants matching TextField styling
- */
-const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB] [&>span]:line-clamp-1",
-  {
-    variants: {
-      state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
-      },
-    },
-    defaultVariants: {
-      state: "default",
-    },
-  }
-)
-
-const Select = SelectPrimitive.Root
-
-const SelectGroup = SelectPrimitive.Group
-
-const SelectValue = SelectPrimitive.Value
-
-export interface SelectTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
-    VariantProps<typeof selectTriggerVariants> {}
-
-const SelectTrigger = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Trigger>,
-  SelectTriggerProps
->(({ className, state, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(selectTriggerVariants({ state, className }))}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-[#6B7280] opacity-70" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-))
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
-
-const SelectScrollUpButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.ScrollUpButton
-    ref={ref}
-    className={cn(
-      "flex cursor-default items-center justify-center py-1",
-      className
-    )}
-    {...props}
-  >
-    <ChevronUp className="size-4 text-[#6B7280]" />
-  </SelectPrimitive.ScrollUpButton>
-))
-SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
-
-const SelectScrollDownButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.ScrollDownButton
-    ref={ref}
-    className={cn(
-      "flex cursor-default items-center justify-center py-1",
-      className
-    )}
-    {...props}
-  >
-    <ChevronDown className="size-4 text-[#6B7280]" />
-  </SelectPrimitive.ScrollDownButton>
-))
-SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
-
-const SelectContent = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9E9E9] shadow-md",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className
-      )}
-      position={position}
-      {...props}
-    >
-      <SelectScrollUpButton />
-      <SelectPrimitive.Viewport
-        className={cn(
-          "p-1",
-          position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
-        )}
-      >
-        {children}
-      </SelectPrimitive.Viewport>
-      <SelectScrollDownButton />
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-))
-SelectContent.displayName = SelectPrimitive.Content.displayName
-
-const SelectLabel = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Label
-    ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-[#6B7280]", className)}
-    {...props}
-  />
-))
-SelectLabel.displayName = SelectPrimitive.Label.displayName
-
-const SelectItem = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#333333] outline-none",
-      "hover:bg-[#F3F4F6] focus:bg-[#F3F4F6]",
-      "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute right-2 flex size-4 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-[#2BBBC9]" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-  </SelectPrimitive.Item>
-))
-SelectItem.displayName = SelectPrimitive.Item.displayName
-
-const SelectSeparator = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Separator
-    ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E9E9E9]", className)}
-    {...props}
-  />
-))
-SelectSeparator.displayName = SelectPrimitive.Separator.displayName
-
-export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-  selectTriggerVariants,
-}
-`, prefix),
-        },
-      ],
-    },
     'table': {
       name: 'table',
       description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
@@ -2480,6 +2346,221 @@ export {
         },
       ],
     },
+    'dropdown-menu': {
+      name: 'dropdown-menu',
+      description: 'A dropdown menu component for displaying actions and options',
+      dependencies: [
+            "@radix-ui/react-dropdown-menu",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'dropdown-menu.tsx',
+          content: prefixTailwindClasses(`import * as React from "react"
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
+import { Check, ChevronRight, Circle } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+const DropdownMenu = DropdownMenuPrimitive.Root
+
+const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+
+const DropdownMenuGroup = DropdownMenuPrimitive.Group
+
+const DropdownMenuPortal = DropdownMenuPrimitive.Portal
+
+const DropdownMenuSub = DropdownMenuPrimitive.Sub
+
+const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
+
+const DropdownMenuSubTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
+    inset?: boolean
+  }
+>(({ className, inset, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubTrigger
+    ref={ref}
+    className={cn(
+      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-[#F3F4F6] data-[state=open]:bg-[#F3F4F6]",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  >
+    {children}
+    <ChevronRight className="ml-auto h-4 w-4" />
+  </DropdownMenuPrimitive.SubTrigger>
+))
+DropdownMenuSubTrigger.displayName =
+  DropdownMenuPrimitive.SubTrigger.displayName
+
+const DropdownMenuSubContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.SubContent
+    ref={ref}
+    className={cn(
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      className
+    )}
+    {...props}
+  />
+))
+DropdownMenuSubContent.displayName =
+  DropdownMenuPrimitive.SubContent.displayName
+
+const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
+>(({ className, sideOffset = 4, ...props }, ref) => (
+  <DropdownMenuPrimitive.Portal>
+    <DropdownMenuPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        className
+      )}
+      {...props}
+    />
+  </DropdownMenuPrimitive.Portal>
+))
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
+
+const DropdownMenuItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+    inset?: boolean
+  }
+>(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  />
+))
+DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
+
+const DropdownMenuCheckboxItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
+>(({ className, children, checked, ...props }, ref) => (
+  <DropdownMenuPrimitive.CheckboxItem
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    checked={checked}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <DropdownMenuPrimitive.ItemIndicator>
+        <Check className="h-4 w-4" />
+      </DropdownMenuPrimitive.ItemIndicator>
+    </span>
+    {children}
+  </DropdownMenuPrimitive.CheckboxItem>
+))
+DropdownMenuCheckboxItem.displayName =
+  DropdownMenuPrimitive.CheckboxItem.displayName
+
+const DropdownMenuRadioItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
+>(({ className, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.RadioItem
+    ref={ref}
+    className={cn(
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      className
+    )}
+    {...props}
+  >
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+      <DropdownMenuPrimitive.ItemIndicator>
+        <Circle className="h-2 w-2 fill-current" />
+      </DropdownMenuPrimitive.ItemIndicator>
+    </span>
+    {children}
+  </DropdownMenuPrimitive.RadioItem>
+))
+DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
+
+const DropdownMenuLabel = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Label>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
+    inset?: boolean
+  }
+>(({ className, inset, ...props }, ref) => (
+  <DropdownMenuPrimitive.Label
+    ref={ref}
+    className={cn(
+      "px-2 py-1.5 text-sm font-semibold",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  />
+))
+DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
+
+const DropdownMenuSeparator = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-[#E5E7EB]", className)}
+    {...props}
+  />
+))
+DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
+
+const DropdownMenuShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
+  return (
+    <span
+      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
+      {...props}
+    />
+  )
+}
+DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
+
+export {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+}
+`, prefix),
+        },
+      ],
+    },
     'tag': {
       name: 'tag',
       description: 'A tag component for event labels with optional bold label prefix',
@@ -2631,9 +2712,9 @@ export { Tag, TagGroup, tagVariants }
         },
       ],
     },
-    'text-field': {
-      name: 'text-field',
-      description: 'A text field with label, helper text, icons, and validation states',
+    'collapsible': {
+      name: 'collapsible',
+      description: 'An expandable/collapsible section component with single or multiple mode support',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -2642,414 +2723,333 @@ export { Tag, TagGroup, tagVariants }
       ],
       files: [
         {
-          name: 'text-field.tsx',
+          name: 'collapsible.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 import { cn } from "../../lib/utils"
 
 /**
- * TextField container variants for when icons/prefix/suffix are present
+ * Collapsible root variants
  */
-const textFieldContainerVariants = cva(
-  "relative flex items-center rounded bg-white transition-all",
+const collapsibleVariants = cva("w-full", {
+  variants: {
+    variant: {
+      default: "",
+      bordered: "border border-[#E5E7EB] rounded-lg divide-y divide-[#E5E7EB]",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+})
+
+/**
+ * Collapsible item variants
+ */
+const collapsibleItemVariants = cva("", {
+  variants: {
+    variant: {
+      default: "",
+      bordered: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+})
+
+/**
+ * Collapsible trigger variants
+ */
+const collapsibleTriggerVariants = cva(
+  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
-      state: {
-        default: "border border-[#E9E9E9] focus-within:border-[#2BBBC9]/50 focus-within:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus-within:border-[#FF3B3B]/60 focus-within:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
-      },
-      disabled: {
-        true: "cursor-not-allowed opacity-50 bg-[#F9FAFB]",
-        false: "",
+      variant: {
+        default: "py-3",
+        bordered: "p-4 hover:bg-[#F9FAFB]",
       },
     },
     defaultVariants: {
-      state: "default",
-      disabled: false,
+      variant: "default",
     },
   }
 )
 
 /**
- * TextField input variants (standalone without container)
+ * Collapsible content variants
  */
-const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
+const collapsibleContentVariants = cva(
+  "overflow-hidden transition-all duration-300 ease-in-out",
   {
     variants: {
-      state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+      variant: {
+        default: "",
+        bordered: "px-4",
       },
     },
     defaultVariants: {
-      state: "default",
+      variant: "default",
     },
   }
 )
 
-/**
- * A comprehensive text field component with label, icons, validation states, and more.
- *
- * @example
- * \`\`\`tsx
- * <TextField label="Email" placeholder="Enter your email" required />
- * <TextField label="Username" error="Username is taken" />
- * <TextField label="Website" prefix="https://" suffix=".com" />
- * \`\`\`
- */
-export interface TextFieldProps
-  extends Omit<React.ComponentProps<"input">, "size">,
-    VariantProps<typeof textFieldInputVariants> {
-  /** Label text displayed above the input */
-  label?: string
-  /** Shows red asterisk next to label when true */
-  required?: boolean
-  /** Helper text displayed below the input */
-  helperText?: string
-  /** Error message - shows error state with red styling */
-  error?: string
-  /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode
-  /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode
-  /** Text prefix inside input (e.g., "https://") */
-  prefix?: string
-  /** Text suffix inside input (e.g., ".com") */
-  suffix?: string
-  /** Shows character count when maxLength is set */
-  showCount?: boolean
-  /** Shows loading spinner inside input */
-  loading?: boolean
-  /** Additional class for the wrapper container */
-  wrapperClassName?: string
-  /** Additional class for the label */
-  labelClassName?: string
-  /** Additional class for the input container (includes prefix/suffix/icons) */
-  inputContainerClassName?: string
+// Types
+type CollapsibleType = "single" | "multiple"
+
+interface CollapsibleContextValue {
+  type: CollapsibleType
+  value: string[]
+  onValueChange: (value: string[]) => void
+  variant: "default" | "bordered"
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+interface CollapsibleItemContextValue {
+  value: string
+  isOpen: boolean
+  disabled?: boolean
+}
+
+// Contexts
+const CollapsibleContext = React.createContext<CollapsibleContextValue | null>(null)
+const CollapsibleItemContext = React.createContext<CollapsibleItemContextValue | null>(null)
+
+function useCollapsibleContext() {
+  const context = React.useContext(CollapsibleContext)
+  if (!context) {
+    throw new Error("Collapsible components must be used within a Collapsible")
+  }
+  return context
+}
+
+function useCollapsibleItemContext() {
+  const context = React.useContext(CollapsibleItemContext)
+  if (!context) {
+    throw new Error("CollapsibleTrigger/CollapsibleContent must be used within a CollapsibleItem")
+  }
+  return context
+}
+
+/**
+ * Root collapsible component that manages state
+ */
+export interface CollapsibleProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof collapsibleVariants> {
+  /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
+  type?: CollapsibleType
+  /** Controlled value - array of open item values */
+  value?: string[]
+  /** Default open items for uncontrolled usage */
+  defaultValue?: string[]
+  /** Callback when open items change */
+  onValueChange?: (value: string[]) => void
+}
+
+const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
   (
     {
       className,
-      wrapperClassName,
-      labelClassName,
-      inputContainerClassName,
-      state,
-      label,
-      required,
-      helperText,
-      error,
-      leftIcon,
-      rightIcon,
-      prefix,
-      suffix,
-      showCount,
-      loading,
-      maxLength,
-      value,
-      defaultValue,
-      onChange,
-      disabled,
-      id,
+      variant = "default",
+      type = "multiple",
+      value: controlledValue,
+      defaultValue = [],
+      onValueChange,
+      children,
       ...props
     },
     ref
   ) => {
-    // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(defaultValue ?? '')
+    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
 
-    // Determine if controlled
-    const isControlled = value !== undefined
-    const currentValue = isControlled ? value : internalValue
+    const isControlled = controlledValue !== undefined
+    const currentValue = isControlled ? controlledValue : internalValue
 
-    // Derive state from props
-    const derivedState = error ? 'error' : (state ?? 'default')
+    const handleValueChange = React.useCallback(
+      (newValue: string[]) => {
+        if (!isControlled) {
+          setInternalValue(newValue)
+        }
+        onValueChange?.(newValue)
+      },
+      [isControlled, onValueChange]
+    )
 
-    // Handle change for both controlled and uncontrolled
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!isControlled) {
-        setInternalValue(e.target.value)
-      }
-      onChange?.(e)
-    }
-
-    // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading
-
-    // Character count
-    const charCount = String(currentValue).length
-
-    // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const inputId = id || generatedId
-    const helperId = \`\${inputId}-helper\`
-    const errorId = \`\${inputId}-error\`
-
-    // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
-
-    // Render the input element
-    const inputElement = (
-      <input
-        ref={ref}
-        id={inputId}
-        className={cn(
-          hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed"
-            : textFieldInputVariants({ state: derivedState, className })
-        )}
-        disabled={disabled || loading}
-        maxLength={maxLength}
-        value={isControlled ? value : undefined}
-        defaultValue={!isControlled ? defaultValue : undefined}
-        onChange={handleChange}
-        aria-invalid={!!error}
-        aria-describedby={ariaDescribedBy}
-        {...props}
-      />
+    const contextValue = React.useMemo(
+      () => ({
+        type,
+        value: currentValue,
+        onValueChange: handleValueChange,
+        variant: variant || "default",
+      }),
+      [type, currentValue, handleValueChange, variant]
     )
 
     return (
-      <div className={cn("flex flex-col gap-1", wrapperClassName)}>
-        {/* Label */}
-        {label && (
-          <label
-            htmlFor={inputId}
-            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
-          >
-            {label}
-            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
-          </label>
-        )}
-
-        {/* Input or Input Container */}
-        {hasAddons ? (
-          <div
-            className={cn(
-              textFieldContainerVariants({ state: derivedState, disabled: disabled || loading }),
-              "h-10 px-4",
-              inputContainerClassName
-            )}
-          >
-            {prefix && <span className="text-sm text-[#6B7280] mr-2 select-none">{prefix}</span>}
-            {leftIcon && <span className="mr-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
-            {inputElement}
-            {loading && <Loader2 className="animate-spin size-4 text-[#6B7280] ml-2 flex-shrink-0" />}
-            {!loading && rightIcon && <span className="ml-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
-            {suffix && <span className="text-sm text-[#6B7280] ml-2 select-none">{suffix}</span>}
-          </div>
-        ) : (
-          inputElement
-        )}
-
-        {/* Helper text / Error message / Character count */}
-        {(error || helperText || (showCount && maxLength)) && (
-          <div className="flex justify-between items-start gap-2">
-            {error ? (
-              <span id={errorId} className="text-xs text-[#FF3B3B]">
-                {error}
-              </span>
-            ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#6B7280]">
-                {helperText}
-              </span>
-            ) : (
-              <span />
-            )}
-            {showCount && maxLength && (
-              <span
-                className={cn(
-                  "text-xs",
-                  charCount > maxLength ? "text-[#FF3B3B]" : "text-[#6B7280]"
-                )}
-              >
-                {charCount}/{maxLength}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      <CollapsibleContext.Provider value={contextValue}>
+        <div
+          ref={ref}
+          className={cn(collapsibleVariants({ variant, className }))}
+          {...props}
+        >
+          {children}
+        </div>
+      </CollapsibleContext.Provider>
     )
   }
 )
-TextField.displayName = "TextField"
-
-export { TextField, textFieldContainerVariants, textFieldInputVariants }
-`, prefix),
-        },
-      ],
-    },
-    'toggle': {
-      name: 'toggle',
-      description: 'A toggle/switch component for boolean inputs with on/off states',
-      dependencies: [
-            "class-variance-authority",
-            "clsx",
-            "tailwind-merge"
-      ],
-      files: [
-        {
-          name: 'toggle.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "../../lib/utils"
+Collapsible.displayName = "Collapsible"
 
 /**
- * Toggle track variants (the outer container)
+ * Individual collapsible item
  */
-const toggleVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-  {
-    variants: {
-      size: {
-        default: "h-6 w-11",
-        sm: "h-5 w-9",
-        lg: "h-7 w-14",
-      },
-    },
-    defaultVariants: {
-      size: "default",
-    },
-  }
-)
-
-/**
- * Toggle thumb variants (the sliding circle)
- */
-const toggleThumbVariants = cva(
-  "pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
-  {
-    variants: {
-      size: {
-        default: "h-5 w-5",
-        sm: "h-4 w-4",
-        lg: "h-6 w-6",
-      },
-      checked: {
-        true: "",
-        false: "translate-x-0",
-      },
-    },
-    compoundVariants: [
-      { size: "default", checked: true, className: "translate-x-5" },
-      { size: "sm", checked: true, className: "translate-x-4" },
-      { size: "lg", checked: true, className: "translate-x-7" },
-    ],
-    defaultVariants: {
-      size: "default",
-      checked: false,
-    },
-  }
-)
-
-/**
- * A toggle/switch component for boolean inputs with on/off states
- *
- * @example
- * \`\`\`tsx
- * <Toggle checked={isEnabled} onCheckedChange={setIsEnabled} />
- * <Toggle size="sm" disabled />
- * <Toggle size="lg" checked label="Enable notifications" />
- * \`\`\`
- */
-export interface ToggleProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
-    VariantProps<typeof toggleVariants> {
-  /** Whether the toggle is checked/on */
-  checked?: boolean
-  /** Default checked state for uncontrolled usage */
-  defaultChecked?: boolean
-  /** Callback when checked state changes */
-  onCheckedChange?: (checked: boolean) => void
-  /** Optional label text */
-  label?: string
-  /** Position of the label */
-  labelPosition?: "left" | "right"
+export interface CollapsibleItemProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof collapsibleItemVariants> {
+  /** Unique value for this item */
+  value: string
+  /** Whether this item is disabled */
+  disabled?: boolean
 }
 
-const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
-  (
-    {
-      className,
-      size,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onCheckedChange,
-      disabled,
-      label,
-      labelPosition = "right",
-      ...props
-    },
-    ref
-  ) => {
-    const [internalChecked, setInternalChecked] = React.useState(defaultChecked)
+const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
+  ({ className, value, disabled, children, ...props }, ref) => {
+    const { value: openValues, variant } = useCollapsibleContext()
+    const isOpen = openValues.includes(value)
 
-    const isControlled = controlledChecked !== undefined
-    const isChecked = isControlled ? controlledChecked : internalChecked
+    const contextValue = React.useMemo(
+      () => ({
+        value,
+        isOpen,
+        disabled,
+      }),
+      [value, isOpen, disabled]
+    )
+
+    return (
+      <CollapsibleItemContext.Provider value={contextValue}>
+        <div
+          ref={ref}
+          data-state={isOpen ? "open" : "closed"}
+          className={cn(collapsibleItemVariants({ variant, className }))}
+          {...props}
+        >
+          {children}
+        </div>
+      </CollapsibleItemContext.Provider>
+    )
+  }
+)
+CollapsibleItem.displayName = "CollapsibleItem"
+
+/**
+ * Trigger button that toggles the collapsible item
+ */
+export interface CollapsibleTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof collapsibleTriggerVariants> {
+  /** Whether to show the chevron icon */
+  showChevron?: boolean
+}
+
+const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
+  ({ className, showChevron = true, children, ...props }, ref) => {
+    const { type, value: openValues, onValueChange, variant } = useCollapsibleContext()
+    const { value, isOpen, disabled } = useCollapsibleItemContext()
 
     const handleClick = () => {
       if (disabled) return
 
-      const newValue = !isChecked
+      let newValue: string[]
 
-      if (!isControlled) {
-        setInternalChecked(newValue)
+      if (type === "single") {
+        // In single mode, toggle current item (close if open, open if closed)
+        newValue = isOpen ? [] : [value]
+      } else {
+        // In multiple mode, toggle the item in the array
+        newValue = isOpen
+          ? openValues.filter((v) => v !== value)
+          : [...openValues, value]
       }
 
-      onCheckedChange?.(newValue)
+      onValueChange(newValue)
     }
 
-    const toggle = (
+    return (
       <button
-        type="button"
-        role="switch"
-        aria-checked={isChecked}
         ref={ref}
+        type="button"
+        aria-expanded={isOpen}
         disabled={disabled}
         onClick={handleClick}
-        className={cn(
-          toggleVariants({ size, className }),
-          isChecked ? "bg-[#343E55]" : "bg-[#E5E7EB]"
-        )}
+        className={cn(collapsibleTriggerVariants({ variant, className }))}
         {...props}
       >
-        <span
-          className={cn(
-            toggleThumbVariants({ size, checked: isChecked })
-          )}
-        />
+        <span className="flex-1">{children}</span>
+        {showChevron && (
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-300",
+              isOpen && "rotate-180"
+            )}
+          />
+        )}
       </button>
     )
-
-    if (label) {
-      return (
-        <label className="inline-flex items-center gap-2 cursor-pointer">
-          {labelPosition === "left" && (
-            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
-              {label}
-            </span>
-          )}
-          {toggle}
-          {labelPosition === "right" && (
-            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
-              {label}
-            </span>
-          )}
-        </label>
-      )
-    }
-
-    return toggle
   }
 )
-Toggle.displayName = "Toggle"
+CollapsibleTrigger.displayName = "CollapsibleTrigger"
 
-export { Toggle, toggleVariants }
+/**
+ * Content that is shown/hidden when the item is toggled
+ */
+export interface CollapsibleContentProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof collapsibleContentVariants> {}
+
+const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentProps>(
+  ({ className, children, ...props }, ref) => {
+    const { variant } = useCollapsibleContext()
+    const { isOpen } = useCollapsibleItemContext()
+    const contentRef = React.useRef<HTMLDivElement>(null)
+    const [height, setHeight] = React.useState<number | undefined>(undefined)
+
+    React.useEffect(() => {
+      if (contentRef.current) {
+        const contentHeight = contentRef.current.scrollHeight
+        setHeight(isOpen ? contentHeight : 0)
+      }
+    }, [isOpen, children])
+
+    return (
+      <div
+        ref={ref}
+        className={cn(collapsibleContentVariants({ variant, className }))}
+        style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
+        aria-hidden={!isOpen}
+        {...props}
+      >
+        <div ref={contentRef} className="pb-4">
+          {children}
+        </div>
+      </div>
+    )
+  }
+)
+CollapsibleContent.displayName = "CollapsibleContent"
+
+export {
+  Collapsible,
+  CollapsibleItem,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  collapsibleVariants,
+  collapsibleItemVariants,
+  collapsibleTriggerVariants,
+  collapsibleContentVariants,
+}
 `, prefix),
         },
       ],

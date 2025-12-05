@@ -1,373 +1,175 @@
 #!/usr/bin/env node
 
 /**
- * This script generates the registry.ts file from the source component files.
- * It ensures the CLI always has the latest component code from the main package.
+ * This script generates the registry files from components.yaml and source files.
+ * It creates:
+ *   - registry-index.ts      (metadata only, for lazy loading)
+ *   - registry-{category}.ts (one per category, with full component code)
  *
- * Run: node scripts/generate-registry.js
+ * Run: npm run generate-registry
  */
 
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import yaml from 'js-yaml'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// Paths to source components (relative to this script)
+// Paths
+const CONFIG_FILE = path.resolve(__dirname, '../components.yaml')
 const UI_COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/ui')
 const CUSTOM_COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/custom')
-const OUTPUT_FILE = path.resolve(__dirname, '../src/utils/registry.ts')
+const OUTPUT_DIR = path.resolve(__dirname, '../src/utils')
 
-// Component metadata - dependencies and descriptions
-const COMPONENT_META = {
-  button: {
-    description: 'A customizable button component with variants, sizes, and icons',
-    dependencies: [
-      '@radix-ui/react-slot',
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  badge: {
-    description: 'A status badge component with active, failed, and disabled variants',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-    ],
-  },
-  tag: {
-    description: 'A tag component for event labels with optional bold label prefix',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-    ],
-  },
-  table: {
-    description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-    ],
-  },
-  'dropdown-menu': {
-    description: 'A dropdown menu component for displaying actions and options',
-    dependencies: [
-      '@radix-ui/react-dropdown-menu',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
+// For backwards compatibility, also generate the combined registry.ts
+const LEGACY_OUTPUT_FILE = path.resolve(OUTPUT_DIR, 'registry.ts')
 
-  'toggle': {
-    description: 'A toggle/switch component for boolean inputs with on/off states',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-    ],
-  },
-  'checkbox': {
-    description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  'collapsible': {
-    description: 'An expandable/collapsible section component with single or multiple mode support',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  'input': {
-    description: 'A text input component with error and disabled states',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-    ],
-  },
-  'select': {
-    description: 'A select dropdown component built on Radix UI Select',
-    dependencies: [
-      '@radix-ui/react-select',
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  'multi-select': {
-    description: 'A multi-select dropdown component with search, badges, and async loading',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  'select-field': {
-    description: 'A select field with label, helper text, and validation states',
-    dependencies: [
-      '@radix-ui/react-select',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  'text-field': {
-    description: 'A text field with label, helper text, icons, and validation states',
-    dependencies: [
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-  },
-  // Custom multi-file components
-  'event-selector': {
-    description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
-    dependencies: [
-      'clsx',
-      'tailwind-merge',
-    ],
-    // Internal component dependencies (installed automatically)
-    internalDependencies: ['checkbox', 'collapsible'],
-    // Multi-file component structure
-    isMultiFile: true,
-    directory: 'event-selector',
-    files: ['event-selector.tsx', 'event-group.tsx', 'event-item.tsx', 'types.ts'],
-    mainFile: 'event-selector.tsx',
-  },
-  'key-value-input': {
-    description: 'A component for managing key-value pairs with validation and duplicate detection',
-    dependencies: [
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-    ],
-    // Internal component dependencies (installed automatically)
-    internalDependencies: ['button', 'input'],
-    // Multi-file component structure
-    isMultiFile: true,
-    directory: 'key-value-input',
-    files: ['key-value-input.tsx', 'key-value-row.tsx', 'types.ts'],
-    mainFile: 'key-value-input.tsx',
-  },
-}
-
-function generateRegistry() {
-  console.log('Generating registry from source components...')
-  console.log(`UI Components directory: ${UI_COMPONENTS_DIR}`)
-  console.log(`Custom Components directory: ${CUSTOM_COMPONENTS_DIR}`)
-
-  // Check if UI components directory exists
-  if (!fs.existsSync(UI_COMPONENTS_DIR)) {
-    console.error(`Error: UI Components directory not found: ${UI_COMPONENTS_DIR}`)
+/**
+ * Load and parse components.yaml
+ */
+function loadConfig() {
+  if (!fs.existsSync(CONFIG_FILE)) {
+    console.error(`Error: Config file not found: ${CONFIG_FILE}`)
     process.exit(1)
   }
 
-  const components = {}
+  const content = fs.readFileSync(CONFIG_FILE, 'utf-8')
+  return yaml.load(content)
+}
 
-  // ============================================
-  // 1. Process single-file UI components
-  // ============================================
-  const uiFiles = fs.readdirSync(UI_COMPONENTS_DIR)
-    .filter(file => file.endsWith('.tsx') && !file.includes('.stories.') && !file.includes('.test.'))
+/**
+ * Read a single-file component
+ */
+async function readSingleFileComponent(componentName, meta) {
+  const filePath = path.join(UI_COMPONENTS_DIR, `${componentName}.tsx`)
 
-  console.log(`Found ${uiFiles.length} UI component files:`, uiFiles)
+  if (!fs.existsSync(filePath)) {
+    console.warn(`  Warning: Component file not found: ${filePath}`)
+    return null
+  }
 
-  for (const file of uiFiles) {
-    const componentName = file.replace('.tsx', '')
-    const filePath = path.join(UI_COMPONENTS_DIR, file)
+  let content = fs.readFileSync(filePath, 'utf-8')
+
+  // Transform @/lib/utils import to relative path
+  content = content.replace(
+    /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
+    'import { cn } from "../../lib/utils"'
+  )
+
+  return {
+    name: componentName,
+    fileName: `${componentName}.tsx`,
+    content,
+    description: meta.description,
+    dependencies: meta.dependencies || [],
+    category: meta.category,
+  }
+}
+
+/**
+ * Read a multi-file component
+ */
+async function readMultiFileComponent(componentName, meta) {
+  const componentDir = path.join(CUSTOM_COMPONENTS_DIR, meta.directory)
+
+  if (!fs.existsSync(componentDir)) {
+    console.warn(`  Warning: Component directory not found: ${componentDir}`)
+    return null
+  }
+
+  const componentFiles = []
+  for (const fileName of meta.files) {
+    const filePath = path.join(componentDir, fileName)
+    if (!fs.existsSync(filePath)) {
+      console.warn(`    Warning: File not found: ${filePath}`)
+      continue
+    }
+
     let content = fs.readFileSync(filePath, 'utf-8')
 
-    // Transform @/lib/utils import to relative path for installed components
+    // Transform @/lib/utils import (goes up to component dir, then to lib)
     content = content.replace(
       /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
-      'import { cn } from "../../lib/utils"'
+      'import { cn } from "../../../lib/utils"'
     )
 
-    // Get metadata or use defaults
-    const meta = COMPONENT_META[componentName] || {
-      description: `${componentName} component`,
-      dependencies: ['clsx', 'tailwind-merge'],
-    }
+    // Transform relative imports to sibling ui components
+    content = content.replace(
+      /from\s*["']\.\.\/\.\.\/ui\/([^"']+)["']/g,
+      'from "../$1"'
+    )
 
-    components[componentName] = {
-      name: componentName,
-      fileName: file,
+    componentFiles.push({
+      name: fileName,
       content,
-      ...meta,
+    })
+  }
+
+  return {
+    name: componentName,
+    description: meta.description,
+    dependencies: meta.dependencies || [],
+    internalDependencies: meta.internalDependencies || [],
+    isMultiFile: true,
+    directory: meta.directory,
+    mainFile: meta.mainFile,
+    files: componentFiles,
+    category: meta.category,
+  }
+}
+
+/**
+ * Read all components in parallel
+ */
+async function readAllComponents(config) {
+  const readPromises = Object.entries(config.components).map(async ([name, meta]) => {
+    if (meta.isMultiFile) {
+      return readMultiFileComponent(name, meta)
+    }
+    return readSingleFileComponent(name, meta)
+  })
+
+  const results = await Promise.all(readPromises)
+  return results.filter(Boolean) // Remove nulls
+}
+
+/**
+ * Group components by category
+ */
+function groupByCategory(components, categories) {
+  const grouped = {}
+
+  // Initialize all categories
+  for (const category of Object.keys(categories)) {
+    grouped[category] = []
+  }
+
+  // Group components
+  for (const comp of components) {
+    if (grouped[comp.category]) {
+      grouped[comp.category].push(comp)
+    } else {
+      console.warn(`  Warning: Unknown category "${comp.category}" for component "${comp.name}"`)
     }
   }
 
-  // ============================================
-  // 2. Process multi-file custom components
-  // ============================================
-  if (fs.existsSync(CUSTOM_COMPONENTS_DIR)) {
-    const customDirs = fs.readdirSync(CUSTOM_COMPONENTS_DIR)
-      .filter(dir => {
-        const stat = fs.statSync(path.join(CUSTOM_COMPONENTS_DIR, dir))
-        return stat.isDirectory()
-      })
-
-    console.log(`Found ${customDirs.length} custom component directories:`, customDirs)
-
-    for (const dir of customDirs) {
-      const meta = COMPONENT_META[dir]
-      if (!meta || !meta.isMultiFile) {
-        console.log(`  Skipping ${dir} (no multi-file metadata)`)
-        continue
-      }
-
-      console.log(`  Processing custom component: ${dir}`)
-
-      const componentFiles = []
-      for (const fileName of meta.files) {
-        const filePath = path.join(CUSTOM_COMPONENTS_DIR, dir, fileName)
-        if (!fs.existsSync(filePath)) {
-          console.error(`    Warning: File not found: ${filePath}`)
-          continue
-        }
-
-        let content = fs.readFileSync(filePath, 'utf-8')
-
-        // Transform @/lib/utils import to relative path (goes up to component dir, then to lib)
-        content = content.replace(
-          /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
-          'import { cn } from "../../../lib/utils"'
-        )
-
-        // Transform relative imports to sibling ui components to absolute paths
-        // e.g., import { Checkbox } from "../../ui/checkbox" -> import { Checkbox } from "../checkbox"
-        content = content.replace(
-          /from\s*["']\.\.\/\.\.\/ui\/([^"']+)["']/g,
-          'from "../$1"'
-        )
-
-        // Transform relative imports within the component directory
-        // e.g., import { EventItem } from "./event-item" stays the same
-
-        componentFiles.push({
-          name: fileName,
-          content,
-        })
-        console.log(`    Added file: ${fileName}`)
-      }
-
-      components[dir] = {
-        name: dir,
-        description: meta.description,
-        dependencies: meta.dependencies,
-        internalDependencies: meta.internalDependencies || [],
-        isMultiFile: true,
-        directory: meta.directory,
-        mainFile: meta.mainFile,
-        files: componentFiles,
-      }
-    }
-  }
-
-  // Generate the registry.ts file
-  const registryContent = generateRegistryFile(components)
-
-  // Ensure output directory exists
-  const outputDir = path.dirname(OUTPUT_FILE)
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true })
-  }
-
-  // Write the registry file
-  fs.writeFileSync(OUTPUT_FILE, registryContent)
-  console.log(`✓ Registry generated: ${OUTPUT_FILE}`)
-  console.log(`  Components: ${Object.keys(components).join(', ')}`)
+  return grouped
 }
 
-function generateRegistryFile(components) {
-  // Escape backticks and ${} in component content for template literals
-  const escapeForTemplate = (str) => {
-    return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${')
-  }
-
-  const componentEntries = Object.entries(components).map(([name, comp]) => {
-    const deps = JSON.stringify(comp.dependencies, null, 6).replace(/\n/g, '\n      ')
-
-    // Handle multi-file components
-    if (comp.isMultiFile) {
-      const internalDeps = JSON.stringify(comp.internalDependencies || [], null, 6).replace(/\n/g, '\n      ')
-      const filesArray = comp.files.map(file => {
-        const escapedContent = escapeForTemplate(file.content)
-        return `        {
-          name: '${file.name}',
-          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
-        }`
-      }).join(',\n')
-
-      return `    '${name}': {
-      name: '${name}',
-      description: '${comp.description}',
-      dependencies: ${deps},
-      internalDependencies: ${internalDeps},
-      isMultiFile: true,
-      directory: '${comp.directory}',
-      mainFile: '${comp.mainFile}',
-      files: [
-${filesArray}
-      ],
-    }`
-    }
-
-    // Handle single-file components
-    const escapedContent = escapeForTemplate(comp.content)
-    return `    '${name}': {
-      name: '${name}',
-      description: '${comp.description}',
-      dependencies: ${deps},
-      files: [
-        {
-          name: '${comp.fileName}',
-          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
-        },
-      ],
-    }`
-  }).join(',\n')
-
-  return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
-// Run: npm run generate-registry
-
-export interface ComponentFile {
-  name: string
-  content: string
+/**
+ * Escape content for template literals
+ */
+function escapeForTemplate(str) {
+  return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${')
 }
 
-export interface ComponentDefinition {
-  name: string
-  description: string
-  dependencies: string[]
-  files: ComponentFile[]
-  // Multi-file component properties (optional)
-  internalDependencies?: string[]
-  isMultiFile?: boolean
-  directory?: string
-  mainFile?: string
-}
-
-export type Registry = Record<string, ComponentDefinition>
-
-// Helper to check if a string looks like Tailwind CSS classes
+/**
+ * Generate the prefix utils code that gets embedded in each registry file
+ */
+function getPrefixUtilsCode() {
+  return `// Helper to check if a string looks like Tailwind CSS classes
 function looksLikeTailwindClasses(str: string): boolean {
   // Skip empty strings
   if (!str || !str.trim()) return false
@@ -567,7 +369,280 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   )
 
   return content
+}`
 }
+
+/**
+ * Generate a category registry file
+ */
+function generateCategoryFile(category, components) {
+  const componentEntries = components.map(comp => {
+    const deps = JSON.stringify(comp.dependencies, null, 6).replace(/\n/g, '\n      ')
+
+    if (comp.isMultiFile) {
+      const internalDeps = JSON.stringify(comp.internalDependencies || [], null, 6).replace(/\n/g, '\n      ')
+      const filesArray = comp.files.map(file => {
+        const escapedContent = escapeForTemplate(file.content)
+        return `        {
+          name: '${file.name}',
+          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+        }`
+      }).join(',\n')
+
+      return `    '${comp.name}': {
+      name: '${comp.name}',
+      description: '${comp.description}',
+      dependencies: ${deps},
+      internalDependencies: ${internalDeps},
+      isMultiFile: true,
+      directory: '${comp.directory}',
+      mainFile: '${comp.mainFile}',
+      files: [
+${filesArray}
+      ],
+    }`
+    }
+
+    const escapedContent = escapeForTemplate(comp.content)
+    return `    '${comp.name}': {
+      name: '${comp.name}',
+      description: '${comp.description}',
+      dependencies: ${deps},
+      files: [
+        {
+          name: '${comp.fileName}',
+          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+        },
+      ],
+    }`
+  }).join(',\n')
+
+  return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
+// Run: npm run generate-registry
+// Category: ${category}
+
+import type { Registry } from './registry-types'
+
+${getPrefixUtilsCode()}
+
+export function get${capitalize(category)}Registry(prefix: string = ''): Registry {
+  return {
+${componentEntries}
+  }
+}
+`
+}
+
+/**
+ * Generate the types file
+ */
+function generateTypesFile() {
+  return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
+// Run: npm run generate-registry
+
+export interface ComponentFile {
+  name: string
+  content: string
+}
+
+export interface ComponentDefinition {
+  name: string
+  description: string
+  dependencies: string[]
+  files: ComponentFile[]
+  // Multi-file component properties (optional)
+  internalDependencies?: string[]
+  isMultiFile?: boolean
+  directory?: string
+  mainFile?: string
+}
+
+export type Registry = Record<string, ComponentDefinition>
+
+export interface ComponentMeta {
+  name: string
+  description: string
+  dependencies: string[]
+  category: string
+  internalDependencies?: string[]
+}
+`
+}
+
+/**
+ * Generate the index file with metadata and lazy loading
+ */
+function generateIndexFile(config, components) {
+  const categories = Object.keys(config.categories)
+
+  // Generate metadata object
+  const metaEntries = components.map(comp => {
+    const internalDeps = comp.internalDependencies
+      ? JSON.stringify(comp.internalDependencies)
+      : '[]'
+
+    return `  '${comp.name}': {
+    name: '${comp.name}',
+    description: '${comp.description}',
+    dependencies: ${JSON.stringify(comp.dependencies)},
+    category: '${comp.category}',
+    internalDependencies: ${internalDeps},
+  }`
+  }).join(',\n')
+
+  // Generate category imports
+  const categoryImports = categories.map(cat =>
+    `import { get${capitalize(cat)}Registry } from './registry-${cat}'`
+  ).join('\n')
+
+  // Generate category getter switch
+  const categoryGetters = categories.map(cat =>
+    `    case '${cat}': return get${capitalize(cat)}Registry(prefix)`
+  ).join('\n')
+
+  return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
+// Run: npm run generate-registry
+//
+// This file provides lazy-loading access to component registries.
+// Components are split by category for optimal loading performance.
+
+import type { Registry, ComponentDefinition, ComponentMeta } from './registry-types'
+
+${categoryImports}
+
+// Component metadata (loaded immediately - small footprint)
+export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
+${metaEntries}
+}
+
+// Available categories
+export const CATEGORIES = ${JSON.stringify(categories)} as const
+export type Category = typeof CATEGORIES[number]
+
+/**
+ * Get metadata for all components (fast, no source code loaded)
+ */
+export function getComponentList(): ComponentMeta[] {
+  return Object.values(COMPONENT_METADATA)
+}
+
+/**
+ * Get metadata for a specific component
+ */
+export function getComponentMeta(name: string): ComponentMeta | undefined {
+  return COMPONENT_METADATA[name]
+}
+
+/**
+ * Get all components in a specific category
+ */
+export function getCategoryRegistry(category: Category, prefix: string = ''): Registry {
+  switch (category) {
+${categoryGetters}
+    default:
+      throw new Error(\`Unknown category: \${category}\`)
+  }
+}
+
+/**
+ * Get a single component by name (lazy loads only the needed category)
+ */
+export async function getComponent(name: string, prefix: string = ''): Promise<ComponentDefinition | undefined> {
+  const meta = COMPONENT_METADATA[name]
+  if (!meta) return undefined
+
+  const categoryRegistry = getCategoryRegistry(meta.category as Category, prefix)
+  return categoryRegistry[name]
+}
+
+/**
+ * Get the full registry (all components) - for backwards compatibility
+ * Note: This loads ALL categories into memory. Prefer getComponent() for better performance.
+ */
+export async function getRegistry(prefix: string = ''): Promise<Registry> {
+  const allComponents: Registry = {}
+
+  for (const category of CATEGORIES) {
+    const categoryRegistry = getCategoryRegistry(category, prefix)
+    Object.assign(allComponents, categoryRegistry)
+  }
+
+  return allComponents
+}
+
+// Re-export types
+export type { Registry, ComponentDefinition, ComponentMeta, ComponentFile } from './registry-types'
+`
+}
+
+/**
+ * Generate legacy combined registry.ts for backwards compatibility
+ */
+function generateLegacyRegistryFile(components) {
+  const componentEntries = components.map(comp => {
+    const deps = JSON.stringify(comp.dependencies, null, 6).replace(/\n/g, '\n      ')
+
+    if (comp.isMultiFile) {
+      const internalDeps = JSON.stringify(comp.internalDependencies || [], null, 6).replace(/\n/g, '\n      ')
+      const filesArray = comp.files.map(file => {
+        const escapedContent = escapeForTemplate(file.content)
+        return `        {
+          name: '${file.name}',
+          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+        }`
+      }).join(',\n')
+
+      return `    '${comp.name}': {
+      name: '${comp.name}',
+      description: '${comp.description}',
+      dependencies: ${deps},
+      internalDependencies: ${internalDeps},
+      isMultiFile: true,
+      directory: '${comp.directory}',
+      mainFile: '${comp.mainFile}',
+      files: [
+${filesArray}
+      ],
+    }`
+    }
+
+    const escapedContent = escapeForTemplate(comp.content)
+    return `    '${comp.name}': {
+      name: '${comp.name}',
+      description: '${comp.description}',
+      dependencies: ${deps},
+      files: [
+        {
+          name: '${comp.fileName}',
+          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+        },
+      ],
+    }`
+  }).join(',\n')
+
+  return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
+// Run: npm run generate-registry
+
+export interface ComponentFile {
+  name: string
+  content: string
+}
+
+export interface ComponentDefinition {
+  name: string
+  description: string
+  dependencies: string[]
+  files: ComponentFile[]
+  // Multi-file component properties (optional)
+  internalDependencies?: string[]
+  isMultiFile?: boolean
+  directory?: string
+  mainFile?: string
+}
+
+export type Registry = Record<string, ComponentDefinition>
+
+${getPrefixUtilsCode()}
 
 // In a real implementation, this would fetch from a remote URL
 // For now, we'll embed the components directly
@@ -579,5 +654,78 @@ ${componentEntries}
 `
 }
 
-// Run the generator
-generateRegistry()
+/**
+ * Capitalize first letter
+ */
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+/**
+ * Main function
+ */
+async function main() {
+  console.log('Generating registry from components.yaml...')
+  console.log(`Config file: ${CONFIG_FILE}`)
+  console.log(`UI Components: ${UI_COMPONENTS_DIR}`)
+  console.log(`Custom Components: ${CUSTOM_COMPONENTS_DIR}`)
+  console.log(`Output directory: ${OUTPUT_DIR}`)
+
+  // Load configuration
+  const config = loadConfig()
+  console.log(`\nLoaded ${Object.keys(config.components).length} component definitions`)
+  console.log(`Categories: ${Object.keys(config.categories).join(', ')}`)
+
+  // Read all components in parallel
+  console.log('\nReading component files...')
+  const components = await readAllComponents(config)
+  console.log(`Read ${components.length} components successfully`)
+
+  // Group by category
+  const grouped = groupByCategory(components, config.categories)
+
+  // Ensure output directory exists
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true })
+  }
+
+  // Generate types file
+  const typesContent = generateTypesFile()
+  const typesFile = path.join(OUTPUT_DIR, 'registry-types.ts')
+  fs.writeFileSync(typesFile, typesContent)
+  console.log(`✓ Generated: registry-types.ts`)
+
+  // Generate category files in parallel
+  const categoryWrites = Object.entries(grouped).map(([category, categoryComponents]) => {
+    if (categoryComponents.length === 0) {
+      console.log(`  Skipping empty category: ${category}`)
+      return Promise.resolve()
+    }
+
+    const content = generateCategoryFile(category, categoryComponents)
+    const filePath = path.join(OUTPUT_DIR, `registry-${category}.ts`)
+    fs.writeFileSync(filePath, content)
+    console.log(`✓ Generated: registry-${category}.ts (${categoryComponents.length} components)`)
+    return Promise.resolve()
+  })
+
+  await Promise.all(categoryWrites)
+
+  // Generate index file
+  const indexContent = generateIndexFile(config, components)
+  const indexFile = path.join(OUTPUT_DIR, 'registry-index.ts')
+  fs.writeFileSync(indexFile, indexContent)
+  console.log(`✓ Generated: registry-index.ts`)
+
+  // Generate legacy combined registry for backwards compatibility
+  const legacyContent = generateLegacyRegistryFile(components)
+  fs.writeFileSync(LEGACY_OUTPUT_FILE, legacyContent)
+  console.log(`✓ Generated: registry.ts (legacy, for backwards compatibility)`)
+
+  console.log('\n✅ Registry generation complete!')
+  console.log(`   Total components: ${components.length}`)
+  console.log(`   Categories: ${Object.keys(grouped).filter(c => grouped[c].length > 0).length}`)
+}
+
+// Run
+main().catch(console.error)
