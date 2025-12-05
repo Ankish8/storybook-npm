@@ -208,9 +208,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getLayoutRegistry(prefix: string = ''): Registry {
   return {
-    'collapsible': {
-      name: 'collapsible',
-      description: 'An expandable/collapsible section component with single or multiple mode support',
+    'accordion': {
+      name: 'accordion',
+      description: 'An expandable/collapsible accordion component with single or multiple mode support',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -219,7 +219,7 @@ export function getLayoutRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'collapsible.tsx',
+          name: 'accordion.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronDown } from "lucide-react"
@@ -227,9 +227,9 @@ import { ChevronDown } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 /**
- * Collapsible root variants
+ * Accordion root variants
  */
-const collapsibleVariants = cva("w-full", {
+const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
@@ -242,9 +242,9 @@ const collapsibleVariants = cva("w-full", {
 })
 
 /**
- * Collapsible item variants
+ * Accordion item variants
  */
-const collapsibleItemVariants = cva("", {
+const accordionItemVariants = cva("", {
   variants: {
     variant: {
       default: "",
@@ -257,9 +257,9 @@ const collapsibleItemVariants = cva("", {
 })
 
 /**
- * Collapsible trigger variants
+ * Accordion trigger variants
  */
-const collapsibleTriggerVariants = cva(
+const accordionTriggerVariants = cva(
   "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
@@ -275,9 +275,9 @@ const collapsibleTriggerVariants = cva(
 )
 
 /**
- * Collapsible content variants
+ * Accordion content variants
  */
-const collapsibleContentVariants = cva(
+const accordionContentVariants = cva(
   "overflow-hidden transition-all duration-300 ease-in-out",
   {
     variants: {
@@ -293,49 +293,49 @@ const collapsibleContentVariants = cva(
 )
 
 // Types
-type CollapsibleType = "single" | "multiple"
+type AccordionType = "single" | "multiple"
 
-interface CollapsibleContextValue {
-  type: CollapsibleType
+interface AccordionContextValue {
+  type: AccordionType
   value: string[]
   onValueChange: (value: string[]) => void
   variant: "default" | "bordered"
 }
 
-interface CollapsibleItemContextValue {
+interface AccordionItemContextValue {
   value: string
   isOpen: boolean
   disabled?: boolean
 }
 
 // Contexts
-const CollapsibleContext = React.createContext<CollapsibleContextValue | null>(null)
-const CollapsibleItemContext = React.createContext<CollapsibleItemContextValue | null>(null)
+const AccordionContext = React.createContext<AccordionContextValue | null>(null)
+const AccordionItemContext = React.createContext<AccordionItemContextValue | null>(null)
 
-function useCollapsibleContext() {
-  const context = React.useContext(CollapsibleContext)
+function useAccordionContext() {
+  const context = React.useContext(AccordionContext)
   if (!context) {
-    throw new Error("Collapsible components must be used within a Collapsible")
+    throw new Error("Accordion components must be used within an Accordion")
   }
   return context
 }
 
-function useCollapsibleItemContext() {
-  const context = React.useContext(CollapsibleItemContext)
+function useAccordionItemContext() {
+  const context = React.useContext(AccordionItemContext)
   if (!context) {
-    throw new Error("CollapsibleTrigger/CollapsibleContent must be used within a CollapsibleItem")
+    throw new Error("AccordionTrigger/AccordionContent must be used within an AccordionItem")
   }
   return context
 }
 
 /**
- * Root collapsible component that manages state
+ * Root accordion component that manages state
  */
-export interface CollapsibleProps
+export interface AccordionProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleVariants> {
+    VariantProps<typeof accordionVariants> {
   /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
-  type?: CollapsibleType
+  type?: AccordionType
   /** Controlled value - array of open item values */
   value?: string[]
   /** Default open items for uncontrolled usage */
@@ -344,7 +344,7 @@ export interface CollapsibleProps
   onValueChange?: (value: string[]) => void
 }
 
-const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
+const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
   (
     {
       className,
@@ -384,35 +384,35 @@ const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
     )
 
     return (
-      <CollapsibleContext.Provider value={contextValue}>
+      <AccordionContext.Provider value={contextValue}>
         <div
           ref={ref}
-          className={cn(collapsibleVariants({ variant, className }))}
+          className={cn(accordionVariants({ variant, className }))}
           {...props}
         >
           {children}
         </div>
-      </CollapsibleContext.Provider>
+      </AccordionContext.Provider>
     )
   }
 )
-Collapsible.displayName = "Collapsible"
+Accordion.displayName = "Accordion"
 
 /**
- * Individual collapsible item
+ * Individual accordion item
  */
-export interface CollapsibleItemProps
+export interface AccordionItemProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleItemVariants> {
+    VariantProps<typeof accordionItemVariants> {
   /** Unique value for this item */
   value: string
   /** Whether this item is disabled */
   disabled?: boolean
 }
 
-const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
+const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
   ({ className, value, disabled, children, ...props }, ref) => {
-    const { value: openValues, variant } = useCollapsibleContext()
+    const { value: openValues, variant } = useAccordionContext()
     const isOpen = openValues.includes(value)
 
     const contextValue = React.useMemo(
@@ -425,35 +425,35 @@ const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
     )
 
     return (
-      <CollapsibleItemContext.Provider value={contextValue}>
+      <AccordionItemContext.Provider value={contextValue}>
         <div
           ref={ref}
           data-state={isOpen ? "open" : "closed"}
-          className={cn(collapsibleItemVariants({ variant, className }))}
+          className={cn(accordionItemVariants({ variant, className }))}
           {...props}
         >
           {children}
         </div>
-      </CollapsibleItemContext.Provider>
+      </AccordionItemContext.Provider>
     )
   }
 )
-CollapsibleItem.displayName = "CollapsibleItem"
+AccordionItem.displayName = "AccordionItem"
 
 /**
- * Trigger button that toggles the collapsible item
+ * Trigger button that toggles the accordion item
  */
-export interface CollapsibleTriggerProps
+export interface AccordionTriggerProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof collapsibleTriggerVariants> {
+    VariantProps<typeof accordionTriggerVariants> {
   /** Whether to show the chevron icon */
   showChevron?: boolean
 }
 
-const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
+const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   ({ className, showChevron = true, children, ...props }, ref) => {
-    const { type, value: openValues, onValueChange, variant } = useCollapsibleContext()
-    const { value, isOpen, disabled } = useCollapsibleItemContext()
+    const { type, value: openValues, onValueChange, variant } = useAccordionContext()
+    const { value, isOpen, disabled } = useAccordionItemContext()
 
     const handleClick = () => {
       if (disabled) return
@@ -480,7 +480,7 @@ const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTrigge
         aria-expanded={isOpen}
         disabled={disabled}
         onClick={handleClick}
-        className={cn(collapsibleTriggerVariants({ variant, className }))}
+        className={cn(accordionTriggerVariants({ variant, className }))}
         {...props}
       >
         <span className="flex-1">{children}</span>
@@ -496,19 +496,19 @@ const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTrigge
     )
   }
 )
-CollapsibleTrigger.displayName = "CollapsibleTrigger"
+AccordionTrigger.displayName = "AccordionTrigger"
 
 /**
  * Content that is shown/hidden when the item is toggled
  */
-export interface CollapsibleContentProps
+export interface AccordionContentProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleContentVariants> {}
+    VariantProps<typeof accordionContentVariants> {}
 
-const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentProps>(
+const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>(
   ({ className, children, ...props }, ref) => {
-    const { variant } = useCollapsibleContext()
-    const { isOpen } = useCollapsibleItemContext()
+    const { variant } = useAccordionContext()
+    const { isOpen } = useAccordionItemContext()
     const contentRef = React.useRef<HTMLDivElement>(null)
     const [height, setHeight] = React.useState<number | undefined>(undefined)
 
@@ -522,7 +522,7 @@ const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentPr
     return (
       <div
         ref={ref}
-        className={cn(collapsibleContentVariants({ variant, className }))}
+        className={cn(accordionContentVariants({ variant, className }))}
         style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
         aria-hidden={!isOpen}
         {...props}
@@ -534,17 +534,17 @@ const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentPr
     )
   }
 )
-CollapsibleContent.displayName = "CollapsibleContent"
+AccordionContent.displayName = "AccordionContent"
 
 export {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-  collapsibleVariants,
-  collapsibleItemVariants,
-  collapsibleTriggerVariants,
-  collapsibleContentVariants,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  accordionVariants,
+  accordionItemVariants,
+  accordionTriggerVariants,
+  accordionContentVariants,
 }
 `, prefix),
         },

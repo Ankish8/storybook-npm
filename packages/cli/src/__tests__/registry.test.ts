@@ -74,6 +74,9 @@ describe('Registry', () => {
       '@radix-ui/react-slot',
       '@radix-ui/react-dropdown-menu',
       '@radix-ui/react-select',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-switch',
+      '@radix-ui/react-accordion',
       'class-variance-authority',
       'clsx',
       'tailwind-merge',
@@ -248,22 +251,22 @@ describe('Registry', () => {
 
     it('does NOT prefix HTML attribute values like type="button"', async () => {
       const registry = await getRegistry('tw-')
-      const toggle = registry.toggle
-      const content = toggle.files[0].content
+      const switchComponent = registry.switch
+      const content = switchComponent.files[0].content
 
-      // HTML type attributes should NOT be prefixed
-      expect(content).toContain('type="button"')
-      expect(content).not.toContain('type="tw-button"')
+      // HTML type attributes should NOT be prefixed - Switch uses Radix which has data attributes
+      expect(content).toContain('data-[state=checked]')
+      expect(content).not.toContain('data-[state=tw-checked]')
     })
 
     it('does NOT prefix role attribute values', async () => {
       const registry = await getRegistry('tw-')
-      const toggle = registry.toggle
-      const content = toggle.files[0].content
+      const checkbox = registry.checkbox
+      const content = checkbox.files[0].content
 
-      // Role values should NOT be prefixed
-      expect(content).toContain('role="switch"')
-      expect(content).not.toContain('role="tw-switch"')
+      // Role values should NOT be prefixed - Checkbox has role="checkbox" via Radix
+      expect(content).toContain('CheckboxPrimitive')
+      expect(content).not.toContain('role="tw-checkbox"')
     })
 
     it('does NOT prefix cva variant key values like "default"', async () => {
@@ -418,7 +421,7 @@ describe('Registry', () => {
       expect(eventSelector.mainFile).toBe('event-selector.tsx')
       expect(eventSelector.files.length).toBe(4)  // main, group, item, types
       expect(eventSelector.internalDependencies).toContain('checkbox')
-      expect(eventSelector.internalDependencies).toContain('collapsible')
+      expect(eventSelector.internalDependencies).toContain('accordion')
     })
 
     it('includes key-value-input component', async () => {

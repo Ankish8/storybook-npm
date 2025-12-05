@@ -181,7 +181,7 @@ describe('Select', () => {
   it('renders separator', async () => {
     const user = userEvent.setup()
 
-    const { container } = render(
+    render(
       <Select>
         <SelectTrigger data-testid="trigger">
           <SelectValue placeholder="Select" />

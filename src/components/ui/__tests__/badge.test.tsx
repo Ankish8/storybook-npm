@@ -19,10 +19,19 @@ describe('Badge', () => {
     ['failed', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
     ['disabled', 'bg-[#F3F5F6]', 'text-[#6B7280]'],
     ['default', 'bg-[#F3F5F6]', 'text-[#333333]'],
+    ['secondary', 'bg-[#F3F4F6]', 'text-[#333333]'],
+    ['destructive', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
   ] as const)('renders %s variant with correct classes', (variant, bgClass, textClass) => {
     const { container } = render(<Badge variant={variant}>Test</Badge>)
     expect(container.firstChild).toHaveClass(bgClass)
     expect(container.firstChild).toHaveClass(textClass)
+  })
+
+  it('renders outline variant with border', () => {
+    const { container } = render(<Badge variant="outline">Outline</Badge>)
+    expect(container.firstChild).toHaveClass('border')
+    expect(container.firstChild).toHaveClass('border-[#E5E7EB]')
+    expect(container.firstChild).toHaveClass('bg-transparent')
   })
 
   it.each([
@@ -82,5 +91,17 @@ describe('Badge', () => {
     render(<Badge data-testid="custom-badge" aria-label="Status">Test</Badge>)
     const badge = screen.getByTestId('custom-badge')
     expect(badge).toHaveAttribute('aria-label', 'Status')
+  })
+
+  it('renders as child element when asChild is true', () => {
+    render(
+      <Badge asChild>
+        <a href="/status">Link Badge</a>
+      </Badge>
+    )
+    const link = screen.getByRole('link')
+    expect(link).toBeInTheDocument()
+    expect(link).toHaveAttribute('href', '/status')
+    expect(link).toHaveClass('bg-[#F3F5F6]')
   })
 })

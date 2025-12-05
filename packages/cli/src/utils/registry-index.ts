@@ -25,8 +25,8 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   'badge': {
     name: 'badge',
-    description: 'A status badge component with active, failed, and disabled variants',
-    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants',
+    dependencies: ["@radix-ui/react-slot","class-variance-authority","clsx","tailwind-merge"],
     category: 'core',
     internalDependencies: [],
   },
@@ -46,15 +46,15 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   'checkbox': {
     name: 'checkbox',
-    description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
-    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
+    dependencies: ["@radix-ui/react-checkbox","class-variance-authority","clsx","tailwind-merge","lucide-react"],
     category: 'form',
     internalDependencies: [],
   },
-  'toggle': {
-    name: 'toggle',
-    description: 'A toggle/switch component for boolean inputs with on/off states',
-    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+  'switch': {
+    name: 'switch',
+    description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
+    dependencies: ["@radix-ui/react-switch","class-variance-authority","clsx","tailwind-merge"],
     category: 'form',
     internalDependencies: [],
   },
@@ -100,9 +100,9 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'feedback',
     internalDependencies: [],
   },
-  'collapsible': {
-    name: 'collapsible',
-    description: 'An expandable/collapsible section component with single or multiple mode support',
+  'accordion': {
+    name: 'accordion',
+    description: 'An expandable/collapsible accordion component with single or multiple mode support',
     dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
     category: 'layout',
     internalDependencies: [],
@@ -112,7 +112,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
     dependencies: ["clsx","tailwind-merge"],
     category: 'custom',
-    internalDependencies: ["checkbox","collapsible"],
+    internalDependencies: ["checkbox","accordion"],
   },
   'key-value-input': {
     name: 'key-value-input',

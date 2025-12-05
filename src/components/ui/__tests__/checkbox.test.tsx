@@ -16,25 +16,19 @@ describe('Checkbox', () => {
   it('renders unchecked by default', () => {
     render(<Checkbox data-testid="checkbox" />)
     const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toHaveAttribute('aria-checked', 'false')
-    expect(checkbox).toHaveClass('bg-white')
-    expect(checkbox).toHaveClass('border-[#E5E7EB]')
+    expect(checkbox).toHaveAttribute('data-state', 'unchecked')
   })
 
   it('renders checked state correctly', () => {
     render(<Checkbox checked data-testid="checkbox" />)
     const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toHaveAttribute('aria-checked', 'true')
-    expect(checkbox).toHaveClass('bg-[#343E55]')
-    expect(checkbox).toHaveClass('border-[#343E55]')
+    expect(checkbox).toHaveAttribute('data-state', 'checked')
   })
 
   it('renders indeterminate state correctly', () => {
     render(<Checkbox checked="indeterminate" data-testid="checkbox" />)
     const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toHaveAttribute('aria-checked', 'mixed')
-    expect(checkbox).toHaveClass('bg-[#343E55]')
-    expect(checkbox).toHaveClass('border-[#343E55]')
+    expect(checkbox).toHaveAttribute('data-state', 'indeterminate')
   })
 
   it.each([
@@ -70,17 +64,17 @@ describe('Checkbox', () => {
     render(<Checkbox />)
     const checkbox = screen.getByRole('checkbox')
 
-    expect(checkbox).toHaveAttribute('aria-checked', 'false')
+    expect(checkbox).toHaveAttribute('data-state', 'unchecked')
     fireEvent.click(checkbox)
-    expect(checkbox).toHaveAttribute('aria-checked', 'true')
+    expect(checkbox).toHaveAttribute('data-state', 'checked')
     fireEvent.click(checkbox)
-    expect(checkbox).toHaveAttribute('aria-checked', 'false')
+    expect(checkbox).toHaveAttribute('data-state', 'unchecked')
   })
 
   it('respects defaultChecked prop', () => {
     render(<Checkbox defaultChecked />)
     const checkbox = screen.getByRole('checkbox')
-    expect(checkbox).toHaveAttribute('aria-checked', 'true')
+    expect(checkbox).toHaveAttribute('data-state', 'checked')
   })
 
   it('does not toggle when disabled', () => {
@@ -90,11 +84,10 @@ describe('Checkbox', () => {
     expect(handleChange).not.toHaveBeenCalled()
   })
 
-  it('applies disabled styles', () => {
+  it('applies disabled state', () => {
     render(<Checkbox disabled data-testid="checkbox" />)
     const checkbox = screen.getByTestId('checkbox')
     expect(checkbox).toBeDisabled()
-    expect(checkbox).toHaveClass('disabled:opacity-50')
   })
 
   it('renders with label on the right by default', () => {
@@ -143,43 +136,11 @@ describe('Checkbox', () => {
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
-  // New props tests
-  describe('New accessibility props', () => {
-    it('applies ariaLabel prop as aria-label attribute', () => {
-      render(<Checkbox ariaLabel="Custom accessible label" />)
-      const checkbox = screen.getByRole('checkbox')
-      expect(checkbox).toHaveAttribute('aria-label', 'Custom accessible label')
-    })
-
-    it('applies ariaLabelledBy prop as aria-labelledby attribute', () => {
-      render(
-        <>
-          <span id="external-label">External Label</span>
-          <Checkbox ariaLabelledBy="external-label" />
-        </>
-      )
-      const checkbox = screen.getByRole('checkbox')
-      expect(checkbox).toHaveAttribute('aria-labelledby', 'external-label')
-    })
-
+  describe('id prop', () => {
     it('applies id prop to checkbox element', () => {
       render(<Checkbox id="my-checkbox" />)
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toHaveAttribute('id', 'my-checkbox')
-    })
-  })
-
-  describe('autoFocus prop', () => {
-    it('focuses checkbox on mount when autoFocus is true', () => {
-      render(<Checkbox autoFocus data-testid="checkbox" />)
-      const checkbox = screen.getByTestId('checkbox')
-      expect(checkbox).toHaveFocus()
-    })
-
-    it('does not focus checkbox on mount when autoFocus is false', () => {
-      render(<Checkbox data-testid="checkbox" />)
-      const checkbox = screen.getByTestId('checkbox')
-      expect(checkbox).not.toHaveFocus()
     })
   })
 
@@ -201,20 +162,6 @@ describe('Checkbox', () => {
       const checkbox = screen.getByTestId('checkbox')
       expect(checkbox).toHaveClass('class-a')
       expect(checkbox).toHaveClass('class-b')
-    })
-  })
-
-  describe('Form metadata props', () => {
-    it('stores name prop as data-name attribute', () => {
-      render(<Checkbox name="newsletter" data-testid="checkbox" />)
-      const checkbox = screen.getByTestId('checkbox')
-      expect(checkbox).toHaveAttribute('data-name', 'newsletter')
-    })
-
-    it('stores value prop as data-value attribute', () => {
-      render(<Checkbox value="subscribed" data-testid="checkbox" />)
-      const checkbox = screen.getByTestId('checkbox')
-      expect(checkbox).toHaveAttribute('data-value', 'subscribed')
     })
   })
 

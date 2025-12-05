@@ -21,7 +21,7 @@ categories:
       - input
       - select
       - checkbox
-      - toggle
+      - switch
       - text-field
       - select-field
       - multi-select
@@ -44,7 +44,7 @@ categories:
   layout:
     description: "Layout and structure components"
     components:
-      - collapsible
+      - accordion
 
   custom:
     description: "Multi-file complex components"
@@ -72,9 +72,10 @@ components:
       - "lucide-react"
 
   badge:
-    description: "A status badge component with active, failed, and disabled variants"
+    description: "A status badge component with active, failed, disabled, outline, secondary, and destructive variants"
     category: core
     dependencies:
+      - "@radix-ui/react-slot"
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge"
@@ -101,18 +102,20 @@ components:
       - "lucide-react"
 
   checkbox:
-    description: "A tri-state checkbox component with label support (checked, unchecked, indeterminate)"
+    description: "A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox."
     category: form
     dependencies:
+      - "@radix-ui/react-checkbox"
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
 
-  toggle:
-    description: "A toggle/switch component for boolean inputs with on/off states"
+  switch:
+    description: "A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch."
     category: form
     dependencies:
+      - "@radix-ui/react-switch"
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge"
@@ -181,8 +184,8 @@ components:
   # ---------------------------------------------------------------------------
   # LAYOUT COMPONENTS
   # ---------------------------------------------------------------------------
-  collapsible:
-    description: "An expandable/collapsible section component with single or multiple mode support"
+  accordion:
+    description: "An expandable/collapsible accordion component with single or multiple mode support"
     category: layout
     dependencies:
       - "class-variance-authority"
@@ -201,7 +204,7 @@ components:
       - "tailwind-merge"
     internalDependencies:
       - checkbox
-      - collapsible
+      - accordion
     isMultiFile: true
     directory: "event-selector"
     files:

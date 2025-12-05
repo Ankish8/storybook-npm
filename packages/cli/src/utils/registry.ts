@@ -269,6 +269,7 @@ const buttonVariants = cva(
         lg: "py-3 px-6 [&_svg]:size-5",
         icon: "h-8 w-8 rounded-md",
         "icon-sm": "h-7 w-7 rounded-md",
+        "icon-lg": "h-10 w-10 rounded-md",
       },
     },
     defaultVariants: {
@@ -351,8 +352,9 @@ export { Button, buttonVariants }
     },
     'badge': {
       name: 'badge',
-      description: 'A status badge component with active, failed, and disabled variants',
+      description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants',
       dependencies: [
+            "@radix-ui/react-slot",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"
@@ -361,6 +363,7 @@ export { Button, buttonVariants }
         {
           name: 'badge.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
@@ -374,10 +377,15 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
+        // Status-based variants (existing)
         active: "bg-[#E5FFF5] text-[#00A651]",
         failed: "bg-[#FFECEC] text-[#FF3B3B]",
         disabled: "bg-[#F3F5F6] text-[#6B7280]",
         default: "bg-[#F3F5F6] text-[#333333]",
+        // shadcn-style variants (new)
+        secondary: "bg-[#F3F4F6] text-[#333333]",
+        outline: "border border-[#E5E7EB] bg-transparent text-[#333333]",
+        destructive: "bg-[#FFECEC] text-[#FF3B3B]",
       },
       size: {
         default: "px-3 py-1",
@@ -400,7 +408,11 @@ const badgeVariants = cva(
  * <Badge variant="active">Active</Badge>
  * <Badge variant="failed">Failed</Badge>
  * <Badge variant="disabled">Disabled</Badge>
+ * <Badge variant="outline">Outline</Badge>
+ * <Badge variant="secondary">Secondary</Badge>
+ * <Badge variant="destructive">Destructive</Badge>
  * <Badge variant="active" leftIcon={<CheckIcon />}>Active</Badge>
+ * <Badge asChild><a href="/status">View Status</a></Badge>
  * \`\`\`
  */
 export interface BadgeProps
@@ -410,12 +422,30 @@ export interface BadgeProps
   leftIcon?: React.ReactNode
   /** Icon displayed on the right side of the badge text */
   rightIcon?: React.ReactNode
+  /** Render as child element using Radix Slot */
+  asChild?: boolean
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, leftIcon, rightIcon, children, ...props }, ref) => {
+  ({ className, variant, size, leftIcon, rightIcon, asChild = false, children, ...props }, ref) => {
+    const Comp = asChild ? Slot : "div"
+
+    // When using asChild, we can't wrap the child with extra elements
+    // The child must receive the className and ref directly
+    if (asChild) {
+      return (
+        <Comp
+          className={cn(badgeVariants({ variant, size, className }), "gap-1")}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </Comp>
+      )
+    }
+
     return (
-      <div
+      <Comp
         className={cn(badgeVariants({ variant, size, className }), "gap-1")}
         ref={ref}
         {...props}
@@ -423,7 +453,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {leftIcon && <span className="[&_svg]:size-3">{leftIcon}</span>}
         {children}
         {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
-      </div>
+      </Comp>
     )
   }
 )
@@ -704,8 +734,9 @@ export {
     },
     'checkbox': {
       name: 'checkbox',
-      description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
+      description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
       dependencies: [
+            "@radix-ui/react-checkbox",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -715,6 +746,7 @@ export {
         {
           name: 'checkbox.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Check, Minus } from "lucide-react"
 
@@ -724,7 +756,7 @@ import { cn } from "../../lib/utils"
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "inline-flex items-center justify-center rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E5E7EB] data-[state=unchecked]:hover:border-[#9CA3AF]",
   {
     variants: {
       size: {
@@ -774,7 +806,7 @@ const labelSizeVariants = cva("", {
 export type CheckedState = boolean | "indeterminate"
 
 /**
- * A tri-state checkbox component with label support
+ * A tri-state checkbox component with label support. Built on Radix UI Checkbox primitive.
  *
  * @example
  * \`\`\`tsx
@@ -786,128 +818,60 @@ export type CheckedState = boolean | "indeterminate"
  * \`\`\`
  */
 export interface CheckboxProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
+  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "onChange">,
     VariantProps<typeof checkboxVariants> {
-  /** Whether the checkbox is checked, unchecked, or indeterminate */
-  checked?: CheckedState
-  /** Default checked state for uncontrolled usage */
-  defaultChecked?: boolean
-  /** Callback when checked state changes */
-  onCheckedChange?: (checked: CheckedState) => void
   /** Optional label text */
   label?: string
   /** Position of the label */
   labelPosition?: "left" | "right"
-  /** The label of the checkbox for accessibility */
-  ariaLabel?: string
-  /** The ID of an element describing the checkbox */
-  ariaLabelledBy?: string
-  /** If true, the checkbox automatically receives focus */
-  autoFocus?: boolean
   /** Class name applied to the checkbox element */
   checkboxClassName?: string
   /** Class name applied to the label element */
   labelClassName?: string
-  /** The name of the checkbox, used for form submission */
-  name?: string
-  /** The value submitted with the form when checked */
-  value?: string
   /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
   separateLabel?: boolean
 }
 
-const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+const Checkbox = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  CheckboxProps
+>(
   (
     {
       className,
       size,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onCheckedChange,
-      disabled,
       label,
       labelPosition = "right",
-      ariaLabel,
-      ariaLabelledBy,
-      autoFocus,
       checkboxClassName,
       labelClassName,
-      name,
-      value,
       separateLabel = false,
       id,
-      onClick,
+      disabled,
       ...props
     },
     ref
   ) => {
-    const [internalChecked, setInternalChecked] = React.useState<CheckedState>(defaultChecked)
-    const checkboxRef = React.useRef<HTMLButtonElement>(null)
-
-    // Merge refs
-    React.useImperativeHandle(ref, () => checkboxRef.current!)
-
-    // Handle autoFocus
-    React.useEffect(() => {
-      if (autoFocus && checkboxRef.current) {
-        checkboxRef.current.focus()
-      }
-    }, [autoFocus])
-
-    const isControlled = controlledChecked !== undefined
-    const checkedState = isControlled ? controlledChecked : internalChecked
-
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (disabled) return
-
-      // Cycle through states: unchecked -> checked -> unchecked
-      // (indeterminate is typically set programmatically, not through user clicks)
-      const newValue = checkedState === true ? false : true
-
-      if (!isControlled) {
-        setInternalChecked(newValue)
-      }
-
-      onCheckedChange?.(newValue)
-
-      // Call external onClick if provided
-      onClick?.(e)
-    }
-
-    const isChecked = checkedState === true
-    const isIndeterminate = checkedState === "indeterminate"
-
     const checkbox = (
-      <button
-        type="button"
-        role="checkbox"
-        aria-checked={isIndeterminate ? "mixed" : isChecked}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        ref={checkboxRef}
+      <CheckboxPrimitive.Root
+        ref={ref}
         id={id}
         disabled={disabled}
-        onClick={handleClick}
-        data-name={name}
-        data-value={value}
         className={cn(
           checkboxVariants({ size }),
           "cursor-pointer",
-          isChecked || isIndeterminate
-            ? "bg-[#343E55] border-[#343E55] text-white"
-            : "bg-white border-[#E5E7EB] hover:border-[#9CA3AF]",
           className,
           checkboxClassName
         )}
         {...props}
       >
-        {isChecked && (
-          <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
-        )}
-        {isIndeterminate && (
-          <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
-        )}
-      </button>
+        <CheckboxPrimitive.Indicator className="flex items-center justify-center">
+          {props.checked === "indeterminate" ? (
+            <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+          ) : (
+            <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+          )}
+        </CheckboxPrimitive.Indicator>
+      </CheckboxPrimitive.Root>
     )
 
     if (label) {
@@ -974,27 +938,29 @@ export { Checkbox, checkboxVariants }
         },
       ],
     },
-    'toggle': {
-      name: 'toggle',
-      description: 'A toggle/switch component for boolean inputs with on/off states',
+    'switch': {
+      name: 'switch',
+      description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
       dependencies: [
+            "@radix-ui/react-switch",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"
       ],
       files: [
         {
-          name: 'toggle.tsx',
+          name: 'switch.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
+import * as SwitchPrimitives from "@radix-ui/react-switch"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
 
 /**
- * Toggle track variants (the outer container)
+ * Switch track variants (the outer container)
  */
-const toggleVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+const switchVariants = cva(
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E5E7EB]",
   {
     variants: {
       size: {
@@ -1010,124 +976,107 @@ const toggleVariants = cva(
 )
 
 /**
- * Toggle thumb variants (the sliding circle)
+ * Switch thumb variants (the sliding circle)
  */
-const toggleThumbVariants = cva(
-  "pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
+const switchThumbVariants = cva(
+  "pointer-events-none block rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=unchecked]:translate-x-0",
   {
     variants: {
       size: {
-        default: "h-5 w-5",
-        sm: "h-4 w-4",
-        lg: "h-6 w-6",
-      },
-      checked: {
-        true: "",
-        false: "translate-x-0",
+        default: "h-5 w-5 data-[state=checked]:translate-x-5",
+        sm: "h-4 w-4 data-[state=checked]:translate-x-4",
+        lg: "h-6 w-6 data-[state=checked]:translate-x-7",
       },
     },
-    compoundVariants: [
-      { size: "default", checked: true, className: "translate-x-5" },
-      { size: "sm", checked: true, className: "translate-x-4" },
-      { size: "lg", checked: true, className: "translate-x-7" },
-    ],
     defaultVariants: {
       size: "default",
-      checked: false,
     },
   }
 )
 
 /**
- * A toggle/switch component for boolean inputs with on/off states
+ * Label text size variants
+ */
+const labelSizeVariants = cva("", {
+  variants: {
+    size: {
+      default: "text-sm",
+      sm: "text-xs",
+      lg: "text-base",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+})
+
+/**
+ * A switch/toggle component for boolean inputs with on/off states
  *
  * @example
  * \`\`\`tsx
- * <Toggle checked={isEnabled} onCheckedChange={setIsEnabled} />
- * <Toggle size="sm" disabled />
- * <Toggle size="lg" checked label="Enable notifications" />
+ * <Switch checked={isEnabled} onCheckedChange={setIsEnabled} />
+ * <Switch size="sm" disabled />
+ * <Switch size="lg" checked label="Enable notifications" />
  * \`\`\`
  */
-export interface ToggleProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
-    VariantProps<typeof toggleVariants> {
-  /** Whether the toggle is checked/on */
-  checked?: boolean
-  /** Default checked state for uncontrolled usage */
-  defaultChecked?: boolean
-  /** Callback when checked state changes */
-  onCheckedChange?: (checked: boolean) => void
+export interface SwitchProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>, "onChange">,
+    VariantProps<typeof switchVariants> {
   /** Optional label text */
   label?: string
   /** Position of the label */
   labelPosition?: "left" | "right"
 }
 
-const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitives.Root>,
+  SwitchProps
+>(
   (
     {
       className,
       size,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onCheckedChange,
-      disabled,
       label,
       labelPosition = "right",
+      disabled,
       ...props
     },
     ref
   ) => {
-    const [internalChecked, setInternalChecked] = React.useState(defaultChecked)
-
-    const isControlled = controlledChecked !== undefined
-    const isChecked = isControlled ? controlledChecked : internalChecked
-
-    const handleClick = () => {
-      if (disabled) return
-
-      const newValue = !isChecked
-
-      if (!isControlled) {
-        setInternalChecked(newValue)
-      }
-
-      onCheckedChange?.(newValue)
-    }
-
-    const toggle = (
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isChecked}
-        ref={ref}
+    const switchElement = (
+      <SwitchPrimitives.Root
+        className={cn(switchVariants({ size, className }))}
         disabled={disabled}
-        onClick={handleClick}
-        className={cn(
-          toggleVariants({ size, className }),
-          isChecked ? "bg-[#343E55]" : "bg-[#E5E7EB]"
-        )}
+        ref={ref}
         {...props}
       >
-        <span
-          className={cn(
-            toggleThumbVariants({ size, checked: isChecked })
-          )}
-        />
-      </button>
+        <SwitchPrimitives.Thumb className={cn(switchThumbVariants({ size }))} />
+      </SwitchPrimitives.Root>
     )
 
     if (label) {
       return (
-        <label className="inline-flex items-center gap-2 cursor-pointer">
+        <label className={cn(
+          "inline-flex items-center gap-2 cursor-pointer",
+          disabled && "cursor-not-allowed"
+        )}>
           {labelPosition === "left" && (
-            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+            <span className={cn(
+              labelSizeVariants({ size }),
+              "text-[#333333]",
+              disabled && "opacity-50"
+            )}>
               {label}
             </span>
           )}
-          {toggle}
+          {switchElement}
           {labelPosition === "right" && (
-            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+            <span className={cn(
+              labelSizeVariants({ size }),
+              "text-[#333333]",
+              disabled && "opacity-50"
+            )}>
               {label}
             </span>
           )}
@@ -1135,12 +1084,12 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       )
     }
 
-    return toggle
+    return switchElement
   }
 )
-Toggle.displayName = "Toggle"
+Switch.displayName = "Switch"
 
-export { Toggle, toggleVariants }
+export { Switch, switchVariants }
 `, prefix),
         },
       ],
@@ -2048,7 +1997,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                   const isSelected = selectedValues.includes(option.value)
                   const isDisabled =
                     option.disabled ||
-                    (!isSelected && maxSelections && selectedValues.length >= maxSelections)
+                    (!isSelected && maxSelections !== undefined && maxSelections > 0 && selectedValues.length >= maxSelections)
 
                   return (
                     <button
@@ -2129,7 +2078,7 @@ export { MultiSelect, multiSelectTriggerVariants }
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
-import { Toggle, type ToggleProps } from "./toggle"
+import { Switch, type SwitchProps } from "./switch"
 
 /**
  * Table size variants for row height.
@@ -2393,16 +2342,16 @@ const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
 TableAvatar.displayName = "TableAvatar"
 
 /**
- * Toggle component optimized for table cells
+ * Switch component optimized for table cells (previously TableToggle)
  */
-export interface TableToggleProps extends Omit<ToggleProps, 'size'> {
-  /** Size of the toggle - defaults to 'sm' for tables */
+export interface TableToggleProps extends Omit<SwitchProps, 'size'> {
+  /** Size of the switch - defaults to 'sm' for tables */
   size?: 'sm' | 'default'
 }
 
 const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
   ({ size = 'sm', ...props }, ref) => (
-    <Toggle ref={ref} size={size} {...props} />
+    <Switch ref={ref} size={size} {...props} />
   )
 )
 TableToggle.displayName = "TableToggle"
@@ -2792,9 +2741,9 @@ export { Tag, TagGroup, tagVariants }
         },
       ],
     },
-    'collapsible': {
-      name: 'collapsible',
-      description: 'An expandable/collapsible section component with single or multiple mode support',
+    'accordion': {
+      name: 'accordion',
+      description: 'An expandable/collapsible accordion component with single or multiple mode support',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -2803,7 +2752,7 @@ export { Tag, TagGroup, tagVariants }
       ],
       files: [
         {
-          name: 'collapsible.tsx',
+          name: 'accordion.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { ChevronDown } from "lucide-react"
@@ -2811,9 +2760,9 @@ import { ChevronDown } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 /**
- * Collapsible root variants
+ * Accordion root variants
  */
-const collapsibleVariants = cva("w-full", {
+const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
@@ -2826,9 +2775,9 @@ const collapsibleVariants = cva("w-full", {
 })
 
 /**
- * Collapsible item variants
+ * Accordion item variants
  */
-const collapsibleItemVariants = cva("", {
+const accordionItemVariants = cva("", {
   variants: {
     variant: {
       default: "",
@@ -2841,9 +2790,9 @@ const collapsibleItemVariants = cva("", {
 })
 
 /**
- * Collapsible trigger variants
+ * Accordion trigger variants
  */
-const collapsibleTriggerVariants = cva(
+const accordionTriggerVariants = cva(
   "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
@@ -2859,9 +2808,9 @@ const collapsibleTriggerVariants = cva(
 )
 
 /**
- * Collapsible content variants
+ * Accordion content variants
  */
-const collapsibleContentVariants = cva(
+const accordionContentVariants = cva(
   "overflow-hidden transition-all duration-300 ease-in-out",
   {
     variants: {
@@ -2877,49 +2826,49 @@ const collapsibleContentVariants = cva(
 )
 
 // Types
-type CollapsibleType = "single" | "multiple"
+type AccordionType = "single" | "multiple"
 
-interface CollapsibleContextValue {
-  type: CollapsibleType
+interface AccordionContextValue {
+  type: AccordionType
   value: string[]
   onValueChange: (value: string[]) => void
   variant: "default" | "bordered"
 }
 
-interface CollapsibleItemContextValue {
+interface AccordionItemContextValue {
   value: string
   isOpen: boolean
   disabled?: boolean
 }
 
 // Contexts
-const CollapsibleContext = React.createContext<CollapsibleContextValue | null>(null)
-const CollapsibleItemContext = React.createContext<CollapsibleItemContextValue | null>(null)
+const AccordionContext = React.createContext<AccordionContextValue | null>(null)
+const AccordionItemContext = React.createContext<AccordionItemContextValue | null>(null)
 
-function useCollapsibleContext() {
-  const context = React.useContext(CollapsibleContext)
+function useAccordionContext() {
+  const context = React.useContext(AccordionContext)
   if (!context) {
-    throw new Error("Collapsible components must be used within a Collapsible")
+    throw new Error("Accordion components must be used within an Accordion")
   }
   return context
 }
 
-function useCollapsibleItemContext() {
-  const context = React.useContext(CollapsibleItemContext)
+function useAccordionItemContext() {
+  const context = React.useContext(AccordionItemContext)
   if (!context) {
-    throw new Error("CollapsibleTrigger/CollapsibleContent must be used within a CollapsibleItem")
+    throw new Error("AccordionTrigger/AccordionContent must be used within an AccordionItem")
   }
   return context
 }
 
 /**
- * Root collapsible component that manages state
+ * Root accordion component that manages state
  */
-export interface CollapsibleProps
+export interface AccordionProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleVariants> {
+    VariantProps<typeof accordionVariants> {
   /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
-  type?: CollapsibleType
+  type?: AccordionType
   /** Controlled value - array of open item values */
   value?: string[]
   /** Default open items for uncontrolled usage */
@@ -2928,7 +2877,7 @@ export interface CollapsibleProps
   onValueChange?: (value: string[]) => void
 }
 
-const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
+const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
   (
     {
       className,
@@ -2968,35 +2917,35 @@ const Collapsible = React.forwardRef<HTMLDivElement, CollapsibleProps>(
     )
 
     return (
-      <CollapsibleContext.Provider value={contextValue}>
+      <AccordionContext.Provider value={contextValue}>
         <div
           ref={ref}
-          className={cn(collapsibleVariants({ variant, className }))}
+          className={cn(accordionVariants({ variant, className }))}
           {...props}
         >
           {children}
         </div>
-      </CollapsibleContext.Provider>
+      </AccordionContext.Provider>
     )
   }
 )
-Collapsible.displayName = "Collapsible"
+Accordion.displayName = "Accordion"
 
 /**
- * Individual collapsible item
+ * Individual accordion item
  */
-export interface CollapsibleItemProps
+export interface AccordionItemProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleItemVariants> {
+    VariantProps<typeof accordionItemVariants> {
   /** Unique value for this item */
   value: string
   /** Whether this item is disabled */
   disabled?: boolean
 }
 
-const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
+const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
   ({ className, value, disabled, children, ...props }, ref) => {
-    const { value: openValues, variant } = useCollapsibleContext()
+    const { value: openValues, variant } = useAccordionContext()
     const isOpen = openValues.includes(value)
 
     const contextValue = React.useMemo(
@@ -3009,35 +2958,35 @@ const CollapsibleItem = React.forwardRef<HTMLDivElement, CollapsibleItemProps>(
     )
 
     return (
-      <CollapsibleItemContext.Provider value={contextValue}>
+      <AccordionItemContext.Provider value={contextValue}>
         <div
           ref={ref}
           data-state={isOpen ? "open" : "closed"}
-          className={cn(collapsibleItemVariants({ variant, className }))}
+          className={cn(accordionItemVariants({ variant, className }))}
           {...props}
         >
           {children}
         </div>
-      </CollapsibleItemContext.Provider>
+      </AccordionItemContext.Provider>
     )
   }
 )
-CollapsibleItem.displayName = "CollapsibleItem"
+AccordionItem.displayName = "AccordionItem"
 
 /**
- * Trigger button that toggles the collapsible item
+ * Trigger button that toggles the accordion item
  */
-export interface CollapsibleTriggerProps
+export interface AccordionTriggerProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof collapsibleTriggerVariants> {
+    VariantProps<typeof accordionTriggerVariants> {
   /** Whether to show the chevron icon */
   showChevron?: boolean
 }
 
-const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
+const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   ({ className, showChevron = true, children, ...props }, ref) => {
-    const { type, value: openValues, onValueChange, variant } = useCollapsibleContext()
-    const { value, isOpen, disabled } = useCollapsibleItemContext()
+    const { type, value: openValues, onValueChange, variant } = useAccordionContext()
+    const { value, isOpen, disabled } = useAccordionItemContext()
 
     const handleClick = () => {
       if (disabled) return
@@ -3064,7 +3013,7 @@ const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTrigge
         aria-expanded={isOpen}
         disabled={disabled}
         onClick={handleClick}
-        className={cn(collapsibleTriggerVariants({ variant, className }))}
+        className={cn(accordionTriggerVariants({ variant, className }))}
         {...props}
       >
         <span className="flex-1">{children}</span>
@@ -3080,19 +3029,19 @@ const CollapsibleTrigger = React.forwardRef<HTMLButtonElement, CollapsibleTrigge
     )
   }
 )
-CollapsibleTrigger.displayName = "CollapsibleTrigger"
+AccordionTrigger.displayName = "AccordionTrigger"
 
 /**
  * Content that is shown/hidden when the item is toggled
  */
-export interface CollapsibleContentProps
+export interface AccordionContentProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof collapsibleContentVariants> {}
+    VariantProps<typeof accordionContentVariants> {}
 
-const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentProps>(
+const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>(
   ({ className, children, ...props }, ref) => {
-    const { variant } = useCollapsibleContext()
-    const { isOpen } = useCollapsibleItemContext()
+    const { variant } = useAccordionContext()
+    const { isOpen } = useAccordionItemContext()
     const contentRef = React.useRef<HTMLDivElement>(null)
     const [height, setHeight] = React.useState<number | undefined>(undefined)
 
@@ -3106,7 +3055,7 @@ const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentPr
     return (
       <div
         ref={ref}
-        className={cn(collapsibleContentVariants({ variant, className }))}
+        className={cn(accordionContentVariants({ variant, className }))}
         style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
         aria-hidden={!isOpen}
         {...props}
@@ -3118,17 +3067,17 @@ const CollapsibleContent = React.forwardRef<HTMLDivElement, CollapsibleContentPr
     )
   }
 )
-CollapsibleContent.displayName = "CollapsibleContent"
+AccordionContent.displayName = "AccordionContent"
 
 export {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-  collapsibleVariants,
-  collapsibleItemVariants,
-  collapsibleTriggerVariants,
-  collapsibleContentVariants,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  accordionVariants,
+  accordionItemVariants,
+  accordionTriggerVariants,
+  accordionContentVariants,
 }
 `, prefix),
         },
@@ -3143,7 +3092,7 @@ export {
       ],
       internalDependencies: [
             "checkbox",
-            "collapsible"
+            "accordion"
       ],
       isMultiFile: true,
       directory: 'event-selector',
@@ -3341,16 +3290,16 @@ EventSelector.displayName = "EventSelector"
 import { cn } from "../../../lib/utils"
 import { Checkbox, type CheckedState } from "../checkbox"
 import {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "../collapsible"
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../accordion"
 import { EventItemComponent } from "./event-item"
 import type { EventGroupComponentProps } from "./types"
 
 /**
- * Event group with collapsible section and group-level checkbox
+ * Event group with accordion section and group-level checkbox
  */
 export const EventGroupComponent = React.forwardRef<
   HTMLDivElement,
@@ -3417,9 +3366,9 @@ export const EventGroupComponent = React.forwardRef<
         className={cn("bg-[#F9FAFB] rounded-lg", className)}
         {...props}
       >
-        <Collapsible type="multiple">
-          <CollapsibleItem value={group.id}>
-            <CollapsibleTrigger
+        <Accordion type="multiple">
+          <AccordionItem value={group.id}>
+            <AccordionTrigger
               showChevron={true}
               className="w-full p-4 hover:bg-[#F3F4F6] rounded-lg"
             >
@@ -3449,8 +3398,8 @@ export const EventGroupComponent = React.forwardRef<
                   </span>
                 )}
               </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
+            </AccordionTrigger>
+            <AccordionContent>
               <div className="border-t border-[#E5E7EB]">
                 {events.length > 0 ? (
                   events.map((event) => (
@@ -3473,9 +3422,9 @@ export const EventGroupComponent = React.forwardRef<
                   </div>
                 )}
               </div>
-            </CollapsibleContent>
-          </CollapsibleItem>
-        </Collapsible>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     )
   }
@@ -3960,9 +3909,7 @@ KeyValueRow.displayName = "KeyValueRow"
         },
         {
           name: 'types.ts',
-          content: prefixTailwindClasses(`import * as React from "react"
-
-/**
+          content: prefixTailwindClasses(`/**
  * Represents a single key-value pair
  */
 export interface KeyValuePair {

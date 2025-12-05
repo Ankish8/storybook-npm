@@ -217,7 +217,7 @@ export function getCustomRegistry(prefix: string = ''): Registry {
       ],
       internalDependencies: [
             "checkbox",
-            "collapsible"
+            "accordion"
       ],
       isMultiFile: true,
       directory: 'event-selector',
@@ -415,16 +415,16 @@ EventSelector.displayName = "EventSelector"
 import { cn } from "../../../lib/utils"
 import { Checkbox, type CheckedState } from "../checkbox"
 import {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "../collapsible"
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../accordion"
 import { EventItemComponent } from "./event-item"
 import type { EventGroupComponentProps } from "./types"
 
 /**
- * Event group with collapsible section and group-level checkbox
+ * Event group with accordion section and group-level checkbox
  */
 export const EventGroupComponent = React.forwardRef<
   HTMLDivElement,
@@ -491,9 +491,9 @@ export const EventGroupComponent = React.forwardRef<
         className={cn("bg-[#F9FAFB] rounded-lg", className)}
         {...props}
       >
-        <Collapsible type="multiple">
-          <CollapsibleItem value={group.id}>
-            <CollapsibleTrigger
+        <Accordion type="multiple">
+          <AccordionItem value={group.id}>
+            <AccordionTrigger
               showChevron={true}
               className="w-full p-4 hover:bg-[#F3F4F6] rounded-lg"
             >
@@ -523,8 +523,8 @@ export const EventGroupComponent = React.forwardRef<
                   </span>
                 )}
               </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
+            </AccordionTrigger>
+            <AccordionContent>
               <div className="border-t border-[#E5E7EB]">
                 {events.length > 0 ? (
                   events.map((event) => (
@@ -547,9 +547,9 @@ export const EventGroupComponent = React.forwardRef<
                   </div>
                 )}
               </div>
-            </CollapsibleContent>
-          </CollapsibleItem>
-        </Collapsible>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     )
   }
@@ -1034,9 +1034,7 @@ KeyValueRow.displayName = "KeyValueRow"
         },
         {
           name: 'types.ts',
-          content: prefixTailwindClasses(`import * as React from "react"
-
-/**
+          content: prefixTailwindClasses(`/**
  * Represents a single key-value pair
  */
 export interface KeyValuePair {

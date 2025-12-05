@@ -345,7 +345,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                   const isSelected = selectedValues.includes(option.value)
                   const isDisabled =
                     option.disabled ||
-                    (!isSelected && maxSelections && selectedValues.length >= maxSelections)
+                    (!isSelected && maxSelections !== undefined && maxSelections > 0 && selectedValues.length >= maxSelections)
 
                   return (
                     <button

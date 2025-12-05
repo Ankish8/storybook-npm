@@ -1,4 +1,5 @@
 import * as React from "react"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Check, Minus } from "lucide-react"
 
@@ -8,7 +9,7 @@ import { cn } from "@/lib/utils"
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "inline-flex items-center justify-center rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E5E7EB] data-[state=unchecked]:hover:border-[#9CA3AF]",
   {
     variants: {
       size: {
@@ -58,7 +59,7 @@ const labelSizeVariants = cva("", {
 export type CheckedState = boolean | "indeterminate"
 
 /**
- * A tri-state checkbox component with label support
+ * A tri-state checkbox component with label support. Built on Radix UI Checkbox primitive.
  *
  * @example
  * ```tsx
@@ -70,128 +71,60 @@ export type CheckedState = boolean | "indeterminate"
  * ```
  */
 export interface CheckboxProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
+  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "onChange">,
     VariantProps<typeof checkboxVariants> {
-  /** Whether the checkbox is checked, unchecked, or indeterminate */
-  checked?: CheckedState
-  /** Default checked state for uncontrolled usage */
-  defaultChecked?: boolean
-  /** Callback when checked state changes */
-  onCheckedChange?: (checked: CheckedState) => void
   /** Optional label text */
   label?: string
   /** Position of the label */
   labelPosition?: "left" | "right"
-  /** The label of the checkbox for accessibility */
-  ariaLabel?: string
-  /** The ID of an element describing the checkbox */
-  ariaLabelledBy?: string
-  /** If true, the checkbox automatically receives focus */
-  autoFocus?: boolean
   /** Class name applied to the checkbox element */
   checkboxClassName?: string
   /** Class name applied to the label element */
   labelClassName?: string
-  /** The name of the checkbox, used for form submission */
-  name?: string
-  /** The value submitted with the form when checked */
-  value?: string
   /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
   separateLabel?: boolean
 }
 
-const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+const Checkbox = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  CheckboxProps
+>(
   (
     {
       className,
       size,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onCheckedChange,
-      disabled,
       label,
       labelPosition = "right",
-      ariaLabel,
-      ariaLabelledBy,
-      autoFocus,
       checkboxClassName,
       labelClassName,
-      name,
-      value,
       separateLabel = false,
       id,
-      onClick,
+      disabled,
       ...props
     },
     ref
   ) => {
-    const [internalChecked, setInternalChecked] = React.useState<CheckedState>(defaultChecked)
-    const checkboxRef = React.useRef<HTMLButtonElement>(null)
-
-    // Merge refs
-    React.useImperativeHandle(ref, () => checkboxRef.current!)
-
-    // Handle autoFocus
-    React.useEffect(() => {
-      if (autoFocus && checkboxRef.current) {
-        checkboxRef.current.focus()
-      }
-    }, [autoFocus])
-
-    const isControlled = controlledChecked !== undefined
-    const checkedState = isControlled ? controlledChecked : internalChecked
-
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (disabled) return
-
-      // Cycle through states: unchecked -> checked -> unchecked
-      // (indeterminate is typically set programmatically, not through user clicks)
-      const newValue = checkedState === true ? false : true
-
-      if (!isControlled) {
-        setInternalChecked(newValue)
-      }
-
-      onCheckedChange?.(newValue)
-
-      // Call external onClick if provided
-      onClick?.(e)
-    }
-
-    const isChecked = checkedState === true
-    const isIndeterminate = checkedState === "indeterminate"
-
     const checkbox = (
-      <button
-        type="button"
-        role="checkbox"
-        aria-checked={isIndeterminate ? "mixed" : isChecked}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        ref={checkboxRef}
+      <CheckboxPrimitive.Root
+        ref={ref}
         id={id}
         disabled={disabled}
-        onClick={handleClick}
-        data-name={name}
-        data-value={value}
         className={cn(
           checkboxVariants({ size }),
           "cursor-pointer",
-          isChecked || isIndeterminate
-            ? "bg-[#343E55] border-[#343E55] text-white"
-            : "bg-white border-[#E5E7EB] hover:border-[#9CA3AF]",
           className,
           checkboxClassName
         )}
         {...props}
       >
-        {isChecked && (
-          <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
-        )}
-        {isIndeterminate && (
-          <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
-        )}
-      </button>
+        <CheckboxPrimitive.Indicator className="flex items-center justify-center">
+          {props.checked === "indeterminate" ? (
+            <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+          ) : (
+            <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+          )}
+        </CheckboxPrimitive.Indicator>
+      </CheckboxPrimitive.Root>
     )
 
     if (label) {

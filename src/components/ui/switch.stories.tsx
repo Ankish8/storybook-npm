@@ -1,25 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
-import { Toggle } from './toggle'
+import { Switch } from './switch'
 
-const meta: Meta<typeof Toggle> = {
-  title: 'Components/Toggle',
-  component: Toggle,
+const meta: Meta<typeof Switch> = {
+  title: 'Components/Switch',
+  component: Switch,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
         component: `
-A toggle switch component for binary on/off states.
+A switch component for binary on/off states. Built on Radix UI Switch primitive for accessibility.
 
 \`\`\`bash
-npx myoperator-ui add toggle
+npx myoperator-ui add switch
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { Toggle } from "@/components/ui/toggle"
+import { Switch } from "@/components/ui/switch"
 \`\`\`
         `,
       },
@@ -30,15 +30,15 @@ import { Toggle } from "@/components/ui/toggle"
     size: {
       control: 'select',
       options: ['default', 'sm', 'lg'],
-      description: 'Size of the toggle',
+      description: 'Size of the switch',
     },
     checked: {
       control: 'boolean',
-      description: 'Whether the toggle is checked',
+      description: 'Whether the switch is checked',
     },
     disabled: {
       control: 'boolean',
-      description: 'Whether the toggle is disabled',
+      description: 'Whether the switch is disabled',
     },
     label: {
       control: 'text',
@@ -107,10 +107,10 @@ const ControlledExample = () => {
   const [checked, setChecked] = useState(false)
   return (
     <div className="flex flex-col gap-4">
-      <Toggle
+      <Switch
         checked={checked}
         onCheckedChange={setChecked}
-        label="Controlled toggle"
+        label="Controlled switch"
       />
       <p className="text-sm text-gray-600">
         Current state: {checked ? 'ON' : 'OFF'}
@@ -127,13 +127,13 @@ export const AllSizes: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <Toggle size="sm" label="Small" />
+        <Switch size="sm" label="Small" />
       </div>
       <div className="flex items-center gap-4">
-        <Toggle size="default" label="Default" />
+        <Switch size="default" label="Default" />
       </div>
       <div className="flex items-center gap-4">
-        <Toggle size="lg" label="Large" />
+        <Switch size="lg" label="Large" />
       </div>
     </div>
   ),
@@ -143,16 +143,16 @@ export const AllStates: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <Toggle label="Unchecked" />
+        <Switch label="Unchecked" />
       </div>
       <div className="flex items-center gap-4">
-        <Toggle checked label="Checked" />
+        <Switch checked label="Checked" />
       </div>
       <div className="flex items-center gap-4">
-        <Toggle disabled label="Disabled unchecked" />
+        <Switch disabled label="Disabled unchecked" />
       </div>
       <div className="flex items-center gap-4">
-        <Toggle disabled checked label="Disabled checked" />
+        <Switch disabled checked label="Disabled checked" />
       </div>
     </div>
   ),

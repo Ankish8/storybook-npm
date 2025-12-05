@@ -117,14 +117,14 @@ import { Checkbox } from "@myoperator/ui"
         defaultValue: { summary: 'right' },
       },
     },
-    ariaLabel: {
+    'aria-label': {
       control: 'text',
       description: 'The label of the checkbox for accessibility',
       table: {
         type: { summary: 'string' },
       },
     },
-    ariaLabelledBy: {
+    'aria-labelledby': {
       control: 'text',
       description: 'The ID of an element describing the checkbox',
       table: {
@@ -458,14 +458,14 @@ export const AccessibilityExample: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="text-sm text-gray-600 mb-2">Using ariaLabel prop:</p>
-        <Checkbox ariaLabel="Subscribe to newsletter" />
+        <p className="text-sm text-gray-600 mb-2">Using aria-label prop:</p>
+        <Checkbox aria-label="Subscribe to newsletter" />
       </div>
       <div>
-        <p className="text-sm text-gray-600 mb-2">Using ariaLabelledBy prop:</p>
+        <p className="text-sm text-gray-600 mb-2">Using aria-labelledby prop:</p>
         <div className="flex items-center gap-2">
           <span id="notification-label" className="text-sm">Enable notifications</span>
-          <Checkbox ariaLabelledBy="notification-label" />
+          <Checkbox aria-labelledby="notification-label" />
         </div>
       </div>
     </div>
@@ -473,7 +473,7 @@ export const AccessibilityExample: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Use `ariaLabel` prop when you need to provide a custom accessible name. Use `ariaLabelledBy` prop when the checkbox is described by external elements.',
+        story: 'Use `aria-label` prop when you need to provide a custom accessible name. Use `aria-labelledby` prop when the checkbox is described by external elements.',
       },
     },
   },

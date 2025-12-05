@@ -478,8 +478,9 @@ export {
     },
     'checkbox': {
       name: 'checkbox',
-      description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate)',
+      description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
       dependencies: [
+            "@radix-ui/react-checkbox",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -489,6 +490,7 @@ export {
         {
           name: 'checkbox.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Check, Minus } from "lucide-react"
 
@@ -498,7 +500,7 @@ import { cn } from "../../lib/utils"
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "inline-flex items-center justify-center rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E5E7EB] data-[state=unchecked]:hover:border-[#9CA3AF]",
   {
     variants: {
       size: {
@@ -548,7 +550,7 @@ const labelSizeVariants = cva("", {
 export type CheckedState = boolean | "indeterminate"
 
 /**
- * A tri-state checkbox component with label support
+ * A tri-state checkbox component with label support. Built on Radix UI Checkbox primitive.
  *
  * @example
  * \`\`\`tsx
@@ -560,128 +562,60 @@ export type CheckedState = boolean | "indeterminate"
  * \`\`\`
  */
 export interface CheckboxProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
+  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "onChange">,
     VariantProps<typeof checkboxVariants> {
-  /** Whether the checkbox is checked, unchecked, or indeterminate */
-  checked?: CheckedState
-  /** Default checked state for uncontrolled usage */
-  defaultChecked?: boolean
-  /** Callback when checked state changes */
-  onCheckedChange?: (checked: CheckedState) => void
   /** Optional label text */
   label?: string
   /** Position of the label */
   labelPosition?: "left" | "right"
-  /** The label of the checkbox for accessibility */
-  ariaLabel?: string
-  /** The ID of an element describing the checkbox */
-  ariaLabelledBy?: string
-  /** If true, the checkbox automatically receives focus */
-  autoFocus?: boolean
   /** Class name applied to the checkbox element */
   checkboxClassName?: string
   /** Class name applied to the label element */
   labelClassName?: string
-  /** The name of the checkbox, used for form submission */
-  name?: string
-  /** The value submitted with the form when checked */
-  value?: string
   /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
   separateLabel?: boolean
 }
 
-const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+const Checkbox = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  CheckboxProps
+>(
   (
     {
       className,
       size,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onCheckedChange,
-      disabled,
       label,
       labelPosition = "right",
-      ariaLabel,
-      ariaLabelledBy,
-      autoFocus,
       checkboxClassName,
       labelClassName,
-      name,
-      value,
       separateLabel = false,
       id,
-      onClick,
+      disabled,
       ...props
     },
     ref
   ) => {
-    const [internalChecked, setInternalChecked] = React.useState<CheckedState>(defaultChecked)
-    const checkboxRef = React.useRef<HTMLButtonElement>(null)
-
-    // Merge refs
-    React.useImperativeHandle(ref, () => checkboxRef.current!)
-
-    // Handle autoFocus
-    React.useEffect(() => {
-      if (autoFocus && checkboxRef.current) {
-        checkboxRef.current.focus()
-      }
-    }, [autoFocus])
-
-    const isControlled = controlledChecked !== undefined
-    const checkedState = isControlled ? controlledChecked : internalChecked
-
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (disabled) return
-
-      // Cycle through states: unchecked -> checked -> unchecked
-      // (indeterminate is typically set programmatically, not through user clicks)
-      const newValue = checkedState === true ? false : true
-
-      if (!isControlled) {
-        setInternalChecked(newValue)
-      }
-
-      onCheckedChange?.(newValue)
-
-      // Call external onClick if provided
-      onClick?.(e)
-    }
-
-    const isChecked = checkedState === true
-    const isIndeterminate = checkedState === "indeterminate"
-
     const checkbox = (
-      <button
-        type="button"
-        role="checkbox"
-        aria-checked={isIndeterminate ? "mixed" : isChecked}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        ref={checkboxRef}
+      <CheckboxPrimitive.Root
+        ref={ref}
         id={id}
         disabled={disabled}
-        onClick={handleClick}
-        data-name={name}
-        data-value={value}
         className={cn(
           checkboxVariants({ size }),
           "cursor-pointer",
-          isChecked || isIndeterminate
-            ? "bg-[#343E55] border-[#343E55] text-white"
-            : "bg-white border-[#E5E7EB] hover:border-[#9CA3AF]",
           className,
           checkboxClassName
         )}
         {...props}
       >
-        {isChecked && (
-          <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
-        )}
-        {isIndeterminate && (
-          <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
-        )}
-      </button>
+        <CheckboxPrimitive.Indicator className="flex items-center justify-center">
+          {props.checked === "indeterminate" ? (
+            <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+          ) : (
+            <Check className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
+          )}
+        </CheckboxPrimitive.Indicator>
+      </CheckboxPrimitive.Root>
     )
 
     if (label) {
@@ -748,27 +682,29 @@ export { Checkbox, checkboxVariants }
         },
       ],
     },
-    'toggle': {
-      name: 'toggle',
-      description: 'A toggle/switch component for boolean inputs with on/off states',
+    'switch': {
+      name: 'switch',
+      description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
       dependencies: [
+            "@radix-ui/react-switch",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"
       ],
       files: [
         {
-          name: 'toggle.tsx',
+          name: 'switch.tsx',
           content: prefixTailwindClasses(`import * as React from "react"
+import * as SwitchPrimitives from "@radix-ui/react-switch"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
 
 /**
- * Toggle track variants (the outer container)
+ * Switch track variants (the outer container)
  */
-const toggleVariants = cva(
-  "relative inline-flex shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+const switchVariants = cva(
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E5E7EB]",
   {
     variants: {
       size: {
@@ -784,124 +720,107 @@ const toggleVariants = cva(
 )
 
 /**
- * Toggle thumb variants (the sliding circle)
+ * Switch thumb variants (the sliding circle)
  */
-const toggleThumbVariants = cva(
-  "pointer-events-none inline-block rounded-full bg-white shadow-lg ring-0 transition-transform duration-200 ease-in-out",
+const switchThumbVariants = cva(
+  "pointer-events-none block rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=unchecked]:translate-x-0",
   {
     variants: {
       size: {
-        default: "h-5 w-5",
-        sm: "h-4 w-4",
-        lg: "h-6 w-6",
-      },
-      checked: {
-        true: "",
-        false: "translate-x-0",
+        default: "h-5 w-5 data-[state=checked]:translate-x-5",
+        sm: "h-4 w-4 data-[state=checked]:translate-x-4",
+        lg: "h-6 w-6 data-[state=checked]:translate-x-7",
       },
     },
-    compoundVariants: [
-      { size: "default", checked: true, className: "translate-x-5" },
-      { size: "sm", checked: true, className: "translate-x-4" },
-      { size: "lg", checked: true, className: "translate-x-7" },
-    ],
     defaultVariants: {
       size: "default",
-      checked: false,
     },
   }
 )
 
 /**
- * A toggle/switch component for boolean inputs with on/off states
+ * Label text size variants
+ */
+const labelSizeVariants = cva("", {
+  variants: {
+    size: {
+      default: "text-sm",
+      sm: "text-xs",
+      lg: "text-base",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+})
+
+/**
+ * A switch/toggle component for boolean inputs with on/off states
  *
  * @example
  * \`\`\`tsx
- * <Toggle checked={isEnabled} onCheckedChange={setIsEnabled} />
- * <Toggle size="sm" disabled />
- * <Toggle size="lg" checked label="Enable notifications" />
+ * <Switch checked={isEnabled} onCheckedChange={setIsEnabled} />
+ * <Switch size="sm" disabled />
+ * <Switch size="lg" checked label="Enable notifications" />
  * \`\`\`
  */
-export interface ToggleProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange">,
-    VariantProps<typeof toggleVariants> {
-  /** Whether the toggle is checked/on */
-  checked?: boolean
-  /** Default checked state for uncontrolled usage */
-  defaultChecked?: boolean
-  /** Callback when checked state changes */
-  onCheckedChange?: (checked: boolean) => void
+export interface SwitchProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>, "onChange">,
+    VariantProps<typeof switchVariants> {
   /** Optional label text */
   label?: string
   /** Position of the label */
   labelPosition?: "left" | "right"
 }
 
-const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+const Switch = React.forwardRef<
+  React.ElementRef<typeof SwitchPrimitives.Root>,
+  SwitchProps
+>(
   (
     {
       className,
       size,
-      checked: controlledChecked,
-      defaultChecked = false,
-      onCheckedChange,
-      disabled,
       label,
       labelPosition = "right",
+      disabled,
       ...props
     },
     ref
   ) => {
-    const [internalChecked, setInternalChecked] = React.useState(defaultChecked)
-
-    const isControlled = controlledChecked !== undefined
-    const isChecked = isControlled ? controlledChecked : internalChecked
-
-    const handleClick = () => {
-      if (disabled) return
-
-      const newValue = !isChecked
-
-      if (!isControlled) {
-        setInternalChecked(newValue)
-      }
-
-      onCheckedChange?.(newValue)
-    }
-
-    const toggle = (
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isChecked}
-        ref={ref}
+    const switchElement = (
+      <SwitchPrimitives.Root
+        className={cn(switchVariants({ size, className }))}
         disabled={disabled}
-        onClick={handleClick}
-        className={cn(
-          toggleVariants({ size, className }),
-          isChecked ? "bg-[#343E55]" : "bg-[#E5E7EB]"
-        )}
+        ref={ref}
         {...props}
       >
-        <span
-          className={cn(
-            toggleThumbVariants({ size, checked: isChecked })
-          )}
-        />
-      </button>
+        <SwitchPrimitives.Thumb className={cn(switchThumbVariants({ size }))} />
+      </SwitchPrimitives.Root>
     )
 
     if (label) {
       return (
-        <label className="inline-flex items-center gap-2 cursor-pointer">
+        <label className={cn(
+          "inline-flex items-center gap-2 cursor-pointer",
+          disabled && "cursor-not-allowed"
+        )}>
           {labelPosition === "left" && (
-            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+            <span className={cn(
+              labelSizeVariants({ size }),
+              "text-[#333333]",
+              disabled && "opacity-50"
+            )}>
               {label}
             </span>
           )}
-          {toggle}
+          {switchElement}
           {labelPosition === "right" && (
-            <span className={cn("text-sm text-[#333333]", disabled && "opacity-50")}>
+            <span className={cn(
+              labelSizeVariants({ size }),
+              "text-[#333333]",
+              disabled && "opacity-50"
+            )}>
               {label}
             </span>
           )}
@@ -909,12 +828,12 @@ const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
       )
     }
 
-    return toggle
+    return switchElement
   }
 )
-Toggle.displayName = "Toggle"
+Switch.displayName = "Switch"
 
-export { Toggle, toggleVariants }
+export { Switch, switchVariants }
 `, prefix),
         },
       ],
@@ -1822,7 +1741,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                   const isSelected = selectedValues.includes(option.value)
                   const isDisabled =
                     option.disabled ||
-                    (!isSelected && maxSelections && selectedValues.length >= maxSelections)
+                    (!isSelected && maxSelections !== undefined && maxSelections > 0 && selectedValues.length >= maxSelections)
 
                   return (
                     <button

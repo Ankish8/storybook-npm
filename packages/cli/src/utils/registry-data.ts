@@ -223,7 +223,7 @@ export function getDataRegistry(prefix: string = ''): Registry {
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
-import { Toggle, type ToggleProps } from "./toggle"
+import { Switch, type SwitchProps } from "./switch"
 
 /**
  * Table size variants for row height.
@@ -487,16 +487,16 @@ const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
 TableAvatar.displayName = "TableAvatar"
 
 /**
- * Toggle component optimized for table cells
+ * Switch component optimized for table cells (previously TableToggle)
  */
-export interface TableToggleProps extends Omit<ToggleProps, 'size'> {
-  /** Size of the toggle - defaults to 'sm' for tables */
+export interface TableToggleProps extends Omit<SwitchProps, 'size'> {
+  /** Size of the switch - defaults to 'sm' for tables */
   size?: 'sm' | 'default'
 }
 
 const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
   ({ size = 'sm', ...props }, ref) => (
-    <Toggle ref={ref} size={size} {...props} />
+    <Switch ref={ref} size={size} {...props} />
   )
 )
 TableToggle.displayName = "TableToggle"

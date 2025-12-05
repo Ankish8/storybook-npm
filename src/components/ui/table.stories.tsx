@@ -207,30 +207,12 @@ export const Overview: Story = {
     size: 'md',
     withoutBorder: false,
   },
-  argTypes: {
-    showToggle: {
-      control: 'boolean',
-      description: 'Show toggle switch column',
-      table: {
-        defaultValue: { summary: 'false' },
-        type: { summary: 'boolean' },
-      },
-    },
-    showActions: {
-      control: 'boolean',
-      description: 'Show actions column with edit/delete buttons',
-      table: {
-        defaultValue: { summary: 'false' },
-        type: { summary: 'boolean' },
-      },
-    },
-  },
   render: (args) => (
     <OverviewTable
       size={args.size || 'md'}
       withoutBorder={args.withoutBorder || false}
-      showToggle={(args as Record<string, boolean>).showToggle || false}
-      showActions={(args as Record<string, boolean>).showActions || false}
+      showToggle={false}
+      showActions={false}
     />
   ),
 }
@@ -1074,41 +1056,18 @@ export const WithStackedTags: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'When a cell contains multiple tags, stack them vertically for better readability. Use a "+N more" indicator styled as a tag when there are too many items to display. Use the controls to test different configurations.',
+        story: 'When a cell contains multiple tags, stack them vertically for better readability. Use a "+N more" indicator styled as a tag when there are too many items to display.',
       },
     },
   },
   args: {
     size: 'md',
   },
-  argTypes: {
-    totalTags: {
-      control: { type: 'range', min: 1, max: 10, step: 1 },
-      description: 'Total number of tags in the first row',
-      table: {
-        defaultValue: { summary: '8' },
-      },
-    },
-    maxVisible: {
-      control: { type: 'range', min: 1, max: 5, step: 1 },
-      description: 'Maximum tags to show before "+N more"',
-      table: {
-        defaultValue: { summary: '2' },
-      },
-    },
-    showActions: {
-      control: 'boolean',
-      description: 'Show action buttons column',
-      table: {
-        defaultValue: { summary: 'true' },
-      },
-    },
-  },
-  render: (args) => (
+  render: () => (
     <StackedTagsTable
-      totalTags={(args as Record<string, number>).totalTags ?? 8}
-      maxVisible={(args as Record<string, number>).maxVisible ?? 2}
-      showActions={(args as Record<string, boolean>).showActions ?? true}
+      totalTags={8}
+      maxVisible={2}
+      showActions={true}
     />
   ),
 }

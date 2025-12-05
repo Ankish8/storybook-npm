@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 import {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from './collapsible'
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from './accordion'
 
-const meta: Meta<typeof Collapsible> = {
-  title: 'Components/Collapsible',
-  component: Collapsible,
+const meta: Meta<typeof Accordion> = {
+  title: 'Components/Accordion',
+  component: Accordion,
   parameters: {
     layout: 'centered',
     docs: {
@@ -18,29 +18,29 @@ const meta: Meta<typeof Collapsible> = {
 An expandable/collapsible section component with single or multiple mode support.
 
 \`\`\`bash
-npx myoperator-ui add collapsible
+npx myoperator-ui add accordion
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
 import {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 } from "@myoperator/ui"
 \`\`\`
 
 ## Usage
 
 \`\`\`tsx
-<Collapsible type="multiple" defaultValue={['item-1']}>
-  <CollapsibleItem value="item-1">
-    <CollapsibleTrigger>Section Title</CollapsibleTrigger>
-    <CollapsibleContent>Content here...</CollapsibleContent>
-  </CollapsibleItem>
-</Collapsible>
+<Accordion type="multiple" defaultValue={['item-1']}>
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Section Title</AccordionTrigger>
+    <AccordionContent>Content here...</AccordionContent>
+  </AccordionItem>
+</Accordion>
 \`\`\`
 
 ## Design Tokens
@@ -60,7 +60,7 @@ import {
     type: {
       control: 'select',
       options: ['single', 'multiple'],
-      description: 'Whether only one item can be open (single/accordion) or multiple items can be open at once',
+      description: 'Whether only one item can be open (single) or multiple items can be open at once',
     },
     variant: {
       control: 'select',
@@ -80,74 +80,74 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   render: () => (
     <div className="w-[400px]">
-      <Collapsible>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>What is myOperator UI?</CollapsibleTrigger>
-          <CollapsibleContent>
+      <Accordion>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>What is myOperator UI?</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               myOperator UI is a collection of beautifully designed, accessible React
               components built with Tailwind CSS.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2">
-          <CollapsibleTrigger>How do I install it?</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>How do I install it?</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               You can install components using the CLI: npx myoperator-ui add button
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-3">
-          <CollapsibleTrigger>Is it customizable?</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Is it customizable?</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               Yes! All components are fully customizable using Tailwind CSS classes
               and CSS variables.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
 }
 
 export const SingleMode: Story = {
-  name: 'Single Mode (Accordion)',
+  name: 'Single Mode',
   render: () => (
     <div className="w-[400px]">
-      <Collapsible type="single" defaultValue={['item-1']}>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Section One</CollapsibleTrigger>
-          <CollapsibleContent>
+      <Accordion type="single" defaultValue={['item-1']}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Section One</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This is the content for section one. Only one section can be open at a time.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2">
-          <CollapsibleTrigger>Section Two</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Section Two</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This is the content for section two. Opening this will close section one.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-3">
-          <CollapsibleTrigger>Section Three</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Section Three</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This is the content for section three.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
   parameters: {
     docs: {
       description: {
-        story: 'In single mode (accordion), only one item can be open at a time. Opening a new item closes the previously open one.',
+        story: 'In single mode, only one item can be open at a time. Opening a new item closes the previously open one.',
       },
     },
   },
@@ -157,32 +157,32 @@ export const MultipleMode: Story = {
   name: 'Multiple Mode',
   render: () => (
     <div className="w-[400px]">
-      <Collapsible type="multiple" defaultValue={['item-1', 'item-2']}>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Section One</CollapsibleTrigger>
-          <CollapsibleContent>
+      <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Section One</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This is the content for section one. Multiple sections can be open.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2">
-          <CollapsibleTrigger>Section Two</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Section Two</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This is the content for section two. This is also open by default.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-3">
-          <CollapsibleTrigger>Section Three</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Section Three</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This is the content for section three.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
   parameters: {
@@ -197,32 +197,32 @@ export const MultipleMode: Story = {
 export const Bordered: Story = {
   render: () => (
     <div className="w-[400px]">
-      <Collapsible variant="bordered" defaultValue={['item-1']}>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Account Settings</CollapsibleTrigger>
-          <CollapsibleContent>
+      <Accordion variant="bordered" defaultValue={['item-1']}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Account Settings</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               Manage your account settings and preferences here.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2">
-          <CollapsibleTrigger>Notification Preferences</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Notification Preferences</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               Configure how and when you receive notifications.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-3">
-          <CollapsibleTrigger>Privacy & Security</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Privacy & Security</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               Review and update your privacy and security settings.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
 }
@@ -231,32 +231,32 @@ export const WithDisabledItem: Story = {
   name: 'With Disabled Item',
   render: () => (
     <div className="w-[400px]">
-      <Collapsible variant="bordered">
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Available Section</CollapsibleTrigger>
-          <CollapsibleContent>
+      <Accordion variant="bordered">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Available Section</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This section is available and can be expanded.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2" disabled>
-          <CollapsibleTrigger>Disabled Section</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2" disabled>
+          <AccordionTrigger>Disabled Section</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This content won't be visible because the item is disabled.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-3">
-          <CollapsibleTrigger>Another Available Section</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Another Available Section</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This section is also available.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
 }
@@ -265,18 +265,18 @@ export const WithoutChevron: Story = {
   name: 'Without Chevron Icon',
   render: () => (
     <div className="w-[400px]">
-      <Collapsible variant="bordered">
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger showChevron={false}>
+      <Accordion variant="bordered">
+        <AccordionItem value="item-1">
+          <AccordionTrigger showChevron={false}>
             <span className="font-medium">Click to expand</span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               This trigger doesn't show a chevron icon.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
 }
@@ -315,26 +315,26 @@ const ControlledExample = () => {
       <p className="mb-4 text-sm text-gray-600">
         Open items: {value.length > 0 ? value.join(', ') : 'none'}
       </p>
-      <Collapsible value={value} onValueChange={setValue} variant="bordered">
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Section One</CollapsibleTrigger>
-          <CollapsibleContent>
+      <Accordion value={value} onValueChange={setValue} variant="bordered">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Section One</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">Content for section one.</p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2">
-          <CollapsibleTrigger>Section Two</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Section Two</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">Content for section two.</p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-3">
-          <CollapsibleTrigger>Section Three</CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger>Section Three</AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">Content for section three.</p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   )
 }
@@ -354,16 +354,16 @@ export const CustomContent: Story = {
   name: 'Custom Content',
   render: () => (
     <div className="w-[400px]">
-      <Collapsible variant="bordered">
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>
+      <Accordion variant="bordered">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-green-500" />
               <span>Online Users</span>
               <span className="ml-2 text-xs text-[#6B7280]">(24)</span>
             </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2 text-sm">
                 <span className="h-6 w-6 rounded-full bg-gray-200" />
@@ -378,21 +378,21 @@ export const CustomContent: Story = {
                 <span>Bob Johnson</span>
               </div>
             </div>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2">
-          <CollapsibleTrigger>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-gray-400" />
               <span>Offline Users</span>
               <span className="ml-2 text-xs text-[#6B7280]">(12)</span>
             </div>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">12 users are currently offline.</p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
 }
@@ -402,41 +402,41 @@ export const FAQ: Story = {
   render: () => (
     <div className="w-[500px]">
       <h2 className="mb-4 text-lg font-semibold text-[#333333]">Frequently Asked Questions</h2>
-      <Collapsible type="single" variant="bordered">
-        <CollapsibleItem value="q1">
-          <CollapsibleTrigger>
+      <Accordion type="single" variant="bordered">
+        <AccordionItem value="q1">
+          <AccordionTrigger>
             <span className="font-medium text-[#333333]">How do I reset my password?</span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               To reset your password, click on the "Forgot Password" link on the login page.
               Enter your email address and we'll send you a link to reset your password.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="q2">
-          <CollapsibleTrigger>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="q2">
+          <AccordionTrigger>
             <span className="font-medium text-[#333333]">Can I change my subscription plan?</span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               Yes, you can upgrade or downgrade your subscription plan at any time from
               your account settings. Changes will be reflected in your next billing cycle.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="q3">
-          <CollapsibleTrigger>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="q3">
+          <AccordionTrigger>
             <span className="font-medium text-[#333333]">How do I contact support?</span>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
+          </AccordionTrigger>
+          <AccordionContent>
             <p className="text-sm text-[#6B7280]">
               You can reach our support team via email at support@example.com or through
               the live chat feature available in the bottom right corner of the dashboard.
             </p>
-          </CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   ),
 }

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Button } from '../button'
 
@@ -34,6 +34,8 @@ describe('Button', () => {
     ['sm', 'py-2', 'px-3'],
     ['lg', 'py-3', 'px-6'],
     ['icon', 'h-8', 'w-8'],
+    ['icon-sm', 'h-7', 'w-7'],
+    ['icon-lg', 'h-10', 'w-10'],
   ] as const)('renders %s size', (size, ...expectedClasses) => {
     render(<Button size={size}>Test</Button>)
     const button = screen.getByRole('button')

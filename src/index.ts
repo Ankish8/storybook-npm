@@ -59,9 +59,9 @@ export {
   DropdownMenuRadioGroup,
 } from './components/ui/dropdown-menu'
 
-// Toggle
-export { Toggle, toggleVariants } from './components/ui/toggle'
-export type { ToggleProps } from './components/ui/toggle'
+// Switch (renamed from Toggle)
+export { Switch, switchVariants } from './components/ui/switch'
+export type { SwitchProps } from './components/ui/switch'
 
 // Input
 export { Input, inputVariants } from './components/ui/input'
@@ -99,23 +99,23 @@ export type { MultiSelectProps, MultiSelectOption } from './components/ui/multi-
 export { Checkbox, checkboxVariants } from './components/ui/checkbox'
 export type { CheckboxProps, CheckedState } from './components/ui/checkbox'
 
-// Collapsible
+// Accordion (renamed from Collapsible)
 export {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-  collapsibleVariants,
-  collapsibleItemVariants,
-  collapsibleTriggerVariants,
-  collapsibleContentVariants,
-} from './components/ui/collapsible'
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  accordionVariants,
+  accordionItemVariants,
+  accordionTriggerVariants,
+  accordionContentVariants,
+} from './components/ui/accordion'
 export type {
-  CollapsibleProps,
-  CollapsibleItemProps,
-  CollapsibleTriggerProps,
-  CollapsibleContentProps,
-} from './components/ui/collapsible'
+  AccordionProps,
+  AccordionItemProps,
+  AccordionTriggerProps,
+  AccordionContentProps,
+} from './components/ui/accordion'
 
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from './components/custom/event-selector'

@@ -1,5 +1,3 @@
-import * as React from "react"
-
 /**
  * Represents a single key-value pair
  */

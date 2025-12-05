@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import {
-  Collapsible,
-  CollapsibleItem,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from '../collapsible'
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '../accordion'
 
-const TestCollapsible = ({
+const TestAccordion = ({
   type = 'multiple' as const,
   defaultValue = [] as string[],
   value,
@@ -20,44 +20,44 @@ const TestCollapsible = ({
   onValueChange?: (value: string[]) => void
   variant?: 'default' | 'bordered'
 }) => (
-  <Collapsible
+  <Accordion
     type={type}
     defaultValue={defaultValue}
     value={value}
     onValueChange={onValueChange}
     variant={variant}
   >
-    <CollapsibleItem value="item-1">
-      <CollapsibleTrigger>Trigger 1</CollapsibleTrigger>
-      <CollapsibleContent>Content 1</CollapsibleContent>
-    </CollapsibleItem>
-    <CollapsibleItem value="item-2">
-      <CollapsibleTrigger>Trigger 2</CollapsibleTrigger>
-      <CollapsibleContent>Content 2</CollapsibleContent>
-    </CollapsibleItem>
-    <CollapsibleItem value="item-3">
-      <CollapsibleTrigger>Trigger 3</CollapsibleTrigger>
-      <CollapsibleContent>Content 3</CollapsibleContent>
-    </CollapsibleItem>
-  </Collapsible>
+    <AccordionItem value="item-1">
+      <AccordionTrigger>Trigger 1</AccordionTrigger>
+      <AccordionContent>Content 1</AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-2">
+      <AccordionTrigger>Trigger 2</AccordionTrigger>
+      <AccordionContent>Content 2</AccordionContent>
+    </AccordionItem>
+    <AccordionItem value="item-3">
+      <AccordionTrigger>Trigger 3</AccordionTrigger>
+      <AccordionContent>Content 3</AccordionContent>
+    </AccordionItem>
+  </Accordion>
 )
 
-describe('Collapsible', () => {
+describe('Accordion', () => {
   it('renders correctly', () => {
-    render(<TestCollapsible />)
+    render(<TestAccordion />)
     expect(screen.getByText('Trigger 1')).toBeInTheDocument()
     expect(screen.getByText('Trigger 2')).toBeInTheDocument()
     expect(screen.getByText('Trigger 3')).toBeInTheDocument()
   })
 
   it('renders with role="button" for triggers', () => {
-    render(<TestCollapsible />)
+    render(<TestAccordion />)
     const triggers = screen.getAllByRole('button')
     expect(triggers).toHaveLength(3)
   })
 
   it('all items are closed by default', () => {
-    render(<TestCollapsible />)
+    render(<TestAccordion />)
     const triggers = screen.getAllByRole('button')
     triggers.forEach((trigger) => {
       expect(trigger).toHaveAttribute('aria-expanded', 'false')
@@ -65,7 +65,7 @@ describe('Collapsible', () => {
   })
 
   it('respects defaultValue prop', () => {
-    render(<TestCollapsible defaultValue={['item-1', 'item-2']} />)
+    render(<TestAccordion defaultValue={['item-1', 'item-2']} />)
     const triggers = screen.getAllByRole('button')
     expect(triggers[0]).toHaveAttribute('aria-expanded', 'true')
     expect(triggers[1]).toHaveAttribute('aria-expanded', 'true')
@@ -73,7 +73,7 @@ describe('Collapsible', () => {
   })
 
   it('opens item when trigger is clicked in multiple mode', () => {
-    render(<TestCollapsible type="multiple" />)
+    render(<TestAccordion type="multiple" />)
     const triggers = screen.getAllByRole('button')
 
     fireEvent.click(triggers[0])
@@ -85,7 +85,7 @@ describe('Collapsible', () => {
   })
 
   it('closes item when clicked again in multiple mode', () => {
-    render(<TestCollapsible type="multiple" defaultValue={['item-1']} />)
+    render(<TestAccordion type="multiple" defaultValue={['item-1']} />)
     const triggers = screen.getAllByRole('button')
 
     expect(triggers[0]).toHaveAttribute('aria-expanded', 'true')
@@ -94,7 +94,7 @@ describe('Collapsible', () => {
   })
 
   it('only one item can be open in single mode', () => {
-    render(<TestCollapsible type="single" defaultValue={['item-1']} />)
+    render(<TestAccordion type="single" defaultValue={['item-1']} />)
     const triggers = screen.getAllByRole('button')
 
     expect(triggers[0]).toHaveAttribute('aria-expanded', 'true')
@@ -106,7 +106,7 @@ describe('Collapsible', () => {
   })
 
   it('can close all items in single mode', () => {
-    render(<TestCollapsible type="single" defaultValue={['item-1']} />)
+    render(<TestAccordion type="single" defaultValue={['item-1']} />)
     const triggers = screen.getAllByRole('button')
 
     expect(triggers[0]).toHaveAttribute('aria-expanded', 'true')
@@ -116,7 +116,7 @@ describe('Collapsible', () => {
 
   it('calls onValueChange when item is toggled', () => {
     const handleChange = vi.fn()
-    render(<TestCollapsible onValueChange={handleChange} />)
+    render(<TestAccordion onValueChange={handleChange} />)
     const triggers = screen.getAllByRole('button')
 
     fireEvent.click(triggers[0])
@@ -126,7 +126,7 @@ describe('Collapsible', () => {
   it('works in controlled mode', () => {
     const handleChange = vi.fn()
     const { rerender } = render(
-      <TestCollapsible value={['item-1']} onValueChange={handleChange} />
+      <TestAccordion value={['item-1']} onValueChange={handleChange} />
     )
 
     const triggers = screen.getAllByRole('button')
@@ -136,48 +136,48 @@ describe('Collapsible', () => {
     expect(handleChange).toHaveBeenCalledWith(['item-1', 'item-2'])
 
     // Simulate parent updating value
-    rerender(<TestCollapsible value={['item-1', 'item-2']} onValueChange={handleChange} />)
+    rerender(<TestAccordion value={['item-1', 'item-2']} onValueChange={handleChange} />)
     expect(triggers[0]).toHaveAttribute('aria-expanded', 'true')
     expect(triggers[1]).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('applies custom className to root', () => {
     render(
-      <Collapsible className="custom-class" data-testid="collapsible">
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion className="custom-class" data-testid="accordion">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
-    expect(screen.getByTestId('collapsible')).toHaveClass('custom-class')
+    expect(screen.getByTestId('accordion')).toHaveClass('custom-class')
   })
 
   it('applies bordered variant classes', () => {
     render(
-      <Collapsible variant="bordered" data-testid="collapsible">
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion variant="bordered" data-testid="accordion">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
-    expect(screen.getByTestId('collapsible')).toHaveClass('border')
-    expect(screen.getByTestId('collapsible')).toHaveClass('rounded-lg')
+    expect(screen.getByTestId('accordion')).toHaveClass('border')
+    expect(screen.getByTestId('accordion')).toHaveClass('rounded-lg')
   })
 
   it('sets data-state attribute on items', () => {
     render(
-      <Collapsible defaultValue={['item-1']}>
-        <CollapsibleItem value="item-1" data-testid="item-1">
-          <CollapsibleTrigger>Trigger 1</CollapsibleTrigger>
-          <CollapsibleContent>Content 1</CollapsibleContent>
-        </CollapsibleItem>
-        <CollapsibleItem value="item-2" data-testid="item-2">
-          <CollapsibleTrigger>Trigger 2</CollapsibleTrigger>
-          <CollapsibleContent>Content 2</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion defaultValue={['item-1']}>
+        <AccordionItem value="item-1" data-testid="item-1">
+          <AccordionTrigger>Trigger 1</AccordionTrigger>
+          <AccordionContent>Content 1</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2" data-testid="item-2">
+          <AccordionTrigger>Trigger 2</AccordionTrigger>
+          <AccordionContent>Content 2</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(screen.getByTestId('item-1')).toHaveAttribute('data-state', 'open')
     expect(screen.getByTestId('item-2')).toHaveAttribute('data-state', 'closed')
@@ -185,91 +185,91 @@ describe('Collapsible', () => {
 
   it('hides chevron when showChevron is false', () => {
     const { container } = render(
-      <Collapsible>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger showChevron={false}>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion>
+        <AccordionItem value="item-1">
+          <AccordionTrigger showChevron={false}>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
   it('shows chevron by default', () => {
     const { container } = render(
-      <Collapsible>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(container.querySelector('svg')).toBeInTheDocument()
   })
 
-  it('forwards ref correctly for Collapsible', () => {
+  it('forwards ref correctly for Accordion', () => {
     const ref = { current: null }
     render(
-      <Collapsible ref={ref}>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion ref={ref}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(ref.current).toBeInstanceOf(HTMLDivElement)
   })
 
-  it('forwards ref correctly for CollapsibleItem', () => {
+  it('forwards ref correctly for AccordionItem', () => {
     const ref = { current: null }
     render(
-      <Collapsible>
-        <CollapsibleItem value="item-1" ref={ref}>
-          <CollapsibleTrigger>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion>
+        <AccordionItem value="item-1" ref={ref}>
+          <AccordionTrigger>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(ref.current).toBeInstanceOf(HTMLDivElement)
   })
 
-  it('forwards ref correctly for CollapsibleTrigger', () => {
+  it('forwards ref correctly for AccordionTrigger', () => {
     const ref = { current: null }
     render(
-      <Collapsible>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger ref={ref}>Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion>
+        <AccordionItem value="item-1">
+          <AccordionTrigger ref={ref}>Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(ref.current).toBeInstanceOf(HTMLButtonElement)
   })
 
-  it('forwards ref correctly for CollapsibleContent', () => {
+  it('forwards ref correctly for AccordionContent', () => {
     const ref = { current: null }
     render(
-      <Collapsible defaultValue={['item-1']}>
-        <CollapsibleItem value="item-1">
-          <CollapsibleTrigger>Trigger</CollapsibleTrigger>
-          <CollapsibleContent ref={ref}>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion defaultValue={['item-1']}>
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Trigger</AccordionTrigger>
+          <AccordionContent ref={ref}>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
     expect(ref.current).toBeInstanceOf(HTMLDivElement)
   })
 })
 
-describe('CollapsibleItem disabled', () => {
+describe('AccordionItem disabled', () => {
   it('does not toggle when item is disabled', () => {
     const handleChange = vi.fn()
     render(
-      <Collapsible onValueChange={handleChange}>
-        <CollapsibleItem value="item-1" disabled>
-          <CollapsibleTrigger>Disabled Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion onValueChange={handleChange}>
+        <AccordionItem value="item-1" disabled>
+          <AccordionTrigger>Disabled Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
 
     const trigger = screen.getByRole('button')
@@ -279,12 +279,12 @@ describe('CollapsibleItem disabled', () => {
 
   it('applies disabled attribute to trigger', () => {
     render(
-      <Collapsible>
-        <CollapsibleItem value="item-1" disabled>
-          <CollapsibleTrigger>Disabled Trigger</CollapsibleTrigger>
-          <CollapsibleContent>Content</CollapsibleContent>
-        </CollapsibleItem>
-      </Collapsible>
+      <Accordion>
+        <AccordionItem value="item-1" disabled>
+          <AccordionTrigger>Disabled Trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
     )
 
     expect(screen.getByRole('button')).toBeDisabled()
