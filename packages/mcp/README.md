@@ -143,7 +143,7 @@ The `install-component` tool understands natural language. Ask your AI assistant
 > → Installs: table, badge
 
 > "Add an accordion section"
-> → Installs: collapsible
+> → Installs: accordion
 
 ---
 
@@ -175,19 +175,19 @@ The `install-component` tool understands natural language. Ask your AI assistant
 
 | Component | Description |
 |-----------|-------------|
-| **Button** | 6 variants, 4 sizes, loading states, icons |
-| **Badge** | Status badges (active, failed, disabled) |
-| **Tag** | Event labels with bold prefix, interactive |
-| **Table** | Composable table with loading skeleton |
+| **Accordion** | Expandable/collapsible sections with single or multiple mode |
+| **Badge** | Status badges (active, failed, disabled, outline, secondary, destructive) with asChild |
+| **Button** | 7 variants, 6 sizes (including icon-lg), loading states, icons |
+| **Checkbox** | Tri-state checkbox built on Radix UI with labels |
 | **DropdownMenu** | Radix-based with keyboard navigation |
 | **Input** | Text input with state variants |
-| **TextField** | Form input with label, icons, validation |
+| **MultiSelect** | Multi-select with tags and search |
 | **Select** | Composable Radix-based dropdown |
 | **SelectField** | Form select with label and validation |
-| **MultiSelect** | Multi-select with tags and search |
-| **Checkbox** | Tri-state checkbox with labels |
-| **Toggle** | Toggle switch for boolean inputs |
-| **Collapsible** | Accordion/expandable sections |
+| **Switch** | Switch component built on Radix UI for boolean inputs |
+| **Table** | Composable table with loading skeleton |
+| **Tag** | Event labels with bold prefix, interactive |
+| **TextField** | Form input with label, icons, validation |
 
 ---
 

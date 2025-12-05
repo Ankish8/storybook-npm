@@ -143,19 +143,19 @@ npx myoperator-ui update --help
 
 | Component | Description |
 |-----------|-------------|
-| `badge` | Status badge with active, failed, and disabled variants |
-| `button` | Customizable button with variants, sizes, icons, and loading state |
-| `checkbox` | Tri-state checkbox component with label support (checked, unchecked, indeterminate) |
-| `collapsible` | Expandable/collapsible section component with single or multiple mode support |
+| `accordion` | Expandable/collapsible accordion component with single or multiple mode support |
+| `badge` | Status badge with active, failed, disabled, outline, secondary, destructive variants and asChild support |
+| `button` | Customizable button with variants, sizes (including icon-lg), icons, and loading state |
+| `checkbox` | Tri-state checkbox built on Radix UI with label support (checked, unchecked, indeterminate) |
 | `dropdown-menu` | Dropdown menu for displaying actions and options |
 | `input` | Basic input component |
 | `multi-select` | Multi-select dropdown with search, tags, and keyboard navigation |
 | `select` | Single select dropdown component |
 | `select-field` | Select field with label, helper text, and validation states |
+| `switch` | Switch component built on Radix UI for boolean inputs with on/off states |
 | `table` | Composable table with size variants, loading/empty states, sticky columns |
 | `tag` | Tag component for event labels with optional bold label prefix |
 | `text-field` | Text input with label, icons, prefix/suffix, validation states, and character count |
-| `toggle` | Toggle/switch component for boolean inputs with on/off states |
 
 ## Configuration
 

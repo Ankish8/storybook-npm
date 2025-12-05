@@ -41,8 +41,8 @@ const COMPONENT_META = {
     description: 'A customizable button component with variants, sizes, and icons. Supports loading states and can render as a child element using Radix Slot.',
     dependencies: ['@radix-ui/react-slot', 'class-variance-authority', 'clsx', 'tailwind-merge', 'lucide-react'],
     props: [
-      { name: 'variant', type: '"default" | "destructive" | "outline" | "secondary" | "ghost" | "link"', required: false, description: 'The visual style of the button', defaultValue: 'default' },
-      { name: 'size', type: '"default" | "sm" | "lg" | "icon"', required: false, description: 'The size of the button', defaultValue: 'default' },
+      { name: 'variant', type: '"default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "dashed"', required: false, description: 'The visual style of the button', defaultValue: 'default' },
+      { name: 'size', type: '"default" | "sm" | "lg" | "icon" | "icon-sm" | "icon-lg"', required: false, description: 'The size of the button', defaultValue: 'default' },
       { name: 'asChild', type: 'boolean', required: false, description: 'Render as child element using Radix Slot', defaultValue: 'false' },
       { name: 'leftIcon', type: 'React.ReactNode', required: false, description: 'Icon displayed on the left side of the button text' },
       { name: 'rightIcon', type: 'React.ReactNode', required: false, description: 'Icon displayed on the right side of the button text' },
@@ -50,8 +50,8 @@ const COMPONENT_META = {
       { name: 'loadingText', type: 'string', required: false, description: 'Text shown during loading state' },
     ],
     variants: [
-      { name: 'variant', options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'], defaultValue: 'default' },
-      { name: 'size', options: ['default', 'sm', 'lg', 'icon'], defaultValue: 'default' },
+      { name: 'variant', options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link', 'dashed'], defaultValue: 'default' },
+      { name: 'size', options: ['default', 'sm', 'lg', 'icon', 'icon-sm', 'icon-lg'], defaultValue: 'default' },
     ],
     examples: [
       { title: 'Basic Button', code: '<Button>Click me</Button>', description: 'Simple button with default styling' },
@@ -62,20 +62,22 @@ const COMPONENT_META = {
 
   badge: {
     name: 'Badge',
-    description: 'A status badge component with active, failed, and disabled variants. Pill-shaped badges with different colors for different states.',
-    dependencies: ['class-variance-authority', 'clsx', 'tailwind-merge'],
+    description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants. Supports asChild for rendering as links.',
+    dependencies: ['@radix-ui/react-slot', 'class-variance-authority', 'clsx', 'tailwind-merge'],
     props: [
-      { name: 'variant', type: '"active" | "failed" | "disabled" | "default"', required: false, description: 'The visual style of the badge', defaultValue: 'default' },
+      { name: 'variant', type: '"active" | "failed" | "disabled" | "default" | "secondary" | "outline" | "destructive"', required: false, description: 'The visual style of the badge', defaultValue: 'default' },
       { name: 'size', type: '"default" | "sm" | "lg"', required: false, description: 'The size of the badge', defaultValue: 'default' },
       { name: 'leftIcon', type: 'React.ReactNode', required: false, description: 'Icon displayed on the left side' },
       { name: 'rightIcon', type: 'React.ReactNode', required: false, description: 'Icon displayed on the right side' },
+      { name: 'asChild', type: 'boolean', required: false, description: 'Render as child element using Radix Slot', defaultValue: 'false' },
     ],
     variants: [
-      { name: 'variant', options: ['active', 'failed', 'disabled', 'default'], defaultValue: 'default' },
+      { name: 'variant', options: ['active', 'failed', 'disabled', 'default', 'secondary', 'outline', 'destructive'], defaultValue: 'default' },
       { name: 'size', options: ['default', 'sm', 'lg'], defaultValue: 'default' },
     ],
     examples: [
       { title: 'Status Badges', code: '<Badge variant="active">Active</Badge>\n<Badge variant="failed">Failed</Badge>', description: 'Badges for different status states' },
+      { title: 'Badge as Link', code: '<Badge asChild><a href="/status">View Status</a></Badge>', description: 'Badge rendered as a link' },
     ],
   },
 
@@ -221,8 +223,8 @@ const COMPONENT_META = {
 
   checkbox: {
     name: 'Checkbox',
-    description: 'A tri-state checkbox component with label support. Supports checked, unchecked, and indeterminate states.',
-    dependencies: ['class-variance-authority', 'clsx', 'tailwind-merge', 'lucide-react'],
+    description: 'A tri-state checkbox component built on Radix UI with label support. Supports checked, unchecked, and indeterminate states.',
+    dependencies: ['@radix-ui/react-checkbox', 'class-variance-authority', 'clsx', 'tailwind-merge', 'lucide-react'],
     props: [
       { name: 'size', type: '"default" | "sm" | "lg"', required: false, description: 'The size of the checkbox', defaultValue: 'default' },
       { name: 'checked', type: 'boolean | "indeterminate"', required: false, description: 'Whether the checkbox is checked' },
@@ -239,13 +241,13 @@ const COMPONENT_META = {
     ],
   },
 
-  toggle: {
-    name: 'Toggle',
-    description: 'A toggle/switch component for boolean inputs with on/off states. Supports labels and multiple sizes.',
-    dependencies: ['class-variance-authority', 'clsx', 'tailwind-merge'],
+  switch: {
+    name: 'Switch',
+    description: 'A switch component built on Radix UI for boolean inputs with on/off states. Supports labels and multiple sizes.',
+    dependencies: ['@radix-ui/react-switch', 'class-variance-authority', 'clsx', 'tailwind-merge'],
     props: [
-      { name: 'size', type: '"default" | "sm" | "lg"', required: false, description: 'The size of the toggle', defaultValue: 'default' },
-      { name: 'checked', type: 'boolean', required: false, description: 'Whether the toggle is on' },
+      { name: 'size', type: '"default" | "sm" | "lg"', required: false, description: 'The size of the switch', defaultValue: 'default' },
+      { name: 'checked', type: 'boolean', required: false, description: 'Whether the switch is on' },
       { name: 'onCheckedChange', type: '(checked: boolean) => void', required: false, description: 'Callback when checked state changes' },
       { name: 'label', type: 'string', required: false, description: 'Optional label text' },
       { name: 'labelPosition', type: '"left" | "right"', required: false, description: 'Position of the label', defaultValue: 'right' },
@@ -254,18 +256,18 @@ const COMPONENT_META = {
       { name: 'size', options: ['default', 'sm', 'lg'], defaultValue: 'default' },
     ],
     examples: [
-      { title: 'Basic Toggle', code: '<Toggle checked={isEnabled} onCheckedChange={setIsEnabled} />', description: 'Simple controlled toggle' },
-      { title: 'Toggle with Label', code: '<Toggle label="Enable notifications" />', description: 'Toggle with label' },
+      { title: 'Basic Switch', code: '<Switch checked={isEnabled} onCheckedChange={setIsEnabled} />', description: 'Simple controlled switch' },
+      { title: 'Switch with Label', code: '<Switch label="Enable notifications" />', description: 'Switch with label' },
     ],
   },
 
-  collapsible: {
-    name: 'Collapsible',
-    description: 'An expandable/collapsible section component with single or multiple mode support.',
+  accordion: {
+    name: 'Accordion',
+    description: 'An expandable/collapsible accordion component with single or multiple mode support.',
     dependencies: ['class-variance-authority', 'clsx', 'tailwind-merge', 'lucide-react'],
     props: [
       { name: 'type', type: '"single" | "multiple"', required: false, description: 'Whether only one item can be open at a time', defaultValue: 'multiple' },
-      { name: 'variant', type: '"default" | "bordered"', required: false, description: 'Visual variant of the collapsible', defaultValue: 'default' },
+      { name: 'variant', type: '"default" | "bordered"', required: false, description: 'Visual variant of the accordion', defaultValue: 'default' },
       { name: 'value', type: 'string[]', required: false, description: 'Controlled value - array of open item values' },
       { name: 'defaultValue', type: 'string[]', required: false, description: 'Default open items for uncontrolled usage' },
     ],
@@ -274,7 +276,7 @@ const COMPONENT_META = {
       { name: 'variant', options: ['default', 'bordered'], defaultValue: 'default' },
     ],
     examples: [
-      { title: 'Basic Collapsible', code: '<Collapsible>\n  <CollapsibleItem value="item-1">\n    <CollapsibleTrigger>Section 1</CollapsibleTrigger>\n    <CollapsibleContent>Content for section 1</CollapsibleContent>\n  </CollapsibleItem>\n</Collapsible>', description: 'Basic collapsible with sections' },
+      { title: 'Basic Accordion', code: '<Accordion>\n  <AccordionItem value="item-1">\n    <AccordionTrigger>Section 1</AccordionTrigger>\n    <AccordionContent>Content for section 1</AccordionContent>\n  </AccordionItem>\n</Accordion>', description: 'Basic accordion with sections' },
     ],
   },
 }
