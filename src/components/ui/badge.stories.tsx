@@ -2,14 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { Check, X, AlertCircle, Clock } from 'lucide-react'
 import { Badge } from './badge'
 
-// Map variant to appropriate icon
-const variantIcons = {
-  active: <Check />,
-  failed: <X />,
-  disabled: <Clock />,
-  default: <AlertCircle />,
-}
-
 const meta: Meta<typeof Badge> = {
   title: 'Components/Badge',
   component: Badge,
@@ -76,41 +68,12 @@ import { Badge } from "@/components/ui/badge"
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Custom args type with showIcon booleans
-type BadgeStoryArgs = {
-  children: string
-  variant: 'active' | 'failed' | 'disabled' | 'default'
-  size: 'sm' | 'default' | 'lg'
-  showLeftIcon: boolean
-  showRightIcon: boolean
-}
-
 export const Overview: Story = {
-  argTypes: {
-    showLeftIcon: {
-      control: 'boolean',
-      description: 'Show icon on the left side',
-    },
-    showRightIcon: {
-      control: 'boolean',
-      description: 'Show icon on the right side',
-    },
-  },
   args: {
     children: 'Active',
     variant: 'active',
     size: 'default',
-    showLeftIcon: false,
-    showRightIcon: false,
-  } as BadgeStoryArgs,
-  render: ({ showLeftIcon, showRightIcon, variant, ...args }: BadgeStoryArgs) => (
-    <Badge
-      {...args}
-      variant={variant}
-      leftIcon={showLeftIcon ? variantIcons[variant || 'default'] : undefined}
-      rightIcon={showRightIcon ? variantIcons[variant || 'default'] : undefined}
-    />
-  ),
+  },
 }
 
 export const Active: Story = {

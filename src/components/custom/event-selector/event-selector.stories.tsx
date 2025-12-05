@@ -121,17 +121,17 @@ const meta: Meta<typeof EventSelector> = {
     docs: {
       description: {
         component: `
-## Important Notice
+A specialized component for selecting webhook events with collapsible groups and tri-state checkboxes.
 
-> **This component is NOT available via CLI.**
->
-> The EventSelector is a custom/domain-specific component and cannot be installed using \`npx myoperator-ui add\`. Import it directly from the npm package.
+\`\`\`bash
+npx myoperator-ui add event-selector
+\`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { EventSelector } from "@myoperator/ui"
-import type { EventItem, EventGroup, EventCategory } from "@myoperator/ui"
+import { EventSelector } from "@/components/custom/event-selector"
+import type { EventItem, EventGroup, EventCategory } from "@/components/custom/event-selector"
 \`\`\`
 
 ## Overview

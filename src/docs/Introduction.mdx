@@ -2,179 +2,73 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 <Meta title="Introduction" />
 
-<div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-  <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-    myOperator UI
-  </h1>
-  <p style={{ fontSize: '1.25rem', color: '#6B7280', maxWidth: '600px', margin: '0 auto' }}>
-    A collection of beautifully designed, accessible React components built with Tailwind CSS and Radix UI.
-  </p>
-</div>
+# myOperator UI
+
+A collection of production-ready React components built with **Tailwind CSS**, **Radix UI**, and **TypeScript**.
+
+```bash
+npx myoperator-ui init
+npx myoperator-ui add button badge table
+```
+
+**[Get Started →](?path=/docs/getting-started--docs)** · [CLI Reference](?path=/docs/cli-reference--docs) · [MCP Server](?path=/docs/mcp-server--docs)
 
 ---
 
 ## Why myOperator UI?
 
-### Copy & Paste Components
-Unlike traditional component libraries, you own the code. Components are copied directly into your project, giving you full control to customize.
+### Own Your Code
+Components are copied directly into your project. No dependency lock-in — full control to customize everything.
 
-### Built on Best Practices
-- **Radix UI** - Accessible, unstyled primitives
-- **Tailwind CSS** - Utility-first styling
-- **CVA** - Type-safe component variants
-- **TypeScript** - Full type definitions
+### Accessible by Default
+Built on Radix UI primitives with proper ARIA attributes, keyboard navigation, and screen reader support.
 
 ### Bootstrap Compatible
-Seamlessly integrate with existing Bootstrap projects. Our CLI detects Bootstrap and configures Tailwind to avoid conflicts.
+Works alongside existing Bootstrap projects. The CLI auto-configures Tailwind to avoid style conflicts.
 
----
-
-## Features
-
-<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
-
-<div style={{ padding: '1.5rem', border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-  <h3 style={{ marginTop: 0 }}>CLI Tool</h3>
-  <p style={{ color: '#6B7280', margin: 0 }}>
-    Add components with a single command. No copy-pasting from docs.
-  </p>
-</div>
-
-<div style={{ padding: '1.5rem', border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-  <h3 style={{ marginTop: 0 }}>Accessible</h3>
-  <p style={{ color: '#6B7280', margin: 0 }}>
-    Built on Radix UI primitives with proper ARIA attributes and keyboard navigation.
-  </p>
-</div>
-
-<div style={{ padding: '1.5rem', border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-  <h3 style={{ marginTop: 0 }}>Customizable</h3>
-  <p style={{ color: '#6B7280', margin: 0 }}>
-    Use CSS variables and Tailwind classes to match your brand.
-  </p>
-</div>
-
-<div style={{ padding: '1.5rem', border: '1px solid #E5E7EB', borderRadius: '8px' }}>
-  <h3 style={{ marginTop: 0 }}>TypeScript</h3>
-  <p style={{ color: '#6B7280', margin: 0 }}>
-    Full type safety with autocomplete and IntelliSense support.
-  </p>
-</div>
-
-</div>
+### TypeScript First
+Full type definitions with autocomplete and IntelliSense. Catch errors at build time, not runtime.
 
 ---
 
 ## Quick Install
 
+Initialize your project and add components in seconds:
+
 ```bash
-# Initialize your project
+# Initialize (installs dependencies, configures Tailwind)
 npx myoperator-ui init
 
-# Add all components at once
-npx myoperator-ui add --all
+# Add specific components
+npx myoperator-ui add button badge
 
-# Or add specific components
-npx myoperator-ui add button badge table
+# Or add ALL components at once
+npx myoperator-ui add --all
 ```
 
 ---
 
-## Components
+## Usage
 
-We offer 13 production-ready components:
+```tsx
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
-<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
-  <thead>
-    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
-      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Component</th>
-      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Badge</strong></td>
-      <td style={{ padding: '0.75rem' }}>Status indicators with active, failed, and disabled variants</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Button</strong></td>
-      <td style={{ padding: '0.75rem' }}>Customizable button with variants, sizes, icons, and loading states</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Checkbox</strong></td>
-      <td style={{ padding: '0.75rem' }}>Tri-state checkbox with label support</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Collapsible</strong></td>
-      <td style={{ padding: '0.75rem' }}>Expandable/collapsible sections</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Dropdown Menu</strong></td>
-      <td style={{ padding: '0.75rem' }}>Actions and options menu</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Input</strong></td>
-      <td style={{ padding: '0.75rem' }}>Basic input component</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Multi-Select</strong></td>
-      <td style={{ padding: '0.75rem' }}>Multi-select with search and tags</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Select</strong></td>
-      <td style={{ padding: '0.75rem' }}>Single select dropdown</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Select Field</strong></td>
-      <td style={{ padding: '0.75rem' }}>Select with label and validation</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Table</strong></td>
-      <td style={{ padding: '0.75rem' }}>Composable table with sorting and sticky columns</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Tag</strong></td>
-      <td style={{ padding: '0.75rem' }}>Event labels with optional bold prefix</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Text Field</strong></td>
-      <td style={{ padding: '0.75rem' }}>Input with label, icons, and validation</td>
-    </tr>
-    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
-      <td style={{ padding: '0.75rem' }}><strong>Toggle</strong></td>
-      <td style={{ padding: '0.75rem' }}>Switch component for boolean inputs</td>
-    </tr>
-  </tbody>
-</table>
+export default function App() {
+  return (
+    <div>
+      <Button variant="default">Click me</Button>
+      <Badge variant="active">Active</Badge>
+    </div>
+  )
+}
+```
 
 ---
 
-## Get Started
+## Next Steps
 
-Ready to add myOperator UI to your project?
-
-<div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
-  <a href="?path=/docs/getting-started--docs" style={{
-    display: 'inline-block',
-    padding: '0.75rem 1.5rem',
-    background: '#343E55',
-    color: 'white',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    fontWeight: 500
-  }}>
-    Getting Started →
-  </a>
-  <a href="?path=/docs/cli-reference--docs" style={{
-    display: 'inline-block',
-    padding: '0.75rem 1.5rem',
-    background: 'transparent',
-    color: '#343E55',
-    borderRadius: '6px',
-    textDecoration: 'none',
-    fontWeight: 500,
-    border: '1px solid #343E55'
-  }}>
-    CLI Reference
-  </a>
-</div>
+- **[Getting Started →](?path=/docs/getting-started--docs)** — Installation and setup guide
+- **[CLI Reference →](?path=/docs/cli-reference--docs)** — Complete CLI documentation
+- **[MCP Server →](?path=/docs/mcp-server--docs)** — AI-powered component generation
+- Browse the **Components** section in the sidebar to see all available components

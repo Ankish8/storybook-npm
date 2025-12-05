@@ -782,6 +782,7 @@ export type CheckedState = boolean | "indeterminate"
  * <Checkbox size="sm" disabled />
  * <Checkbox checked="indeterminate" label="Select all" />
  * <Checkbox label="Accept terms" labelPosition="right" />
+ * <Checkbox id="terms" label="Accept terms" separateLabel />
  * \`\`\`
  */
 export interface CheckboxProps
@@ -797,6 +798,22 @@ export interface CheckboxProps
   label?: string
   /** Position of the label */
   labelPosition?: "left" | "right"
+  /** The label of the checkbox for accessibility */
+  ariaLabel?: string
+  /** The ID of an element describing the checkbox */
+  ariaLabelledBy?: string
+  /** If true, the checkbox automatically receives focus */
+  autoFocus?: boolean
+  /** Class name applied to the checkbox element */
+  checkboxClassName?: string
+  /** Class name applied to the label element */
+  labelClassName?: string
+  /** The name of the checkbox, used for form submission */
+  name?: string
+  /** The value submitted with the form when checked */
+  value?: string
+  /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
+  separateLabel?: boolean
 }
 
 const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
@@ -810,12 +827,32 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       disabled,
       label,
       labelPosition = "right",
+      ariaLabel,
+      ariaLabelledBy,
+      autoFocus,
+      checkboxClassName,
+      labelClassName,
+      name,
+      value,
+      separateLabel = false,
+      id,
       onClick,
       ...props
     },
     ref
   ) => {
     const [internalChecked, setInternalChecked] = React.useState<CheckedState>(defaultChecked)
+    const checkboxRef = React.useRef<HTMLButtonElement>(null)
+
+    // Merge refs
+    React.useImperativeHandle(ref, () => checkboxRef.current!)
+
+    // Handle autoFocus
+    React.useEffect(() => {
+      if (autoFocus && checkboxRef.current) {
+        checkboxRef.current.focus()
+      }
+    }, [autoFocus])
 
     const isControlled = controlledChecked !== undefined
     const checkedState = isControlled ? controlledChecked : internalChecked
@@ -845,15 +882,22 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         type="button"
         role="checkbox"
         aria-checked={isIndeterminate ? "mixed" : isChecked}
-        ref={ref}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        ref={checkboxRef}
+        id={id}
         disabled={disabled}
         onClick={handleClick}
+        data-name={name}
+        data-value={value}
         className={cn(
-          checkboxVariants({ size, className }),
+          checkboxVariants({ size }),
           "cursor-pointer",
           isChecked || isIndeterminate
             ? "bg-[#343E55] border-[#343E55] text-white"
-            : "bg-white border-[#E5E7EB] hover:border-[#9CA3AF]"
+            : "bg-white border-[#E5E7EB] hover:border-[#9CA3AF]",
+          className,
+          checkboxClassName
         )}
         {...props}
       >
@@ -867,16 +911,52 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     )
 
     if (label) {
+      // separateLabel mode: use htmlFor/id association instead of wrapping
+      if (separateLabel && id) {
+        return (
+          <div className="inline-flex items-center gap-2">
+            {labelPosition === "left" && (
+              <label
+                htmlFor={id}
+                className={cn(
+                  labelSizeVariants({ size }),
+                  "text-[#333333] cursor-pointer",
+                  disabled && "opacity-50 cursor-not-allowed",
+                  labelClassName
+                )}
+              >
+                {label}
+              </label>
+            )}
+            {checkbox}
+            {labelPosition === "right" && (
+              <label
+                htmlFor={id}
+                className={cn(
+                  labelSizeVariants({ size }),
+                  "text-[#333333] cursor-pointer",
+                  disabled && "opacity-50 cursor-not-allowed",
+                  labelClassName
+                )}
+              >
+                {label}
+              </label>
+            )}
+          </div>
+        )
+      }
+
+      // Default: wrapping label
       return (
-        <label className="inline-flex items-center gap-2 cursor-pointer">
+        <label className={cn("inline-flex items-center gap-2 cursor-pointer", disabled && "cursor-not-allowed")}>
           {labelPosition === "left" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50")}>
+            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50", labelClassName)}>
               {label}
             </span>
           )}
           {checkbox}
           {labelPosition === "right" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50")}>
+            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50", labelClassName)}>
               {label}
             </span>
           )}

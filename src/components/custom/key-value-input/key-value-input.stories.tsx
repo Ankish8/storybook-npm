@@ -11,17 +11,17 @@ const meta: Meta<typeof KeyValueInput> = {
     docs: {
       description: {
         component: `
-## Important Notice
+A specialized component for managing key-value pairs such as HTTP headers, query parameters, or environment variables.
 
-> **This component is NOT available via CLI.**
->
-> The KeyValueInput is a custom/domain-specific component and cannot be installed using \`npx myoperator-ui add\`. Import it directly from the npm package.
+\`\`\`bash
+npx myoperator-ui add key-value-input
+\`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { KeyValueInput } from "@myoperator/ui"
-import type { KeyValuePair } from "@myoperator/ui"
+import { KeyValueInput } from "@/components/custom/key-value-input"
+import type { KeyValuePair } from "@/components/custom/key-value-input"
 \`\`\`
 
 ## Overview

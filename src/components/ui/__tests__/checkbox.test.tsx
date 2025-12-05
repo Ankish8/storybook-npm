@@ -142,4 +142,151 @@ describe('Checkbox', () => {
     const { container } = render(<Checkbox />)
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
+
+  // New props tests
+  describe('New accessibility props', () => {
+    it('applies ariaLabel prop as aria-label attribute', () => {
+      render(<Checkbox ariaLabel="Custom accessible label" />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('aria-label', 'Custom accessible label')
+    })
+
+    it('applies ariaLabelledBy prop as aria-labelledby attribute', () => {
+      render(
+        <>
+          <span id="external-label">External Label</span>
+          <Checkbox ariaLabelledBy="external-label" />
+        </>
+      )
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('aria-labelledby', 'external-label')
+    })
+
+    it('applies id prop to checkbox element', () => {
+      render(<Checkbox id="my-checkbox" />)
+      const checkbox = screen.getByRole('checkbox')
+      expect(checkbox).toHaveAttribute('id', 'my-checkbox')
+    })
+  })
+
+  describe('autoFocus prop', () => {
+    it('focuses checkbox on mount when autoFocus is true', () => {
+      render(<Checkbox autoFocus data-testid="checkbox" />)
+      const checkbox = screen.getByTestId('checkbox')
+      expect(checkbox).toHaveFocus()
+    })
+
+    it('does not focus checkbox on mount when autoFocus is false', () => {
+      render(<Checkbox data-testid="checkbox" />)
+      const checkbox = screen.getByTestId('checkbox')
+      expect(checkbox).not.toHaveFocus()
+    })
+  })
+
+  describe('Custom className props', () => {
+    it('applies checkboxClassName to checkbox element', () => {
+      render(<Checkbox checkboxClassName="custom-checkbox-class" data-testid="checkbox" />)
+      const checkbox = screen.getByTestId('checkbox')
+      expect(checkbox).toHaveClass('custom-checkbox-class')
+    })
+
+    it('applies labelClassName to label text', () => {
+      render(<Checkbox label="Test Label" labelClassName="custom-label-class" />)
+      const labelText = screen.getByText('Test Label')
+      expect(labelText).toHaveClass('custom-label-class')
+    })
+
+    it('applies both className and checkboxClassName', () => {
+      render(<Checkbox className="class-a" checkboxClassName="class-b" data-testid="checkbox" />)
+      const checkbox = screen.getByTestId('checkbox')
+      expect(checkbox).toHaveClass('class-a')
+      expect(checkbox).toHaveClass('class-b')
+    })
+  })
+
+  describe('Form metadata props', () => {
+    it('stores name prop as data-name attribute', () => {
+      render(<Checkbox name="newsletter" data-testid="checkbox" />)
+      const checkbox = screen.getByTestId('checkbox')
+      expect(checkbox).toHaveAttribute('data-name', 'newsletter')
+    })
+
+    it('stores value prop as data-value attribute', () => {
+      render(<Checkbox value="subscribed" data-testid="checkbox" />)
+      const checkbox = screen.getByTestId('checkbox')
+      expect(checkbox).toHaveAttribute('data-value', 'subscribed')
+    })
+  })
+
+  describe('separateLabel prop', () => {
+    it('renders with htmlFor/id association when separateLabel is true', () => {
+      render(<Checkbox id="terms-checkbox" label="Accept terms" separateLabel />)
+      const checkbox = screen.getByRole('checkbox')
+      const label = screen.getByText('Accept terms')
+
+      expect(checkbox).toHaveAttribute('id', 'terms-checkbox')
+      expect(label.tagName).toBe('LABEL')
+      expect(label).toHaveAttribute('for', 'terms-checkbox')
+    })
+
+    it('renders wrapping label when separateLabel is false', () => {
+      render(<Checkbox label="Accept terms" />)
+      const label = screen.getByText('Accept terms')
+
+      // In default mode, label text is in a span, not a label with htmlFor
+      expect(label.tagName).toBe('SPAN')
+    })
+
+    it('falls back to wrapping label when separateLabel is true but id is missing', () => {
+      render(<Checkbox label="Accept terms" separateLabel />)
+      const label = screen.getByText('Accept terms')
+
+      // Without id, falls back to wrapping span
+      expect(label.tagName).toBe('SPAN')
+    })
+
+    it('clicking separate label toggles checkbox', () => {
+      const handleChange = vi.fn()
+      render(
+        <Checkbox
+          id="clickable-label"
+          label="Click me"
+          separateLabel
+          onCheckedChange={handleChange}
+        />
+      )
+
+      const label = screen.getByText('Click me')
+      fireEvent.click(label)
+      expect(handleChange).toHaveBeenCalledWith(true)
+    })
+
+    it('applies labelClassName in separateLabel mode', () => {
+      render(
+        <Checkbox
+          id="styled-label"
+          label="Styled Label"
+          separateLabel
+          labelClassName="my-label-style"
+        />
+      )
+      const label = screen.getByText('Styled Label')
+      expect(label).toHaveClass('my-label-style')
+    })
+
+    it('handles labelPosition in separateLabel mode', () => {
+      const { container } = render(
+        <Checkbox
+          id="left-label"
+          label="Left Label"
+          labelPosition="left"
+          separateLabel
+        />
+      )
+
+      // Check that label comes before checkbox in the DOM
+      const wrapper = container.firstChild
+      expect(wrapper?.firstChild?.textContent).toBe('Left Label')
+    })
+  })
 })
