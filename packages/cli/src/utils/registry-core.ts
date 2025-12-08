@@ -234,6 +234,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
+        primary: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -364,6 +365,7 @@ const badgeVariants = cva(
         failed: "bg-[#FFECEC] text-[#FF3B3B]",
         disabled: "bg-[#F3F5F6] text-[#6B7280]",
         default: "bg-[#F3F5F6] text-[#333333]",
+        primary: "bg-[#F3F5F6] text-[#333333]",
         // shadcn-style variants (new)
         secondary: "bg-[#F3F4F6] text-[#333333]",
         outline: "border border-[#E5E7EB] bg-transparent text-[#333333]",
@@ -390,6 +392,8 @@ const badgeVariants = cva(
  * <Badge variant="active">Active</Badge>
  * <Badge variant="failed">Failed</Badge>
  * <Badge variant="disabled">Disabled</Badge>
+ * <Badge variant="default">Default</Badge>
+ * <Badge variant="primary">Primary</Badge>
  * <Badge variant="outline">Outline</Badge>
  * <Badge variant="secondary">Secondary</Badge>
  * <Badge variant="destructive">Destructive</Badge>

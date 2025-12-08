@@ -367,16 +367,14 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
                   )}
                 </div>
                 {/* Category Groups */}
-                <div className="p-4 space-y-3 bg-[#F9FAFB]">
+                <div className="divide-y divide-[#E5E7EB]">
                   {renderGroups(categoryGroups)}
                 </div>
               </div>
             )
           })}
           {/* Render orphan groups outside categories */}
-          {orphanGroups.length > 0 && (
-            <div className="space-y-3">{renderGroups(orphanGroups)}</div>
-          )}
+          {orphanGroups.length > 0 && renderGroups(orphanGroups)}
         </>
       )
     }
@@ -401,7 +399,9 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
         </div>
 
         {/* Groups */}
-        <div className="space-y-3">{renderCategories()}</div>
+        <div className="border border-[#E5E7EB] rounded-lg overflow-hidden divide-y divide-[#E5E7EB]">
+          {renderCategories()}
+        </div>
       </div>
     )
   }
@@ -485,17 +485,47 @@ export const EventGroupComponent = React.forwardRef<
       }
     }
 
+    // Single event in group: render as flat item (no accordion)
+    if (events.length === 1) {
+      const event = events[0]
+      const isSelected = selectedEvents.includes(event.id)
+
+      return (
+        <div
+          ref={ref}
+          className={cn("bg-white p-4", className)}
+          {...props}
+        >
+          <div className="flex items-start gap-3">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) =>
+                handleEventSelection(event.id, checked === true)
+              }
+              aria-label={\`Select \${event.name}\`}
+              className="mt-0.5"
+            />
+            <div className="flex-1 min-w-0">
+              <span className="font-medium text-[#333333]">{event.name}</span>
+              <p className="text-sm text-[#6B7280] mt-0.5">{event.description}</p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Multiple events: render as collapsible accordion
     return (
       <div
         ref={ref}
-        className={cn("bg-[#F9FAFB] rounded-lg", className)}
+        className={cn("bg-white", className)}
         {...props}
       >
         <Accordion type="multiple">
           <AccordionItem value={group.id}>
             <AccordionTrigger
               showChevron={true}
-              className="w-full p-4 hover:bg-[#F3F4F6] rounded-lg"
+              className="w-full p-4 hover:bg-[#F9FAFB]"
             >
               <div className="flex items-center gap-3 flex-1">
                 <Checkbox
