@@ -24,11 +24,66 @@ import { Button } from "@/components/ui/button"
 
 ## Design Tokens
 
-| Token | Value |
-|-------|-------|
-| Primary Color | \`#343E55\` |
-| Border Radius | \`4px\` |
-| Padding | \`10px 16px\` |
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Primary Color</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">343E55</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #343E55; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Primary Hover</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-primary-hover</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">2F384D</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #2F384D; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Secondary Surface</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-primary-surface</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">EBECEE</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #EBECEE; border-radius: 6px; border: 1px solid #D5D7DA;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Destructive</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-error-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F04438</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F04438; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Ghost Hover</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-ui</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F5F5F5</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F5F5F5; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Text Inverted</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-inverted</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">FFFFFF</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #FFFFFF; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Border Radius</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--radius</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">4px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Padding</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">—</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">10px 16px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },

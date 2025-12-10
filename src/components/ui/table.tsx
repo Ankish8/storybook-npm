@@ -56,7 +56,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, size, withoutBorder, ...props }, ref) => (
     <div className={cn(
       "relative w-full overflow-auto",
-      !withoutBorder && "rounded-lg border border-[#E5E7EB]"
+      !withoutBorder && "rounded-lg border border-[#E9EAEB]"
     )}>
       <table
         ref={ref}
@@ -74,7 +74,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-[#F9FAFB] [&_tr]:border-b", className)}
+    className={cn("bg-[#FAFAFA] [&_tr]:border-b", className)}
     {...props}
   />
 ))
@@ -99,7 +99,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[#F9FAFB] font-medium [&>tr]:last:border-b-0",
+      "border-t bg-[#FAFAFA] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -117,10 +117,10 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-[#E5E7EB] transition-colors",
+        "border-b border-[#E9EAEB] transition-colors",
         highlighted
-          ? "bg-[#EBF5FF]"
-          : "hover:bg-[#F9FAFB]/50 data-[state=selected]:bg-[#F3F4F6]",
+          ? "bg-[#ECF1FB]"
+          : "hover:bg-[#FAFAFA]/50 data-[state=selected]:bg-[#F5F5F5]",
         className
       )}
       {...props}
@@ -143,8 +143,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-[#6B7280] text-sm [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-[#F9FAFB] z-10",
+        "h-12 px-4 text-left align-middle font-medium text-[#717680] text-sm [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-[#FAFAFA] z-10",
         sortDirection && "cursor-pointer select-none",
         className
       )}
@@ -153,12 +153,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       <div className="flex items-center gap-1">
         {children}
         {sortDirection && (
-          <span className="text-[#9CA3AF]">
+          <span className="text-[#A4A7AE]">
             {sortDirection === 'asc' ? '↑' : '↓'}
           </span>
         )}
         {infoTooltip && (
-          <span className="text-[#9CA3AF] cursor-help" title={infoTooltip}>
+          <span className="text-[#A4A7AE] cursor-help" title={infoTooltip}>
             ⓘ
           </span>
         )}
@@ -178,7 +178,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     <td
       ref={ref}
       className={cn(
-        "px-4 align-middle text-[#333333] [&:has([role=checkbox])]:pr-0",
+        "px-4 align-middle text-[#181D27] [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-white z-10",
         className
       )}
@@ -194,7 +194,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-[#6B7280]", className)}
+    className={cn("mt-4 text-sm text-[#717680]", className)}
     {...props}
   />
 ))
@@ -216,7 +216,7 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
       <TableRow key={rowIndex}>
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
-            <div className="h-4 bg-[#E5E7EB] rounded animate-pulse"
+            <div className="h-4 bg-[#E9EAEB] rounded animate-pulse"
                  style={{ width: colIndex === 1 ? '80%' : colIndex === 2 ? '30%' : '60%' }} />
           </TableCell>
         ))}
@@ -238,7 +238,7 @@ export interface TableEmptyProps {
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-8 text-[#6B7280]">
+    <TableCell colSpan={colSpan} className="text-center py-8 text-[#717680]">
       {children || "No data available"}
     </TableCell>
   </TableRow>

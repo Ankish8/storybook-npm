@@ -25,12 +25,60 @@ import { PageHeader } from "@/components/ui/page-header"
 
 ## Design Tokens
 
-| Token | Value |
-|-------|-------|
-| Font Family | Source Sans Pro |
-| Height | \`76px\` |
-| Title | \`16px\`, semibold (600), \`#333333\` |
-| Description | \`14px\`, regular (400), \`#333333\` |
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Font Family</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--font-family</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">Source Sans Pro</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Height</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">—</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">76px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Title Color</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">181D27</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #181D27; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Title Size</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">—</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">16px, semibold (600)</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Description</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px, regular (400)</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">FFFFFF</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #FFFFFF; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Border</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-border-layout</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">E9EAEB</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #E9EAEB; border-radius: 6px; border: 1px solid #D5D7DA;"></div></td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E5E7EB] data-[state=unchecked]:hover:border-[#9CA3AF]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E9EAEB] data-[state=unchecked]:hover:border-[#A4A7AE]",
   {
     variants: {
       size: {
@@ -137,7 +137,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#333333] cursor-pointer",
+                  "text-[#181D27] cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -151,7 +151,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#333333] cursor-pointer",
+                  "text-[#181D27] cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -167,13 +167,13 @@ const Checkbox = React.forwardRef<
       return (
         <label className={cn("inline-flex items-center gap-2 cursor-pointer", disabled && "cursor-not-allowed")}>
           {labelPosition === "left" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50", labelClassName)}>
+            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
               {label}
             </span>
           )}
           {checkbox}
           {labelPosition === "right" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50", labelClassName)}>
+            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
               {label}
             </span>
           )}

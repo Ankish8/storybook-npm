@@ -247,22 +247,22 @@ import { Loader2 } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
-        primary: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
+        default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
+        primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-[#F04438] text-white hover:bg-[#D92D20]",
         outline:
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#343E55] hover:text-white",
         secondary:
-          "bg-[#343E55]/20 text-[#343E55] hover:bg-[#343E55]/30",
-        ghost: "text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#333333]",
+          "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
+        ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-[#D1D5DB] bg-transparent text-[#6B7280] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#F9FAFB]",
+          "border border-dashed border-[#D5D7DA] bg-transparent text-[#717680] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#FAFAFA]",
       },
       size: {
         default: "py-2.5 px-4 [&_svg]:size-4",
@@ -379,15 +379,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Status-based variants (existing)
-        active: "bg-[#E5FFF5] text-[#00A651]",
-        failed: "bg-[#FFECEC] text-[#FF3B3B]",
-        disabled: "bg-[#F3F5F6] text-[#6B7280]",
-        default: "bg-[#F3F5F6] text-[#333333]",
-        primary: "bg-[#F3F5F6] text-[#333333]",
+        active: "bg-[#ECFDF3] text-[#17B26A]",
+        failed: "bg-[#FEF3F2] text-[#F04438]",
+        disabled: "bg-[#F5F5F5] text-[#717680]",
+        default: "bg-[#F5F5F5] text-[#181D27]",
+        primary: "bg-[#F5F5F5] text-[#181D27]",
         // shadcn-style variants (new)
-        secondary: "bg-[#F3F4F6] text-[#333333]",
-        outline: "border border-[#E5E7EB] bg-transparent text-[#333333]",
-        destructive: "bg-[#FFECEC] text-[#FF3B3B]",
+        secondary: "bg-[#F5F5F5] text-[#181D27]",
+        outline: "border border-[#E9EAEB] bg-transparent text-[#181D27]",
+        destructive: "bg-[#FEF3F2] text-[#F04438]",
       },
       size: {
         default: "px-3 py-1",
@@ -488,12 +488,12 @@ import { cn } from "../../lib/utils"
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
+  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -559,12 +559,12 @@ import { cn } from "../../lib/utils"
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB] [&>span]:line-clamp-1",
+  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA] [&>span]:line-clamp-1",
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -594,7 +594,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-[#6B7280] opacity-70" />
+      <ChevronDown className="size-4 text-[#717680] opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ))
@@ -612,7 +612,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronUp className="size-4 text-[#6B7280]" />
+    <ChevronUp className="size-4 text-[#717680]" />
   </SelectPrimitive.ScrollUpButton>
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
@@ -629,7 +629,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronDown className="size-4 text-[#6B7280]" />
+    <ChevronDown className="size-4 text-[#717680]" />
   </SelectPrimitive.ScrollDownButton>
 ))
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
@@ -642,7 +642,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9E9E9] shadow-md",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9EAEB] shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -677,7 +677,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-[#6B7280]", className)}
+    className={cn("px-4 py-1.5 text-xs font-medium text-[#717680]", className)}
     {...props}
   />
 ))
@@ -690,8 +690,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#333333] outline-none",
-      "hover:bg-[#F3F4F6] focus:bg-[#F3F4F6]",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
+      "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -699,7 +699,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-[#2BBBC9]" />
+        <Check className="size-4 text-[#2BBCCA]" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -713,7 +713,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E9E9E9]", className)}
+    className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
     {...props}
   />
 ))
@@ -760,7 +760,7 @@ import { cn } from "../../lib/utils"
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E5E7EB] data-[state=unchecked]:hover:border-[#9CA3AF]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E9EAEB] data-[state=unchecked]:hover:border-[#A4A7AE]",
   {
     variants: {
       size: {
@@ -888,7 +888,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#333333] cursor-pointer",
+                  "text-[#181D27] cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -902,7 +902,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#333333] cursor-pointer",
+                  "text-[#181D27] cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -918,13 +918,13 @@ const Checkbox = React.forwardRef<
       return (
         <label className={cn("inline-flex items-center gap-2 cursor-pointer", disabled && "cursor-not-allowed")}>
           {labelPosition === "left" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50", labelClassName)}>
+            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
               {label}
             </span>
           )}
           {checkbox}
           {labelPosition === "right" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#333333]", disabled && "opacity-50", labelClassName)}>
+            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
               {label}
             </span>
           )}
@@ -964,7 +964,7 @@ import { cn } from "../../lib/utils"
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E5E7EB]",
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E9EAEB]",
   {
     variants: {
       size: {
@@ -1068,7 +1068,7 @@ const Switch = React.forwardRef<
           {labelPosition === "left" && (
             <span className={cn(
               labelSizeVariants({ size }),
-              "text-[#333333]",
+              "text-[#181D27]",
               disabled && "opacity-50"
             )}>
               {label}
@@ -1078,7 +1078,7 @@ const Switch = React.forwardRef<
           {labelPosition === "right" && (
             <span className={cn(
               labelSizeVariants({ size }),
-              "text-[#333333]",
+              "text-[#181D27]",
               disabled && "opacity-50"
             )}>
               {label}
@@ -1124,11 +1124,11 @@ const textFieldContainerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus-within:border-[#2BBBC9]/50 focus-within:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus-within:border-[#FF3B3B]/60 focus-within:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
-        true: "cursor-not-allowed opacity-50 bg-[#F9FAFB]",
+        true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
         false: "",
       },
     },
@@ -1143,12 +1143,12 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
+  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -1266,7 +1266,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         id={inputId}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className })
         )}
         disabled={disabled || loading}
@@ -1286,10 +1286,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
+            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+            {required && <span className="text-[#F04438] ml-0.5">*</span>}
           </label>
         )}
 
@@ -1302,12 +1302,12 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               inputContainerClassName
             )}
           >
-            {prefix && <span className="text-sm text-[#6B7280] mr-2 select-none">{prefix}</span>}
-            {leftIcon && <span className="mr-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
+            {prefix && <span className="text-sm text-[#717680] mr-2 select-none">{prefix}</span>}
+            {leftIcon && <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
             {inputElement}
-            {loading && <Loader2 className="animate-spin size-4 text-[#6B7280] ml-2 flex-shrink-0" />}
-            {!loading && rightIcon && <span className="ml-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
-            {suffix && <span className="text-sm text-[#6B7280] ml-2 select-none">{suffix}</span>}
+            {loading && <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />}
+            {!loading && rightIcon && <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
+            {suffix && <span className="text-sm text-[#717680] ml-2 select-none">{suffix}</span>}
           </div>
         ) : (
           inputElement
@@ -1317,11 +1317,11 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#FF3B3B]">
+              <span id={errorId} className="text-xs text-[#F04438]">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#6B7280]">
+              <span id={helperId} className="text-xs text-[#717680]">
                 {helperText}
               </span>
             ) : (
@@ -1331,7 +1331,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-[#FF3B3B]" : "text-[#6B7280]"
+                  charCount > maxLength ? "text-[#F04438]" : "text-[#717680]"
                 )}
               >
                 {charCount}/{maxLength}
@@ -1528,10 +1528,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
+            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+            {required && <span className="text-[#F04438] ml-0.5">*</span>}
           </label>
         )}
 
@@ -1557,7 +1557,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           >
             <SelectValue placeholder={placeholder} />
             {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-[#6B7280]" />
+              <Loader2 className="absolute right-8 size-4 animate-spin text-[#717680]" />
             )}
           </SelectTrigger>
           <SelectContent>
@@ -1569,7 +1569,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-[#E9E9E9] rounded bg-white placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2BBBC9]/50"
+                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
@@ -1610,7 +1610,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
               searchQuery &&
               groupedOptions.ungrouped.length === 0 &&
               Object.keys(groupedOptions.groups).length === 0 && (
-                <div className="py-6 text-center text-sm text-[#6B7280]">
+                <div className="py-6 text-center text-sm text-[#717680]">
                   No results found
                 </div>
               )}
@@ -1621,11 +1621,11 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#FF3B3B]">
+              <span id={errorId} className="text-xs text-[#F04438]">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#6B7280]">
+              <span id={helperId} className="text-xs text-[#717680]">
                 {helperText}
               </span>
             ) : null}
@@ -1664,12 +1664,12 @@ import { cn } from "../../lib/utils"
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded bg-white px-4 py-2 text-sm text-[#333333] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
+  "flex min-h-10 w-full items-center justify-between rounded bg-white px-4 py-2 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -1880,10 +1880,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
+            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+            {required && <span className="text-[#F04438] ml-0.5">*</span>}
           </label>
         )}
 
@@ -1908,12 +1908,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-[#9CA3AF]">{placeholder}</span>
+              <span className="text-[#A2A6B1]">{placeholder}</span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-[#F3F4F6] text-[#333333] text-xs px-2 py-0.5 rounded"
+                  className="inline-flex items-center gap-1 bg-[#F5F5F5] text-[#181D27] text-xs px-2 py-0.5 rounded"
                 >
                   {label}
                   <span
@@ -1926,7 +1926,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                         removeValue(selectedValues[index], e as unknown as React.MouseEvent)
                       }
                     }}
-                    className="cursor-pointer hover:text-[#FF3B3B] focus:outline-none"
+                    className="cursor-pointer hover:text-[#F04438] focus:outline-none"
                     aria-label={\`Remove \${label}\`}
                   >
                     <X className="size-3" />
@@ -1947,18 +1947,18 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                     clearAll(e as unknown as React.MouseEvent)
                   }
                 }}
-                className="p-0.5 cursor-pointer hover:text-[#FF3B3B] focus:outline-none"
+                className="p-0.5 cursor-pointer hover:text-[#F04438] focus:outline-none"
                 aria-label="Clear all"
               >
-                <X className="size-4 text-[#6B7280]" />
+                <X className="size-4 text-[#717680]" />
               </span>
             )}
             {loading ? (
-              <Loader2 className="size-4 animate-spin text-[#6B7280]" />
+              <Loader2 className="size-4 animate-spin text-[#717680]" />
             ) : (
               <ChevronDown
                 className={cn(
-                  "size-4 text-[#6B7280] transition-transform",
+                  "size-4 text-[#717680] transition-transform",
                   isOpen && "rotate-180"
                 )}
               />
@@ -1970,7 +1970,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {isOpen && (
           <div
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-white border border-[#E9E9E9] shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-white border border-[#E9EAEB] shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -1978,13 +1978,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-[#E9E9E9]">
+              <div className="p-2 border-b border-[#E9EAEB]">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-[#E9E9E9] rounded bg-white placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2BBBC9]/50"
+                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -1993,7 +1993,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
             {/* Options */}
             <div className="max-h-60 overflow-auto p-1">
               {filteredOptions.length === 0 ? (
-                <div className="py-6 text-center text-sm text-[#6B7280]">
+                <div className="py-6 text-center text-sm text-[#717680]">
                   No results found
                 </div>
               ) : (
@@ -2012,14 +2012,14 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       disabled={isDisabled}
                       onClick={() => !isDisabled && toggleOption(option.value)}
                       className={cn(
-                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#333333] outline-none",
-                        "hover:bg-[#F3F4F6] focus:bg-[#F3F4F6]",
-                        isSelected && "bg-[#F3F4F6]",
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
+                        "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
+                        isSelected && "bg-[#F5F5F5]",
                         isDisabled && "pointer-events-none opacity-50"
                       )}
                     >
                       <span className="absolute right-2 flex size-4 items-center justify-center">
-                        {isSelected && <Check className="size-4 text-[#2BBBC9]" />}
+                        {isSelected && <Check className="size-4 text-[#2BBCCA]" />}
                       </span>
                       {option.label}
                     </button>
@@ -2030,7 +2030,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-[#E9E9E9] text-xs text-[#6B7280]">
+              <div className="p-2 border-t border-[#E9EAEB] text-xs text-[#717680]">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}
@@ -2046,11 +2046,11 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#FF3B3B]">
+              <span id={errorId} className="text-xs text-[#F04438]">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#6B7280]">
+              <span id={helperId} className="text-xs text-[#717680]">
                 {helperText}
               </span>
             ) : null}
@@ -2136,7 +2136,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, size, withoutBorder, ...props }, ref) => (
     <div className={cn(
       "relative w-full overflow-auto",
-      !withoutBorder && "rounded-lg border border-[#E5E7EB]"
+      !withoutBorder && "rounded-lg border border-[#E9EAEB]"
     )}>
       <table
         ref={ref}
@@ -2154,7 +2154,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-[#F9FAFB] [&_tr]:border-b", className)}
+    className={cn("bg-[#FAFAFA] [&_tr]:border-b", className)}
     {...props}
   />
 ))
@@ -2179,7 +2179,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[#F9FAFB] font-medium [&>tr]:last:border-b-0",
+      "border-t bg-[#FAFAFA] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -2197,10 +2197,10 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-[#E5E7EB] transition-colors",
+        "border-b border-[#E9EAEB] transition-colors",
         highlighted
-          ? "bg-[#EBF5FF]"
-          : "hover:bg-[#F9FAFB]/50 data-[state=selected]:bg-[#F3F4F6]",
+          ? "bg-[#ECF1FB]"
+          : "hover:bg-[#FAFAFA]/50 data-[state=selected]:bg-[#F5F5F5]",
         className
       )}
       {...props}
@@ -2223,8 +2223,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-[#6B7280] text-sm [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-[#F9FAFB] z-10",
+        "h-12 px-4 text-left align-middle font-medium text-[#717680] text-sm [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-[#FAFAFA] z-10",
         sortDirection && "cursor-pointer select-none",
         className
       )}
@@ -2233,12 +2233,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       <div className="flex items-center gap-1">
         {children}
         {sortDirection && (
-          <span className="text-[#9CA3AF]">
+          <span className="text-[#A4A7AE]">
             {sortDirection === 'asc' ? '↑' : '↓'}
           </span>
         )}
         {infoTooltip && (
-          <span className="text-[#9CA3AF] cursor-help" title={infoTooltip}>
+          <span className="text-[#A4A7AE] cursor-help" title={infoTooltip}>
             ⓘ
           </span>
         )}
@@ -2258,7 +2258,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     <td
       ref={ref}
       className={cn(
-        "px-4 align-middle text-[#333333] [&:has([role=checkbox])]:pr-0",
+        "px-4 align-middle text-[#181D27] [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-white z-10",
         className
       )}
@@ -2274,7 +2274,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-[#6B7280]", className)}
+    className={cn("mt-4 text-sm text-[#717680]", className)}
     {...props}
   />
 ))
@@ -2296,7 +2296,7 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
       <TableRow key={rowIndex}>
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
-            <div className="h-4 bg-[#E5E7EB] rounded animate-pulse"
+            <div className="h-4 bg-[#E9EAEB] rounded animate-pulse"
                  style={{ width: colIndex === 1 ? '80%' : colIndex === 2 ? '30%' : '60%' }} />
           </TableCell>
         ))}
@@ -2318,7 +2318,7 @@ export interface TableEmptyProps {
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-8 text-[#6B7280]">
+    <TableCell colSpan={colSpan} className="text-center py-8 text-[#717680]">
       {children || "No data available"}
     </TableCell>
   </TableRow>
@@ -2418,7 +2418,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-[#F3F4F6] data-[state=open]:bg-[#F3F4F6]",
+      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-[#F5F5F5] data-[state=open]:bg-[#F5F5F5]",
       inset && "pl-8",
       className
     )}
@@ -2438,7 +2438,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E9EAEB] bg-white p-1 text-[#181D27] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className
     )}
     {...props}
@@ -2456,7 +2456,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E5E7EB] bg-white p-1 text-[#333333] shadow-md",
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E9EAEB] bg-white p-1 text-[#181D27] shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
@@ -2475,7 +2475,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F5F5F5] focus:text-[#181D27] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className
     )}
@@ -2491,7 +2491,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F5F5F5] focus:text-[#181D27] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     checked={checked}
@@ -2515,7 +2515,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F3F4F6] focus:text-[#333333] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F5F5F5] focus:text-[#181D27] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
@@ -2554,7 +2554,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E5E7EB]", className)}
+    className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
     {...props}
   />
 ))
@@ -2682,14 +2682,14 @@ const tagVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#F3F4F6] text-[#333333]",
-        primary: "bg-[#F3F4F6] text-[#333333]",
-        accent: "bg-[#343E55]/10 text-[#343E55]",
-        secondary: "bg-[#E5E7EB] text-[#374151]",
-        success: "bg-[#E5FFF5] text-[#00A651]",
-        warning: "bg-[#FFF8E5] text-[#F59E0B]",
-        error: "bg-[#FFECEC] text-[#FF3B3B]",
-        destructive: "bg-[#FFECEC] text-[#FF3B3B]",
+        default: "bg-[#F5F5F5] text-[#181D27]",
+        primary: "bg-[#F5F5F5] text-[#181D27]",
+        accent: "bg-[#EBECEE] text-[#343E55]",
+        secondary: "bg-[#E9EAEB] text-[#414651]",
+        success: "bg-[#ECFDF3] text-[#17B26A]",
+        warning: "bg-[#FFFAEB] text-[#F79009]",
+        error: "bg-[#FEF3F2] text-[#F04438]",
+        destructive: "bg-[#FEF3F2] text-[#F04438]",
       },
       size: {
         default: "px-2 py-1",
@@ -2835,7 +2835,7 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      bordered: "border border-[#E5E7EB] rounded-lg divide-y divide-[#E5E7EB]",
+      bordered: "border border-[#E9EAEB] rounded-lg divide-y divide-[#E9EAEB]",
     },
   },
   defaultVariants: {
@@ -2867,7 +2867,7 @@ const accordionTriggerVariants = cva(
     variants: {
       variant: {
         default: "py-3",
-        bordered: "p-4 hover:bg-[#F9FAFB]",
+        bordered: "p-4 hover:bg-[#FAFAFA]",
       },
     },
     defaultVariants: {
@@ -3089,7 +3089,7 @@ const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerPro
         {showChevron && (
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-300",
+              "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
               isOpen && "rotate-180"
             )}
           />
@@ -3252,7 +3252,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F3F4F6] transition-colors text-[#333333]"
+            className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F5F5F5] transition-colors text-[#181D27]"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -3261,7 +3261,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       }
       if (icon) {
         return (
-          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#6B7280]">
+          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#717680]">
             {icon}
           </div>
         )
@@ -3277,7 +3277,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         className={cn(
           pageHeaderVariants(),
           "h-[76px] px-4",
-          showBorder && "border-b border-[#E4E4E4]",
+          showBorder && "border-b border-[#E9EAEB]",
           className
         )}
         {...props}
@@ -3292,17 +3292,17 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         {/* Content Section: Title + Description */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-base font-semibold text-[#333333] truncate">
+            <h1 className="text-base font-semibold text-[#181D27] truncate">
               {title}
             </h1>
             {infoIcon && (
-              <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[#6B7280]">
+              <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[#717680]">
                 {infoIcon}
               </span>
             )}
           </div>
           {description && (
-            <p className="text-sm text-[#333333] font-normal mt-1 truncate">
+            <p className="text-sm text-[#181D27] font-normal mt-1 truncate">
               {description}
             </p>
           )}

@@ -229,22 +229,22 @@ import { Loader2 } from "lucide-react"
 import { cn } from "../../lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
-        primary: "bg-[#343E55] text-white hover:bg-[#343E55]/90",
+        default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
+        primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-[#F04438] text-white hover:bg-[#D92D20]",
         outline:
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#343E55] hover:text-white",
         secondary:
-          "bg-[#343E55]/20 text-[#343E55] hover:bg-[#343E55]/30",
-        ghost: "text-[#6B7280] hover:bg-[#F3F4F6] hover:text-[#333333]",
+          "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
+        ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-[#D1D5DB] bg-transparent text-[#6B7280] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#F9FAFB]",
+          "border border-dashed border-[#D5D7DA] bg-transparent text-[#717680] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#FAFAFA]",
       },
       size: {
         default: "py-2.5 px-4 [&_svg]:size-4",
@@ -361,15 +361,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Status-based variants (existing)
-        active: "bg-[#E5FFF5] text-[#00A651]",
-        failed: "bg-[#FFECEC] text-[#FF3B3B]",
-        disabled: "bg-[#F3F5F6] text-[#6B7280]",
-        default: "bg-[#F3F5F6] text-[#333333]",
-        primary: "bg-[#F3F5F6] text-[#333333]",
+        active: "bg-[#ECFDF3] text-[#17B26A]",
+        failed: "bg-[#FEF3F2] text-[#F04438]",
+        disabled: "bg-[#F5F5F5] text-[#717680]",
+        default: "bg-[#F5F5F5] text-[#181D27]",
+        primary: "bg-[#F5F5F5] text-[#181D27]",
         // shadcn-style variants (new)
-        secondary: "bg-[#F3F4F6] text-[#333333]",
-        outline: "border border-[#E5E7EB] bg-transparent text-[#333333]",
-        destructive: "bg-[#FFECEC] text-[#FF3B3B]",
+        secondary: "bg-[#F5F5F5] text-[#181D27]",
+        outline: "border border-[#E9EAEB] bg-transparent text-[#181D27]",
+        destructive: "bg-[#FEF3F2] text-[#F04438]",
       },
       size: {
         default: "px-3 py-1",

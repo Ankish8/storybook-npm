@@ -11,7 +11,7 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      bordered: "border border-[#E5E7EB] rounded-lg divide-y divide-[#E5E7EB]",
+      bordered: "border border-[#E9EAEB] rounded-lg divide-y divide-[#E9EAEB]",
     },
   },
   defaultVariants: {
@@ -43,7 +43,7 @@ const accordionTriggerVariants = cva(
     variants: {
       variant: {
         default: "py-3",
-        bordered: "p-4 hover:bg-[#F9FAFB]",
+        bordered: "p-4 hover:bg-[#FAFAFA]",
       },
     },
     defaultVariants: {
@@ -265,7 +265,7 @@ const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerPro
         {showChevron && (
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-[#6B7280] transition-transform duration-300",
+              "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
               isOpen && "rotate-180"
             )}
           />

@@ -16,12 +16,12 @@ describe('Input', () => {
   it('applies default state classes', () => {
     render(<Input data-testid="input" />)
     const input = screen.getByTestId('input')
-    expect(input).toHaveClass('border-[#E9E9E9]')
+    expect(input).toHaveClass('border-[#E9EAEB]')
   })
 
   it.each([
-    ['default', 'border-[#E9E9E9]'],
-    ['error', 'border-[#FF3B3B]/40'],
+    ['default', 'border-[#E9EAEB]'],
+    ['error', 'border-[#F04438]/40'],
   ] as const)('renders %s state', (state, expectedClass) => {
     render(<Input state={state} data-testid="input" />)
     const input = screen.getByTestId('input')

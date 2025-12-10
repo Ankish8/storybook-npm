@@ -10,18 +10,18 @@ describe('Badge', () => {
 
   it('applies default variant classes', () => {
     const { container } = render(<Badge>Default</Badge>)
-    expect(container.firstChild).toHaveClass('bg-[#F3F5F6]')
-    expect(container.firstChild).toHaveClass('text-[#333333]')
+    expect(container.firstChild).toHaveClass('bg-[#F5F5F5]')
+    expect(container.firstChild).toHaveClass('text-[#181D27]')
   })
 
   it.each([
-    ['active', 'bg-[#E5FFF5]', 'text-[#00A651]'],
-    ['failed', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
-    ['disabled', 'bg-[#F3F5F6]', 'text-[#6B7280]'],
-    ['default', 'bg-[#F3F5F6]', 'text-[#333333]'],
-    ['primary', 'bg-[#F3F5F6]', 'text-[#333333]'],
-    ['secondary', 'bg-[#F3F4F6]', 'text-[#333333]'],
-    ['destructive', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
+    ['active', 'bg-[#ECFDF3]', 'text-[#17B26A]'],
+    ['failed', 'bg-[#FEF3F2]', 'text-[#F04438]'],
+    ['disabled', 'bg-[#F5F5F5]', 'text-[#717680]'],
+    ['default', 'bg-[#F5F5F5]', 'text-[#181D27]'],
+    ['primary', 'bg-[#F5F5F5]', 'text-[#181D27]'],
+    ['secondary', 'bg-[#F5F5F5]', 'text-[#181D27]'],
+    ['destructive', 'bg-[#FEF3F2]', 'text-[#F04438]'],
   ] as const)('renders %s variant with correct classes', (variant, bgClass, textClass) => {
     const { container } = render(<Badge variant={variant}>Test</Badge>)
     expect(container.firstChild).toHaveClass(bgClass)
@@ -31,7 +31,7 @@ describe('Badge', () => {
   it('renders outline variant with border', () => {
     const { container } = render(<Badge variant="outline">Outline</Badge>)
     expect(container.firstChild).toHaveClass('border')
-    expect(container.firstChild).toHaveClass('border-[#E5E7EB]')
+    expect(container.firstChild).toHaveClass('border-[#E9EAEB]')
     expect(container.firstChild).toHaveClass('bg-transparent')
   })
 
@@ -103,6 +103,6 @@ describe('Badge', () => {
     const link = screen.getByRole('link')
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', '/status')
-    expect(link).toHaveClass('bg-[#F3F5F6]')
+    expect(link).toHaveClass('bg-[#F5F5F5]')
   })
 })

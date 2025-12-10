@@ -45,12 +45,42 @@ import {
 
 ## Design Tokens
 
-| Token | Value |
-|-------|-------|
-| Border Color | \`#E5E7EB\` |
-| Hover Background | \`#F9FAFB\` |
-| Icon Color | \`#6B7280\` |
-| Focus Ring | \`#343E55\` |
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Border Color</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-border-layout</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">E9EAEB</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #E9EAEB; border-radius: 6px; border: 1px solid #D5D7DA;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Hover Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-subtle</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">FAFAFA</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #FAFAFA; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Icon Color</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-muted</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">717680</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #717680; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Focus Ring</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">343E55</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #343E55; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },

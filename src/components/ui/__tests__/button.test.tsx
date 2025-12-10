@@ -18,10 +18,10 @@ describe('Button', () => {
   it.each([
     ['default', 'bg-[#343E55]'],
     ['primary', 'bg-[#343E55]'],
-    ['destructive', 'bg-destructive'],
+    ['destructive', 'bg-[#F04438]'],
     ['outline', 'border-[#343E55]'],
-    ['secondary', 'bg-[#343E55]/20'],
-    ['ghost', 'hover:bg-[#F3F4F6]'],
+    ['secondary', 'bg-[#EBECEE]'],
+    ['ghost', 'hover:bg-[#F5F5F5]'],
     ['link', 'underline-offset-4'],
     ['dashed', 'border-dashed'],
   ] as const)('renders %s variant', (variant, expectedClass) => {

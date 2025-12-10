@@ -260,7 +260,7 @@ describe('DropdownMenuSeparator', () => {
     await user.click(screen.getByText('Open'))
     expect(screen.getByTestId('separator')).toBeInTheDocument()
     expect(screen.getByTestId('separator')).toHaveClass('h-px')
-    expect(screen.getByTestId('separator')).toHaveClass('bg-[#E5E7EB]')
+    expect(screen.getByTestId('separator')).toHaveClass('bg-[#E9EAEB]')
   })
 })
 

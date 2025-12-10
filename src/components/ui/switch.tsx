@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E5E7EB]",
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E9EAEB]",
   {
     variants: {
       size: {
@@ -112,7 +112,7 @@ const Switch = React.forwardRef<
           {labelPosition === "left" && (
             <span className={cn(
               labelSizeVariants({ size }),
-              "text-[#333333]",
+              "text-[#181D27]",
               disabled && "opacity-50"
             )}>
               {label}
@@ -122,7 +122,7 @@ const Switch = React.forwardRef<
           {labelPosition === "right" && (
             <span className={cn(
               labelSizeVariants({ size }),
-              "text-[#333333]",
+              "text-[#181D27]",
               disabled && "opacity-50"
             )}>
               {label}

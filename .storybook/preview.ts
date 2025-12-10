@@ -22,6 +22,8 @@ const preview: Preview = {
           'Getting Started',
           'CLI Reference',
           'MCP Server',
+          'Foundations',
+          ['Colors', 'Typography', 'Spacing', 'Accessibility'],
           'Components',
           ['Button', 'Badge', 'Checkbox', 'Collapsible', 'Dropdown Menu', 'Input', 'MultiSelect', 'Select', 'SelectField', 'Table', 'Tag', 'TextField', 'Toggle'],
           'Custom',

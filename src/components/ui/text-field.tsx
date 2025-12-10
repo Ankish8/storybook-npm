@@ -12,11 +12,11 @@ const textFieldContainerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus-within:border-[#2BBBC9]/50 focus-within:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus-within:border-[#FF3B3B]/60 focus-within:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
-        true: "cursor-not-allowed opacity-50 bg-[#F9FAFB]",
+        true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
         false: "",
       },
     },
@@ -31,12 +31,12 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#333333] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#F9FAFB]",
+  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
   {
     variants: {
       state: {
-        default: "border border-[#E9E9E9] focus:outline-none focus:border-[#2BBBC9]/50 focus:shadow-[0_0_0_1px_rgba(43,187,201,0.15)]",
-        error: "border border-[#FF3B3B]/40 focus:outline-none focus:border-[#FF3B3B]/60 focus:shadow-[0_0_0_1px_rgba(255,59,59,0.1)]",
+        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -154,7 +154,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         id={inputId}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#333333] placeholder:text-[#9CA3AF] disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className })
         )}
         disabled={disabled || loading}
@@ -174,10 +174,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-sm font-medium text-[#333333]", labelClassName)}
+            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+            {required && <span className="text-[#F04438] ml-0.5">*</span>}
           </label>
         )}
 
@@ -190,12 +190,12 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               inputContainerClassName
             )}
           >
-            {prefix && <span className="text-sm text-[#6B7280] mr-2 select-none">{prefix}</span>}
-            {leftIcon && <span className="mr-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
+            {prefix && <span className="text-sm text-[#717680] mr-2 select-none">{prefix}</span>}
+            {leftIcon && <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
             {inputElement}
-            {loading && <Loader2 className="animate-spin size-4 text-[#6B7280] ml-2 flex-shrink-0" />}
-            {!loading && rightIcon && <span className="ml-2 text-[#6B7280] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
-            {suffix && <span className="text-sm text-[#6B7280] ml-2 select-none">{suffix}</span>}
+            {loading && <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />}
+            {!loading && rightIcon && <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
+            {suffix && <span className="text-sm text-[#717680] ml-2 select-none">{suffix}</span>}
           </div>
         ) : (
           inputElement
@@ -205,11 +205,11 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#FF3B3B]">
+              <span id={errorId} className="text-xs text-[#F04438]">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#6B7280]">
+              <span id={helperId} className="text-xs text-[#717680]">
                 {helperText}
               </span>
             ) : (
@@ -219,7 +219,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-[#FF3B3B]" : "text-[#6B7280]"
+                  charCount > maxLength ? "text-[#F04438]" : "text-[#717680]"
                 )}
               >
                 {charCount}/{maxLength}

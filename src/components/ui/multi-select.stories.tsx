@@ -89,15 +89,60 @@ import { MultiSelect } from "@/components/ui/multi-select"
 
 ## Design Tokens
 
-| Token | Value |
-|-------|-------|
-| Border Color | \`#E9E9E9\` |
-| Border Radius | \`4px\` |
-| Min Height | \`40px\` |
-| Padding | \`8px 16px\` |
-| Focus Ring | \`#2BBBC9\` |
-| Error Color | \`#FF3B3B\` |
-| Tag BG | \`#F3F4F6\` |
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Border Color</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-border-input</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">E9EAEB</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #E9EAEB; border-radius: 6px; border: 1px solid #D5D7DA;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Border Radius</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--radius</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">4px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Min Height</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">—</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">40px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Padding</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">—</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">8px 16px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Focus Ring</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-brand</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">2BBCCA</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #2BBCCA; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Error Color</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-error-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F04438</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F04438; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Tag Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-ui</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F5F5F5</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F5F5F5; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },

@@ -88,12 +88,12 @@ describe('Select', () => {
   // State variants
   it('applies default state styling', () => {
     renderSelect()
-    expect(screen.getByTestId('trigger')).toHaveClass('border-[#E9E9E9]')
+    expect(screen.getByTestId('trigger')).toHaveClass('border-[#E9EAEB]')
   })
 
   it('applies error state styling', () => {
     renderSelect({ triggerProps: { state: 'error' } })
-    expect(screen.getByTestId('trigger')).toHaveClass('border-[#FF3B3B]/40')
+    expect(screen.getByTestId('trigger')).toHaveClass('border-[#F04438]/40')
   })
 
   // Disabled state

@@ -1,0 +1,649 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+Our color system helps users identify status, see actions, locate help, and indicate next steps. The consistent use of color keeps cognitive loads low and creates a unified, engaging user experience. Colors are designed to be clear and accessible.
+
+---
+
+## Color Keys
+
+Colors are organized into **Primitive Colors** (raw color values) and **Semantic Colors** (purpose-driven tokens). Components should always use semantic colors to ensure consistency and maintainability.
+
+### Semantic Colors
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginTop: '24px' }}>
+
+#### Primary
+
+The primary color is used across all interactive elements such as buttons, links, inputs, etc. This color defines the overall feel while maintaining accessibility.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#343E55', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>primary-color</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#343E55</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#2F384D', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>primary-hover</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#2F384D</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#777E8D', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>primary-selected</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#777E8D</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#EBECEE', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>primary-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#EBECEE</div>
+    </div>
+  </div>
+</div>
+
+#### Brand
+
+The brand color is the secondary/accent color used to reiterate brand identity across all interfaces.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#2BBCCA', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>brand-color</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#2BBCCA</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#1F858F', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>brand-hover</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#1F858F</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#71D2DB', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>brand-selected</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#71D2DB</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#EAF8FA', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>brand-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#EAF8FA</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+---
+
+### Background Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>bg-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#FFFFFF</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#0C0F12', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>bg-secondary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#0C0F12</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#F5F5F5', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>bg-ui</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#F5F5F5</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#E9EAEB', borderRadius: '8px', border: '1px solid #D5D7DA' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>bg-grey</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#E9EAEB</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#D5D7DA', borderRadius: '8px', border: '1px solid #A4A7AE' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>bg-hover</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#D5D7DA</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#000000', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>bg-inverted</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#000000</div>
+    </div>
+  </div>
+</div>
+
+---
+
+### Text Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#181D27', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>text-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#181D27</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#343E55', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>text-secondary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#343E55</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#A2A6B1', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>text-placeholder</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#A2A6B1</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#717680', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>text-muted</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#717680</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#4275D6', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>text-link</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#4275D6</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>text-inverted</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#FFFFFF</div>
+    </div>
+  </div>
+</div>
+
+---
+
+### Border Colors
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '3px solid #343E55' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>border-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#343E55</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '3px solid #777E8D' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>border-secondary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#777E8D</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '3px solid #27ABB8' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>border-accent</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#27ABB8</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '3px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>border-layout</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#E9EAEB</div>
+    </div>
+  </div>
+</div>
+
+---
+
+## Functional Colors
+
+### Error
+
+Error colors communicate a destructive/negative action, such as removing a user from your team.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#F04438', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>error-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#F04438</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FEF3F2', borderRadius: '8px', border: '1px solid #FDA29B' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>error-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#FEF3F2</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#B42318', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>error-text</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#B42318</div>
+    </div>
+  </div>
+</div>
+
+### Warning
+
+Warning colors communicate that an action is potentially destructive or on-hold.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#F79009', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>warning-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#F79009</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFAEB', borderRadius: '8px', border: '1px solid #FEC84B' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>warning-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#FFFAEB</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#B54708', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>warning-text</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#B54708</div>
+    </div>
+  </div>
+</div>
+
+### Success
+
+Success colors communicate a positive action, trend, or confirmation.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#17B26A', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>success-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#17B26A</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#ECFDF3', borderRadius: '8px', border: '1px solid #75E0A7' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>success-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#ECFDF3</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#067647', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>success-text</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#067647</div>
+    </div>
+  </div>
+</div>
+
+### Info
+
+Info colors communicate supporting information — hyperlinks, text buttons, supporting instructions.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#4275D6', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>info-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#4275D6</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#ECF1FB', borderRadius: '8px', border: '1px solid #A8C0EC' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>info-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#ECF1FB</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#2F5398', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>info-text</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#2F5398</div>
+    </div>
+  </div>
+</div>
+
+### Disabled
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '16px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#A2A6B1', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>disabled-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#A2A6B1</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#EBECEE', borderRadius: '8px', border: '1px solid #D5D7DA' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>disabled-surface</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#EBECEE</div>
+    </div>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#717680', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px' }}>disabled-text</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#717680</div>
+    </div>
+  </div>
+</div>
+
+---
+
+## Primitive Color Palettes
+
+### Neutrals (Gray)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#FDFDFD' },
+    { shade: '50', color: '#FAFAFA' },
+    { shade: '100', color: '#F5F5F5' },
+    { shade: '200', color: '#E9EAEB' },
+    { shade: '300', color: '#D5D7DA' },
+    { shade: '400', color: '#A4A7AE' },
+    { shade: '500', color: '#717680' },
+    { shade: '600', color: '#535862' },
+    { shade: '700', color: '#414651' },
+    { shade: '800', color: '#252B37' },
+    { shade: '900', color: '#181D27' },
+    { shade: '950', color: '#0A0D12' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+### Primary (Blue Gray)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#F9FAFB' },
+    { shade: '50', color: '#EBECEE' },
+    { shade: '100', color: '#C0C3CA' },
+    { shade: '200', color: '#A2A6B1' },
+    { shade: '300', color: '#777E8D' },
+    { shade: '400', color: '#5D6577' },
+    { shade: '500', color: '#343E55' },
+    { shade: '600', color: '#2F384D' },
+    { shade: '700', color: '#252C3C' },
+    { shade: '800', color: '#1D222F' },
+    { shade: '900', color: '#161A24' },
+    { shade: '950', color: '#0C0F12' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+### Secondary (Turquoise)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#F6FCFD' },
+    { shade: '50', color: '#EAF8FA' },
+    { shade: '100', color: '#BDEAEF' },
+    { shade: '200', color: '#9DE0E7' },
+    { shade: '300', color: '#71D2DB' },
+    { shade: '400', color: '#55C9D5' },
+    { shade: '500', color: '#2BBCCA' },
+    { shade: '600', color: '#27ABB8' },
+    { shade: '700', color: '#1F858F' },
+    { shade: '800', color: '#18676F' },
+    { shade: '900', color: '#124F55' },
+    { shade: '950', color: '#0F3D3D' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+### Error (Red)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#FFFBFA' },
+    { shade: '50', color: '#FEF3F2' },
+    { shade: '100', color: '#FEE4E2' },
+    { shade: '200', color: '#FECDCA' },
+    { shade: '300', color: '#FDA29B' },
+    { shade: '400', color: '#F97066' },
+    { shade: '500', color: '#F04438' },
+    { shade: '600', color: '#D92D20' },
+    { shade: '700', color: '#B42318' },
+    { shade: '800', color: '#912018' },
+    { shade: '900', color: '#7A271A' },
+    { shade: '950', color: '#55160C' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+### Warning (Amber)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#FFFCF5' },
+    { shade: '50', color: '#FFFAEB' },
+    { shade: '100', color: '#FEF0C7' },
+    { shade: '200', color: '#FEDF89' },
+    { shade: '300', color: '#FEC84B' },
+    { shade: '400', color: '#FDB022' },
+    { shade: '500', color: '#F79009' },
+    { shade: '600', color: '#DC6803' },
+    { shade: '700', color: '#B54708' },
+    { shade: '800', color: '#93370D' },
+    { shade: '900', color: '#7A2E0E' },
+    { shade: '950', color: '#4E1D09' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+### Success (Green)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#F6FEF9' },
+    { shade: '50', color: '#ECFDF3' },
+    { shade: '100', color: '#DCFAE6' },
+    { shade: '200', color: '#ABEFC6' },
+    { shade: '300', color: '#75E0A7' },
+    { shade: '400', color: '#47CD89' },
+    { shade: '500', color: '#17B26A' },
+    { shade: '600', color: '#079455' },
+    { shade: '700', color: '#067647' },
+    { shade: '800', color: '#085D3A' },
+    { shade: '900', color: '#074D31' },
+    { shade: '950', color: '#053321' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+### Info (Blue)
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
+  {[
+    { shade: '25', color: '#F6F8FD' },
+    { shade: '50', color: '#ECF1FB' },
+    { shade: '100', color: '#C4D4F2' },
+    { shade: '200', color: '#A8C0EC' },
+    { shade: '300', color: '#80A3E4' },
+    { shade: '400', color: '#6891DE' },
+    { shade: '500', color: '#4275D6' },
+    { shade: '600', color: '#3C6AC3' },
+    { shade: '700', color: '#2F5398' },
+    { shade: '800', color: '#244076' },
+    { shade: '900', color: '#1C315A' },
+    { shade: '950', color: '#182A44' },
+  ].map((item) => (
+    <div key={item.shade} style={{ textAlign: 'center' }}>
+      <div style={{ width: '64px', height: '48px', backgroundColor: item.color, borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+      <div style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>{item.shade}</div>
+      <div style={{ fontSize: '10px', color: '#717680' }}>{item.color}</div>
+    </div>
+  ))}
+</div>
+
+---
+
+## Usage in Code
+
+### CSS Variables
+
+All colors are available as CSS custom properties:
+
+```css
+/* Semantic colors */
+.my-element {
+  color: var(--semantic-text-primary);
+  background-color: var(--semantic-bg-primary);
+  border-color: var(--semantic-border-layout);
+}
+
+/* Primitive colors */
+.my-element {
+  color: var(--color-primary-500);
+  background-color: var(--color-neutral-100);
+}
+```
+
+### TypeScript
+
+Import color tokens from the colors module:
+
+```typescript
+import { semantic, primitives, primary, secondary } from '@/lib/colors'
+
+// Using semantic colors
+const primaryColor = semantic.primary.color      // #343E55
+const brandColor = semantic.brand.color          // #2BBCCA
+const textColor = semantic.text.primary          // #181D27
+
+// Using primitive colors
+const blue500 = primary[500]                     // #343E55
+const gray100 = primitives.neutral[100]          // #F5F5F5
+```
+
+### Tailwind Classes
+
+Use the defined color classes in your components:
+
+```tsx
+// Using Tailwind with semantic variable classes
+<button className="bg-[var(--semantic-primary)] text-[var(--semantic-text-inverted)]">
+  Click me
+</button>
+
+// Using hardcoded semantic values (for components)
+<button className="bg-[#343E55] text-white hover:bg-[#2F384D]">
+  Click me
+</button>
+```
+
+---
+
+## Color Mapping Reference
+
+<div style={{ overflowX: 'auto', marginTop: '16px' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+    <thead>
+      <tr style={{ backgroundColor: '#FAFAFA', borderBottom: '2px solid #E9EAEB' }}>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Semantic Token</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>CSS Variable</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Primitive</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Hex</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Preview</th>
+      </tr>
+    </thead>
+    <tbody>
+      {[
+        { token: 'Primary Color', variable: '--semantic-primary', primitive: 'primary-500', hex: '#343E55' },
+        { token: 'Primary Hover', variable: '--semantic-primary-hover', primitive: 'primary-600', hex: '#2F384D' },
+        { token: 'Brand Color', variable: '--semantic-brand', primitive: 'secondary-500', hex: '#2BBCCA' },
+        { token: 'Brand Hover', variable: '--semantic-brand-hover', primitive: 'secondary-700', hex: '#1F858F' },
+        { token: 'Text Primary', variable: '--semantic-text-primary', primitive: 'neutral-900', hex: '#181D27' },
+        { token: 'Text Secondary', variable: '--semantic-text-secondary', primitive: 'primary-500', hex: '#343E55' },
+        { token: 'Text Muted', variable: '--semantic-text-muted', primitive: 'neutral-500', hex: '#717680' },
+        { token: 'Text Placeholder', variable: '--semantic-text-placeholder', primitive: 'primary-200', hex: '#A2A6B1' },
+        { token: 'Background Primary', variable: '--semantic-bg-primary', primitive: 'white', hex: '#FFFFFF' },
+        { token: 'Background UI', variable: '--semantic-bg-ui', primitive: 'neutral-100', hex: '#F5F5F5' },
+        { token: 'Background Grey', variable: '--semantic-bg-grey', primitive: 'neutral-200', hex: '#E9EAEB' },
+        { token: 'Background Hover', variable: '--semantic-bg-hover', primitive: 'neutral-300', hex: '#D5D7DA' },
+        { token: 'Border Layout', variable: '--semantic-border-layout', primitive: 'neutral-200', hex: '#E9EAEB' },
+        { token: 'Border Input', variable: '--semantic-border-input', primitive: 'neutral-200', hex: '#E9EAEB' },
+        { token: 'Border Input Focus', variable: '--semantic-border-input-focus', primitive: 'secondary-500', hex: '#2BBCCA' },
+        { token: 'Error Primary', variable: '--semantic-error-primary', primitive: 'error-500', hex: '#F04438' },
+        { token: 'Error Surface', variable: '--semantic-error-surface', primitive: 'error-50', hex: '#FEF3F2' },
+        { token: 'Warning Primary', variable: '--semantic-warning-primary', primitive: 'warning-500', hex: '#F79009' },
+        { token: 'Success Primary', variable: '--semantic-success-primary', primitive: 'success-500', hex: '#17B26A' },
+        { token: 'Info Primary', variable: '--semantic-info-primary', primitive: 'info-500', hex: '#4275D6' },
+      ].map((row, index) => (
+        <tr key={index} style={{ borderBottom: '1px solid #E9EAEB' }}>
+          <td style={{ padding: '12px 16px' }}>{row.token}</td>
+          <td style={{ padding: '12px 16px' }}><code style={{ backgroundColor: '#F5F5F5', padding: '2px 6px', borderRadius: '4px', fontSize: '12px' }}>{row.variable}</code></td>
+          <td style={{ padding: '12px 16px', color: '#717680' }}>{row.primitive}</td>
+          <td style={{ padding: '12px 16px', fontFamily: 'monospace' }}>{row.hex}</td>
+          <td style={{ padding: '12px 16px' }}><div style={{ width: '32px', height: '32px', backgroundColor: row.hex, borderRadius: '6px', border: '1px solid #E9EAEB' }} /></td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

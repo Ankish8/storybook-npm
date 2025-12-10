@@ -14,15 +14,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Status-based variants (existing)
-        active: "bg-[#E5FFF5] text-[#00A651]",
-        failed: "bg-[#FFECEC] text-[#FF3B3B]",
-        disabled: "bg-[#F3F5F6] text-[#6B7280]",
-        default: "bg-[#F3F5F6] text-[#333333]",
-        primary: "bg-[#F3F5F6] text-[#333333]",
+        active: "bg-[#ECFDF3] text-[#17B26A]",
+        failed: "bg-[#FEF3F2] text-[#F04438]",
+        disabled: "bg-[#F5F5F5] text-[#717680]",
+        default: "bg-[#F5F5F5] text-[#181D27]",
+        primary: "bg-[#F5F5F5] text-[#181D27]",
         // shadcn-style variants (new)
-        secondary: "bg-[#F3F4F6] text-[#333333]",
-        outline: "border border-[#E5E7EB] bg-transparent text-[#333333]",
-        destructive: "bg-[#FFECEC] text-[#FF3B3B]",
+        secondary: "bg-[#F5F5F5] text-[#181D27]",
+        outline: "border border-[#E9EAEB] bg-transparent text-[#181D27]",
+        destructive: "bg-[#FEF3F2] text-[#F04438]",
       },
       size: {
         default: "px-3 py-1",

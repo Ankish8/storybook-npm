@@ -36,7 +36,7 @@ describe('SelectField', () => {
   it('renders required indicator when required', () => {
     render(<SelectField label="Test Label" options={defaultOptions} required />)
     expect(screen.getByText('*')).toBeInTheDocument()
-    expect(screen.getByText('*')).toHaveClass('text-[#FF3B3B]')
+    expect(screen.getByText('*')).toHaveClass('text-[#F04438]')
   })
 
   it('does not render required indicator when not required', () => {
@@ -54,14 +54,14 @@ describe('SelectField', () => {
   it('renders helper text when provided', () => {
     render(<SelectField options={defaultOptions} helperText="Helper text here" />)
     expect(screen.getByText('Helper text here')).toBeInTheDocument()
-    expect(screen.getByText('Helper text here')).toHaveClass('text-[#6B7280]')
+    expect(screen.getByText('Helper text here')).toHaveClass('text-[#717680]')
   })
 
   // Error message tests
   it('shows error message when error prop is set', () => {
     render(<SelectField options={defaultOptions} error="This field is required" />)
     expect(screen.getByText('This field is required')).toBeInTheDocument()
-    expect(screen.getByText('This field is required')).toHaveClass('text-[#FF3B3B]')
+    expect(screen.getByText('This field is required')).toHaveClass('text-[#F04438]')
   })
 
   it('error message takes precedence over helper text', () => {
@@ -78,7 +78,7 @@ describe('SelectField', () => {
 
   it('applies error state styling when error is set', () => {
     render(<SelectField options={defaultOptions} error="Error" />)
-    expect(screen.getByRole('combobox')).toHaveClass('border-[#FF3B3B]/40')
+    expect(screen.getByRole('combobox')).toHaveClass('border-[#F04438]/40')
   })
 
   it('sets aria-invalid when error is present', () => {

@@ -53,7 +53,7 @@ describe('Table', () => {
 
     const wrapper = screen.getByRole('table').parentElement
     expect(wrapper).toHaveClass('border')
-    expect(wrapper).toHaveClass('border-[#E5E7EB]')
+    expect(wrapper).toHaveClass('border-[#E9EAEB]')
   })
 
   it('renders without border when withoutBorder is true', () => {
@@ -116,7 +116,7 @@ describe('TableHeader', () => {
       </Table>
     )
 
-    expect(screen.getByTestId('header')).toHaveClass('bg-[#F9FAFB]')
+    expect(screen.getByTestId('header')).toHaveClass('bg-[#FAFAFA]')
   })
 })
 
@@ -146,7 +146,7 @@ describe('TableRow', () => {
       </Table>
     )
 
-    expect(screen.getByTestId('row')).toHaveClass('bg-[#EBF5FF]')
+    expect(screen.getByTestId('row')).toHaveClass('bg-[#ECF1FB]')
   })
 
   it('renders non-highlighted row with hover styles', () => {
@@ -160,7 +160,7 @@ describe('TableRow', () => {
       </Table>
     )
 
-    expect(screen.getByTestId('row')).toHaveClass('hover:bg-[#F9FAFB]/50')
+    expect(screen.getByTestId('row')).toHaveClass('hover:bg-[#FAFAFA]/50')
   })
 })
 
@@ -296,7 +296,7 @@ describe('TableFooter', () => {
     )
 
     expect(screen.getByTestId('footer')).toHaveClass('border-t')
-    expect(screen.getByTestId('footer')).toHaveClass('bg-[#F9FAFB]')
+    expect(screen.getByTestId('footer')).toHaveClass('bg-[#FAFAFA]')
   })
 })
 

@@ -24,16 +24,66 @@ import { Badge } from "@/components/ui/badge"
 
 ## Design Tokens
 
-| Token | Value |
-|-------|-------|
-| Active Background | \`#E5FFF5\` |
-| Active Text | \`#00A651\` |
-| Failed Background | \`#FFECEC\` |
-| Failed Text | \`#FF3B3B\` |
-| Disabled Background | \`#F3F5F6\` |
-| Disabled Text | \`#6B7280\` |
-| Border Radius | \`25px\` (full) |
-| Padding | \`4px 12px\` |
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Active Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-success-surface</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">ECFDF3</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #ECFDF3; border-radius: 6px; border: 1px solid #75E0A7;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Active Text</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-success-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">17B26A</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #17B26A; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Failed Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-error-surface</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">FEF3F2</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #FEF3F2; border-radius: 6px; border: 1px solid #FDA29B;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Failed Text</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-error-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F04438</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F04438; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Disabled Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-ui</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F5F5F5</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F5F5F5; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Disabled Text</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-muted</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">717680</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #717680; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Border Radius</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--radius-full</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">25px (full)</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Padding</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">—</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">4px 12px</td>
+      <td style="padding: 12px 16px;">—</td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },

@@ -135,14 +135,14 @@ describe('PageHeader', () => {
     const title = screen.getByRole('heading', { name: 'Title' })
     expect(title).toHaveClass('text-base')
     expect(title).toHaveClass('font-semibold')
-    expect(title).toHaveClass('text-[#333333]')
+    expect(title).toHaveClass('text-[#181D27]')
   })
 
   it('applies correct description styling', () => {
     render(<PageHeader title="Title" description="Description" />)
     const description = screen.getByText('Description')
     expect(description).toHaveClass('text-sm')
-    expect(description).toHaveClass('text-[#333333]')
+    expect(description).toHaveClass('text-[#181D27]')
   })
 
   // Accessibility

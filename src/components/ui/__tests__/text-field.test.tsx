@@ -24,7 +24,7 @@ describe('TextField', () => {
   it('renders required indicator when required', () => {
     render(<TextField label="Email" required />)
     expect(screen.getByText('*')).toBeInTheDocument()
-    expect(screen.getByText('*')).toHaveClass('text-[#FF3B3B]')
+    expect(screen.getByText('*')).toHaveClass('text-[#F04438]')
   })
 
   it('does not render required indicator when not required', () => {
@@ -41,7 +41,7 @@ describe('TextField', () => {
   // State tests
   it('applies error state styling when error is set', () => {
     render(<TextField error="Error" data-testid="input" />)
-    expect(screen.getByTestId('input')).toHaveClass('border-[#FF3B3B]/40')
+    expect(screen.getByTestId('input')).toHaveClass('border-[#F04438]/40')
   })
 
   it('sets aria-invalid when error is present', () => {
@@ -53,14 +53,14 @@ describe('TextField', () => {
   it('renders helper text when provided', () => {
     render(<TextField helperText="We will never share your email" />)
     expect(screen.getByText('We will never share your email')).toBeInTheDocument()
-    expect(screen.getByText('We will never share your email')).toHaveClass('text-[#6B7280]')
+    expect(screen.getByText('We will never share your email')).toHaveClass('text-[#717680]')
   })
 
   // Error message tests
   it('shows error message when error prop is set', () => {
     render(<TextField error="This field is required" />)
     expect(screen.getByText('This field is required')).toBeInTheDocument()
-    expect(screen.getByText('This field is required')).toHaveClass('text-[#FF3B3B]')
+    expect(screen.getByText('This field is required')).toHaveClass('text-[#F04438]')
   })
 
   it('error message takes precedence over helper text', () => {
@@ -124,7 +124,7 @@ describe('TextField', () => {
 
   it('shows character count in red when over limit', () => {
     render(<TextField showCount maxLength={3} defaultValue="hello" />)
-    expect(screen.getByText('5/3')).toHaveClass('text-[#FF3B3B]')
+    expect(screen.getByText('5/3')).toHaveClass('text-[#F04438]')
   })
 
   // Loading state tests
@@ -230,13 +230,13 @@ describe('TextField', () => {
   // Container styling with addons
   it('uses container with focus-within styling when has addons', () => {
     const { container } = render(<TextField leftIcon={<span>L</span>} />)
-    const inputContainer = container.querySelector('.focus-within\\:border-\\[\\#2BBBC9\\]\\/50')
+    const inputContainer = container.querySelector('.focus-within\\:border-\\[\\#2BBCCA\\]\\/50')
     expect(inputContainer).toBeInTheDocument()
   })
 
   it('applies error state to container when has addons', () => {
     const { container } = render(<TextField leftIcon={<span>L</span>} error="Error" />)
-    const inputContainer = container.querySelector('.border-\\[\\#FF3B3B\\]\\/40')
+    const inputContainer = container.querySelector('.border-\\[\\#F04438\\]\\/40')
     expect(inputContainer).toBeInTheDocument()
   })
 })

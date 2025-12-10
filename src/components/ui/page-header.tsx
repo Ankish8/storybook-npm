@@ -86,7 +86,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F3F4F6] transition-colors text-[#333333]"
+            className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F5F5F5] transition-colors text-[#181D27]"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -95,7 +95,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       }
       if (icon) {
         return (
-          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#6B7280]">
+          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#717680]">
             {icon}
           </div>
         )
@@ -111,7 +111,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         className={cn(
           pageHeaderVariants(),
           "h-[76px] px-4",
-          showBorder && "border-b border-[#E4E4E4]",
+          showBorder && "border-b border-[#E9EAEB]",
           className
         )}
         {...props}
@@ -126,17 +126,17 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         {/* Content Section: Title + Description */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h1 className="text-base font-semibold text-[#333333] truncate">
+            <h1 className="text-base font-semibold text-[#181D27] truncate">
               {title}
             </h1>
             {infoIcon && (
-              <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[#6B7280]">
+              <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[#717680]">
                 {infoIcon}
               </span>
             )}
           </div>
           {description && (
-            <p className="text-sm text-[#333333] font-normal mt-1 truncate">
+            <p className="text-sm text-[#181D27] font-normal mt-1 truncate">
               {description}
             </p>
           )}
