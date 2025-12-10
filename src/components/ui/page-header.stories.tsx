@@ -97,6 +97,14 @@ import { PageHeader } from "@/components/ui/page-header"
       control: 'boolean',
       description: 'Show back arrow instead of icon',
     },
+    layout: {
+      control: 'select',
+      options: ['horizontal', 'vertical', 'responsive'],
+      description: 'Layout mode: horizontal (single row), vertical (stacked), responsive (auto)',
+      table: {
+        defaultValue: { summary: 'responsive' },
+      },
+    },
     icon: {
       control: false,
       description: 'Icon displayed on the left side',
@@ -108,6 +116,13 @@ import { PageHeader } from "@/components/ui/page-header"
     actions: {
       control: false,
       description: 'Action buttons on the right side',
+    },
+    mobileOverflowLimit: {
+      control: { type: 'number', min: 1, max: 5 },
+      description: 'Max actions to show on mobile before overflow menu',
+      table: {
+        defaultValue: { summary: '2' },
+      },
     },
   },
   decorators: [
@@ -164,24 +179,117 @@ export const HeaderWithBackButton: Story = {
   },
 }
 
-// Multiple Actions (4 buttons)
+// Multiple Actions with Overflow (4 buttons)
 export const MultipleActions: Story = {
-  name: 'Multiple Actions (4 buttons)',
+  name: 'Multiple Actions (Overflow)',
   args: {
     icon: <Users />,
     title: 'Team Members',
     description: 'Manage team access and permissions',
+    mobileOverflowLimit: 2,
     actions: (
       <>
+        <Button variant="outline">Export</Button>
+        <Button variant="outline">Import</Button>
         <Button variant="ghost" size="icon" aria-label="Delete">
           <Trash2 />
         </Button>
-        <Button variant="outline">Export</Button>
-        <Button variant="outline">Import</Button>
         <Button leftIcon={<Plus />}>Add Member</Button>
       </>
     ),
   },
+  parameters: {
+    docs: {
+      description: {
+        story: 'On mobile/vertical layout, only the first 2 buttons are shown. The rest are in a "..." overflow menu.',
+      },
+    },
+  },
+}
+
+// Horizontal Layout (always single row)
+export const HorizontalLayout: Story = {
+  name: 'Layout: Horizontal',
+  args: {
+    icon: <Webhook />,
+    title: 'Webhooks',
+    description: 'Configure and manage your webhook integrations',
+    layout: 'horizontal',
+    actions: (
+      <>
+        <Button variant="outline">Cancel</Button>
+        <Button leftIcon={<Plus />}>Add Webhook</Button>
+      </>
+    ),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Forces single-row layout regardless of screen size. Use when you need consistent horizontal alignment.',
+      },
+    },
+  },
+}
+
+// Vertical Layout (always stacked)
+export const VerticalLayout: Story = {
+  name: 'Layout: Vertical',
+  args: {
+    icon: <Webhook />,
+    title: 'Webhooks',
+    description: 'Configure and manage your webhook integrations',
+    layout: 'vertical',
+    actions: (
+      <>
+        <Button variant="outline">Cancel</Button>
+        <Button leftIcon={<Plus />}>Add Webhook</Button>
+      </>
+    ),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Forces stacked layout regardless of screen size. Use for narrow containers or when you always want actions below.',
+      },
+    },
+  },
+}
+
+// Mobile View Preview (using responsive layout in narrow container)
+export const MobileView: Story = {
+  name: 'Mobile View (Responsive)',
+  args: {
+    icon: <Webhook />,
+    title: 'Webhooks',
+    description: 'Configure and manage your webhook integrations',
+    layout: 'responsive',
+    infoIcon: <Info className="cursor-pointer" />,
+    actions: (
+      <>
+        <Button variant="outline">Cancel</Button>
+        <Button leftIcon={<Plus />}>Add Webhook</Button>
+      </>
+    ),
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+    docs: {
+      description: {
+        story: 'With `layout="responsive"` (default), actions stack below on mobile (<640px) and stay inline on desktop.',
+      },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <div className="bg-gray-100 p-4">
+        <div className="bg-white rounded-lg shadow max-w-[375px]">
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
 }
 
 // Long Title (truncation test)

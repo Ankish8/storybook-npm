@@ -290,7 +290,8 @@ describe('Consumer Type Compatibility', () => {
       expect(screen.getByRole('heading', { name: 'Test Page' })).toBeInTheDocument()
       expect(screen.getByText('Test description')).toBeInTheDocument()
       expect(screen.getByTestId('icon')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument()
+      // Actions render twice (desktop + mobile) with CSS visibility
+      expect(screen.getAllByRole('button', { name: 'Action' })).toHaveLength(2)
     })
   })
 })

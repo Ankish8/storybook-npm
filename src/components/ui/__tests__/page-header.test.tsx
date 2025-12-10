@@ -83,7 +83,8 @@ describe('PageHeader', () => {
         actions={<button>Action Button</button>}
       />
     )
-    expect(screen.getByRole('button', { name: 'Action Button' })).toBeInTheDocument()
+    // Actions render twice (desktop + mobile) with CSS visibility
+    expect(screen.getAllByRole('button', { name: 'Action Button' })).toHaveLength(2)
   })
 
   it('renders multiple action buttons', () => {
@@ -98,8 +99,9 @@ describe('PageHeader', () => {
         }
       />
     )
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    // Actions render twice (desktop + mobile) with CSS visibility
+    expect(screen.getAllByRole('button', { name: 'Cancel' })).toHaveLength(2)
+    expect(screen.getAllByRole('button', { name: 'Save' })).toHaveLength(2)
   })
 
   // Base styles
@@ -107,7 +109,8 @@ describe('PageHeader', () => {
     render(<PageHeader title="Title" data-testid="header" />)
     expect(screen.getByTestId('header')).toHaveClass('bg-white')
     expect(screen.getByTestId('header')).toHaveClass('flex')
-    expect(screen.getByTestId('header')).toHaveClass('items-center')
+    expect(screen.getByTestId('header')).toHaveClass('flex-col')
+    expect(screen.getByTestId('header')).toHaveClass('sm:items-center')
   })
 
   // Custom styling
@@ -126,7 +129,8 @@ describe('PageHeader', () => {
   // Height spec
   it('applies correct height', () => {
     render(<PageHeader title="Title" data-testid="header" />)
-    expect(screen.getByTestId('header')).toHaveClass('h-[76px]')
+    expect(screen.getByTestId('header')).toHaveClass('min-h-[76px]')
+    expect(screen.getByTestId('header')).toHaveClass('sm:h-[76px]')
   })
 
   // Typography
@@ -161,5 +165,95 @@ describe('PageHeader', () => {
   it('spreads additional props', () => {
     render(<PageHeader title="Title" data-testid="header" aria-label="Page header" />)
     expect(screen.getByTestId('header')).toHaveAttribute('aria-label', 'Page header')
+  })
+
+  // Overflow menu
+  describe('mobileOverflowLimit', () => {
+    it('shows overflow menu when actions exceed limit', () => {
+      render(
+        <PageHeader
+          title="Title"
+          layout="vertical"
+          mobileOverflowLimit={2}
+          actions={
+            <>
+              <button>Action 1</button>
+              <button>Action 2</button>
+              <button>Action 3</button>
+            </>
+          }
+        />
+      )
+      // Should show 2 visible + 1 overflow trigger
+      expect(screen.getByRole('button', { name: 'Action 1' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Action 2' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'More actions' })).toBeInTheDocument()
+      // Action 3 should not be visible (it's in the dropdown)
+      expect(screen.queryByRole('button', { name: 'Action 3' })).not.toBeInTheDocument()
+    })
+
+    it('does not show overflow menu when actions are within limit', () => {
+      render(
+        <PageHeader
+          title="Title"
+          layout="vertical"
+          mobileOverflowLimit={2}
+          actions={
+            <>
+              <button>Action 1</button>
+              <button>Action 2</button>
+            </>
+          }
+        />
+      )
+      expect(screen.queryByRole('button', { name: 'More actions' })).not.toBeInTheDocument()
+    })
+  })
+
+  // Layout prop tests
+  describe('layout prop', () => {
+    it('applies responsive layout by default', () => {
+      render(<PageHeader title="Title" data-testid="header" />)
+      expect(screen.getByTestId('header')).toHaveClass('flex-col')
+      expect(screen.getByTestId('header')).toHaveClass('sm:flex-row')
+    })
+
+    it('applies horizontal layout when specified', () => {
+      render(<PageHeader title="Title" layout="horizontal" data-testid="header" />)
+      expect(screen.getByTestId('header')).toHaveClass('flex-row')
+      expect(screen.getByTestId('header')).toHaveClass('items-center')
+      expect(screen.getByTestId('header')).toHaveClass('h-[76px]')
+    })
+
+    it('applies vertical layout when specified', () => {
+      render(<PageHeader title="Title" layout="vertical" data-testid="header" />)
+      expect(screen.getByTestId('header')).toHaveClass('flex-col')
+      expect(screen.getByTestId('header')).toHaveClass('min-h-[76px]')
+      expect(screen.getByTestId('header')).toHaveClass('py-4')
+    })
+
+    it('applies correct action spacing for horizontal layout', () => {
+      render(
+        <PageHeader
+          title="Title"
+          layout="horizontal"
+          actions={<button data-testid="action">Action</button>}
+        />
+      )
+      // Horizontal layout: actions container has ml-4
+      expect(screen.getByTestId('action').closest('.flex.items-center.gap-2')).toHaveClass('ml-4')
+    })
+
+    it('applies correct action spacing for vertical layout', () => {
+      render(
+        <PageHeader
+          title="Title"
+          layout="vertical"
+          actions={<button data-testid="action">Action</button>}
+        />
+      )
+      // Vertical layout: expandable actions wrapper has mt-3
+      expect(screen.getByTestId('action').closest('.flex.flex-col')).toHaveClass('mt-3')
+    })
   })
 })
