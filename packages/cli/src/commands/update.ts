@@ -4,7 +4,7 @@ import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry } from '../utils/registry.js'
-import { readConfig, configExists, getTailwindPrefix } from '../utils/config.js'
+import { configExists, getTailwindPrefix } from '../utils/config.js'
 
 interface UpdateOptions {
   yes: boolean
@@ -15,13 +15,32 @@ interface UpdateOptions {
 }
 
 /**
+ * Normalize content for comparison - removes trailing whitespace and normalizes line endings
+ */
+function normalizeContent(content: string): string {
+  return content
+    .split('\n')
+    .map(line => line.trimEnd()) // Remove trailing whitespace from each line
+    .join('\n')
+    .replace(/\r\n/g, '\n') // Normalize line endings
+    .trimEnd() // Remove trailing newlines
+}
+
+/**
+ * Check if two contents are meaningfully different (ignoring whitespace)
+ */
+function hasRealChanges(oldContent: string, newContent: string): boolean {
+  return normalizeContent(oldContent) !== normalizeContent(newContent)
+}
+
+/**
  * Simple diff function to show changes between two strings
  */
 function generateDiff(oldContent: string, newContent: string, filename: string): string {
   const oldLines = oldContent.split('\n')
   const newLines = newContent.split('\n')
 
-  if (oldContent === newContent) {
+  if (!hasRealChanges(oldContent, newContent)) {
     return chalk.gray(`  ${filename}: No changes`)
   }
 
@@ -201,7 +220,7 @@ export async function update(components: string[], options: UpdateOptions) {
       const oldContent = await fs.readFile(filePath, 'utf-8')
       const newContent = file.content
 
-      const hasChanges = oldContent !== newContent
+      const hasChanges = hasRealChanges(oldContent, newContent)
       changesInfo.push({ name: componentName, file: file.name, oldContent, newContent, hasChanges })
 
       const diff = generateDiff(oldContent, newContent, file.name)
