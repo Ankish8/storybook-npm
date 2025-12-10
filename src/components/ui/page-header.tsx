@@ -62,6 +62,8 @@ export interface PageHeaderProps
   infoIcon?: React.ReactNode
   /** Action buttons/elements rendered on the right side */
   actions?: React.ReactNode
+  /** Show bottom border (default: true) */
+  showBorder?: boolean
 }
 
 const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
@@ -74,6 +76,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
     onBackClick,
     infoIcon,
     actions,
+    showBorder = true,
     ...props
   }, ref) => {
     // Determine what to show on the left: back button, icon, or nothing
@@ -108,6 +111,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         className={cn(
           pageHeaderVariants(),
           "h-[76px] px-4",
+          showBorder && "border-b border-[#E4E4E4]",
           className
         )}
         {...props}
