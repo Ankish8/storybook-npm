@@ -17,13 +17,14 @@
     "verify-build": "node scripts/verify-build.js",
     "integrity:snapshot": "node scripts/check-integrity.js snapshot",
     "integrity:verify": "node scripts/check-integrity.js verify",
+    "validate-types": "node scripts/validate-types.js",
     "build": "npm run generate-registry && npm run validate:prefix && tsup src/index.ts --format esm --dts && npm run verify-build",
     "build:safe": "npm run integrity:snapshot && npm run build",
     "dev": "tsup src/index.ts --format esm --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build && npm run validate-registry"
+    "prepublishOnly": "npm run validate-types && npm run build && npm run validate-registry"
   },
   "dependencies": {
     "chalk": "^5.3.0",

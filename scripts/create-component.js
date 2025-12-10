@@ -171,6 +171,27 @@ describe('${pascalCase}', () => {
     render(<${pascalCase} data-testid="${componentName}" aria-label="test label">Test</${pascalCase}>)
     expect(screen.getByTestId('${componentName}')).toHaveAttribute('aria-label', 'test label')
   })
+
+  // Type compatibility tests - TypeScript will catch mismatches between CVA and props
+  describe('Type Compatibility', () => {
+    it('variant prop is correctly typed from CVA', () => {
+      // This test ensures CVA variant keys match props interface
+      // If CVA defines variant but props doesn't include it, TypeScript will error
+      render(<${pascalCase} variant="default">Type Check</${pascalCase}>)
+      expect(screen.getByText('Type Check')).toBeInTheDocument()
+    })
+
+    it('size prop is correctly typed from CVA', () => {
+      // This test ensures CVA size keys match props interface
+      render(<${pascalCase} size="default">Type Check</${pascalCase}>)
+      expect(screen.getByText('Type Check')).toBeInTheDocument()
+    })
+
+    it('accepts combined variant and size props', () => {
+      render(<${pascalCase} variant="primary" size="lg">Combined</${pascalCase}>)
+      expect(screen.getByText('Combined')).toBeInTheDocument()
+    })
+  })
 })
 `
 

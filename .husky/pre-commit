@@ -3,5 +3,8 @@
 # Check that all components have test files
 node scripts/check-component-tests.js || exit 1
 
+# Validate CVA props alignment (prevents TypeScript consumer errors)
+node scripts/validate-cva-props.js || exit 1
+
 # Run lint-staged
 npx lint-staged
