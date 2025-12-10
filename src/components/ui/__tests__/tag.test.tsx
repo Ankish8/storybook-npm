@@ -17,11 +17,13 @@ describe('Tag', () => {
 
   it.each([
     ['default', 'bg-[#F3F4F6]', 'text-[#333333]'],
-    ['primary', 'bg-[#343E55]/10', 'text-[#343E55]'],
+    ['primary', 'bg-[#F3F4F6]', 'text-[#333333]'],
+    ['accent', 'bg-[#343E55]/10', 'text-[#343E55]'],
     ['secondary', 'bg-[#E5E7EB]', 'text-[#374151]'],
     ['success', 'bg-[#E5FFF5]', 'text-[#00A651]'],
     ['warning', 'bg-[#FFF8E5]', 'text-[#F59E0B]'],
     ['error', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
+    ['destructive', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
   ] as const)('renders %s variant', (variant, bgClass, textClass) => {
     render(<Tag variant={variant} data-testid="tag">Test</Tag>)
     const tag = screen.getByTestId('tag')

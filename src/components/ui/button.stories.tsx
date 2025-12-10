@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button"
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'secondary', 'outline', 'ghost', 'link', 'destructive'],
+      options: ['default', 'primary', 'secondary', 'outline', 'ghost', 'link', 'destructive', 'dashed'],
       description: 'The visual style of the button',
     },
     size: {
@@ -98,11 +98,13 @@ export const ButtonKinds: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Button variant="default">Default</Button>
+      <Button variant="primary">Primary</Button>
       <Button variant="secondary">Secondary</Button>
       <Button variant="outline">Outline</Button>
       <Button variant="ghost">Ghost</Button>
       <Button variant="link">Link</Button>
       <Button variant="destructive">Destructive</Button>
+      <Button variant="dashed">Dashed</Button>
     </div>
   ),
 }
@@ -225,8 +227,17 @@ export const Usage: Story = {
           <Button variant="default">Save</Button>
         </div>
         <div>
-          <p className="font-medium text-sm">Default (Primary)</p>
+          <p className="font-medium text-sm">Default</p>
           <p className="text-sm text-gray-600">Main actions like "Save", "Submit", "Create"</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="w-32">
+          <Button variant="primary">Submit</Button>
+        </div>
+        <div>
+          <p className="font-medium text-sm">Primary</p>
+          <p className="text-sm text-gray-600">Alias for default - use interchangeably for primary actions</p>
         </div>
       </div>
       <div className="flex items-center gap-4">

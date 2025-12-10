@@ -19,6 +19,7 @@ describe('Badge', () => {
     ['failed', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
     ['disabled', 'bg-[#F3F5F6]', 'text-[#6B7280]'],
     ['default', 'bg-[#F3F5F6]', 'text-[#333333]'],
+    ['primary', 'bg-[#F3F5F6]', 'text-[#333333]'],
     ['secondary', 'bg-[#F3F4F6]', 'text-[#333333]'],
     ['destructive', 'bg-[#FFECEC]', 'text-[#FF3B3B]'],
   ] as const)('renders %s variant with correct classes', (variant, bgClass, textClass) => {

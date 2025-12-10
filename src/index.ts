@@ -117,6 +117,10 @@ export type {
   AccordionContentProps,
 } from './components/ui/accordion'
 
+// PageHeader
+export { PageHeader, pageHeaderVariants } from './components/ui/page-header'
+export type { PageHeaderProps } from './components/ui/page-header'
+
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from './components/custom/event-selector'
 export type {

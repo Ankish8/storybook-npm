@@ -18,6 +18,7 @@ const badgeVariants = cva(
         failed: "bg-[#FFECEC] text-[#FF3B3B]",
         disabled: "bg-[#F3F5F6] text-[#6B7280]",
         default: "bg-[#F3F5F6] text-[#333333]",
+        primary: "bg-[#F3F5F6] text-[#333333]",
         // shadcn-style variants (new)
         secondary: "bg-[#F3F4F6] text-[#333333]",
         outline: "border border-[#E5E7EB] bg-transparent text-[#333333]",
@@ -44,6 +45,8 @@ const badgeVariants = cva(
  * <Badge variant="active">Active</Badge>
  * <Badge variant="failed">Failed</Badge>
  * <Badge variant="disabled">Disabled</Badge>
+ * <Badge variant="default">Default</Badge>
+ * <Badge variant="primary">Primary</Badge>
  * <Badge variant="outline">Outline</Badge>
  * <Badge variant="secondary">Secondary</Badge>
  * <Badge variant="destructive">Destructive</Badge>

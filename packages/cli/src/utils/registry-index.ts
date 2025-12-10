@@ -107,6 +107,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'layout',
     internalDependencies: [],
   },
+  'page-header': {
+    name: 'page-header',
+    description: 'A page header component with icon, title, description, and action buttons',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    category: 'layout',
+    internalDependencies: [],
+  },
   'event-selector': {
     name: 'event-selector',
     description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',

@@ -4,58 +4,52 @@ import { Phone, MessageCircle } from 'lucide-react'
 import { EventSelector } from './event-selector'
 import type { EventItem, EventGroup, EventCategory } from './types'
 
-// Sample data matching the screenshots
+// Sample data matching the Figma screenshots
 const sampleEvents: EventItem[] = [
-  // In-Call Events
+  // In-Call Events (multiple events - will show as collapsible accordion)
   {
-    id: 'call-initiated',
-    name: 'Call.Initiated',
+    id: 'call-begin',
+    name: 'Call Begin – NewChannel',
     description: 'Triggered when the call reaches MyOperator and a new channel is created.',
     group: 'in-call-events',
   },
   {
     id: 'call-agent-ringing',
-    name: 'Call.AgentRinging',
+    name: 'Start Dialing Agent – DialBegin',
     description: 'Triggered when the system starts dialing the assigned agent(s).',
     group: 'in-call-events',
   },
   {
     id: 'call-agent-responded',
-    name: 'Call.AgentResponded',
+    name: 'Agent Responded – DialEnd',
     description: 'Triggered when the call reaches MyOperator and a new channel is created.',
     group: 'in-call-events',
   },
   {
     id: 'call-ended',
-    name: 'Call.Ended',
+    name: 'Call Ended – Hangup',
     description: 'Triggered when the call is terminated by either party.',
     group: 'in-call-events',
   },
-  // After Call Events
+  // After Call Summary Event (single event - will show as flat card)
   {
     id: 'call-summary',
-    name: 'Call.Summary',
-    description: 'Triggered after call has ended. Provides: call duration, recordings, timestamps, agent, caller, queue logic, call outcome.',
+    name: 'After Call Summary Event',
+    description: 'Includes: Call duration, recordings, timestamps, agent, caller, queue logic, call outcome.',
     group: 'after-call-event',
   },
-  // Call Disposition Events
+  // Disposition Submitted Event (single event - will show as flat card)
   {
     id: 'disposition-submitted',
-    name: 'Disposition.Submitted',
-    description: 'Triggered when an agent submits a disposition form after a call.',
+    name: 'Disposition Submitted Event',
+    description: 'Includes: tags, disposition notes, remarks, selected reason codes.',
     group: 'call-disposition-event',
   },
-  // WhatsApp Events
+  // WhatsApp Events (single event - will show as flat card)
   {
-    id: 'whatsapp-message-received',
-    name: 'WhatsApp.MessageReceived',
-    description: 'Triggered when a new message is received on WhatsApp.',
-    group: 'whatsapp-events',
-  },
-  {
-    id: 'whatsapp-message-sent',
-    name: 'WhatsApp.MessageSent',
-    description: 'Triggered when a message is successfully sent via WhatsApp.',
+    id: 'whatsapp-events',
+    name: 'WhatsApp Events',
+    description: 'Triggered in WhatsApp communication flow',
     group: 'whatsapp-events',
   },
 ]
@@ -68,12 +62,12 @@ const sampleGroups: EventGroup[] = [
   },
   {
     id: 'after-call-event',
-    name: 'After Call Event',
+    name: 'After Call Summary Event',
     description: 'Triggered once per call after hangup.',
   },
   {
     id: 'call-disposition-event',
-    name: 'Call Disposition Event',
+    name: 'Disposition Submitted Event',
     description: 'Triggered after agent submits disposition.',
   },
   {
@@ -220,12 +214,12 @@ const [selected, setSelected] = useState<string[]>([])
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Basic uncontrolled example
+// Basic uncontrolled example - flat layout matching Figma
 export const Default: Story = {
   args: {
     events: sampleEvents,
     groups: sampleGroups,
-    categories: sampleCategories,
+    // No categories - flat list of groups
     title: 'Events',
     description: 'Select which events should trigger this webhook',
   },
@@ -237,8 +231,8 @@ export const WithDefaultSelection: Story = {
   args: {
     events: sampleEvents,
     groups: sampleGroups,
-    categories: sampleCategories,
-    defaultSelectedEvents: ['call-initiated', 'call-ended', 'call-summary'],
+    // No categories - flat list
+    defaultSelectedEvents: ['call-begin', 'call-ended', 'call-summary'],
     title: 'Events',
     description: 'Select which events should trigger this webhook',
   },
@@ -246,7 +240,7 @@ export const WithDefaultSelection: Story = {
 
 // Controlled example
 const ControlledExample = () => {
-  const [selected, setSelected] = useState<string[]>(['call-initiated', 'call-ended'])
+  const [selected, setSelected] = useState<string[]>(['call-begin', 'call-ended'])
 
   return (
     <div className="space-y-4">
@@ -272,7 +266,6 @@ const ControlledExample = () => {
       <EventSelector
         events={sampleEvents}
         groups={sampleGroups}
-        categories={sampleCategories}
         selectedEvents={selected}
         onSelectionChange={setSelected}
       />
@@ -317,7 +310,7 @@ export const EmptyGroup: Story = {
   args: {
     events: sampleEvents.filter(e => e.group !== 'call-disposition-event'),
     groups: sampleGroups,
-    categories: sampleCategories,
+    // No categories - flat list
     emptyGroupMessage: 'No events configured for this category',
     title: 'Events',
     description: 'Select which events should trigger this webhook',
@@ -341,7 +334,6 @@ const CustomEmptyStateExample = () => {
     <EventSelector
       events={sampleEvents.filter(e => e.group !== 'call-disposition-event')}
       groups={sampleGroups}
-      categories={sampleCategories}
       renderEmptyGroup={(group) => (
         <div className="flex items-center justify-between">
           <span className="text-sm text-[#6B7280]">No events in this group</span>
@@ -375,8 +367,8 @@ export const PartialSelection: Story = {
   args: {
     events: sampleEvents,
     groups: sampleGroups,
-    categories: sampleCategories,
-    defaultSelectedEvents: ['call-initiated', 'call-ended'],
+    // No categories - flat list
+    defaultSelectedEvents: ['call-begin', 'call-ended'],
     title: 'Events',
     description: 'Select which events should trigger this webhook',
   },
@@ -395,7 +387,7 @@ export const FullSelection: Story = {
   args: {
     events: sampleEvents,
     groups: sampleGroups,
-    categories: sampleCategories,
+    // No categories - flat list
     defaultSelectedEvents: sampleEvents.map(e => e.id),
     title: 'Events',
     description: 'Select which events should trigger this webhook',
@@ -408,7 +400,7 @@ export const CustomLabels: Story = {
   args: {
     events: sampleEvents,
     groups: sampleGroups,
-    categories: sampleCategories,
+    // No categories - flat list
     title: 'Webhook Events',
     description: 'Choose the events that will trigger notifications to your endpoint',
   },
@@ -460,7 +452,6 @@ const RealWorldExample = () => {
       <EventSelector
         events={sampleEvents}
         groups={sampleGroups}
-        categories={sampleCategories}
         selectedEvents={selected}
         onSelectionChange={setSelected}
       />

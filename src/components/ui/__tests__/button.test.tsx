@@ -17,6 +17,7 @@ describe('Button', () => {
 
   it.each([
     ['default', 'bg-[#343E55]'],
+    ['primary', 'bg-[#343E55]'],
     ['destructive', 'bg-destructive'],
     ['outline', 'border-[#343E55]'],
     ['secondary', 'bg-[#343E55]/20'],

@@ -140,16 +140,14 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
                   )}
                 </div>
                 {/* Category Groups */}
-                <div className="p-4 space-y-3 bg-[#F9FAFB]">
+                <div className="divide-y divide-[#E5E7EB]">
                   {renderGroups(categoryGroups)}
                 </div>
               </div>
             )
           })}
           {/* Render orphan groups outside categories */}
-          {orphanGroups.length > 0 && (
-            <div className="space-y-3">{renderGroups(orphanGroups)}</div>
-          )}
+          {orphanGroups.length > 0 && renderGroups(orphanGroups)}
         </>
       )
     }
@@ -174,7 +172,9 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
         </div>
 
         {/* Groups */}
-        <div className="space-y-3">{renderCategories()}</div>
+        <div className="border border-[#E5E7EB] rounded-lg overflow-hidden divide-y divide-[#E5E7EB]">
+          {renderCategories()}
+        </div>
       </div>
     )
   }

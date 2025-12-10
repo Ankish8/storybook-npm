@@ -42,7 +42,7 @@ import { Badge } from "@/components/ui/badge"
   argTypes: {
     variant: {
       control: 'select',
-      options: ['active', 'failed', 'disabled', 'default'],
+      options: ['active', 'failed', 'disabled', 'default', 'primary', 'secondary', 'outline', 'destructive'],
       description: 'The visual style of the badge',
     },
     size: {
@@ -112,6 +112,10 @@ export const AllVariants: Story = {
       <Badge variant="failed">Failed</Badge>
       <Badge variant="disabled">Disabled</Badge>
       <Badge variant="default">Default</Badge>
+      <Badge variant="primary">Primary</Badge>
+      <Badge variant="secondary">Secondary</Badge>
+      <Badge variant="outline">Outline</Badge>
+      <Badge variant="destructive">Destructive</Badge>
     </div>
   ),
 }

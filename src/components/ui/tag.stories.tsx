@@ -48,7 +48,7 @@ import { Tag, TagGroup } from "@/components/ui/tag"
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'primary', 'secondary', 'success', 'warning', 'error'],
+      options: ['default', 'primary', 'accent', 'secondary', 'success', 'warning', 'error', 'destructive'],
       description: 'The visual style of the tag',
     },
     size: {
@@ -101,10 +101,12 @@ export const AllVariants: Story = {
     <div className="flex flex-wrap items-center gap-4">
       <Tag variant="default">Default</Tag>
       <Tag variant="primary">Primary</Tag>
+      <Tag variant="accent">Accent</Tag>
       <Tag variant="secondary">Secondary</Tag>
       <Tag variant="success">Success</Tag>
       <Tag variant="warning">Warning</Tag>
       <Tag variant="error">Error</Tag>
+      <Tag variant="destructive">Destructive</Tag>
     </div>
   ),
 }
