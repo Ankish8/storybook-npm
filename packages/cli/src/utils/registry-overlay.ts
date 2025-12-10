@@ -154,13 +154,22 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
     const args = content.slice(cnMatch.index + cnMatch[0].length, i - 1)
 
-    // Prefix class strings within the cn() arguments
-    const prefixedArgs = args.replace(
+    // Prefix class strings within the cn() arguments (both double and single quotes)
+    let prefixedArgs = args.replace(
       /"([^"]*)"/g,
       (m: string, classes: string) => {
         if (!looksLikeTailwindClasses(classes)) return m
         const prefixed = prefixClassString(classes, prefix)
         return `"${prefixed}"`
+      }
+    )
+    // Also handle single-quoted strings
+    prefixedArgs = prefixedArgs.replace(
+      /'([^']*)'/g,
+      (m: string, classes: string) => {
+        if (!looksLikeTailwindClasses(classes)) return m
+        const prefixed = prefixClassString(classes, prefix)
+        return `'${prefixed}'`
       }
     )
 
@@ -181,18 +190,21 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   )
 
   // 4. Handle variant values in cva config objects
-  // Pattern: key: "class string" within variants/defaultVariants objects
+  // Pattern: key: "class string" or key: 'class string' within variants/defaultVariants objects
   // Handles both unquoted keys (default:) and quoted keys ("icon-sm":)
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
+
+  // Skip keys that are definitely not class values
+  const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
+
+  // Handle double-quoted values
   content = content.replace(
     /(\w+|"[^"]+"):\s*"([^"\n]+)"/g,
     (match: string, key: string, value: string) => {
       // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/"/g, '')
 
-      // Skip keys that are definitely not class values
-      const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
       if (nonClassKeys.includes(cleanKey)) return match
 
       // Only prefix if the value looks like Tailwind classes
@@ -200,6 +212,23 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
       const prefixed = prefixClassString(value, prefix)
       return `${key}: "${prefixed}"`
+    }
+  )
+
+  // Handle single-quoted values
+  content = content.replace(
+    /(\w+|'[^']+'):\s*'([^'\n]+)'/g,
+    (match: string, key: string, value: string) => {
+      // Remove quotes from key if present for comparison
+      const cleanKey = key.replace(/'/g, '')
+
+      if (nonClassKeys.includes(cleanKey)) return match
+
+      // Only prefix if the value looks like Tailwind classes
+      if (!looksLikeTailwindClasses(value)) return match
+
+      const prefixed = prefixClassString(value, prefix)
+      return `${key}: '${prefixed}'`
     }
   )
 

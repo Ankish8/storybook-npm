@@ -156,7 +156,7 @@ describe('Registry', () => {
       const content = button.files[0].content
 
       // Check that hover: prefix is preserved and utility is prefixed
-      expect(content).toContain('hover:tw-bg-[#343E55]/90')
+      expect(content).toContain('hover:tw-bg-[#2F384D]')
     })
 
     it('preserves import paths without prefixing', async () => {
@@ -215,7 +215,7 @@ describe('Registry', () => {
       // Wrong:   tw-data-[state=open]:animate-in (prefix on selector)
       expect(content).toContain('data-[state=open]:tw-animate-in')
       expect(content).toContain('data-[disabled]:tw-pointer-events-none')
-      expect(content).toContain('data-[state=open]:tw-bg-[#F3F4F6]')
+      expect(content).toContain('data-[state=open]:tw-bg-[#F5F5F5]')
 
       // Should NOT have prefix before data-
       expect(content).not.toMatch(/tw-data-\[/)
