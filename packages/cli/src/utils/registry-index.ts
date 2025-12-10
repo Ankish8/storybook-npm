@@ -93,6 +93,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'overlay',
     internalDependencies: [],
   },
+  'tooltip': {
+    name: 'tooltip',
+    description: 'A popup that displays information related to an element when hovered or focused',
+    dependencies: ["@radix-ui/react-tooltip","clsx","tailwind-merge"],
+    category: 'overlay',
+    internalDependencies: [],
+  },
   'tag': {
     name: 'tag',
     description: 'A tag component for event labels with optional bold label prefix',

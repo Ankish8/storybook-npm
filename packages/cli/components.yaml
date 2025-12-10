@@ -35,6 +35,7 @@ categories:
     description: "Popups, modals, menus"
     components:
       - dropdown-menu
+      - tooltip
 
   feedback:
     description: "Status and notifications"
@@ -170,6 +171,14 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+
+  tooltip:
+    description: "A popup that displays information related to an element when hovered or focused"
+    category: overlay
+    dependencies:
+      - "@radix-ui/react-tooltip"
+      - "clsx"
+      - "tailwind-merge"
 
   # ---------------------------------------------------------------------------
   # FEEDBACK COMPONENTS
