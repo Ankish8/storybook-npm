@@ -67,7 +67,6 @@ export interface PageHeaderProps
 const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
   ({
     className,
-    variant,
     title,
     description,
     icon,
@@ -107,7 +106,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          pageHeaderVariants({ variant }),
+          pageHeaderVariants(),
           "h-[76px] px-4",
           className
         )}
