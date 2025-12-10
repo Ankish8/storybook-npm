@@ -107,7 +107,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         ref={ref}
         className={cn(
           pageHeaderVariants(),
-          "h-[76px] px-4 pt-4",
+          "h-[76px] px-4",
           className
         )}
         {...props}
