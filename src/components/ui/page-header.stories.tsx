@@ -79,6 +79,33 @@ import { PageHeader } from "@/components/ui/page-header"
     </tr>
   </tbody>
 </table>
+
+## Typography
+
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Element</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Style</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Size / Weight</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Title</td>
+      <td style="padding: 12px 16px;">Title/Medium</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">16px / SemiBold</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-base font-semibold</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Description</td>
+      <td style="padding: 12px 16px;">Body/Medium</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / Regular</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm font-normal</code></td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },
