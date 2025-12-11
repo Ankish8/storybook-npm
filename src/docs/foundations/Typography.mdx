@@ -1,0 +1,492 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+Like in other UI systems, typography works by the principle of accessibility before aesthetics. Therefore, the text should be readable and help the user understand what's important by well-contrasted size and color hierarchy.
+
+---
+
+## Font Family
+
+We use **Source Sans Pro** for our UI hierarchy. Source Sans Pro is a sans-serif typeface created by Paul D. Hunt for Adobe Systems. It provides excellent readability across all sizes.
+
+<div style={{ backgroundColor: '#F5F5F5', borderRadius: '8px', padding: '16px 24px', marginTop: '16px' }}>
+  <code style={{ fontSize: '14px', color: '#343E55' }}>
+    {`<link
+  href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap"
+  rel="stylesheet"
+/>`}
+  </code>
+</div>
+
+<div style={{ marginTop: '16px', backgroundColor: '#F5F5F5', borderRadius: '8px', padding: '16px 24px' }}>
+  <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '8px' }}>CSS Variable:</div>
+  <code style={{ fontSize: '14px', color: '#343E55' }}>
+    {`font-family: 'Source Sans Pro', sans-serif;`}
+  </code>
+</div>
+
+---
+
+## Type Styles
+
+We use five key type style categories: **Headline**, **Body**, **Title**, **Label**, and **Display**.
+
+### Headline
+
+Used for page titles, section headers, and prominent headings. These styles use **SemiBold (600)** weight.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Headline/Small</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>24px / 32px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-headline-small</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '24px', lineHeight: '32px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Headline/Medium</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>28px / 36px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-headline-medium</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '28px', lineHeight: '36px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Headline/Large</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>32px / 40px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-headline-large</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '32px', lineHeight: '40px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+</div>
+
+### Body
+
+Used for paragraphs, descriptions, and general content. These styles use **Regular (400)** weight.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Body/Small</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro Regular</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>12px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-body-small</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '12px', fontWeight: 400, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Body/Medium</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro Regular</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>14px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-body-medium</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Body/Large</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro Regular</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>16px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-body-large</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '16px', fontWeight: 400, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+</div>
+
+### Title
+
+Used for card titles, dialog headers, and component headings. These styles use **SemiBold (600)** weight.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Title/Small</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>14px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-title-small</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Title/Medium</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>16px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-title-medium</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '16px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Title/Large</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>18px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-title-large</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '18px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+</div>
+
+### Label
+
+Used for form labels, buttons, badges, and small UI elements. These styles use **SemiBold (600)** weight.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Label/Small</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>10px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-label-small</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '10px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Label/Medium</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>12px / auto</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-label-medium</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '12px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Label/Large</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro SemiBold</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>14px / 20px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-label-large</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', lineHeight: '20px', fontWeight: 600, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+</div>
+
+### Display
+
+Used for hero sections, large promotional text, and marketing content. These styles use **Regular (400)** weight.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '24px' }}>
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Display/Small</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro Regular</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>36px / 44px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-display-small</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '36px', lineHeight: '44px', fontWeight: 400, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Display/Medium</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro Regular</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>45px / 52px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-display-medium</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '45px', lineHeight: '52px', fontWeight: 400, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', padding: '20px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ minWidth: '160px' }}>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>Display/Large</div>
+      <div style={{ fontSize: '12px', color: '#717680', marginTop: '4px' }}>Source Sans Pro Regular</div>
+      <div style={{ fontSize: '12px', color: '#717680' }}>57px / 64px</div>
+      <code style={{ fontSize: '11px', backgroundColor: '#E9EAEB', padding: '2px 6px', borderRadius: '4px', marginTop: '8px', display: 'inline-block' }}>.text-display-large</code>
+    </div>
+    <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '57px', lineHeight: '64px', fontWeight: 400, color: '#181D27' }}>
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+</div>
+
+---
+
+## Text Colors
+
+Use semantic text colors for consistency across the design system.
+
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginTop: '24px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#181D27', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>text-primary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#181D27</div>
+      <div style={{ color: '#717680', fontSize: '12px', marginTop: '2px' }}>Use for default text color</div>
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#343E55', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>text-secondary</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#343E55</div>
+      <div style={{ color: '#717680', fontSize: '12px', marginTop: '2px' }}>Use for text with lesser importance</div>
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#717680', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>text-muted</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#717680</div>
+      <div style={{ color: '#717680', fontSize: '12px', marginTop: '2px' }}>Use for helper text and captions</div>
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#A2A6B1', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>text-placeholder</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#A2A6B1</div>
+      <div style={{ color: '#717680', fontSize: '12px', marginTop: '2px' }}>Use for placeholder text in inputs</div>
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#4275D6', borderRadius: '8px' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>text-link</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#4275D6</div>
+      <div style={{ color: '#717680', fontSize: '12px', marginTop: '2px' }}>Use only for links</div>
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: '#FAFAFA', borderRadius: '8px' }}>
+    <div style={{ width: '48px', height: '48px', backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E9EAEB' }} />
+    <div>
+      <div style={{ fontWeight: 600, fontSize: '14px', color: '#181D27' }}>text-inverted</div>
+      <div style={{ color: '#717680', fontSize: '12px' }}>#FFFFFF</div>
+      <div style={{ color: '#717680', fontSize: '12px', marginTop: '2px' }}>Use for text on dark backgrounds</div>
+    </div>
+  </div>
+</div>
+
+---
+
+## Usage in Code
+
+### CSS Classes
+
+Apply typography styles using the predefined CSS classes:
+
+```css
+/* Typography classes are available globally */
+.text-headline-small { /* 24px / 32px, SemiBold */ }
+.text-headline-medium { /* 28px / 36px, SemiBold */ }
+.text-headline-large { /* 32px / 40px, SemiBold */ }
+
+.text-body-small { /* 12px, Regular */ }
+.text-body-medium { /* 14px, Regular */ }
+.text-body-large { /* 16px, Regular */ }
+
+.text-title-small { /* 14px, SemiBold */ }
+.text-title-medium { /* 16px, SemiBold */ }
+.text-title-large { /* 18px, SemiBold */ }
+
+.text-label-small { /* 10px, SemiBold */ }
+.text-label-medium { /* 12px, SemiBold */ }
+.text-label-large { /* 14px / 20px, SemiBold */ }
+
+.text-display-small { /* 36px / 44px, Regular */ }
+.text-display-medium { /* 45px / 52px, Regular */ }
+.text-display-large { /* 57px / 64px, Regular */ }
+```
+
+### TypeScript
+
+Import typography tokens from the typography module:
+
+```typescript
+import { typography, headline, body, title, label, display } from '@/lib/typography'
+
+// Access specific styles
+const headlineSmall = headline.small
+// { fontFamily, fontSize: '24px', lineHeight: '32px', fontWeight: 600, cssClass: 'text-headline-small' }
+
+// Access font weights
+const regular = typography.fontWeight.regular  // 400
+const semibold = typography.fontWeight.semibold  // 600
+```
+
+### Tailwind Classes
+
+Components use Tailwind utility classes that inherit the global Source Sans Pro font:
+
+```tsx
+// Tailwind classes work with Source Sans Pro
+<p className="text-sm font-normal">Body text (14px, Regular)</p>
+<h2 className="text-2xl font-semibold">Heading (24px, SemiBold)</h2>
+<label className="text-xs font-semibold">Label (12px, SemiBold)</label>
+```
+
+---
+
+## Usage Guidelines
+
+<div style={{ backgroundColor: '#F6FEF9', border: '1px solid #75E0A7', borderRadius: '8px', padding: '20px', marginTop: '16px' }}>
+  <div style={{ fontWeight: 600, fontSize: '16px', color: '#067647', marginBottom: '12px' }}>Best Practices</div>
+  <ul style={{ margin: 0, paddingLeft: '20px', color: '#181D27', fontSize: '14px', lineHeight: '1.6' }}>
+    <li>Avoid using text size smaller than 14px (except for labels and captions)</li>
+    <li>Don't underline words. For typographic emphasis, use <strong>bold text</strong></li>
+    <li>Don't use 2 different sizes of text in the same line</li>
+    <li>Use semantic text colors for consistent hierarchy</li>
+    <li>Maintain proper contrast ratios for accessibility (WCAG 2.1 AA)</li>
+  </ul>
+</div>
+
+<div style={{ backgroundColor: '#FEF3F2', border: '1px solid #FDA29B', borderRadius: '8px', padding: '20px', marginTop: '16px' }}>
+  <div style={{ fontWeight: 600, fontSize: '16px', color: '#B42318', marginBottom: '12px' }}>Avoid</div>
+  <ul style={{ margin: 0, paddingLeft: '20px', color: '#181D27', fontSize: '14px', lineHeight: '1.6' }}>
+    <li>Mixing font families - always use Source Sans Pro</li>
+    <li>Using custom font weights outside of 400 and 600</li>
+    <li>Applying underline for emphasis (reserve for links)</li>
+    <li>Using very light or very bold weights</li>
+  </ul>
+</div>
+
+---
+
+## Usage Examples
+
+### Modal / Dialog
+
+<div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E9EAEB', borderRadius: '12px', padding: '24px', marginTop: '16px', maxWidth: '400px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <div>
+      <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '24px', fontWeight: 600, color: '#181D27' }}>Modal title</div>
+      <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#717680', marginTop: '4px' }}>Subtitle description text goes here</div>
+    </div>
+    <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#717680' }}>×</div>
+  </div>
+  <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#181D27', marginTop: '16px', lineHeight: '1.5' }}>
+    This is a placeholder text just to show the default size and weight for body text typography in a popup.
+  </div>
+  <div style={{ display: 'flex', gap: '12px', marginTop: '24px', justifyContent: 'flex-end' }}>
+    <button style={{ padding: '8px 16px', border: '1px solid #E9EAEB', borderRadius: '6px', backgroundColor: '#FFFFFF', fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 600, color: '#343E55', cursor: 'pointer' }}>Cancel</button>
+    <button style={{ padding: '8px 16px', border: 'none', borderRadius: '6px', backgroundColor: '#343E55', fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 600, color: '#FFFFFF', cursor: 'pointer' }}>Create</button>
+  </div>
+</div>
+
+<div style={{ marginTop: '12px', fontSize: '12px', color: '#717680' }}>
+  <strong>Typography used:</strong> Title = Headline/Small, Subtitle = Body/Medium + text-muted, Content = Body/Medium, Buttons = Label/Large
+</div>
+
+### Card Header
+
+<div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E9EAEB', borderRadius: '12px', padding: '20px', marginTop: '24px', maxWidth: '300px' }}>
+  <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '18px', fontWeight: 600, color: '#181D27' }}>Team Tasks</div>
+  <div style={{ display: 'flex', gap: '16px', marginTop: '12px', borderBottom: '2px solid #E9EAEB', paddingBottom: '8px' }}>
+    <span style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#343E55', borderBottom: '2px solid #2BBCCA', marginBottom: '-10px', paddingBottom: '8px' }}>Main Table</span>
+    <span style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#717680' }}>Timeline</span>
+    <span style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#717680' }}>Kanban</span>
+  </div>
+</div>
+
+<div style={{ marginTop: '12px', fontSize: '12px', color: '#717680' }}>
+  <strong>Typography used:</strong> Card title = Title/Large, Tabs = Body/Medium
+</div>
+
+### Alert Banner
+
+<div style={{ backgroundColor: '#F5F5F5', borderRadius: '8px', padding: '12px 16px', marginTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #E9EAEB' }}>
+  <div style={{ fontFamily: "'Source Sans Pro', sans-serif", fontSize: '14px', fontWeight: 400, color: '#181D27' }}>
+    Alert banner message <span style={{ textDecoration: 'underline', cursor: 'pointer', color: '#4275D6' }}>this is a CTA</span>
+  </div>
+  <div style={{ color: '#717680', cursor: 'pointer' }}>×</div>
+</div>
+
+<div style={{ marginTop: '12px', fontSize: '12px', color: '#717680' }}>
+  <strong>Typography used:</strong> Message = Body/Medium + text-primary, CTA = text-link
+</div>
+
+---
+
+## Type Scale Reference
+
+<div style={{ overflowX: 'auto', marginTop: '16px' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+    <thead>
+      <tr style={{ backgroundColor: '#FAFAFA', borderBottom: '2px solid #E9EAEB' }}>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Style</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Font</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Weight</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Size</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>Line Height</th>
+        <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 600 }}>CSS Class</th>
+      </tr>
+    </thead>
+    <tbody>
+      {[
+        { style: 'Headline/Small', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '24px', lineHeight: '32px', cssClass: '.text-headline-small' },
+        { style: 'Headline/Medium', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '28px', lineHeight: '36px', cssClass: '.text-headline-medium' },
+        { style: 'Headline/Large', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '32px', lineHeight: '40px', cssClass: '.text-headline-large' },
+        { style: 'Body/Small', font: 'Source Sans Pro', weight: 'Regular (400)', size: '12px', lineHeight: 'auto', cssClass: '.text-body-small' },
+        { style: 'Body/Medium', font: 'Source Sans Pro', weight: 'Regular (400)', size: '14px', lineHeight: 'auto', cssClass: '.text-body-medium' },
+        { style: 'Body/Large', font: 'Source Sans Pro', weight: 'Regular (400)', size: '16px', lineHeight: 'auto', cssClass: '.text-body-large' },
+        { style: 'Title/Small', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '14px', lineHeight: 'auto', cssClass: '.text-title-small' },
+        { style: 'Title/Medium', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '16px', lineHeight: 'auto', cssClass: '.text-title-medium' },
+        { style: 'Title/Large', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '18px', lineHeight: 'auto', cssClass: '.text-title-large' },
+        { style: 'Label/Small', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '10px', lineHeight: 'auto', cssClass: '.text-label-small' },
+        { style: 'Label/Medium', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '12px', lineHeight: 'auto', cssClass: '.text-label-medium' },
+        { style: 'Label/Large', font: 'Source Sans Pro', weight: 'SemiBold (600)', size: '14px', lineHeight: '20px', cssClass: '.text-label-large' },
+        { style: 'Display/Small', font: 'Source Sans Pro', weight: 'Regular (400)', size: '36px', lineHeight: '44px', cssClass: '.text-display-small' },
+        { style: 'Display/Medium', font: 'Source Sans Pro', weight: 'Regular (400)', size: '45px', lineHeight: '52px', cssClass: '.text-display-medium' },
+        { style: 'Display/Large', font: 'Source Sans Pro', weight: 'Regular (400)', size: '57px', lineHeight: '64px', cssClass: '.text-display-large' },
+      ].map((row, index) => (
+        <tr key={index} style={{ borderBottom: '1px solid #E9EAEB' }}>
+          <td style={{ padding: '12px 16px', fontWeight: 500 }}>{row.style}</td>
+          <td style={{ padding: '12px 16px', color: '#717680' }}>{row.font}</td>
+          <td style={{ padding: '12px 16px', color: '#717680' }}>{row.weight}</td>
+          <td style={{ padding: '12px 16px', fontFamily: 'monospace' }}>{row.size}</td>
+          <td style={{ padding: '12px 16px', fontFamily: 'monospace' }}>{row.lineHeight}</td>
+          <td style={{ padding: '12px 16px' }}><code style={{ backgroundColor: '#F5F5F5', padding: '2px 6px', borderRadius: '4px', fontSize: '12px' }}>{row.cssClass}</code></td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

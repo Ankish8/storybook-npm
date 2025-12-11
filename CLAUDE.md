@@ -180,6 +180,30 @@ describe('Component', () => {
 Colors are intentionally hardcoded (e.g., `bg-[#343E55]`) for Bootstrap compatibility.
 **NEVER** change these to CSS variables or Tailwind theme tokens.
 
+## Tailwind Class Prefixing (tw- Prefix)
+
+The CLI adds a `tw-` prefix to all Tailwind classes during build. This happens automatically via `prefixTailwindClasses()`. The transformation recognizes these patterns:
+
+1. `cva("classes")` - CVA base classes
+2. `cn("classes")` or `cn('classes')` - Merged classes (both quote styles)
+3. `className="classes"` - Direct JSX attributes
+4. `key: "classes"` or `key: 'classes'` - Object property values
+
+**Best practices:**
+- Prefer `cva()` or `cn()` for dynamic classes
+- Both single and double quotes work, but be consistent
+- Avoid complex string concatenation or template literals for class strings
+- Run `npm run build` in `packages/cli` to verify transformation
+
+**Validation:**
+- `validate:prefix` - Checks for corrupted output (false prefixing)
+- `validate:coverage` - Checks for unprefixed Tailwind classes
+
+If you see unprefixed classes in production:
+1. Check if classes are in a recognized pattern (listed above)
+2. Run `npm run generate-registry && npm run validate:coverage` to identify issues
+3. Refactor to use `cn()`, `cva()`, or direct `className=` patterns
+
 ## Running Tests
 
 ```bash
