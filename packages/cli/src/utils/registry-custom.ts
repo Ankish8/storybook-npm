@@ -232,6 +232,52 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 5. Handle function calls with class string arguments
+  // Recognizes patterns like: functionName("mt-3") or helperFunc("flex gap-2")
+  // where the string argument looks like Tailwind classes
+
+  // Function names that commonly receive class strings
+  const classArgFunctions = [
+    'renderExpandableActions',
+    'getClassName',
+    'getClasses',
+    'classNames',
+    'mergeClasses',
+    'combineClasses',
+  ]
+
+  // Handle double-quoted function arguments
+  const funcArgRegex = new RegExp(
+    `\\b(${classArgFunctions.join('|')})\\s*\\(\\s*"([^"\\n]*)"`,
+    'g'
+  )
+  content = content.replace(
+    funcArgRegex,
+    (match: string, funcName: string, classes: string) => {
+      if (!looksLikeTailwindClasses(classes)) return match
+      // Skip if already prefixed
+      if (classes.includes(prefix)) return match
+      const prefixed = prefixClassString(classes, prefix)
+      return `${funcName}("${prefixed}"`
+    }
+  )
+
+  // Handle single-quoted function arguments
+  const funcArgRegexSingle = new RegExp(
+    `\\b(${classArgFunctions.join('|')})\\s*\\(\\s*'([^'\\n]*)'`,
+    'g'
+  )
+  content = content.replace(
+    funcArgRegexSingle,
+    (match: string, funcName: string, classes: string) => {
+      if (!looksLikeTailwindClasses(classes)) return match
+      // Skip if already prefixed
+      if (classes.includes(prefix)) return match
+      const prefixed = prefixClassString(classes, prefix)
+      return `${funcName}('${prefixed}'`
+    }
+  )
+
   return content
 }
 

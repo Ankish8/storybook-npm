@@ -87,7 +87,7 @@ function findUnprefixedClasses(content, componentName) {
   const issues = []
 
   // Find class strings in the transformed content
-  // Look for className="..." or key: "..." patterns
+  // Look for className="...", key: "...", and function argument patterns
   const patterns = [
     /className="([^"]+)"/g,
     /className='([^']+)'/g,
@@ -106,7 +106,38 @@ function findUnprefixedClasses(content, componentName) {
           issues.push({
             component: componentName,
             class: cls,
-            context: classString.slice(0, 50) + (classString.length > 50 ? '...' : '')
+            context: classString.slice(0, 50) + (classString.length > 50 ? '...' : ''),
+            pattern: 'standard'
+          })
+        }
+      }
+    }
+  }
+
+  // Also check for function calls with class string arguments
+  // These are commonly missed: functionName("mt-3"), helperFunc("flex gap-2")
+  const funcArgPatterns = [
+    /\b\w+\s*\(\s*"([^"\n]+)"\s*\)/g,   // functionName("classes")
+    /\b\w+\s*\(\s*'([^'\n]+)'\s*\)/g,   // functionName('classes')
+  ]
+
+  for (const pattern of funcArgPatterns) {
+    let match
+    while ((match = pattern.exec(content)) !== null) {
+      const classString = match[1]
+      // Skip if it doesn't look like classes (e.g., regular strings, paths, etc.)
+      if (!classString.includes('-') && !classString.includes(' ')) continue
+      // Skip if it looks like a path or import
+      if (classString.startsWith('@') || classString.startsWith('.') || classString.startsWith('/')) continue
+
+      const classes = classString.split(/\s+/).filter(Boolean)
+      for (const cls of classes) {
+        if (isUnprefixedTailwindClass(cls)) {
+          issues.push({
+            component: componentName,
+            class: cls,
+            context: match[0].slice(0, 60) + (match[0].length > 60 ? '...' : ''),
+            pattern: 'function-arg'
           })
         }
       }
@@ -172,6 +203,7 @@ async function validatePrefixCoverage() {
       console.error('  - cn("classes") or cn(\'classes\')')
       console.error('  - className="classes"')
       console.error('  - key: "classes" or key: \'classes\'')
+      console.error('  - renderExpandableActions("classes") (and other recognized helpers)')
       console.error('')
 
       process.exit(1)

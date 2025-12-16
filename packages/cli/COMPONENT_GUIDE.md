@@ -47,7 +47,34 @@ variant: {
 },
 ```
 
-### 4. Focus Ring Colors
+### 4. Reset Bootstrap Default Margins on Text Elements
+
+Bootstrap applies default margins to HTML text elements. Always add `m-0` to reset them:
+
+**Elements that need `m-0`:**
+- `<h1>` through `<h6>` - Bootstrap adds margin-bottom
+- `<p>` - Bootstrap adds margin-bottom
+- `<ul>`, `<ol>` - Bootstrap adds margin-bottom and padding-left
+- `<blockquote>` - Bootstrap adds margins
+- `<pre>` - Bootstrap adds margin-bottom
+- `<hr>` - Bootstrap adds margin-top and margin-bottom
+
+```tsx
+// ❌ Bad - Bootstrap will override spacing
+<h1 className="text-lg font-bold">Title</h1>
+<p className="text-sm mt-2">Description</p>
+
+// ✅ Good - Reset Bootstrap margins first, then apply your own
+<h1 className="m-0 text-lg font-bold">Title</h1>
+<p className="m-0 text-sm mt-2">Description</p>
+```
+
+**Why this matters:**
+- Bootstrap's default styles still apply even with `important: true` in Tailwind config
+- Explicit resets ensure consistent spacing across all environments
+- Prevents unexpected layout shifts in Bootstrap projects
+
+### 5. Focus Ring Colors
 
 Use hardcoded focus ring color instead of semantic:
 
@@ -230,6 +257,7 @@ const Component = ({ asChild, ...props }) => {
 - [ ] Hardcoded colors (no semantic classes)
 - [ ] Explicit heights/widths where needed
 - [ ] `border-0` on elements that shouldn't have borders
+- [ ] `m-0` on text elements (h1-h6, p, ul, ol, blockquote, pre, hr)
 - [ ] Hardcoded focus ring color
 - [ ] `cn()` for className merging
 - [ ] `forwardRef` for DOM access

@@ -160,10 +160,11 @@ const CSS_VARIABLES_V3 = `@tailwind base;
 
 `
 
-const getTailwindConfig = (prefix: string = 'tw-') => `/** @type {import('tailwindcss').Config} */
+const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean = false) => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  prefix: "${prefix}",
+  prefix: "${prefix}",${hasBootstrap ? `
+  important: true,  // Required to override Bootstrap styles` : ''}
   content: ["./src/components/ui/**/*.{js,ts,jsx,tsx}"],
   theme: {
     container: {
@@ -410,13 +411,34 @@ export async function init() {
 
     // Create utils file or add cn function if missing
     const utilsFullPath = path.join(cwd, utilsPath)
-    const cnUtilsContent = `import { type ClassValue, clsx } from "clsx"
+
+    // Generate utils content based on prefix - configures tailwind-merge to understand prefixed classes
+    const getCnUtilsContent = (prefix: string) => {
+      if (prefix) {
+        return `import { type ClassValue, clsx } from "clsx"
+import { extendTailwindMerge } from "tailwind-merge"
+
+// Configure tailwind-merge to understand the "${prefix}" prefix
+const twMerge = extendTailwindMerge({
+  prefix: "${prefix}",
+})
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+`
+      }
+      // No prefix - use standard twMerge
+      return `import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 `
+    }
+
+    const cnUtilsContent = getCnUtilsContent(userPrefix)
     let utilsCreated = false
     let utilsUpdated = false
 
@@ -435,13 +457,19 @@ export function cn(...inputs: ClassValue[]) {
         // Check and add missing imports at the top
         const hasClsxImport = existingUtils.includes('from "clsx"') || existingUtils.includes("from 'clsx'")
         const hasTwMergeImport = existingUtils.includes('from "tailwind-merge"') || existingUtils.includes("from 'tailwind-merge'")
+        const hasExtendTwMerge = existingUtils.includes('extendTailwindMerge')
 
         let importsToAdd = ''
         if (!hasClsxImport) {
           importsToAdd += `import { type ClassValue, clsx } from "clsx"\n`
         }
-        if (!hasTwMergeImport) {
-          importsToAdd += `import { twMerge } from "tailwind-merge"\n`
+        if (!hasTwMergeImport && !hasExtendTwMerge) {
+          // Add the appropriate import based on prefix
+          if (userPrefix) {
+            importsToAdd += `import { extendTailwindMerge } from "tailwind-merge"\n`
+          } else {
+            importsToAdd += `import { twMerge } from "tailwind-merge"\n`
+          }
         }
 
         // Add imports at the top if needed
@@ -449,12 +477,26 @@ export function cn(...inputs: ClassValue[]) {
           updatedContent = importsToAdd + updatedContent
         }
 
-        // Add cn function at the end
-        const cnFunction = `
+        // Add cn function at the end (with prefix configuration if needed)
+        let cnFunction: string
+        if (userPrefix) {
+          cnFunction = `
+// Configure tailwind-merge to understand the "${userPrefix}" prefix
+const twMerge = extendTailwindMerge({
+  prefix: "${userPrefix}",
+})
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 `
+        } else {
+          cnFunction = `
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+`
+        }
         updatedContent = updatedContent.trimEnd() + '\n' + cnFunction
 
         await fs.writeFile(utilsFullPath, updatedContent)
@@ -518,14 +560,14 @@ export function cn(...inputs: ClassValue[]) {
     if (tailwindVersion === 'v3' && tailwindConfig) {
       const tailwindConfigPath = path.join(cwd, tailwindConfig)
       if (!(await fs.pathExists(tailwindConfigPath))) {
-        await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix))
+        await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
         tailwindUpdated = true
       } else {
         // Check if tailwind config already has the theme colors
         const existingConfig = await fs.readFile(tailwindConfigPath, 'utf-8')
         if (!existingConfig.includes('hsl(var(--destructive))') && !existingConfig.includes('hsl(var(--ring))')) {
           // Auto-update for v3
-          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix))
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
           tailwindUpdated = true
         }
       }
