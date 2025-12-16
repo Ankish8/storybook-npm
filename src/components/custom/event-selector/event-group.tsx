@@ -94,7 +94,7 @@ export const EventGroupComponent = React.forwardRef<
             />
             <div className="flex-1 min-w-0">
               <span className="font-medium text-[#333333]">{event.name}</span>
-              <p className="text-sm text-[#6B7280] mt-0.5">{event.description}</p>
+              <p className="m-0 text-sm text-[#6B7280] mt-0.5">{event.description}</p>
             </div>
           </div>
         </div>

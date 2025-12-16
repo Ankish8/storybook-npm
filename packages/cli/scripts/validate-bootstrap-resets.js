@@ -36,18 +36,52 @@ const RESET_PATTERN = /\bm-0\b/
 
 console.log('🔍 Validating Bootstrap margin resets...\n')
 
-const componentsDir = path.join(__dirname, '../../../src/components/ui')
+const uiDir = path.join(__dirname, '../../../src/components/ui')
+const customDir = path.join(__dirname, '../../../src/components/custom')
 
-// Get all .tsx component files (exclude stories and tests)
-let files = []
-try {
-  files = fs.readdirSync(componentsDir)
-    .filter(f => f.endsWith('.tsx'))
-    .filter(f => !f.includes('.stories.'))  // Exclude Storybook stories
-    .filter(f => !f.includes('.test.'))     // Exclude test files
-    .map(f => path.join(componentsDir, f))
-} catch (err) {
-  console.error('❌ Could not read components directory:', componentsDir)
+// Get .tsx files from a directory (non-recursive)
+const getFilesFromDir = (dir) => {
+  try {
+    return fs.readdirSync(dir)
+      .filter(f => f.endsWith('.tsx'))
+      .filter(f => !f.includes('.stories.'))
+      .filter(f => !f.includes('.test.'))
+      .map(f => path.join(dir, f))
+  } catch {
+    return []
+  }
+}
+
+// Get .tsx files recursively from a directory
+const getFilesRecursive = (dir) => {
+  let results = []
+  try {
+    const items = fs.readdirSync(dir, { withFileTypes: true })
+    for (const item of items) {
+      const fullPath = path.join(dir, item.name)
+      if (item.isDirectory()) {
+        results = results.concat(getFilesRecursive(fullPath))
+      } else if (
+        item.name.endsWith('.tsx') &&
+        !item.name.includes('.stories.') &&
+        !item.name.includes('.test.')
+      ) {
+        results.push(fullPath)
+      }
+    }
+  } catch {
+    // Directory doesn't exist, skip
+  }
+  return results
+}
+
+// Get all .tsx component files from both ui/ and custom/ directories
+const uiFiles = getFilesFromDir(uiDir)
+const customFiles = getFilesRecursive(customDir)
+const files = [...uiFiles, ...customFiles]
+
+if (files.length === 0) {
+  console.error('❌ No component files found')
   process.exit(1)
 }
 
@@ -55,9 +89,11 @@ let hasErrors = false
 let checkedFiles = 0
 let issuesFound = []
 
+const srcDir = path.join(__dirname, '../../../src')
+
 files.forEach(file => {
   const content = fs.readFileSync(file, 'utf8')
-  const fileName = path.basename(file)
+  const relativePath = path.relative(srcDir, file)
   const lines = content.split('\n')
 
   checkedFiles++
@@ -76,7 +112,7 @@ files.forEach(file => {
           if (!RESET_PATTERN.test(classes)) {
             hasErrors = true
             issuesFound.push({
-              file: fileName,
+              file: relativePath,
               line: index + 1,
               element: name,
               classes: classes.substring(0, 60) + (classes.length > 60 ? '...' : '')

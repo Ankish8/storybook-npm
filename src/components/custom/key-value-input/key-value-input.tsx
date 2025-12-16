@@ -137,9 +137,9 @@ export const KeyValueInput = React.forwardRef<
       <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="mb-3">
-          <h3 className="text-base font-semibold text-[#333333]">{title}</h3>
+          <h3 className="m-0 text-base font-semibold text-[#333333]">{title}</h3>
           {description && (
-            <p className="text-sm text-[#6B7280] mt-1">{description}</p>
+            <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
           )}
         </div>
 
@@ -197,7 +197,7 @@ export const KeyValueInput = React.forwardRef<
 
         {/* Limit indicator */}
         {isAtLimit && (
-          <p className="text-xs text-[#6B7280] mt-2 text-center">
+          <p className="m-0 text-xs text-[#6B7280] mt-2 text-center">
             Maximum of {maxItems} items reached
           </p>
         )}
