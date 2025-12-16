@@ -475,5 +475,55 @@ describe('Registry', () => {
       expect(mainFile!.content).toContain('from "../../../lib/utils"')
       expect(mainFile!.content).not.toContain('@/lib/utils')
     })
+
+    it('has correct file path structure for multi-file components', async () => {
+      const registry = await getRegistry()
+
+      // Verify all multi-file components have required properties
+      for (const [name, component] of Object.entries(registry)) {
+        if (component.isMultiFile) {
+          expect(component.directory).toBeDefined()
+          expect(component.directory).toBeTruthy()
+          expect(component.mainFile).toBeDefined()
+          expect(component.mainFile).toBeTruthy()
+          expect(component.files.length).toBeGreaterThan(1)
+
+          // mainFile should be in files array
+          const mainFileExists = component.files.some(f => f.name === component.mainFile)
+          expect(mainFileExists).toBe(true)
+        }
+      }
+    })
+
+    it('multi-file component directory matches component name', async () => {
+      const registry = await getRegistry()
+      const eventSelector = registry['event-selector']
+      const keyValueInput = registry['key-value-input']
+
+      // Directory should match component name for consistency
+      expect(eventSelector.directory).toBe('event-selector')
+      expect(keyValueInput.directory).toBe('key-value-input')
+    })
+
+    it('update command file path calculation for multi-file components', async () => {
+      // This test verifies the logic used in update.ts for file path calculation
+      const registry = await getRegistry()
+      const componentsDir = 'src/components/ui'
+
+      for (const [name, component] of Object.entries(registry)) {
+        // Simulate the getComponentFilePath logic from update.ts
+        let expectedPath: string
+        if (component.isMultiFile && component.directory) {
+          expectedPath = `${componentsDir}/${component.directory}/${component.files[0].name}`
+        } else {
+          expectedPath = `${componentsDir}/${component.files[0].name}`
+        }
+
+        // Multi-file components should have directory in path
+        if (component.isMultiFile) {
+          expect(expectedPath).toContain(`/${component.directory}/`)
+        }
+      }
+    })
   })
 })

@@ -120,12 +120,20 @@ export async function update(components: string[], options: UpdateOptions) {
   // Get components directory
   const componentsDir = path.join(cwd, options.path)
 
+  // Helper to get the file path for checking if component is installed
+  const getComponentFilePath = (component: any) => {
+    if (component.isMultiFile && component.directory) {
+      return path.join(componentsDir, component.directory, component.files[0].name)
+    }
+    return path.join(componentsDir, component.files[0].name)
+  }
+
   // If --all flag, update all installed components
   if (options.all) {
     const installedComponents: string[] = []
     for (const name of availableComponents) {
       const component = registry[name]
-      const filePath = path.join(componentsDir, component.files[0].name)
+      const filePath = getComponentFilePath(component)
       if (await fs.pathExists(filePath)) {
         installedComponents.push(name)
       }
@@ -145,7 +153,7 @@ export async function update(components: string[], options: UpdateOptions) {
     const installedComponents: string[] = []
     for (const name of availableComponents) {
       const component = registry[name]
-      const filePath = path.join(componentsDir, component.files[0].name)
+      const filePath = getComponentFilePath(component)
       if (await fs.pathExists(filePath)) {
         installedComponents.push(name)
       }
@@ -190,7 +198,7 @@ export async function update(components: string[], options: UpdateOptions) {
 
   for (const name of components) {
     const component = registry[name]
-    const filePath = path.join(componentsDir, component.files[0].name)
+    const filePath = getComponentFilePath(component)
     if (await fs.pathExists(filePath)) {
       toUpdate.push(name)
     } else {
@@ -210,20 +218,23 @@ export async function update(components: string[], options: UpdateOptions) {
   // Show diff for each component
   console.log(chalk.bold('\n  Changes to be applied:\n'))
 
-  const changesInfo: { name: string; file: string; oldContent: string; newContent: string; hasChanges: boolean }[] = []
+  const changesInfo: { name: string; file: string; relativePath: string; oldContent: string; newContent: string; hasChanges: boolean }[] = []
 
   for (const componentName of toUpdate) {
     const component = registry[componentName]
+    // For multi-file components, files are in a subdirectory
+    const subDir = (component.isMultiFile && component.directory) ? component.directory : ''
 
     for (const file of component.files) {
-      const filePath = path.join(componentsDir, file.name)
+      const relativePath = subDir ? path.join(subDir, file.name) : file.name
+      const filePath = path.join(componentsDir, relativePath)
       const oldContent = await fs.readFile(filePath, 'utf-8')
       const newContent = file.content
 
       const hasChanges = hasRealChanges(oldContent, newContent)
-      changesInfo.push({ name: componentName, file: file.name, oldContent, newContent, hasChanges })
+      changesInfo.push({ name: componentName, file: file.name, relativePath, oldContent, newContent, hasChanges })
 
-      const diff = generateDiff(oldContent, newContent, file.name)
+      const diff = generateDiff(oldContent, newContent, relativePath)
       console.log(diff)
     }
   }
@@ -265,18 +276,18 @@ export async function update(components: string[], options: UpdateOptions) {
     const backedUp: string[] = []
 
     for (const change of componentsWithChanges) {
-      const filePath = path.join(componentsDir, change.file)
+      const filePath = path.join(componentsDir, change.relativePath)
 
       // Create backup if requested
       if (options.backup) {
         const backupPath = `${filePath}.backup.${Date.now()}`
         await fs.copy(filePath, backupPath)
-        backedUp.push(change.file)
+        backedUp.push(change.relativePath)
       }
 
       // Write new content
       await fs.writeFile(filePath, change.newContent)
-      updated.push(change.file)
+      updated.push(change.relativePath)
     }
 
     spinner.succeed('Components updated successfully!')
