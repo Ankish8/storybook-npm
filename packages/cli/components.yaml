@@ -14,6 +14,7 @@ categories:
     components:
       - button
       - badge
+      - typography
 
   form:
     description: "Form inputs and controls"
@@ -79,6 +80,13 @@ components:
     dependencies:
       - "@radix-ui/react-slot"
       - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  typography:
+    description: "A semantic typography component with kind, variant, color, alignment, and truncation support"
+    category: core
+    dependencies:
       - "clsx"
       - "tailwind-merge"
 

@@ -6,6 +6,7 @@
     }
   },
   "enabledPlugins": {
-    "myoperator-publish@local-dev": true
+    "myoperator-publish@local-dev": true,
+    "explanatory-output-style@claude-plugins-official": true
   }
 }

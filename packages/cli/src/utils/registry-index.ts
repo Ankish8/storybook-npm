@@ -30,6 +30,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'core',
     internalDependencies: [],
   },
+  'typography': {
+    name: 'typography',
+    description: 'A semantic typography component with kind, variant, color, alignment, and truncation support',
+    dependencies: ["clsx","tailwind-merge"],
+    category: 'core',
+    internalDependencies: [],
+  },
   'input': {
     name: 'input',
     description: 'A text input component with error and disabled states',
