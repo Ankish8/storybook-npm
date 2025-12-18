@@ -314,12 +314,12 @@ export async function getRegistry(prefix: string = ''): Promise<Registry> {
       files: [
         {
           name: 'button.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -328,12 +328,10 @@ const buttonVariants = cva(
       variant: {
         default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
         primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        destructive:
-          "bg-[#F04438] text-white hover:bg-[#D92D20]",
+        destructive: "bg-[#F04438] text-white hover:bg-[#D92D20]",
         outline:
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#EBECEE]",
-        secondary:
-          "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
+        secondary: "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
         ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
         dashed:
@@ -353,7 +351,7 @@ const buttonVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Button component for user interactions.
@@ -366,35 +364,39 @@ const buttonVariants = cva(
  * \`\`\`
  */
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   /** Render as child element using Radix Slot */
-  asChild?: boolean
+  asChild?: boolean;
   /** Icon displayed on the left side of the button text */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the button text */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Shows loading spinner and disables button */
-  loading?: boolean
+  loading?: boolean;
   /** Text shown during loading state */
-  loadingText?: string
+  loadingText?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    asChild = false,
-    leftIcon,
-    rightIcon,
-    loading = false,
-    loadingText,
-    children,
-    disabled,
-    ...props
-  }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      leftIcon,
+      rightIcon,
+      loading = false,
+      loadingText,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "button";
 
     return (
       <Comp
@@ -416,12 +418,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         )}
       </Comp>
-    )
+    );
   }
-)
-Button.displayName = "Button"
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
 `, prefix),
         },
       ],
@@ -438,11 +440,11 @@ export { Button, buttonVariants }
       files: [
         {
           name: 'badge.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Badge variants for status indicators.
@@ -475,7 +477,7 @@ const badgeVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Badge component for displaying status indicators.
@@ -495,19 +497,32 @@ const badgeVariants = cva(
  * \`\`\`
  */
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
   /** Icon displayed on the left side of the badge text */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the badge text */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Render as child element using Radix Slot */
-  asChild?: boolean
+  asChild?: boolean;
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, leftIcon, rightIcon, asChild = false, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "div"
+  (
+    {
+      className,
+      variant,
+      size,
+      leftIcon,
+      rightIcon,
+      asChild = false,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "div";
 
     // When using asChild, we can't wrap the child with extra elements
     // The child must receive the className and ref directly
@@ -520,7 +535,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         >
           {children}
         </Comp>
-      )
+      );
     }
 
     return (
@@ -533,12 +548,12 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {children}
         {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
       </Comp>
-    )
+    );
   }
-)
-Badge.displayName = "Badge"
+);
+Badge.displayName = "Badge";
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };
 `, prefix),
         },
       ],
@@ -553,19 +568,27 @@ export { Badge, badgeVariants }
       files: [
         {
           name: 'typography.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../lib/utils"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../lib/utils";
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-export type Kind = "display" | "headline" | "title" | "label" | "body"
-export type Variant = "large" | "medium" | "small"
-export type Color = "primary" | "secondary" | "muted" | "placeholder" | "link" | "inverted" | "error" | "success"
-export type Align = "left" | "center" | "right"
+export type Kind = "display" | "headline" | "title" | "label" | "body";
+export type Variant = "large" | "medium" | "small";
+export type Color =
+  | "primary"
+  | "secondary"
+  | "muted"
+  | "placeholder"
+  | "link"
+  | "inverted"
+  | "error"
+  | "success";
+export type Align = "left" | "center" | "right";
 
-type Key = \`\${Kind}-\${Variant}\`
+type Key = \`\${Kind}-\${Variant}\`;
 
 // =============================================================================
 // MAPPINGS
@@ -590,7 +613,7 @@ const mapTagName: { [key in Key]: keyof JSX.IntrinsicElements } = {
   "body-large": "span",
   "body-medium": "span",
   "body-small": "span",
-}
+};
 
 /**
  * Maps kind-variant combinations to Tailwind typography classes
@@ -611,7 +634,7 @@ const mapClassName: { [key in Key]: string } = {
   "body-large": "text-base leading-5 font-normal",
   "body-medium": "text-sm leading-[18px] font-normal",
   "body-small": "text-xs leading-4 font-normal",
-}
+};
 
 /**
  * Maps color variants to Tailwind text color classes
@@ -625,7 +648,7 @@ const mapColorClassName: { [key in Color]: string } = {
   inverted: "text-white",
   error: "text-[#F04438]",
   success: "text-[#17B26A]",
-}
+};
 
 /**
  * Maps alignment to Tailwind text alignment classes
@@ -634,7 +657,7 @@ const mapAlignClassName: { [key in Align]: string } = {
   left: "text-left",
   center: "text-center",
   right: "text-right",
-}
+};
 
 // =============================================================================
 // COMPONENT
@@ -645,21 +668,21 @@ const mapAlignClassName: { [key in Align]: string } = {
  */
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   /** Text content */
-  children: React.ReactNode
+  children: React.ReactNode;
   /** Typography kind - determines base styling and semantic tag */
-  kind?: Kind
+  kind?: Kind;
   /** Size variant */
-  variant?: Variant
+  variant?: Variant;
   /** Text color */
-  color?: Color
+  color?: Color;
   /** Text alignment */
-  align?: Align
+  align?: Align;
   /** Enable text truncation with ellipsis */
-  truncate?: boolean
+  truncate?: boolean;
   /** Override the default HTML tag */
-  tag?: keyof JSX.IntrinsicElements
+  tag?: keyof JSX.IntrinsicElements;
   /** For label elements - associates with form input */
-  htmlFor?: string
+  htmlFor?: string;
 }
 
 /**
@@ -696,8 +719,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     },
     ref
   ) => {
-    const key: Key = \`\${kind}-\${variant}\`
-    const Tag = tag || mapTagName[key]
+    const key: Key = \`\${kind}-\${variant}\`;
+    const Tag = tag || mapTagName[key];
 
     const classes = cn(
       "m-0", // Reset margin
@@ -706,7 +729,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       align && mapAlignClassName[align],
       truncate && "truncate",
       className
-    )
+    );
 
     return (
       <Tag
@@ -717,12 +740,18 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       >
         {children}
       </Tag>
-    )
+    );
   }
-)
-Typography.displayName = "Typography"
+);
+Typography.displayName = "Typography";
 
-export { Typography, mapTagName, mapClassName, mapColorClassName, mapAlignClassName }
+export {
+  Typography,
+  mapTagName,
+  mapClassName,
+  mapColorClassName,
+  mapAlignClassName,
+};
 `, prefix),
         },
       ],
@@ -738,10 +767,10 @@ export { Typography, mapTagName, mapClassName, mapColorClassName, mapAlignClassN
       files: [
         {
           name: 'input.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Input variants for different visual states
@@ -751,15 +780,17 @@ const inputVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 /**
  * A flexible input component for text entry with state variants.
@@ -772,7 +803,8 @@ const inputVariants = cva(
  * \`\`\`
  */
 export interface InputProps
-  extends Omit<React.ComponentProps<"input">, "size">,
+  extends
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof inputVariants> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -784,12 +816,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = "Input";
 
-export { Input, inputVariants }
+export { Input, inputVariants };
 `, prefix),
         },
       ],
@@ -807,12 +839,12 @@ export { Input, inputVariants }
       files: [
         {
           name: 'select.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as SelectPrimitive from "@radix-ui/react-select"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, ChevronDown, ChevronUp } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * SelectTrigger variants matching TextField styling
@@ -822,24 +854,27 @@ const selectTriggerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
-const Select = SelectPrimitive.Root
+const Select = SelectPrimitive.Root;
 
-const SelectGroup = SelectPrimitive.Group
+const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = SelectPrimitive.Value
+const SelectValue = SelectPrimitive.Value;
 
 export interface SelectTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
+  extends
+    React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
     VariantProps<typeof selectTriggerVariants> {}
 
 const SelectTrigger = React.forwardRef<
@@ -856,8 +891,8 @@ const SelectTrigger = React.forwardRef<
       <ChevronDown className="size-4 text-[#717680] opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
-))
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+));
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
@@ -873,8 +908,8 @@ const SelectScrollUpButton = React.forwardRef<
   >
     <ChevronUp className="size-4 text-[#717680]" />
   </SelectPrimitive.ScrollUpButton>
-))
-SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
+));
+SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 
 const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
@@ -890,8 +925,9 @@ const SelectScrollDownButton = React.forwardRef<
   >
     <ChevronDown className="size-4 text-[#717680]" />
   </SelectPrimitive.ScrollDownButton>
-))
-SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
+));
+SelectScrollDownButton.displayName =
+  SelectPrimitive.ScrollDownButton.displayName;
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
@@ -927,8 +963,8 @@ const SelectContent = React.forwardRef<
       <SelectScrollDownButton />
     </SelectPrimitive.Content>
   </SelectPrimitive.Portal>
-))
-SelectContent.displayName = SelectPrimitive.Content.displayName
+));
+SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
@@ -939,8 +975,8 @@ const SelectLabel = React.forwardRef<
     className={cn("px-4 py-1.5 text-xs font-medium text-[#717680]", className)}
     {...props}
   />
-))
-SelectLabel.displayName = SelectPrimitive.Label.displayName
+));
+SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
@@ -963,8 +999,8 @@ const SelectItem = React.forwardRef<
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
   </SelectPrimitive.Item>
-))
-SelectItem.displayName = SelectPrimitive.Item.displayName
+));
+SelectItem.displayName = SelectPrimitive.Item.displayName;
 
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
@@ -975,8 +1011,8 @@ const SelectSeparator = React.forwardRef<
     className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
     {...props}
   />
-))
-SelectSeparator.displayName = SelectPrimitive.Separator.displayName
+));
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
 export {
   Select,
@@ -990,7 +1026,7 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
   selectTriggerVariants,
-}
+};
 `, prefix),
         },
       ],
@@ -1008,12 +1044,12 @@ export {
       files: [
         {
           name: 'checkbox.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, Minus } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, Minus } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Checkbox box variants (the outer container)
@@ -1032,7 +1068,7 @@ const checkboxVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Icon size variants based on checkbox size
@@ -1048,7 +1084,7 @@ const iconSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 /**
  * Label text size variants
@@ -1064,9 +1100,9 @@ const labelSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
-export type CheckedState = boolean | "indeterminate"
+export type CheckedState = boolean | "indeterminate";
 
 /**
  * A tri-state checkbox component with label support. Built on Radix UI Checkbox primitive.
@@ -1081,18 +1117,22 @@ export type CheckedState = boolean | "indeterminate"
  * \`\`\`
  */
 export interface CheckboxProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "onChange">,
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
+      "onChange"
+    >,
     VariantProps<typeof checkboxVariants> {
   /** Optional label text */
-  label?: string
+  label?: string;
   /** Position of the label */
-  labelPosition?: "left" | "right"
+  labelPosition?: "left" | "right";
   /** Class name applied to the checkbox element */
-  checkboxClassName?: string
+  checkboxClassName?: string;
   /** Class name applied to the label element */
-  labelClassName?: string
+  labelClassName?: string;
   /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
-  separateLabel?: boolean
+  separateLabel?: boolean;
 }
 
 const Checkbox = React.forwardRef<
@@ -1135,7 +1175,7 @@ const Checkbox = React.forwardRef<
           )}
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
-    )
+    );
 
     if (label) {
       // separateLabel mode: use htmlFor/id association instead of wrapping
@@ -1170,33 +1210,52 @@ const Checkbox = React.forwardRef<
               </label>
             )}
           </div>
-        )
+        );
       }
 
       // Default: wrapping label
       return (
-        <label className={cn("inline-flex items-center gap-2 cursor-pointer", disabled && "cursor-not-allowed")}>
+        <label
+          className={cn(
+            "inline-flex items-center gap-2 cursor-pointer",
+            disabled && "cursor-not-allowed"
+          )}
+        >
           {labelPosition === "left" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50",
+                labelClassName
+              )}
+            >
               {label}
             </span>
           )}
           {checkbox}
           {labelPosition === "right" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50",
+                labelClassName
+              )}
+            >
               {label}
             </span>
           )}
         </label>
-      )
+      );
     }
 
-    return checkbox
+    return checkbox;
   }
-)
-Checkbox.displayName = "Checkbox"
+);
+Checkbox.displayName = "Checkbox";
 
-export { Checkbox, checkboxVariants }
+export { Checkbox, checkboxVariants };
 `, prefix),
         },
       ],
@@ -1213,11 +1272,11 @@ export { Checkbox, checkboxVariants }
       files: [
         {
           name: 'switch.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as SwitchPrimitives from "@radix-ui/react-switch"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as SwitchPrimitives from "@radix-ui/react-switch";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Switch track variants (the outer container)
@@ -1236,7 +1295,7 @@ const switchVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Switch thumb variants (the sliding circle)
@@ -1255,7 +1314,7 @@ const switchThumbVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Label text size variants
@@ -1271,7 +1330,7 @@ const labelSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 /**
  * A switch/toggle component for boolean inputs with on/off states
@@ -1284,12 +1343,16 @@ const labelSizeVariants = cva("", {
  * \`\`\`
  */
 export interface SwitchProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>, "onChange">,
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
+      "onChange"
+    >,
     VariantProps<typeof switchVariants> {
   /** Optional label text */
-  label?: string
+  label?: string;
   /** Position of the label */
-  labelPosition?: "left" | "right"
+  labelPosition?: "left" | "right";
 }
 
 const Switch = React.forwardRef<
@@ -1297,14 +1360,7 @@ const Switch = React.forwardRef<
   SwitchProps
 >(
   (
-    {
-      className,
-      size,
-      label,
-      labelPosition = "right",
-      disabled,
-      ...props
-    },
+    { className, size, label, labelPosition = "right", disabled, ...props },
     ref
   ) => {
     const switchElement = (
@@ -1316,43 +1372,49 @@ const Switch = React.forwardRef<
       >
         <SwitchPrimitives.Thumb className={cn(switchThumbVariants({ size }))} />
       </SwitchPrimitives.Root>
-    )
+    );
 
     if (label) {
       return (
-        <label className={cn(
-          "inline-flex items-center gap-2 cursor-pointer",
-          disabled && "cursor-not-allowed"
-        )}>
+        <label
+          className={cn(
+            "inline-flex items-center gap-2 cursor-pointer",
+            disabled && "cursor-not-allowed"
+          )}
+        >
           {labelPosition === "left" && (
-            <span className={cn(
-              labelSizeVariants({ size }),
-              "text-[#181D27]",
-              disabled && "opacity-50"
-            )}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50"
+              )}
+            >
               {label}
             </span>
           )}
           {switchElement}
           {labelPosition === "right" && (
-            <span className={cn(
-              labelSizeVariants({ size }),
-              "text-[#181D27]",
-              disabled && "opacity-50"
-            )}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50"
+              )}
+            >
               {label}
             </span>
           )}
         </label>
-      )
+      );
     }
 
-    return switchElement
+    return switchElement;
   }
-)
-Switch.displayName = "Switch"
+);
+Switch.displayName = "Switch";
 
-export { Switch, switchVariants }
+export { Switch, switchVariants };
 `, prefix),
         },
       ],
@@ -1369,11 +1431,11 @@ export { Switch, switchVariants }
       files: [
         {
           name: 'text-field.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * TextField container variants for when icons/prefix/suffix are present
@@ -1383,8 +1445,10 @@ const textFieldContainerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
@@ -1396,7 +1460,7 @@ const textFieldContainerVariants = cva(
       disabled: false,
     },
   }
-)
+);
 
 /**
  * TextField input variants (standalone without container)
@@ -1406,15 +1470,17 @@ const textFieldInputVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 /**
  * A comprehensive text field component with label, icons, validation states, and more.
@@ -1427,34 +1493,35 @@ const textFieldInputVariants = cva(
  * \`\`\`
  */
 export interface TextFieldProps
-  extends Omit<React.ComponentProps<"input">, "size">,
+  extends
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
   /** Label text displayed above the input */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the input */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Text prefix inside input (e.g., "https://") */
-  prefix?: string
+  prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
-  suffix?: string
+  suffix?: string;
   /** Shows character count when maxLength is set */
-  showCount?: boolean
+  showCount?: boolean;
   /** Shows loading spinner inside input */
-  loading?: boolean
+  loading?: boolean;
   /** Additional class for the wrapper container */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for the label */
-  labelClassName?: string
+  labelClassName?: string;
   /** Additional class for the input container (includes prefix/suffix/icons) */
-  inputContainerClassName?: string
+  inputContainerClassName?: string;
 }
 
 const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
@@ -1486,37 +1553,39 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     ref
   ) => {
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(defaultValue ?? '')
+    const [internalValue, setInternalValue] = React.useState(
+      defaultValue ?? ""
+    );
 
     // Determine if controlled
-    const isControlled = value !== undefined
-    const currentValue = isControlled ? value : internalValue
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
 
     // Derive state from props
-    const derivedState = error ? 'error' : (state ?? 'default')
+    const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
-        setInternalValue(e.target.value)
+        setInternalValue(e.target.value);
       }
-      onChange?.(e)
-    }
+      onChange?.(e);
+    };
 
     // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading;
 
     // Character count
-    const charCount = String(currentValue).length
+    const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const inputId = id || generatedId
-    const helperId = \`\${inputId}-helper\`
-    const errorId = \`\${inputId}-error\`
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
+    const helperId = \`\${inputId}-helper\`;
+    const errorId = \`\${inputId}-error\`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Render the input element
     const inputElement = (
@@ -1537,7 +1606,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         aria-describedby={ariaDescribedBy}
         {...props}
       />
-    )
+    );
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -1556,17 +1625,38 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {hasAddons ? (
           <div
             className={cn(
-              textFieldContainerVariants({ state: derivedState, disabled: disabled || loading }),
+              textFieldContainerVariants({
+                state: derivedState,
+                disabled: disabled || loading,
+              }),
               "h-10 px-4",
               inputContainerClassName
             )}
           >
-            {prefix && <span className="text-sm text-[#717680] mr-2 select-none">{prefix}</span>}
-            {leftIcon && <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
+            {prefix && (
+              <span className="text-sm text-[#717680] mr-2 select-none">
+                {prefix}
+              </span>
+            )}
+            {leftIcon && (
+              <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+                {leftIcon}
+              </span>
+            )}
             {inputElement}
-            {loading && <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />}
-            {!loading && rightIcon && <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
-            {suffix && <span className="text-sm text-[#717680] ml-2 select-none">{suffix}</span>}
+            {loading && (
+              <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />
+            )}
+            {!loading && rightIcon && (
+              <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+                {rightIcon}
+              </span>
+            )}
+            {suffix && (
+              <span className="text-sm text-[#717680] ml-2 select-none">
+                {suffix}
+              </span>
+            )}
           </div>
         ) : (
           inputElement
@@ -1599,12 +1689,12 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-TextField.displayName = "TextField"
+);
+TextField.displayName = "TextField";
 
-export { TextField, textFieldContainerVariants, textFieldInputVariants }
+export { TextField, textFieldContainerVariants, textFieldInputVariants };
 `, prefix),
         },
       ],
@@ -1621,10 +1711,10 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants }
       files: [
         {
           name: 'select-field.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 import {
   Select,
   SelectContent,
@@ -1633,56 +1723,56 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./select"
+} from "./select";
 
 export interface SelectOption {
   /** The value of the option */
-  value: string
+  value: string;
   /** The display label of the option */
-  label: string
+  label: string;
   /** Whether the option is disabled */
-  disabled?: boolean
+  disabled?: boolean;
   /** Group name for grouping options */
-  group?: string
+  group?: string;
 }
 
 export interface SelectFieldProps {
   /** Label text displayed above the select */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the select */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Disabled state */
-  disabled?: boolean
+  disabled?: boolean;
   /** Loading state with spinner */
-  loading?: boolean
+  loading?: boolean;
   /** Placeholder text when no value selected */
-  placeholder?: string
+  placeholder?: string;
   /** Currently selected value (controlled) */
-  value?: string
+  value?: string;
   /** Default value (uncontrolled) */
-  defaultValue?: string
+  defaultValue?: string;
   /** Callback when value changes */
-  onValueChange?: (value: string) => void
+  onValueChange?: (value: string) => void;
   /** Options to display */
-  options: SelectOption[]
+  options: SelectOption[];
   /** Enable search/filter functionality */
-  searchable?: boolean
+  searchable?: boolean;
   /** Search placeholder text */
-  searchPlaceholder?: string
+  searchPlaceholder?: string;
   /** Additional class for wrapper */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for trigger */
-  triggerClassName?: string
+  triggerClassName?: string;
   /** Additional class for label */
-  labelClassName?: string
+  labelClassName?: string;
   /** ID for the select */
-  id?: string
+  id?: string;
   /** Name attribute for form submission */
-  name?: string
+  name?: string;
 }
 
 /**
@@ -1727,59 +1817,59 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     ref
   ) => {
     // Internal state for search
-    const [searchQuery, setSearchQuery] = React.useState("")
+    const [searchQuery, setSearchQuery] = React.useState("");
 
     // Derive state from props
-    const derivedState = error ? "error" : "default"
+    const derivedState = error ? "error" : "default";
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const selectId = id || generatedId
-    const helperId = \`\${selectId}-helper\`
-    const errorId = \`\${selectId}-error\`
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const helperId = \`\${selectId}-helper\`;
+    const errorId = \`\${selectId}-error\`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Group options by group property
     const groupedOptions = React.useMemo(() => {
-      const groups: Record<string, SelectOption[]> = {}
-      const ungrouped: SelectOption[] = []
+      const groups: Record<string, SelectOption[]> = {};
+      const ungrouped: SelectOption[] = [];
 
       options.forEach((option) => {
         // Filter by search query if searchable
         if (searchable && searchQuery) {
           if (!option.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return
+            return;
           }
         }
 
         if (option.group) {
           if (!groups[option.group]) {
-            groups[option.group] = []
+            groups[option.group] = [];
           }
-          groups[option.group].push(option)
+          groups[option.group].push(option);
         } else {
-          ungrouped.push(option)
+          ungrouped.push(option);
         }
-      })
+      });
 
-      return { groups, ungrouped }
-    }, [options, searchable, searchQuery])
+      return { groups, ungrouped };
+    }, [options, searchable, searchQuery]);
 
-    const hasGroups = Object.keys(groupedOptions.groups).length > 0
+    const hasGroups = Object.keys(groupedOptions.groups).length > 0;
 
     // Handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
-    }
+      setSearchQuery(e.target.value);
+    };
 
     // Reset search when dropdown closes
     const handleOpenChange = (open: boolean) => {
       if (!open) {
-        setSearchQuery("")
+        setSearchQuery("");
       }
-    }
+    };
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -1807,10 +1897,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
             ref={ref}
             id={selectId}
             state={derivedState}
-            className={cn(
-              loading && "pr-10",
-              triggerClassName
-            )}
+            className={cn(loading && "pr-10", triggerClassName)}
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}
           >
@@ -1849,20 +1936,22 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
 
             {/* Grouped options */}
             {hasGroups &&
-              Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
-                <SelectGroup key={groupName}>
-                  <SelectLabel>{groupName}</SelectLabel>
-                  {groupOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      disabled={option.disabled}
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              ))}
+              Object.entries(groupedOptions.groups).map(
+                ([groupName, groupOptions]) => (
+                  <SelectGroup key={groupName}>
+                    <SelectLabel>{groupName}</SelectLabel>
+                    {groupOptions.map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )
+              )}
 
             {/* No results message */}
             {searchable &&
@@ -1891,12 +1980,12 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-SelectField.displayName = "SelectField"
+);
+SelectField.displayName = "SelectField";
 
-export { SelectField }
+export { SelectField };
 `, prefix),
         },
       ],
@@ -1913,11 +2002,11 @@ export { SelectField }
       files: [
         {
           name: 'multi-select.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, ChevronDown, X, Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, ChevronDown, X, Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * MultiSelect trigger variants matching TextField styling
@@ -1927,64 +2016,68 @@ const multiSelectTriggerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 export interface MultiSelectOption {
   /** The value of the option */
-  value: string
+  value: string;
   /** The display label of the option */
-  label: string
+  label: string;
   /** Whether the option is disabled */
-  disabled?: boolean
+  disabled?: boolean;
 }
 
-export interface MultiSelectProps extends VariantProps<typeof multiSelectTriggerVariants> {
+export interface MultiSelectProps extends VariantProps<
+  typeof multiSelectTriggerVariants
+> {
   /** Label text displayed above the select */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the select */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Disabled state */
-  disabled?: boolean
+  disabled?: boolean;
   /** Loading state with spinner */
-  loading?: boolean
+  loading?: boolean;
   /** Placeholder text when no value selected */
-  placeholder?: string
+  placeholder?: string;
   /** Currently selected values (controlled) */
-  value?: string[]
+  value?: string[];
   /** Default values (uncontrolled) */
-  defaultValue?: string[]
+  defaultValue?: string[];
   /** Callback when values change */
-  onValueChange?: (value: string[]) => void
+  onValueChange?: (value: string[]) => void;
   /** Options to display */
-  options: MultiSelectOption[]
+  options: MultiSelectOption[];
   /** Enable search/filter functionality */
-  searchable?: boolean
+  searchable?: boolean;
   /** Search placeholder text */
-  searchPlaceholder?: string
+  searchPlaceholder?: string;
   /** Maximum selections allowed */
-  maxSelections?: number
+  maxSelections?: number;
   /** Additional class for wrapper */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for trigger */
-  triggerClassName?: string
+  triggerClassName?: string;
   /** Additional class for label */
-  labelClassName?: string
+  labelClassName?: string;
   /** ID for the select */
-  id?: string
+  id?: string;
   /** Name attribute for form submission */
-  name?: string
+  name?: string;
 }
 
 /**
@@ -2031,104 +2124,109 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     ref
   ) => {
     // Internal state for selected values (uncontrolled mode)
-    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
+    const [internalValue, setInternalValue] =
+      React.useState<string[]>(defaultValue);
     // Dropdown open state
-    const [isOpen, setIsOpen] = React.useState(false)
+    const [isOpen, setIsOpen] = React.useState(false);
     // Search query
-    const [searchQuery, setSearchQuery] = React.useState("")
+    const [searchQuery, setSearchQuery] = React.useState("");
 
     // Container ref for click outside detection
-    const containerRef = React.useRef<HTMLDivElement>(null)
+    const containerRef = React.useRef<HTMLDivElement>(null);
 
     // Determine if controlled
-    const isControlled = value !== undefined
-    const selectedValues = isControlled ? value : internalValue
+    const isControlled = value !== undefined;
+    const selectedValues = isControlled ? value : internalValue;
 
     // Derive state from props
-    const derivedState = error ? "error" : (state ?? "default")
+    const derivedState = error ? "error" : (state ?? "default");
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const selectId = id || generatedId
-    const helperId = \`\${selectId}-helper\`
-    const errorId = \`\${selectId}-error\`
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const helperId = \`\${selectId}-helper\`;
+    const errorId = \`\${selectId}-error\`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Filter options by search query
     const filteredOptions = React.useMemo(() => {
-      if (!searchable || !searchQuery) return options
+      if (!searchable || !searchQuery) return options;
       return options.filter((option) =>
         option.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }, [options, searchable, searchQuery])
+      );
+    }, [options, searchable, searchQuery]);
 
     // Get selected option labels
     const selectedLabels = React.useMemo(() => {
       return selectedValues
         .map((v) => options.find((o) => o.value === v)?.label)
-        .filter(Boolean) as string[]
-    }, [selectedValues, options])
+        .filter(Boolean) as string[];
+    }, [selectedValues, options]);
 
     // Handle toggle selection
     const toggleOption = (optionValue: string) => {
       const newValues = selectedValues.includes(optionValue)
         ? selectedValues.filter((v) => v !== optionValue)
         : maxSelections && selectedValues.length >= maxSelections
-        ? selectedValues
-        : [...selectedValues, optionValue]
+          ? selectedValues
+          : [...selectedValues, optionValue];
 
       if (!isControlled) {
-        setInternalValue(newValues)
+        setInternalValue(newValues);
       }
-      onValueChange?.(newValues)
-    }
+      onValueChange?.(newValues);
+    };
 
     // Handle remove tag
     const removeValue = (valueToRemove: string, e: React.MouseEvent) => {
-      e.stopPropagation()
-      const newValues = selectedValues.filter((v) => v !== valueToRemove)
+      e.stopPropagation();
+      const newValues = selectedValues.filter((v) => v !== valueToRemove);
       if (!isControlled) {
-        setInternalValue(newValues)
+        setInternalValue(newValues);
       }
-      onValueChange?.(newValues)
-    }
+      onValueChange?.(newValues);
+    };
 
     // Handle clear all
     const clearAll = (e: React.MouseEvent) => {
-      e.stopPropagation()
+      e.stopPropagation();
       if (!isControlled) {
-        setInternalValue([])
+        setInternalValue([]);
       }
-      onValueChange?.([])
-    }
+      onValueChange?.([]);
+    };
 
     // Close dropdown when clicking outside
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-          setIsOpen(false)
-          setSearchQuery("")
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setIsOpen(false);
+          setSearchQuery("");
         }
-      }
+      };
 
-      document.addEventListener("mousedown", handleClickOutside)
-      return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
-        setIsOpen(false)
-        setSearchQuery("")
+        setIsOpen(false);
+        setSearchQuery("");
       } else if (e.key === "Enter" || e.key === " ") {
         if (!isOpen) {
-          e.preventDefault()
-          setIsOpen(true)
+          e.preventDefault();
+          setIsOpen(true);
         }
       }
-    }
+    };
 
     return (
       <div
@@ -2180,9 +2278,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                     tabIndex={0}
                     onClick={(e) => removeValue(selectedValues[index], e)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        removeValue(selectedValues[index], e as unknown as React.MouseEvent)
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        removeValue(
+                          selectedValues[index],
+                          e as unknown as React.MouseEvent
+                        );
                       }
                     }}
                     className="cursor-pointer hover:text-[#F04438] focus:outline-none"
@@ -2201,9 +2302,9 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                 tabIndex={0}
                 onClick={clearAll}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    clearAll(e as unknown as React.MouseEvent)
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    clearAll(e as unknown as React.MouseEvent);
                   }
                 }}
                 className="p-0.5 cursor-pointer hover:text-[#F04438] focus:outline-none"
@@ -2257,10 +2358,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                 </div>
               ) : (
                 filteredOptions.map((option) => {
-                  const isSelected = selectedValues.includes(option.value)
+                  const isSelected = selectedValues.includes(option.value);
                   const isDisabled =
                     option.disabled ||
-                    (!isSelected && maxSelections !== undefined && maxSelections > 0 && selectedValues.length >= maxSelections)
+                    (!isSelected &&
+                      maxSelections !== undefined &&
+                      maxSelections > 0 &&
+                      selectedValues.length >= maxSelections);
 
                   return (
                     <button
@@ -2278,11 +2382,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       )}
                     >
                       <span className="absolute right-2 flex size-4 items-center justify-center">
-                        {isSelected && <Check className="size-4 text-[#2BBCCA]" />}
+                        {isSelected && (
+                          <Check className="size-4 text-[#2BBCCA]" />
+                        )}
                       </span>
                       {option.label}
                     </button>
-                  )
+                  );
                 })
               )}
             </div>
@@ -2297,9 +2403,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         )}
 
         {/* Hidden input for form submission */}
-        {name && selectedValues.map((v) => (
-          <input key={v} type="hidden" name={name} value={v} />
-        ))}
+        {name &&
+          selectedValues.map((v) => (
+            <input key={v} type="hidden" name={name} value={v} />
+          ))}
 
         {/* Helper text / Error message */}
         {(error || helperText) && (
@@ -2316,12 +2423,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-MultiSelect.displayName = "MultiSelect"
+);
+MultiSelect.displayName = "MultiSelect";
 
-export { MultiSelect, multiSelectTriggerVariants }
+export { MultiSelect, multiSelectTriggerVariants };
 `, prefix),
         },
       ],
@@ -2337,30 +2444,27 @@ export { MultiSelect, multiSelectTriggerVariants }
       files: [
         {
           name: 'table.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
-import { Switch, type SwitchProps } from "./switch"
+import { cn } from "../../lib/utils";
+import { Switch, type SwitchProps } from "./switch";
 
 /**
  * Table size variants for row height.
  */
-const tableVariants = cva(
-  "w-full caption-bottom text-sm",
-  {
-    variants: {
-      size: {
-        sm: "[&_td]:py-2 [&_th]:py-2",
-        md: "[&_td]:py-3 [&_th]:py-3",
-        lg: "[&_td]:py-4 [&_th]:py-4",
-      },
+const tableVariants = cva("w-full caption-bottom text-sm", {
+  variants: {
+    size: {
+      sm: "[&_td]:py-2 [&_th]:py-2",
+      md: "[&_td]:py-3 [&_th]:py-3",
+      lg: "[&_td]:py-4 [&_th]:py-4",
     },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-)
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
 
 /**
  * Table component for displaying tabular data.
@@ -2385,18 +2489,21 @@ const tableVariants = cva(
  */
 
 export interface TableProps
-  extends React.HTMLAttributes<HTMLTableElement>,
+  extends
+    React.HTMLAttributes<HTMLTableElement>,
     VariantProps<typeof tableVariants> {
   /** Remove outer border from the table */
-  withoutBorder?: boolean
+  withoutBorder?: boolean;
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, size, withoutBorder, ...props }, ref) => (
-    <div className={cn(
-      "relative w-full overflow-auto",
-      !withoutBorder && "rounded-lg border border-[#E9EAEB]"
-    )}>
+    <div
+      className={cn(
+        "relative w-full overflow-auto",
+        !withoutBorder && "rounded-lg border border-[#E9EAEB]"
+      )}
+    >
       <table
         ref={ref}
         className={cn(tableVariants({ size, className }))}
@@ -2404,8 +2511,8 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       />
     </div>
   )
-)
-Table.displayName = "Table"
+);
+Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
@@ -2416,8 +2523,8 @@ const TableHeader = React.forwardRef<
     className={cn("bg-[#FAFAFA] [&_tr]:border-b", className)}
     {...props}
   />
-))
-TableHeader.displayName = "TableHeader"
+));
+TableHeader.displayName = "TableHeader";
 
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
@@ -2428,8 +2535,8 @@ const TableBody = React.forwardRef<
     className={cn("[&_tr:last-child]:border-0", className)}
     {...props}
   />
-))
-TableBody.displayName = "TableBody"
+));
+TableBody.displayName = "TableBody";
 
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
@@ -2443,12 +2550,12 @@ const TableFooter = React.forwardRef<
     )}
     {...props}
   />
-))
-TableFooter.displayName = "TableFooter"
+));
+TableFooter.displayName = "TableFooter";
 
 export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   /** Highlight the row with a colored background */
-  highlighted?: boolean
+  highlighted?: boolean;
 }
 
 const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
@@ -2465,20 +2572,23 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       {...props}
     />
   )
-)
-TableRow.displayName = "TableRow"
+);
+TableRow.displayName = "TableRow";
 
 export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   /** Make this column sticky on horizontal scroll */
-  sticky?: boolean
+  sticky?: boolean;
   /** Sort direction indicator */
-  sortDirection?: 'asc' | 'desc' | null
+  sortDirection?: "asc" | "desc" | null;
   /** Show info icon with tooltip */
-  infoTooltip?: string
+  infoTooltip?: string;
 }
 
 const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
-  ({ className, sticky, sortDirection, infoTooltip, children, ...props }, ref) => (
+  (
+    { className, sticky, sortDirection, infoTooltip, children, ...props },
+    ref
+  ) => (
     <th
       ref={ref}
       className={cn(
@@ -2493,7 +2603,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
         {children}
         {sortDirection && (
           <span className="text-[#A4A7AE]">
-            {sortDirection === 'asc' ? '↑' : '↓'}
+            {sortDirection === "asc" ? "↑" : "↓"}
           </span>
         )}
         {infoTooltip && (
@@ -2504,12 +2614,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       </div>
     </th>
   )
-)
-TableHead.displayName = "TableHead"
+);
+TableHead.displayName = "TableHead";
 
 export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   /** Make this cell sticky on horizontal scroll */
-  sticky?: boolean
+  sticky?: boolean;
 }
 
 const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
@@ -2524,8 +2634,8 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
       {...props}
     />
   )
-)
-TableCell.displayName = "TableCell"
+);
+TableCell.displayName = "TableCell";
 
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
@@ -2536,17 +2646,17 @@ const TableCaption = React.forwardRef<
     className={cn("mt-4 text-sm text-[#717680]", className)}
     {...props}
   />
-))
-TableCaption.displayName = "TableCaption"
+));
+TableCaption.displayName = "TableCaption";
 
 /**
  * TableSkeleton - Loading state for table rows
  */
 export interface TableSkeletonProps {
   /** Number of rows to show */
-  rows?: number
+  rows?: number;
   /** Number of columns to show */
-  columns?: number
+  columns?: number;
 }
 
 const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
@@ -2555,24 +2665,28 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
       <TableRow key={rowIndex}>
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
-            <div className="h-4 bg-[#E9EAEB] rounded animate-pulse"
-                 style={{ width: colIndex === 1 ? '80%' : colIndex === 2 ? '30%' : '60%' }} />
+            <div
+              className="h-4 bg-[#E9EAEB] rounded animate-pulse"
+              style={{
+                width: colIndex === 1 ? "80%" : colIndex === 2 ? "30%" : "60%",
+              }}
+            />
           </TableCell>
         ))}
       </TableRow>
     ))}
   </>
-)
-TableSkeleton.displayName = "TableSkeleton"
+);
+TableSkeleton.displayName = "TableSkeleton";
 
 /**
  * TableEmpty - Empty state message
  */
 export interface TableEmptyProps {
   /** Number of columns to span */
-  colSpan: number
+  colSpan: number;
   /** Custom message or component */
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
@@ -2581,17 +2695,17 @@ const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
       {children || "No data available"}
     </TableCell>
   </TableRow>
-)
-TableEmpty.displayName = "TableEmpty"
+);
+TableEmpty.displayName = "TableEmpty";
 
 /**
  * Avatar component for table cells
  */
 export interface TableAvatarProps {
   /** Initials to display */
-  initials: string
+  initials: string;
   /** Background color */
-  color?: string
+  color?: string;
 }
 
 const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
@@ -2601,23 +2715,23 @@ const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
   >
     {initials}
   </div>
-)
-TableAvatar.displayName = "TableAvatar"
+);
+TableAvatar.displayName = "TableAvatar";
 
 /**
  * Switch component optimized for table cells (previously TableToggle)
  */
-export interface TableToggleProps extends Omit<SwitchProps, 'size'> {
+export interface TableToggleProps extends Omit<SwitchProps, "size"> {
   /** Size of the switch - defaults to 'sm' for tables */
-  size?: 'sm' | 'default'
+  size?: "sm" | "default";
 }
 
 const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
-  ({ size = 'sm', ...props }, ref) => (
+  ({ size = "sm", ...props }, ref) => (
     <Switch ref={ref} size={size} {...props} />
   )
-)
-TableToggle.displayName = "TableToggle"
+);
+TableToggle.displayName = "TableToggle";
 
 export {
   Table,
@@ -2633,7 +2747,7 @@ export {
   TableAvatar,
   TableToggle,
   tableVariants,
-}
+};
 `, prefix),
         },
       ],
@@ -2650,28 +2764,28 @@ export {
       files: [
         {
           name: 'dropdown-menu.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import { Check, ChevronRight, Circle } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { Check, ChevronRight, Circle } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
-const DropdownMenu = DropdownMenuPrimitive.Root
+const DropdownMenu = DropdownMenuPrimitive.Root;
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
-const DropdownMenuGroup = DropdownMenuPrimitive.Group
+const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
-const DropdownMenuPortal = DropdownMenuPrimitive.Portal
+const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 
-const DropdownMenuSub = DropdownMenuPrimitive.Sub
+const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
-const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
+const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
-    inset?: boolean
+    inset?: boolean;
   }
 >(({ className, inset, children, ...props }, ref) => (
   <DropdownMenuPrimitive.SubTrigger
@@ -2686,9 +2800,9 @@ const DropdownMenuSubTrigger = React.forwardRef<
     {children}
     <ChevronRight className="ml-auto h-4 w-4" />
   </DropdownMenuPrimitive.SubTrigger>
-))
+));
 DropdownMenuSubTrigger.displayName =
-  DropdownMenuPrimitive.SubTrigger.displayName
+  DropdownMenuPrimitive.SubTrigger.displayName;
 
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
@@ -2702,9 +2816,9 @@ const DropdownMenuSubContent = React.forwardRef<
     )}
     {...props}
   />
-))
+));
 DropdownMenuSubContent.displayName =
-  DropdownMenuPrimitive.SubContent.displayName
+  DropdownMenuPrimitive.SubContent.displayName;
 
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
@@ -2722,13 +2836,13 @@ const DropdownMenuContent = React.forwardRef<
       {...props}
     />
   </DropdownMenuPrimitive.Portal>
-))
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
+));
+DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
-    inset?: boolean
+    inset?: boolean;
   }
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
@@ -2740,8 +2854,8 @@ const DropdownMenuItem = React.forwardRef<
     )}
     {...props}
   />
-))
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
+));
+DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
@@ -2763,9 +2877,9 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     </span>
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
-))
+));
 DropdownMenuCheckboxItem.displayName =
-  DropdownMenuPrimitive.CheckboxItem.displayName
+  DropdownMenuPrimitive.CheckboxItem.displayName;
 
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
@@ -2786,13 +2900,13 @@ const DropdownMenuRadioItem = React.forwardRef<
     </span>
     {children}
   </DropdownMenuPrimitive.RadioItem>
-))
-DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
+));
+DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;
 
 const DropdownMenuLabel = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
-    inset?: boolean
+    inset?: boolean;
   }
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Label
@@ -2804,8 +2918,8 @@ const DropdownMenuLabel = React.forwardRef<
     )}
     {...props}
   />
-))
-DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
+));
+DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName;
 
 const DropdownMenuSeparator = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
@@ -2816,8 +2930,8 @@ const DropdownMenuSeparator = React.forwardRef<
     className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
     {...props}
   />
-))
-DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
+));
+DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
 const DropdownMenuShortcut = ({
   className,
@@ -2828,9 +2942,9 @@ const DropdownMenuShortcut = ({
       className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
       {...props}
     />
-  )
-}
-DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
+  );
+};
+DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 
 export {
   DropdownMenu,
@@ -2848,7 +2962,7 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-}
+};
 `, prefix),
         },
       ],
@@ -2864,16 +2978,16 @@ export {
       files: [
         {
           name: 'tooltip.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
-const TooltipProvider = TooltipPrimitive.Provider
+const TooltipProvider = TooltipPrimitive.Provider;
 
-const Tooltip = TooltipPrimitive.Root
+const Tooltip = TooltipPrimitive.Root;
 
-const TooltipTrigger = TooltipPrimitive.Trigger
+const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
@@ -2890,8 +3004,8 @@ const TooltipContent = React.forwardRef<
       {...props}
     />
   </TooltipPrimitive.Portal>
-))
-TooltipContent.displayName = TooltipPrimitive.Content.displayName
+));
+TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 const TooltipArrow = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Arrow>,
@@ -2902,8 +3016,8 @@ const TooltipArrow = React.forwardRef<
     className={cn("fill-[#343E55]", className)}
     {...props}
   />
-))
-TooltipArrow.displayName = TooltipPrimitive.Arrow.displayName
+));
+TooltipArrow.displayName = TooltipPrimitive.Arrow.displayName;
 
 export {
   Tooltip,
@@ -2911,7 +3025,7 @@ export {
   TooltipContent,
   TooltipArrow,
   TooltipProvider,
-}
+};
 `, prefix),
         },
       ],
@@ -2927,41 +3041,38 @@ export {
       files: [
         {
           name: 'tag.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Tag variants for event labels and categories.
  * Rounded rectangle tags with optional bold labels.
  */
-const tagVariants = cva(
-  "inline-flex items-center rounded text-sm",
-  {
-    variants: {
-      variant: {
-        default: "bg-[#F5F5F5] text-[#181D27]",
-        primary: "bg-[#F5F5F5] text-[#181D27]",
-        accent: "bg-[#EBECEE] text-[#343E55]",
-        secondary: "bg-[#E9EAEB] text-[#414651]",
-        success: "bg-[#ECFDF3] text-[#17B26A]",
-        warning: "bg-[#FFFAEB] text-[#F79009]",
-        error: "bg-[#FEF3F2] text-[#F04438]",
-        destructive: "bg-[#FEF3F2] text-[#F04438]",
-      },
-      size: {
-        default: "px-2 py-1",
-        sm: "px-1.5 py-0.5 text-xs",
-        lg: "px-3 py-1.5",
-      },
+const tagVariants = cva("inline-flex items-center rounded text-sm", {
+  variants: {
+    variant: {
+      default: "bg-[#F5F5F5] text-[#181D27]",
+      primary: "bg-[#F5F5F5] text-[#181D27]",
+      accent: "bg-[#EBECEE] text-[#343E55]",
+      secondary: "bg-[#E9EAEB] text-[#414651]",
+      success: "bg-[#ECFDF3] text-[#17B26A]",
+      warning: "bg-[#FFFAEB] text-[#F79009]",
+      error: "bg-[#FEF3F2] text-[#F04438]",
+      destructive: "bg-[#FEF3F2] text-[#F04438]",
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
+    size: {
+      default: "px-2 py-1",
+      sm: "px-1.5 py-0.5 text-xs",
+      lg: "px-3 py-1.5",
     },
-  }
-)
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default",
+  },
+});
 
 /**
  * Tag component for displaying event labels and categories.
@@ -2973,10 +3084,11 @@ const tagVariants = cva(
  * \`\`\`
  */
 export interface TagProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
+  extends
+    React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof tagVariants> {
   /** Bold label prefix displayed before the content */
-  label?: string
+  label?: string;
 }
 
 const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
@@ -2987,15 +3099,13 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
         ref={ref}
         {...props}
       >
-        {label && (
-          <span className="font-semibold mr-1">{label}</span>
-        )}
+        {label && <span className="font-semibold mr-1">{label}</span>}
         <span className="font-normal">{children}</span>
       </span>
-    )
+    );
   }
-)
-Tag.displayName = "Tag"
+);
+Tag.displayName = "Tag";
 
 /**
  * TagGroup component for displaying multiple tags with overflow indicator.
@@ -3014,15 +3124,15 @@ Tag.displayName = "Tag"
  */
 export interface TagGroupProps {
   /** Array of tags to display */
-  tags: Array<{ label?: string; value: string }>
+  tags: Array<{ label?: string; value: string }>;
   /** Maximum number of tags to show before overflow (default: 2) */
-  maxVisible?: number
+  maxVisible?: number;
   /** Tag variant */
-  variant?: TagProps['variant']
+  variant?: TagProps["variant"];
   /** Tag size */
-  size?: TagProps['size']
+  size?: TagProps["size"];
   /** Additional className for the container */
-  className?: string
+  className?: string;
 }
 
 const TagGroup = ({
@@ -3032,13 +3142,14 @@ const TagGroup = ({
   size,
   className,
 }: TagGroupProps) => {
-  const visibleTags = tags.slice(0, maxVisible)
-  const overflowCount = tags.length - maxVisible
+  const visibleTags = tags.slice(0, maxVisible);
+  const overflowCount = tags.length - maxVisible;
 
   return (
     <div className={cn("flex flex-col items-start gap-2", className)}>
       {visibleTags.map((tag, index) => {
-        const isLastVisible = index === visibleTags.length - 1 && overflowCount > 0
+        const isLastVisible =
+          index === visibleTags.length - 1 && overflowCount > 0;
 
         if (isLastVisible) {
           return (
@@ -3050,21 +3161,21 @@ const TagGroup = ({
                 +{overflowCount} more
               </Tag>
             </div>
-          )
+          );
         }
 
         return (
           <Tag key={index} label={tag.label} variant={variant} size={size}>
             {tag.value}
           </Tag>
-        )
+        );
       })}
     </div>
-  )
-}
-TagGroup.displayName = "TagGroup"
+  );
+};
+TagGroup.displayName = "TagGroup";
 
-export { Tag, TagGroup, tagVariants }
+export { Tag, TagGroup, tagVariants };
 `, prefix),
         },
       ],
@@ -3081,11 +3192,11 @@ export { Tag, TagGroup, tagVariants }
       files: [
         {
           name: 'accordion.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ChevronDown } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Accordion root variants
@@ -3100,7 +3211,7 @@ const accordionVariants = cva("w-full", {
   defaultVariants: {
     variant: "default",
   },
-})
+});
 
 /**
  * Accordion item variants
@@ -3115,7 +3226,7 @@ const accordionItemVariants = cva("", {
   defaultVariants: {
     variant: "default",
   },
-})
+});
 
 /**
  * Accordion trigger variants
@@ -3133,7 +3244,7 @@ const accordionTriggerVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 /**
  * Accordion content variants
@@ -3151,58 +3262,64 @@ const accordionContentVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 // Types
-type AccordionType = "single" | "multiple"
+type AccordionType = "single" | "multiple";
 
 interface AccordionContextValue {
-  type: AccordionType
-  value: string[]
-  onValueChange: (value: string[]) => void
-  variant: "default" | "bordered"
+  type: AccordionType;
+  value: string[];
+  onValueChange: (value: string[]) => void;
+  variant: "default" | "bordered";
 }
 
 interface AccordionItemContextValue {
-  value: string
-  isOpen: boolean
-  disabled?: boolean
+  value: string;
+  isOpen: boolean;
+  disabled?: boolean;
 }
 
 // Contexts
-const AccordionContext = React.createContext<AccordionContextValue | null>(null)
-const AccordionItemContext = React.createContext<AccordionItemContextValue | null>(null)
+const AccordionContext = React.createContext<AccordionContextValue | null>(
+  null
+);
+const AccordionItemContext =
+  React.createContext<AccordionItemContextValue | null>(null);
 
 function useAccordionContext() {
-  const context = React.useContext(AccordionContext)
+  const context = React.useContext(AccordionContext);
   if (!context) {
-    throw new Error("Accordion components must be used within an Accordion")
+    throw new Error("Accordion components must be used within an Accordion");
   }
-  return context
+  return context;
 }
 
 function useAccordionItemContext() {
-  const context = React.useContext(AccordionItemContext)
+  const context = React.useContext(AccordionItemContext);
   if (!context) {
-    throw new Error("AccordionTrigger/AccordionContent must be used within an AccordionItem")
+    throw new Error(
+      "AccordionTrigger/AccordionContent must be used within an AccordionItem"
+    );
   }
-  return context
+  return context;
 }
 
 /**
  * Root accordion component that manages state
  */
 export interface AccordionProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionVariants> {
   /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
-  type?: AccordionType
+  type?: AccordionType;
   /** Controlled value - array of open item values */
-  value?: string[]
+  value?: string[];
   /** Default open items for uncontrolled usage */
-  defaultValue?: string[]
+  defaultValue?: string[];
   /** Callback when open items change */
-  onValueChange?: (value: string[]) => void
+  onValueChange?: (value: string[]) => void;
 }
 
 const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
@@ -3219,20 +3336,21 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
     },
     ref
   ) => {
-    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
+    const [internalValue, setInternalValue] =
+      React.useState<string[]>(defaultValue);
 
-    const isControlled = controlledValue !== undefined
-    const currentValue = isControlled ? controlledValue : internalValue
+    const isControlled = controlledValue !== undefined;
+    const currentValue = isControlled ? controlledValue : internalValue;
 
     const handleValueChange = React.useCallback(
       (newValue: string[]) => {
         if (!isControlled) {
-          setInternalValue(newValue)
+          setInternalValue(newValue);
         }
-        onValueChange?.(newValue)
+        onValueChange?.(newValue);
       },
       [isControlled, onValueChange]
-    )
+    );
 
     const contextValue = React.useMemo(
       () => ({
@@ -3242,7 +3360,7 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
         variant: variant || "default",
       }),
       [type, currentValue, handleValueChange, variant]
-    )
+    );
 
     return (
       <AccordionContext.Provider value={contextValue}>
@@ -3254,27 +3372,28 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
           {children}
         </div>
       </AccordionContext.Provider>
-    )
+    );
   }
-)
-Accordion.displayName = "Accordion"
+);
+Accordion.displayName = "Accordion";
 
 /**
  * Individual accordion item
  */
 export interface AccordionItemProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionItemVariants> {
   /** Unique value for this item */
-  value: string
+  value: string;
   /** Whether this item is disabled */
-  disabled?: boolean
+  disabled?: boolean;
 }
 
 const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
   ({ className, value, disabled, children, ...props }, ref) => {
-    const { value: openValues, variant } = useAccordionContext()
-    const isOpen = openValues.includes(value)
+    const { value: openValues, variant } = useAccordionContext();
+    const isOpen = openValues.includes(value);
 
     const contextValue = React.useMemo(
       () => ({
@@ -3283,7 +3402,7 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
         disabled,
       }),
       [value, isOpen, disabled]
-    )
+    );
 
     return (
       <AccordionItemContext.Provider value={contextValue}>
@@ -3296,106 +3415,115 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
           {children}
         </div>
       </AccordionItemContext.Provider>
-    )
+    );
   }
-)
-AccordionItem.displayName = "AccordionItem"
+);
+AccordionItem.displayName = "AccordionItem";
 
 /**
  * Trigger button that toggles the accordion item
  */
 export interface AccordionTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof accordionTriggerVariants> {
   /** Whether to show the chevron icon */
-  showChevron?: boolean
+  showChevron?: boolean;
 }
 
-const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerProps>(
-  ({ className, showChevron = true, children, ...props }, ref) => {
-    const { type, value: openValues, onValueChange, variant } = useAccordionContext()
-    const { value, isOpen, disabled } = useAccordionItemContext()
+const AccordionTrigger = React.forwardRef<
+  HTMLButtonElement,
+  AccordionTriggerProps
+>(({ className, showChevron = true, children, ...props }, ref) => {
+  const {
+    type,
+    value: openValues,
+    onValueChange,
+    variant,
+  } = useAccordionContext();
+  const { value, isOpen, disabled } = useAccordionItemContext();
 
-    const handleClick = () => {
-      if (disabled) return
+  const handleClick = () => {
+    if (disabled) return;
 
-      let newValue: string[]
+    let newValue: string[];
 
-      if (type === "single") {
-        // In single mode, toggle current item (close if open, open if closed)
-        newValue = isOpen ? [] : [value]
-      } else {
-        // In multiple mode, toggle the item in the array
-        newValue = isOpen
-          ? openValues.filter((v) => v !== value)
-          : [...openValues, value]
-      }
-
-      onValueChange(newValue)
+    if (type === "single") {
+      // In single mode, toggle current item (close if open, open if closed)
+      newValue = isOpen ? [] : [value];
+    } else {
+      // In multiple mode, toggle the item in the array
+      newValue = isOpen
+        ? openValues.filter((v) => v !== value)
+        : [...openValues, value];
     }
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        aria-expanded={isOpen}
-        disabled={disabled}
-        onClick={handleClick}
-        className={cn(accordionTriggerVariants({ variant, className }))}
-        {...props}
-      >
-        <span className="flex-1">{children}</span>
-        {showChevron && (
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
-              isOpen && "rotate-180"
-            )}
-          />
-        )}
-      </button>
-    )
-  }
-)
-AccordionTrigger.displayName = "AccordionTrigger"
+    onValueChange(newValue);
+  };
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      aria-expanded={isOpen}
+      disabled={disabled}
+      onClick={handleClick}
+      className={cn(accordionTriggerVariants({ variant, className }))}
+      {...props}
+    >
+      <span className="flex-1">{children}</span>
+      {showChevron && (
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
+            isOpen && "rotate-180"
+          )}
+        />
+      )}
+    </button>
+  );
+});
+AccordionTrigger.displayName = "AccordionTrigger";
 
 /**
  * Content that is shown/hidden when the item is toggled
  */
 export interface AccordionContentProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>(
-  ({ className, children, ...props }, ref) => {
-    const { variant } = useAccordionContext()
-    const { isOpen } = useAccordionItemContext()
-    const contentRef = React.useRef<HTMLDivElement>(null)
-    const [height, setHeight] = React.useState<number | undefined>(undefined)
+const AccordionContent = React.forwardRef<
+  HTMLDivElement,
+  AccordionContentProps
+>(({ className, children, ...props }, ref) => {
+  const { variant } = useAccordionContext();
+  const { isOpen } = useAccordionItemContext();
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [height, setHeight] = React.useState<number | undefined>(undefined);
 
-    React.useEffect(() => {
-      if (contentRef.current) {
-        const contentHeight = contentRef.current.scrollHeight
-        setHeight(isOpen ? contentHeight : 0)
-      }
-    }, [isOpen, children])
+  React.useEffect(() => {
+    if (contentRef.current) {
+      const contentHeight = contentRef.current.scrollHeight;
+      setHeight(isOpen ? contentHeight : 0);
+    }
+  }, [isOpen, children]);
 
-    return (
-      <div
-        ref={ref}
-        className={cn(accordionContentVariants({ variant, className }))}
-        style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
-        aria-hidden={!isOpen}
-        {...props}
-      >
-        <div ref={contentRef} className="pb-4">
-          {children}
-        </div>
+  return (
+    <div
+      ref={ref}
+      className={cn(accordionContentVariants({ variant, className }))}
+      style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
+      aria-hidden={!isOpen}
+      {...props}
+    >
+      <div ref={contentRef} className="pb-4">
+        {children}
       </div>
-    )
-  }
-)
-AccordionContent.displayName = "AccordionContent"
+    </div>
+  );
+});
+AccordionContent.displayName = "AccordionContent";
 
 export {
   Accordion,
@@ -3406,7 +3534,7 @@ export {
   accordionItemVariants,
   accordionTriggerVariants,
   accordionContentVariants,
-}
+};
 `, prefix),
         },
       ],
@@ -3423,12 +3551,12 @@ export {
       files: [
         {
           name: 'page-header.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { ArrowLeft, MoreHorizontal, X } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ArrowLeft, MoreHorizontal, X } from "lucide-react";
 
-import { cn } from "../../lib/utils"
-import { Button } from "./button"
+import { cn } from "../../lib/utils";
+import { Button } from "./button";
 
 /**
  * PageHeader variants for layout styles.
@@ -3439,7 +3567,7 @@ const pageHeaderVariants = cva(
     variants: {},
     defaultVariants: {},
   }
-)
+);
 
 /**
  * Page header component for displaying page titles with optional icons and actions.
@@ -3472,47 +3600,51 @@ const pageHeaderVariants = cva(
  * \`\`\`
  */
 export interface PageHeaderProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof pageHeaderVariants> {
   /** Page title (required) */
-  title: string
+  title: string;
   /** Optional description/subtitle displayed below the title */
-  description?: string
+  description?: string;
   /** Icon displayed on the left side (hidden when showBackButton is true) */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
   /** Shows back arrow button instead of icon */
-  showBackButton?: boolean
+  showBackButton?: boolean;
   /** Callback when back button is clicked */
-  onBackClick?: () => void
+  onBackClick?: () => void;
   /** Optional info icon displayed next to the title (e.g., tooltip trigger) */
-  infoIcon?: React.ReactNode
+  infoIcon?: React.ReactNode;
   /** Action buttons/elements rendered on the right side */
-  actions?: React.ReactNode
+  actions?: React.ReactNode;
   /** Show bottom border (default: true) */
-  showBorder?: boolean
+  showBorder?: boolean;
   /** Layout mode: 'horizontal' (single row), 'vertical' (stacked), 'responsive' (auto based on screen size, default) */
-  layout?: 'horizontal' | 'vertical' | 'responsive'
+  layout?: "horizontal" | "vertical" | "responsive";
   /** Max actions to show on mobile before overflow (default: 2) */
-  mobileOverflowLimit?: number
+  mobileOverflowLimit?: number;
 }
 
 const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
-  ({
-    className,
-    title,
-    description,
-    icon,
-    showBackButton = false,
-    onBackClick,
-    infoIcon,
-    actions,
-    showBorder = true,
-    layout = 'responsive',
-    mobileOverflowLimit = 2,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      title,
+      description,
+      icon,
+      showBackButton = false,
+      onBackClick,
+      infoIcon,
+      actions,
+      showBorder = true,
+      layout = "responsive",
+      mobileOverflowLimit = 2,
+      ...props
+    },
+    ref
+  ) => {
     // State for overflow expansion (moved to top level)
-    const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false)
+    const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false);
 
     // Determine what to show on the left: back button, icon, or nothing
     const renderLeftElement = () => {
@@ -3526,66 +3658,68 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-        )
+        );
       }
       if (icon) {
         return (
           <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#717680]">
             {icon}
           </div>
-        )
+        );
       }
-      return null
-    }
+      return null;
+    };
 
-    const leftElement = renderLeftElement()
+    const leftElement = renderLeftElement();
 
     // Flatten children recursively to handle fragments
     const flattenChildren = (children: React.ReactNode): React.ReactNode[] => {
-      const result: React.ReactNode[] = []
+      const result: React.ReactNode[] = [];
       React.Children.forEach(children, (child) => {
         if (React.isValidElement(child) && child.type === React.Fragment) {
-          result.push(...flattenChildren(child.props.children))
+          result.push(...flattenChildren(child.props.children));
         } else if (child !== null && child !== undefined) {
-          result.push(child)
+          result.push(child);
         }
-      })
-      return result
-    }
+      });
+      return result;
+    };
 
     // Convert actions to array for overflow handling
-    const actionsArray = flattenChildren(actions)
-    const hasOverflow = actionsArray.length > mobileOverflowLimit
-    const visibleActions = hasOverflow ? actionsArray.slice(0, mobileOverflowLimit) : actionsArray
-    const overflowActions = hasOverflow ? actionsArray.slice(mobileOverflowLimit) : []
+    const actionsArray = flattenChildren(actions);
+    const hasOverflow = actionsArray.length > mobileOverflowLimit;
+    const visibleActions = hasOverflow
+      ? actionsArray.slice(0, mobileOverflowLimit)
+      : actionsArray;
+    const overflowActions = hasOverflow
+      ? actionsArray.slice(mobileOverflowLimit)
+      : [];
 
     // Layout classes based on prop
     const layoutClasses = {
-      horizontal: 'flex-row items-center',
-      vertical: 'flex-col',
-      responsive: 'flex-col sm:flex-row sm:items-center',
-    }
+      horizontal: "flex-row items-center",
+      vertical: "flex-col",
+      responsive: "flex-col sm:flex-row sm:items-center",
+    };
 
     const heightClasses = {
-      horizontal: 'h-[76px]',
-      vertical: 'min-h-[76px] py-4',
-      responsive: 'min-h-[76px] py-4 sm:py-0 sm:h-[76px]',
-    }
+      horizontal: "h-[76px]",
+      vertical: "min-h-[76px] py-4",
+      responsive: "min-h-[76px] py-4 sm:py-0 sm:h-[76px]",
+    };
 
     // Render actions for desktop (all inline)
     const renderDesktopActions = () => (
-      <div className="hidden sm:flex items-center gap-2">
-        {actionsArray}
-      </div>
-    )
+      <div className="hidden sm:flex items-center gap-2">{actionsArray}</div>
+    );
 
     // Render expandable actions (for mobile and vertical layout)
     const renderExpandableActions = (additionalClasses?: string) => {
       // Calculate grid columns: equal width for visible actions, smaller for overflow button
-      const hasOverflowBtn = overflowActions.length > 0
+      const hasOverflowBtn = overflowActions.length > 0;
       const gridCols = hasOverflowBtn
         ? \`repeat(\${visibleActions.length}, 1fr) auto\`
-        : \`repeat(\${visibleActions.length}, 1fr)\`
+        : \`repeat(\${visibleActions.length}, 1fr)\`;
 
       return (
         <div className={cn("flex flex-col gap-2 w-full", additionalClasses)}>
@@ -3605,7 +3739,11 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
                 aria-label={isOverflowExpanded ? "Show less" : "More actions"}
                 aria-expanded={isOverflowExpanded}
               >
-                {isOverflowExpanded ? <X className="w-4 h-4" /> : <MoreHorizontal className="w-4 h-4" />}
+                {isOverflowExpanded ? (
+                  <X className="w-4 h-4" />
+                ) : (
+                  <MoreHorizontal className="w-4 h-4" />
+                )}
               </Button>
             )}
           </div>
@@ -3621,25 +3759,23 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
             </div>
           )}
         </div>
-      )
-    }
+      );
+    };
 
     // For horizontal layout, always show all actions inline
     const renderHorizontalActions = () => (
-      <div className="flex items-center gap-2 ml-4">
-        {actionsArray}
-      </div>
-    )
+      <div className="flex items-center gap-2 ml-4">{actionsArray}</div>
+    );
 
     const renderActions = () => {
-      if (!actions) return null
+      if (!actions) return null;
 
-      if (layout === 'horizontal') {
-        return renderHorizontalActions()
+      if (layout === "horizontal") {
+        return renderHorizontalActions();
       }
 
-      if (layout === 'vertical') {
-        return renderExpandableActions("mt-3")
+      if (layout === "vertical") {
+        return renderExpandableActions("mt-3");
       }
 
       // Responsive: render both, CSS handles visibility
@@ -3650,8 +3786,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
             {renderExpandableActions()}
           </div>
         </>
-      )
-    }
+      );
+    };
 
     return (
       <div
@@ -3669,9 +3805,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         <div className="flex items-center flex-1 min-w-0">
           {/* Left Section: Icon or Back Button */}
           {leftElement && (
-            <div className="flex-shrink-0 mr-4">
-              {leftElement}
-            </div>
+            <div className="flex-shrink-0 mr-4">{leftElement}</div>
           )}
 
           {/* Content Section: Title + Description */}
@@ -3697,12 +3831,12 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         {/* Actions Section */}
         {renderActions()}
       </div>
-    )
+    );
   }
-)
-PageHeader.displayName = "PageHeader"
+);
+PageHeader.displayName = "PageHeader";
 
-export { PageHeader, pageHeaderVariants }
+export { PageHeader, pageHeaderVariants };
 `, prefix),
         },
       ],

@@ -294,30 +294,27 @@ export function getDataRegistry(prefix: string = ''): Registry {
       files: [
         {
           name: 'table.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
-import { Switch, type SwitchProps } from "./switch"
+import { cn } from "../../lib/utils";
+import { Switch, type SwitchProps } from "./switch";
 
 /**
  * Table size variants for row height.
  */
-const tableVariants = cva(
-  "w-full caption-bottom text-sm",
-  {
-    variants: {
-      size: {
-        sm: "[&_td]:py-2 [&_th]:py-2",
-        md: "[&_td]:py-3 [&_th]:py-3",
-        lg: "[&_td]:py-4 [&_th]:py-4",
-      },
+const tableVariants = cva("w-full caption-bottom text-sm", {
+  variants: {
+    size: {
+      sm: "[&_td]:py-2 [&_th]:py-2",
+      md: "[&_td]:py-3 [&_th]:py-3",
+      lg: "[&_td]:py-4 [&_th]:py-4",
     },
-    defaultVariants: {
-      size: "md",
-    },
-  }
-)
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
 
 /**
  * Table component for displaying tabular data.
@@ -342,18 +339,21 @@ const tableVariants = cva(
  */
 
 export interface TableProps
-  extends React.HTMLAttributes<HTMLTableElement>,
+  extends
+    React.HTMLAttributes<HTMLTableElement>,
     VariantProps<typeof tableVariants> {
   /** Remove outer border from the table */
-  withoutBorder?: boolean
+  withoutBorder?: boolean;
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
   ({ className, size, withoutBorder, ...props }, ref) => (
-    <div className={cn(
-      "relative w-full overflow-auto",
-      !withoutBorder && "rounded-lg border border-[#E9EAEB]"
-    )}>
+    <div
+      className={cn(
+        "relative w-full overflow-auto",
+        !withoutBorder && "rounded-lg border border-[#E9EAEB]"
+      )}
+    >
       <table
         ref={ref}
         className={cn(tableVariants({ size, className }))}
@@ -361,8 +361,8 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
       />
     </div>
   )
-)
-Table.displayName = "Table"
+);
+Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
@@ -373,8 +373,8 @@ const TableHeader = React.forwardRef<
     className={cn("bg-[#FAFAFA] [&_tr]:border-b", className)}
     {...props}
   />
-))
-TableHeader.displayName = "TableHeader"
+));
+TableHeader.displayName = "TableHeader";
 
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
@@ -385,8 +385,8 @@ const TableBody = React.forwardRef<
     className={cn("[&_tr:last-child]:border-0", className)}
     {...props}
   />
-))
-TableBody.displayName = "TableBody"
+));
+TableBody.displayName = "TableBody";
 
 const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
@@ -400,12 +400,12 @@ const TableFooter = React.forwardRef<
     )}
     {...props}
   />
-))
-TableFooter.displayName = "TableFooter"
+));
+TableFooter.displayName = "TableFooter";
 
 export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   /** Highlight the row with a colored background */
-  highlighted?: boolean
+  highlighted?: boolean;
 }
 
 const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
@@ -422,20 +422,23 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       {...props}
     />
   )
-)
-TableRow.displayName = "TableRow"
+);
+TableRow.displayName = "TableRow";
 
 export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   /** Make this column sticky on horizontal scroll */
-  sticky?: boolean
+  sticky?: boolean;
   /** Sort direction indicator */
-  sortDirection?: 'asc' | 'desc' | null
+  sortDirection?: "asc" | "desc" | null;
   /** Show info icon with tooltip */
-  infoTooltip?: string
+  infoTooltip?: string;
 }
 
 const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
-  ({ className, sticky, sortDirection, infoTooltip, children, ...props }, ref) => (
+  (
+    { className, sticky, sortDirection, infoTooltip, children, ...props },
+    ref
+  ) => (
     <th
       ref={ref}
       className={cn(
@@ -450,7 +453,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
         {children}
         {sortDirection && (
           <span className="text-[#A4A7AE]">
-            {sortDirection === 'asc' ? '↑' : '↓'}
+            {sortDirection === "asc" ? "↑" : "↓"}
           </span>
         )}
         {infoTooltip && (
@@ -461,12 +464,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       </div>
     </th>
   )
-)
-TableHead.displayName = "TableHead"
+);
+TableHead.displayName = "TableHead";
 
 export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   /** Make this cell sticky on horizontal scroll */
-  sticky?: boolean
+  sticky?: boolean;
 }
 
 const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
@@ -481,8 +484,8 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
       {...props}
     />
   )
-)
-TableCell.displayName = "TableCell"
+);
+TableCell.displayName = "TableCell";
 
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
@@ -493,17 +496,17 @@ const TableCaption = React.forwardRef<
     className={cn("mt-4 text-sm text-[#717680]", className)}
     {...props}
   />
-))
-TableCaption.displayName = "TableCaption"
+));
+TableCaption.displayName = "TableCaption";
 
 /**
  * TableSkeleton - Loading state for table rows
  */
 export interface TableSkeletonProps {
   /** Number of rows to show */
-  rows?: number
+  rows?: number;
   /** Number of columns to show */
-  columns?: number
+  columns?: number;
 }
 
 const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
@@ -512,24 +515,28 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
       <TableRow key={rowIndex}>
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
-            <div className="h-4 bg-[#E9EAEB] rounded animate-pulse"
-                 style={{ width: colIndex === 1 ? '80%' : colIndex === 2 ? '30%' : '60%' }} />
+            <div
+              className="h-4 bg-[#E9EAEB] rounded animate-pulse"
+              style={{
+                width: colIndex === 1 ? "80%" : colIndex === 2 ? "30%" : "60%",
+              }}
+            />
           </TableCell>
         ))}
       </TableRow>
     ))}
   </>
-)
-TableSkeleton.displayName = "TableSkeleton"
+);
+TableSkeleton.displayName = "TableSkeleton";
 
 /**
  * TableEmpty - Empty state message
  */
 export interface TableEmptyProps {
   /** Number of columns to span */
-  colSpan: number
+  colSpan: number;
   /** Custom message or component */
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
@@ -538,17 +545,17 @@ const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
       {children || "No data available"}
     </TableCell>
   </TableRow>
-)
-TableEmpty.displayName = "TableEmpty"
+);
+TableEmpty.displayName = "TableEmpty";
 
 /**
  * Avatar component for table cells
  */
 export interface TableAvatarProps {
   /** Initials to display */
-  initials: string
+  initials: string;
   /** Background color */
-  color?: string
+  color?: string;
 }
 
 const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
@@ -558,23 +565,23 @@ const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
   >
     {initials}
   </div>
-)
-TableAvatar.displayName = "TableAvatar"
+);
+TableAvatar.displayName = "TableAvatar";
 
 /**
  * Switch component optimized for table cells (previously TableToggle)
  */
-export interface TableToggleProps extends Omit<SwitchProps, 'size'> {
+export interface TableToggleProps extends Omit<SwitchProps, "size"> {
   /** Size of the switch - defaults to 'sm' for tables */
-  size?: 'sm' | 'default'
+  size?: "sm" | "default";
 }
 
 const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
-  ({ size = 'sm', ...props }, ref) => (
+  ({ size = "sm", ...props }, ref) => (
     <Switch ref={ref} size={size} {...props} />
   )
-)
-TableToggle.displayName = "TableToggle"
+);
+TableToggle.displayName = "TableToggle";
 
 export {
   Table,
@@ -590,7 +597,7 @@ export {
   TableAvatar,
   TableToggle,
   tableVariants,
-}
+};
 `, prefix),
         },
       ],

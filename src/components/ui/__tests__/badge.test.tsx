@@ -1,70 +1,76 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { Badge } from '../badge'
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { Badge } from "../badge";
 
-describe('Badge', () => {
-  it('renders children correctly', () => {
-    render(<Badge>Test Badge</Badge>)
-    expect(screen.getByText('Test Badge')).toBeInTheDocument()
-  })
+describe("Badge", () => {
+  it("renders children correctly", () => {
+    render(<Badge>Test Badge</Badge>);
+    expect(screen.getByText("Test Badge")).toBeInTheDocument();
+  });
 
-  it('applies default variant classes', () => {
-    const { container } = render(<Badge>Default</Badge>)
-    expect(container.firstChild).toHaveClass('bg-[#F5F5F5]')
-    expect(container.firstChild).toHaveClass('text-[#181D27]')
-  })
-
-  it.each([
-    ['active', 'bg-[#ECFDF3]', 'text-[#17B26A]'],
-    ['failed', 'bg-[#FEF3F2]', 'text-[#F04438]'],
-    ['disabled', 'bg-[#F5F5F5]', 'text-[#717680]'],
-    ['default', 'bg-[#F5F5F5]', 'text-[#181D27]'],
-    ['primary', 'bg-[#F5F5F5]', 'text-[#181D27]'],
-    ['secondary', 'bg-[#F5F5F5]', 'text-[#181D27]'],
-    ['destructive', 'bg-[#FEF3F2]', 'text-[#F04438]'],
-  ] as const)('renders %s variant with correct classes', (variant, bgClass, textClass) => {
-    const { container } = render(<Badge variant={variant}>Test</Badge>)
-    expect(container.firstChild).toHaveClass(bgClass)
-    expect(container.firstChild).toHaveClass(textClass)
-  })
-
-  it('renders outline variant with border', () => {
-    const { container } = render(<Badge variant="outline">Outline</Badge>)
-    expect(container.firstChild).toHaveClass('border')
-    expect(container.firstChild).toHaveClass('border-[#E9EAEB]')
-    expect(container.firstChild).toHaveClass('bg-transparent')
-  })
+  it("applies default variant classes", () => {
+    const { container } = render(<Badge>Default</Badge>);
+    expect(container.firstChild).toHaveClass("bg-[#F5F5F5]");
+    expect(container.firstChild).toHaveClass("text-[#181D27]");
+  });
 
   it.each([
-    ['default', 'px-3', 'py-1'],
-    ['sm', 'px-2', 'py-0.5'],
-    ['lg', 'px-4', 'py-1.5'],
-  ] as const)('renders %s size with correct classes', (size, pxClass, pyClass) => {
-    const { container } = render(<Badge size={size}>Test</Badge>)
-    expect(container.firstChild).toHaveClass(pxClass)
-    expect(container.firstChild).toHaveClass(pyClass)
-  })
+    ["active", "bg-[#ECFDF3]", "text-[#17B26A]"],
+    ["failed", "bg-[#FEF3F2]", "text-[#F04438]"],
+    ["disabled", "bg-[#F5F5F5]", "text-[#717680]"],
+    ["default", "bg-[#F5F5F5]", "text-[#181D27]"],
+    ["primary", "bg-[#F5F5F5]", "text-[#181D27]"],
+    ["secondary", "bg-[#F5F5F5]", "text-[#181D27]"],
+    ["destructive", "bg-[#FEF3F2]", "text-[#F04438]"],
+  ] as const)(
+    "renders %s variant with correct classes",
+    (variant, bgClass, textClass) => {
+      const { container } = render(<Badge variant={variant}>Test</Badge>);
+      expect(container.firstChild).toHaveClass(bgClass);
+      expect(container.firstChild).toHaveClass(textClass);
+    }
+  );
 
-  it('renders with left icon', () => {
+  it("renders outline variant with border", () => {
+    const { container } = render(<Badge variant="outline">Outline</Badge>);
+    expect(container.firstChild).toHaveClass("border");
+    expect(container.firstChild).toHaveClass("border-[#E9EAEB]");
+    expect(container.firstChild).toHaveClass("bg-transparent");
+  });
+
+  it.each([
+    ["default", "px-3", "py-1"],
+    ["sm", "px-2", "py-0.5"],
+    ["lg", "px-4", "py-1.5"],
+  ] as const)(
+    "renders %s size with correct classes",
+    (size, pxClass, pyClass) => {
+      const { container } = render(<Badge size={size}>Test</Badge>);
+      expect(container.firstChild).toHaveClass(pxClass);
+      expect(container.firstChild).toHaveClass(pyClass);
+    }
+  );
+
+  it("renders with left icon", () => {
     render(
       <Badge leftIcon={<span data-testid="left-icon">Icon</span>}>
         With Icon
       </Badge>
-    )
-    expect(screen.getByTestId('left-icon')).toBeInTheDocument()
-    expect(screen.getByText('With Icon')).toBeInTheDocument()
-  })
+    );
+    expect(screen.getByTestId("left-icon")).toBeInTheDocument();
+    expect(screen.getByText("With Icon")).toBeInTheDocument();
+  });
 
-  it('renders with right icon', () => {
+  it("renders with right icon", () => {
     render(
       <Badge rightIcon={<span data-testid="right-icon">Icon</span>}>
         With Icon
       </Badge>
-    )
-    expect(screen.getByTestId('right-icon')).toBeInTheDocument()
-  })
+    );
+    expect(screen.getByTestId("right-icon")).toBeInTheDocument();
+  });
 
-  it('renders with both icons', () => {
+  it("renders with both icons", () => {
     render(
       <Badge
         leftIcon={<span data-testid="left">L</span>}
@@ -72,37 +78,41 @@ describe('Badge', () => {
       >
         Both
       </Badge>
-    )
-    expect(screen.getByTestId('left')).toBeInTheDocument()
-    expect(screen.getByTestId('right')).toBeInTheDocument()
-  })
+    );
+    expect(screen.getByTestId("left")).toBeInTheDocument();
+    expect(screen.getByTestId("right")).toBeInTheDocument();
+  });
 
-  it('applies custom className', () => {
-    const { container } = render(<Badge className="custom-class">Test</Badge>)
-    expect(container.firstChild).toHaveClass('custom-class')
-  })
+  it("applies custom className", () => {
+    const { container } = render(<Badge className="custom-class">Test</Badge>);
+    expect(container.firstChild).toHaveClass("custom-class");
+  });
 
-  it('forwards ref correctly', () => {
-    const ref = { current: null }
-    render(<Badge ref={ref}>Test</Badge>)
-    expect(ref.current).toBeInstanceOf(HTMLDivElement)
-  })
+  it("forwards ref correctly", () => {
+    const ref = { current: null };
+    render(<Badge ref={ref}>Test</Badge>);
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
 
-  it('passes through additional props', () => {
-    render(<Badge data-testid="custom-badge" aria-label="Status">Test</Badge>)
-    const badge = screen.getByTestId('custom-badge')
-    expect(badge).toHaveAttribute('aria-label', 'Status')
-  })
+  it("passes through additional props", () => {
+    render(
+      <Badge data-testid="custom-badge" aria-label="Status">
+        Test
+      </Badge>
+    );
+    const badge = screen.getByTestId("custom-badge");
+    expect(badge).toHaveAttribute("aria-label", "Status");
+  });
 
-  it('renders as child element when asChild is true', () => {
+  it("renders as child element when asChild is true", () => {
     render(
       <Badge asChild>
         <a href="/status">Link Badge</a>
       </Badge>
-    )
-    const link = screen.getByRole('link')
-    expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/status')
-    expect(link).toHaveClass('bg-[#F5F5F5]')
-  })
-})
+    );
+    const link = screen.getByRole("link");
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "/status");
+    expect(link).toHaveClass("bg-[#F5F5F5]");
+  });
+});

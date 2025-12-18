@@ -1,13 +1,22 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { TextField } from './text-field'
-import { Mail, Search, Eye, EyeOff, User, Lock, Globe, DollarSign } from 'lucide-react'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { TextField } from "./text-field";
+import {
+  Mail,
+  Search,
+  Eye,
+  EyeOff,
+  User,
+  Lock,
+  Globe,
+  DollarSign,
+} from "lucide-react";
 
 const meta: Meta<typeof TextField> = {
-  title: 'Components/TextField',
+  title: "Components/TextField",
   component: TextField,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -162,138 +171,138 @@ import { TextField } from "@/components/ui/text-field"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     label: {
-      control: 'text',
-      description: 'Label text displayed above the input',
+      control: "text",
+      description: "Label text displayed above the input",
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     required: {
-      control: 'boolean',
-      description: 'Shows red asterisk (*) next to label',
+      control: "boolean",
+      description: "Shows red asterisk (*) next to label",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     placeholder: {
-      control: 'text',
-      description: 'Input placeholder text',
+      control: "text",
+      description: "Input placeholder text",
     },
     helperText: {
-      control: 'text',
-      description: 'Helper text displayed below the input',
+      control: "text",
+      description: "Helper text displayed below the input",
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     error: {
-      control: 'text',
-      description: 'Error message - triggers error state with red styling',
+      control: "text",
+      description: "Error message - triggers error state with red styling",
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     disabled: {
-      control: 'boolean',
-      description: 'Disabled state',
+      control: "boolean",
+      description: "Disabled state",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     loading: {
-      control: 'boolean',
-      description: 'Loading state with spinner',
+      control: "boolean",
+      description: "Loading state with spinner",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     prefix: {
-      control: 'text',
+      control: "text",
       description: 'Text prefix inside input (e.g., "https://")',
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     suffix: {
-      control: 'text',
+      control: "text",
       description: 'Text suffix inside input (e.g., ".com")',
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     showCount: {
-      control: 'boolean',
-      description: 'Show character count (requires maxLength)',
+      control: "boolean",
+      description: "Show character count (requires maxLength)",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     maxLength: {
-      control: 'number',
-      description: 'Maximum character length',
+      control: "number",
+      description: "Maximum character length",
       table: {
-        type: { summary: 'number' },
+        type: { summary: "number" },
       },
     },
     type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search'],
-      description: 'Input type',
+      control: "select",
+      options: ["text", "email", "password", "number", "tel", "url", "search"],
+      description: "Input type",
       table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: 'text' },
+        type: { summary: "string" },
+        defaultValue: { summary: "text" },
       },
     },
     leftIcon: {
-      control: 'boolean',
-      description: 'Show left icon inside input',
+      control: "boolean",
+      description: "Show left icon inside input",
       mapping: {
         true: <Search />,
         false: undefined,
       },
       table: {
-        type: { summary: 'ReactNode' },
+        type: { summary: "ReactNode" },
       },
     },
     rightIcon: {
-      control: 'boolean',
-      description: 'Show right icon inside input',
+      control: "boolean",
+      description: "Show right icon inside input",
       mapping: {
         true: <Mail />,
         false: undefined,
       },
       table: {
-        type: { summary: 'ReactNode' },
+        type: { summary: "ReactNode" },
       },
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Overview - primary interactive example
 export const Overview: Story = {
   args: {
-    label: 'Email',
-    placeholder: 'Enter your email',
+    label: "Email",
+    placeholder: "Enter your email",
     required: true,
-    helperText: 'We will never share your email.',
-    type: 'text',
+    helperText: "We will never share your email.",
+    type: "text",
   },
   render: (args) => (
     <div className="w-80">
       <TextField {...args} />
     </div>
   ),
-}
+};
 
 // States - all state variants
 export const States: Story = {
@@ -301,27 +310,39 @@ export const States: Story = {
     <div className="flex flex-col gap-6 w-80">
       <TextField label="Default" placeholder="Default state" />
       <TextField label="Disabled" placeholder="Disabled state" disabled />
-      <TextField label="Error" placeholder="Error state" error="This field is required" />
+      <TextField
+        label="Error"
+        placeholder="Error state"
+        error="This field is required"
+      />
       <TextField label="Loading" placeholder="Loading state" loading />
     </div>
   ),
-}
+};
 
 // With Label
 export const WithLabel: Story = {
-  name: 'With label',
+  name: "With label",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <TextField label="Full Name" placeholder="Enter your name" />
-      <TextField label="Email Address" placeholder="Enter your email" required />
-      <TextField label="Optional Field" placeholder="This field is optional" helperText="You can leave this empty" />
+      <TextField
+        label="Email Address"
+        placeholder="Enter your email"
+        required
+      />
+      <TextField
+        label="Optional Field"
+        placeholder="This field is optional"
+        helperText="You can leave this empty"
+      />
     </div>
   ),
-}
+};
 
 // With Icons
 export const WithIcons: Story = {
-  name: 'With icons',
+  name: "With icons",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <TextField label="Search" placeholder="Search..." leftIcon={<Search />} />
@@ -334,11 +355,11 @@ export const WithIcons: Story = {
       />
     </div>
   ),
-}
+};
 
 // With Prefix/Suffix
 export const WithPrefixSuffix: Story = {
-  name: 'With prefix/suffix',
+  name: "With prefix/suffix",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <TextField
@@ -359,11 +380,11 @@ export const WithPrefixSuffix: Story = {
       <TextField label="Email" suffix="@company.com" placeholder="username" />
     </div>
   ),
-}
+};
 
 // Character Count
 export const CharacterCount: Story = {
-  name: 'Character count',
+  name: "Character count",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <TextField
@@ -381,11 +402,11 @@ export const CharacterCount: Story = {
       />
     </div>
   ),
-}
+};
 
 // Validation States
 export const ValidationStates: Story = {
-  name: 'Validation states',
+  name: "Validation states",
   render: () => (
     <div className="flex flex-col gap-6 w-80">
       <TextField
@@ -402,23 +423,23 @@ export const ValidationStates: Story = {
       />
     </div>
   ),
-}
+};
 
 // Controlled Example
 const ControlledExample = () => {
-  const [value, setValue] = useState('')
-  const [error, setError] = useState('')
+  const [value, setValue] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    setValue(newValue)
+    const newValue = e.target.value;
+    setValue(newValue);
 
     if (newValue.length > 0 && newValue.length < 3) {
-      setError('Must be at least 3 characters')
+      setError("Must be at least 3 characters");
     } else {
-      setError('')
+      setError("");
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4 w-80">
@@ -432,24 +453,26 @@ const ControlledExample = () => {
         showCount
         maxLength={20}
       />
-      <p className="text-sm text-[#6B7280]">Current value: {value || '(empty)'}</p>
+      <p className="text-sm text-[#6B7280]">
+        Current value: {value || "(empty)"}
+      </p>
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
-}
+};
 
 // Password Field Example
 const PasswordExample = () => {
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
 
   return (
     <div className="w-80">
       <TextField
         label="Password"
-        type={show ? 'text' : 'password'}
+        type={show ? "text" : "password"}
         placeholder="Enter password"
         required
         leftIcon={<Lock />}
@@ -465,16 +488,16 @@ const PasswordExample = () => {
         helperText="Must be at least 8 characters"
       />
     </div>
-  )
-}
+  );
+};
 
 export const Password: Story = {
   render: () => <PasswordExample />,
-}
+};
 
 // Form Example
 export const FormExample: Story = {
-  name: 'Form example',
+  name: "Form example",
   render: () => (
     <form className="flex flex-col gap-4 w-80">
       <TextField
@@ -506,16 +529,16 @@ export const FormExample: Story = {
       />
     </form>
   ),
-}
+};
 
 // Loading State
 export const LoadingState: Story = {
-  name: 'Loading state',
+  name: "Loading state",
   args: {
-    label: 'Verifying',
-    placeholder: 'Checking availability...',
+    label: "Verifying",
+    placeholder: "Checking availability...",
     loading: true,
-    defaultValue: 'username123',
+    defaultValue: "username123",
   },
   decorators: [
     (Story) => (
@@ -524,11 +547,11 @@ export const LoadingState: Story = {
       </div>
     ),
   ],
-}
+};
 
 // All Features Combined
 export const AllFeatures: Story = {
-  name: 'All features',
+  name: "All features",
   render: () => (
     <div className="flex flex-col gap-4 w-96">
       <TextField
@@ -544,5 +567,4 @@ export const AllFeatures: Story = {
       />
     </div>
   ),
-}
-
+};

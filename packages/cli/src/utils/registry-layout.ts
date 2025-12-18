@@ -295,11 +295,11 @@ export function getLayoutRegistry(prefix: string = ''): Registry {
       files: [
         {
           name: 'accordion.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { ChevronDown } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ChevronDown } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Accordion root variants
@@ -314,7 +314,7 @@ const accordionVariants = cva("w-full", {
   defaultVariants: {
     variant: "default",
   },
-})
+});
 
 /**
  * Accordion item variants
@@ -329,7 +329,7 @@ const accordionItemVariants = cva("", {
   defaultVariants: {
     variant: "default",
   },
-})
+});
 
 /**
  * Accordion trigger variants
@@ -347,7 +347,7 @@ const accordionTriggerVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 /**
  * Accordion content variants
@@ -365,58 +365,64 @@ const accordionContentVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 // Types
-type AccordionType = "single" | "multiple"
+type AccordionType = "single" | "multiple";
 
 interface AccordionContextValue {
-  type: AccordionType
-  value: string[]
-  onValueChange: (value: string[]) => void
-  variant: "default" | "bordered"
+  type: AccordionType;
+  value: string[];
+  onValueChange: (value: string[]) => void;
+  variant: "default" | "bordered";
 }
 
 interface AccordionItemContextValue {
-  value: string
-  isOpen: boolean
-  disabled?: boolean
+  value: string;
+  isOpen: boolean;
+  disabled?: boolean;
 }
 
 // Contexts
-const AccordionContext = React.createContext<AccordionContextValue | null>(null)
-const AccordionItemContext = React.createContext<AccordionItemContextValue | null>(null)
+const AccordionContext = React.createContext<AccordionContextValue | null>(
+  null
+);
+const AccordionItemContext =
+  React.createContext<AccordionItemContextValue | null>(null);
 
 function useAccordionContext() {
-  const context = React.useContext(AccordionContext)
+  const context = React.useContext(AccordionContext);
   if (!context) {
-    throw new Error("Accordion components must be used within an Accordion")
+    throw new Error("Accordion components must be used within an Accordion");
   }
-  return context
+  return context;
 }
 
 function useAccordionItemContext() {
-  const context = React.useContext(AccordionItemContext)
+  const context = React.useContext(AccordionItemContext);
   if (!context) {
-    throw new Error("AccordionTrigger/AccordionContent must be used within an AccordionItem")
+    throw new Error(
+      "AccordionTrigger/AccordionContent must be used within an AccordionItem"
+    );
   }
-  return context
+  return context;
 }
 
 /**
  * Root accordion component that manages state
  */
 export interface AccordionProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionVariants> {
   /** Whether only one item can be open at a time ('single') or multiple ('multiple') */
-  type?: AccordionType
+  type?: AccordionType;
   /** Controlled value - array of open item values */
-  value?: string[]
+  value?: string[];
   /** Default open items for uncontrolled usage */
-  defaultValue?: string[]
+  defaultValue?: string[];
   /** Callback when open items change */
-  onValueChange?: (value: string[]) => void
+  onValueChange?: (value: string[]) => void;
 }
 
 const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
@@ -433,20 +439,21 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
     },
     ref
   ) => {
-    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
+    const [internalValue, setInternalValue] =
+      React.useState<string[]>(defaultValue);
 
-    const isControlled = controlledValue !== undefined
-    const currentValue = isControlled ? controlledValue : internalValue
+    const isControlled = controlledValue !== undefined;
+    const currentValue = isControlled ? controlledValue : internalValue;
 
     const handleValueChange = React.useCallback(
       (newValue: string[]) => {
         if (!isControlled) {
-          setInternalValue(newValue)
+          setInternalValue(newValue);
         }
-        onValueChange?.(newValue)
+        onValueChange?.(newValue);
       },
       [isControlled, onValueChange]
-    )
+    );
 
     const contextValue = React.useMemo(
       () => ({
@@ -456,7 +463,7 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
         variant: variant || "default",
       }),
       [type, currentValue, handleValueChange, variant]
-    )
+    );
 
     return (
       <AccordionContext.Provider value={contextValue}>
@@ -468,27 +475,28 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
           {children}
         </div>
       </AccordionContext.Provider>
-    )
+    );
   }
-)
-Accordion.displayName = "Accordion"
+);
+Accordion.displayName = "Accordion";
 
 /**
  * Individual accordion item
  */
 export interface AccordionItemProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionItemVariants> {
   /** Unique value for this item */
-  value: string
+  value: string;
   /** Whether this item is disabled */
-  disabled?: boolean
+  disabled?: boolean;
 }
 
 const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
   ({ className, value, disabled, children, ...props }, ref) => {
-    const { value: openValues, variant } = useAccordionContext()
-    const isOpen = openValues.includes(value)
+    const { value: openValues, variant } = useAccordionContext();
+    const isOpen = openValues.includes(value);
 
     const contextValue = React.useMemo(
       () => ({
@@ -497,7 +505,7 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
         disabled,
       }),
       [value, isOpen, disabled]
-    )
+    );
 
     return (
       <AccordionItemContext.Provider value={contextValue}>
@@ -510,106 +518,115 @@ const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
           {children}
         </div>
       </AccordionItemContext.Provider>
-    )
+    );
   }
-)
-AccordionItem.displayName = "AccordionItem"
+);
+AccordionItem.displayName = "AccordionItem";
 
 /**
  * Trigger button that toggles the accordion item
  */
 export interface AccordionTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof accordionTriggerVariants> {
   /** Whether to show the chevron icon */
-  showChevron?: boolean
+  showChevron?: boolean;
 }
 
-const AccordionTrigger = React.forwardRef<HTMLButtonElement, AccordionTriggerProps>(
-  ({ className, showChevron = true, children, ...props }, ref) => {
-    const { type, value: openValues, onValueChange, variant } = useAccordionContext()
-    const { value, isOpen, disabled } = useAccordionItemContext()
+const AccordionTrigger = React.forwardRef<
+  HTMLButtonElement,
+  AccordionTriggerProps
+>(({ className, showChevron = true, children, ...props }, ref) => {
+  const {
+    type,
+    value: openValues,
+    onValueChange,
+    variant,
+  } = useAccordionContext();
+  const { value, isOpen, disabled } = useAccordionItemContext();
 
-    const handleClick = () => {
-      if (disabled) return
+  const handleClick = () => {
+    if (disabled) return;
 
-      let newValue: string[]
+    let newValue: string[];
 
-      if (type === "single") {
-        // In single mode, toggle current item (close if open, open if closed)
-        newValue = isOpen ? [] : [value]
-      } else {
-        // In multiple mode, toggle the item in the array
-        newValue = isOpen
-          ? openValues.filter((v) => v !== value)
-          : [...openValues, value]
-      }
-
-      onValueChange(newValue)
+    if (type === "single") {
+      // In single mode, toggle current item (close if open, open if closed)
+      newValue = isOpen ? [] : [value];
+    } else {
+      // In multiple mode, toggle the item in the array
+      newValue = isOpen
+        ? openValues.filter((v) => v !== value)
+        : [...openValues, value];
     }
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        aria-expanded={isOpen}
-        disabled={disabled}
-        onClick={handleClick}
-        className={cn(accordionTriggerVariants({ variant, className }))}
-        {...props}
-      >
-        <span className="flex-1">{children}</span>
-        {showChevron && (
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
-              isOpen && "rotate-180"
-            )}
-          />
-        )}
-      </button>
-    )
-  }
-)
-AccordionTrigger.displayName = "AccordionTrigger"
+    onValueChange(newValue);
+  };
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      aria-expanded={isOpen}
+      disabled={disabled}
+      onClick={handleClick}
+      className={cn(accordionTriggerVariants({ variant, className }))}
+      {...props}
+    >
+      <span className="flex-1">{children}</span>
+      {showChevron && (
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
+            isOpen && "rotate-180"
+          )}
+        />
+      )}
+    </button>
+  );
+});
+AccordionTrigger.displayName = "AccordionTrigger";
 
 /**
  * Content that is shown/hidden when the item is toggled
  */
 export interface AccordionContentProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = React.forwardRef<HTMLDivElement, AccordionContentProps>(
-  ({ className, children, ...props }, ref) => {
-    const { variant } = useAccordionContext()
-    const { isOpen } = useAccordionItemContext()
-    const contentRef = React.useRef<HTMLDivElement>(null)
-    const [height, setHeight] = React.useState<number | undefined>(undefined)
+const AccordionContent = React.forwardRef<
+  HTMLDivElement,
+  AccordionContentProps
+>(({ className, children, ...props }, ref) => {
+  const { variant } = useAccordionContext();
+  const { isOpen } = useAccordionItemContext();
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const [height, setHeight] = React.useState<number | undefined>(undefined);
 
-    React.useEffect(() => {
-      if (contentRef.current) {
-        const contentHeight = contentRef.current.scrollHeight
-        setHeight(isOpen ? contentHeight : 0)
-      }
-    }, [isOpen, children])
+  React.useEffect(() => {
+    if (contentRef.current) {
+      const contentHeight = contentRef.current.scrollHeight;
+      setHeight(isOpen ? contentHeight : 0);
+    }
+  }, [isOpen, children]);
 
-    return (
-      <div
-        ref={ref}
-        className={cn(accordionContentVariants({ variant, className }))}
-        style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
-        aria-hidden={!isOpen}
-        {...props}
-      >
-        <div ref={contentRef} className="pb-4">
-          {children}
-        </div>
+  return (
+    <div
+      ref={ref}
+      className={cn(accordionContentVariants({ variant, className }))}
+      style={{ height: height !== undefined ? \`\${height}px\` : undefined }}
+      aria-hidden={!isOpen}
+      {...props}
+    >
+      <div ref={contentRef} className="pb-4">
+        {children}
       </div>
-    )
-  }
-)
-AccordionContent.displayName = "AccordionContent"
+    </div>
+  );
+});
+AccordionContent.displayName = "AccordionContent";
 
 export {
   Accordion,
@@ -620,7 +637,7 @@ export {
   accordionItemVariants,
   accordionTriggerVariants,
   accordionContentVariants,
-}
+};
 `, prefix),
         },
       ],
@@ -637,12 +654,12 @@ export {
       files: [
         {
           name: 'page-header.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { ArrowLeft, MoreHorizontal, X } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { ArrowLeft, MoreHorizontal, X } from "lucide-react";
 
-import { cn } from "../../lib/utils"
-import { Button } from "./button"
+import { cn } from "../../lib/utils";
+import { Button } from "./button";
 
 /**
  * PageHeader variants for layout styles.
@@ -653,7 +670,7 @@ const pageHeaderVariants = cva(
     variants: {},
     defaultVariants: {},
   }
-)
+);
 
 /**
  * Page header component for displaying page titles with optional icons and actions.
@@ -686,47 +703,51 @@ const pageHeaderVariants = cva(
  * \`\`\`
  */
 export interface PageHeaderProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof pageHeaderVariants> {
   /** Page title (required) */
-  title: string
+  title: string;
   /** Optional description/subtitle displayed below the title */
-  description?: string
+  description?: string;
   /** Icon displayed on the left side (hidden when showBackButton is true) */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
   /** Shows back arrow button instead of icon */
-  showBackButton?: boolean
+  showBackButton?: boolean;
   /** Callback when back button is clicked */
-  onBackClick?: () => void
+  onBackClick?: () => void;
   /** Optional info icon displayed next to the title (e.g., tooltip trigger) */
-  infoIcon?: React.ReactNode
+  infoIcon?: React.ReactNode;
   /** Action buttons/elements rendered on the right side */
-  actions?: React.ReactNode
+  actions?: React.ReactNode;
   /** Show bottom border (default: true) */
-  showBorder?: boolean
+  showBorder?: boolean;
   /** Layout mode: 'horizontal' (single row), 'vertical' (stacked), 'responsive' (auto based on screen size, default) */
-  layout?: 'horizontal' | 'vertical' | 'responsive'
+  layout?: "horizontal" | "vertical" | "responsive";
   /** Max actions to show on mobile before overflow (default: 2) */
-  mobileOverflowLimit?: number
+  mobileOverflowLimit?: number;
 }
 
 const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
-  ({
-    className,
-    title,
-    description,
-    icon,
-    showBackButton = false,
-    onBackClick,
-    infoIcon,
-    actions,
-    showBorder = true,
-    layout = 'responsive',
-    mobileOverflowLimit = 2,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      title,
+      description,
+      icon,
+      showBackButton = false,
+      onBackClick,
+      infoIcon,
+      actions,
+      showBorder = true,
+      layout = "responsive",
+      mobileOverflowLimit = 2,
+      ...props
+    },
+    ref
+  ) => {
     // State for overflow expansion (moved to top level)
-    const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false)
+    const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false);
 
     // Determine what to show on the left: back button, icon, or nothing
     const renderLeftElement = () => {
@@ -740,66 +761,68 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-        )
+        );
       }
       if (icon) {
         return (
           <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#717680]">
             {icon}
           </div>
-        )
+        );
       }
-      return null
-    }
+      return null;
+    };
 
-    const leftElement = renderLeftElement()
+    const leftElement = renderLeftElement();
 
     // Flatten children recursively to handle fragments
     const flattenChildren = (children: React.ReactNode): React.ReactNode[] => {
-      const result: React.ReactNode[] = []
+      const result: React.ReactNode[] = [];
       React.Children.forEach(children, (child) => {
         if (React.isValidElement(child) && child.type === React.Fragment) {
-          result.push(...flattenChildren(child.props.children))
+          result.push(...flattenChildren(child.props.children));
         } else if (child !== null && child !== undefined) {
-          result.push(child)
+          result.push(child);
         }
-      })
-      return result
-    }
+      });
+      return result;
+    };
 
     // Convert actions to array for overflow handling
-    const actionsArray = flattenChildren(actions)
-    const hasOverflow = actionsArray.length > mobileOverflowLimit
-    const visibleActions = hasOverflow ? actionsArray.slice(0, mobileOverflowLimit) : actionsArray
-    const overflowActions = hasOverflow ? actionsArray.slice(mobileOverflowLimit) : []
+    const actionsArray = flattenChildren(actions);
+    const hasOverflow = actionsArray.length > mobileOverflowLimit;
+    const visibleActions = hasOverflow
+      ? actionsArray.slice(0, mobileOverflowLimit)
+      : actionsArray;
+    const overflowActions = hasOverflow
+      ? actionsArray.slice(mobileOverflowLimit)
+      : [];
 
     // Layout classes based on prop
     const layoutClasses = {
-      horizontal: 'flex-row items-center',
-      vertical: 'flex-col',
-      responsive: 'flex-col sm:flex-row sm:items-center',
-    }
+      horizontal: "flex-row items-center",
+      vertical: "flex-col",
+      responsive: "flex-col sm:flex-row sm:items-center",
+    };
 
     const heightClasses = {
-      horizontal: 'h-[76px]',
-      vertical: 'min-h-[76px] py-4',
-      responsive: 'min-h-[76px] py-4 sm:py-0 sm:h-[76px]',
-    }
+      horizontal: "h-[76px]",
+      vertical: "min-h-[76px] py-4",
+      responsive: "min-h-[76px] py-4 sm:py-0 sm:h-[76px]",
+    };
 
     // Render actions for desktop (all inline)
     const renderDesktopActions = () => (
-      <div className="hidden sm:flex items-center gap-2">
-        {actionsArray}
-      </div>
-    )
+      <div className="hidden sm:flex items-center gap-2">{actionsArray}</div>
+    );
 
     // Render expandable actions (for mobile and vertical layout)
     const renderExpandableActions = (additionalClasses?: string) => {
       // Calculate grid columns: equal width for visible actions, smaller for overflow button
-      const hasOverflowBtn = overflowActions.length > 0
+      const hasOverflowBtn = overflowActions.length > 0;
       const gridCols = hasOverflowBtn
         ? \`repeat(\${visibleActions.length}, 1fr) auto\`
-        : \`repeat(\${visibleActions.length}, 1fr)\`
+        : \`repeat(\${visibleActions.length}, 1fr)\`;
 
       return (
         <div className={cn("flex flex-col gap-2 w-full", additionalClasses)}>
@@ -819,7 +842,11 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
                 aria-label={isOverflowExpanded ? "Show less" : "More actions"}
                 aria-expanded={isOverflowExpanded}
               >
-                {isOverflowExpanded ? <X className="w-4 h-4" /> : <MoreHorizontal className="w-4 h-4" />}
+                {isOverflowExpanded ? (
+                  <X className="w-4 h-4" />
+                ) : (
+                  <MoreHorizontal className="w-4 h-4" />
+                )}
               </Button>
             )}
           </div>
@@ -835,25 +862,23 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
             </div>
           )}
         </div>
-      )
-    }
+      );
+    };
 
     // For horizontal layout, always show all actions inline
     const renderHorizontalActions = () => (
-      <div className="flex items-center gap-2 ml-4">
-        {actionsArray}
-      </div>
-    )
+      <div className="flex items-center gap-2 ml-4">{actionsArray}</div>
+    );
 
     const renderActions = () => {
-      if (!actions) return null
+      if (!actions) return null;
 
-      if (layout === 'horizontal') {
-        return renderHorizontalActions()
+      if (layout === "horizontal") {
+        return renderHorizontalActions();
       }
 
-      if (layout === 'vertical') {
-        return renderExpandableActions("mt-3")
+      if (layout === "vertical") {
+        return renderExpandableActions("mt-3");
       }
 
       // Responsive: render both, CSS handles visibility
@@ -864,8 +889,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
             {renderExpandableActions()}
           </div>
         </>
-      )
-    }
+      );
+    };
 
     return (
       <div
@@ -883,9 +908,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         <div className="flex items-center flex-1 min-w-0">
           {/* Left Section: Icon or Back Button */}
           {leftElement && (
-            <div className="flex-shrink-0 mr-4">
-              {leftElement}
-            </div>
+            <div className="flex-shrink-0 mr-4">{leftElement}</div>
           )}
 
           {/* Content Section: Title + Description */}
@@ -911,12 +934,12 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         {/* Actions Section */}
         {renderActions()}
       </div>
-    )
+    );
   }
-)
-PageHeader.displayName = "PageHeader"
+);
+PageHeader.displayName = "PageHeader";
 
-export { PageHeader, pageHeaderVariants }
+export { PageHeader, pageHeaderVariants };
 `, prefix),
         },
       ],

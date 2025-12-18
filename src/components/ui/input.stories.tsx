@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { Input } from './input'
+import type { Meta, StoryObj } from "@storybook/react";
+import { Input } from "./input";
 
 const meta: Meta<typeof Input> = {
-  title: 'Components/Input',
+  title: "Components/Input",
   component: Input,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -128,57 +128,57 @@ import { Input } from "@/components/ui/input"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     state: {
-      control: 'select',
-      options: ['default', 'error'],
-      description: 'Visual state of the input',
+      control: "select",
+      options: ["default", "error"],
+      description: "Visual state of the input",
       table: {
         type: { summary: '"default" | "error"' },
-        defaultValue: { summary: 'default' },
+        defaultValue: { summary: "default" },
       },
     },
     type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search'],
-      description: 'Input type',
+      control: "select",
+      options: ["text", "email", "password", "number", "tel", "url", "search"],
+      description: "Input type",
       table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: 'text' },
+        type: { summary: "string" },
+        defaultValue: { summary: "text" },
       },
     },
     placeholder: {
-      control: 'text',
-      description: 'Placeholder text',
+      control: "text",
+      description: "Placeholder text",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Disabled state',
+      control: "boolean",
+      description: "Disabled state",
     },
     readOnly: {
-      control: 'boolean',
-      description: 'Read-only state',
+      control: "boolean",
+      description: "Read-only state",
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Overview - primary interactive example
 export const Overview: Story = {
   args: {
-    placeholder: 'Enter your email',
-    state: 'default',
-    type: 'text',
+    placeholder: "Enter your email",
+    state: "default",
+    type: "text",
   },
   render: (args) => (
     <div className="w-80">
       <Input {...args} />
     </div>
   ),
-}
+};
 
 // States - all state variants
 export const States: Story = {
@@ -194,21 +194,25 @@ export const States: Story = {
       </div>
     </div>
   ),
-}
+};
 
 // Disabled
 export const Disabled: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <Input placeholder="Disabled input" disabled />
-      <Input placeholder="With value" defaultValue="Disabled with value" disabled />
+      <Input
+        placeholder="With value"
+        defaultValue="Disabled with value"
+        disabled
+      />
     </div>
   ),
-}
+};
 
 // Input Types
 export const InputTypes: Story = {
-  name: 'Input types',
+  name: "Input types",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <div>
@@ -233,25 +237,25 @@ export const InputTypes: Story = {
       </div>
     </div>
   ),
-}
+};
 
 // File Input
 export const FileInput: Story = {
-  name: 'File input',
+  name: "File input",
   render: () => (
     <div className="w-80">
       <Input type="file" />
     </div>
   ),
-}
+};
 
 // With Value
 export const WithValue: Story = {
-  name: 'With value',
+  name: "With value",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <Input defaultValue="Default value" />
       <Input defaultValue="Error value" state="error" />
     </div>
   ),
-}
+};

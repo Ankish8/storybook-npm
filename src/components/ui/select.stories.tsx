@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from "@storybook/react";
 import {
   Select,
   SelectContent,
@@ -8,13 +8,13 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from './select'
+} from "./select";
 
 const meta: Meta<typeof Select> = {
-  title: 'Components/Select',
+  title: "Components/Select",
   component: Select,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -152,11 +152,11 @@ import {
       },
     },
   },
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Overview - primary interactive example
 export const Overview: Story = {
@@ -176,7 +176,7 @@ export const Overview: Story = {
       </Select>
     </div>
   ),
-}
+};
 
 // States - all state variants
 export const States: Story = {
@@ -220,11 +220,11 @@ export const States: Story = {
       </div>
     </div>
   ),
-}
+};
 
 // With Selected Value
 export const WithSelectedValue: Story = {
-  name: 'With selected value',
+  name: "With selected value",
   render: () => (
     <div className="w-80">
       <Select defaultValue="bearer">
@@ -240,11 +240,11 @@ export const WithSelectedValue: Story = {
       </Select>
     </div>
   ),
-}
+};
 
 // With Groups
 export const WithGroups: Story = {
-  name: 'With groups',
+  name: "With groups",
   render: () => (
     <div className="w-80">
       <Select>
@@ -277,11 +277,11 @@ export const WithGroups: Story = {
       </Select>
     </div>
   ),
-}
+};
 
 // With Disabled Items
 export const WithDisabledItems: Story = {
-  name: 'With disabled items',
+  name: "With disabled items",
   render: () => (
     <div className="w-80">
       <Select>
@@ -292,16 +292,18 @@ export const WithDisabledItems: Story = {
           <SelectItem value="free">Free</SelectItem>
           <SelectItem value="basic">Basic - $9/mo</SelectItem>
           <SelectItem value="pro">Pro - $29/mo</SelectItem>
-          <SelectItem value="enterprise" disabled>Enterprise (Contact Sales)</SelectItem>
+          <SelectItem value="enterprise" disabled>
+            Enterprise (Contact Sales)
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
   ),
-}
+};
 
 // Long List
 export const LongList: Story = {
-  name: 'Long list',
+  name: "Long list",
   render: () => (
     <div className="w-80">
       <Select>
@@ -333,14 +335,16 @@ export const LongList: Story = {
       </Select>
     </div>
   ),
-}
+};
 
 // Authentication Example (from screenshot)
 export const AuthenticationExample: Story = {
-  name: 'Authentication example',
+  name: "Authentication example",
   render: () => (
     <div className="w-96">
-      <p className="text-sm font-medium text-[#333333] mb-1.5">Authentication</p>
+      <p className="text-sm font-medium text-[#333333] mb-1.5">
+        Authentication
+      </p>
       <Select defaultValue="none">
         <SelectTrigger>
           <SelectValue />
@@ -355,4 +359,4 @@ export const AuthenticationExample: Story = {
       </Select>
     </div>
   ),
-}
+};

@@ -15,9 +15,9 @@
  * because variant wasn't in the Props interface.
  */
 
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import * as React from 'react'
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import * as React from "react";
 
 // Import all components as consumers would
 import {
@@ -45,84 +45,88 @@ import {
   AccordionTrigger,
   AccordionContent,
   PageHeader,
-} from '../../../index'
+} from "../../../index";
 
-describe('Consumer Type Compatibility', () => {
-  describe('Button', () => {
-    it('accepts variant prop with all valid values', () => {
-      const { rerender } = render(<Button variant="default">Test</Button>)
-      expect(screen.getByRole('button')).toBeInTheDocument()
+describe("Consumer Type Compatibility", () => {
+  describe("Button", () => {
+    it("accepts variant prop with all valid values", () => {
+      const { rerender } = render(<Button variant="default">Test</Button>);
+      expect(screen.getByRole("button")).toBeInTheDocument();
 
-      rerender(<Button variant="primary">Test</Button>)
-      rerender(<Button variant="destructive">Test</Button>)
-      rerender(<Button variant="outline">Test</Button>)
-      rerender(<Button variant="secondary">Test</Button>)
-      rerender(<Button variant="ghost">Test</Button>)
-      rerender(<Button variant="link">Test</Button>)
-      rerender(<Button variant="dashed">Test</Button>)
-    })
+      rerender(<Button variant="primary">Test</Button>);
+      rerender(<Button variant="destructive">Test</Button>);
+      rerender(<Button variant="outline">Test</Button>);
+      rerender(<Button variant="secondary">Test</Button>);
+      rerender(<Button variant="ghost">Test</Button>);
+      rerender(<Button variant="link">Test</Button>);
+      rerender(<Button variant="dashed">Test</Button>);
+    });
 
-    it('accepts size prop with all valid values', () => {
-      const { rerender } = render(<Button size="default">Test</Button>)
-      expect(screen.getByRole('button')).toBeInTheDocument()
+    it("accepts size prop with all valid values", () => {
+      const { rerender } = render(<Button size="default">Test</Button>);
+      expect(screen.getByRole("button")).toBeInTheDocument();
 
-      rerender(<Button size="sm">Test</Button>)
-      rerender(<Button size="lg">Test</Button>)
-      rerender(<Button size="icon">Test</Button>)
-      rerender(<Button size="icon-sm">Test</Button>)
-      rerender(<Button size="icon-lg">Test</Button>)
-    })
+      rerender(<Button size="sm">Test</Button>);
+      rerender(<Button size="lg">Test</Button>);
+      rerender(<Button size="icon">Test</Button>);
+      rerender(<Button size="icon-sm">Test</Button>);
+      rerender(<Button size="icon-lg">Test</Button>);
+    });
 
-    it('accepts combined variant and size props', () => {
-      render(<Button variant="primary" size="lg">Test</Button>)
-      expect(screen.getByRole('button')).toBeInTheDocument()
-    })
-  })
+    it("accepts combined variant and size props", () => {
+      render(
+        <Button variant="primary" size="lg">
+          Test
+        </Button>
+      );
+      expect(screen.getByRole("button")).toBeInTheDocument();
+    });
+  });
 
-  describe('Badge', () => {
-    it('accepts variant prop with all valid values', () => {
-      const { rerender } = render(<Badge variant="default">Test</Badge>)
-      expect(screen.getByText('Test')).toBeInTheDocument()
+  describe("Badge", () => {
+    it("accepts variant prop with all valid values", () => {
+      const { rerender } = render(<Badge variant="default">Test</Badge>);
+      expect(screen.getByText("Test")).toBeInTheDocument();
 
-      rerender(<Badge variant="active">Test</Badge>)
-      rerender(<Badge variant="failed">Test</Badge>)
-      rerender(<Badge variant="disabled">Test</Badge>)
-      rerender(<Badge variant="primary">Test</Badge>)
-      rerender(<Badge variant="secondary">Test</Badge>)
-      rerender(<Badge variant="outline">Test</Badge>)
-      rerender(<Badge variant="destructive">Test</Badge>)
-    })
+      rerender(<Badge variant="active">Test</Badge>);
+      rerender(<Badge variant="failed">Test</Badge>);
+      rerender(<Badge variant="disabled">Test</Badge>);
+      rerender(<Badge variant="primary">Test</Badge>);
+      rerender(<Badge variant="secondary">Test</Badge>);
+      rerender(<Badge variant="outline">Test</Badge>);
+      rerender(<Badge variant="destructive">Test</Badge>);
+    });
 
-    it('accepts size prop with all valid values', () => {
-      const { rerender } = render(<Badge size="default">Test</Badge>)
-      expect(screen.getByText('Test')).toBeInTheDocument()
+    it("accepts size prop with all valid values", () => {
+      const { rerender } = render(<Badge size="default">Test</Badge>);
+      expect(screen.getByText("Test")).toBeInTheDocument();
 
-      rerender(<Badge size="sm">Test</Badge>)
-      rerender(<Badge size="lg">Test</Badge>)
-    })
-  })
+      rerender(<Badge size="sm">Test</Badge>);
+      rerender(<Badge size="lg">Test</Badge>);
+    });
+  });
 
-  describe('Tag', () => {
-    it('accepts variant prop with all valid values', () => {
-      const { rerender } = render(<Tag variant="default">Test</Tag>)
-      expect(screen.getByText('Test')).toBeInTheDocument()
+  describe("Tag", () => {
+    it("accepts variant prop with all valid values", () => {
+      const { rerender } = render(<Tag variant="default">Test</Tag>);
+      expect(screen.getByText("Test")).toBeInTheDocument();
 
-      rerender(<Tag variant="primary">Test</Tag>)
-      rerender(<Tag variant="secondary">Test</Tag>)
-      rerender(<Tag variant="outline">Test</Tag>)
-    })
+      rerender(<Tag variant="primary">Test</Tag>);
+      rerender(<Tag variant="secondary">Test</Tag>);
+      rerender(<Tag variant="outline">Test</Tag>);
+    });
 
-    it('accepts size prop with all valid values', () => {
-      const { rerender } = render(<Tag size="default">Test</Tag>)
-      expect(screen.getByText('Test')).toBeInTheDocument()
+    it("accepts size prop with all valid values", () => {
+      const { rerender } = render(<Tag size="default">Test</Tag>);
+      expect(screen.getByText("Test")).toBeInTheDocument();
 
-      rerender(<Tag size="sm">Test</Tag>)
-      rerender(<Tag size="lg">Test</Tag>)
-    })
-  })
+      rerender(<Tag size="sm">Test</Tag>);
+      rerender(<Tag size="lg">Test</Tag>);
+    });
+  });
 
-  describe('Table', () => {
-    it('accepts size prop with all valid values', () => {
+  describe("Table", () => {
+    it("accepts size prop with all valid values", () => {
       const { rerender } = render(
         <Table size="sm">
           <TableBody>
@@ -131,8 +135,8 @@ describe('Consumer Type Compatibility', () => {
             </TableRow>
           </TableBody>
         </Table>
-      )
-      expect(screen.getByRole('table')).toBeInTheDocument()
+      );
+      expect(screen.getByRole("table")).toBeInTheDocument();
 
       rerender(
         <Table size="md">
@@ -142,7 +146,7 @@ describe('Consumer Type Compatibility', () => {
             </TableRow>
           </TableBody>
         </Table>
-      )
+      );
 
       rerender(
         <Table size="lg">
@@ -152,40 +156,42 @@ describe('Consumer Type Compatibility', () => {
             </TableRow>
           </TableBody>
         </Table>
-      )
-    })
-  })
+      );
+    });
+  });
 
-  describe('Switch', () => {
-    it('accepts size prop with all valid values', () => {
-      const { rerender } = render(<Switch size="default" />)
-      expect(screen.getByRole('switch')).toBeInTheDocument()
+  describe("Switch", () => {
+    it("accepts size prop with all valid values", () => {
+      const { rerender } = render(<Switch size="default" />);
+      expect(screen.getByRole("switch")).toBeInTheDocument();
 
-      rerender(<Switch size="sm" />)
-      rerender(<Switch size="lg" />)
-    })
-  })
+      rerender(<Switch size="sm" />);
+      rerender(<Switch size="lg" />);
+    });
+  });
 
-  describe('Input', () => {
-    it('accepts state prop with all valid values', () => {
-      const { rerender } = render(<Input state="default" data-testid="input" />)
-      expect(screen.getByTestId('input')).toBeInTheDocument()
+  describe("Input", () => {
+    it("accepts state prop with all valid values", () => {
+      const { rerender } = render(
+        <Input state="default" data-testid="input" />
+      );
+      expect(screen.getByTestId("input")).toBeInTheDocument();
 
-      rerender(<Input state="error" data-testid="input" />)
-    })
-  })
+      rerender(<Input state="error" data-testid="input" />);
+    });
+  });
 
-  describe('TextField', () => {
-    it('accepts state prop with all valid values', () => {
-      const { rerender } = render(<TextField state="default" label="Test" />)
-      expect(screen.getByLabelText('Test')).toBeInTheDocument()
+  describe("TextField", () => {
+    it("accepts state prop with all valid values", () => {
+      const { rerender } = render(<TextField state="default" label="Test" />);
+      expect(screen.getByLabelText("Test")).toBeInTheDocument();
 
-      rerender(<TextField state="error" label="Test" />)
-    })
-  })
+      rerender(<TextField state="error" label="Test" />);
+    });
+  });
 
-  describe('Select', () => {
-    it('accepts state prop with all valid values', () => {
+  describe("Select", () => {
+    it("accepts state prop with all valid values", () => {
       const { rerender } = render(
         <Select>
           <SelectTrigger state="default" data-testid="trigger">
@@ -195,8 +201,8 @@ describe('Consumer Type Compatibility', () => {
             <SelectItem value="1">Option 1</SelectItem>
           </SelectContent>
         </Select>
-      )
-      expect(screen.getByTestId('trigger')).toBeInTheDocument()
+      );
+      expect(screen.getByTestId("trigger")).toBeInTheDocument();
 
       rerender(
         <Select>
@@ -207,48 +213,40 @@ describe('Consumer Type Compatibility', () => {
             <SelectItem value="1">Option 1</SelectItem>
           </SelectContent>
         </Select>
-      )
-    })
-  })
+      );
+    });
+  });
 
-  describe('MultiSelect', () => {
-    it('accepts state prop with all valid values', () => {
+  describe("MultiSelect", () => {
+    it("accepts state prop with all valid values", () => {
       const options = [
-        { label: 'Option 1', value: '1' },
-        { label: 'Option 2', value: '2' },
-      ]
+        { label: "Option 1", value: "1" },
+        { label: "Option 2", value: "2" },
+      ];
 
       const { rerender } = render(
-        <MultiSelect
-          options={options}
-          state="default"
-          placeholder="Select"
-        />
-      )
-      expect(screen.getByRole('combobox')).toBeInTheDocument()
+        <MultiSelect options={options} state="default" placeholder="Select" />
+      );
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
 
       rerender(
-        <MultiSelect
-          options={options}
-          state="error"
-          placeholder="Select"
-        />
-      )
-    })
-  })
+        <MultiSelect options={options} state="error" placeholder="Select" />
+      );
+    });
+  });
 
-  describe('Checkbox', () => {
-    it('accepts size prop with all valid values', () => {
-      const { rerender } = render(<Checkbox size="default" />)
-      expect(screen.getByRole('checkbox')).toBeInTheDocument()
+  describe("Checkbox", () => {
+    it("accepts size prop with all valid values", () => {
+      const { rerender } = render(<Checkbox size="default" />);
+      expect(screen.getByRole("checkbox")).toBeInTheDocument();
 
-      rerender(<Checkbox size="sm" />)
-      rerender(<Checkbox size="lg" />)
-    })
-  })
+      rerender(<Checkbox size="sm" />);
+      rerender(<Checkbox size="lg" />);
+    });
+  });
 
-  describe('Accordion', () => {
-    it('accepts variant prop with all valid values', () => {
+  describe("Accordion", () => {
+    it("accepts variant prop with all valid values", () => {
       const { rerender } = render(
         <Accordion type="single" variant="default" collapsible>
           <AccordionItem value="1">
@@ -256,8 +254,8 @@ describe('Consumer Type Compatibility', () => {
             <AccordionContent>Content</AccordionContent>
           </AccordionItem>
         </Accordion>
-      )
-      expect(screen.getByText('Trigger')).toBeInTheDocument()
+      );
+      expect(screen.getByText("Trigger")).toBeInTheDocument();
 
       rerender(
         <Accordion type="single" variant="bordered" collapsible>
@@ -266,19 +264,21 @@ describe('Consumer Type Compatibility', () => {
             <AccordionContent>Content</AccordionContent>
           </AccordionItem>
         </Accordion>
-      )
-    })
-  })
+      );
+    });
+  });
 
-  describe('PageHeader', () => {
-    it('compiles without variant prop (no variants defined)', () => {
+  describe("PageHeader", () => {
+    it("compiles without variant prop (no variants defined)", () => {
       // PageHeader has empty variants: {} so it should NOT accept variant prop
       // This test verifies it works without variant
-      render(<PageHeader title="Test Page" />)
-      expect(screen.getByRole('heading', { name: 'Test Page' })).toBeInTheDocument()
-    })
+      render(<PageHeader title="Test Page" />);
+      expect(
+        screen.getByRole("heading", { name: "Test Page" })
+      ).toBeInTheDocument();
+    });
 
-    it('accepts all defined props', () => {
+    it("accepts all defined props", () => {
       render(
         <PageHeader
           title="Test Page"
@@ -286,12 +286,14 @@ describe('Consumer Type Compatibility', () => {
           icon={<span data-testid="icon">Icon</span>}
           actions={<button>Action</button>}
         />
-      )
-      expect(screen.getByRole('heading', { name: 'Test Page' })).toBeInTheDocument()
-      expect(screen.getByText('Test description')).toBeInTheDocument()
-      expect(screen.getByTestId('icon')).toBeInTheDocument()
+      );
+      expect(
+        screen.getByRole("heading", { name: "Test Page" })
+      ).toBeInTheDocument();
+      expect(screen.getByText("Test description")).toBeInTheDocument();
+      expect(screen.getByTestId("icon")).toBeInTheDocument();
       // Actions render twice (desktop + mobile) with CSS visibility
-      expect(screen.getAllByRole('button', { name: 'Action' })).toHaveLength(2)
-    })
-  })
-})
+      expect(screen.getAllByRole("button", { name: "Action" })).toHaveLength(2);
+    });
+  });
+});

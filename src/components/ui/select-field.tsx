@@ -1,7 +1,7 @@
-import * as React from "react"
-import { Loader2 } from "lucide-react"
+import * as React from "react";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -10,56 +10,56 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./select"
+} from "./select";
 
 export interface SelectOption {
   /** The value of the option */
-  value: string
+  value: string;
   /** The display label of the option */
-  label: string
+  label: string;
   /** Whether the option is disabled */
-  disabled?: boolean
+  disabled?: boolean;
   /** Group name for grouping options */
-  group?: string
+  group?: string;
 }
 
 export interface SelectFieldProps {
   /** Label text displayed above the select */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the select */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Disabled state */
-  disabled?: boolean
+  disabled?: boolean;
   /** Loading state with spinner */
-  loading?: boolean
+  loading?: boolean;
   /** Placeholder text when no value selected */
-  placeholder?: string
+  placeholder?: string;
   /** Currently selected value (controlled) */
-  value?: string
+  value?: string;
   /** Default value (uncontrolled) */
-  defaultValue?: string
+  defaultValue?: string;
   /** Callback when value changes */
-  onValueChange?: (value: string) => void
+  onValueChange?: (value: string) => void;
   /** Options to display */
-  options: SelectOption[]
+  options: SelectOption[];
   /** Enable search/filter functionality */
-  searchable?: boolean
+  searchable?: boolean;
   /** Search placeholder text */
-  searchPlaceholder?: string
+  searchPlaceholder?: string;
   /** Additional class for wrapper */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for trigger */
-  triggerClassName?: string
+  triggerClassName?: string;
   /** Additional class for label */
-  labelClassName?: string
+  labelClassName?: string;
   /** ID for the select */
-  id?: string
+  id?: string;
   /** Name attribute for form submission */
-  name?: string
+  name?: string;
 }
 
 /**
@@ -104,59 +104,59 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     ref
   ) => {
     // Internal state for search
-    const [searchQuery, setSearchQuery] = React.useState("")
+    const [searchQuery, setSearchQuery] = React.useState("");
 
     // Derive state from props
-    const derivedState = error ? "error" : "default"
+    const derivedState = error ? "error" : "default";
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const selectId = id || generatedId
-    const helperId = `${selectId}-helper`
-    const errorId = `${selectId}-error`
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const helperId = `${selectId}-helper`;
+    const errorId = `${selectId}-error`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Group options by group property
     const groupedOptions = React.useMemo(() => {
-      const groups: Record<string, SelectOption[]> = {}
-      const ungrouped: SelectOption[] = []
+      const groups: Record<string, SelectOption[]> = {};
+      const ungrouped: SelectOption[] = [];
 
       options.forEach((option) => {
         // Filter by search query if searchable
         if (searchable && searchQuery) {
           if (!option.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return
+            return;
           }
         }
 
         if (option.group) {
           if (!groups[option.group]) {
-            groups[option.group] = []
+            groups[option.group] = [];
           }
-          groups[option.group].push(option)
+          groups[option.group].push(option);
         } else {
-          ungrouped.push(option)
+          ungrouped.push(option);
         }
-      })
+      });
 
-      return { groups, ungrouped }
-    }, [options, searchable, searchQuery])
+      return { groups, ungrouped };
+    }, [options, searchable, searchQuery]);
 
-    const hasGroups = Object.keys(groupedOptions.groups).length > 0
+    const hasGroups = Object.keys(groupedOptions.groups).length > 0;
 
     // Handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
-    }
+      setSearchQuery(e.target.value);
+    };
 
     // Reset search when dropdown closes
     const handleOpenChange = (open: boolean) => {
       if (!open) {
-        setSearchQuery("")
+        setSearchQuery("");
       }
-    }
+    };
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -184,10 +184,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
             ref={ref}
             id={selectId}
             state={derivedState}
-            className={cn(
-              loading && "pr-10",
-              triggerClassName
-            )}
+            className={cn(loading && "pr-10", triggerClassName)}
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}
           >
@@ -226,20 +223,22 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
 
             {/* Grouped options */}
             {hasGroups &&
-              Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
-                <SelectGroup key={groupName}>
-                  <SelectLabel>{groupName}</SelectLabel>
-                  {groupOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      disabled={option.disabled}
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              ))}
+              Object.entries(groupedOptions.groups).map(
+                ([groupName, groupOptions]) => (
+                  <SelectGroup key={groupName}>
+                    <SelectLabel>{groupName}</SelectLabel>
+                    {groupOptions.map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )
+              )}
 
             {/* No results message */}
             {searchable &&
@@ -268,9 +267,9 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-SelectField.displayName = "SelectField"
+);
+SelectField.displayName = "SelectField";
 
-export { SelectField }
+export { SelectField };

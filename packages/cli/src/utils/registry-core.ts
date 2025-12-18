@@ -296,12 +296,12 @@ export function getCoreRegistry(prefix: string = ''): Registry {
       files: [
         {
           name: 'button.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -310,12 +310,10 @@ const buttonVariants = cva(
       variant: {
         default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
         primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        destructive:
-          "bg-[#F04438] text-white hover:bg-[#D92D20]",
+        destructive: "bg-[#F04438] text-white hover:bg-[#D92D20]",
         outline:
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#EBECEE]",
-        secondary:
-          "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
+        secondary: "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
         ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
         dashed:
@@ -335,7 +333,7 @@ const buttonVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Button component for user interactions.
@@ -348,35 +346,39 @@ const buttonVariants = cva(
  * \`\`\`
  */
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   /** Render as child element using Radix Slot */
-  asChild?: boolean
+  asChild?: boolean;
   /** Icon displayed on the left side of the button text */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the button text */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Shows loading spinner and disables button */
-  loading?: boolean
+  loading?: boolean;
   /** Text shown during loading state */
-  loadingText?: string
+  loadingText?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    asChild = false,
-    leftIcon,
-    rightIcon,
-    loading = false,
-    loadingText,
-    children,
-    disabled,
-    ...props
-  }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      leftIcon,
+      rightIcon,
+      loading = false,
+      loadingText,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "button";
 
     return (
       <Comp
@@ -398,12 +400,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         )}
       </Comp>
-    )
+    );
   }
-)
-Button.displayName = "Button"
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
 `, prefix),
         },
       ],
@@ -420,11 +422,11 @@ export { Button, buttonVariants }
       files: [
         {
           name: 'badge.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Badge variants for status indicators.
@@ -457,7 +459,7 @@ const badgeVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Badge component for displaying status indicators.
@@ -477,19 +479,32 @@ const badgeVariants = cva(
  * \`\`\`
  */
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
   /** Icon displayed on the left side of the badge text */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the badge text */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Render as child element using Radix Slot */
-  asChild?: boolean
+  asChild?: boolean;
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, leftIcon, rightIcon, asChild = false, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "div"
+  (
+    {
+      className,
+      variant,
+      size,
+      leftIcon,
+      rightIcon,
+      asChild = false,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "div";
 
     // When using asChild, we can't wrap the child with extra elements
     // The child must receive the className and ref directly
@@ -502,7 +517,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         >
           {children}
         </Comp>
-      )
+      );
     }
 
     return (
@@ -515,12 +530,12 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {children}
         {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
       </Comp>
-    )
+    );
   }
-)
-Badge.displayName = "Badge"
+);
+Badge.displayName = "Badge";
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };
 `, prefix),
         },
       ],
@@ -535,19 +550,27 @@ export { Badge, badgeVariants }
       files: [
         {
           name: 'typography.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../lib/utils"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../lib/utils";
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-export type Kind = "display" | "headline" | "title" | "label" | "body"
-export type Variant = "large" | "medium" | "small"
-export type Color = "primary" | "secondary" | "muted" | "placeholder" | "link" | "inverted" | "error" | "success"
-export type Align = "left" | "center" | "right"
+export type Kind = "display" | "headline" | "title" | "label" | "body";
+export type Variant = "large" | "medium" | "small";
+export type Color =
+  | "primary"
+  | "secondary"
+  | "muted"
+  | "placeholder"
+  | "link"
+  | "inverted"
+  | "error"
+  | "success";
+export type Align = "left" | "center" | "right";
 
-type Key = \`\${Kind}-\${Variant}\`
+type Key = \`\${Kind}-\${Variant}\`;
 
 // =============================================================================
 // MAPPINGS
@@ -572,7 +595,7 @@ const mapTagName: { [key in Key]: keyof JSX.IntrinsicElements } = {
   "body-large": "span",
   "body-medium": "span",
   "body-small": "span",
-}
+};
 
 /**
  * Maps kind-variant combinations to Tailwind typography classes
@@ -593,7 +616,7 @@ const mapClassName: { [key in Key]: string } = {
   "body-large": "text-base leading-5 font-normal",
   "body-medium": "text-sm leading-[18px] font-normal",
   "body-small": "text-xs leading-4 font-normal",
-}
+};
 
 /**
  * Maps color variants to Tailwind text color classes
@@ -607,7 +630,7 @@ const mapColorClassName: { [key in Color]: string } = {
   inverted: "text-white",
   error: "text-[#F04438]",
   success: "text-[#17B26A]",
-}
+};
 
 /**
  * Maps alignment to Tailwind text alignment classes
@@ -616,7 +639,7 @@ const mapAlignClassName: { [key in Align]: string } = {
   left: "text-left",
   center: "text-center",
   right: "text-right",
-}
+};
 
 // =============================================================================
 // COMPONENT
@@ -627,21 +650,21 @@ const mapAlignClassName: { [key in Align]: string } = {
  */
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   /** Text content */
-  children: React.ReactNode
+  children: React.ReactNode;
   /** Typography kind - determines base styling and semantic tag */
-  kind?: Kind
+  kind?: Kind;
   /** Size variant */
-  variant?: Variant
+  variant?: Variant;
   /** Text color */
-  color?: Color
+  color?: Color;
   /** Text alignment */
-  align?: Align
+  align?: Align;
   /** Enable text truncation with ellipsis */
-  truncate?: boolean
+  truncate?: boolean;
   /** Override the default HTML tag */
-  tag?: keyof JSX.IntrinsicElements
+  tag?: keyof JSX.IntrinsicElements;
   /** For label elements - associates with form input */
-  htmlFor?: string
+  htmlFor?: string;
 }
 
 /**
@@ -678,8 +701,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     },
     ref
   ) => {
-    const key: Key = \`\${kind}-\${variant}\`
-    const Tag = tag || mapTagName[key]
+    const key: Key = \`\${kind}-\${variant}\`;
+    const Tag = tag || mapTagName[key];
 
     const classes = cn(
       "m-0", // Reset margin
@@ -688,7 +711,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       align && mapAlignClassName[align],
       truncate && "truncate",
       className
-    )
+    );
 
     return (
       <Tag
@@ -699,12 +722,18 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       >
         {children}
       </Tag>
-    )
+    );
   }
-)
-Typography.displayName = "Typography"
+);
+Typography.displayName = "Typography";
 
-export { Typography, mapTagName, mapClassName, mapColorClassName, mapAlignClassName }
+export {
+  Typography,
+  mapTagName,
+  mapClassName,
+  mapColorClassName,
+  mapAlignClassName,
+};
 `, prefix),
         },
       ],

@@ -1,8 +1,8 @@
-import * as React from "react"
-import * as SwitchPrimitives from "@radix-ui/react-switch"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import * as SwitchPrimitives from "@radix-ui/react-switch";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 /**
  * Switch track variants (the outer container)
@@ -21,7 +21,7 @@ const switchVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Switch thumb variants (the sliding circle)
@@ -40,7 +40,7 @@ const switchThumbVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Label text size variants
@@ -56,7 +56,7 @@ const labelSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 /**
  * A switch/toggle component for boolean inputs with on/off states
@@ -69,12 +69,16 @@ const labelSizeVariants = cva("", {
  * ```
  */
 export interface SwitchProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>, "onChange">,
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
+      "onChange"
+    >,
     VariantProps<typeof switchVariants> {
   /** Optional label text */
-  label?: string
+  label?: string;
   /** Position of the label */
-  labelPosition?: "left" | "right"
+  labelPosition?: "left" | "right";
 }
 
 const Switch = React.forwardRef<
@@ -82,14 +86,7 @@ const Switch = React.forwardRef<
   SwitchProps
 >(
   (
-    {
-      className,
-      size,
-      label,
-      labelPosition = "right",
-      disabled,
-      ...props
-    },
+    { className, size, label, labelPosition = "right", disabled, ...props },
     ref
   ) => {
     const switchElement = (
@@ -101,40 +98,46 @@ const Switch = React.forwardRef<
       >
         <SwitchPrimitives.Thumb className={cn(switchThumbVariants({ size }))} />
       </SwitchPrimitives.Root>
-    )
+    );
 
     if (label) {
       return (
-        <label className={cn(
-          "inline-flex items-center gap-2 cursor-pointer",
-          disabled && "cursor-not-allowed"
-        )}>
+        <label
+          className={cn(
+            "inline-flex items-center gap-2 cursor-pointer",
+            disabled && "cursor-not-allowed"
+          )}
+        >
           {labelPosition === "left" && (
-            <span className={cn(
-              labelSizeVariants({ size }),
-              "text-[#181D27]",
-              disabled && "opacity-50"
-            )}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50"
+              )}
+            >
               {label}
             </span>
           )}
           {switchElement}
           {labelPosition === "right" && (
-            <span className={cn(
-              labelSizeVariants({ size }),
-              "text-[#181D27]",
-              disabled && "opacity-50"
-            )}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50"
+              )}
+            >
               {label}
             </span>
           )}
         </label>
-      )
+      );
     }
 
-    return switchElement
+    return switchElement;
   }
-)
-Switch.displayName = "Switch"
+);
+Switch.displayName = "Switch";
 
-export { Switch, switchVariants }
+export { Switch, switchVariants };

@@ -1,8 +1,8 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 /**
  * Badge variants for status indicators.
@@ -35,7 +35,7 @@ const badgeVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Badge component for displaying status indicators.
@@ -55,19 +55,32 @@ const badgeVariants = cva(
  * ```
  */
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {
   /** Icon displayed on the left side of the badge text */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the badge text */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Render as child element using Radix Slot */
-  asChild?: boolean
+  asChild?: boolean;
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant, size, leftIcon, rightIcon, asChild = false, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "div"
+  (
+    {
+      className,
+      variant,
+      size,
+      leftIcon,
+      rightIcon,
+      asChild = false,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "div";
 
     // When using asChild, we can't wrap the child with extra elements
     // The child must receive the className and ref directly
@@ -80,7 +93,7 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         >
           {children}
         </Comp>
-      )
+      );
     }
 
     return (
@@ -93,9 +106,9 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
         {children}
         {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}
       </Comp>
-    )
+    );
   }
-)
-Badge.displayName = "Badge"
+);
+Badge.displayName = "Badge";
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };

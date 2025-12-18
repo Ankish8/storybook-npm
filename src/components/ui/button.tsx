@@ -1,9 +1,9 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -12,12 +12,10 @@ const buttonVariants = cva(
       variant: {
         default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
         primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        destructive:
-          "bg-[#F04438] text-white hover:bg-[#D92D20]",
+        destructive: "bg-[#F04438] text-white hover:bg-[#D92D20]",
         outline:
           "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#EBECEE]",
-        secondary:
-          "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
+        secondary: "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
         ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
         link: "text-[#343E55] underline-offset-4 hover:underline",
         dashed:
@@ -37,7 +35,7 @@ const buttonVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Button component for user interactions.
@@ -50,35 +48,39 @@ const buttonVariants = cva(
  * ```
  */
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   /** Render as child element using Radix Slot */
-  asChild?: boolean
+  asChild?: boolean;
   /** Icon displayed on the left side of the button text */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the button text */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Shows loading spinner and disables button */
-  loading?: boolean
+  loading?: boolean;
   /** Text shown during loading state */
-  loadingText?: string
+  loadingText?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    asChild = false,
-    leftIcon,
-    rightIcon,
-    loading = false,
-    loadingText,
-    children,
-    disabled,
-    ...props
-  }, ref) => {
-    const Comp = asChild ? Slot : "button"
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      leftIcon,
+      rightIcon,
+      loading = false,
+      loadingText,
+      children,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "button";
 
     return (
       <Comp
@@ -100,9 +102,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         )}
       </Comp>
-    )
+    );
   }
-)
-Button.displayName = "Button"
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };

@@ -18,7 +18,7 @@
 
 export const fontFamily = {
   base: "'Source Sans Pro', sans-serif",
-} as const
+} as const;
 
 // =============================================================================
 // FONT WEIGHTS
@@ -27,7 +27,7 @@ export const fontFamily = {
 export const fontWeight = {
   regular: 400,
   semibold: 600,
-} as const
+} as const;
 
 // =============================================================================
 // TYPE STYLES
@@ -41,26 +41,26 @@ export const fontWeight = {
 export const headline = {
   small: {
     fontFamily: fontFamily.base,
-    fontSize: '24px',
-    lineHeight: '32px',
+    fontSize: "24px",
+    lineHeight: "32px",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-headline-small',
+    cssClass: "text-headline-small",
   },
   medium: {
     fontFamily: fontFamily.base,
-    fontSize: '28px',
-    lineHeight: '36px',
+    fontSize: "28px",
+    lineHeight: "36px",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-headline-medium',
+    cssClass: "text-headline-medium",
   },
   large: {
     fontFamily: fontFamily.base,
-    fontSize: '32px',
-    lineHeight: '40px',
+    fontSize: "32px",
+    lineHeight: "40px",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-headline-large',
+    cssClass: "text-headline-large",
   },
-} as const
+} as const;
 
 /**
  * Body Styles
@@ -70,26 +70,26 @@ export const headline = {
 export const body = {
   small: {
     fontFamily: fontFamily.base,
-    fontSize: '12px',
-    lineHeight: 'normal',
+    fontSize: "12px",
+    lineHeight: "normal",
     fontWeight: fontWeight.regular,
-    cssClass: 'text-body-small',
+    cssClass: "text-body-small",
   },
   medium: {
     fontFamily: fontFamily.base,
-    fontSize: '14px',
-    lineHeight: 'normal',
+    fontSize: "14px",
+    lineHeight: "normal",
     fontWeight: fontWeight.regular,
-    cssClass: 'text-body-medium',
+    cssClass: "text-body-medium",
   },
   large: {
     fontFamily: fontFamily.base,
-    fontSize: '16px',
-    lineHeight: 'normal',
+    fontSize: "16px",
+    lineHeight: "normal",
     fontWeight: fontWeight.regular,
-    cssClass: 'text-body-large',
+    cssClass: "text-body-large",
   },
-} as const
+} as const;
 
 /**
  * Title Styles
@@ -99,26 +99,26 @@ export const body = {
 export const title = {
   small: {
     fontFamily: fontFamily.base,
-    fontSize: '14px',
-    lineHeight: 'normal',
+    fontSize: "14px",
+    lineHeight: "normal",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-title-small',
+    cssClass: "text-title-small",
   },
   medium: {
     fontFamily: fontFamily.base,
-    fontSize: '16px',
-    lineHeight: 'normal',
+    fontSize: "16px",
+    lineHeight: "normal",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-title-medium',
+    cssClass: "text-title-medium",
   },
   large: {
     fontFamily: fontFamily.base,
-    fontSize: '18px',
-    lineHeight: 'normal',
+    fontSize: "18px",
+    lineHeight: "normal",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-title-large',
+    cssClass: "text-title-large",
   },
-} as const
+} as const;
 
 /**
  * Label Styles
@@ -128,26 +128,26 @@ export const title = {
 export const label = {
   small: {
     fontFamily: fontFamily.base,
-    fontSize: '10px',
-    lineHeight: 'normal',
+    fontSize: "10px",
+    lineHeight: "normal",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-label-small',
+    cssClass: "text-label-small",
   },
   medium: {
     fontFamily: fontFamily.base,
-    fontSize: '12px',
-    lineHeight: 'normal',
+    fontSize: "12px",
+    lineHeight: "normal",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-label-medium',
+    cssClass: "text-label-medium",
   },
   large: {
     fontFamily: fontFamily.base,
-    fontSize: '14px',
-    lineHeight: '20px',
+    fontSize: "14px",
+    lineHeight: "20px",
     fontWeight: fontWeight.semibold,
-    cssClass: 'text-label-large',
+    cssClass: "text-label-large",
   },
-} as const
+} as const;
 
 /**
  * Display Styles
@@ -157,26 +157,26 @@ export const label = {
 export const display = {
   small: {
     fontFamily: fontFamily.base,
-    fontSize: '36px',
-    lineHeight: '44px',
+    fontSize: "36px",
+    lineHeight: "44px",
     fontWeight: fontWeight.regular,
-    cssClass: 'text-display-small',
+    cssClass: "text-display-small",
   },
   medium: {
     fontFamily: fontFamily.base,
-    fontSize: '45px',
-    lineHeight: '52px',
+    fontSize: "45px",
+    lineHeight: "52px",
     fontWeight: fontWeight.regular,
-    cssClass: 'text-display-medium',
+    cssClass: "text-display-medium",
   },
   large: {
     fontFamily: fontFamily.base,
-    fontSize: '57px',
-    lineHeight: '64px',
+    fontSize: "57px",
+    lineHeight: "64px",
     fontWeight: fontWeight.regular,
-    cssClass: 'text-display-large',
+    cssClass: "text-display-large",
   },
-} as const
+} as const;
 
 // =============================================================================
 // EXPORTS
@@ -191,7 +191,7 @@ export const typeStyles = {
   title,
   label,
   display,
-} as const
+} as const;
 
 /**
  * Complete typography system
@@ -200,6 +200,6 @@ export const typography = {
   fontFamily,
   fontWeight,
   styles: typeStyles,
-} as const
+} as const;
 
-export default typography
+export default typography;

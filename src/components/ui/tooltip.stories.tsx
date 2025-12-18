@@ -1,20 +1,20 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { Info, HelpCircle, Settings, Plus, Trash2 } from 'lucide-react'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { Info, HelpCircle, Settings, Plus, Trash2 } from "lucide-react";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipArrow,
   TooltipProvider,
-} from './tooltip'
-import { Button } from './button'
+} from "./tooltip";
+import { Button } from "./button";
 
 const meta: Meta<typeof Tooltip> = {
-  title: 'Components/Tooltip',
+  title: "Components/Tooltip",
   component: Tooltip,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -146,7 +146,7 @@ Wrap your app or a section with \`TooltipProvider\` to enable tooltips:
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   decorators: [
     (Story) => (
       <TooltipProvider delayDuration={100}>
@@ -154,10 +154,10 @@ Wrap your app or a section with \`TooltipProvider\` to enable tooltips:
       </TooltipProvider>
     ),
   ],
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -170,7 +170,7 @@ export const Default: Story = {
       </TooltipContent>
     </Tooltip>
   ),
-}
+};
 
 export const WithArrow: Story = {
   render: () => (
@@ -184,10 +184,10 @@ export const WithArrow: Story = {
       </TooltipContent>
     </Tooltip>
   ),
-}
+};
 
 export const Positions: Story = {
-  name: 'All Positions',
+  name: "All Positions",
   render: () => (
     <div className="flex flex-col items-center gap-8">
       <Tooltip>
@@ -233,10 +233,10 @@ export const Positions: Story = {
       </Tooltip>
     </div>
   ),
-}
+};
 
 export const Alignment: Story = {
-  name: 'Alignment Options',
+  name: "Alignment Options",
   render: () => (
     <div className="flex gap-4">
       <Tooltip>
@@ -267,10 +267,10 @@ export const Alignment: Story = {
       </Tooltip>
     </div>
   ),
-}
+};
 
 export const WithOffset: Story = {
-  name: 'Custom Offset',
+  name: "Custom Offset",
   render: () => (
     <div className="flex gap-4">
       <Tooltip>
@@ -304,10 +304,10 @@ export const WithOffset: Story = {
       </Tooltip>
     </div>
   ),
-}
+};
 
 export const WithIcons: Story = {
-  name: 'Icon Triggers',
+  name: "Icon Triggers",
   render: () => (
     <div className="flex gap-6">
       <Tooltip>
@@ -344,10 +344,10 @@ export const WithIcons: Story = {
       </Tooltip>
     </div>
   ),
-}
+};
 
 export const IconButtons: Story = {
-  name: 'Use Case: Icon Buttons',
+  name: "Use Case: Icon Buttons",
   render: () => (
     <div className="flex gap-2 p-4 bg-gray-50 rounded-lg">
       <Tooltip>
@@ -387,14 +387,15 @@ export const IconButtons: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Tooltips are essential for icon-only buttons to provide context for users.',
+        story:
+          "Tooltips are essential for icon-only buttons to provide context for users.",
       },
     },
   },
-}
+};
 
 export const LongContent: Story = {
-  name: 'Long Content',
+  name: "Long Content",
   render: () => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -408,10 +409,10 @@ export const LongContent: Story = {
       </TooltipContent>
     </Tooltip>
   ),
-}
+};
 
 export const RichContent: Story = {
-  name: 'Rich Content',
+  name: "Rich Content",
   render: () => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -426,10 +427,10 @@ export const RichContent: Story = {
       </TooltipContent>
     </Tooltip>
   ),
-}
+};
 
 const ControlledExample = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -451,26 +452,25 @@ const ControlledExample = () => {
         </Button>
       </div>
 
-      <p className="text-sm text-gray-500">
-        State: {open ? 'Open' : 'Closed'}
-      </p>
+      <p className="text-sm text-gray-500">State: {open ? "Open" : "Closed"}</p>
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
   parameters: {
     docs: {
       description: {
-        story: 'Use the `open` and `onOpenChange` props to control the tooltip state programmatically.',
+        story:
+          "Use the `open` and `onOpenChange` props to control the tooltip state programmatically.",
       },
     },
   },
-}
+};
 
 export const DisabledButton: Story = {
-  name: 'Use Case: Disabled Button',
+  name: "Use Case: Disabled Button",
   render: () => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -488,17 +488,18 @@ export const DisabledButton: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Wrap disabled buttons in a span to enable tooltip functionality, since disabled elements don\'t trigger mouse events.',
+        story:
+          "Wrap disabled buttons in a span to enable tooltip functionality, since disabled elements don't trigger mouse events.",
       },
     },
   },
-}
+};
 
 export const TextTrigger: Story = {
-  name: 'Text Trigger',
+  name: "Text Trigger",
   render: () => (
     <p className="text-sm">
-      This is some text with a{' '}
+      This is some text with a{" "}
       <Tooltip>
         <TooltipTrigger asChild>
           <span className="underline decoration-dotted cursor-help">
@@ -508,14 +509,14 @@ export const TextTrigger: Story = {
         <TooltipContent>
           <p>A brief explanation of the term</p>
         </TooltipContent>
-      </Tooltip>{' '}
+      </Tooltip>{" "}
       that needs explanation.
     </p>
   ),
-}
+};
 
 export const TruncatedText: Story = {
-  name: 'Use Case: Truncated Text',
+  name: "Use Case: Truncated Text",
   render: () => (
     <div className="w-48">
       <Tooltip>
@@ -533,8 +534,8 @@ export const TruncatedText: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Show full content in tooltip when text is truncated.',
+        story: "Show full content in tooltip when text is truncated.",
       },
     },
   },
-}
+};

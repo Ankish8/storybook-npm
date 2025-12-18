@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { Check, X, AlertCircle, Clock } from 'lucide-react'
-import { Badge } from './badge'
+import type { Meta, StoryObj } from "@storybook/react";
+import { Check, X, AlertCircle, Clock } from "lucide-react";
+import { Badge } from "./badge";
 
 const meta: Meta<typeof Badge> = {
-  title: 'Components/Badge',
+  title: "Components/Badge",
   component: Badge,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -115,74 +115,83 @@ import { Badge } from "@/components/ui/badge"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['active', 'failed', 'disabled', 'default', 'primary', 'secondary', 'outline', 'destructive'],
-      description: 'The visual style of the badge',
+      control: "select",
+      options: [
+        "active",
+        "failed",
+        "disabled",
+        "default",
+        "primary",
+        "secondary",
+        "outline",
+        "destructive",
+      ],
+      description: "The visual style of the badge",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'default', 'lg'],
-      description: 'The size of the badge',
+      control: "select",
+      options: ["sm", "default", "lg"],
+      description: "The size of the badge",
     },
     children: {
-      control: 'text',
-      description: 'The content of the badge',
+      control: "text",
+      description: "The content of the badge",
     },
     leftIcon: {
       control: false,
-      description: 'Icon displayed on the left side',
+      description: "Icon displayed on the left side",
     },
     rightIcon: {
       control: false,
-      description: 'Icon displayed on the right side',
+      description: "Icon displayed on the right side",
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Overview: Story = {
   args: {
-    children: 'Active',
-    variant: 'active',
-    size: 'default',
+    children: "Active",
+    variant: "active",
+    size: "default",
   },
-}
+};
 
 export const Active: Story = {
   args: {
-    children: 'Active',
-    variant: 'active',
+    children: "Active",
+    variant: "active",
   },
-}
+};
 
 export const Failed: Story = {
   args: {
-    children: 'Failed',
-    variant: 'failed',
+    children: "Failed",
+    variant: "failed",
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
-    children: 'Disabled',
-    variant: 'disabled',
+    children: "Disabled",
+    variant: "disabled",
   },
-}
+};
 
 export const Default: Story = {
   args: {
-    children: 'Default',
-    variant: 'default',
+    children: "Default",
+    variant: "default",
   },
-}
+};
 
 export const AllVariants: Story = {
-  name: 'All Variants',
+  name: "All Variants",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active">Active</Badge>
@@ -195,57 +204,81 @@ export const AllVariants: Story = {
       <Badge variant="destructive">Destructive</Badge>
     </div>
   ),
-}
+};
 
 export const AllSizes: Story = {
-  name: 'All Sizes',
+  name: "All Sizes",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
-      <Badge variant="active" size="sm">Small</Badge>
-      <Badge variant="active" size="default">Default</Badge>
-      <Badge variant="active" size="lg">Large</Badge>
+      <Badge variant="active" size="sm">
+        Small
+      </Badge>
+      <Badge variant="active" size="default">
+        Default
+      </Badge>
+      <Badge variant="active" size="lg">
+        Large
+      </Badge>
     </div>
   ),
-}
+};
 
 export const WithIcons: Story = {
-  name: 'With Icons',
+  name: "With Icons",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
-      <Badge variant="active" leftIcon={<Check />}>Active</Badge>
-      <Badge variant="failed" leftIcon={<X />}>Failed</Badge>
-      <Badge variant="disabled" leftIcon={<Clock />}>Pending</Badge>
-      <Badge variant="default" leftIcon={<AlertCircle />}>Info</Badge>
+      <Badge variant="active" leftIcon={<Check />}>
+        Active
+      </Badge>
+      <Badge variant="failed" leftIcon={<X />}>
+        Failed
+      </Badge>
+      <Badge variant="disabled" leftIcon={<Clock />}>
+        Pending
+      </Badge>
+      <Badge variant="default" leftIcon={<AlertCircle />}>
+        Info
+      </Badge>
     </div>
   ),
-}
+};
 
 export const WithRightIcon: Story = {
-  name: 'With Right Icon',
+  name: "With Right Icon",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
-      <Badge variant="active" rightIcon={<Check />}>Verified</Badge>
-      <Badge variant="failed" rightIcon={<X />}>Rejected</Badge>
+      <Badge variant="active" rightIcon={<Check />}>
+        Verified
+      </Badge>
+      <Badge variant="failed" rightIcon={<X />}>
+        Rejected
+      </Badge>
     </div>
   ),
-}
+};
 
 export const StatusExamples: Story = {
-  name: 'Status Examples',
+  name: "Status Examples",
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-600 w-24">Webhook 1:</span>
-        <Badge variant="active" leftIcon={<Check />}>Active</Badge>
+        <Badge variant="active" leftIcon={<Check />}>
+          Active
+        </Badge>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-600 w-24">Webhook 2:</span>
-        <Badge variant="failed" leftIcon={<X />}>Failed</Badge>
+        <Badge variant="failed" leftIcon={<X />}>
+          Failed
+        </Badge>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-600 w-24">Webhook 3:</span>
-        <Badge variant="disabled" leftIcon={<Clock />}>Disabled</Badge>
+        <Badge variant="disabled" leftIcon={<Clock />}>
+          Disabled
+        </Badge>
       </div>
     </div>
   ),
-}
+};

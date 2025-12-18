@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { MoreVertical, Edit, Copy, Trash, FileText } from 'lucide-react'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { MoreVertical, Edit, Copy, Trash, FileText } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -12,20 +12,20 @@ import {
   TableEmpty,
   TableAvatar,
   TableToggle,
-} from './table'
-import { Badge } from './badge'
-import { Tag, TagGroup } from './tag'
-import { Button } from './button'
+} from "./table";
+import { Badge } from "./badge";
+import { Tag, TagGroup } from "./tag";
+import { Button } from "./button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from './dropdown-menu'
+} from "./dropdown-menu";
 
 const meta: Meta<typeof Table> = {
-  title: 'Components/Table',
+  title: "Components/Table",
   component: Table,
   decorators: [
     (Story) => (
@@ -35,7 +35,7 @@ const meta: Meta<typeof Table> = {
     ),
   ],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
         component: `
@@ -123,63 +123,89 @@ import {
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      control: 'select',
-      options: ['sm', 'md', 'lg'],
-      description: 'The row size of the table',
+      control: "select",
+      options: ["sm", "md", "lg"],
+      description: "The row size of the table",
       table: {
-        defaultValue: { summary: 'md' },
+        defaultValue: { summary: "md" },
         type: { summary: "'sm' | 'md' | 'lg'" },
       },
     },
     withoutBorder: {
-      control: 'boolean',
-      description: 'Remove outer border from the table',
+      control: "boolean",
+      description: "Remove outer border from the table",
       table: {
-        defaultValue: { summary: 'false' },
-        type: { summary: 'boolean' },
+        defaultValue: { summary: "false" },
+        type: { summary: "boolean" },
       },
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Sample data for stories
 const sampleData = [
-  { id: 1, date: '2020-01-01', subject: 'Lorem ipsum dolor', sentBy: 'JD', status: 'active', emails: 100, enabled: true },
-  { id: 2, date: '2023-03-03', subject: 'This is the subject This is the subject...', sentBy: 'SP', status: 'active', emails: 999, enabled: false },
-  { id: 3, date: '2022-02-02', subject: 'This is the subject', sentBy: 'ON', status: 'disabled', emails: 99, enabled: true },
-]
+  {
+    id: 1,
+    date: "2020-01-01",
+    subject: "Lorem ipsum dolor",
+    sentBy: "JD",
+    status: "active",
+    emails: 100,
+    enabled: true,
+  },
+  {
+    id: 2,
+    date: "2023-03-03",
+    subject: "This is the subject This is the subject...",
+    sentBy: "SP",
+    status: "active",
+    emails: 999,
+    enabled: false,
+  },
+  {
+    id: 3,
+    date: "2022-02-02",
+    subject: "This is the subject",
+    sentBy: "ON",
+    status: "disabled",
+    emails: 99,
+    enabled: true,
+  },
+];
 
-const statusVariants: Record<string, 'active' | 'failed' | 'disabled'> = {
-  active: 'active',
-  failed: 'failed',
-  disabled: 'disabled',
-}
+const statusVariants: Record<string, "active" | "failed" | "disabled"> = {
+  active: "active",
+  failed: "failed",
+  disabled: "disabled",
+};
 
 // Interactive Overview component with state
 const OverviewTable = ({
   size,
   withoutBorder,
   showToggle,
-  showActions
+  showActions,
 }: {
-  size: 'sm' | 'md' | 'lg'
-  withoutBorder: boolean
-  showToggle: boolean
-  showActions: boolean
+  size: "sm" | "md" | "lg";
+  withoutBorder: boolean;
+  showToggle: boolean;
+  showActions: boolean;
 }) => {
-  const [data, setData] = useState(sampleData)
+  const [data, setData] = useState(sampleData);
 
   const handleToggle = (id: number, checked: boolean) => {
-    setData(data.map(item =>
-      item.id === id ? { ...item, enabled: checked } : item
-    ))
-  }
+    setData(
+      data.map((item) =>
+        item.id === id ? { ...item, enabled: checked } : item
+      )
+    );
+  };
 
   return (
     <Table size={size} withoutBorder={withoutBorder}>
@@ -191,15 +217,21 @@ const OverviewTable = ({
           <TableHead>Status</TableHead>
           <TableHead>Emails sent</TableHead>
           {showToggle && <TableHead className="w-[80px]">Enabled</TableHead>}
-          {showActions && <TableHead className="text-right w-[120px]">Actions</TableHead>}
+          {showActions && (
+            <TableHead className="text-right w-[120px]">Actions</TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
         {data.map((row) => (
           <TableRow key={row.id}>
             <TableCell className="text-[#6B7280]">{row.date}</TableCell>
-            <TableCell className="font-medium text-[#111827]">{row.subject}</TableCell>
-            <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
+            <TableCell className="font-medium text-[#111827]">
+              {row.subject}
+            </TableCell>
+            <TableCell>
+              <TableAvatar initials={row.sentBy} />
+            </TableCell>
             <TableCell>
               <Badge variant={statusVariants[row.status]}>
                 {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
@@ -217,10 +249,20 @@ const OverviewTable = ({
             {showActions && (
               <TableCell>
                 <div className="flex items-center justify-end gap-0.5">
-                  <Button variant="ghost" size="icon" title="View Log" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="View Log"
+                    className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                  >
                     <FileText className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Edit"
+                    className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
@@ -238,30 +280,31 @@ const OverviewTable = ({
         ))}
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
 export const Overview: Story = {
   args: {
-    size: 'md',
+    size: "md",
     withoutBorder: false,
   },
   render: (args) => (
     <OverviewTable
-      size={args.size || 'md'}
+      size={args.size || "md"}
       withoutBorder={args.withoutBorder || false}
       showToggle={false}
       showActions={false}
     />
   ),
-}
+};
 
 export const Sizes: Story = {
-  name: 'Sizes',
+  name: "Sizes",
   parameters: {
     docs: {
       description: {
-        story: 'The table is available in 3 different row heights: small (32px), medium (40px), and large (48px). Medium size is the default size.',
+        story:
+          "The table is available in 3 different row heights: small (32px), medium (40px), and large (48px). Medium size is the default size.",
       },
     },
   },
@@ -332,14 +375,15 @@ export const Sizes: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const Borders: Story = {
-  name: 'Borders',
+  name: "Borders",
   parameters: {
     docs: {
       description: {
-        story: 'The table is available with or without an outer border. When using a table inside another component (like a modal or dialog), remove the table\'s outer border for a cleaner look.',
+        story:
+          "The table is available with or without an outer border. When using a table inside another component (like a modal or dialog), remove the table's outer border for a cleaner look.",
       },
     },
   },
@@ -362,8 +406,12 @@ export const Borders: Story = {
               <TableRow key={i}>
                 <TableCell>{row.date}</TableCell>
                 <TableCell>{row.subject}</TableCell>
-                <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
-                <TableCell><Badge variant="active">{row.status}</Badge></TableCell>
+                <TableCell>
+                  <TableAvatar initials={row.sentBy} />
+                </TableCell>
+                <TableCell>
+                  <Badge variant="active">{row.status}</Badge>
+                </TableCell>
                 <TableCell>{row.emails}</TableCell>
               </TableRow>
             ))}
@@ -387,8 +435,12 @@ export const Borders: Story = {
               <TableRow key={i}>
                 <TableCell>{row.date}</TableCell>
                 <TableCell>{row.subject}</TableCell>
-                <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
-                <TableCell><Badge variant="active">{row.status}</Badge></TableCell>
+                <TableCell>
+                  <TableAvatar initials={row.sentBy} />
+                </TableCell>
+                <TableCell>
+                  <Badge variant="active">{row.status}</Badge>
+                </TableCell>
                 <TableCell>{row.emails}</TableCell>
               </TableRow>
             ))}
@@ -397,14 +449,14 @@ export const Borders: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const HeaderFunctionality: Story = {
-  name: 'Table header functionality',
+  name: "Table header functionality",
   parameters: {
     docs: {
       description: {
-        story: 'Sorting, Icons and Information added to selected columns.',
+        story: "Sorting, Icons and Information added to selected columns.",
       },
     },
   },
@@ -414,8 +466,12 @@ export const HeaderFunctionality: Story = {
         <TableRow>
           <TableHead>Sent on</TableHead>
           <TableHead>Subject</TableHead>
-          <TableHead infoTooltip="The user who sent the email">Sent by</TableHead>
-          <TableHead infoTooltip="Current status of the email">Status</TableHead>
+          <TableHead infoTooltip="The user who sent the email">
+            Sent by
+          </TableHead>
+          <TableHead infoTooltip="Current status of the email">
+            Status
+          </TableHead>
           <TableHead>Emails sent</TableHead>
         </TableRow>
       </TableHeader>
@@ -424,22 +480,26 @@ export const HeaderFunctionality: Story = {
           <TableRow key={i}>
             <TableCell>{row.date}</TableCell>
             <TableCell>{row.subject}</TableCell>
-            <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
-            <TableCell><Badge variant="active">{row.status}</Badge></TableCell>
+            <TableCell>
+              <TableAvatar initials={row.sentBy} />
+            </TableCell>
+            <TableCell>
+              <Badge variant="active">{row.status}</Badge>
+            </TableCell>
             <TableCell>{row.emails}</TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
   ),
-}
+};
 
 export const Loading: Story = {
-  name: 'Loading',
+  name: "Loading",
   parameters: {
     docs: {
       description: {
-        story: 'Using skeleton to show loading state.',
+        story: "Using skeleton to show loading state.",
       },
     },
   },
@@ -459,11 +519,11 @@ export const Loading: Story = {
       </TableBody>
     </Table>
   ),
-}
+};
 
 export const EmptyState: Story = {
-  name: 'Empty State',
-  tags: ['!dev'],
+  name: "Empty State",
+  tags: ["!dev"],
   render: () => (
     <Table>
       <TableHeader>
@@ -482,14 +542,15 @@ export const EmptyState: Story = {
       </TableBody>
     </Table>
   ),
-}
+};
 
 export const HighlightedRow: Story = {
-  name: 'Highlighted row',
+  name: "Highlighted row",
   parameters: {
     docs: {
       description: {
-        story: 'Use a highlighted row to mark a single row of the table. A highlighted row allows adding additional information for the entire row, using a system trigger such as a side-panel or modal.',
+        story:
+          "Use a highlighted row to mark a single row of the table. A highlighted row allows adding additional information for the entire row, using a system trigger such as a side-panel or modal.",
       },
     },
   },
@@ -508,35 +569,50 @@ export const HighlightedRow: Story = {
         <TableRow>
           <TableCell>2020-01-01</TableCell>
           <TableCell>Lorem ipsum dolor</TableCell>
-          <TableCell><TableAvatar initials="JD" /></TableCell>
-          <TableCell><Badge variant="active">Sent</Badge></TableCell>
+          <TableCell>
+            <TableAvatar initials="JD" />
+          </TableCell>
+          <TableCell>
+            <Badge variant="active">Sent</Badge>
+          </TableCell>
           <TableCell>100</TableCell>
         </TableRow>
         <TableRow highlighted>
           <TableCell>2022-02-02</TableCell>
           <TableCell>This is the subject</TableCell>
-          <TableCell><TableAvatar initials="ON" color="#F59E0B" /></TableCell>
-          <TableCell><Badge variant="active">Sent</Badge></TableCell>
+          <TableCell>
+            <TableAvatar initials="ON" color="#F59E0B" />
+          </TableCell>
+          <TableCell>
+            <Badge variant="active">Sent</Badge>
+          </TableCell>
           <TableCell>99</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>2023-03-03</TableCell>
-          <TableCell>This is the subject This is the subject This is the sub...</TableCell>
-          <TableCell><TableAvatar initials="SP" color="#10B981" /></TableCell>
-          <TableCell><Badge variant="active">Sent</Badge></TableCell>
+          <TableCell>
+            This is the subject This is the subject This is the sub...
+          </TableCell>
+          <TableCell>
+            <TableAvatar initials="SP" color="#10B981" />
+          </TableCell>
+          <TableCell>
+            <Badge variant="active">Sent</Badge>
+          </TableCell>
           <TableCell>999</TableCell>
         </TableRow>
       </TableBody>
     </Table>
   ),
-}
+};
 
 export const StickyColumn: Story = {
-  name: 'Sticky column',
+  name: "Sticky column",
   parameters: {
     docs: {
       description: {
-        story: 'Use sticky column in your table when you want to keep specific column visible while the users scroll horizontally.',
+        story:
+          "Use sticky column in your table when you want to keep specific column visible while the users scroll horizontally.",
       },
     },
   },
@@ -558,7 +634,9 @@ export const StickyColumn: Story = {
         <TableBody>
           <TableRow>
             <TableCell sticky>Limited time offer</TableCell>
-            <TableCell><Badge variant="active">In progress</Badge></TableCell>
+            <TableCell>
+              <Badge variant="active">In progress</Badge>
+            </TableCell>
             <TableCell>This is des...</TableCell>
             <TableCell>2024-07-03</TableCell>
             <TableCell>100</TableCell>
@@ -568,7 +646,9 @@ export const StickyColumn: Story = {
           </TableRow>
           <TableRow>
             <TableCell sticky>Action required</TableCell>
-            <TableCell><Badge variant="active">In progress</Badge></TableCell>
+            <TableCell>
+              <Badge variant="active">In progress</Badge>
+            </TableCell>
             <TableCell>This is des...</TableCell>
             <TableCell>2024-07-08</TableCell>
             <TableCell>150</TableCell>
@@ -578,7 +658,9 @@ export const StickyColumn: Story = {
           </TableRow>
           <TableRow>
             <TableCell sticky>Cancellation request</TableCell>
-            <TableCell><Badge variant="default">Done</Badge></TableCell>
+            <TableCell>
+              <Badge variant="default">Done</Badge>
+            </TableCell>
             <TableCell>This is des...</TableCell>
             <TableCell>2024-07-12</TableCell>
             <TableCell>300</TableCell>
@@ -588,7 +670,9 @@ export const StickyColumn: Story = {
           </TableRow>
           <TableRow>
             <TableCell sticky>Limited time offer</TableCell>
-            <TableCell><Badge variant="failed">Stuck</Badge></TableCell>
+            <TableCell>
+              <Badge variant="failed">Stuck</Badge>
+            </TableCell>
             <TableCell>This is des...</TableCell>
             <TableCell>2024-08-06</TableCell>
             <TableCell>50</TableCell>
@@ -598,7 +682,9 @@ export const StickyColumn: Story = {
           </TableRow>
           <TableRow>
             <TableCell sticky>Cancellation request</TableCell>
-            <TableCell><Badge variant="default">Done</Badge></TableCell>
+            <TableCell>
+              <Badge variant="default">Done</Badge>
+            </TableCell>
             <TableCell>This is des...</TableCell>
             <TableCell>2024-09-05</TableCell>
             <TableCell>400</TableCell>
@@ -610,39 +696,77 @@ export const StickyColumn: Story = {
       </Table>
     </div>
   ),
-}
+};
 
 export const Scroll: Story = {
-  name: 'Scroll',
+  name: "Scroll",
   parameters: {
     docs: {
       description: {
-        story: 'Table with both vertical and horizontal scroll.',
+        story: "Table with both vertical and horizontal scroll.",
       },
     },
   },
   render: () => {
-    const priorityVariants: Record<string, 'active' | 'failed' | 'disabled' | 'default'> = {
-      Urgent: 'failed',
-      High: 'active',
-      Normal: 'disabled',
-      Low: 'default',
-    }
+    const priorityVariants: Record<
+      string,
+      "active" | "failed" | "disabled" | "default"
+    > = {
+      Urgent: "failed",
+      High: "active",
+      Normal: "disabled",
+      Low: "default",
+    };
 
-    const statusVariants: Record<string, 'active' | 'failed' | 'disabled'> = {
-      'In progress': 'active',
-      Queued: 'disabled',
-      Failed: 'failed',
-      Sent: 'active',
-    }
+    const statusVariants: Record<string, "active" | "failed" | "disabled"> = {
+      "In progress": "active",
+      Queued: "disabled",
+      Failed: "failed",
+      Sent: "active",
+    };
 
     const scrollData = [
-      { date: '2020-01-01', priority: 'Urgent', subject: 'Lorem ipsum dolor', sentBy: 'JD', status: 'In progress', emails: 100 },
-      { date: '2020-02-02', priority: 'High', subject: 'Dolor sit amet', sentBy: 'JD', status: 'In progress', emails: 50 },
-      { date: '2020-03-03', priority: 'Normal', subject: 'Consectetur adipiscing elit', sentBy: 'PS', status: 'Queued', emails: 0 },
-      { date: '2020-04-04', priority: 'Low', subject: 'Sed do eiusmod tempor incididunt', sentBy: 'SJ', status: 'Failed', emails: 200 },
-      { date: '2020-05-05', priority: 'Urgent', subject: 'Ut labore et dolore magna aliqua', sentBy: 'JD', status: 'Sent', emails: 150 },
-    ]
+      {
+        date: "2020-01-01",
+        priority: "Urgent",
+        subject: "Lorem ipsum dolor",
+        sentBy: "JD",
+        status: "In progress",
+        emails: 100,
+      },
+      {
+        date: "2020-02-02",
+        priority: "High",
+        subject: "Dolor sit amet",
+        sentBy: "JD",
+        status: "In progress",
+        emails: 50,
+      },
+      {
+        date: "2020-03-03",
+        priority: "Normal",
+        subject: "Consectetur adipiscing elit",
+        sentBy: "PS",
+        status: "Queued",
+        emails: 0,
+      },
+      {
+        date: "2020-04-04",
+        priority: "Low",
+        subject: "Sed do eiusmod tempor incididunt",
+        sentBy: "SJ",
+        status: "Failed",
+        emails: 200,
+      },
+      {
+        date: "2020-05-05",
+        priority: "Urgent",
+        subject: "Ut labore et dolore magna aliqua",
+        sentBy: "JD",
+        status: "Sent",
+        emails: 150,
+      },
+    ];
 
     return (
       <div className="max-h-[250px] overflow-auto">
@@ -662,27 +786,36 @@ export const Scroll: Story = {
               <TableRow key={i}>
                 <TableCell>{row.date}</TableCell>
                 <TableCell>
-                  <Badge variant={priorityVariants[row.priority]}>{row.priority}</Badge>
+                  <Badge variant={priorityVariants[row.priority]}>
+                    {row.priority}
+                  </Badge>
                 </TableCell>
                 <TableCell>{row.subject}</TableCell>
-                <TableCell><TableAvatar initials={row.sentBy} /></TableCell>
-                <TableCell><Badge variant={statusVariants[row.status]}>{row.status}</Badge></TableCell>
+                <TableCell>
+                  <TableAvatar initials={row.sentBy} />
+                </TableCell>
+                <TableCell>
+                  <Badge variant={statusVariants[row.status]}>
+                    {row.status}
+                  </Badge>
+                </TableCell>
                 <TableCell>{row.emails}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-    )
+    );
   },
-}
+};
 
 export const VirtualizedScroll: Story = {
-  name: 'Virtualized Scroll',
+  name: "Virtualized Scroll",
   parameters: {
     docs: {
       description: {
-        story: 'This is an example of a table with 5000 rows. For large datasets, consider implementing virtualization for better performance.',
+        story:
+          "This is an example of a table with 5000 rows. For large datasets, consider implementing virtualization for better performance.",
       },
     },
   },
@@ -697,7 +830,7 @@ export const VirtualizedScroll: Story = {
       col3: `Value ${i}-3`,
       col4: `Value ${i}-4`,
       col5: `Value ${i}-5`,
-    }))
+    }));
 
     return (
       <div className="max-h-[300px] overflow-auto">
@@ -730,17 +863,17 @@ export const VirtualizedScroll: Story = {
           </TableBody>
         </Table>
       </div>
-    )
+    );
   },
-}
+};
 
 export const DosAndDonts: Story = {
   name: "Do's and Don'ts",
-  tags: ['!dev'],
+  tags: ["!dev"],
   parameters: {
     docs: {
       description: {
-        story: 'Best practices for using the Table component.',
+        story: "Best practices for using the Table component.",
       },
     },
   },
@@ -761,17 +894,23 @@ export const DosAndDonts: Story = {
               <TableRow>
                 <TableCell>Apr 22</TableCell>
                 <TableCell>Limited time offer: AP Process</TableCell>
-                <TableCell><Badge variant="active">In progress</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="active">In progress</Badge>
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Apr 22</TableCell>
                 <TableCell>Action required: Update your AP</TableCell>
-                <TableCell><Badge variant="disabled">Queued</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="disabled">Queued</Badge>
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Apr 22</TableCell>
                 <TableCell>Limited time offer: AP Process</TableCell>
-                <TableCell><Badge variant="active">Sent</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="active">Sent</Badge>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -779,7 +918,9 @@ export const DosAndDonts: Story = {
             <span className="text-green-600 text-lg">✓</span>
             <span className="font-medium">Do</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">If there's a need to insert an icon, use for all columns.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            If there's a need to insert an icon, use for all columns.
+          </p>
         </div>
         <div className="flex-1">
           <Table>
@@ -794,17 +935,23 @@ export const DosAndDonts: Story = {
               <TableRow>
                 <TableCell>Apr 22</TableCell>
                 <TableCell>Limited time offer: AP Process</TableCell>
-                <TableCell><Badge variant="active">In progress</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="active">In progress</Badge>
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Apr 22</TableCell>
                 <TableCell>Action required: Update your AP</TableCell>
-                <TableCell><Badge variant="disabled">Queued</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="disabled">Queued</Badge>
+                </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Apr 22</TableCell>
                 <TableCell>Limited time offer: AP Process</TableCell>
-                <TableCell><Badge variant="active">Sent</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="active">Sent</Badge>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -812,7 +959,9 @@ export const DosAndDonts: Story = {
             <span className="text-red-600 text-lg">✗</span>
             <span className="font-medium">Don't</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">Don't use icons if not applied to all columns titles.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't use icons if not applied to all columns titles.
+          </p>
         </div>
       </div>
 
@@ -849,7 +998,9 @@ export const DosAndDonts: Story = {
             <span className="text-green-600 text-lg">✓</span>
             <span className="font-medium">Do</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">If there's a need, remove only the outer border.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            If there's a need, remove only the outer border.
+          </p>
         </div>
         <div className="flex-1">
           <Table withoutBorder>
@@ -882,16 +1033,21 @@ export const DosAndDonts: Story = {
             <span className="text-red-600 text-lg">✗</span>
             <span className="font-medium">Don't</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">Don't remove border between the rows.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't remove border between the rows.
+          </p>
         </div>
       </div>
     </div>
   ),
-}
+};
 
 // All available tags for testing
 const allEventTags = [
-  { label: "In Call Event:", value: "Call Begin, Start Dialing Agent, Agent Respond..." },
+  {
+    label: "In Call Event:",
+    value: "Call Begin, Start Dialing Agent, Agent Respond...",
+  },
   { label: "Whatsapp Event:", value: "message.Delivered" },
   { label: "Call Disposition:", value: "Answered, Voicemail" },
   { label: "After Call Event:", value: "Call ended" },
@@ -901,7 +1057,7 @@ const allEventTags = [
   { label: "Recording:", value: "Started, Stopped" },
   { label: "Transfer Event:", value: "Warm transfer, Cold transfer" },
   { label: "Hold Event:", value: "On hold, Resume" },
-]
+];
 
 // Interactive component for WithStackedTags story
 const StackedTagsTable = ({
@@ -909,11 +1065,11 @@ const StackedTagsTable = ({
   maxVisible,
   showActions,
 }: {
-  totalTags: number
-  maxVisible: number
-  showActions: boolean
+  totalTags: number;
+  maxVisible: number;
+  showActions: boolean;
 }) => {
-  const tags = allEventTags.slice(0, totalTags)
+  const tags = allEventTags.slice(0, totalTags);
 
   return (
     <Table>
@@ -923,7 +1079,9 @@ const StackedTagsTable = ({
           <TableHead>Events</TableHead>
           <TableHead className="w-[150px]">Created on</TableHead>
           <TableHead className="w-[100px]">Status</TableHead>
-          {showActions && <TableHead className="w-[100px] text-right">Actions</TableHead>}
+          {showActions && (
+            <TableHead className="w-[100px] text-right">Actions</TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -941,7 +1099,12 @@ const StackedTagsTable = ({
           {showActions && (
             <TableCell className="align-top">
               <div className="hidden sm:flex items-center justify-end gap-0.5">
-                <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Edit"
+                  className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
                 <Button
@@ -996,7 +1159,12 @@ const StackedTagsTable = ({
           {showActions && (
             <TableCell className="align-top">
               <div className="hidden sm:flex items-center justify-end gap-0.5">
-                <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Edit"
+                  className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
                 <Button
@@ -1038,7 +1206,10 @@ const StackedTagsTable = ({
           <TableCell className="align-top">
             <TagGroup
               tags={[
-                { label: "IVR Event:", value: "Menu selection, Input received" },
+                {
+                  label: "IVR Event:",
+                  value: "Menu selection, Input received",
+                },
               ]}
               maxVisible={maxVisible}
             />
@@ -1050,7 +1221,12 @@ const StackedTagsTable = ({
           {showActions && (
             <TableCell className="align-top">
               <div className="hidden sm:flex items-center justify-end gap-0.5">
-                <Button variant="ghost" size="icon" title="Edit" className="h-8 w-8 text-gray-500 hover:text-gray-700">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  title="Edit"
+                  className="h-8 w-8 text-gray-500 hover:text-gray-700"
+                >
                   <Edit className="h-4 w-4" />
                 </Button>
                 <Button
@@ -1087,37 +1263,35 @@ const StackedTagsTable = ({
         </TableRow>
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
 export const WithStackedTags: Story = {
-  name: 'With Stacked Tags',
+  name: "With Stacked Tags",
   parameters: {
     docs: {
       description: {
-        story: 'When a cell contains multiple tags, stack them vertically for better readability. Use a "+N more" indicator styled as a tag when there are too many items to display.',
+        story:
+          'When a cell contains multiple tags, stack them vertically for better readability. Use a "+N more" indicator styled as a tag when there are too many items to display.',
       },
     },
   },
   args: {
-    size: 'md',
+    size: "md",
   },
   render: () => (
-    <StackedTagsTable
-      totalTags={8}
-      maxVisible={2}
-      showActions={true}
-    />
+    <StackedTagsTable totalTags={8} maxVisible={2} showActions={true} />
   ),
-}
+};
 
 export const WebhookTable: Story = {
-  name: 'Webhook Table Example',
-  tags: ['!dev'],
+  name: "Webhook Table Example",
+  tags: ["!dev"],
   parameters: {
     docs: {
       description: {
-        story: 'Complete example showing how to compose Table, Badge, and Tag components together with inline/wrapped tags.',
+        story:
+          "Complete example showing how to compose Table, Badge, and Tag components together with inline/wrapped tags.",
       },
     },
   },
@@ -1139,7 +1313,9 @@ export const WebhookTable: Story = {
           </TableCell>
           <TableCell>
             <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag label="In Call Event:">
+                Start of call, Bridge, Call ended
+              </Tag>
               <Tag>After Call Event</Tag>
             </div>
           </TableCell>
@@ -1178,7 +1354,9 @@ export const WebhookTable: Story = {
           </TableCell>
           <TableCell>
             <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag label="In Call Event:">
+                Start of call, Bridge, Call ended
+              </Tag>
               <Tag>After Call Event</Tag>
             </div>
           </TableCell>
@@ -1217,7 +1395,9 @@ export const WebhookTable: Story = {
           </TableCell>
           <TableCell>
             <div className="flex flex-wrap gap-2">
-              <Tag label="In Call Event:">Start of call, Bridge, Call ended</Tag>
+              <Tag label="In Call Event:">
+                Start of call, Bridge, Call ended
+              </Tag>
               <Tag>After Call Event</Tag>
             </div>
           </TableCell>
@@ -1253,4 +1433,4 @@ export const WebhookTable: Story = {
       </TableBody>
     </Table>
   ),
-}
+};

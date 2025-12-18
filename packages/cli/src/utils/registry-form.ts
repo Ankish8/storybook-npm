@@ -294,10 +294,10 @@ export function getFormRegistry(prefix: string = ''): Registry {
       files: [
         {
           name: 'input.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Input variants for different visual states
@@ -307,15 +307,17 @@ const inputVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 /**
  * A flexible input component for text entry with state variants.
@@ -328,7 +330,8 @@ const inputVariants = cva(
  * \`\`\`
  */
 export interface InputProps
-  extends Omit<React.ComponentProps<"input">, "size">,
+  extends
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof inputVariants> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -340,12 +343,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = "Input";
 
-export { Input, inputVariants }
+export { Input, inputVariants };
 `, prefix),
         },
       ],
@@ -363,12 +366,12 @@ export { Input, inputVariants }
       files: [
         {
           name: 'select.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as SelectPrimitive from "@radix-ui/react-select"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, ChevronDown, ChevronUp } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * SelectTrigger variants matching TextField styling
@@ -378,24 +381,27 @@ const selectTriggerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
-const Select = SelectPrimitive.Root
+const Select = SelectPrimitive.Root;
 
-const SelectGroup = SelectPrimitive.Group
+const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = SelectPrimitive.Value
+const SelectValue = SelectPrimitive.Value;
 
 export interface SelectTriggerProps
-  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
+  extends
+    React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
     VariantProps<typeof selectTriggerVariants> {}
 
 const SelectTrigger = React.forwardRef<
@@ -412,8 +418,8 @@ const SelectTrigger = React.forwardRef<
       <ChevronDown className="size-4 text-[#717680] opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
-))
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+));
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
@@ -429,8 +435,8 @@ const SelectScrollUpButton = React.forwardRef<
   >
     <ChevronUp className="size-4 text-[#717680]" />
   </SelectPrimitive.ScrollUpButton>
-))
-SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName
+));
+SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 
 const SelectScrollDownButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
@@ -446,8 +452,9 @@ const SelectScrollDownButton = React.forwardRef<
   >
     <ChevronDown className="size-4 text-[#717680]" />
   </SelectPrimitive.ScrollDownButton>
-))
-SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName
+));
+SelectScrollDownButton.displayName =
+  SelectPrimitive.ScrollDownButton.displayName;
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
@@ -483,8 +490,8 @@ const SelectContent = React.forwardRef<
       <SelectScrollDownButton />
     </SelectPrimitive.Content>
   </SelectPrimitive.Portal>
-))
-SelectContent.displayName = SelectPrimitive.Content.displayName
+));
+SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
@@ -495,8 +502,8 @@ const SelectLabel = React.forwardRef<
     className={cn("px-4 py-1.5 text-xs font-medium text-[#717680]", className)}
     {...props}
   />
-))
-SelectLabel.displayName = SelectPrimitive.Label.displayName
+));
+SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
@@ -519,8 +526,8 @@ const SelectItem = React.forwardRef<
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
   </SelectPrimitive.Item>
-))
-SelectItem.displayName = SelectPrimitive.Item.displayName
+));
+SelectItem.displayName = SelectPrimitive.Item.displayName;
 
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
@@ -531,8 +538,8 @@ const SelectSeparator = React.forwardRef<
     className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
     {...props}
   />
-))
-SelectSeparator.displayName = SelectPrimitive.Separator.displayName
+));
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
 export {
   Select,
@@ -546,7 +553,7 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
   selectTriggerVariants,
-}
+};
 `, prefix),
         },
       ],
@@ -564,12 +571,12 @@ export {
       files: [
         {
           name: 'checkbox.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, Minus } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, Minus } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Checkbox box variants (the outer container)
@@ -588,7 +595,7 @@ const checkboxVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Icon size variants based on checkbox size
@@ -604,7 +611,7 @@ const iconSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 /**
  * Label text size variants
@@ -620,9 +627,9 @@ const labelSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
-export type CheckedState = boolean | "indeterminate"
+export type CheckedState = boolean | "indeterminate";
 
 /**
  * A tri-state checkbox component with label support. Built on Radix UI Checkbox primitive.
@@ -637,18 +644,22 @@ export type CheckedState = boolean | "indeterminate"
  * \`\`\`
  */
 export interface CheckboxProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "onChange">,
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
+      "onChange"
+    >,
     VariantProps<typeof checkboxVariants> {
   /** Optional label text */
-  label?: string
+  label?: string;
   /** Position of the label */
-  labelPosition?: "left" | "right"
+  labelPosition?: "left" | "right";
   /** Class name applied to the checkbox element */
-  checkboxClassName?: string
+  checkboxClassName?: string;
   /** Class name applied to the label element */
-  labelClassName?: string
+  labelClassName?: string;
   /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
-  separateLabel?: boolean
+  separateLabel?: boolean;
 }
 
 const Checkbox = React.forwardRef<
@@ -691,7 +702,7 @@ const Checkbox = React.forwardRef<
           )}
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
-    )
+    );
 
     if (label) {
       // separateLabel mode: use htmlFor/id association instead of wrapping
@@ -726,33 +737,52 @@ const Checkbox = React.forwardRef<
               </label>
             )}
           </div>
-        )
+        );
       }
 
       // Default: wrapping label
       return (
-        <label className={cn("inline-flex items-center gap-2 cursor-pointer", disabled && "cursor-not-allowed")}>
+        <label
+          className={cn(
+            "inline-flex items-center gap-2 cursor-pointer",
+            disabled && "cursor-not-allowed"
+          )}
+        >
           {labelPosition === "left" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50",
+                labelClassName
+              )}
+            >
               {label}
             </span>
           )}
           {checkbox}
           {labelPosition === "right" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50",
+                labelClassName
+              )}
+            >
               {label}
             </span>
           )}
         </label>
-      )
+      );
     }
 
-    return checkbox
+    return checkbox;
   }
-)
-Checkbox.displayName = "Checkbox"
+);
+Checkbox.displayName = "Checkbox";
 
-export { Checkbox, checkboxVariants }
+export { Checkbox, checkboxVariants };
 `, prefix),
         },
       ],
@@ -769,11 +799,11 @@ export { Checkbox, checkboxVariants }
       files: [
         {
           name: 'switch.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import * as SwitchPrimitives from "@radix-ui/react-switch"
-import { cva, type VariantProps } from "class-variance-authority"
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as SwitchPrimitives from "@radix-ui/react-switch";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * Switch track variants (the outer container)
@@ -792,7 +822,7 @@ const switchVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Switch thumb variants (the sliding circle)
@@ -811,7 +841,7 @@ const switchThumbVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Label text size variants
@@ -827,7 +857,7 @@ const labelSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 /**
  * A switch/toggle component for boolean inputs with on/off states
@@ -840,12 +870,16 @@ const labelSizeVariants = cva("", {
  * \`\`\`
  */
 export interface SwitchProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>, "onChange">,
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
+      "onChange"
+    >,
     VariantProps<typeof switchVariants> {
   /** Optional label text */
-  label?: string
+  label?: string;
   /** Position of the label */
-  labelPosition?: "left" | "right"
+  labelPosition?: "left" | "right";
 }
 
 const Switch = React.forwardRef<
@@ -853,14 +887,7 @@ const Switch = React.forwardRef<
   SwitchProps
 >(
   (
-    {
-      className,
-      size,
-      label,
-      labelPosition = "right",
-      disabled,
-      ...props
-    },
+    { className, size, label, labelPosition = "right", disabled, ...props },
     ref
   ) => {
     const switchElement = (
@@ -872,43 +899,49 @@ const Switch = React.forwardRef<
       >
         <SwitchPrimitives.Thumb className={cn(switchThumbVariants({ size }))} />
       </SwitchPrimitives.Root>
-    )
+    );
 
     if (label) {
       return (
-        <label className={cn(
-          "inline-flex items-center gap-2 cursor-pointer",
-          disabled && "cursor-not-allowed"
-        )}>
+        <label
+          className={cn(
+            "inline-flex items-center gap-2 cursor-pointer",
+            disabled && "cursor-not-allowed"
+          )}
+        >
           {labelPosition === "left" && (
-            <span className={cn(
-              labelSizeVariants({ size }),
-              "text-[#181D27]",
-              disabled && "opacity-50"
-            )}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50"
+              )}
+            >
               {label}
             </span>
           )}
           {switchElement}
           {labelPosition === "right" && (
-            <span className={cn(
-              labelSizeVariants({ size }),
-              "text-[#181D27]",
-              disabled && "opacity-50"
-            )}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50"
+              )}
+            >
               {label}
             </span>
           )}
         </label>
-      )
+      );
     }
 
-    return switchElement
+    return switchElement;
   }
-)
-Switch.displayName = "Switch"
+);
+Switch.displayName = "Switch";
 
-export { Switch, switchVariants }
+export { Switch, switchVariants };
 `, prefix),
         },
       ],
@@ -925,11 +958,11 @@ export { Switch, switchVariants }
       files: [
         {
           name: 'text-field.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * TextField container variants for when icons/prefix/suffix are present
@@ -939,8 +972,10 @@ const textFieldContainerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
@@ -952,7 +987,7 @@ const textFieldContainerVariants = cva(
       disabled: false,
     },
   }
-)
+);
 
 /**
  * TextField input variants (standalone without container)
@@ -962,15 +997,17 @@ const textFieldInputVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 /**
  * A comprehensive text field component with label, icons, validation states, and more.
@@ -983,34 +1020,35 @@ const textFieldInputVariants = cva(
  * \`\`\`
  */
 export interface TextFieldProps
-  extends Omit<React.ComponentProps<"input">, "size">,
+  extends
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
   /** Label text displayed above the input */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the input */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Text prefix inside input (e.g., "https://") */
-  prefix?: string
+  prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
-  suffix?: string
+  suffix?: string;
   /** Shows character count when maxLength is set */
-  showCount?: boolean
+  showCount?: boolean;
   /** Shows loading spinner inside input */
-  loading?: boolean
+  loading?: boolean;
   /** Additional class for the wrapper container */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for the label */
-  labelClassName?: string
+  labelClassName?: string;
   /** Additional class for the input container (includes prefix/suffix/icons) */
-  inputContainerClassName?: string
+  inputContainerClassName?: string;
 }
 
 const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
@@ -1042,37 +1080,39 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     ref
   ) => {
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(defaultValue ?? '')
+    const [internalValue, setInternalValue] = React.useState(
+      defaultValue ?? ""
+    );
 
     // Determine if controlled
-    const isControlled = value !== undefined
-    const currentValue = isControlled ? value : internalValue
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
 
     // Derive state from props
-    const derivedState = error ? 'error' : (state ?? 'default')
+    const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
-        setInternalValue(e.target.value)
+        setInternalValue(e.target.value);
       }
-      onChange?.(e)
-    }
+      onChange?.(e);
+    };
 
     // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading;
 
     // Character count
-    const charCount = String(currentValue).length
+    const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const inputId = id || generatedId
-    const helperId = \`\${inputId}-helper\`
-    const errorId = \`\${inputId}-error\`
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
+    const helperId = \`\${inputId}-helper\`;
+    const errorId = \`\${inputId}-error\`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Render the input element
     const inputElement = (
@@ -1093,7 +1133,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         aria-describedby={ariaDescribedBy}
         {...props}
       />
-    )
+    );
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -1112,17 +1152,38 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {hasAddons ? (
           <div
             className={cn(
-              textFieldContainerVariants({ state: derivedState, disabled: disabled || loading }),
+              textFieldContainerVariants({
+                state: derivedState,
+                disabled: disabled || loading,
+              }),
               "h-10 px-4",
               inputContainerClassName
             )}
           >
-            {prefix && <span className="text-sm text-[#717680] mr-2 select-none">{prefix}</span>}
-            {leftIcon && <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
+            {prefix && (
+              <span className="text-sm text-[#717680] mr-2 select-none">
+                {prefix}
+              </span>
+            )}
+            {leftIcon && (
+              <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+                {leftIcon}
+              </span>
+            )}
             {inputElement}
-            {loading && <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />}
-            {!loading && rightIcon && <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
-            {suffix && <span className="text-sm text-[#717680] ml-2 select-none">{suffix}</span>}
+            {loading && (
+              <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />
+            )}
+            {!loading && rightIcon && (
+              <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+                {rightIcon}
+              </span>
+            )}
+            {suffix && (
+              <span className="text-sm text-[#717680] ml-2 select-none">
+                {suffix}
+              </span>
+            )}
           </div>
         ) : (
           inputElement
@@ -1155,12 +1216,12 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-TextField.displayName = "TextField"
+);
+TextField.displayName = "TextField";
 
-export { TextField, textFieldContainerVariants, textFieldInputVariants }
+export { TextField, textFieldContainerVariants, textFieldInputVariants };
 `, prefix),
         },
       ],
@@ -1177,10 +1238,10 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants }
       files: [
         {
           name: 'select-field.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 import {
   Select,
   SelectContent,
@@ -1189,56 +1250,56 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./select"
+} from "./select";
 
 export interface SelectOption {
   /** The value of the option */
-  value: string
+  value: string;
   /** The display label of the option */
-  label: string
+  label: string;
   /** Whether the option is disabled */
-  disabled?: boolean
+  disabled?: boolean;
   /** Group name for grouping options */
-  group?: string
+  group?: string;
 }
 
 export interface SelectFieldProps {
   /** Label text displayed above the select */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the select */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Disabled state */
-  disabled?: boolean
+  disabled?: boolean;
   /** Loading state with spinner */
-  loading?: boolean
+  loading?: boolean;
   /** Placeholder text when no value selected */
-  placeholder?: string
+  placeholder?: string;
   /** Currently selected value (controlled) */
-  value?: string
+  value?: string;
   /** Default value (uncontrolled) */
-  defaultValue?: string
+  defaultValue?: string;
   /** Callback when value changes */
-  onValueChange?: (value: string) => void
+  onValueChange?: (value: string) => void;
   /** Options to display */
-  options: SelectOption[]
+  options: SelectOption[];
   /** Enable search/filter functionality */
-  searchable?: boolean
+  searchable?: boolean;
   /** Search placeholder text */
-  searchPlaceholder?: string
+  searchPlaceholder?: string;
   /** Additional class for wrapper */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for trigger */
-  triggerClassName?: string
+  triggerClassName?: string;
   /** Additional class for label */
-  labelClassName?: string
+  labelClassName?: string;
   /** ID for the select */
-  id?: string
+  id?: string;
   /** Name attribute for form submission */
-  name?: string
+  name?: string;
 }
 
 /**
@@ -1283,59 +1344,59 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     ref
   ) => {
     // Internal state for search
-    const [searchQuery, setSearchQuery] = React.useState("")
+    const [searchQuery, setSearchQuery] = React.useState("");
 
     // Derive state from props
-    const derivedState = error ? "error" : "default"
+    const derivedState = error ? "error" : "default";
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const selectId = id || generatedId
-    const helperId = \`\${selectId}-helper\`
-    const errorId = \`\${selectId}-error\`
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const helperId = \`\${selectId}-helper\`;
+    const errorId = \`\${selectId}-error\`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Group options by group property
     const groupedOptions = React.useMemo(() => {
-      const groups: Record<string, SelectOption[]> = {}
-      const ungrouped: SelectOption[] = []
+      const groups: Record<string, SelectOption[]> = {};
+      const ungrouped: SelectOption[] = [];
 
       options.forEach((option) => {
         // Filter by search query if searchable
         if (searchable && searchQuery) {
           if (!option.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return
+            return;
           }
         }
 
         if (option.group) {
           if (!groups[option.group]) {
-            groups[option.group] = []
+            groups[option.group] = [];
           }
-          groups[option.group].push(option)
+          groups[option.group].push(option);
         } else {
-          ungrouped.push(option)
+          ungrouped.push(option);
         }
-      })
+      });
 
-      return { groups, ungrouped }
-    }, [options, searchable, searchQuery])
+      return { groups, ungrouped };
+    }, [options, searchable, searchQuery]);
 
-    const hasGroups = Object.keys(groupedOptions.groups).length > 0
+    const hasGroups = Object.keys(groupedOptions.groups).length > 0;
 
     // Handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
-    }
+      setSearchQuery(e.target.value);
+    };
 
     // Reset search when dropdown closes
     const handleOpenChange = (open: boolean) => {
       if (!open) {
-        setSearchQuery("")
+        setSearchQuery("");
       }
-    }
+    };
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -1363,10 +1424,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
             ref={ref}
             id={selectId}
             state={derivedState}
-            className={cn(
-              loading && "pr-10",
-              triggerClassName
-            )}
+            className={cn(loading && "pr-10", triggerClassName)}
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}
           >
@@ -1405,20 +1463,22 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
 
             {/* Grouped options */}
             {hasGroups &&
-              Object.entries(groupedOptions.groups).map(([groupName, groupOptions]) => (
-                <SelectGroup key={groupName}>
-                  <SelectLabel>{groupName}</SelectLabel>
-                  {groupOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      disabled={option.disabled}
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              ))}
+              Object.entries(groupedOptions.groups).map(
+                ([groupName, groupOptions]) => (
+                  <SelectGroup key={groupName}>
+                    <SelectLabel>{groupName}</SelectLabel>
+                    {groupOptions.map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )
+              )}
 
             {/* No results message */}
             {searchable &&
@@ -1447,12 +1507,12 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-SelectField.displayName = "SelectField"
+);
+SelectField.displayName = "SelectField";
 
-export { SelectField }
+export { SelectField };
 `, prefix),
         },
       ],
@@ -1469,11 +1529,11 @@ export { SelectField }
       files: [
         {
           name: 'multi-select.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, ChevronDown, X, Loader2 } from "lucide-react"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, ChevronDown, X, Loader2 } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
 /**
  * MultiSelect trigger variants matching TextField styling
@@ -1483,64 +1543,68 @@ const multiSelectTriggerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 export interface MultiSelectOption {
   /** The value of the option */
-  value: string
+  value: string;
   /** The display label of the option */
-  label: string
+  label: string;
   /** Whether the option is disabled */
-  disabled?: boolean
+  disabled?: boolean;
 }
 
-export interface MultiSelectProps extends VariantProps<typeof multiSelectTriggerVariants> {
+export interface MultiSelectProps extends VariantProps<
+  typeof multiSelectTriggerVariants
+> {
   /** Label text displayed above the select */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the select */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Disabled state */
-  disabled?: boolean
+  disabled?: boolean;
   /** Loading state with spinner */
-  loading?: boolean
+  loading?: boolean;
   /** Placeholder text when no value selected */
-  placeholder?: string
+  placeholder?: string;
   /** Currently selected values (controlled) */
-  value?: string[]
+  value?: string[];
   /** Default values (uncontrolled) */
-  defaultValue?: string[]
+  defaultValue?: string[];
   /** Callback when values change */
-  onValueChange?: (value: string[]) => void
+  onValueChange?: (value: string[]) => void;
   /** Options to display */
-  options: MultiSelectOption[]
+  options: MultiSelectOption[];
   /** Enable search/filter functionality */
-  searchable?: boolean
+  searchable?: boolean;
   /** Search placeholder text */
-  searchPlaceholder?: string
+  searchPlaceholder?: string;
   /** Maximum selections allowed */
-  maxSelections?: number
+  maxSelections?: number;
   /** Additional class for wrapper */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for trigger */
-  triggerClassName?: string
+  triggerClassName?: string;
   /** Additional class for label */
-  labelClassName?: string
+  labelClassName?: string;
   /** ID for the select */
-  id?: string
+  id?: string;
   /** Name attribute for form submission */
-  name?: string
+  name?: string;
 }
 
 /**
@@ -1587,104 +1651,109 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     ref
   ) => {
     // Internal state for selected values (uncontrolled mode)
-    const [internalValue, setInternalValue] = React.useState<string[]>(defaultValue)
+    const [internalValue, setInternalValue] =
+      React.useState<string[]>(defaultValue);
     // Dropdown open state
-    const [isOpen, setIsOpen] = React.useState(false)
+    const [isOpen, setIsOpen] = React.useState(false);
     // Search query
-    const [searchQuery, setSearchQuery] = React.useState("")
+    const [searchQuery, setSearchQuery] = React.useState("");
 
     // Container ref for click outside detection
-    const containerRef = React.useRef<HTMLDivElement>(null)
+    const containerRef = React.useRef<HTMLDivElement>(null);
 
     // Determine if controlled
-    const isControlled = value !== undefined
-    const selectedValues = isControlled ? value : internalValue
+    const isControlled = value !== undefined;
+    const selectedValues = isControlled ? value : internalValue;
 
     // Derive state from props
-    const derivedState = error ? "error" : (state ?? "default")
+    const derivedState = error ? "error" : (state ?? "default");
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const selectId = id || generatedId
-    const helperId = \`\${selectId}-helper\`
-    const errorId = \`\${selectId}-error\`
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const helperId = \`\${selectId}-helper\`;
+    const errorId = \`\${selectId}-error\`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Filter options by search query
     const filteredOptions = React.useMemo(() => {
-      if (!searchable || !searchQuery) return options
+      if (!searchable || !searchQuery) return options;
       return options.filter((option) =>
         option.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }, [options, searchable, searchQuery])
+      );
+    }, [options, searchable, searchQuery]);
 
     // Get selected option labels
     const selectedLabels = React.useMemo(() => {
       return selectedValues
         .map((v) => options.find((o) => o.value === v)?.label)
-        .filter(Boolean) as string[]
-    }, [selectedValues, options])
+        .filter(Boolean) as string[];
+    }, [selectedValues, options]);
 
     // Handle toggle selection
     const toggleOption = (optionValue: string) => {
       const newValues = selectedValues.includes(optionValue)
         ? selectedValues.filter((v) => v !== optionValue)
         : maxSelections && selectedValues.length >= maxSelections
-        ? selectedValues
-        : [...selectedValues, optionValue]
+          ? selectedValues
+          : [...selectedValues, optionValue];
 
       if (!isControlled) {
-        setInternalValue(newValues)
+        setInternalValue(newValues);
       }
-      onValueChange?.(newValues)
-    }
+      onValueChange?.(newValues);
+    };
 
     // Handle remove tag
     const removeValue = (valueToRemove: string, e: React.MouseEvent) => {
-      e.stopPropagation()
-      const newValues = selectedValues.filter((v) => v !== valueToRemove)
+      e.stopPropagation();
+      const newValues = selectedValues.filter((v) => v !== valueToRemove);
       if (!isControlled) {
-        setInternalValue(newValues)
+        setInternalValue(newValues);
       }
-      onValueChange?.(newValues)
-    }
+      onValueChange?.(newValues);
+    };
 
     // Handle clear all
     const clearAll = (e: React.MouseEvent) => {
-      e.stopPropagation()
+      e.stopPropagation();
       if (!isControlled) {
-        setInternalValue([])
+        setInternalValue([]);
       }
-      onValueChange?.([])
-    }
+      onValueChange?.([]);
+    };
 
     // Close dropdown when clicking outside
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-          setIsOpen(false)
-          setSearchQuery("")
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setIsOpen(false);
+          setSearchQuery("");
         }
-      }
+      };
 
-      document.addEventListener("mousedown", handleClickOutside)
-      return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
-        setIsOpen(false)
-        setSearchQuery("")
+        setIsOpen(false);
+        setSearchQuery("");
       } else if (e.key === "Enter" || e.key === " ") {
         if (!isOpen) {
-          e.preventDefault()
-          setIsOpen(true)
+          e.preventDefault();
+          setIsOpen(true);
         }
       }
-    }
+    };
 
     return (
       <div
@@ -1736,9 +1805,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                     tabIndex={0}
                     onClick={(e) => removeValue(selectedValues[index], e)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        removeValue(selectedValues[index], e as unknown as React.MouseEvent)
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        removeValue(
+                          selectedValues[index],
+                          e as unknown as React.MouseEvent
+                        );
                       }
                     }}
                     className="cursor-pointer hover:text-[#F04438] focus:outline-none"
@@ -1757,9 +1829,9 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                 tabIndex={0}
                 onClick={clearAll}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    clearAll(e as unknown as React.MouseEvent)
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    clearAll(e as unknown as React.MouseEvent);
                   }
                 }}
                 className="p-0.5 cursor-pointer hover:text-[#F04438] focus:outline-none"
@@ -1813,10 +1885,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                 </div>
               ) : (
                 filteredOptions.map((option) => {
-                  const isSelected = selectedValues.includes(option.value)
+                  const isSelected = selectedValues.includes(option.value);
                   const isDisabled =
                     option.disabled ||
-                    (!isSelected && maxSelections !== undefined && maxSelections > 0 && selectedValues.length >= maxSelections)
+                    (!isSelected &&
+                      maxSelections !== undefined &&
+                      maxSelections > 0 &&
+                      selectedValues.length >= maxSelections);
 
                   return (
                     <button
@@ -1834,11 +1909,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       )}
                     >
                       <span className="absolute right-2 flex size-4 items-center justify-center">
-                        {isSelected && <Check className="size-4 text-[#2BBCCA]" />}
+                        {isSelected && (
+                          <Check className="size-4 text-[#2BBCCA]" />
+                        )}
                       </span>
                       {option.label}
                     </button>
-                  )
+                  );
                 })
               )}
             </div>
@@ -1853,9 +1930,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         )}
 
         {/* Hidden input for form submission */}
-        {name && selectedValues.map((v) => (
-          <input key={v} type="hidden" name={name} value={v} />
-        ))}
+        {name &&
+          selectedValues.map((v) => (
+            <input key={v} type="hidden" name={name} value={v} />
+          ))}
 
         {/* Helper text / Error message */}
         {(error || helperText) && (
@@ -1872,12 +1950,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-MultiSelect.displayName = "MultiSelect"
+);
+MultiSelect.displayName = "MultiSelect";
 
-export { MultiSelect, multiSelectTriggerVariants }
+export { MultiSelect, multiSelectTriggerVariants };
 `, prefix),
         },
       ],

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { Meta, StoryObj } from '@storybook/react'
+import { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react";
 import {
   MoreVertical,
   Edit,
@@ -14,7 +14,7 @@ import {
   MessageSquare,
   PlusCircle,
   Plus,
-} from 'lucide-react'
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -29,11 +29,11 @@ import {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-} from './dropdown-menu'
-import { Button } from './button'
+} from "./dropdown-menu";
+import { Button } from "./button";
 
 const meta: Meta<typeof DropdownMenu> = {
-  title: 'Components/Dropdown Menu',
+  title: "Components/Dropdown Menu",
   component: DropdownMenu,
   decorators: [
     (Story) => (
@@ -43,7 +43,7 @@ const meta: Meta<typeof DropdownMenu> = {
     ),
   ],
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
         component: `
@@ -133,11 +133,11 @@ import {
       },
     },
   },
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Overview: Story = {
   render: () => (
@@ -164,14 +164,15 @@ export const Overview: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
-}
+};
 
 export const IconTrigger: Story = {
-  name: 'Icon Trigger (Three Dots)',
+  name: "Icon Trigger (Three Dots)",
   parameters: {
     docs: {
       description: {
-        story: 'Common pattern for action menus in tables and lists using the three-dot (kebab) icon.',
+        story:
+          "Common pattern for action menus in tables and lists using the three-dot (kebab) icon.",
       },
     },
   },
@@ -199,14 +200,14 @@ export const IconTrigger: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
-}
+};
 
 export const WithShortcuts: Story = {
-  name: 'With Keyboard Shortcuts',
+  name: "With Keyboard Shortcuts",
   parameters: {
     docs: {
       description: {
-        story: 'Display keyboard shortcuts alongside menu items.',
+        story: "Display keyboard shortcuts alongside menu items.",
       },
     },
   },
@@ -235,10 +236,10 @@ export const WithShortcuts: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
-}
+};
 
 export const DisabledItems: Story = {
-  name: 'Disabled Items',
+  name: "Disabled Items",
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -246,28 +247,27 @@ export const DisabledItems: Story = {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          Archive (disabled)
-        </DropdownMenuItem>
+        <DropdownMenuItem disabled>Archive (disabled)</DropdownMenuItem>
         <DropdownMenuItem>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   ),
-}
+};
 
 export const Checkboxes: Story = {
-  name: 'With Checkboxes',
+  name: "With Checkboxes",
   parameters: {
     docs: {
       description: {
-        story: 'Use checkbox items to allow users to toggle multiple options on or off.',
+        story:
+          "Use checkbox items to allow users to toggle multiple options on or off.",
       },
     },
   },
   render: function CheckboxesExample() {
-    const [showStatusBar, setShowStatusBar] = useState(true)
-    const [showActivityBar, setShowActivityBar] = useState(false)
-    const [showPanel, setShowPanel] = useState(false)
+    const [showStatusBar, setShowStatusBar] = useState(true);
+    const [showActivityBar, setShowActivityBar] = useState(false);
+    const [showPanel, setShowPanel] = useState(false);
 
     return (
       <DropdownMenu>
@@ -298,21 +298,22 @@ export const Checkboxes: Story = {
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
+    );
   },
-}
+};
 
 export const RadioGroups: Story = {
-  name: 'With Radio Group',
+  name: "With Radio Group",
   parameters: {
     docs: {
       description: {
-        story: 'Use radio groups when only one option can be selected at a time.',
+        story:
+          "Use radio groups when only one option can be selected at a time.",
       },
     },
   },
   render: function RadioGroupsExample() {
-    const [position, setPosition] = useState('bottom')
+    const [position, setPosition] = useState("bottom");
 
     return (
       <DropdownMenu>
@@ -329,16 +330,16 @@ export const RadioGroups: Story = {
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
+    );
   },
-}
+};
 
 export const Submenus: Story = {
-  name: 'With Submenus',
+  name: "With Submenus",
   parameters: {
     docs: {
       description: {
-        story: 'Nested menus for organizing complex menu hierarchies.',
+        story: "Nested menus for organizing complex menu hierarchies.",
       },
     },
   },
@@ -384,4 +385,4 @@ export const Submenus: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
-}
+};

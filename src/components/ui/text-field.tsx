@@ -1,8 +1,8 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2 } from "lucide-react"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 /**
  * TextField container variants for when icons/prefix/suffix are present
@@ -12,8 +12,10 @@ const textFieldContainerVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
@@ -25,7 +27,7 @@ const textFieldContainerVariants = cva(
       disabled: false,
     },
   }
-)
+);
 
 /**
  * TextField input variants (standalone without container)
@@ -35,15 +37,17 @@ const textFieldInputVariants = cva(
   {
     variants: {
       state: {
-        default: "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error: "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default:
+          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
       state: "default",
     },
   }
-)
+);
 
 /**
  * A comprehensive text field component with label, icons, validation states, and more.
@@ -56,34 +60,35 @@ const textFieldInputVariants = cva(
  * ```
  */
 export interface TextFieldProps
-  extends Omit<React.ComponentProps<"input">, "size">,
+  extends
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
   /** Label text displayed above the input */
-  label?: string
+  label?: string;
   /** Shows red asterisk next to label when true */
-  required?: boolean
+  required?: boolean;
   /** Helper text displayed below the input */
-  helperText?: string
+  helperText?: string;
   /** Error message - shows error state with red styling */
-  error?: string
+  error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode
+  rightIcon?: React.ReactNode;
   /** Text prefix inside input (e.g., "https://") */
-  prefix?: string
+  prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
-  suffix?: string
+  suffix?: string;
   /** Shows character count when maxLength is set */
-  showCount?: boolean
+  showCount?: boolean;
   /** Shows loading spinner inside input */
-  loading?: boolean
+  loading?: boolean;
   /** Additional class for the wrapper container */
-  wrapperClassName?: string
+  wrapperClassName?: string;
   /** Additional class for the label */
-  labelClassName?: string
+  labelClassName?: string;
   /** Additional class for the input container (includes prefix/suffix/icons) */
-  inputContainerClassName?: string
+  inputContainerClassName?: string;
 }
 
 const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
@@ -115,37 +120,39 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     ref
   ) => {
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(defaultValue ?? '')
+    const [internalValue, setInternalValue] = React.useState(
+      defaultValue ?? ""
+    );
 
     // Determine if controlled
-    const isControlled = value !== undefined
-    const currentValue = isControlled ? value : internalValue
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
 
     // Derive state from props
-    const derivedState = error ? 'error' : (state ?? 'default')
+    const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
-        setInternalValue(e.target.value)
+        setInternalValue(e.target.value);
       }
-      onChange?.(e)
-    }
+      onChange?.(e);
+    };
 
     // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading;
 
     // Character count
-    const charCount = String(currentValue).length
+    const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId()
-    const inputId = id || generatedId
-    const helperId = `${inputId}-helper`
-    const errorId = `${inputId}-error`
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
+    const helperId = `${inputId}-helper`;
+    const errorId = `${inputId}-error`;
 
     // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Render the input element
     const inputElement = (
@@ -166,7 +173,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         aria-describedby={ariaDescribedBy}
         {...props}
       />
-    )
+    );
 
     return (
       <div className={cn("flex flex-col gap-1", wrapperClassName)}>
@@ -185,17 +192,38 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {hasAddons ? (
           <div
             className={cn(
-              textFieldContainerVariants({ state: derivedState, disabled: disabled || loading }),
+              textFieldContainerVariants({
+                state: derivedState,
+                disabled: disabled || loading,
+              }),
               "h-10 px-4",
               inputContainerClassName
             )}
           >
-            {prefix && <span className="text-sm text-[#717680] mr-2 select-none">{prefix}</span>}
-            {leftIcon && <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{leftIcon}</span>}
+            {prefix && (
+              <span className="text-sm text-[#717680] mr-2 select-none">
+                {prefix}
+              </span>
+            )}
+            {leftIcon && (
+              <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+                {leftIcon}
+              </span>
+            )}
             {inputElement}
-            {loading && <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />}
-            {!loading && rightIcon && <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">{rightIcon}</span>}
-            {suffix && <span className="text-sm text-[#717680] ml-2 select-none">{suffix}</span>}
+            {loading && (
+              <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />
+            )}
+            {!loading && rightIcon && (
+              <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+                {rightIcon}
+              </span>
+            )}
+            {suffix && (
+              <span className="text-sm text-[#717680] ml-2 select-none">
+                {suffix}
+              </span>
+            )}
           </div>
         ) : (
           inputElement
@@ -228,9 +256,9 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           </div>
         )}
       </div>
-    )
+    );
   }
-)
-TextField.displayName = "TextField"
+);
+TextField.displayName = "TextField";
 
-export { TextField, textFieldContainerVariants, textFieldInputVariants }
+export { TextField, textFieldContainerVariants, textFieldInputVariants };

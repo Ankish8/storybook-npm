@@ -1,9 +1,9 @@
-import * as React from "react"
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Check, Minus } from "lucide-react"
+import * as React from "react";
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, Minus } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 /**
  * Checkbox box variants (the outer container)
@@ -22,7 +22,7 @@ const checkboxVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 /**
  * Icon size variants based on checkbox size
@@ -38,7 +38,7 @@ const iconSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 /**
  * Label text size variants
@@ -54,9 +54,9 @@ const labelSizeVariants = cva("", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
-export type CheckedState = boolean | "indeterminate"
+export type CheckedState = boolean | "indeterminate";
 
 /**
  * A tri-state checkbox component with label support. Built on Radix UI Checkbox primitive.
@@ -71,18 +71,22 @@ export type CheckedState = boolean | "indeterminate"
  * ```
  */
 export interface CheckboxProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>, "onChange">,
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
+      "onChange"
+    >,
     VariantProps<typeof checkboxVariants> {
   /** Optional label text */
-  label?: string
+  label?: string;
   /** Position of the label */
-  labelPosition?: "left" | "right"
+  labelPosition?: "left" | "right";
   /** Class name applied to the checkbox element */
-  checkboxClassName?: string
+  checkboxClassName?: string;
   /** Class name applied to the label element */
-  labelClassName?: string
+  labelClassName?: string;
   /** If true, uses separate labels with htmlFor/id association instead of wrapping the input. Requires id prop. */
-  separateLabel?: boolean
+  separateLabel?: boolean;
 }
 
 const Checkbox = React.forwardRef<
@@ -125,7 +129,7 @@ const Checkbox = React.forwardRef<
           )}
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
-    )
+    );
 
     if (label) {
       // separateLabel mode: use htmlFor/id association instead of wrapping
@@ -160,30 +164,49 @@ const Checkbox = React.forwardRef<
               </label>
             )}
           </div>
-        )
+        );
       }
 
       // Default: wrapping label
       return (
-        <label className={cn("inline-flex items-center gap-2 cursor-pointer", disabled && "cursor-not-allowed")}>
+        <label
+          className={cn(
+            "inline-flex items-center gap-2 cursor-pointer",
+            disabled && "cursor-not-allowed"
+          )}
+        >
           {labelPosition === "left" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50",
+                labelClassName
+              )}
+            >
               {label}
             </span>
           )}
           {checkbox}
           {labelPosition === "right" && (
-            <span className={cn(labelSizeVariants({ size }), "text-[#181D27]", disabled && "opacity-50", labelClassName)}>
+            <span
+              className={cn(
+                labelSizeVariants({ size }),
+                "text-[#181D27]",
+                disabled && "opacity-50",
+                labelClassName
+              )}
+            >
               {label}
             </span>
           )}
         </label>
-      )
+      );
     }
 
-    return checkbox
+    return checkbox;
   }
-)
-Checkbox.displayName = "Checkbox"
+);
+Checkbox.displayName = "Checkbox";
 
-export { Checkbox, checkboxVariants }
+export { Checkbox, checkboxVariants };

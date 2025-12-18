@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { Switch } from './switch'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { Switch } from "./switch";
 
 const meta: Meta<typeof Switch> = {
-  title: 'Components/Switch',
+  title: "Components/Switch",
   component: Switch,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -58,86 +58,86 @@ import { Switch } from "@/components/ui/switch"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     size: {
-      control: 'select',
-      options: ['default', 'sm', 'lg'],
-      description: 'Size of the switch',
+      control: "select",
+      options: ["default", "sm", "lg"],
+      description: "Size of the switch",
     },
     checked: {
-      control: 'boolean',
-      description: 'Whether the switch is checked',
+      control: "boolean",
+      description: "Whether the switch is checked",
     },
     disabled: {
-      control: 'boolean',
-      description: 'Whether the switch is disabled',
+      control: "boolean",
+      description: "Whether the switch is disabled",
     },
     label: {
-      control: 'text',
-      description: 'Optional label text',
+      control: "text",
+      description: "Optional label text",
     },
     labelPosition: {
-      control: 'select',
-      options: ['left', 'right'],
-      description: 'Position of the label',
+      control: "select",
+      options: ["left", "right"],
+      description: "Position of the label",
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {},
-}
+};
 
 export const Checked: Story = {
   args: {
     checked: true,
   },
-}
+};
 
 export const WithLabel: Story = {
   args: {
-    label: 'Enable notifications',
+    label: "Enable notifications",
   },
-}
+};
 
 export const LabelLeft: Story = {
   args: {
-    label: 'Dark mode',
-    labelPosition: 'left',
+    label: "Dark mode",
+    labelPosition: "left",
   },
-}
+};
 
 export const Small: Story = {
   args: {
-    size: 'sm',
+    size: "sm",
   },
-}
+};
 
 export const Large: Story = {
   args: {
-    size: 'lg',
+    size: "lg",
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
     disabled: true,
   },
-}
+};
 
 export const DisabledChecked: Story = {
   args: {
     disabled: true,
     checked: true,
   },
-}
+};
 
 const ControlledExample = () => {
-  const [checked, setChecked] = useState(false)
+  const [checked, setChecked] = useState(false);
   return (
     <div className="flex flex-col gap-4">
       <Switch
@@ -146,15 +146,15 @@ const ControlledExample = () => {
         label="Controlled switch"
       />
       <p className="text-sm text-gray-600">
-        Current state: {checked ? 'ON' : 'OFF'}
+        Current state: {checked ? "ON" : "OFF"}
       </p>
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
-}
+};
 
 export const AllSizes: Story = {
   render: () => (
@@ -170,7 +170,7 @@ export const AllSizes: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const AllStates: Story = {
   render: () => (
@@ -189,4 +189,4 @@ export const AllStates: Story = {
       </div>
     </div>
   ),
-}
+};

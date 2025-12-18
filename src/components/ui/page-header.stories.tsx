@@ -1,13 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { PageHeader } from './page-header'
-import { Button } from './button'
-import { Webhook, Settings, Users, FileText, Plus, Trash2, Info } from 'lucide-react'
+import type { Meta, StoryObj } from "@storybook/react";
+import { PageHeader } from "./page-header";
+import { Button } from "./button";
+import {
+  Webhook,
+  Settings,
+  Users,
+  FileText,
+  Plus,
+  Trash2,
+  Info,
+} from "lucide-react";
 
 const meta: Meta<typeof PageHeader> = {
-  title: 'Components/PageHeader',
+  title: "Components/PageHeader",
   component: PageHeader,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
         component: `
@@ -110,45 +118,46 @@ import { PageHeader } from "@/components/ui/page-header"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     title: {
-      control: 'text',
-      description: 'Page title (required)',
+      control: "text",
+      description: "Page title (required)",
     },
     description: {
-      control: 'text',
-      description: 'Optional description below title',
+      control: "text",
+      description: "Optional description below title",
     },
     showBackButton: {
-      control: 'boolean',
-      description: 'Show back arrow instead of icon',
+      control: "boolean",
+      description: "Show back arrow instead of icon",
     },
     layout: {
-      control: 'select',
-      options: ['horizontal', 'vertical', 'responsive'],
-      description: 'Layout mode: horizontal (single row), vertical (stacked), responsive (auto)',
+      control: "select",
+      options: ["horizontal", "vertical", "responsive"],
+      description:
+        "Layout mode: horizontal (single row), vertical (stacked), responsive (auto)",
       table: {
-        defaultValue: { summary: 'responsive' },
+        defaultValue: { summary: "responsive" },
       },
     },
     icon: {
       control: false,
-      description: 'Icon displayed on the left side',
+      description: "Icon displayed on the left side",
     },
     infoIcon: {
       control: false,
-      description: 'Info icon displayed next to title',
+      description: "Info icon displayed next to title",
     },
     actions: {
       control: false,
-      description: 'Action buttons on the right side',
+      description: "Action buttons on the right side",
     },
     mobileOverflowLimit: {
-      control: { type: 'number', min: 1, max: 5 },
-      description: 'Max actions to show on mobile before overflow menu',
+      control: { type: "number", min: 1, max: 5 },
+      description: "Max actions to show on mobile before overflow menu",
       table: {
-        defaultValue: { summary: '2' },
+        defaultValue: { summary: "2" },
       },
     },
   },
@@ -161,42 +170,41 @@ import { PageHeader } from "@/components/ui/page-header"
       </div>
     ),
   ],
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Overview - primary interactive example
 export const Overview: Story = {
   args: {
     icon: <Webhook />,
-    title: 'Webhooks',
-    description: 'Configure and manage your webhook integrations',
+    title: "Webhooks",
+    description: "Configure and manage your webhook integrations",
   },
-}
+};
 
 // Header with Actions
 export const HeaderWithActions: Story = {
-  name: 'Header with Actions',
+  name: "Header with Actions",
   args: {
     icon: <Webhook />,
-    title: 'Webhooks',
-    description: 'Configure and manage your webhook integrations',
+    title: "Webhooks",
+    description: "Configure and manage your webhook integrations",
     infoIcon: <Info className="cursor-pointer" />,
-    actions: (
-      <Button leftIcon={<Plus />}>Add Webhook</Button>
-    ),
+    actions: <Button leftIcon={<Plus />}>Add Webhook</Button>,
   },
-}
+};
 
 // Header with Back Button
 export const HeaderWithBackButton: Story = {
-  name: 'Header with Back Button',
+  name: "Header with Back Button",
   args: {
     showBackButton: true,
-    onBackClick: () => alert('Back clicked!'),
-    title: 'Add New Webhook',
-    description: 'Configure your webhook endpoint and authentication. All webhooks use POST method with HTTPS protocol only.',
+    onBackClick: () => alert("Back clicked!"),
+    title: "Add New Webhook",
+    description:
+      "Configure your webhook endpoint and authentication. All webhooks use POST method with HTTPS protocol only.",
     actions: (
       <>
         <Button variant="ghost">Cancel</Button>
@@ -204,15 +212,15 @@ export const HeaderWithBackButton: Story = {
       </>
     ),
   },
-}
+};
 
 // Multiple Actions with Overflow (4 buttons)
 export const MultipleActions: Story = {
-  name: 'Multiple Actions (Overflow)',
+  name: "Multiple Actions (Overflow)",
   args: {
     icon: <Users />,
-    title: 'Team Members',
-    description: 'Manage team access and permissions',
+    title: "Team Members",
+    description: "Manage team access and permissions",
     mobileOverflowLimit: 2,
     actions: (
       <>
@@ -228,20 +236,21 @@ export const MultipleActions: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'On mobile/vertical layout, only the first 2 buttons are shown. The rest are in a "..." overflow menu.',
+        story:
+          'On mobile/vertical layout, only the first 2 buttons are shown. The rest are in a "..." overflow menu.',
       },
     },
   },
-}
+};
 
 // Horizontal Layout (always single row)
 export const HorizontalLayout: Story = {
-  name: 'Layout: Horizontal',
+  name: "Layout: Horizontal",
   args: {
     icon: <Webhook />,
-    title: 'Webhooks',
-    description: 'Configure and manage your webhook integrations',
-    layout: 'horizontal',
+    title: "Webhooks",
+    description: "Configure and manage your webhook integrations",
+    layout: "horizontal",
     actions: (
       <>
         <Button variant="outline">Cancel</Button>
@@ -252,20 +261,21 @@ export const HorizontalLayout: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Forces single-row layout regardless of screen size. Use when you need consistent horizontal alignment.',
+        story:
+          "Forces single-row layout regardless of screen size. Use when you need consistent horizontal alignment.",
       },
     },
   },
-}
+};
 
 // Vertical Layout (always stacked)
 export const VerticalLayout: Story = {
-  name: 'Layout: Vertical',
+  name: "Layout: Vertical",
   args: {
     icon: <Webhook />,
-    title: 'Webhooks',
-    description: 'Configure and manage your webhook integrations',
-    layout: 'vertical',
+    title: "Webhooks",
+    description: "Configure and manage your webhook integrations",
+    layout: "vertical",
     actions: (
       <>
         <Button variant="outline">Cancel</Button>
@@ -276,20 +286,21 @@ export const VerticalLayout: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Forces stacked layout regardless of screen size. Use for narrow containers or when you always want actions below.',
+        story:
+          "Forces stacked layout regardless of screen size. Use for narrow containers or when you always want actions below.",
       },
     },
   },
-}
+};
 
 // Mobile View Preview (using responsive layout in narrow container)
 export const MobileView: Story = {
-  name: 'Mobile View (Responsive)',
+  name: "Mobile View (Responsive)",
   args: {
     icon: <Webhook />,
-    title: 'Webhooks',
-    description: 'Configure and manage your webhook integrations',
-    layout: 'responsive',
+    title: "Webhooks",
+    description: "Configure and manage your webhook integrations",
+    layout: "responsive",
     infoIcon: <Info className="cursor-pointer" />,
     actions: (
       <>
@@ -300,11 +311,12 @@ export const MobileView: Story = {
   },
   parameters: {
     viewport: {
-      defaultViewport: 'mobile1',
+      defaultViewport: "mobile1",
     },
     docs: {
       description: {
-        story: 'With `layout="responsive"` (default), actions stack below on mobile (<640px) and stay inline on desktop.',
+        story:
+          'With `layout="responsive"` (default), actions stack below on mobile (<640px) and stay inline on desktop.',
       },
     },
   },
@@ -317,15 +329,17 @@ export const MobileView: Story = {
       </div>
     ),
   ],
-}
+};
 
 // Long Title (truncation test)
 export const LongTitle: Story = {
-  name: 'Long Title (Truncation)',
+  name: "Long Title (Truncation)",
   args: {
     icon: <FileText />,
-    title: 'This is a very long page title that should be truncated when it exceeds the available space',
-    description: 'This description is also quite long and should truncate properly when the container width is limited',
+    title:
+      "This is a very long page title that should be truncated when it exceeds the available space",
+    description:
+      "This description is also quite long and should truncate properly when the container width is limited",
     actions: <Button>Action</Button>,
   },
   decorators: [
@@ -337,12 +351,12 @@ export const LongTitle: Story = {
       </div>
     ),
   ],
-}
+};
 
 // All Variations Showcase - hidden from sidebar, shown in docs
 export const AllVariations: Story = {
-  name: 'All Variations',
-  tags: ['!dev'],
+  name: "All Variations",
+  tags: ["!dev"],
   render: () => (
     <div className="flex flex-col divide-y">
       <div className="bg-white">
@@ -390,16 +404,16 @@ export const AllVariations: Story = {
       </div>
     ),
   ],
-}
+};
 
 // Usage guide - hidden from sidebar, shown in docs
 export const Usage: Story = {
-  name: 'Usage',
-  tags: ['!dev'],
+  name: "Usage",
+  tags: ["!dev"],
   parameters: {
     docs: {
       description: {
-        story: 'Guidelines for when to use each PageHeader variation.',
+        story: "Guidelines for when to use each PageHeader variation.",
       },
     },
   },
@@ -415,7 +429,9 @@ export const Usage: Story = {
         </div>
         <div className="flex-1">
           <p className="font-medium text-sm">Simple Header</p>
-          <p className="text-sm text-gray-600">For section headers or read-only views without actions</p>
+          <p className="text-sm text-gray-600">
+            For section headers or read-only views without actions
+          </p>
         </div>
       </div>
       <div className="flex items-start gap-4">
@@ -429,7 +445,9 @@ export const Usage: Story = {
         </div>
         <div className="flex-1">
           <p className="font-medium text-sm">Header with Actions</p>
-          <p className="text-sm text-gray-600">For list pages with create/add actions</p>
+          <p className="text-sm text-gray-600">
+            For list pages with create/add actions
+          </p>
         </div>
       </div>
       <div className="flex items-start gap-4">
@@ -448,7 +466,9 @@ export const Usage: Story = {
         </div>
         <div className="flex-1">
           <p className="font-medium text-sm">Header with Back Button</p>
-          <p className="text-sm text-gray-600">For detail/edit pages with navigation and form actions</p>
+          <p className="text-sm text-gray-600">
+            For detail/edit pages with navigation and form actions
+          </p>
         </div>
       </div>
     </div>
@@ -460,16 +480,16 @@ export const Usage: Story = {
       </div>
     ),
   ],
-}
+};
 
 // Do's and Don'ts - hidden from sidebar, shown in docs
 export const DosAndDonts: Story = {
   name: "Do's and Don'ts",
-  tags: ['!dev'],
+  tags: ["!dev"],
   parameters: {
     docs: {
       description: {
-        story: 'Best practices for using the PageHeader component.',
+        story: "Best practices for using the PageHeader component.",
       },
     },
   },
@@ -494,7 +514,10 @@ export const DosAndDonts: Story = {
             <span className="text-green-600 text-lg">✓</span>
             <span className="font-medium">Do</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">Use ghost/outline for secondary actions, primary for main action on the right.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Use ghost/outline for secondary actions, primary for main action on
+            the right.
+          </p>
         </div>
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-6 flex items-center justify-center min-h-[100px]">
@@ -513,7 +536,10 @@ export const DosAndDonts: Story = {
             <span className="text-red-600 text-lg">✗</span>
             <span className="font-medium">Don't</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">Don't use multiple primary buttons or put secondary action after primary.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't use multiple primary buttons or put secondary action after
+            primary.
+          </p>
         </div>
       </div>
 
@@ -531,7 +557,9 @@ export const DosAndDonts: Story = {
             <span className="text-green-600 text-lg">✓</span>
             <span className="font-medium">Do</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">Keep titles short (2-4 words) and descriptions concise.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Keep titles short (2-4 words) and descriptions concise.
+          </p>
         </div>
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-6 flex items-center justify-center min-h-[100px]">
@@ -545,7 +573,9 @@ export const DosAndDonts: Story = {
             <span className="text-red-600 text-lg">✗</span>
             <span className="font-medium">Don't</span>
           </div>
-          <p className="text-sm text-gray-600 mt-1">Don't use long titles or descriptions that may truncate or wrap.</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't use long titles or descriptions that may truncate or wrap.
+          </p>
         </div>
       </div>
     </div>
@@ -557,16 +587,17 @@ export const DosAndDonts: Story = {
       </div>
     ),
   ],
-}
+};
 
 // Accessibility - hidden from sidebar, shown in docs
 export const Accessibility: Story = {
-  name: 'Accessibility',
-  tags: ['!dev'],
+  name: "Accessibility",
+  tags: ["!dev"],
   parameters: {
     docs: {
       description: {
-        story: 'PageHeader uses semantic HTML with h1 for the title and proper ARIA labels for buttons.',
+        story:
+          "PageHeader uses semantic HTML with h1 for the title and proper ARIA labels for buttons.",
       },
     },
   },
@@ -575,13 +606,27 @@ export const Accessibility: Story = {
       <div>
         <h4 className="font-medium text-sm mb-3">Keyboard navigation</h4>
         <div className="flex flex-col gap-2 text-sm text-gray-600 mb-4">
-          <p><code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">Tab</code> to move focus between back button and actions</p>
-          <p><code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">Enter</code> or <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">Space</code> to activate buttons</p>
+          <p>
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              Tab
+            </code>{" "}
+            to move focus between back button and actions
+          </p>
+          <p>
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              Enter
+            </code>{" "}
+            or{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              Space
+            </code>{" "}
+            to activate buttons
+          </p>
         </div>
         <div className="bg-white rounded-lg shadow">
           <PageHeader
             showBackButton
-            onBackClick={() => alert('Back')}
+            onBackClick={() => alert("Back")}
             title="Accessible Header"
             description="Try tabbing through this header"
             actions={
@@ -596,9 +641,25 @@ export const Accessibility: Story = {
       <div>
         <h4 className="font-medium text-sm mb-3">Semantic structure</h4>
         <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
-          <li>Title uses <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">&lt;h1&gt;</code> for proper document outline</li>
-          <li>Back button has <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-label="Go back"</code></li>
-          <li>Icon-only action buttons should include <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-label</code></li>
+          <li>
+            Title uses{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              &lt;h1&gt;
+            </code>{" "}
+            for proper document outline
+          </li>
+          <li>
+            Back button has{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              aria-label="Go back"
+            </code>
+          </li>
+          <li>
+            Icon-only action buttons should include{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              aria-label
+            </code>
+          </li>
         </ul>
       </div>
     </div>
@@ -610,4 +671,4 @@ export const Accessibility: Story = {
       </div>
     ),
   ],
-}
+};

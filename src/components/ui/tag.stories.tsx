@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { Tag, TagGroup } from './tag'
+import type { Meta, StoryObj } from "@storybook/react";
+import { Tag, TagGroup } from "./tag";
 
 const meta: Meta<typeof Tag> = {
-  title: 'Components/Tag',
+  title: "Components/Tag",
   component: Tag,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -77,59 +77,68 @@ import { Tag, TagGroup } from "@/components/ui/tag"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     variant: {
-      control: 'select',
-      options: ['default', 'primary', 'accent', 'secondary', 'success', 'warning', 'error', 'destructive'],
-      description: 'The visual style of the tag',
+      control: "select",
+      options: [
+        "default",
+        "primary",
+        "accent",
+        "secondary",
+        "success",
+        "warning",
+        "error",
+        "destructive",
+      ],
+      description: "The visual style of the tag",
     },
     size: {
-      control: 'select',
-      options: ['sm', 'default', 'lg'],
-      description: 'The size of the tag',
+      control: "select",
+      options: ["sm", "default", "lg"],
+      description: "The size of the tag",
     },
     label: {
-      control: 'text',
-      description: 'Bold label prefix displayed before the content',
+      control: "text",
+      description: "Bold label prefix displayed before the content",
     },
     children: {
-      control: 'text',
-      description: 'The content of the tag',
+      control: "text",
+      description: "The content of the tag",
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Overview: Story = {
   args: {
-    children: 'After Call Event',
-    variant: 'default',
-    size: 'default',
+    children: "After Call Event",
+    variant: "default",
+    size: "default",
   },
-}
+};
 
 export const WithLabel: Story = {
-  name: 'With Label',
+  name: "With Label",
   args: {
-    label: 'In Call Event:',
-    children: 'Start of call, Bridge, Call ended',
-    variant: 'default',
+    label: "In Call Event:",
+    children: "Start of call, Bridge, Call ended",
+    variant: "default",
   },
-}
+};
 
 export const SimpleTag: Story = {
-  name: 'Simple Tag',
+  name: "Simple Tag",
   args: {
-    children: 'After Call Event',
-    variant: 'default',
+    children: "After Call Event",
+    variant: "default",
   },
-}
+};
 
 export const AllVariants: Story = {
-  name: 'All Variants',
+  name: "All Variants",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Tag variant="default">Default</Tag>
@@ -142,10 +151,10 @@ export const AllVariants: Story = {
       <Tag variant="destructive">Destructive</Tag>
     </div>
   ),
-}
+};
 
 export const AllSizes: Story = {
-  name: 'All Sizes',
+  name: "All Sizes",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Tag size="sm">Small</Tag>
@@ -153,14 +162,15 @@ export const AllSizes: Story = {
       <Tag size="lg">Large</Tag>
     </div>
   ),
-}
+};
 
 export const EventTags: Story = {
-  name: 'Event Tags',
+  name: "Event Tags",
   parameters: {
     docs: {
       description: {
-        story: 'Common usage pattern for displaying event labels with optional prefixes.',
+        story:
+          "Common usage pattern for displaying event labels with optional prefixes.",
       },
     },
   },
@@ -176,24 +186,30 @@ export const EventTags: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const TagGroupExample: Story = {
-  name: 'TagGroup',
+  name: "TagGroup",
   parameters: {
     docs: {
       description: {
-        story: 'Use TagGroup to display multiple tags with automatic overflow handling. Tags beyond `maxVisible` are hidden with a "+N more" indicator.',
+        story:
+          'Use TagGroup to display multiple tags with automatic overflow handling. Tags beyond `maxVisible` are hidden with a "+N more" indicator.',
       },
     },
   },
   render: () => (
     <div className="flex flex-col gap-8">
       <div>
-        <h4 className="text-sm font-medium mb-2">With overflow (8 tags, max 2 visible)</h4>
+        <h4 className="text-sm font-medium mb-2">
+          With overflow (8 tags, max 2 visible)
+        </h4>
         <TagGroup
           tags={[
-            { label: "In Call Event:", value: "Call Begin, Start Dialing Agent" },
+            {
+              label: "In Call Event:",
+              value: "Call Begin, Start Dialing Agent",
+            },
             { label: "Whatsapp Event:", value: "message.Delivered" },
             { label: "Call Disposition:", value: "Answered, Voicemail" },
             { label: "After Call Event:", value: "Call ended" },
@@ -206,7 +222,9 @@ export const TagGroupExample: Story = {
         />
       </div>
       <div>
-        <h4 className="text-sm font-medium mb-2">Without overflow (2 tags, max 2 visible)</h4>
+        <h4 className="text-sm font-medium mb-2">
+          Without overflow (2 tags, max 2 visible)
+        </h4>
         <TagGroup
           tags={[
             { label: "After Call Event:", value: "Call ended, Voicemail" },
@@ -238,14 +256,15 @@ export const TagGroupExample: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const TagGroupMaxVisible: Story = {
-  name: 'TagGroup Max Visible Options',
+  name: "TagGroup Max Visible Options",
   parameters: {
     docs: {
       description: {
-        story: 'Customize the number of visible tags using the `maxVisible` prop.',
+        story:
+          "Customize the number of visible tags using the `maxVisible` prop.",
       },
     },
   },
@@ -256,7 +275,7 @@ export const TagGroupMaxVisible: Story = {
       { label: "Event 3:", value: "Value 3" },
       { label: "Event 4:", value: "Value 4" },
       { label: "Event 5:", value: "Value 5" },
-    ]
+    ];
 
     return (
       <div className="flex flex-col gap-8">
@@ -273,10 +292,12 @@ export const TagGroupMaxVisible: Story = {
           <TagGroup tags={tags} maxVisible={3} />
         </div>
         <div>
-          <h4 className="text-sm font-medium mb-2">maxVisible=5 (all visible)</h4>
+          <h4 className="text-sm font-medium mb-2">
+            maxVisible=5 (all visible)
+          </h4>
           <TagGroup tags={tags} maxVisible={5} />
         </div>
       </div>
-    )
+    );
   },
-}
+};

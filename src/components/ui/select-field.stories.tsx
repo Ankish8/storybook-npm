@@ -1,48 +1,64 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { SelectField, type SelectOption } from './select-field'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { SelectField, type SelectOption } from "./select-field";
 
 const authOptions: SelectOption[] = [
-  { value: 'none', label: 'None' },
-  { value: 'basic', label: 'Basic Auth' },
-  { value: 'bearer', label: 'Bearer Token' },
-  { value: 'api-key', label: 'API Key' },
-  { value: 'oauth2', label: 'OAuth 2.0' },
-]
+  { value: "none", label: "None" },
+  { value: "basic", label: "Basic Auth" },
+  { value: "bearer", label: "Bearer Token" },
+  { value: "api-key", label: "API Key" },
+  { value: "oauth2", label: "OAuth 2.0" },
+];
 
 const countryOptions: SelectOption[] = [
-  { value: 'us', label: 'United States' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'au', label: 'Australia' },
-  { value: 'de', label: 'Germany' },
-  { value: 'fr', label: 'France' },
-  { value: 'it', label: 'Italy' },
-  { value: 'es', label: 'Spain' },
-  { value: 'jp', label: 'Japan' },
-  { value: 'in', label: 'India' },
-  { value: 'br', label: 'Brazil' },
-  { value: 'mx', label: 'Mexico' },
-]
+  { value: "us", label: "United States" },
+  { value: "uk", label: "United Kingdom" },
+  { value: "ca", label: "Canada" },
+  { value: "au", label: "Australia" },
+  { value: "de", label: "Germany" },
+  { value: "fr", label: "France" },
+  { value: "it", label: "Italy" },
+  { value: "es", label: "Spain" },
+  { value: "jp", label: "Japan" },
+  { value: "in", label: "India" },
+  { value: "br", label: "Brazil" },
+  { value: "mx", label: "Mexico" },
+];
 
 const timezoneOptions: SelectOption[] = [
-  { value: 'est', label: 'Eastern Standard Time (EST)', group: 'North America' },
-  { value: 'cst', label: 'Central Standard Time (CST)', group: 'North America' },
-  { value: 'mst', label: 'Mountain Standard Time (MST)', group: 'North America' },
-  { value: 'pst', label: 'Pacific Standard Time (PST)', group: 'North America' },
-  { value: 'gmt', label: 'Greenwich Mean Time (GMT)', group: 'Europe' },
-  { value: 'cet', label: 'Central European Time (CET)', group: 'Europe' },
-  { value: 'eet', label: 'Eastern European Time (EET)', group: 'Europe' },
-  { value: 'ist', label: 'India Standard Time (IST)', group: 'Asia' },
-  { value: 'jst', label: 'Japan Standard Time (JST)', group: 'Asia' },
-  { value: 'cst-china', label: 'China Standard Time (CST)', group: 'Asia' },
-]
+  {
+    value: "est",
+    label: "Eastern Standard Time (EST)",
+    group: "North America",
+  },
+  {
+    value: "cst",
+    label: "Central Standard Time (CST)",
+    group: "North America",
+  },
+  {
+    value: "mst",
+    label: "Mountain Standard Time (MST)",
+    group: "North America",
+  },
+  {
+    value: "pst",
+    label: "Pacific Standard Time (PST)",
+    group: "North America",
+  },
+  { value: "gmt", label: "Greenwich Mean Time (GMT)", group: "Europe" },
+  { value: "cet", label: "Central European Time (CET)", group: "Europe" },
+  { value: "eet", label: "Eastern European Time (EET)", group: "Europe" },
+  { value: "ist", label: "India Standard Time (IST)", group: "Asia" },
+  { value: "jst", label: "Japan Standard Time (JST)", group: "Asia" },
+  { value: "cst-china", label: "China Standard Time (CST)", group: "Asia" },
+];
 
 const meta: Meta<typeof SelectField> = {
-  title: 'Components/SelectField',
+  title: "Components/SelectField",
   component: SelectField,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -201,86 +217,86 @@ import { SelectField } from "@/components/ui/select-field"
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     label: {
-      control: 'text',
-      description: 'Label text displayed above the select',
+      control: "text",
+      description: "Label text displayed above the select",
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     required: {
-      control: 'boolean',
-      description: 'Shows red asterisk (*) next to label',
+      control: "boolean",
+      description: "Shows red asterisk (*) next to label",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     placeholder: {
-      control: 'text',
-      description: 'Placeholder text when no value selected',
+      control: "text",
+      description: "Placeholder text when no value selected",
     },
     helperText: {
-      control: 'text',
-      description: 'Helper text displayed below the select',
+      control: "text",
+      description: "Helper text displayed below the select",
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     error: {
-      control: 'text',
-      description: 'Error message - triggers error state with red styling',
+      control: "text",
+      description: "Error message - triggers error state with red styling",
       table: {
-        type: { summary: 'string' },
+        type: { summary: "string" },
       },
     },
     disabled: {
-      control: 'boolean',
-      description: 'Disabled state',
+      control: "boolean",
+      description: "Disabled state",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     loading: {
-      control: 'boolean',
-      description: 'Loading state with spinner',
+      control: "boolean",
+      description: "Loading state with spinner",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     searchable: {
-      control: 'boolean',
-      description: 'Enable search/filter functionality',
+      control: "boolean",
+      description: "Enable search/filter functionality",
       table: {
-        type: { summary: 'boolean' },
-        defaultValue: { summary: 'false' },
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
       },
     },
     searchPlaceholder: {
-      control: 'text',
-      description: 'Search input placeholder text',
+      control: "text",
+      description: "Search input placeholder text",
       table: {
-        type: { summary: 'string' },
-        defaultValue: { summary: 'Search...' },
+        type: { summary: "string" },
+        defaultValue: { summary: "Search..." },
       },
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Overview - primary interactive example
 export const Overview: Story = {
   args: {
-    label: 'Authentication',
-    placeholder: 'Select authentication method',
+    label: "Authentication",
+    placeholder: "Select authentication method",
     required: true,
-    helperText: 'Choose how you want to authenticate requests.',
+    helperText: "Choose how you want to authenticate requests.",
     options: authOptions,
   },
   render: (args) => (
@@ -288,7 +304,7 @@ export const Overview: Story = {
       <SelectField {...args} />
     </div>
   ),
-}
+};
 
 // States - all state variants
 export const States: Story = {
@@ -319,11 +335,11 @@ export const States: Story = {
       />
     </div>
   ),
-}
+};
 
 // With Label
 export const WithLabel: Story = {
-  name: 'With label',
+  name: "With label",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <SelectField
@@ -345,11 +361,11 @@ export const WithLabel: Story = {
       />
     </div>
   ),
-}
+};
 
 // With Helper Text
 export const WithHelperText: Story = {
-  name: 'With helper text',
+  name: "With helper text",
   render: () => (
     <div className="w-80">
       <SelectField
@@ -360,11 +376,11 @@ export const WithHelperText: Story = {
       />
     </div>
   ),
-}
+};
 
 // Validation States
 export const ValidationStates: Story = {
-  name: 'Validation states',
+  name: "Validation states",
   render: () => (
     <div className="flex flex-col gap-6 w-80">
       <SelectField
@@ -382,11 +398,11 @@ export const ValidationStates: Story = {
       />
     </div>
   ),
-}
+};
 
 // With Groups
 export const WithGroups: Story = {
-  name: 'With groups',
+  name: "With groups",
   render: () => (
     <div className="w-80">
       <SelectField
@@ -397,7 +413,7 @@ export const WithGroups: Story = {
       />
     </div>
   ),
-}
+};
 
 // Searchable
 export const Searchable: Story = {
@@ -413,11 +429,11 @@ export const Searchable: Story = {
       />
     </div>
   ),
-}
+};
 
 // Controlled Example
 const ControlledExample = () => {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState("");
 
   return (
     <div className="flex flex-col gap-4 w-80">
@@ -430,22 +446,22 @@ const ControlledExample = () => {
         required
       />
       <p className="text-sm text-[#6B7280]">
-        Selected value: {value || '(none)'}
+        Selected value: {value || "(none)"}
       </p>
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
-}
+};
 
 // Loading State
 export const LoadingState: Story = {
-  name: 'Loading state',
+  name: "Loading state",
   args: {
-    label: 'Fetching Options',
-    placeholder: 'Loading...',
+    label: "Fetching Options",
+    placeholder: "Loading...",
     loading: true,
     options: [],
   },
@@ -454,11 +470,11 @@ export const LoadingState: Story = {
       <SelectField {...args} />
     </div>
   ),
-}
+};
 
 // Form Example
 export const FormExample: Story = {
-  name: 'Form example',
+  name: "Form example",
   render: () => (
     <form className="flex flex-col gap-4 w-80">
       <SelectField
@@ -484,11 +500,11 @@ export const FormExample: Story = {
       />
     </form>
   ),
-}
+};
 
 // With TextField Example (from screenshot)
 export const WebhookFormExample: Story = {
-  name: 'Webhook form example',
+  name: "Webhook form example",
   render: () => (
     <form className="flex flex-col gap-4 w-96">
       <div className="flex flex-col gap-1">
@@ -512,4 +528,4 @@ export const WebhookFormExample: Story = {
       />
     </form>
   ),
-}
+};

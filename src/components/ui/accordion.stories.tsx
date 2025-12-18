@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from './accordion'
+} from "./accordion";
 
 const meta: Meta<typeof Accordion> = {
-  title: 'Components/Accordion',
+  title: "Components/Accordion",
   component: Accordion,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -112,27 +112,28 @@ import {
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     type: {
-      control: 'select',
-      options: ['single', 'multiple'],
-      description: 'Whether only one item can be open (single) or multiple items can be open at once',
+      control: "select",
+      options: ["single", "multiple"],
+      description:
+        "Whether only one item can be open (single) or multiple items can be open at once",
     },
     variant: {
-      control: 'select',
-      options: ['default', 'bordered'],
-      description: 'Visual style variant',
+      control: "select",
+      options: ["default", "bordered"],
+      description: "Visual style variant",
     },
     defaultValue: {
-      control: 'object',
-      description: 'Default open items (array of item values)',
+      control: "object",
+      description: "Default open items (array of item values)",
     },
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -142,8 +143,8 @@ export const Default: Story = {
           <AccordionTrigger>What is myOperator UI?</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              myOperator UI is a collection of beautifully designed, accessible React
-              components built with Tailwind CSS.
+              myOperator UI is a collection of beautifully designed, accessible
+              React components built with Tailwind CSS.
             </p>
           </AccordionContent>
         </AccordionItem>
@@ -151,7 +152,8 @@ export const Default: Story = {
           <AccordionTrigger>How do I install it?</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              You can install components using the CLI: npx myoperator-ui add button
+              You can install components using the CLI: npx myoperator-ui add
+              button
             </p>
           </AccordionContent>
         </AccordionItem>
@@ -159,26 +161,27 @@ export const Default: Story = {
           <AccordionTrigger>Is it customizable?</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              Yes! All components are fully customizable using Tailwind CSS classes
-              and CSS variables.
+              Yes! All components are fully customizable using Tailwind CSS
+              classes and CSS variables.
             </p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
   ),
-}
+};
 
 export const SingleMode: Story = {
-  name: 'Single Mode',
+  name: "Single Mode",
   render: () => (
     <div className="w-[400px]">
-      <Accordion type="single" defaultValue={['item-1']}>
+      <Accordion type="single" defaultValue={["item-1"]}>
         <AccordionItem value="item-1">
           <AccordionTrigger>Section One</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              This is the content for section one. Only one section can be open at a time.
+              This is the content for section one. Only one section can be open
+              at a time.
             </p>
           </AccordionContent>
         </AccordionItem>
@@ -186,7 +189,8 @@ export const SingleMode: Story = {
           <AccordionTrigger>Section Two</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              This is the content for section two. Opening this will close section one.
+              This is the content for section two. Opening this will close
+              section one.
             </p>
           </AccordionContent>
         </AccordionItem>
@@ -204,22 +208,24 @@ export const SingleMode: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'In single mode, only one item can be open at a time. Opening a new item closes the previously open one.',
+        story:
+          "In single mode, only one item can be open at a time. Opening a new item closes the previously open one.",
       },
     },
   },
-}
+};
 
 export const MultipleMode: Story = {
-  name: 'Multiple Mode',
+  name: "Multiple Mode",
   render: () => (
     <div className="w-[400px]">
-      <Accordion type="multiple" defaultValue={['item-1', 'item-2']}>
+      <Accordion type="multiple" defaultValue={["item-1", "item-2"]}>
         <AccordionItem value="item-1">
           <AccordionTrigger>Section One</AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              This is the content for section one. Multiple sections can be open.
+              This is the content for section one. Multiple sections can be
+              open.
             </p>
           </AccordionContent>
         </AccordionItem>
@@ -245,16 +251,17 @@ export const MultipleMode: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'In multiple mode, any number of items can be open simultaneously.',
+        story:
+          "In multiple mode, any number of items can be open simultaneously.",
       },
     },
   },
-}
+};
 
 export const Bordered: Story = {
   render: () => (
     <div className="w-[400px]">
-      <Accordion variant="bordered" defaultValue={['item-1']}>
+      <Accordion variant="bordered" defaultValue={["item-1"]}>
         <AccordionItem value="item-1">
           <AccordionTrigger>Account Settings</AccordionTrigger>
           <AccordionContent>
@@ -282,10 +289,10 @@ export const Bordered: Story = {
       </Accordion>
     </div>
   ),
-}
+};
 
 export const WithDisabledItem: Story = {
-  name: 'With Disabled Item',
+  name: "With Disabled Item",
   render: () => (
     <div className="w-[400px]">
       <Accordion variant="bordered">
@@ -316,10 +323,10 @@ export const WithDisabledItem: Story = {
       </Accordion>
     </div>
   ),
-}
+};
 
 export const WithoutChevron: Story = {
-  name: 'Without Chevron Icon',
+  name: "Without Chevron Icon",
   render: () => (
     <div className="w-[400px]">
       <Accordion variant="bordered">
@@ -336,22 +343,22 @@ export const WithoutChevron: Story = {
       </Accordion>
     </div>
   ),
-}
+};
 
 const ControlledExample = () => {
-  const [value, setValue] = useState<string[]>(['item-1'])
+  const [value, setValue] = useState<string[]>(["item-1"]);
 
   return (
     <div className="w-[400px]">
       <div className="mb-4 flex gap-2">
         <button
-          onClick={() => setValue(['item-1'])}
+          onClick={() => setValue(["item-1"])}
           className="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
         >
           Open First
         </button>
         <button
-          onClick={() => setValue(['item-2'])}
+          onClick={() => setValue(["item-2"])}
           className="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
         >
           Open Second
@@ -363,14 +370,14 @@ const ControlledExample = () => {
           Close All
         </button>
         <button
-          onClick={() => setValue(['item-1', 'item-2', 'item-3'])}
+          onClick={() => setValue(["item-1", "item-2", "item-3"])}
           className="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200"
         >
           Open All
         </button>
       </div>
       <p className="mb-4 text-sm text-gray-600">
-        Open items: {value.length > 0 ? value.join(', ') : 'none'}
+        Open items: {value.length > 0 ? value.join(", ") : "none"}
       </p>
       <Accordion value={value} onValueChange={setValue} variant="bordered">
         <AccordionItem value="item-1">
@@ -393,22 +400,23 @@ const ControlledExample = () => {
         </AccordionItem>
       </Accordion>
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
   parameters: {
     docs: {
       description: {
-        story: 'Use the `value` and `onValueChange` props for controlled state management.',
+        story:
+          "Use the `value` and `onValueChange` props for controlled state management.",
       },
     },
   },
-}
+};
 
 export const CustomContent: Story = {
-  name: 'Custom Content',
+  name: "Custom Content",
   render: () => (
     <div className="w-[400px]">
       <Accordion variant="bordered">
@@ -446,54 +454,67 @@ export const CustomContent: Story = {
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <p className="text-sm text-[#6B7280]">12 users are currently offline.</p>
+            <p className="text-sm text-[#6B7280]">
+              12 users are currently offline.
+            </p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
   ),
-}
+};
 
 export const FAQ: Story = {
-  name: 'FAQ Example',
+  name: "FAQ Example",
   render: () => (
     <div className="w-[500px]">
-      <h2 className="mb-4 text-lg font-semibold text-[#333333]">Frequently Asked Questions</h2>
+      <h2 className="mb-4 text-lg font-semibold text-[#333333]">
+        Frequently Asked Questions
+      </h2>
       <Accordion type="single" variant="bordered">
         <AccordionItem value="q1">
           <AccordionTrigger>
-            <span className="font-medium text-[#333333]">How do I reset my password?</span>
+            <span className="font-medium text-[#333333]">
+              How do I reset my password?
+            </span>
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              To reset your password, click on the "Forgot Password" link on the login page.
-              Enter your email address and we'll send you a link to reset your password.
+              To reset your password, click on the "Forgot Password" link on the
+              login page. Enter your email address and we'll send you a link to
+              reset your password.
             </p>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="q2">
           <AccordionTrigger>
-            <span className="font-medium text-[#333333]">Can I change my subscription plan?</span>
+            <span className="font-medium text-[#333333]">
+              Can I change my subscription plan?
+            </span>
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              Yes, you can upgrade or downgrade your subscription plan at any time from
-              your account settings. Changes will be reflected in your next billing cycle.
+              Yes, you can upgrade or downgrade your subscription plan at any
+              time from your account settings. Changes will be reflected in your
+              next billing cycle.
             </p>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="q3">
           <AccordionTrigger>
-            <span className="font-medium text-[#333333]">How do I contact support?</span>
+            <span className="font-medium text-[#333333]">
+              How do I contact support?
+            </span>
           </AccordionTrigger>
           <AccordionContent>
             <p className="text-sm text-[#6B7280]">
-              You can reach our support team via email at support@example.com or through
-              the live chat feature available in the bottom right corner of the dashboard.
+              You can reach our support team via email at support@example.com or
+              through the live chat feature available in the bottom right corner
+              of the dashboard.
             </p>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
   ),
-}
+};

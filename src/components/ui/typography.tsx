@@ -1,16 +1,24 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 // =============================================================================
 // TYPES
 // =============================================================================
 
-export type Kind = "display" | "headline" | "title" | "label" | "body"
-export type Variant = "large" | "medium" | "small"
-export type Color = "primary" | "secondary" | "muted" | "placeholder" | "link" | "inverted" | "error" | "success"
-export type Align = "left" | "center" | "right"
+export type Kind = "display" | "headline" | "title" | "label" | "body";
+export type Variant = "large" | "medium" | "small";
+export type Color =
+  | "primary"
+  | "secondary"
+  | "muted"
+  | "placeholder"
+  | "link"
+  | "inverted"
+  | "error"
+  | "success";
+export type Align = "left" | "center" | "right";
 
-type Key = `${Kind}-${Variant}`
+type Key = `${Kind}-${Variant}`;
 
 // =============================================================================
 // MAPPINGS
@@ -35,7 +43,7 @@ const mapTagName: { [key in Key]: keyof JSX.IntrinsicElements } = {
   "body-large": "span",
   "body-medium": "span",
   "body-small": "span",
-}
+};
 
 /**
  * Maps kind-variant combinations to Tailwind typography classes
@@ -56,7 +64,7 @@ const mapClassName: { [key in Key]: string } = {
   "body-large": "text-base leading-5 font-normal",
   "body-medium": "text-sm leading-[18px] font-normal",
   "body-small": "text-xs leading-4 font-normal",
-}
+};
 
 /**
  * Maps color variants to Tailwind text color classes
@@ -70,7 +78,7 @@ const mapColorClassName: { [key in Color]: string } = {
   inverted: "text-white",
   error: "text-[#F04438]",
   success: "text-[#17B26A]",
-}
+};
 
 /**
  * Maps alignment to Tailwind text alignment classes
@@ -79,7 +87,7 @@ const mapAlignClassName: { [key in Align]: string } = {
   left: "text-left",
   center: "text-center",
   right: "text-right",
-}
+};
 
 // =============================================================================
 // COMPONENT
@@ -90,21 +98,21 @@ const mapAlignClassName: { [key in Align]: string } = {
  */
 export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   /** Text content */
-  children: React.ReactNode
+  children: React.ReactNode;
   /** Typography kind - determines base styling and semantic tag */
-  kind?: Kind
+  kind?: Kind;
   /** Size variant */
-  variant?: Variant
+  variant?: Variant;
   /** Text color */
-  color?: Color
+  color?: Color;
   /** Text alignment */
-  align?: Align
+  align?: Align;
   /** Enable text truncation with ellipsis */
-  truncate?: boolean
+  truncate?: boolean;
   /** Override the default HTML tag */
-  tag?: keyof JSX.IntrinsicElements
+  tag?: keyof JSX.IntrinsicElements;
   /** For label elements - associates with form input */
-  htmlFor?: string
+  htmlFor?: string;
 }
 
 /**
@@ -141,8 +149,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     },
     ref
   ) => {
-    const key: Key = `${kind}-${variant}`
-    const Tag = tag || mapTagName[key]
+    const key: Key = `${kind}-${variant}`;
+    const Tag = tag || mapTagName[key];
 
     const classes = cn(
       "m-0", // Reset margin
@@ -151,7 +159,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       align && mapAlignClassName[align],
       truncate && "truncate",
       className
-    )
+    );
 
     return (
       <Tag
@@ -162,9 +170,15 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       >
         {children}
       </Tag>
-    )
+    );
   }
-)
-Typography.displayName = "Typography"
+);
+Typography.displayName = "Typography";
 
-export { Typography, mapTagName, mapClassName, mapColorClassName, mapAlignClassName }
+export {
+  Typography,
+  mapTagName,
+  mapClassName,
+  mapColorClassName,
+  mapAlignClassName,
+};
