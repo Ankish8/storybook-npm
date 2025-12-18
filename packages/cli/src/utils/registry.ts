@@ -3858,10 +3858,10 @@ export { PageHeader, pageHeaderVariants };
       files: [
         {
           name: 'event-selector.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
-import { EventGroupComponent } from "./event-group"
-import type { EventSelectorProps, EventCategory, EventGroup } from "./types"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { EventGroupComponent } from "./event-group";
+import type { EventSelectorProps, EventCategory, EventGroup } from "./types";
 
 /**
  * EventSelector - A component for selecting webhook events
@@ -3886,7 +3886,10 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types"
  * />
  * \`\`\`
  */
-export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps>(
+export const EventSelector = React.forwardRef<
+  HTMLDivElement,
+  EventSelectorProps
+>(
   (
     {
       events,
@@ -3907,35 +3910,35 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
     // Controlled vs uncontrolled state
     const [internalSelected, setInternalSelected] = React.useState<string[]>(
       defaultSelectedEvents
-    )
+    );
 
-    const isControlled = controlledSelected !== undefined
-    const selectedEvents = isControlled ? controlledSelected : internalSelected
+    const isControlled = controlledSelected !== undefined;
+    const selectedEvents = isControlled ? controlledSelected : internalSelected;
 
     const handleSelectionChange = React.useCallback(
       (newSelection: string[]) => {
         if (!isControlled) {
-          setInternalSelected(newSelection)
+          setInternalSelected(newSelection);
         }
-        onSelectionChange?.(newSelection)
+        onSelectionChange?.(newSelection);
       },
       [isControlled, onSelectionChange]
-    )
+    );
 
     // Get events for a specific group
     const getEventsForGroup = (groupId: string) => {
-      return events.filter((event) => event.group === groupId)
-    }
+      return events.filter((event) => event.group === groupId);
+    };
 
     // Get groups for a specific category
     const getGroupsForCategory = (category: EventCategory): EventGroup[] => {
       return category.groups
         .map((groupId) => groups.find((g) => g.id === groupId))
-        .filter((g): g is EventGroup => g !== undefined)
-    }
+        .filter((g): g is EventGroup => g !== undefined);
+    };
 
     // Calculate total selected count
-    const totalSelected = selectedEvents.length
+    const totalSelected = selectedEvents.length;
 
     // Render groups without categories
     const renderGroups = (groupsToRender: EventGroup[]) => {
@@ -3949,32 +3952,36 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
           emptyGroupMessage={emptyGroupMessage}
           renderEmptyGroup={renderEmptyGroup}
         />
-      ))
-    }
+      ));
+    };
 
     // Render categories with nested groups
     const renderCategories = () => {
       // Ensure categories is an array before using array methods
-      if (!categories || !Array.isArray(categories) || categories.length === 0) {
-        return renderGroups(groups)
+      if (
+        !categories ||
+        !Array.isArray(categories) ||
+        categories.length === 0
+      ) {
+        return renderGroups(groups);
       }
 
       // Get groups that belong to categories
-      const groupsInCategories = new Set(categories.flatMap((c) => c.groups))
+      const groupsInCategories = new Set(categories.flatMap((c) => c.groups));
 
       // Get orphan groups (not in any category)
-      const orphanGroups = groups.filter((g) => !groupsInCategories.has(g.id))
+      const orphanGroups = groups.filter((g) => !groupsInCategories.has(g.id));
 
       return (
         <>
           {categories.map((category) => {
-            const categoryGroups = getGroupsForCategory(category)
+            const categoryGroups = getGroupsForCategory(category);
             const categoryEventIds = categoryGroups.flatMap((g) =>
               getEventsForGroup(g.id).map((e) => e.id)
-            )
+            );
             const selectedInCategory = categoryEventIds.filter((id) =>
               selectedEvents.includes(id)
-            )
+            );
 
             return (
               <div
@@ -4004,24 +4011,22 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
                   {renderGroups(categoryGroups)}
                 </div>
               </div>
-            )
+            );
           })}
           {/* Render orphan groups outside categories */}
           {orphanGroups.length > 0 && renderGroups(orphanGroups)}
         </>
-      )
-    }
+      );
+    };
 
     return (
-      <div
-        ref={ref}
-        className={cn("w-full", className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="m-0 text-base font-semibold text-[#333333]">{title}</h3>
+            <h3 className="m-0 text-base font-semibold text-[#333333]">
+              {title}
+            </h3>
             {description && (
               <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
             )}
@@ -4036,25 +4041,25 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
           {renderCategories()}
         </div>
       </div>
-    )
+    );
   }
-)
-EventSelector.displayName = "EventSelector"
+);
+EventSelector.displayName = "EventSelector";
 `, prefix),
         },
         {
           name: 'event-group.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
-import { Checkbox, type CheckedState } from "../checkbox"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Checkbox, type CheckedState } from "../checkbox";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../accordion"
-import { EventItemComponent } from "./event-item"
-import type { EventGroupComponentProps } from "./types"
+} from "../accordion";
+import { EventItemComponent } from "./event-item";
+import type { EventGroupComponentProps } from "./types";
 
 /**
  * Event group with accordion section and group-level checkbox
@@ -4077,58 +4082,60 @@ export const EventGroupComponent = React.forwardRef<
     ref
   ) => {
     // Calculate selection state for this group
-    const groupEventIds = events.map((e) => e.id)
+    const groupEventIds = events.map((e) => e.id);
     const selectedInGroup = groupEventIds.filter((id) =>
       selectedEvents.includes(id)
-    )
-    const allSelected = groupEventIds.length > 0 && selectedInGroup.length === groupEventIds.length
-    const someSelected = selectedInGroup.length > 0 && selectedInGroup.length < groupEventIds.length
+    );
+    const allSelected =
+      groupEventIds.length > 0 &&
+      selectedInGroup.length === groupEventIds.length;
+    const someSelected =
+      selectedInGroup.length > 0 &&
+      selectedInGroup.length < groupEventIds.length;
 
     const checkboxState: CheckedState = allSelected
       ? true
       : someSelected
-      ? "indeterminate"
-      : false
+        ? "indeterminate"
+        : false;
 
-    const selectedCount = selectedInGroup.length
+    const selectedCount = selectedInGroup.length;
 
     // Handle group checkbox click
     const handleGroupCheckbox = () => {
       if (allSelected) {
         // Deselect all events in this group
-        onSelectionChange(selectedEvents.filter((id) => !groupEventIds.includes(id)))
+        onSelectionChange(
+          selectedEvents.filter((id) => !groupEventIds.includes(id))
+        );
       } else {
         // Select all events in this group
-        const newSelection = [...selectedEvents]
+        const newSelection = [...selectedEvents];
         groupEventIds.forEach((id) => {
           if (!newSelection.includes(id)) {
-            newSelection.push(id)
+            newSelection.push(id);
           }
-        })
-        onSelectionChange(newSelection)
+        });
+        onSelectionChange(newSelection);
       }
-    }
+    };
 
     // Handle individual event selection
     const handleEventSelection = (eventId: string, selected: boolean) => {
       if (selected) {
-        onSelectionChange([...selectedEvents, eventId])
+        onSelectionChange([...selectedEvents, eventId]);
       } else {
-        onSelectionChange(selectedEvents.filter((id) => id !== eventId))
+        onSelectionChange(selectedEvents.filter((id) => id !== eventId));
       }
-    }
+    };
 
     // Single event in group: render as flat item (no accordion)
     if (events.length === 1) {
-      const event = events[0]
-      const isSelected = selectedEvents.includes(event.id)
+      const event = events[0];
+      const isSelected = selectedEvents.includes(event.id);
 
       return (
-        <div
-          ref={ref}
-          className={cn("bg-white p-4", className)}
-          {...props}
-        >
+        <div ref={ref} className={cn("bg-white p-4", className)} {...props}>
           <div className="flex items-start gap-3">
             <Checkbox
               checked={isSelected}
@@ -4140,20 +4147,18 @@ export const EventGroupComponent = React.forwardRef<
             />
             <div className="flex-1 min-w-0">
               <span className="font-medium text-[#333333]">{event.name}</span>
-              <p className="m-0 text-sm text-[#6B7280] mt-0.5">{event.description}</p>
+              <p className="m-0 text-sm text-[#6B7280] mt-0.5">
+                {event.description}
+              </p>
             </div>
           </div>
         </div>
-      )
+      );
     }
 
     // Multiple events: render as collapsible accordion
     return (
-      <div
-        ref={ref}
-        className={cn("bg-white", className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("bg-white", className)} {...props}>
         <Accordion type="multiple">
           <AccordionItem value={group.id}>
             <AccordionTrigger
@@ -4201,9 +4206,7 @@ export const EventGroupComponent = React.forwardRef<
                     />
                   ))
                 ) : renderEmptyGroup ? (
-                  <div className="py-4 px-8">
-                    {renderEmptyGroup(group)}
-                  </div>
+                  <div className="py-4 px-8">{renderEmptyGroup(group)}</div>
                 ) : (
                   <div className="py-4 px-8 text-sm text-[#6B7280] italic">
                     {emptyGroupMessage}
@@ -4214,18 +4217,18 @@ export const EventGroupComponent = React.forwardRef<
           </AccordionItem>
         </Accordion>
       </div>
-    )
+    );
   }
-)
-EventGroupComponent.displayName = "EventGroupComponent"
+);
+EventGroupComponent.displayName = "EventGroupComponent";
 `, prefix),
         },
         {
           name: 'event-item.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
-import { Checkbox } from "../checkbox"
-import type { EventItemComponentProps } from "./types"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Checkbox } from "../checkbox";
+import type { EventItemComponentProps } from "./types";
 
 /**
  * Individual event item with checkbox
@@ -4237,10 +4240,7 @@ export const EventItemComponent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn(
-        "flex items-start gap-3 py-2 pl-8 pr-4",
-        className
-      )}
+      className={cn("flex items-start gap-3 py-2 pl-8 pr-4", className)}
       {...props}
     >
       <Checkbox
@@ -4255,9 +4255,9 @@ export const EventItemComponent = React.forwardRef<
         </div>
       </div>
     </div>
-  )
-})
-EventItemComponent.displayName = "EventItemComponent"
+  );
+});
+EventItemComponent.displayName = "EventItemComponent";
 `, prefix),
         },
         {
@@ -4394,16 +4394,16 @@ export interface EventItemComponentProps {
       files: [
         {
           name: 'key-value-input.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Plus } from "lucide-react"
-import { cn } from "../../../lib/utils"
-import { Button } from "../button"
-import { KeyValueRow } from "./key-value-row"
-import type { KeyValueInputProps, KeyValuePair } from "./types"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Plus } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { KeyValueRow } from "./key-value-row";
+import type { KeyValueInputProps, KeyValuePair } from "./types";
 
 // Helper to generate unique IDs
 const generateId = () =>
-  \`kv-\${Date.now()}-\${Math.random().toString(36).substr(2, 9)}\`
+  \`kv-\${Date.now()}-\${Math.random().toString(36).substr(2, 9)}\`;
 
 /**
  * KeyValueInput - A component for managing key-value pairs
@@ -4452,88 +4452,92 @@ export const KeyValueInput = React.forwardRef<
   ) => {
     // Controlled vs uncontrolled state
     const [internalPairs, setInternalPairs] =
-      React.useState<KeyValuePair[]>(defaultValue)
+      React.useState<KeyValuePair[]>(defaultValue);
 
-    const isControlled = controlledValue !== undefined
-    const pairs = isControlled ? controlledValue : internalPairs
+    const isControlled = controlledValue !== undefined;
+    const pairs = isControlled ? controlledValue : internalPairs;
 
     // Track which keys have been touched for validation
-    const [touchedKeys, setTouchedKeys] = React.useState<Set<string>>(new Set())
+    const [touchedKeys, setTouchedKeys] = React.useState<Set<string>>(
+      new Set()
+    );
 
     const handlePairsChange = React.useCallback(
       (newPairs: KeyValuePair[]) => {
         if (!isControlled) {
-          setInternalPairs(newPairs)
+          setInternalPairs(newPairs);
         }
-        onChange?.(newPairs)
+        onChange?.(newPairs);
       },
       [isControlled, onChange]
-    )
+    );
 
     // Check for duplicate keys (case-insensitive)
     const getDuplicateKeys = React.useCallback((): Set<string> => {
-      const keyCount = new Map<string, number>()
+      const keyCount = new Map<string, number>();
       pairs.forEach((pair) => {
         if (pair.key.trim()) {
-          const key = pair.key.toLowerCase()
-          keyCount.set(key, (keyCount.get(key) || 0) + 1)
+          const key = pair.key.toLowerCase();
+          keyCount.set(key, (keyCount.get(key) || 0) + 1);
         }
-      })
-      const duplicates = new Set<string>()
+      });
+      const duplicates = new Set<string>();
       keyCount.forEach((count, key) => {
-        if (count > 1) duplicates.add(key)
-      })
-      return duplicates
-    }, [pairs])
+        if (count > 1) duplicates.add(key);
+      });
+      return duplicates;
+    }, [pairs]);
 
-    const duplicateKeys = getDuplicateKeys()
+    const duplicateKeys = getDuplicateKeys();
 
     // Add new row
     const handleAdd = () => {
-      if (pairs.length >= maxItems) return
+      if (pairs.length >= maxItems) return;
       const newPair: KeyValuePair = {
         id: generateId(),
         key: "",
         value: "",
-      }
-      handlePairsChange([...pairs, newPair])
-    }
+      };
+      handlePairsChange([...pairs, newPair]);
+    };
 
     // Update key
     const handleKeyChange = (id: string, key: string) => {
       handlePairsChange(
         pairs.map((pair) => (pair.id === id ? { ...pair, key } : pair))
-      )
-      setTouchedKeys((prev) => new Set(prev).add(id))
-    }
+      );
+      setTouchedKeys((prev) => new Set(prev).add(id));
+    };
 
     // Update value
     const handleValueChange = (id: string, value: string) => {
       handlePairsChange(
         pairs.map((pair) => (pair.id === id ? { ...pair, value } : pair))
-      )
-    }
+      );
+    };
 
     // Delete row
     const handleDelete = (id: string) => {
-      handlePairsChange(pairs.filter((pair) => pair.id !== id))
+      handlePairsChange(pairs.filter((pair) => pair.id !== id));
       setTouchedKeys((prev) => {
-        const next = new Set(prev)
-        next.delete(id)
-        return next
-      })
-    }
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    };
 
-    const isAtLimit = pairs.length >= maxItems
+    const isAtLimit = pairs.length >= maxItems;
     const addButtonTitle = isAtLimit
       ? \`Maximum of \${maxItems} items allowed\`
-      : undefined
+      : undefined;
 
     return (
       <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="mb-3">
-          <h3 className="m-0 text-base font-semibold text-[#333333]">{title}</h3>
+          <h3 className="m-0 text-base font-semibold text-[#333333]">
+            {title}
+          </h3>
           {description && (
             <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
           )}
@@ -4598,20 +4602,20 @@ export const KeyValueInput = React.forwardRef<
           </p>
         )}
       </div>
-    )
+    );
   }
-)
-KeyValueInput.displayName = "KeyValueInput"
+);
+KeyValueInput.displayName = "KeyValueInput";
 `, prefix),
         },
         {
           name: 'key-value-row.tsx',
-          content: prefixTailwindClasses(`import * as React from "react"
-import { Trash2 } from "lucide-react"
-import { cn } from "../../../lib/utils"
-import { Input } from "../input"
-import { Button } from "../button"
-import type { KeyValueRowProps } from "./types"
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Trash2 } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Input } from "../input";
+import { Button } from "../button";
+import type { KeyValueRowProps } from "./types";
 
 /**
  * Individual key-value pair row with inputs and delete button
@@ -4636,14 +4640,14 @@ export const KeyValueRow = React.forwardRef<
     ref
   ) => {
     // Determine if key input should show error state
-    const keyHasError = isDuplicateKey || isKeyEmpty
+    const keyHasError = isDuplicateKey || isKeyEmpty;
 
     // Determine error message
     const errorMessage = isDuplicateKey
       ? "Duplicate key"
       : isKeyEmpty
-      ? "Key is required"
-      : null
+        ? "Key is required"
+        : null;
 
     return (
       <div
@@ -4689,10 +4693,10 @@ export const KeyValueRow = React.forwardRef<
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
-    )
+    );
   }
-)
-KeyValueRow.displayName = "KeyValueRow"
+);
+KeyValueRow.displayName = "KeyValueRow";
 `, prefix),
         },
         {

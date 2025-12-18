@@ -1,117 +1,122 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { Phone, MessageCircle } from 'lucide-react'
-import { EventSelector } from './event-selector'
-import type { EventItem, EventGroup, EventCategory } from './types'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { Phone, MessageCircle } from "lucide-react";
+import { EventSelector } from "./event-selector";
+import type { EventItem, EventGroup, EventCategory } from "./types";
 
 // Sample data matching the Figma screenshots
 const sampleEvents: EventItem[] = [
   // In-Call Events (multiple events - will show as collapsible accordion)
   {
-    id: 'call-begin',
-    name: 'Call Begin – NewChannel',
-    description: 'Triggered when the call reaches MyOperator and a new channel is created.',
-    group: 'in-call-events',
+    id: "call-begin",
+    name: "Call Begin – NewChannel",
+    description:
+      "Triggered when the call reaches MyOperator and a new channel is created.",
+    group: "in-call-events",
   },
   {
-    id: 'call-agent-ringing',
-    name: 'Start Dialing Agent – DialBegin',
-    description: 'Triggered when the system starts dialing the assigned agent(s).',
-    group: 'in-call-events',
+    id: "call-agent-ringing",
+    name: "Start Dialing Agent – DialBegin",
+    description:
+      "Triggered when the system starts dialing the assigned agent(s).",
+    group: "in-call-events",
   },
   {
-    id: 'call-agent-responded',
-    name: 'Agent Responded – DialEnd',
-    description: 'Triggered when the call reaches MyOperator and a new channel is created.',
-    group: 'in-call-events',
+    id: "call-agent-responded",
+    name: "Agent Responded – DialEnd",
+    description:
+      "Triggered when the call reaches MyOperator and a new channel is created.",
+    group: "in-call-events",
   },
   {
-    id: 'call-ended',
-    name: 'Call Ended – Hangup',
-    description: 'Triggered when the call is terminated by either party.',
-    group: 'in-call-events',
+    id: "call-ended",
+    name: "Call Ended – Hangup",
+    description: "Triggered when the call is terminated by either party.",
+    group: "in-call-events",
   },
   // After Call Summary Event (single event - will show as flat card)
   {
-    id: 'call-summary',
-    name: 'After Call Summary Event',
-    description: 'Includes: Call duration, recordings, timestamps, agent, caller, queue logic, call outcome.',
-    group: 'after-call-event',
+    id: "call-summary",
+    name: "After Call Summary Event",
+    description:
+      "Includes: Call duration, recordings, timestamps, agent, caller, queue logic, call outcome.",
+    group: "after-call-event",
   },
   // Disposition Submitted Event (single event - will show as flat card)
   {
-    id: 'disposition-submitted',
-    name: 'Disposition Submitted Event',
-    description: 'Includes: tags, disposition notes, remarks, selected reason codes.',
-    group: 'call-disposition-event',
+    id: "disposition-submitted",
+    name: "Disposition Submitted Event",
+    description:
+      "Includes: tags, disposition notes, remarks, selected reason codes.",
+    group: "call-disposition-event",
   },
   // WhatsApp Events (single event - will show as flat card)
   {
-    id: 'whatsapp-events',
-    name: 'WhatsApp Events',
-    description: 'Triggered in WhatsApp communication flow',
-    group: 'whatsapp-events',
+    id: "whatsapp-events",
+    name: "WhatsApp Events",
+    description: "Triggered in WhatsApp communication flow",
+    group: "whatsapp-events",
   },
-]
+];
 
 const sampleGroups: EventGroup[] = [
   {
-    id: 'in-call-events',
-    name: 'In-Call Events',
-    description: 'Triggered during active calls',
+    id: "in-call-events",
+    name: "In-Call Events",
+    description: "Triggered during active calls",
   },
   {
-    id: 'after-call-event',
-    name: 'After Call Summary Event',
-    description: 'Triggered once per call after hangup.',
+    id: "after-call-event",
+    name: "After Call Summary Event",
+    description: "Triggered once per call after hangup.",
   },
   {
-    id: 'call-disposition-event',
-    name: 'Disposition Submitted Event',
-    description: 'Triggered after agent submits disposition.',
+    id: "call-disposition-event",
+    name: "Disposition Submitted Event",
+    description: "Triggered after agent submits disposition.",
   },
   {
-    id: 'whatsapp-events',
-    name: 'WhatsApp Events',
-    description: 'Triggered in WhatsApp communication flow',
+    id: "whatsapp-events",
+    name: "WhatsApp Events",
+    description: "Triggered in WhatsApp communication flow",
   },
-]
+];
 
 // Categories without icons (default)
 const sampleCategories: EventCategory[] = [
   {
-    id: 'call-events',
-    name: 'Call Events (Voice)',
-    groups: ['in-call-events', 'after-call-event', 'call-disposition-event'],
+    id: "call-events",
+    name: "Call Events (Voice)",
+    groups: ["in-call-events", "after-call-event", "call-disposition-event"],
   },
   {
-    id: 'whatsapp-category',
-    name: 'WhatsApp Events',
-    groups: ['whatsapp-events'],
+    id: "whatsapp-category",
+    name: "WhatsApp Events",
+    groups: ["whatsapp-events"],
   },
-]
+];
 
 // Categories with icons (optional)
 const sampleCategoriesWithIcons: EventCategory[] = [
   {
-    id: 'call-events',
-    name: 'Call Events (Voice)',
+    id: "call-events",
+    name: "Call Events (Voice)",
     icon: <Phone className="h-5 w-5 text-[#343E55]" />,
-    groups: ['in-call-events', 'after-call-event', 'call-disposition-event'],
+    groups: ["in-call-events", "after-call-event", "call-disposition-event"],
   },
   {
-    id: 'whatsapp-category',
-    name: 'WhatsApp Events',
+    id: "whatsapp-category",
+    name: "WhatsApp Events",
     icon: <MessageCircle className="h-5 w-5 text-[#25D366]" />,
-    groups: ['whatsapp-events'],
+    groups: ["whatsapp-events"],
   },
-]
+];
 
 const meta: Meta<typeof EventSelector> = {
-  title: 'Custom/Event Selector',
+  title: "Custom/Event Selector",
   component: EventSelector,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
     docs: {
       description: {
         component: `
@@ -187,19 +192,19 @@ const [selected, setSelected] = useState<string[]>([])
       },
     },
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     title: {
-      control: 'text',
-      description: 'Title displayed at the top',
+      control: "text",
+      description: "Title displayed at the top",
     },
     description: {
-      control: 'text',
-      description: 'Description displayed below the title',
+      control: "text",
+      description: "Description displayed below the title",
     },
     emptyGroupMessage: {
-      control: 'text',
-      description: 'Message shown when a group has no events',
+      control: "text",
+      description: "Message shown when a group has no events",
     },
   },
   decorators: [
@@ -209,10 +214,10 @@ const [selected, setSelected] = useState<string[]>([])
       </div>
     ),
   ],
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Basic uncontrolled example - flat layout matching Figma
 export const Default: Story = {
@@ -220,33 +225,36 @@ export const Default: Story = {
     events: sampleEvents,
     groups: sampleGroups,
     // No categories - flat list of groups
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
-}
+};
 
 // With pre-selected events
 export const WithDefaultSelection: Story = {
-  name: 'With Default Selection',
+  name: "With Default Selection",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
     // No categories - flat list
-    defaultSelectedEvents: ['call-begin', 'call-ended', 'call-summary'],
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    defaultSelectedEvents: ["call-begin", "call-ended", "call-summary"],
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
-}
+};
 
 // Controlled example
 const ControlledExample = () => {
-  const [selected, setSelected] = useState<string[]>(['call-begin', 'call-ended'])
+  const [selected, setSelected] = useState<string[]>([
+    "call-begin",
+    "call-ended",
+  ]);
 
   return (
     <div className="space-y-4">
       <div className="p-4 bg-gray-100 rounded-lg">
         <p className="text-sm text-gray-600 mb-2">
-          Selected Events: {selected.length > 0 ? selected.join(', ') : 'none'}
+          Selected Events: {selected.length > 0 ? selected.join(", ") : "none"}
         </p>
         <div className="flex gap-2 flex-wrap">
           <button
@@ -256,7 +264,7 @@ const ControlledExample = () => {
             Clear All
           </button>
           <button
-            onClick={() => setSelected(sampleEvents.map(e => e.id))}
+            onClick={() => setSelected(sampleEvents.map((e) => e.id))}
             className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50"
           >
             Select All
@@ -270,73 +278,78 @@ const ControlledExample = () => {
         onSelectionChange={setSelected}
       />
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
   parameters: {
     docs: {
       description: {
-        story: 'Use `selectedEvents` and `onSelectionChange` props for controlled state management.',
+        story:
+          "Use `selectedEvents` and `onSelectionChange` props for controlled state management.",
       },
     },
   },
-}
+};
 
 // With categories
 // Without categories - simpler flat structure
 export const WithoutCategories: Story = {
-  name: 'Without Categories (Flat)',
+  name: "Without Categories (Flat)",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
     // No categories prop - groups shown directly
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
   parameters: {
     docs: {
       description: {
-        story: 'When categories are not provided, groups are displayed directly without the extra nesting level. Use this for simpler implementations.',
+        story:
+          "When categories are not provided, groups are displayed directly without the extra nesting level. Use this for simpler implementations.",
       },
     },
   },
-}
+};
 
 // Empty state
 export const EmptyGroup: Story = {
-  name: 'With Empty Group',
+  name: "With Empty Group",
   args: {
-    events: sampleEvents.filter(e => e.group !== 'call-disposition-event'),
+    events: sampleEvents.filter((e) => e.group !== "call-disposition-event"),
     groups: sampleGroups,
     // No categories - flat list
-    emptyGroupMessage: 'No events configured for this category',
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    emptyGroupMessage: "No events configured for this category",
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
   parameters: {
     docs: {
       description: {
-        story: 'When a group has no events, the `emptyGroupMessage` is displayed.',
+        story:
+          "When a group has no events, the `emptyGroupMessage` is displayed.",
       },
     },
   },
-}
+};
 
 // Custom empty state with action button
 const CustomEmptyStateExample = () => {
   const handleAddEvent = (groupId: string) => {
-    alert(`Add event to group: ${groupId}`)
-  }
+    alert(`Add event to group: ${groupId}`);
+  };
 
   return (
     <EventSelector
-      events={sampleEvents.filter(e => e.group !== 'call-disposition-event')}
+      events={sampleEvents.filter((e) => e.group !== "call-disposition-event")}
       groups={sampleGroups}
       renderEmptyGroup={(group) => (
         <div className="flex items-center justify-between">
-          <span className="text-sm text-[#6B7280]">No events in this group</span>
+          <span className="text-sm text-[#6B7280]">
+            No events in this group
+          </span>
           <button
             onClick={() => handleAddEvent(group.id)}
             className="px-3 py-1 text-sm bg-[#343E55] text-white rounded hover:bg-[#343E55]/90"
@@ -346,93 +359,99 @@ const CustomEmptyStateExample = () => {
         </div>
       )}
     />
-  )
-}
+  );
+};
 
 export const CustomEmptyState: Story = {
-  name: 'Custom Empty State',
+  name: "Custom Empty State",
   render: () => <CustomEmptyStateExample />,
   parameters: {
     docs: {
       description: {
-        story: 'Use `renderEmptyGroup` to customize the empty state with actions like "Add Event" button.',
+        story:
+          'Use `renderEmptyGroup` to customize the empty state with actions like "Add Event" button.',
       },
     },
   },
-}
+};
 
 // Partial selection (indeterminate state)
 export const PartialSelection: Story = {
-  name: 'Partial Selection (Indeterminate)',
+  name: "Partial Selection (Indeterminate)",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
     // No categories - flat list
-    defaultSelectedEvents: ['call-begin', 'call-ended'],
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    defaultSelectedEvents: ["call-begin", "call-ended"],
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
   parameters: {
     docs: {
       description: {
-        story: 'When some (but not all) events in a group are selected, the group checkbox shows an indeterminate state.',
+        story:
+          "When some (but not all) events in a group are selected, the group checkbox shows an indeterminate state.",
       },
     },
   },
-}
+};
 
 // Full selection
 export const FullSelection: Story = {
-  name: 'Full Selection',
+  name: "Full Selection",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
     // No categories - flat list
-    defaultSelectedEvents: sampleEvents.map(e => e.id),
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    defaultSelectedEvents: sampleEvents.map((e) => e.id),
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
-}
+};
 
 // Custom title and description
 export const CustomLabels: Story = {
-  name: 'Custom Labels',
+  name: "Custom Labels",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
     // No categories - flat list
-    title: 'Webhook Events',
-    description: 'Choose the events that will trigger notifications to your endpoint',
+    title: "Webhook Events",
+    description:
+      "Choose the events that will trigger notifications to your endpoint",
   },
-}
+};
 
 // With category icons
 export const WithIcons: Story = {
-  name: 'With Category Icons',
+  name: "With Category Icons",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
     categories: sampleCategoriesWithIcons,
-    title: 'Events',
-    description: 'Select which events should trigger this webhook',
+    title: "Events",
+    description: "Select which events should trigger this webhook",
   },
   parameters: {
     docs: {
       description: {
-        story: 'Categories can optionally have icons. Pass any React node as the `icon` property.',
+        story:
+          "Categories can optionally have icons. Pass any React node as the `icon` property.",
       },
     },
   },
-}
+};
 
 // Real-world usage example
 const RealWorldExample = () => {
-  const [selected, setSelected] = useState<string[]>([])
-  const [webhookUrl, setWebhookUrl] = useState('')
+  const [selected, setSelected] = useState<string[]>([]);
+  const [webhookUrl, setWebhookUrl] = useState("");
 
   const handleSave = () => {
-    alert(`Webhook URL: ${webhookUrl}\nSelected Events: ${selected.join(', ')}`)
-  }
+    alert(
+      `Webhook URL: ${webhookUrl}\nSelected Events: ${selected.join(", ")}`
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -458,7 +477,10 @@ const RealWorldExample = () => {
 
       <div className="flex justify-end gap-3">
         <button
-          onClick={() => { setSelected([]); setWebhookUrl('') }}
+          onClick={() => {
+            setSelected([]);
+            setWebhookUrl("");
+          }}
           className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
         >
           Cancel
@@ -472,17 +494,18 @@ const RealWorldExample = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const RealWorldUsage: Story = {
-  name: 'Real World Usage',
+  name: "Real World Usage",
   render: () => <RealWorldExample />,
   parameters: {
     docs: {
       description: {
-        story: 'A complete example showing how EventSelector might be used in a webhook configuration form.',
+        story:
+          "A complete example showing how EventSelector might be used in a webhook configuration form.",
       },
     },
   },
-}
+};

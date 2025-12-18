@@ -1,9 +1,9 @@
-import * as React from "react"
-import { Trash2 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Input } from "../../ui/input"
-import { Button } from "../../ui/button"
-import type { KeyValueRowProps } from "./types"
+import * as React from "react";
+import { Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import type { KeyValueRowProps } from "./types";
 
 /**
  * Individual key-value pair row with inputs and delete button
@@ -28,14 +28,14 @@ export const KeyValueRow = React.forwardRef<
     ref
   ) => {
     // Determine if key input should show error state
-    const keyHasError = isDuplicateKey || isKeyEmpty
+    const keyHasError = isDuplicateKey || isKeyEmpty;
 
     // Determine error message
     const errorMessage = isDuplicateKey
       ? "Duplicate key"
       : isKeyEmpty
-      ? "Key is required"
-      : null
+        ? "Key is required"
+        : null;
 
     return (
       <div
@@ -81,7 +81,7 @@ export const KeyValueRow = React.forwardRef<
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
-    )
+    );
   }
-)
-KeyValueRow.displayName = "KeyValueRow"
+);
+KeyValueRow.displayName = "KeyValueRow";

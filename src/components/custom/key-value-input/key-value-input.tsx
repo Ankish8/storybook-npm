@@ -1,13 +1,13 @@
-import * as React from "react"
-import { Plus } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "../../ui/button"
-import { KeyValueRow } from "./key-value-row"
-import type { KeyValueInputProps, KeyValuePair } from "./types"
+import * as React from "react";
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "../../ui/button";
+import { KeyValueRow } from "./key-value-row";
+import type { KeyValueInputProps, KeyValuePair } from "./types";
 
 // Helper to generate unique IDs
 const generateId = () =>
-  `kv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  `kv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 /**
  * KeyValueInput - A component for managing key-value pairs
@@ -56,88 +56,92 @@ export const KeyValueInput = React.forwardRef<
   ) => {
     // Controlled vs uncontrolled state
     const [internalPairs, setInternalPairs] =
-      React.useState<KeyValuePair[]>(defaultValue)
+      React.useState<KeyValuePair[]>(defaultValue);
 
-    const isControlled = controlledValue !== undefined
-    const pairs = isControlled ? controlledValue : internalPairs
+    const isControlled = controlledValue !== undefined;
+    const pairs = isControlled ? controlledValue : internalPairs;
 
     // Track which keys have been touched for validation
-    const [touchedKeys, setTouchedKeys] = React.useState<Set<string>>(new Set())
+    const [touchedKeys, setTouchedKeys] = React.useState<Set<string>>(
+      new Set()
+    );
 
     const handlePairsChange = React.useCallback(
       (newPairs: KeyValuePair[]) => {
         if (!isControlled) {
-          setInternalPairs(newPairs)
+          setInternalPairs(newPairs);
         }
-        onChange?.(newPairs)
+        onChange?.(newPairs);
       },
       [isControlled, onChange]
-    )
+    );
 
     // Check for duplicate keys (case-insensitive)
     const getDuplicateKeys = React.useCallback((): Set<string> => {
-      const keyCount = new Map<string, number>()
+      const keyCount = new Map<string, number>();
       pairs.forEach((pair) => {
         if (pair.key.trim()) {
-          const key = pair.key.toLowerCase()
-          keyCount.set(key, (keyCount.get(key) || 0) + 1)
+          const key = pair.key.toLowerCase();
+          keyCount.set(key, (keyCount.get(key) || 0) + 1);
         }
-      })
-      const duplicates = new Set<string>()
+      });
+      const duplicates = new Set<string>();
       keyCount.forEach((count, key) => {
-        if (count > 1) duplicates.add(key)
-      })
-      return duplicates
-    }, [pairs])
+        if (count > 1) duplicates.add(key);
+      });
+      return duplicates;
+    }, [pairs]);
 
-    const duplicateKeys = getDuplicateKeys()
+    const duplicateKeys = getDuplicateKeys();
 
     // Add new row
     const handleAdd = () => {
-      if (pairs.length >= maxItems) return
+      if (pairs.length >= maxItems) return;
       const newPair: KeyValuePair = {
         id: generateId(),
         key: "",
         value: "",
-      }
-      handlePairsChange([...pairs, newPair])
-    }
+      };
+      handlePairsChange([...pairs, newPair]);
+    };
 
     // Update key
     const handleKeyChange = (id: string, key: string) => {
       handlePairsChange(
         pairs.map((pair) => (pair.id === id ? { ...pair, key } : pair))
-      )
-      setTouchedKeys((prev) => new Set(prev).add(id))
-    }
+      );
+      setTouchedKeys((prev) => new Set(prev).add(id));
+    };
 
     // Update value
     const handleValueChange = (id: string, value: string) => {
       handlePairsChange(
         pairs.map((pair) => (pair.id === id ? { ...pair, value } : pair))
-      )
-    }
+      );
+    };
 
     // Delete row
     const handleDelete = (id: string) => {
-      handlePairsChange(pairs.filter((pair) => pair.id !== id))
+      handlePairsChange(pairs.filter((pair) => pair.id !== id));
       setTouchedKeys((prev) => {
-        const next = new Set(prev)
-        next.delete(id)
-        return next
-      })
-    }
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    };
 
-    const isAtLimit = pairs.length >= maxItems
+    const isAtLimit = pairs.length >= maxItems;
     const addButtonTitle = isAtLimit
       ? `Maximum of ${maxItems} items allowed`
-      : undefined
+      : undefined;
 
     return (
       <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="mb-3">
-          <h3 className="m-0 text-base font-semibold text-[#333333]">{title}</h3>
+          <h3 className="m-0 text-base font-semibold text-[#333333]">
+            {title}
+          </h3>
           {description && (
             <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
           )}
@@ -202,7 +206,7 @@ export const KeyValueInput = React.forwardRef<
           </p>
         )}
       </div>
-    )
+    );
   }
-)
-KeyValueInput.displayName = "KeyValueInput"
+);
+KeyValueInput.displayName = "KeyValueInput";

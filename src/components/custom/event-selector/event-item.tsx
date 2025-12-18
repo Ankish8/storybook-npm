@@ -1,7 +1,7 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Checkbox } from "../../ui/checkbox"
-import type { EventItemComponentProps } from "./types"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Checkbox } from "../../ui/checkbox";
+import type { EventItemComponentProps } from "./types";
 
 /**
  * Individual event item with checkbox
@@ -13,10 +13,7 @@ export const EventItemComponent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn(
-        "flex items-start gap-3 py-2 pl-8 pr-4",
-        className
-      )}
+      className={cn("flex items-start gap-3 py-2 pl-8 pr-4", className)}
       {...props}
     >
       <Checkbox
@@ -31,6 +28,6 @@ export const EventItemComponent = React.forwardRef<
         </div>
       </div>
     </div>
-  )
-})
-EventItemComponent.displayName = "EventItemComponent"
+  );
+});
+EventItemComponent.displayName = "EventItemComponent";

@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import { useState } from "react"
-import { KeyValueInput } from "./key-value-input"
-import type { KeyValuePair } from "./types"
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import { KeyValueInput } from "./key-value-input";
+import type { KeyValuePair } from "./types";
 
 const meta: Meta<typeof KeyValueInput> = {
   title: "Custom/Key Value Input",
@@ -99,10 +99,10 @@ const [headers, setHeaders] = useState<KeyValuePair[]>([])
       </div>
     ),
   ],
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 // Default uncontrolled example
 export const Default: Story = {
@@ -115,7 +115,7 @@ export const Default: Story = {
     keyPlaceholder: "Content-Type",
     valuePlaceholder: "application/json",
   },
-}
+};
 
 // With default values
 export const WithDefaultValues: Story = {
@@ -129,13 +129,13 @@ export const WithDefaultValues: Story = {
       { id: "2", key: "Authorization", value: "Bearer token" },
     ],
   },
-}
+};
 
 // Controlled example
 const ControlledExample = () => {
   const [headers, setHeaders] = useState<KeyValuePair[]>([
     { id: "1", key: "Content-Type", value: "application/json" },
-  ])
+  ]);
 
   return (
     <div className="space-y-4">
@@ -154,12 +154,12 @@ const ControlledExample = () => {
         </pre>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const Controlled: Story = {
   render: () => <ControlledExample />,
-}
+};
 
 // At max limit
 export const AtMaxLimit: Story = {
@@ -174,7 +174,7 @@ export const AtMaxLimit: Story = {
       { id: "3", key: "Accept", value: "application/json" },
     ],
   },
-}
+};
 
 // With validation errors
 const ValidationExample = () => {
@@ -182,7 +182,7 @@ const ValidationExample = () => {
     { id: "1", key: "Content-Type", value: "application/json" },
     { id: "2", key: "content-type", value: "text/html" }, // Duplicate (case-insensitive)
     { id: "3", key: "", value: "some value" }, // Empty key
-  ])
+  ]);
 
   return (
     <KeyValueInput
@@ -191,13 +191,13 @@ const ValidationExample = () => {
       value={pairs}
       onChange={setPairs}
     />
-  )
-}
+  );
+};
 
 export const WithValidation: Story = {
   name: "With Validation Errors",
   render: () => <ValidationExample />,
-}
+};
 
 // Query Parameters use case
 export const QueryParameters: Story = {
@@ -214,7 +214,7 @@ export const QueryParameters: Story = {
       { id: "2", key: "limit", value: "10" },
     ],
   },
-}
+};
 
 // Empty state
 export const EmptyState: Story = {
@@ -225,12 +225,12 @@ export const EmptyState: Story = {
       "Additional HTTP headers to send with webhook requests. Key is required, value is optional.",
     defaultValue: [],
   },
-}
+};
 
 // Real world usage example
 const RealWorldExample = () => {
-  const [headers, setHeaders] = useState<KeyValuePair[]>([])
-  const [queryParams, setQueryParams] = useState<KeyValuePair[]>([])
+  const [headers, setHeaders] = useState<KeyValuePair[]>([]);
+  const [queryParams, setQueryParams] = useState<KeyValuePair[]>([]);
 
   return (
     <div className="space-y-8">
@@ -252,8 +252,8 @@ const RealWorldExample = () => {
         valuePlaceholder="1"
       />
     </div>
-  )
-}
+  );
+};
 
 export const RealWorldUsage: Story = {
   name: "Real World Usage",
@@ -266,4 +266,4 @@ export const RealWorldUsage: Story = {
       },
     },
   },
-}
+};

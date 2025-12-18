@@ -1,7 +1,7 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { EventGroupComponent } from "./event-group"
-import type { EventSelectorProps, EventCategory, EventGroup } from "./types"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { EventGroupComponent } from "./event-group";
+import type { EventSelectorProps, EventCategory, EventGroup } from "./types";
 
 /**
  * EventSelector - A component for selecting webhook events
@@ -26,7 +26,10 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types"
  * />
  * ```
  */
-export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps>(
+export const EventSelector = React.forwardRef<
+  HTMLDivElement,
+  EventSelectorProps
+>(
   (
     {
       events,
@@ -47,35 +50,35 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
     // Controlled vs uncontrolled state
     const [internalSelected, setInternalSelected] = React.useState<string[]>(
       defaultSelectedEvents
-    )
+    );
 
-    const isControlled = controlledSelected !== undefined
-    const selectedEvents = isControlled ? controlledSelected : internalSelected
+    const isControlled = controlledSelected !== undefined;
+    const selectedEvents = isControlled ? controlledSelected : internalSelected;
 
     const handleSelectionChange = React.useCallback(
       (newSelection: string[]) => {
         if (!isControlled) {
-          setInternalSelected(newSelection)
+          setInternalSelected(newSelection);
         }
-        onSelectionChange?.(newSelection)
+        onSelectionChange?.(newSelection);
       },
       [isControlled, onSelectionChange]
-    )
+    );
 
     // Get events for a specific group
     const getEventsForGroup = (groupId: string) => {
-      return events.filter((event) => event.group === groupId)
-    }
+      return events.filter((event) => event.group === groupId);
+    };
 
     // Get groups for a specific category
     const getGroupsForCategory = (category: EventCategory): EventGroup[] => {
       return category.groups
         .map((groupId) => groups.find((g) => g.id === groupId))
-        .filter((g): g is EventGroup => g !== undefined)
-    }
+        .filter((g): g is EventGroup => g !== undefined);
+    };
 
     // Calculate total selected count
-    const totalSelected = selectedEvents.length
+    const totalSelected = selectedEvents.length;
 
     // Render groups without categories
     const renderGroups = (groupsToRender: EventGroup[]) => {
@@ -89,32 +92,36 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
           emptyGroupMessage={emptyGroupMessage}
           renderEmptyGroup={renderEmptyGroup}
         />
-      ))
-    }
+      ));
+    };
 
     // Render categories with nested groups
     const renderCategories = () => {
       // Ensure categories is an array before using array methods
-      if (!categories || !Array.isArray(categories) || categories.length === 0) {
-        return renderGroups(groups)
+      if (
+        !categories ||
+        !Array.isArray(categories) ||
+        categories.length === 0
+      ) {
+        return renderGroups(groups);
       }
 
       // Get groups that belong to categories
-      const groupsInCategories = new Set(categories.flatMap((c) => c.groups))
+      const groupsInCategories = new Set(categories.flatMap((c) => c.groups));
 
       // Get orphan groups (not in any category)
-      const orphanGroups = groups.filter((g) => !groupsInCategories.has(g.id))
+      const orphanGroups = groups.filter((g) => !groupsInCategories.has(g.id));
 
       return (
         <>
           {categories.map((category) => {
-            const categoryGroups = getGroupsForCategory(category)
+            const categoryGroups = getGroupsForCategory(category);
             const categoryEventIds = categoryGroups.flatMap((g) =>
               getEventsForGroup(g.id).map((e) => e.id)
-            )
+            );
             const selectedInCategory = categoryEventIds.filter((id) =>
               selectedEvents.includes(id)
-            )
+            );
 
             return (
               <div
@@ -144,24 +151,22 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
                   {renderGroups(categoryGroups)}
                 </div>
               </div>
-            )
+            );
           })}
           {/* Render orphan groups outside categories */}
           {orphanGroups.length > 0 && renderGroups(orphanGroups)}
         </>
-      )
-    }
+      );
+    };
 
     return (
-      <div
-        ref={ref}
-        className={cn("w-full", className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="m-0 text-base font-semibold text-[#333333]">{title}</h3>
+            <h3 className="m-0 text-base font-semibold text-[#333333]">
+              {title}
+            </h3>
             {description && (
               <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
             )}
@@ -176,7 +181,7 @@ export const EventSelector = React.forwardRef<HTMLDivElement, EventSelectorProps
           {renderCategories()}
         </div>
       </div>
-    )
+    );
   }
-)
-EventSelector.displayName = "EventSelector"
+);
+EventSelector.displayName = "EventSelector";
