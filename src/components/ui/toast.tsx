@@ -209,7 +209,6 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout);
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -374,7 +373,7 @@ function Toaster() {
         const Icon = variant ? variantIcons[variant] : null;
 
         return (
-          <Toast key={id} variant={variant} className={variant} {...props}>
+          <Toast key={id} variant={variant} className={variant ?? undefined} {...props}>
             <div className="flex gap-3">
               {Icon && (
                 <Icon
@@ -404,7 +403,6 @@ function Toaster() {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export { useToast, toast, Toaster };
 
 /**
