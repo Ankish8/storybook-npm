@@ -86,9 +86,19 @@ describe('Registry', () => {
       'lucide-react',
     ]
 
+    const getPackageName = (dep: string) => {
+      // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
+      if (dep.startsWith('@')) {
+        const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
+        return match ? match[1] : dep
+      }
+      return dep.split(/[@^~]/)[0]
+    }
+
     for (const component of Object.values(registry)) {
       for (const dep of component.dependencies) {
-        expect(validDeps).toContain(dep)
+        const pkgName = getPackageName(dep)
+        expect(validDeps).toContain(pkgName)
       }
     }
   })
@@ -106,16 +116,38 @@ describe('Registry', () => {
     const registry = await getRegistry()
     const button = registry.button
 
-    expect(button.dependencies).toContain('@radix-ui/react-slot')
-    expect(button.dependencies).toContain('class-variance-authority')
-    expect(button.dependencies).toContain('lucide-react')
+    const getPackageName = (dep: string) => {
+      // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
+      if (dep.startsWith('@')) {
+        const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
+        return match ? match[1] : dep
+      }
+      return dep.split(/[@^~]/)[0]
+    }
+
+    const depNames = button.dependencies.map(getPackageName)
+
+    expect(depNames).toContain('@radix-ui/react-slot')
+    expect(depNames).toContain('class-variance-authority')
+    expect(depNames).toContain('lucide-react')
   })
 
   it('dropdown-menu component has radix dependency', async () => {
     const registry = await getRegistry()
     const dropdown = registry['dropdown-menu']
 
-    expect(dropdown.dependencies).toContain('@radix-ui/react-dropdown-menu')
+    const getPackageName = (dep: string) => {
+      // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
+      if (dep.startsWith('@')) {
+        const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
+        return match ? match[1] : dep
+      }
+      return dep.split(/[@^~]/)[0]
+    }
+
+    const depNames = dropdown.dependencies.map(getPackageName)
+
+    expect(depNames).toContain('@radix-ui/react-dropdown-menu')
   })
 
   it('prefix function works correctly', async () => {
