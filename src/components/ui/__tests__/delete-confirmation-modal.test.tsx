@@ -217,5 +217,31 @@ describe("DeleteConfirmationModal", () => {
 
       expect(screen.getByRole("textbox")).toHaveFocus();
     });
+
+    it("provides sr-only description when none is provided", () => {
+      render(<DeleteConfirmationModal open={true} itemName="webhook" />);
+
+      // Should have a hidden description for screen readers
+      const srOnlyDescription = screen.getByText(
+        "Delete confirmation dialog - this action cannot be undone"
+      );
+      expect(srOnlyDescription).toBeInTheDocument();
+      expect(srOnlyDescription).toHaveClass("sr-only");
+    });
+
+    it("shows visible description when provided", () => {
+      render(
+        <DeleteConfirmationModal
+          open={true}
+          description="This will permanently remove the item."
+        />
+      );
+
+      const description = screen.getByText(
+        "This will permanently remove the item."
+      );
+      expect(description).toBeInTheDocument();
+      expect(description).not.toHaveClass("sr-only");
+    });
   });
 });

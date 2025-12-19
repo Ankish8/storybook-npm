@@ -247,6 +247,34 @@ describe("ConfirmationModal", () => {
         screen.getByText("This action cannot be undone")
       ).toBeInTheDocument();
     });
+
+    it("provides sr-only description when none is provided", () => {
+      render(
+        <ConfirmationModal
+          open={true}
+          title="Confirm Action"
+        />
+      );
+
+      // Should have a hidden description for screen readers
+      const srOnlyDescription = screen.getByText("Confirmation dialog");
+      expect(srOnlyDescription).toBeInTheDocument();
+      expect(srOnlyDescription).toHaveClass("sr-only");
+    });
+
+    it("shows visible description when provided", () => {
+      render(
+        <ConfirmationModal
+          open={true}
+          title="Confirm"
+          description="Are you sure?"
+        />
+      );
+
+      const description = screen.getByText("Are you sure?");
+      expect(description).toBeInTheDocument();
+      expect(description).not.toHaveClass("sr-only");
+    });
   });
 
   describe("Controlled vs Uncontrolled", () => {

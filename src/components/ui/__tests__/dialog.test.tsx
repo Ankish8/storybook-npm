@@ -309,5 +309,36 @@ describe("Dialog", () => {
 
       expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
     });
+
+    it("provides sr-only description when none is provided", () => {
+      render(
+        <Dialog open={true}>
+          <DialogContent>
+            <DialogTitle>Test Title Only</DialogTitle>
+          </DialogContent>
+        </Dialog>
+      );
+
+      // Should have a hidden description for screen readers
+      const srOnlyDescription = screen.getByText("Dialog content");
+      expect(srOnlyDescription).toBeInTheDocument();
+      expect(srOnlyDescription).toHaveClass("sr-only");
+    });
+
+    it("does not add sr-only description when DialogDescription is provided", () => {
+      render(
+        <Dialog open={true}>
+          <DialogContent>
+            <DialogTitle>Test</DialogTitle>
+            <DialogDescription>Custom description</DialogDescription>
+          </DialogContent>
+        </Dialog>
+      );
+
+      // Should have the custom description
+      expect(screen.getByText("Custom description")).toBeInTheDocument();
+      // Should NOT have the fallback sr-only description
+      expect(screen.queryByText("Dialog content")).not.toBeInTheDocument();
+    });
   });
 });
