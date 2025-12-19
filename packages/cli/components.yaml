@@ -46,6 +46,7 @@ categories:
     components:
       - tag
       - alert
+      - toast
 
   layout:
     description: "Layout and structure components"
@@ -242,6 +243,14 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+
+  toast:
+    description: "A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support"
+    category: feedback
+    dependencies:
+      - "sonner"
+      - "clsx"
+      - "tailwind-merge"
 
   # ---------------------------------------------------------------------------
   # LAYOUT COMPONENTS

@@ -142,6 +142,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'feedback',
     internalDependencies: [],
   },
+  'toast': {
+    name: 'toast',
+    description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
+    dependencies: ["sonner","clsx","tailwind-merge"],
+    category: 'feedback',
+    internalDependencies: [],
+  },
   'accordion': {
     name: 'accordion',
     description: 'An expandable/collapsible accordion component with single or multiple mode support',
