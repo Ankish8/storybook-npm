@@ -18,6 +18,7 @@ describe("Dialog", () => {
         <DialogTrigger>Open Dialog</DialogTrigger>
         <DialogContent>
           <DialogTitle>Dialog Title</DialogTitle>
+          <DialogDescription>Dialog description for accessibility</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -39,6 +40,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent>
           <DialogTitle>Controlled Dialog</DialogTitle>
+          <DialogDescription>Controlled dialog description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -52,6 +54,7 @@ describe("Dialog", () => {
       <Dialog open={true} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogTitle>Test Dialog</DialogTitle>
+          <DialogDescription>Test dialog description</DialogDescription>
           <DialogClose data-testid="close-btn">Close</DialogClose>
         </DialogContent>
       </Dialog>
@@ -69,6 +72,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent>
           <DialogTitle>Test</DialogTitle>
+          <DialogDescription>Test description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -81,6 +85,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent hideCloseButton>
           <DialogTitle>Test</DialogTitle>
+          <DialogDescription>Test description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -95,6 +100,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent size="sm" data-testid="dialog-content">
           <DialogTitle>Small Dialog</DialogTitle>
+          <DialogDescription>Small dialog description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -105,6 +111,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent size="lg" data-testid="dialog-content">
           <DialogTitle>Large Dialog</DialogTitle>
+          <DialogDescription>Large dialog description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -115,6 +122,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent size="xl" data-testid="dialog-content">
           <DialogTitle>XL Dialog</DialogTitle>
+          <DialogDescription>XL dialog description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -127,6 +135,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent data-testid="dialog-content">
           <DialogTitle>Default Dialog</DialogTitle>
+          <DialogDescription>Default dialog description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -139,6 +148,7 @@ describe("Dialog", () => {
       <Dialog open={true}>
         <DialogContent className="custom-class" data-testid="dialog-content">
           <DialogTitle>Test</DialogTitle>
+          <DialogDescription>Test description</DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -152,6 +162,7 @@ describe("Dialog", () => {
         <Dialog open={true}>
           <DialogContent>
             <DialogHeader data-testid="header">Header Content</DialogHeader>
+            <DialogDescription>Description for accessibility</DialogDescription>
           </DialogContent>
         </Dialog>
       );
@@ -166,6 +177,7 @@ describe("Dialog", () => {
             <DialogHeader className="custom-header" data-testid="header">
               Header
             </DialogHeader>
+            <DialogDescription>Description for accessibility</DialogDescription>
           </DialogContent>
         </Dialog>
       );
@@ -179,6 +191,8 @@ describe("Dialog", () => {
       render(
         <Dialog open={true}>
           <DialogContent>
+            <DialogTitle>Test</DialogTitle>
+            <DialogDescription>Description for accessibility</DialogDescription>
             <DialogFooter data-testid="footer">Footer Content</DialogFooter>
           </DialogContent>
         </Dialog>
@@ -191,6 +205,8 @@ describe("Dialog", () => {
       render(
         <Dialog open={true}>
           <DialogContent>
+            <DialogTitle>Test</DialogTitle>
+            <DialogDescription>Description for accessibility</DialogDescription>
             <DialogFooter className="custom-footer" data-testid="footer">
               Footer
             </DialogFooter>
@@ -208,6 +224,7 @@ describe("Dialog", () => {
         <Dialog open={true}>
           <DialogContent>
             <DialogTitle data-testid="title">Title</DialogTitle>
+            <DialogDescription>Description for accessibility</DialogDescription>
           </DialogContent>
         </Dialog>
       );
@@ -225,6 +242,7 @@ describe("Dialog", () => {
             <DialogTitle className="custom-title" data-testid="title">
               Title
             </DialogTitle>
+            <DialogDescription>Description for accessibility</DialogDescription>
           </DialogContent>
         </Dialog>
       );
@@ -238,6 +256,7 @@ describe("Dialog", () => {
       render(
         <Dialog open={true}>
           <DialogContent>
+            <DialogTitle>Test Title</DialogTitle>
             <DialogDescription data-testid="desc">
               Description text
             </DialogDescription>
@@ -252,6 +271,7 @@ describe("Dialog", () => {
       render(
         <Dialog open={true}>
           <DialogContent>
+            <DialogTitle>Test Title</DialogTitle>
             <DialogDescription className="custom-desc" data-testid="desc">
               Description
             </DialogDescription>
@@ -269,6 +289,7 @@ describe("Dialog", () => {
         <Dialog open={true}>
           <DialogContent>
             <DialogTitle>Accessible Dialog</DialogTitle>
+            <DialogDescription>This dialog is accessible</DialogDescription>
           </DialogContent>
         </Dialog>
       );
@@ -281,6 +302,7 @@ describe("Dialog", () => {
         <Dialog open={true}>
           <DialogContent>
             <DialogTitle>Test</DialogTitle>
+            <DialogDescription>Test description</DialogDescription>
           </DialogContent>
         </Dialog>
       );

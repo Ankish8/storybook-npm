@@ -6,7 +6,13 @@ import { Button } from "../button";
 
 describe("ConfirmationModal", () => {
   it("renders title", () => {
-    render(<ConfirmationModal open={true} title="Confirm Action" />);
+    render(
+      <ConfirmationModal
+        open={true}
+        title="Confirm Action"
+        description="Please confirm this action"
+      />
+    );
 
     expect(screen.getByText("Confirm Action")).toBeInTheDocument();
   });
@@ -25,18 +31,16 @@ describe("ConfirmationModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render description when not provided", () => {
-    render(<ConfirmationModal open={true} title="Confirm" />);
-
-    // Only title should be present, no description element
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-  });
-
   it("calls onConfirm when confirm button is clicked", async () => {
     const user = userEvent.setup();
     const onConfirm = vi.fn();
     render(
-      <ConfirmationModal open={true} title="Confirm" onConfirm={onConfirm} />
+      <ConfirmationModal
+        open={true}
+        title="Confirm"
+        description="Please confirm"
+        onConfirm={onConfirm}
+      />
     );
 
     await user.click(screen.getByRole("button", { name: /yes/i }));
@@ -52,6 +56,7 @@ describe("ConfirmationModal", () => {
       <ConfirmationModal
         open={true}
         title="Confirm"
+        description="Please confirm or cancel"
         onCancel={onCancel}
         onOpenChange={onOpenChange}
       />
@@ -64,7 +69,13 @@ describe("ConfirmationModal", () => {
   });
 
   it("renders default variant button by default", () => {
-    render(<ConfirmationModal open={true} title="Confirm" />);
+    render(
+      <ConfirmationModal
+        open={true}
+        title="Confirm"
+        description="Default variant test"
+      />
+    );
 
     const confirmButton = screen.getByRole("button", { name: /yes/i });
     // Button uses hardcoded hex colors
@@ -76,6 +87,7 @@ describe("ConfirmationModal", () => {
       <ConfirmationModal
         open={true}
         title="Confirm"
+        description="Destructive variant test"
         variant="destructive"
       />
     );
@@ -90,6 +102,7 @@ describe("ConfirmationModal", () => {
       <ConfirmationModal
         open={true}
         title="Confirm"
+        description="Custom button text test"
         confirmButtonText="Proceed"
         cancelButtonText="Go Back"
       />
@@ -105,7 +118,12 @@ describe("ConfirmationModal", () => {
 
   it("shows loading state on confirm button", () => {
     render(
-      <ConfirmationModal open={true} title="Confirm" loading={true} />
+      <ConfirmationModal
+        open={true}
+        title="Confirm"
+        description="Loading state test"
+        loading={true}
+      />
     );
 
     expect(screen.getByRole("button", { name: /yes/i })).toBeDisabled();
@@ -113,7 +131,12 @@ describe("ConfirmationModal", () => {
 
   it("disables cancel button when loading", () => {
     render(
-      <ConfirmationModal open={true} title="Confirm" loading={true} />
+      <ConfirmationModal
+        open={true}
+        title="Confirm"
+        description="Loading state test"
+        loading={true}
+      />
     );
 
     expect(screen.getByRole("button", { name: /cancel/i })).toBeDisabled();
@@ -125,6 +148,7 @@ describe("ConfirmationModal", () => {
       <ConfirmationModal
         trigger={<Button>Open Modal</Button>}
         title="Triggered Modal"
+        description="Modal opened via trigger"
       />
     );
 
@@ -142,6 +166,7 @@ describe("ConfirmationModal", () => {
       <ConfirmationModal
         open={true}
         title="Confirm"
+        description="Custom class test"
         className="custom-class"
       />
     );
@@ -154,6 +179,7 @@ describe("ConfirmationModal", () => {
       <ConfirmationModal
         open={true}
         title={<span data-testid="custom-title">Custom Title</span>}
+        description="ReactNode title test"
       />
     );
 
@@ -178,7 +204,13 @@ describe("ConfirmationModal", () => {
 
   describe("Accessibility", () => {
     it("has proper dialog role", () => {
-      render(<ConfirmationModal open={true} title="Confirm" />);
+      render(
+        <ConfirmationModal
+          open={true}
+          title="Confirm"
+          description="Accessibility test"
+        />
+      );
 
       expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
@@ -188,6 +220,7 @@ describe("ConfirmationModal", () => {
         <ConfirmationModal
           open={true}
           title="Confirm"
+          description="Button accessibility test"
           confirmButtonText="Confirm"
           cancelButtonText="Cancel"
         />
@@ -198,6 +231,20 @@ describe("ConfirmationModal", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
+    });
+
+    it("has description for screen readers", () => {
+      render(
+        <ConfirmationModal
+          open={true}
+          title="Confirm"
+          description="This action cannot be undone"
+        />
+      );
+
+      expect(
+        screen.getByText("This action cannot be undone")
       ).toBeInTheDocument();
     });
   });
@@ -212,6 +259,7 @@ describe("ConfirmationModal", () => {
           open={true}
           onOpenChange={onOpenChange}
           title="Controlled"
+          description="Controlled mode test"
         />
       );
 
@@ -226,6 +274,7 @@ describe("ConfirmationModal", () => {
           open={false}
           onOpenChange={onOpenChange}
           title="Controlled"
+          description="Controlled mode test"
         />
       );
 
@@ -240,6 +289,7 @@ describe("ConfirmationModal", () => {
         <ConfirmationModal
           trigger={<Button>Trigger</Button>}
           title="Uncontrolled"
+          description="Uncontrolled mode test"
         />
       );
 

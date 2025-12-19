@@ -124,9 +124,9 @@ const DeleteConfirmationModal = React.forwardRef<
         <DialogContent ref={ref} size="sm" className={cn(className)}>
           <DialogHeader>
             <DialogTitle>{title || defaultTitle}</DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
+            <DialogDescription className={description ? undefined : "sr-only"}>
+              {description || "Delete confirmation dialog - this action cannot be undone"}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2 py-4">
             <label

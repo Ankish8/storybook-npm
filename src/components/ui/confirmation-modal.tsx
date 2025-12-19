@@ -103,9 +103,9 @@ const ConfirmationModal = React.forwardRef<
         <DialogContent ref={ref} size="sm" className={cn(className)}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
+            <DialogDescription className={description ? undefined : "sr-only"}>
+              {description || "Confirmation dialog"}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={handleCancel} disabled={loading}>
