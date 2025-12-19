@@ -60,9 +60,12 @@ const hasDialogDescription = (children: React.ReactNode): boolean => {
     if (React.isValidElement(child)) {
       if (child.type === DialogDescription) {
         found = true;
-      } else if (child.props?.children) {
-        if (hasDialogDescription(child.props.children)) {
-          found = true;
+      } else {
+        const childProps = child.props as { children?: React.ReactNode };
+        if (childProps.children) {
+          if (hasDialogDescription(childProps.children)) {
+            found = true;
+          }
         }
       }
     }

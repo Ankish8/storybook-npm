@@ -2857,27 +2857,57 @@ export interface DialogContentProps
   hideCloseButton?: boolean;
 }
 
+// Helper to check if children contain DialogDescription
+const hasDialogDescription = (children: React.ReactNode): boolean => {
+  let found = false;
+  React.Children.forEach(children, (child) => {
+    if (React.isValidElement(child)) {
+      if (child.type === DialogDescription) {
+        found = true;
+      } else {
+        const childProps = child.props as { children?: React.ReactNode };
+        if (childProps.children) {
+          if (hasDialogDescription(childProps.children)) {
+            found = true;
+          }
+        }
+      }
+    }
+  });
+  return found;
+};
+
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, size, hideCloseButton = false, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(dialogContentVariants({ size, className }))}
-      {...props}
-    >
-      {children}
-      {!hideCloseButton && (
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-      )}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-));
+>(({ className, children, size, hideCloseButton = false, ...props }, ref) => {
+  const hasDescription = hasDialogDescription(children);
+
+  return (
+    <DialogPortal>
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(dialogContentVariants({ size, className }))}
+        {...props}
+      >
+        {children}
+        {/* Accessibility: Add hidden description if none provided */}
+        {!hasDescription && (
+          <DialogPrimitive.Description className="sr-only">
+            Dialog content
+          </DialogPrimitive.Description>
+        )}
+        {!hideCloseButton && (
+          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        )}
+      </DialogPrimitive.Content>
+    </DialogPortal>
+  );
+});
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({
