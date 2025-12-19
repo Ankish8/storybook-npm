@@ -283,6 +283,169 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getOverlayRegistry(prefix: string = ''): Registry {
   return {
+    'dialog': {
+      name: 'dialog',
+      description: 'A modal dialog component built on Radix UI Dialog with size variants and animations',
+      dependencies: [
+            "@radix-ui/react-dialog",
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: 'dialog.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "../../lib/utils";
+
+const Dialog = DialogPrimitive.Root;
+
+const DialogTrigger = DialogPrimitive.Trigger;
+
+const DialogPortal = DialogPrimitive.Portal;
+
+const DialogClose = DialogPrimitive.Close;
+
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn(
+      "fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    )}
+    {...props}
+  />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
+
+const dialogContentVariants = cva(
+  "fixed left-[50%] top-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg",
+  {
+    variants: {
+      size: {
+        sm: "w-full max-w-sm",
+        default: "w-full max-w-lg",
+        lg: "w-full max-w-2xl",
+        xl: "w-full max-w-4xl",
+        full: "w-[calc(100%-2rem)] h-[calc(100%-2rem)] max-w-none",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+);
+
+export interface DialogContentProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+    VariantProps<typeof dialogContentVariants> {
+  /** Hide the default close button in the top-right corner */
+  hideCloseButton?: boolean;
+}
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  DialogContentProps
+>(({ className, children, size, hideCloseButton = false, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(dialogContentVariants({ size, className }))}
+      {...props}
+    >
+      {children}
+      {!hideCloseButton && (
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      )}
+    </DialogPrimitive.Content>
+  </DialogPortal>
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
+
+const DialogHeader = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className
+    )}
+    {...props}
+  />
+);
+DialogHeader.displayName = "DialogHeader";
+
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className
+    )}
+    {...props}
+  />
+);
+DialogFooter.displayName = "DialogFooter";
+
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight text-foreground",
+      className
+    )}
+    {...props}
+  />
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
+
+const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
+
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  dialogContentVariants,
+};
+`, prefix),
+        },
+      ],
+    },
     'dropdown-menu': {
       name: 'dropdown-menu',
       description: 'A dropdown menu component for displaying actions and options',
@@ -557,6 +720,331 @@ export {
   TooltipArrow,
   TooltipProvider,
 };
+`, prefix),
+        },
+      ],
+    },
+    'delete-confirmation-modal': {
+      name: 'delete-confirmation-modal',
+      description: 'A confirmation modal requiring text input to confirm deletion',
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'delete-confirmation-modal.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "./dialog";
+import { Button } from "./button";
+import { Input } from "./input";
+
+/**
+ * Props for the DeleteConfirmationModal component
+ */
+export interface DeleteConfirmationModalProps {
+  /** Controls modal visibility (controlled mode) */
+  open?: boolean;
+  /** Callback when open state changes */
+  onOpenChange?: (open: boolean) => void;
+  /** The name of the item being deleted (shown in title) */
+  itemName?: string;
+  /** Custom title (overrides default) */
+  title?: React.ReactNode;
+  /** Additional description text */
+  description?: React.ReactNode;
+  /** Text user must type to confirm (default: "DELETE") */
+  confirmText?: string;
+  /** Called when user confirms deletion */
+  onConfirm?: () => void;
+  /** Called when user cancels */
+  onCancel?: () => void;
+  /** Loading state for delete button */
+  loading?: boolean;
+  /** Text for delete button (default: "Delete") */
+  deleteButtonText?: string;
+  /** Text for cancel button (default: "Cancel") */
+  cancelButtonText?: string;
+  /** Trigger element for uncontrolled usage */
+  trigger?: React.ReactNode;
+  /** Additional className for the dialog content */
+  className?: string;
+}
+
+/**
+ * A confirmation modal that requires the user to type a specific text to confirm deletion.
+ *
+ * @example
+ * \`\`\`tsx
+ * // Controlled usage
+ * <DeleteConfirmationModal
+ *   open={isOpen}
+ *   onOpenChange={setIsOpen}
+ *   itemName="webhook"
+ *   onConfirm={handleDelete}
+ * />
+ *
+ * // Uncontrolled with trigger
+ * <DeleteConfirmationModal
+ *   trigger={<Button variant="destructive">Delete</Button>}
+ *   itemName="user"
+ *   onConfirm={handleDelete}
+ * />
+ * \`\`\`
+ */
+const DeleteConfirmationModal = React.forwardRef<
+  HTMLDivElement,
+  DeleteConfirmationModalProps
+>(
+  (
+    {
+      open,
+      onOpenChange,
+      itemName = "item",
+      title,
+      description,
+      confirmText = "DELETE",
+      onConfirm,
+      onCancel,
+      loading = false,
+      deleteButtonText = "Delete",
+      cancelButtonText = "Cancel",
+      trigger,
+      className,
+    },
+    ref
+  ) => {
+    const [inputValue, setInputValue] = React.useState("");
+    const isConfirmEnabled = inputValue === confirmText;
+
+    // Reset input when modal closes
+    React.useEffect(() => {
+      if (!open) {
+        setInputValue("");
+      }
+    }, [open]);
+
+    const handleConfirm = () => {
+      if (isConfirmEnabled) {
+        onConfirm?.();
+      }
+    };
+
+    const handleCancel = () => {
+      onCancel?.();
+      onOpenChange?.(false);
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+      if (!newOpen) {
+        setInputValue("");
+      }
+      onOpenChange?.(newOpen);
+    };
+
+    const defaultTitle = \`Are you sure you want to delete this \${itemName}?\`;
+
+    return (
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+        <DialogContent ref={ref} size="sm" className={cn(className)}>
+          <DialogHeader>
+            <DialogTitle>{title || defaultTitle}</DialogTitle>
+            {description && (
+              <DialogDescription>{description}</DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="grid gap-2 py-4">
+            <label
+              htmlFor="delete-confirmation-input"
+              className="text-sm text-muted-foreground"
+            >
+              Enter "{confirmText}" in uppercase to confirm
+            </label>
+            <Input
+              id="delete-confirmation-input"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder={confirmText}
+              autoComplete="off"
+              autoFocus
+            />
+          </div>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={handleCancel} disabled={loading}>
+              {cancelButtonText}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirm}
+              disabled={!isConfirmEnabled || loading}
+              loading={loading}
+            >
+              {deleteButtonText}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+DeleteConfirmationModal.displayName = "DeleteConfirmationModal";
+
+export { DeleteConfirmationModal };
+`, prefix),
+        },
+      ],
+    },
+    'confirmation-modal': {
+      name: 'confirmation-modal',
+      description: 'A simple confirmation modal for yes/no decisions',
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: 'confirmation-modal.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "./dialog";
+import { Button } from "./button";
+
+/**
+ * Props for the ConfirmationModal component
+ */
+export interface ConfirmationModalProps {
+  /** Controls modal visibility (controlled mode) */
+  open?: boolean;
+  /** Callback when open state changes */
+  onOpenChange?: (open: boolean) => void;
+  /** Modal title */
+  title: React.ReactNode;
+  /** Modal description/message */
+  description?: React.ReactNode;
+  /** Visual style of confirm button */
+  variant?: "default" | "destructive";
+  /** Called when user confirms */
+  onConfirm?: () => void;
+  /** Called when user cancels */
+  onCancel?: () => void;
+  /** Loading state for confirm button */
+  loading?: boolean;
+  /** Text for confirm button (default: "Yes") */
+  confirmButtonText?: string;
+  /** Text for cancel button (default: "Cancel") */
+  cancelButtonText?: string;
+  /** Trigger element for uncontrolled usage */
+  trigger?: React.ReactNode;
+  /** Additional className for the dialog content */
+  className?: string;
+}
+
+/**
+ * A simple confirmation modal for yes/no decisions.
+ *
+ * @example
+ * \`\`\`tsx
+ * // Controlled usage
+ * <ConfirmationModal
+ *   open={isOpen}
+ *   onOpenChange={setIsOpen}
+ *   title="Disable Webhook"
+ *   description="Are you sure you want to disable this webhook?"
+ *   onConfirm={handleDisable}
+ * />
+ *
+ * // Destructive variant
+ * <ConfirmationModal
+ *   open={isOpen}
+ *   onOpenChange={setIsOpen}
+ *   title="Archive Project"
+ *   variant="destructive"
+ *   confirmButtonText="Archive"
+ *   onConfirm={handleArchive}
+ * />
+ * \`\`\`
+ */
+const ConfirmationModal = React.forwardRef<
+  HTMLDivElement,
+  ConfirmationModalProps
+>(
+  (
+    {
+      open,
+      onOpenChange,
+      title,
+      description,
+      variant = "default",
+      onConfirm,
+      onCancel,
+      loading = false,
+      confirmButtonText = "Yes",
+      cancelButtonText = "Cancel",
+      trigger,
+      className,
+    },
+    ref
+  ) => {
+    const handleConfirm = () => {
+      onConfirm?.();
+    };
+
+    const handleCancel = () => {
+      onCancel?.();
+      onOpenChange?.(false);
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+        <DialogContent ref={ref} size="sm" className={cn(className)}>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            {description && (
+              <DialogDescription>{description}</DialogDescription>
+            )}
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={handleCancel} disabled={loading}>
+              {cancelButtonText}
+            </Button>
+            <Button
+              variant={variant === "destructive" ? "destructive" : "default"}
+              onClick={handleConfirm}
+              disabled={loading}
+              loading={loading}
+            >
+              {confirmButtonText}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+ConfirmationModal.displayName = "ConfirmationModal";
+
+export { ConfirmationModal };
 `, prefix),
         },
       ],

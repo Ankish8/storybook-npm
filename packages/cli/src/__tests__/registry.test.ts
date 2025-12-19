@@ -72,6 +72,7 @@ describe('Registry', () => {
     const registry = await getRegistry()
     const validDeps = [
       '@radix-ui/react-slot',
+      '@radix-ui/react-dialog',
       '@radix-ui/react-dropdown-menu',
       '@radix-ui/react-select',
       '@radix-ui/react-checkbox',
@@ -480,7 +481,7 @@ describe('Registry', () => {
       const registry = await getRegistry()
 
       // Verify all multi-file components have required properties
-      for (const [name, component] of Object.entries(registry)) {
+      for (const component of Object.values(registry)) {
         if (component.isMultiFile) {
           expect(component.directory).toBeDefined()
           expect(component.directory).toBeTruthy()
@@ -510,7 +511,7 @@ describe('Registry', () => {
       const registry = await getRegistry()
       const componentsDir = 'src/components/ui'
 
-      for (const [name, component] of Object.entries(registry)) {
+      for (const component of Object.values(registry)) {
         // Simulate the getComponentFilePath logic from update.ts
         let expectedPath: string
         if (component.isMultiFile && component.directory) {

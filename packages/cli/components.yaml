@@ -35,13 +35,17 @@ categories:
   overlay:
     description: "Popups, modals, menus"
     components:
+      - dialog
       - dropdown-menu
       - tooltip
+      - delete-confirmation-modal
+      - confirmation-modal
 
   feedback:
     description: "Status and notifications"
     components:
       - tag
+      - alert
 
   layout:
     description: "Layout and structure components"
@@ -171,6 +175,16 @@ components:
   # ---------------------------------------------------------------------------
   # OVERLAY COMPONENTS
   # ---------------------------------------------------------------------------
+  dialog:
+    description: "A modal dialog component built on Radix UI Dialog with size variants and animations"
+    category: overlay
+    dependencies:
+      - "@radix-ui/react-dialog"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
   dropdown-menu:
     description: "A dropdown menu component for displaying actions and options"
     category: overlay
@@ -188,6 +202,27 @@ components:
       - "clsx"
       - "tailwind-merge"
 
+  delete-confirmation-modal:
+    description: "A confirmation modal requiring text input to confirm deletion"
+    category: overlay
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - dialog
+      - button
+      - input
+
+  confirmation-modal:
+    description: "A simple confirmation modal for yes/no decisions"
+    category: overlay
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - dialog
+      - button
+
   # ---------------------------------------------------------------------------
   # FEEDBACK COMPONENTS
   # ---------------------------------------------------------------------------
@@ -198,6 +233,15 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge"
+
+  alert:
+    description: "A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility"
+    category: feedback
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
 
   # ---------------------------------------------------------------------------
   # LAYOUT COMPONENTS
