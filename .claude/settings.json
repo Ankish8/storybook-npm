@@ -1,8 +1,10 @@
 {
   "extraKnownMarketplaces": {
     "local-dev": {
-      "source": "directory",
-      "path": "."
+      "source": {
+        "source": "directory",
+        "path": "."
+      }
     }
   },
   "enabledPlugins": {

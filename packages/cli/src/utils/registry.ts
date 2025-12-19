@@ -338,9 +338,9 @@ const buttonVariants = cva(
           "border border-dashed border-[#D5D7DA] bg-transparent text-[#717680] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#FAFAFA]",
       },
       size: {
-        default: "py-2.5 px-4 [&_svg]:size-4",
-        sm: "py-2 px-3 text-xs [&_svg]:size-3.5",
-        lg: "py-3 px-6 [&_svg]:size-5",
+        default: "min-w-20 py-2.5 px-4 [&_svg]:size-4",
+        sm: "min-w-16 py-2 px-3 text-xs [&_svg]:size-3.5",
+        lg: "min-w-24 py-3 px-6 [&_svg]:size-5",
         icon: "h-8 w-8 rounded-md",
         "icon-sm": "h-7 w-7 rounded-md",
         "icon-lg": "h-10 w-10 rounded-md",
@@ -720,7 +720,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     ref
   ) => {
     const key: Key = \`\${kind}-\${variant}\`;
-    const Tag = tag || mapTagName[key];
+    const Tag = (tag || mapTagName[key]) as React.ElementType;
 
     const classes = cn(
       "m-0", // Reset margin
@@ -731,11 +731,13 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       className
     );
 
+    const tagName = tag || mapTagName[key];
+
     return (
       <Tag
-        ref={ref as React.Ref<HTMLElement>}
+        ref={ref}
         className={classes}
-        htmlFor={Tag === "label" ? htmlFor : undefined}
+        htmlFor={tagName === "label" ? htmlFor : undefined}
         {...props}
       >
         {children}

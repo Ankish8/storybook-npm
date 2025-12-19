@@ -150,7 +150,7 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     ref
   ) => {
     const key: Key = `${kind}-${variant}`;
-    const Tag = tag || mapTagName[key];
+    const Tag = (tag || mapTagName[key]) as React.ElementType;
 
     const classes = cn(
       "m-0", // Reset margin
@@ -161,11 +161,13 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       className
     );
 
+    const tagName = tag || mapTagName[key];
+
     return (
       <Tag
-        ref={ref as React.Ref<HTMLElement>}
+        ref={ref}
         className={classes}
-        htmlFor={Tag === "label" ? htmlFor : undefined}
+        htmlFor={tagName === "label" ? htmlFor : undefined}
         {...props}
       >
         {children}
