@@ -815,7 +815,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       const result: React.ReactNode[] = [];
       React.Children.forEach(children, (child) => {
         if (React.isValidElement(child) && child.type === React.Fragment) {
-          result.push(...flattenChildren(child.props.children));
+          const fragmentProps = child.props as { children?: React.ReactNode };
+          result.push(...flattenChildren(fragmentProps.children));
         } else if (child !== null && child !== undefined) {
           result.push(child);
         }

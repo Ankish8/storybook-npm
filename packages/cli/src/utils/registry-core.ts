@@ -614,7 +614,7 @@ type Key = \`\${Kind}-\${Variant}\`;
 /**
  * Maps kind-variant combinations to semantic HTML tags
  */
-const mapTagName: { [key in Key]: keyof JSX.IntrinsicElements } = {
+const mapTagName: { [key in Key]: keyof React.JSX.IntrinsicElements } = {
   "display-large": "h4",
   "display-medium": "h4",
   "display-small": "h4",
@@ -697,7 +697,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   /** Enable text truncation with ellipsis */
   truncate?: boolean;
   /** Override the default HTML tag */
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: keyof React.JSX.IntrinsicElements;
   /** For label elements - associates with form input */
   htmlFor?: string;
 }

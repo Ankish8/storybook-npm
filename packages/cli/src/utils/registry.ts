@@ -632,7 +632,7 @@ type Key = \`\${Kind}-\${Variant}\`;
 /**
  * Maps kind-variant combinations to semantic HTML tags
  */
-const mapTagName: { [key in Key]: keyof JSX.IntrinsicElements } = {
+const mapTagName: { [key in Key]: keyof React.JSX.IntrinsicElements } = {
   "display-large": "h4",
   "display-medium": "h4",
   "display-small": "h4",
@@ -715,7 +715,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   /** Enable text truncation with ellipsis */
   truncate?: boolean;
   /** Override the default HTML tag */
-  tag?: keyof JSX.IntrinsicElements;
+  tag?: keyof React.JSX.IntrinsicElements;
   /** For label elements - associates with form input */
   htmlFor?: string;
 }
@@ -4911,7 +4911,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       const result: React.ReactNode[] = [];
       React.Children.forEach(children, (child) => {
         if (React.isValidElement(child) && child.type === React.Fragment) {
-          result.push(...flattenChildren(child.props.children));
+          const fragmentProps = child.props as { children?: React.ReactNode };
+          result.push(...flattenChildren(fragmentProps.children));
         } else if (child !== null && child !== undefined) {
           result.push(child);
         }
