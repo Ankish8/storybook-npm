@@ -64,6 +64,7 @@ async function readSingleFileComponent(componentName, meta) {
     content,
     description: meta.description,
     dependencies: meta.dependencies || [],
+    internalDependencies: meta.internalDependencies || [],
     category: meta.category,
   }
 }
@@ -479,10 +480,15 @@ ${filesArray}
     }
 
     const escapedContent = escapeForTemplate(comp.content)
+    const internalDeps = comp.internalDependencies && comp.internalDependencies.length > 0
+      ? JSON.stringify(comp.internalDependencies, null, 6).replace(/\n/g, '\n      ')
+      : null
+
     return `    '${comp.name}': {
       name: '${comp.name}',
       description: '${comp.description}',
-      dependencies: ${deps},
+      dependencies: ${deps},${internalDeps ? `
+      internalDependencies: ${internalDeps},` : ''}
       files: [
         {
           name: '${comp.fileName}',
@@ -682,10 +688,15 @@ ${filesArray}
     }
 
     const escapedContent = escapeForTemplate(comp.content)
+    const internalDeps = comp.internalDependencies && comp.internalDependencies.length > 0
+      ? JSON.stringify(comp.internalDependencies, null, 6).replace(/\n/g, '\n      ')
+      : null
+
     return `    '${comp.name}': {
       name: '${comp.name}',
       description: '${comp.description}',
-      dependencies: ${deps},
+      dependencies: ${deps},${internalDeps ? `
+      internalDependencies: ${internalDeps},` : ''}
       files: [
         {
           name: '${comp.fileName}',

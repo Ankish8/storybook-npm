@@ -119,14 +119,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     description: 'A confirmation modal requiring text input to confirm deletion',
     dependencies: ["clsx","tailwind-merge"],
     category: 'overlay',
-    internalDependencies: [],
+    internalDependencies: ["dialog","button","input"],
   },
   'confirmation-modal': {
     name: 'confirmation-modal',
     description: 'A simple confirmation modal for yes/no decisions',
     dependencies: ["clsx","tailwind-merge"],
     category: 'overlay',
-    internalDependencies: [],
+    internalDependencies: ["dialog","button"],
   },
   'tag': {
     name: 'tag',

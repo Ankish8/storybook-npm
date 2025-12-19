@@ -3202,6 +3202,11 @@ export {
             "clsx",
             "tailwind-merge"
       ],
+      internalDependencies: [
+            "dialog",
+            "button",
+            "input"
+      ],
       files: [
         {
           name: 'delete-confirmation-modal.tsx',
@@ -3382,6 +3387,10 @@ export { DeleteConfirmationModal };
       dependencies: [
             "clsx",
             "tailwind-merge"
+      ],
+      internalDependencies: [
+            "dialog",
+            "button"
       ],
       files: [
         {
