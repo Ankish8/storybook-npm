@@ -392,7 +392,7 @@ export { Input, inputVariants };
       name: 'select',
       description: 'A select dropdown component built on Radix UI Select',
       dependencies: [
-            "@radix-ui/react-select",
+            "@radix-ui/react-select@^2.2.6",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -597,7 +597,7 @@ export {
       name: 'checkbox',
       description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
       dependencies: [
-            "@radix-ui/react-checkbox",
+            "@radix-ui/react-checkbox@^1.3.3",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -826,7 +826,7 @@ export { Checkbox, checkboxVariants };
       name: 'switch',
       description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
       dependencies: [
-            "@radix-ui/react-switch",
+            "@radix-ui/react-switch@^1.2.6",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"
@@ -1265,7 +1265,7 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
       name: 'select-field',
       description: 'A select field with label, helper text, and validation states',
       dependencies: [
-            "@radix-ui/react-select",
+            "@radix-ui/react-select@^2.2.6",
             "clsx",
             "tailwind-merge",
             "lucide-react"

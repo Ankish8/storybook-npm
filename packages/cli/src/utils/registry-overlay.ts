@@ -322,7 +322,7 @@ export function getOverlayRegistry(prefix: string = ''): Registry {
       name: 'dialog',
       description: 'A modal dialog component built on Radix UI Dialog with size variants and animations',
       dependencies: [
-            "@radix-ui/react-dialog",
+            "@radix-ui/react-dialog@^1.1.15",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -515,7 +515,7 @@ export {
       name: 'dropdown-menu',
       description: 'A dropdown menu component for displaying actions and options',
       dependencies: [
-            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-dropdown-menu@^2.1.16",
             "clsx",
             "tailwind-merge",
             "lucide-react"
@@ -730,7 +730,7 @@ export {
       name: 'tooltip',
       description: 'A popup that displays information related to an element when hovered or focused',
       dependencies: [
-            "@radix-ui/react-tooltip",
+            "@radix-ui/react-tooltip@^1.2.8",
             "clsx",
             "tailwind-merge"
       ],

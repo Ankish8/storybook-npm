@@ -322,7 +322,7 @@ export function getCoreRegistry(prefix: string = ''): Registry {
       name: 'button',
       description: 'A customizable button component with variants, sizes, and icons',
       dependencies: [
-            "@radix-ui/react-slot",
+            "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -449,7 +449,7 @@ export { Button, buttonVariants };
       name: 'badge',
       description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants',
       dependencies: [
-            "@radix-ui/react-slot",
+            "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"

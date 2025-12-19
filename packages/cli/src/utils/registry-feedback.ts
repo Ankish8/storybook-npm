@@ -688,7 +688,7 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
       name: 'toast',
       description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
       dependencies: [
-            "@radix-ui/react-toast",
+            "@radix-ui/react-toast@^1.2.15",
             "class-variance-authority",
             "lucide-react",
             "clsx",

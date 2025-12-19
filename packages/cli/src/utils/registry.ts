@@ -340,7 +340,7 @@ export async function getRegistry(prefix: string = ''): Promise<Registry> {
       name: 'button',
       description: 'A customizable button component with variants, sizes, and icons',
       dependencies: [
-            "@radix-ui/react-slot",
+            "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -467,7 +467,7 @@ export { Button, buttonVariants };
       name: 'badge',
       description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants',
       dependencies: [
-            "@radix-ui/react-slot",
+            "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"
@@ -867,7 +867,7 @@ export { Input, inputVariants };
       name: 'select',
       description: 'A select dropdown component built on Radix UI Select',
       dependencies: [
-            "@radix-ui/react-select",
+            "@radix-ui/react-select@^2.2.6",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -1072,7 +1072,7 @@ export {
       name: 'checkbox',
       description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
       dependencies: [
-            "@radix-ui/react-checkbox",
+            "@radix-ui/react-checkbox@^1.3.3",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -1301,7 +1301,7 @@ export { Checkbox, checkboxVariants };
       name: 'switch',
       description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
       dependencies: [
-            "@radix-ui/react-switch",
+            "@radix-ui/react-switch@^1.2.6",
             "class-variance-authority",
             "clsx",
             "tailwind-merge"
@@ -1740,7 +1740,7 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
       name: 'select-field',
       description: 'A select field with label, helper text, and validation states',
       dependencies: [
-            "@radix-ui/react-select",
+            "@radix-ui/react-select@^2.2.6",
             "clsx",
             "tailwind-merge",
             "lucide-react"
@@ -2793,7 +2793,7 @@ export {
       name: 'dialog',
       description: 'A modal dialog component built on Radix UI Dialog with size variants and animations',
       dependencies: [
-            "@radix-ui/react-dialog",
+            "@radix-ui/react-dialog@^1.1.15",
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
@@ -2986,7 +2986,7 @@ export {
       name: 'dropdown-menu',
       description: 'A dropdown menu component for displaying actions and options',
       dependencies: [
-            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-dropdown-menu@^2.1.16",
             "clsx",
             "tailwind-merge",
             "lucide-react"
@@ -3201,7 +3201,7 @@ export {
       name: 'tooltip',
       description: 'A popup that displays information related to an element when hovered or focused',
       dependencies: [
-            "@radix-ui/react-tooltip",
+            "@radix-ui/react-tooltip@^1.2.8",
             "clsx",
             "tailwind-merge"
       ],
@@ -3964,7 +3964,7 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
       name: 'toast',
       description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
       dependencies: [
-            "@radix-ui/react-toast",
+            "@radix-ui/react-toast@^1.2.15",
             "class-variance-authority",
             "lucide-react",
             "clsx",
