@@ -274,9 +274,9 @@ function dispatch(action: Action) {
   });
 }
 
-type Toast = Omit<ToasterToast, "id">;
+type ToastInput = Omit<ToasterToast, "id">;
 
-function toast({ ...props }: Toast) {
+function toast({ ...props }: ToastInput) {
   const id = genId();
 
   const update = (props: ToasterToast) =>
@@ -306,13 +306,13 @@ function toast({ ...props }: Toast) {
 }
 
 // Convenience methods for different variants
-toast.success = (props: Omit<Toast, "variant">) =>
+toast.success = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "success" });
-toast.error = (props: Omit<Toast, "variant">) =>
+toast.error = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "error" });
-toast.warning = (props: Omit<Toast, "variant">) =>
+toast.warning = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "warning" });
-toast.info = (props: Omit<Toast, "variant">) =>
+toast.info = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "info" });
 toast.dismiss = (toastId?: string) =>
   dispatch({ type: "DISMISS_TOAST", toastId });

@@ -823,6 +823,7 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
+ 
 export {
   type ToastProps,
   type ToastActionElement,
@@ -850,6 +851,7 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",
@@ -857,14 +859,14 @@ const actionTypes = {
   REMOVE_TOAST: "REMOVE_TOAST",
 } as const;
 
+type ActionType = typeof actionTypes;
+
 let count = 0;
 
 function genId() {
   count = (count + 1) % Number.MAX_SAFE_INTEGER;
   return count.toString();
 }
-
-type ActionType = typeof actionTypes;
 
 type Action =
   | {
@@ -906,6 +908,7 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout);
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -970,9 +973,9 @@ function dispatch(action: Action) {
   });
 }
 
-type Toast = Omit<ToasterToast, "id">;
+type ToastInput = Omit<ToasterToast, "id">;
 
-function toast({ ...props }: Toast) {
+function toast({ ...props }: ToastInput) {
   const id = genId();
 
   const update = (props: ToasterToast) =>
@@ -1002,13 +1005,13 @@ function toast({ ...props }: Toast) {
 }
 
 // Convenience methods for different variants
-toast.success = (props: Omit<Toast, "variant">) =>
+toast.success = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "success" });
-toast.error = (props: Omit<Toast, "variant">) =>
+toast.error = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "error" });
-toast.warning = (props: Omit<Toast, "variant">) =>
+toast.warning = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "warning" });
-toast.info = (props: Omit<Toast, "variant">) =>
+toast.info = (props: Omit<ToastInput, "variant">) =>
   toast({ ...props, variant: "info" });
 toast.dismiss = (toastId?: string) =>
   dispatch({ type: "DISMISS_TOAST", toastId });
@@ -1100,6 +1103,7 @@ function Toaster() {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { useToast, toast, Toaster };
 
 /**

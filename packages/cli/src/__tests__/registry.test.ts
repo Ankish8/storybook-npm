@@ -84,7 +84,6 @@ describe('Registry', () => {
       'clsx',
       'tailwind-merge',
       'lucide-react',
-      'sonner',
     ]
 
     for (const component of Object.values(registry)) {
