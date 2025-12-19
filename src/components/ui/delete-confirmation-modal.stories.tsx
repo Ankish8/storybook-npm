@@ -10,22 +10,89 @@ const meta: Meta<typeof DeleteConfirmationModal> = {
     layout: "centered",
     docs: {
       description: {
-        component: `
-A confirmation modal that requires the user to type a specific text (default: "DELETE") to confirm deletion.
-This provides an extra layer of protection against accidental deletions.
+        component: `A confirmation modal that requires users to type confirmation text to prevent accidental deletions.
 
-## Installation
 \`\`\`bash
 npx myoperator-ui add delete-confirmation-modal
 \`\`\`
 
-## Features
-- Requires exact text match to enable delete button
-- Case-sensitive confirmation (must match exactly)
-- Loading state support
-- Customizable confirmation text
-- Controlled and uncontrolled modes
-- Resets input when closed
+## Import
+
+\`\`\`tsx
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal"
+\`\`\`
+
+## Design Tokens
+
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Element</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Size</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Description</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Modal Width</td>
+      <td style="padding: 12px 16px;">Small</td>
+      <td style="padding: 12px 16px;">Maximum width for modal</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">384px</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Input Field</td>
+      <td style="padding: 12px 16px;">Default</td>
+      <td style="padding: 12px 16px;">Confirmation text input</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">Full width</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Button Variant</td>
+      <td style="padding: 12px 16px;">Destructive</td>
+      <td style="padding: 12px 16px;">Delete button style</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">Destructive variant</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Default Confirm Text</td>
+      <td style="padding: 12px 16px;">—</td>
+      <td style="padding: 12px 16px;">Required text to type</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">DELETE (case-sensitive)</td>
+    </tr>
+  </tbody>
+</table>
+
+## Typography
+
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Element</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Style</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Size / Weight</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Class</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Title</td>
+      <td style="padding: 12px 16px;">Heading/Medium</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">16px / SemiBold</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-base font-semibold</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Description</td>
+      <td style="padding: 12px 16px;">Body/Small</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / Regular</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Label Text</td>
+      <td style="padding: 12px 16px;">Body/Small</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / Regular</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm text-muted-foreground</code></td>
+    </tr>
+  </tbody>
+</table>
         `,
       },
     },
@@ -257,6 +324,181 @@ export const AllVariations: Story = {
           description="This file will be permanently deleted from your storage."
           onConfirm={() => console.log("Deleted!")}
         />
+      </div>
+    </div>
+  ),
+};
+
+// Usage guidelines
+export const Usage: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Guidelines for using delete confirmation modals effectively.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-6 max-w-2xl">
+      <div className="flex items-start gap-4">
+        <div className="w-40">
+          <DeleteConfirmationModal
+            trigger={<Button variant="destructive">Delete Account</Button>}
+            itemName="account"
+            description="This action is permanent."
+            onConfirm={() => console.log("Deleted!")}
+          />
+        </div>
+        <div>
+          <p className="font-medium text-sm">High-Impact Deletion</p>
+          <p className="text-sm text-gray-600">
+            Use for important deletions like user accounts, projects, or large datasets
+          </p>
+        </div>
+      </div>
+      <div className="flex items-start gap-4">
+        <div className="w-40">
+          <DeleteConfirmationModal
+            trigger={<Button variant="destructive">Delete File</Button>}
+            itemName="file"
+            onConfirm={() => console.log("Deleted!")}
+          />
+        </div>
+        <div>
+          <p className="font-medium text-sm">Standard Deletion</p>
+          <p className="text-sm text-gray-600">
+            Use for regular deletions of items, records, or documents
+          </p>
+        </div>
+      </div>
+    </div>
+  ),
+};
+
+// Do's and Don'ts
+export const DosAndDonts: Story = {
+  name: "Do's and Don'ts",
+  tags: ["!dev"],
+  parameters: {
+    docs: {
+      description: {
+        story: "Best practices for delete confirmation modals.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-12">
+      {/* Clear consequences */}
+      <div className="flex gap-8">
+        <div className="flex-1">
+          <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
+            <DeleteConfirmationModal
+              trigger={<Button variant="destructive">Delete User</Button>}
+              itemName="user account"
+              description="All associated data, files, and settings will be permanently removed. This cannot be undone."
+              onConfirm={() => console.log("Deleted!")}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-green-600 text-lg">✓</span>
+            <span className="font-medium">Do</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Clearly explain the consequences of deletion with detailed description.
+          </p>
+        </div>
+        <div className="flex-1">
+          <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
+            <DeleteConfirmationModal
+              trigger={<Button variant="destructive">Delete</Button>}
+              itemName="item"
+              onConfirm={() => console.log("Deleted!")}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-red-600 text-lg">✗</span>
+            <span className="font-medium">Don't</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't delete without explanation or with vague wording.
+          </p>
+        </div>
+      </div>
+
+      {/* Meaningful confirmation text */}
+      <div className="flex gap-8">
+        <div className="flex-1">
+          <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
+            <DeleteConfirmationModal
+              trigger={<Button variant="destructive">Remove Integration</Button>}
+              title="Remove Slack Integration?"
+              confirmText="REMOVE INTEGRATION"
+              deleteButtonText="Remove Integration"
+              onConfirm={() => console.log("Deleted!")}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-green-600 text-lg">✓</span>
+            <span className="font-medium">Do</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Use custom confirmation text that matches the action being deleted.
+          </p>
+        </div>
+        <div className="flex-1">
+          <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
+            <DeleteConfirmationModal
+              trigger={<Button variant="destructive">Delete</Button>}
+              itemName="anything"
+              onConfirm={() => console.log("Deleted!")}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-red-600 text-lg">✗</span>
+            <span className="font-medium">Don't</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't always use generic "DELETE" - tailor it to the specific action.
+          </p>
+        </div>
+      </div>
+
+      {/* Irreversible data */}
+      <div className="flex gap-8">
+        <div className="flex-1">
+          <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
+            <DeleteConfirmationModal
+              trigger={<Button variant="destructive">Delete Permanently</Button>}
+              itemName="data"
+              description="This permanent deletion cannot be recovered from backups."
+              onConfirm={() => console.log("Deleted!")}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-green-600 text-lg">✓</span>
+            <span className="font-medium">Do</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Use for truly irreversible actions. Include clear warnings.
+          </p>
+        </div>
+        <div className="flex-1">
+          <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
+            <DeleteConfirmationModal
+              trigger={<Button variant="destructive">Remove</Button>}
+              itemName="item"
+              description="You can restore this from trash later."
+              onConfirm={() => console.log("Deleted!")}
+            />
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-red-600 text-lg">✗</span>
+            <span className="font-medium">Don't</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-1">
+            Don't use delete confirmation for soft deletes or reversible actions.
+          </p>
+        </div>
       </div>
     </div>
   ),

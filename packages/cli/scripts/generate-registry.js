@@ -248,8 +248,42 @@ function prefixClassString(classString: string, prefix: string): string {
       // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
       if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return cls
 
-      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria)-\\[[^\\]]+\\]:))+/)
+      // Handle arbitrary selector values like [&_svg]:pointer-events-none or [&_[data-icon]]:text-red
+      // MUST be checked BEFORE variant match to handle nested brackets properly
+      if (cls.startsWith('[&') || cls.startsWith('[&_')) {
+        // Find the matching closing bracket by tracking depth
+        let depth = 0
+        let closeBracket = -1
+        for (let i = 0; i < cls.length; i++) {
+          if (cls[i] === '[') depth++
+          else if (cls[i] === ']') {
+            depth--
+            if (depth === 0 && cls[i + 1] === ':') {
+              closeBracket = i
+              break
+            }
+          }
+        }
+        if (closeBracket !== -1) {
+          const selector = cls.slice(0, closeBracket + 2) // Include ]:
+          const utility = cls.slice(closeBracket + 2)
+          if (!utility) return cls
+          // Handle negative utilities
+          if (utility.startsWith('-')) {
+            return \`\${selector}-\${prefix}\${utility.slice(1)}\`
+          }
+          return \`\${selector}\${prefix}\${utility}\`
+        }
+        return cls
+      }
+
+      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:,
+      // group-[.selector]:, peer-[.selector]:, etc.
+      // Pattern breakdown:
+      // - Simple variants: hover:, focus:, sm:, lg:, dark:, etc.
+      // - Data/aria variants: data-[state=open]:, aria-[checked]:
+      // - Group/peer variants: group-[.toaster]:, peer-[.active]:, group/name-[.class]:
+      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria|group|peer)(\\/[a-z0-9-]+)?-?\\[[^\\]]+\\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
         const utility = cls.slice(variants.length)
@@ -264,18 +298,6 @@ function prefixClassString(classString: string, prefix: string): string {
       // Handle negative values like -mt-4
       if (cls.startsWith('-') && cls.length > 1) {
         return \`-\${prefix}\${cls.slice(1)}\`
-      }
-
-      // Handle arbitrary selector values like [&_svg]:pointer-events-none
-      if (cls.startsWith('[&')) {
-        const closeBracket = cls.indexOf(']:')
-        if (closeBracket !== -1) {
-          const selector = cls.slice(0, closeBracket + 2)
-          const utility = cls.slice(closeBracket + 2)
-          if (!utility) return cls
-          return \`\${selector}\${prefix}\${utility}\`
-        }
-        return cls
       }
 
       // Regular class (including arbitrary values like bg-[#343E55])
@@ -361,8 +383,18 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values
-  const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
+  // Skip keys that are definitely not class values (only when value is ambiguous)
+  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
+
+  // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
+  function hasObviousTailwindPatterns(value: string): boolean {
+    // Check for variant prefixes that clearly indicate Tailwind classes
+    return /(?:^|\\s)(hover|focus|active|disabled|group|peer|data-|aria-|sm:|md:|lg:|xl:|2xl:|dark:)/.test(value) ||
+           // Group/peer with selectors
+           /group-\\[|peer-\\[/.test(value) ||
+           // Arbitrary selectors
+           /\\[&/.test(value)
+  }
 
   // Handle double-quoted values
   content = content.replace(
@@ -371,10 +403,12 @@ function prefixTailwindClasses(content: string, prefix: string): string {
       // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/"/g, '')
 
-      if (nonClassKeys.includes(cleanKey)) return match
-
-      // Only prefix if the value looks like Tailwind classes
+      // First check if value looks like Tailwind classes at all
       if (!looksLikeTailwindClasses(value)) return match
+
+      // If the value has obvious Tailwind patterns, always prefix (override blocklist)
+      // This handles cases like title: "group-[.toast]:font-semibold" in Sonner
+      if (!hasObviousTailwindPatterns(value) && nonClassKeys.includes(cleanKey)) return match
 
       const prefixed = prefixClassString(value, prefix)
       return \`\${key}: "\${prefixed}"\`
@@ -388,10 +422,11 @@ function prefixTailwindClasses(content: string, prefix: string): string {
       // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/'/g, '')
 
-      if (nonClassKeys.includes(cleanKey)) return match
-
-      // Only prefix if the value looks like Tailwind classes
+      // First check if value looks like Tailwind classes at all
       if (!looksLikeTailwindClasses(value)) return match
+
+      // If the value has obvious Tailwind patterns, always prefix (override blocklist)
+      if (!hasObviousTailwindPatterns(value) && nonClassKeys.includes(cleanKey)) return match
 
       const prefixed = prefixClassString(value, prefix)
       return \`\${key}: '\${prefixed}'\`

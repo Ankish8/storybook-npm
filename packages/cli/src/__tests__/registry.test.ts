@@ -79,6 +79,7 @@ describe('Registry', () => {
       '@radix-ui/react-switch',
       '@radix-ui/react-accordion',
       '@radix-ui/react-tooltip',
+      '@radix-ui/react-toast',
       'class-variance-authority',
       'clsx',
       'tailwind-merge',

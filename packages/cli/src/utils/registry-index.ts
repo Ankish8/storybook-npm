@@ -145,7 +145,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   'toast': {
     name: 'toast',
     description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
-    dependencies: ["sonner","clsx","tailwind-merge"],
+    dependencies: ["@radix-ui/react-toast","class-variance-authority","lucide-react","clsx","tailwind-merge"],
     category: 'feedback',
     internalDependencies: [],
   },

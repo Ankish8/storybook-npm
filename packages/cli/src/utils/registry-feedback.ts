@@ -82,8 +82,42 @@ function prefixClassString(classString: string, prefix: string): string {
       // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
       if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return cls
 
-      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria)-\[[^\]]+\]:))+/)
+      // Handle arbitrary selector values like [&_svg]:pointer-events-none or [&_[data-icon]]:text-red
+      // MUST be checked BEFORE variant match to handle nested brackets properly
+      if (cls.startsWith('[&') || cls.startsWith('[&_')) {
+        // Find the matching closing bracket by tracking depth
+        let depth = 0
+        let closeBracket = -1
+        for (let i = 0; i < cls.length; i++) {
+          if (cls[i] === '[') depth++
+          else if (cls[i] === ']') {
+            depth--
+            if (depth === 0 && cls[i + 1] === ':') {
+              closeBracket = i
+              break
+            }
+          }
+        }
+        if (closeBracket !== -1) {
+          const selector = cls.slice(0, closeBracket + 2) // Include ]:
+          const utility = cls.slice(closeBracket + 2)
+          if (!utility) return cls
+          // Handle negative utilities
+          if (utility.startsWith('-')) {
+            return `${selector}-${prefix}${utility.slice(1)}`
+          }
+          return `${selector}${prefix}${utility}`
+        }
+        return cls
+      }
+
+      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:,
+      // group-[.selector]:, peer-[.selector]:, etc.
+      // Pattern breakdown:
+      // - Simple variants: hover:, focus:, sm:, lg:, dark:, etc.
+      // - Data/aria variants: data-[state=open]:, aria-[checked]:
+      // - Group/peer variants: group-[.toaster]:, peer-[.active]:, group/name-[.class]:
+      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria|group|peer)(\/[a-z0-9-]+)?-?\[[^\]]+\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
         const utility = cls.slice(variants.length)
@@ -98,18 +132,6 @@ function prefixClassString(classString: string, prefix: string): string {
       // Handle negative values like -mt-4
       if (cls.startsWith('-') && cls.length > 1) {
         return `-${prefix}${cls.slice(1)}`
-      }
-
-      // Handle arbitrary selector values like [&_svg]:pointer-events-none
-      if (cls.startsWith('[&')) {
-        const closeBracket = cls.indexOf(']:')
-        if (closeBracket !== -1) {
-          const selector = cls.slice(0, closeBracket + 2)
-          const utility = cls.slice(closeBracket + 2)
-          if (!utility) return cls
-          return `${selector}${prefix}${utility}`
-        }
-        return cls
       }
 
       // Regular class (including arbitrary values like bg-[#343E55])
@@ -195,8 +217,18 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values
-  const nonClassKeys = ['name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
+  // Skip keys that are definitely not class values (only when value is ambiguous)
+  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy']
+
+  // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
+  function hasObviousTailwindPatterns(value: string): boolean {
+    // Check for variant prefixes that clearly indicate Tailwind classes
+    return /(?:^|\s)(hover|focus|active|disabled|group|peer|data-|aria-|sm:|md:|lg:|xl:|2xl:|dark:)/.test(value) ||
+           // Group/peer with selectors
+           /group-\[|peer-\[/.test(value) ||
+           // Arbitrary selectors
+           /\[&/.test(value)
+  }
 
   // Handle double-quoted values
   content = content.replace(
@@ -205,10 +237,12 @@ function prefixTailwindClasses(content: string, prefix: string): string {
       // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/"/g, '')
 
-      if (nonClassKeys.includes(cleanKey)) return match
-
-      // Only prefix if the value looks like Tailwind classes
+      // First check if value looks like Tailwind classes at all
       if (!looksLikeTailwindClasses(value)) return match
+
+      // If the value has obvious Tailwind patterns, always prefix (override blocklist)
+      // This handles cases like title: "group-[.toast]:font-semibold" in Sonner
+      if (!hasObviousTailwindPatterns(value) && nonClassKeys.includes(cleanKey)) return match
 
       const prefixed = prefixClassString(value, prefix)
       return `${key}: "${prefixed}"`
@@ -222,10 +256,11 @@ function prefixTailwindClasses(content: string, prefix: string): string {
       // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/'/g, '')
 
-      if (nonClassKeys.includes(cleanKey)) return match
-
-      // Only prefix if the value looks like Tailwind classes
+      // First check if value looks like Tailwind classes at all
       if (!looksLikeTailwindClasses(value)) return match
+
+      // If the value has obvious Tailwind patterns, always prefix (override blocklist)
+      if (!hasObviousTailwindPatterns(value) && nonClassKeys.includes(cleanKey)) return match
 
       const prefixed = prefixClassString(value, prefix)
       return `${key}: '${prefixed}'`
@@ -653,55 +688,363 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
       name: 'toast',
       description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
       dependencies: [
-            "sonner",
+            "@radix-ui/react-toast",
+            "class-variance-authority",
+            "lucide-react",
             "clsx",
             "tailwind-merge"
       ],
       files: [
         {
           name: 'toast.tsx',
-          content: prefixTailwindClasses(`import { Toaster as SonnerToaster, toast } from "sonner";
+          content: prefixTailwindClasses(`import * as React from "react";
+import * as ToastPrimitives from "@radix-ui/react-toast";
+import { cva, type VariantProps } from "class-variance-authority";
+import { X, CheckCircle2, XCircle, AlertTriangle, Info } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 
-/**
- * Position options for the toast container.
- */
-export type ToastPosition =
-  | "top-left"
-  | "top-center"
-  | "top-right"
-  | "bottom-left"
-  | "bottom-center"
-  | "bottom-right";
+const ToastProvider = ToastPrimitives.Provider;
 
-/**
- * Props for the Toaster component.
- */
-export interface ToasterProps {
-  /** Position of the toast container (default: "bottom-right") */
-  position?: ToastPosition;
-  /** Whether to show the close button on toasts (default: true) */
-  closeButton?: boolean;
-  /** Duration in milliseconds before toast auto-dismisses (default: 4000) */
-  duration?: number;
-  /** Gap between toasts in pixels (default: 8) */
-  gap?: number;
-  /** Offset from the edge of the screen in pixels (default: 16) */
-  offset?: number | string;
-  /** Whether to expand toasts on hover (default: true) */
-  expand?: boolean;
-  /** Whether toasts are visually stacked (default: true) */
-  visibleToasts?: number;
-  /** Custom class name for the toaster container */
-  className?: string;
-  /** Rich colors mode - uses more vibrant background colors */
-  richColors?: boolean;
+const ToastViewport = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Viewport>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Viewport
+    ref={ref}
+    className={cn(
+      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      className
+    )}
+    {...props}
+  />
+));
+ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
+
+const toastVariants = cva(
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-lg border p-4 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  {
+    variants: {
+      variant: {
+        default: "border-[#E9EAEB] bg-white text-[#181D27]",
+        success: "border-[#17B26A]/20 bg-[#ECFDF3] text-[#067647]",
+        error: "border-[#F04438]/20 bg-[#FEF3F2] text-[#B42318]",
+        warning: "border-[#F79009]/20 bg-[#FFFAEB] text-[#B54708]",
+        info: "border-[#4275D6]/20 bg-[#EBF5FF] text-[#1849A9]",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+const Toast = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Root>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
+    VariantProps<typeof toastVariants>
+>(({ className, variant, ...props }, ref) => {
+  return (
+    <ToastPrimitives.Root
+      ref={ref}
+      className={cn(toastVariants({ variant }), className)}
+      {...props}
+    />
+  );
+});
+Toast.displayName = ToastPrimitives.Root.displayName;
+
+const ToastAction = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Action>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Action
+    ref={ref}
+    className={cn(
+      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-[#E9EAEB] bg-transparent px-3 text-sm font-medium transition-colors hover:bg-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#4275D6] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      "group-[.success]:border-[#17B26A]/30 group-[.success]:hover:border-[#17B26A]/50 group-[.success]:hover:bg-[#17B26A]/10",
+      "group-[.error]:border-[#F04438]/30 group-[.error]:hover:border-[#F04438]/50 group-[.error]:hover:bg-[#F04438]/10",
+      "group-[.warning]:border-[#F79009]/30 group-[.warning]:hover:border-[#F79009]/50 group-[.warning]:hover:bg-[#F79009]/10",
+      "group-[.info]:border-[#4275D6]/30 group-[.info]:hover:border-[#4275D6]/50 group-[.info]:hover:bg-[#4275D6]/10",
+      className
+    )}
+    {...props}
+  />
+));
+ToastAction.displayName = ToastPrimitives.Action.displayName;
+
+const ToastClose = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Close>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Close
+    ref={ref}
+    className={cn(
+      "absolute right-2 top-2 rounded-md p-1 text-[#717680] opacity-0 transition-opacity hover:text-[#181D27] focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
+      "group-[.success]:text-[#067647] group-[.success]:hover:text-[#067647]",
+      "group-[.error]:text-[#B42318] group-[.error]:hover:text-[#B42318]",
+      "group-[.warning]:text-[#B54708] group-[.warning]:hover:text-[#B54708]",
+      "group-[.info]:text-[#1849A9] group-[.info]:hover:text-[#1849A9]",
+      className
+    )}
+    toast-close=""
+    {...props}
+  >
+    <X className="h-4 w-4" />
+  </ToastPrimitives.Close>
+));
+ToastClose.displayName = ToastPrimitives.Close.displayName;
+
+const ToastTitle = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Title>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Title
+    ref={ref}
+    className={cn("text-sm font-semibold", className)}
+    {...props}
+  />
+));
+ToastTitle.displayName = ToastPrimitives.Title.displayName;
+
+const ToastDescription = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitives.Description>,
+  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
+>(({ className, ...props }, ref) => (
+  <ToastPrimitives.Description
+    ref={ref}
+    className={cn("text-sm opacity-90", className)}
+    {...props}
+  />
+));
+ToastDescription.displayName = ToastPrimitives.Description.displayName;
+
+type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
+
+type ToastActionElement = React.ReactElement<typeof ToastAction>;
+
+export {
+  type ToastProps,
+  type ToastActionElement,
+  ToastProvider,
+  ToastViewport,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  ToastClose,
+  ToastAction,
+  toastVariants,
+};
+
+// ============================================================================
+// Toast Hook & Toaster Component
+// ============================================================================
+
+const TOAST_LIMIT = 5;
+const TOAST_REMOVE_DELAY = 5000;
+
+type ToasterToast = ToastProps & {
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: ToastActionElement;
+};
+
+const actionTypes = {
+  ADD_TOAST: "ADD_TOAST",
+  UPDATE_TOAST: "UPDATE_TOAST",
+  DISMISS_TOAST: "DISMISS_TOAST",
+  REMOVE_TOAST: "REMOVE_TOAST",
+} as const;
+
+let count = 0;
+
+function genId() {
+  count = (count + 1) % Number.MAX_SAFE_INTEGER;
+  return count.toString();
 }
 
+type ActionType = typeof actionTypes;
+
+type Action =
+  | {
+      type: ActionType["ADD_TOAST"];
+      toast: ToasterToast;
+    }
+  | {
+      type: ActionType["UPDATE_TOAST"];
+      toast: Partial<ToasterToast>;
+    }
+  | {
+      type: ActionType["DISMISS_TOAST"];
+      toastId?: ToasterToast["id"];
+    }
+  | {
+      type: ActionType["REMOVE_TOAST"];
+      toastId?: ToasterToast["id"];
+    };
+
+interface State {
+  toasts: ToasterToast[];
+}
+
+const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+
+const addToRemoveQueue = (toastId: string) => {
+  if (toastTimeouts.has(toastId)) {
+    return;
+  }
+
+  const timeout = setTimeout(() => {
+    toastTimeouts.delete(toastId);
+    dispatch({
+      type: "REMOVE_TOAST",
+      toastId: toastId,
+    });
+  }, TOAST_REMOVE_DELAY);
+
+  toastTimeouts.set(toastId, timeout);
+};
+
+export const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "ADD_TOAST":
+      return {
+        ...state,
+        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+      };
+
+    case "UPDATE_TOAST":
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === action.toast.id ? { ...t, ...action.toast } : t
+        ),
+      };
+
+    case "DISMISS_TOAST": {
+      const { toastId } = action;
+
+      if (toastId) {
+        addToRemoveQueue(toastId);
+      } else {
+        state.toasts.forEach((toast) => {
+          addToRemoveQueue(toast.id);
+        });
+      }
+
+      return {
+        ...state,
+        toasts: state.toasts.map((t) =>
+          t.id === toastId || toastId === undefined
+            ? {
+                ...t,
+                open: false,
+              }
+            : t
+        ),
+      };
+    }
+    case "REMOVE_TOAST":
+      if (action.toastId === undefined) {
+        return {
+          ...state,
+          toasts: [],
+        };
+      }
+      return {
+        ...state,
+        toasts: state.toasts.filter((t) => t.id !== action.toastId),
+      };
+  }
+};
+
+const listeners: Array<(state: State) => void> = [];
+
+let memoryState: State = { toasts: [] };
+
+function dispatch(action: Action) {
+  memoryState = reducer(memoryState, action);
+  listeners.forEach((listener) => {
+    listener(memoryState);
+  });
+}
+
+type Toast = Omit<ToasterToast, "id">;
+
+function toast({ ...props }: Toast) {
+  const id = genId();
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    });
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
+
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss();
+      },
+    },
+  });
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  };
+}
+
+// Convenience methods for different variants
+toast.success = (props: Omit<Toast, "variant">) =>
+  toast({ ...props, variant: "success" });
+toast.error = (props: Omit<Toast, "variant">) =>
+  toast({ ...props, variant: "error" });
+toast.warning = (props: Omit<Toast, "variant">) =>
+  toast({ ...props, variant: "warning" });
+toast.info = (props: Omit<Toast, "variant">) =>
+  toast({ ...props, variant: "info" });
+toast.dismiss = (toastId?: string) =>
+  dispatch({ type: "DISMISS_TOAST", toastId });
+
+function useToast() {
+  const [state, setState] = React.useState<State>(memoryState);
+
+  React.useEffect(() => {
+    listeners.push(setState);
+    return () => {
+      const index = listeners.indexOf(setState);
+      if (index > -1) {
+        listeners.splice(index, 1);
+      }
+    };
+  }, [state]);
+
+  return {
+    ...state,
+    toast,
+    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+  };
+}
+
+// Variant icons mapping
+const variantIcons = {
+  default: null,
+  success: CheckCircle2,
+  error: XCircle,
+  warning: AlertTriangle,
+  info: Info,
+};
+
 /**
- * Toast container component that renders toast notifications.
- * Place this component once at the root of your app (e.g., in App.tsx or layout).
+ * Toaster component that renders toast notifications.
+ * Place this component once at the root of your app.
  *
  * @example
  * \`\`\`tsx
@@ -718,125 +1061,102 @@ export interface ToasterProps {
  * }
  * \`\`\`
  */
-function Toaster({
-  position = "bottom-right",
-  closeButton = true,
-  duration = 4000,
-  gap = 8,
-  offset = 16,
-  expand = true,
-  visibleToasts = 3,
-  className,
-  richColors = true,
-  ...props
-}: ToasterProps) {
+function Toaster() {
+  const { toasts } = useToast();
+
   return (
-    <SonnerToaster
-      position={position}
-      closeButton={closeButton}
-      duration={duration}
-      gap={gap}
-      offset={offset}
-      expand={expand}
-      visibleToasts={visibleToasts}
-      richColors={richColors}
-      className={cn("toaster group", className)}
-      toastOptions={{
-        classNames: {
-          toast: cn(
-            "group toast",
-            "group-[.toaster]:bg-white group-[.toaster]:text-[#181D27]",
-            "group-[.toaster]:border group-[.toaster]:border-[#E9EAEB]",
-            "group-[.toaster]:shadow-lg group-[.toaster]:rounded-lg",
-            "group-[.toaster]:p-4"
-          ),
-          title: "group-[.toast]:font-semibold group-[.toast]:text-[#181D27]",
-          description: "group-[.toast]:text-sm group-[.toast]:text-[#717680]",
-          actionButton: cn(
-            "group-[.toast]:bg-[#4275D6] group-[.toast]:text-white",
-            "group-[.toast]:rounded group-[.toast]:px-3 group-[.toast]:py-1.5",
-            "group-[.toast]:text-sm group-[.toast]:font-medium"
-          ),
-          cancelButton: cn(
-            "group-[.toast]:bg-[#F5F5F5] group-[.toast]:text-[#181D27]",
-            "group-[.toast]:rounded group-[.toast]:px-3 group-[.toast]:py-1.5",
-            "group-[.toast]:text-sm group-[.toast]:font-medium"
-          ),
-          closeButton: cn(
-            "group-[.toast]:text-[#717680]",
-            "group-[.toast]:hover:text-[#181D27]",
-            "group-[.toast]:border-[#E9EAEB]",
-            "group-[.toast]:bg-white"
-          ),
-          // Variant-specific styles (when richColors is true)
-          success: cn(
-            "group-[.toaster]:bg-[#ECFDF3] group-[.toaster]:border-[#17B26A]/20",
-            "group-[.toaster]:text-[#067647]",
-            "[&_[data-icon]]:text-[#17B26A]"
-          ),
-          error: cn(
-            "group-[.toaster]:bg-[#FEF3F2] group-[.toaster]:border-[#F04438]/20",
-            "group-[.toaster]:text-[#B42318]",
-            "[&_[data-icon]]:text-[#F04438]"
-          ),
-          warning: cn(
-            "group-[.toaster]:bg-[#FFFAEB] group-[.toaster]:border-[#F79009]/20",
-            "group-[.toaster]:text-[#B54708]",
-            "[&_[data-icon]]:text-[#F79009]"
-          ),
-          info: cn(
-            "group-[.toaster]:bg-[#EBF5FF] group-[.toaster]:border-[#4275D6]/20",
-            "group-[.toaster]:text-[#1849A9]",
-            "[&_[data-icon]]:text-[#4275D6]"
-          ),
-        },
-      }}
-      {...props}
-    />
+    <ToastProvider>
+      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+        const Icon = variant ? variantIcons[variant] : null;
+
+        return (
+          <Toast key={id} variant={variant} className={variant} {...props}>
+            <div className="flex gap-3">
+              {Icon && (
+                <Icon
+                  className={cn(
+                    "h-5 w-5 shrink-0",
+                    variant === "success" && "text-[#17B26A]",
+                    variant === "error" && "text-[#F04438]",
+                    variant === "warning" && "text-[#F79009]",
+                    variant === "info" && "text-[#4275D6]"
+                  )}
+                />
+              )}
+              <div className="grid gap-1">
+                {title && <ToastTitle>{title}</ToastTitle>}
+                {description && (
+                  <ToastDescription>{description}</ToastDescription>
+                )}
+              </div>
+            </div>
+            {action}
+            <ToastClose />
+          </Toast>
+        );
+      })}
+      <ToastViewport />
+    </ToastProvider>
   );
 }
 
-// Re-export toast function with our custom types
-export { Toaster, toast };
+export { useToast, toast, Toaster };
 
 /**
- * Convenience functions for common toast types.
+ * Toast notification system using Radix UI primitives.
  *
  * @example
  * \`\`\`tsx
+ * // In your App.tsx or layout
+ * import { Toaster } from "@/components/ui/toast"
+ *
+ * function App() {
+ *   return (
+ *     <>
+ *       <YourApp />
+ *       <Toaster />
+ *     </>
+ *   )
+ * }
+ * \`\`\`
+ *
+ * @example
+ * \`\`\`tsx
+ * // Trigger toasts from anywhere
  * import { toast } from "@/components/ui/toast"
  *
  * // Simple message
- * toast("Event has been created")
+ * toast({ title: "Event has been created" })
  *
- * // With description
- * toast.success("Success!", {
+ * // Success toast
+ * toast.success({
+ *   title: "Success!",
  *   description: "Your changes have been saved."
  * })
  *
  * // Error toast
- * toast.error("Error", {
+ * toast.error({
+ *   title: "Error",
  *   description: "Something went wrong. Please try again."
  * })
  *
+ * // Warning toast
+ * toast.warning({
+ *   title: "Warning",
+ *   description: "This action cannot be undone."
+ * })
+ *
+ * // Info toast
+ * toast.info({
+ *   title: "Info",
+ *   description: "You have 3 new notifications."
+ * })
+ *
  * // With action button
- * toast("Event created", {
- *   action: {
- *     label: "Undo",
- *     onClick: () => console.log("Undo clicked")
- *   }
+ * toast({
+ *   title: "Event created",
+ *   action: <ToastAction altText="Undo">Undo</ToastAction>
  * })
- *
- * // Promise toast (shows loading, then success/error)
- * toast.promise(saveData(), {
- *   loading: "Saving...",
- *   success: "Saved successfully!",
- *   error: "Failed to save"
- * })
- *
- * // Dismiss a specific toast
- * const toastId = toast("Message")
- * toast.dismiss(toastId)
  *
  * // Dismiss all toasts
  * toast.dismiss()

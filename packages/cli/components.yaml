@@ -248,7 +248,9 @@ components:
     description: "A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support"
     category: feedback
     dependencies:
-      - "sonner"
+      - "@radix-ui/react-toast"
+      - "class-variance-authority"
+      - "lucide-react"
       - "clsx"
       - "tailwind-merge"
 
