@@ -553,14 +553,12 @@ export const EventGroupComponent = React.forwardRef<
       onSelectionChange,
       emptyGroupMessage = "No events available",
       renderEmptyGroup,
+      defaultExpanded = false,
       className,
       ...props
     },
     ref
   ) => {
-    // Track accordion open/closed state explicitly to survive re-renders
-    const [isAccordionOpen, setIsAccordionOpen] = React.useState(true);
-
     // Calculate selection state for this group
     const groupEventIds = events.map((e) => e.id);
     const selectedInGroup = groupEventIds.filter((id) =>
@@ -639,43 +637,41 @@ export const EventGroupComponent = React.forwardRef<
     // Multiple events: render as collapsible accordion
     return (
       <div ref={ref} className={cn("bg-white", className)} {...props}>
-        <Accordion
-          type="multiple"
-          value={isAccordionOpen ? [group.id] : []}
-          onValueChange={(values) => setIsAccordionOpen(values.includes(group.id))}
-        >
+        <Accordion type="multiple" defaultValue={defaultExpanded ? [group.id] : []}>
           <AccordionItem value={group.id}>
-            <AccordionTrigger
-              showChevron={true}
-              className="w-full p-4 hover:bg-[#F9FAFB]"
-            >
-              <div className="flex items-center gap-3 flex-1">
-                <Checkbox
-                  checked={checkboxState}
-                  onCheckedChange={handleGroupCheckbox}
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label={\`Select all \${group.name}\`}
-                />
-                <div className="flex flex-col items-start text-left flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    {group.icon && (
-                      <span className="text-[#6B7280]">{group.icon}</span>
-                    )}
-                    <span className="font-medium text-[#333333]">
-                      {group.name}
+            {/* Header row with checkbox OUTSIDE the trigger button to avoid nested buttons */}
+            <div className="flex items-center gap-3 p-4 hover:bg-[#F9FAFB]">
+              <Checkbox
+                checked={checkboxState}
+                onCheckedChange={handleGroupCheckbox}
+                aria-label={\`Select all \${group.name}\`}
+              />
+              <AccordionTrigger
+                showChevron={true}
+                className="flex-1 p-0 hover:bg-transparent"
+              >
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="flex flex-col items-start text-left flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      {group.icon && (
+                        <span className="text-[#6B7280]">{group.icon}</span>
+                      )}
+                      <span className="font-medium text-[#333333]">
+                        {group.name}
+                      </span>
+                    </div>
+                    <span className="text-sm text-[#6B7280] mt-0.5">
+                      {group.description}
                     </span>
                   </div>
-                  <span className="text-sm text-[#6B7280] mt-0.5">
-                    {group.description}
-                  </span>
+                  {selectedCount > 0 && (
+                    <span className="text-sm text-[#6B7280] whitespace-nowrap">
+                      {selectedCount} Selected
+                    </span>
+                  )}
                 </div>
-                {selectedCount > 0 && (
-                  <span className="text-sm text-[#6B7280] whitespace-nowrap">
-                    {selectedCount} Selected
-                  </span>
-                )}
-              </div>
-            </AccordionTrigger>
+              </AccordionTrigger>
+            </div>
             <AccordionContent>
               <div className="border-t border-[#E5E7EB]">
                 {events.length > 0 ? (
@@ -843,6 +839,8 @@ export interface EventGroupComponentProps {
   emptyGroupMessage?: string
   /** Custom render function for empty group state */
   renderEmptyGroup?: (group: EventGroup) => React.ReactNode
+  /** Whether the accordion should be expanded by default (default: false) */
+  defaultExpanded?: boolean
 }
 
 /**

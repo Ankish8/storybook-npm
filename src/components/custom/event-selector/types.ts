@@ -95,6 +95,8 @@ export interface EventGroupComponentProps {
   emptyGroupMessage?: string
   /** Custom render function for empty group state */
   renderEmptyGroup?: (group: EventGroup) => React.ReactNode
+  /** Whether the accordion should be expanded by default (default: false) */
+  defaultExpanded?: boolean
 }
 
 /**
