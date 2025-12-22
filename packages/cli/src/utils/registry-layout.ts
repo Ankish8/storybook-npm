@@ -844,12 +844,12 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
     const heightClasses = {
       horizontal: "h-[76px]",
       vertical: "min-h-[76px] py-4",
-      responsive: "min-h-[76px] py-4 sm:py-0 sm:h-[76px]",
+      responsive: "min-h-[76px] py-4 lg:py-0 lg:h-[76px]",
     };
 
     // Render actions for desktop (all inline)
     const renderDesktopActions = () => (
-      <div className="hidden sm:flex items-center gap-2">{actionsArray}</div>
+      <div className="hidden sm:flex items-center gap-2 ml-6">{actionsArray}</div>
     );
 
     // Render expandable actions (for mobile and vertical layout)
@@ -960,7 +960,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
               )}
             </div>
             {description && (
-              <p className="m-0 text-sm text-[#181D27] font-normal mt-1 truncate">
+              <p className="m-0 text-sm text-[#181D27] font-normal mt-1 line-clamp-2">
                 {description}
               </p>
             )}

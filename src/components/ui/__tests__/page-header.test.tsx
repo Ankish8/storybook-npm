@@ -135,7 +135,7 @@ describe("PageHeader", () => {
   it("applies correct height", () => {
     render(<PageHeader title="Title" data-testid="header" />);
     expect(screen.getByTestId("header")).toHaveClass("min-h-[76px]");
-    expect(screen.getByTestId("header")).toHaveClass("sm:h-[76px]");
+    expect(screen.getByTestId("header")).toHaveClass("lg:h-[76px]");
   });
 
   // Typography

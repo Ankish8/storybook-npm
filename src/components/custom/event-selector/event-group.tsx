@@ -30,6 +30,9 @@ export const EventGroupComponent = React.forwardRef<
     },
     ref
   ) => {
+    // Track accordion open/closed state explicitly to survive re-renders
+    const [isAccordionOpen, setIsAccordionOpen] = React.useState(true);
+
     // Calculate selection state for this group
     const groupEventIds = events.map((e) => e.id);
     const selectedInGroup = groupEventIds.filter((id) =>
@@ -108,7 +111,11 @@ export const EventGroupComponent = React.forwardRef<
     // Multiple events: render as collapsible accordion
     return (
       <div ref={ref} className={cn("bg-white", className)} {...props}>
-        <Accordion type="multiple">
+        <Accordion
+          type="multiple"
+          value={isAccordionOpen ? [group.id] : []}
+          onValueChange={(values) => setIsAccordionOpen(values.includes(group.id))}
+        >
           <AccordionItem value={group.id}>
             <AccordionTrigger
               showChevron={true}

@@ -1,4 +1,9 @@
 {
+  "enabledPlugins": {
+    "myoperator-publish@local-dev": true,
+    "explanatory-output-style@claude-plugins-official": true,
+    "myoperator-publish@myoperator-local": true
+  },
   "extraKnownMarketplaces": {
     "local-dev": {
       "source": {
@@ -6,9 +11,5 @@
         "path": "."
       }
     }
-  },
-  "enabledPlugins": {
-    "myoperator-publish@local-dev": true,
-    "explanatory-output-style@claude-plugins-official": true
   }
 }
