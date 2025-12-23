@@ -17,6 +17,9 @@ export const KeyValueRow = React.forwardRef<
       pair,
       isDuplicateKey,
       isKeyEmpty,
+      isValueEmpty,
+      keyRequired = true,
+      valueRequired = true,
       keyPlaceholder = "Key",
       valuePlaceholder = "Value",
       onKeyChange,
@@ -27,15 +30,9 @@ export const KeyValueRow = React.forwardRef<
     },
     ref
   ) => {
-    // Determine if key input should show error state
-    const keyHasError = isDuplicateKey || isKeyEmpty;
-
-    // Determine error message
-    const errorMessage = isDuplicateKey
-      ? "Duplicate key"
-      : isKeyEmpty
-        ? "Key is required"
-        : null;
+    // Determine if inputs should show error state
+    const keyHasError = isDuplicateKey || (keyRequired && isKeyEmpty);
+    const valueHasError = valueRequired && isValueEmpty;
 
     return (
       <div
@@ -50,13 +47,9 @@ export const KeyValueRow = React.forwardRef<
             onChange={(e) => onKeyChange(pair.id, e.target.value)}
             placeholder={keyPlaceholder}
             state={keyHasError ? "error" : "default"}
+            required={keyRequired}
             aria-label="Key"
           />
-          {errorMessage && (
-            <span className="text-xs text-[#FF3B3B] mt-1 block">
-              {errorMessage}
-            </span>
-          )}
         </div>
 
         {/* Value Input */}
@@ -65,6 +58,8 @@ export const KeyValueRow = React.forwardRef<
             value={pair.value}
             onChange={(e) => onValueChange(pair.id, e.target.value)}
             placeholder={valuePlaceholder}
+            state={valueHasError ? "error" : "default"}
+            required={valueRequired}
             aria-label="Value"
           />
         </div>

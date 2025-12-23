@@ -32,7 +32,8 @@ KeyValueInput is a specialized component for managing key-value pairs such as HT
 
 - **Dynamic add/remove rows** - Add up to 10 items (configurable)
 - **Duplicate key validation** - Case-insensitive detection
-- **Required key validation** - Shows error for empty keys
+- **Required field validation** - Configurable via \`keyRequired\` and \`valueRequired\` props
+- **Native form validation** - Uses HTML \`required\` attribute for form integration
 - **Maximum items limit** - Disabled button with tooltip when at limit
 - **Controlled and uncontrolled modes** - Flexible state management
 
@@ -91,6 +92,14 @@ const [headers, setHeaders] = useState<KeyValuePair[]>([])
       control: "text",
       description: "Label for value column header",
     },
+    keyRequired: {
+      control: "boolean",
+      description: "Whether key field is required (default: true)",
+    },
+    valueRequired: {
+      control: "boolean",
+      description: "Whether value field is required (default: true)",
+    },
   },
   decorators: [
     (Story) => (
@@ -104,16 +113,18 @@ const [headers, setHeaders] = useState<KeyValuePair[]>([])
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Default uncontrolled example
+// Default uncontrolled example (both key and value required)
 export const Default: Story = {
   args: {
     title: "Headers",
     description:
-      "Additional HTTP headers to send with webhook requests. Key is required, value is optional.",
+      "Additional HTTP headers to send with webhook requests. Both key and value are required.",
     addButtonText: "Add Header",
     maxItems: 10,
     keyPlaceholder: "Content-Type",
     valuePlaceholder: "application/json",
+    keyRequired: true,
+    valueRequired: true,
   },
 };
 
@@ -182,12 +193,13 @@ const ValidationExample = () => {
     { id: "1", key: "Content-Type", value: "application/json" },
     { id: "2", key: "content-type", value: "text/html" }, // Duplicate (case-insensitive)
     { id: "3", key: "", value: "some value" }, // Empty key
+    { id: "4", key: "Accept", value: "" }, // Empty value
   ]);
 
   return (
     <KeyValueInput
       title="Headers"
-      description="Shows validation for duplicate and empty keys"
+      description="Shows validation for duplicate keys, empty keys, and empty values. Type in a field and clear it to see the error state."
       value={pairs}
       onChange={setPairs}
     />
@@ -197,6 +209,14 @@ const ValidationExample = () => {
 export const WithValidation: Story = {
   name: "With Validation Errors",
   render: () => <ValidationExample />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Validation errors appear after a field is touched and then cleared. Try typing in a field and clearing it to see the error state.",
+      },
+    },
+  },
 };
 
 // Query Parameters use case
@@ -222,8 +242,35 @@ export const EmptyState: Story = {
   args: {
     title: "Headers",
     description:
-      "Additional HTTP headers to send with webhook requests. Key is required, value is optional.",
+      "Additional HTTP headers to send with webhook requests. Both key and value are required.",
     defaultValue: [],
+  },
+};
+
+// Value optional (only key required)
+export const ValueOptional: Story = {
+  name: "Value Optional",
+  args: {
+    title: "Environment Variables",
+    description:
+      "Define environment variables. Key is required, but value can be empty.",
+    addButtonText: "Add Variable",
+    keyPlaceholder: "VARIABLE_NAME",
+    valuePlaceholder: "value (optional)",
+    keyRequired: true,
+    valueRequired: false,
+    defaultValue: [
+      { id: "1", key: "NODE_ENV", value: "production" },
+      { id: "2", key: "DEBUG", value: "" },
+    ],
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `valueRequired={false}` when only the key is mandatory. Notice the value column header has no asterisk.",
+      },
+    },
   },
 };
 

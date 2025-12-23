@@ -46,6 +46,8 @@ export const KeyValueInput = React.forwardRef<
       valuePlaceholder = "Value",
       keyLabel = "Key",
       valueLabel = "Value",
+      keyRequired = true,
+      valueRequired = true,
       value: controlledValue,
       onChange,
       defaultValue = [],
@@ -61,8 +63,11 @@ export const KeyValueInput = React.forwardRef<
     const isControlled = controlledValue !== undefined;
     const pairs = isControlled ? controlledValue : internalPairs;
 
-    // Track which keys have been touched for validation
+    // Track which fields have been touched for validation
     const [touchedKeys, setTouchedKeys] = React.useState<Set<string>>(
+      new Set()
+    );
+    const [touchedValues, setTouchedValues] = React.useState<Set<string>>(
       new Set()
     );
 
@@ -118,12 +123,18 @@ export const KeyValueInput = React.forwardRef<
       handlePairsChange(
         pairs.map((pair) => (pair.id === id ? { ...pair, value } : pair))
       );
+      setTouchedValues((prev) => new Set(prev).add(id));
     };
 
     // Delete row
     const handleDelete = (id: string) => {
       handlePairsChange(pairs.filter((pair) => pair.id !== id));
       setTouchedKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      setTouchedValues((prev) => {
         const next = new Set(prev);
         next.delete(id);
         return next;
@@ -155,12 +166,13 @@ export const KeyValueInput = React.forwardRef<
               <div className="flex-1">
                 <span className="text-sm font-medium text-[#333333]">
                   {keyLabel}
-                  <span className="text-[#FF3B3B] ml-0.5">*</span>
+                  {keyRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
                 </span>
               </div>
               <div className="flex-1">
                 <span className="text-sm font-medium text-[#333333]">
                   {valueLabel}
+                  {valueRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
                 </span>
               </div>
               {/* Spacer for delete button column */}
@@ -175,6 +187,9 @@ export const KeyValueInput = React.forwardRef<
                   pair={pair}
                   isDuplicateKey={duplicateKeys.has(pair.key.toLowerCase())}
                   isKeyEmpty={touchedKeys.has(pair.id) && !pair.key.trim()}
+                  isValueEmpty={touchedValues.has(pair.id) && !pair.value.trim()}
+                  keyRequired={keyRequired}
+                  valueRequired={valueRequired}
                   keyPlaceholder={keyPlaceholder}
                   valuePlaceholder={valuePlaceholder}
                   onKeyChange={handleKeyChange}

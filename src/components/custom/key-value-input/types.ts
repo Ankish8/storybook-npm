@@ -32,6 +32,12 @@ export interface KeyValueInputProps {
   /** Label for value column header (default: "Value") */
   valueLabel?: string
 
+  // Validation
+  /** Whether key field is required (default: true) */
+  keyRequired?: boolean
+  /** Whether value field is required (default: true) */
+  valueRequired?: boolean
+
   // State (controlled mode)
   /** Array of key-value pairs (controlled) */
   value?: KeyValuePair[]
@@ -57,6 +63,12 @@ export interface KeyValueRowProps {
   isDuplicateKey: boolean
   /** Whether key is empty (for validation) */
   isKeyEmpty: boolean
+  /** Whether value is empty (for validation) */
+  isValueEmpty: boolean
+  /** Whether key field is required */
+  keyRequired?: boolean
+  /** Whether value field is required */
+  valueRequired?: boolean
   /** Placeholder for key input */
   keyPlaceholder?: string
   /** Placeholder for value input */

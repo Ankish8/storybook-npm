@@ -924,6 +924,8 @@ export const KeyValueInput = React.forwardRef<
       valuePlaceholder = "Value",
       keyLabel = "Key",
       valueLabel = "Value",
+      keyRequired = true,
+      valueRequired = true,
       value: controlledValue,
       onChange,
       defaultValue = [],
@@ -939,8 +941,11 @@ export const KeyValueInput = React.forwardRef<
     const isControlled = controlledValue !== undefined;
     const pairs = isControlled ? controlledValue : internalPairs;
 
-    // Track which keys have been touched for validation
+    // Track which fields have been touched for validation
     const [touchedKeys, setTouchedKeys] = React.useState<Set<string>>(
+      new Set()
+    );
+    const [touchedValues, setTouchedValues] = React.useState<Set<string>>(
       new Set()
     );
 
@@ -996,12 +1001,18 @@ export const KeyValueInput = React.forwardRef<
       handlePairsChange(
         pairs.map((pair) => (pair.id === id ? { ...pair, value } : pair))
       );
+      setTouchedValues((prev) => new Set(prev).add(id));
     };
 
     // Delete row
     const handleDelete = (id: string) => {
       handlePairsChange(pairs.filter((pair) => pair.id !== id));
       setTouchedKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      setTouchedValues((prev) => {
         const next = new Set(prev);
         next.delete(id);
         return next;
@@ -1033,12 +1044,13 @@ export const KeyValueInput = React.forwardRef<
               <div className="flex-1">
                 <span className="text-sm font-medium text-[#333333]">
                   {keyLabel}
-                  <span className="text-[#FF3B3B] ml-0.5">*</span>
+                  {keyRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
                 </span>
               </div>
               <div className="flex-1">
                 <span className="text-sm font-medium text-[#333333]">
                   {valueLabel}
+                  {valueRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
                 </span>
               </div>
               {/* Spacer for delete button column */}
@@ -1053,6 +1065,9 @@ export const KeyValueInput = React.forwardRef<
                   pair={pair}
                   isDuplicateKey={duplicateKeys.has(pair.key.toLowerCase())}
                   isKeyEmpty={touchedKeys.has(pair.id) && !pair.key.trim()}
+                  isValueEmpty={touchedValues.has(pair.id) && !pair.value.trim()}
+                  keyRequired={keyRequired}
+                  valueRequired={valueRequired}
                   keyPlaceholder={keyPlaceholder}
                   valuePlaceholder={valuePlaceholder}
                   onKeyChange={handleKeyChange}
@@ -1111,6 +1126,9 @@ export const KeyValueRow = React.forwardRef<
       pair,
       isDuplicateKey,
       isKeyEmpty,
+      isValueEmpty,
+      keyRequired = true,
+      valueRequired = true,
       keyPlaceholder = "Key",
       valuePlaceholder = "Value",
       onKeyChange,
@@ -1121,15 +1139,9 @@ export const KeyValueRow = React.forwardRef<
     },
     ref
   ) => {
-    // Determine if key input should show error state
-    const keyHasError = isDuplicateKey || isKeyEmpty;
-
-    // Determine error message
-    const errorMessage = isDuplicateKey
-      ? "Duplicate key"
-      : isKeyEmpty
-        ? "Key is required"
-        : null;
+    // Determine if inputs should show error state
+    const keyHasError = isDuplicateKey || (keyRequired && isKeyEmpty);
+    const valueHasError = valueRequired && isValueEmpty;
 
     return (
       <div
@@ -1144,13 +1156,9 @@ export const KeyValueRow = React.forwardRef<
             onChange={(e) => onKeyChange(pair.id, e.target.value)}
             placeholder={keyPlaceholder}
             state={keyHasError ? "error" : "default"}
+            required={keyRequired}
             aria-label="Key"
           />
-          {errorMessage && (
-            <span className="text-xs text-[#FF3B3B] mt-1 block">
-              {errorMessage}
-            </span>
-          )}
         </div>
 
         {/* Value Input */}
@@ -1159,6 +1167,8 @@ export const KeyValueRow = React.forwardRef<
             value={pair.value}
             onChange={(e) => onValueChange(pair.id, e.target.value)}
             placeholder={valuePlaceholder}
+            state={valueHasError ? "error" : "default"}
+            required={valueRequired}
             aria-label="Value"
           />
         </div>
@@ -1217,6 +1227,12 @@ export interface KeyValueInputProps {
   /** Label for value column header (default: "Value") */
   valueLabel?: string
 
+  // Validation
+  /** Whether key field is required (default: true) */
+  keyRequired?: boolean
+  /** Whether value field is required (default: true) */
+  valueRequired?: boolean
+
   // State (controlled mode)
   /** Array of key-value pairs (controlled) */
   value?: KeyValuePair[]
@@ -1242,6 +1258,12 @@ export interface KeyValueRowProps {
   isDuplicateKey: boolean
   /** Whether key is empty (for validation) */
   isKeyEmpty: boolean
+  /** Whether value is empty (for validation) */
+  isValueEmpty: boolean
+  /** Whether key field is required */
+  keyRequired?: boolean
+  /** Whether value field is required */
+  valueRequired?: boolean
   /** Placeholder for key input */
   keyPlaceholder?: string
   /** Placeholder for value input */
