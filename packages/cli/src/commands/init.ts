@@ -33,48 +33,236 @@ const CSS_VARIABLES_V4 = `@import "tailwindcss";
 }
 
 :root {
+  /* =========================================================================
+     PRIMITIVE COLORS - CSS Custom Properties
+     ========================================================================= */
+
+  /* Base */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* Neutral (Gray) */
+  --color-neutral-25: #FDFDFD;
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #E9EAEB;
+  --color-neutral-300: #D5D7DA;
+  --color-neutral-400: #A4A7AE;
+  --color-neutral-500: #717680;
+  --color-neutral-600: #535862;
+  --color-neutral-700: #414651;
+  --color-neutral-800: #252B37;
+  --color-neutral-900: #181D27;
+  --color-neutral-950: #0A0D12;
+
+  /* Primary (Blue Gray) */
+  --color-primary-25: #F9FAFB;
+  --color-primary-50: #EBECEE;
+  --color-primary-100: #C0C3CA;
+  --color-primary-200: #A2A6B1;
+  --color-primary-300: #777E8D;
+  --color-primary-400: #5D6577;
+  --color-primary-500: #343E55;
+  --color-primary-600: #2F384D;
+  --color-primary-700: #252C3C;
+  --color-primary-800: #1D222F;
+  --color-primary-900: #161A24;
+  --color-primary-950: #0C0F12;
+
+  /* Secondary (Turquoise) */
+  --color-secondary-25: #F6FCFD;
+  --color-secondary-50: #EAF8FA;
+  --color-secondary-100: #BDEAEF;
+  --color-secondary-200: #9DE0E7;
+  --color-secondary-300: #71D2DB;
+  --color-secondary-400: #55C9D5;
+  --color-secondary-500: #2BBCCA;
+  --color-secondary-600: #27ABB8;
+  --color-secondary-700: #1F858F;
+  --color-secondary-800: #18676F;
+  --color-secondary-900: #124F55;
+  --color-secondary-950: #0F3D3D;
+
+  /* Error (Red) */
+  --color-error-25: #FFFBFA;
+  --color-error-50: #FEF3F2;
+  --color-error-100: #FEE4E2;
+  --color-error-200: #FECDCA;
+  --color-error-300: #FDA29B;
+  --color-error-400: #F97066;
+  --color-error-500: #F04438;
+  --color-error-600: #D92D20;
+  --color-error-700: #B42318;
+  --color-error-800: #912018;
+  --color-error-900: #7A271A;
+  --color-error-950: #55160C;
+
+  /* Warning (Amber) */
+  --color-warning-25: #FFFCF5;
+  --color-warning-50: #FFFAEB;
+  --color-warning-100: #FEF0C7;
+  --color-warning-200: #FEDF89;
+  --color-warning-300: #FEC84B;
+  --color-warning-400: #FDB022;
+  --color-warning-500: #F79009;
+  --color-warning-600: #DC6803;
+  --color-warning-700: #B54708;
+  --color-warning-800: #93370D;
+  --color-warning-900: #7A2E0E;
+  --color-warning-950: #4E1D09;
+
+  /* Success (Green) */
+  --color-success-25: #F6FEF9;
+  --color-success-50: #ECFDF3;
+  --color-success-100: #DCFAE6;
+  --color-success-200: #ABEFC6;
+  --color-success-300: #75E0A7;
+  --color-success-400: #47CD89;
+  --color-success-500: #17B26A;
+  --color-success-600: #079455;
+  --color-success-700: #067647;
+  --color-success-800: #085D3A;
+  --color-success-900: #074D31;
+  --color-success-950: #053321;
+
+  /* Info (Blue) */
+  --color-info-25: #F6F8FD;
+  --color-info-50: #ECF1FB;
+  --color-info-100: #C4D4F2;
+  --color-info-200: #A8C0EC;
+  --color-info-300: #80A3E4;
+  --color-info-400: #6891DE;
+  --color-info-500: #4275D6;
+  --color-info-600: #3C6AC3;
+  --color-info-700: #2F5398;
+  --color-info-800: #244076;
+  --color-info-900: #1C315A;
+  --color-info-950: #182A44;
+
+  /* =========================================================================
+     SEMANTIC COLORS - Purpose-driven tokens
+     ========================================================================= */
+
+  /* Primary UI Colors */
+  --semantic-primary: var(--color-primary-500);
+  --semantic-primary-hover: var(--color-primary-600);
+  --semantic-primary-selected: var(--color-primary-300);
+  --semantic-primary-selected-hover: var(--color-primary-400);
+  --semantic-primary-highlighted: var(--color-primary-700);
+  --semantic-primary-surface: var(--color-primary-50);
+
+  /* Brand Colors */
+  --semantic-brand: var(--color-secondary-500);
+  --semantic-brand-hover: var(--color-secondary-700);
+  --semantic-brand-selected: var(--color-secondary-300);
+  --semantic-brand-selected-hover: var(--color-secondary-600);
+  --semantic-brand-highlighted: var(--color-secondary-600);
+  --semantic-brand-surface: var(--color-secondary-50);
+
+  /* Background Colors */
+  --semantic-bg-primary: var(--color-white);
+  --semantic-bg-secondary: var(--color-primary-950);
+  --semantic-bg-ui: var(--color-neutral-100);
+  --semantic-bg-grey: var(--color-neutral-200);
+  --semantic-bg-grey-hover: var(--color-neutral-400);
+  --semantic-bg-inverted: var(--color-black);
+  --semantic-bg-hover: var(--color-neutral-300);
+
+  /* Text Colors */
+  --semantic-text-primary: var(--color-neutral-900);
+  --semantic-text-secondary: var(--color-primary-500);
+  --semantic-text-placeholder: var(--color-primary-200);
+  --semantic-text-link: var(--color-info-500);
+  --semantic-text-inverted: var(--color-white);
+  --semantic-text-muted: var(--color-neutral-500);
+
+  /* Border Colors */
+  --semantic-border-primary: var(--color-primary-500);
+  --semantic-border-secondary: var(--color-primary-300);
+  --semantic-border-accent: var(--color-secondary-600);
+  --semantic-border-layout: var(--color-neutral-200);
+  --semantic-border-input: var(--color-neutral-200);
+  --semantic-border-input-focus: var(--color-secondary-500);
+
+  /* Disabled State */
+  --semantic-disabled-primary: var(--color-primary-200);
+  --semantic-disabled-secondary: var(--color-primary-50);
+  --semantic-disabled-text: var(--color-neutral-500);
+  --semantic-disabled-border: var(--color-neutral-300);
+
+  /* Error State */
+  --semantic-error-primary: var(--color-error-500);
+  --semantic-error-surface: var(--color-error-50);
+  --semantic-error-text: var(--color-error-700);
+  --semantic-error-border: var(--color-error-300);
+  --semantic-error-hover: var(--color-error-600);
+
+  /* Warning State */
+  --semantic-warning-primary: var(--color-warning-500);
+  --semantic-warning-surface: var(--color-warning-50);
+  --semantic-warning-text: var(--color-warning-700);
+  --semantic-warning-border: var(--color-warning-300);
+  --semantic-warning-hover: var(--color-warning-600);
+
+  /* Success State */
+  --semantic-success-primary: var(--color-success-500);
+  --semantic-success-surface: var(--color-success-50);
+  --semantic-success-text: var(--color-success-700);
+  --semantic-success-border: var(--color-success-300);
+  --semantic-success-hover: var(--color-success-600);
+
+  /* Info State */
+  --semantic-info-primary: var(--color-info-500);
+  --semantic-info-surface: var(--color-info-50);
+  --semantic-info-text: var(--color-info-700);
+  --semantic-info-border: var(--color-info-200);
+  --semantic-info-hover: var(--color-info-600);
+
+  /* =========================================================================
+     LEGACY SHADCN VARIABLES (for compatibility)
+     ========================================================================= */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 220 20% 12%;
   --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  --card-foreground: 220 20% 12%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
+  --popover-foreground: 220 20% 12%;
+  --primary: 222 26% 27%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 183 64% 46%;
+  --secondary-foreground: 0 0% 100%;
   --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 183 64% 46%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 4 89% 58%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 222 26% 27%;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
+  --background: 222 47% 5%;
   --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
+  --card: 222 47% 5%;
   --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
+  --popover: 222 47% 5%;
   --popover-foreground: 210 40% 98%;
   --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 33% 17.5%;
   --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
+  --muted: 217 33% 17.5%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 33% 17.5%;
   --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 0 63% 31%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 212.7 26.8% 83.9%;
+  --border: 217 33% 17.5%;
+  --input: 217 33% 17.5%;
+  --ring: 213 27% 84%;
 }
 `
 
@@ -90,6 +278,239 @@ const CSS_VARIABLES_V4_BOOTSTRAP = `/* myOperator UI - Tailwind CSS for Bootstra
 /* Tell Tailwind to scan component files for utility classes */
 @source "./components/**/*.{js,ts,jsx,tsx}";
 @source "./lib/**/*.{js,ts,jsx,tsx}";
+
+:root {
+  /* =========================================================================
+     PRIMITIVE COLORS - CSS Custom Properties
+     ========================================================================= */
+
+  /* Base */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+
+  /* Neutral (Gray) */
+  --color-neutral-25: #FDFDFD;
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #E9EAEB;
+  --color-neutral-300: #D5D7DA;
+  --color-neutral-400: #A4A7AE;
+  --color-neutral-500: #717680;
+  --color-neutral-600: #535862;
+  --color-neutral-700: #414651;
+  --color-neutral-800: #252B37;
+  --color-neutral-900: #181D27;
+  --color-neutral-950: #0A0D12;
+
+  /* Primary (Blue Gray) */
+  --color-primary-25: #F9FAFB;
+  --color-primary-50: #EBECEE;
+  --color-primary-100: #C0C3CA;
+  --color-primary-200: #A2A6B1;
+  --color-primary-300: #777E8D;
+  --color-primary-400: #5D6577;
+  --color-primary-500: #343E55;
+  --color-primary-600: #2F384D;
+  --color-primary-700: #252C3C;
+  --color-primary-800: #1D222F;
+  --color-primary-900: #161A24;
+  --color-primary-950: #0C0F12;
+
+  /* Secondary (Turquoise) */
+  --color-secondary-25: #F6FCFD;
+  --color-secondary-50: #EAF8FA;
+  --color-secondary-100: #BDEAEF;
+  --color-secondary-200: #9DE0E7;
+  --color-secondary-300: #71D2DB;
+  --color-secondary-400: #55C9D5;
+  --color-secondary-500: #2BBCCA;
+  --color-secondary-600: #27ABB8;
+  --color-secondary-700: #1F858F;
+  --color-secondary-800: #18676F;
+  --color-secondary-900: #124F55;
+  --color-secondary-950: #0F3D3D;
+
+  /* Error (Red) */
+  --color-error-25: #FFFBFA;
+  --color-error-50: #FEF3F2;
+  --color-error-100: #FEE4E2;
+  --color-error-200: #FECDCA;
+  --color-error-300: #FDA29B;
+  --color-error-400: #F97066;
+  --color-error-500: #F04438;
+  --color-error-600: #D92D20;
+  --color-error-700: #B42318;
+  --color-error-800: #912018;
+  --color-error-900: #7A271A;
+  --color-error-950: #55160C;
+
+  /* Warning (Amber) */
+  --color-warning-25: #FFFCF5;
+  --color-warning-50: #FFFAEB;
+  --color-warning-100: #FEF0C7;
+  --color-warning-200: #FEDF89;
+  --color-warning-300: #FEC84B;
+  --color-warning-400: #FDB022;
+  --color-warning-500: #F79009;
+  --color-warning-600: #DC6803;
+  --color-warning-700: #B54708;
+  --color-warning-800: #93370D;
+  --color-warning-900: #7A2E0E;
+  --color-warning-950: #4E1D09;
+
+  /* Success (Green) */
+  --color-success-25: #F6FEF9;
+  --color-success-50: #ECFDF3;
+  --color-success-100: #DCFAE6;
+  --color-success-200: #ABEFC6;
+  --color-success-300: #75E0A7;
+  --color-success-400: #47CD89;
+  --color-success-500: #17B26A;
+  --color-success-600: #079455;
+  --color-success-700: #067647;
+  --color-success-800: #085D3A;
+  --color-success-900: #074D31;
+  --color-success-950: #053321;
+
+  /* Info (Blue) */
+  --color-info-25: #F6F8FD;
+  --color-info-50: #ECF1FB;
+  --color-info-100: #C4D4F2;
+  --color-info-200: #A8C0EC;
+  --color-info-300: #80A3E4;
+  --color-info-400: #6891DE;
+  --color-info-500: #4275D6;
+  --color-info-600: #3C6AC3;
+  --color-info-700: #2F5398;
+  --color-info-800: #244076;
+  --color-info-900: #1C315A;
+  --color-info-950: #182A44;
+
+  /* =========================================================================
+     SEMANTIC COLORS - Purpose-driven tokens
+     ========================================================================= */
+
+  /* Primary UI Colors */
+  --semantic-primary: var(--color-primary-500);
+  --semantic-primary-hover: var(--color-primary-600);
+  --semantic-primary-selected: var(--color-primary-300);
+  --semantic-primary-selected-hover: var(--color-primary-400);
+  --semantic-primary-highlighted: var(--color-primary-700);
+  --semantic-primary-surface: var(--color-primary-50);
+
+  /* Brand Colors */
+  --semantic-brand: var(--color-secondary-500);
+  --semantic-brand-hover: var(--color-secondary-700);
+  --semantic-brand-selected: var(--color-secondary-300);
+  --semantic-brand-selected-hover: var(--color-secondary-600);
+  --semantic-brand-highlighted: var(--color-secondary-600);
+  --semantic-brand-surface: var(--color-secondary-50);
+
+  /* Background Colors */
+  --semantic-bg-primary: var(--color-white);
+  --semantic-bg-secondary: var(--color-primary-950);
+  --semantic-bg-ui: var(--color-neutral-100);
+  --semantic-bg-grey: var(--color-neutral-200);
+  --semantic-bg-grey-hover: var(--color-neutral-400);
+  --semantic-bg-inverted: var(--color-black);
+  --semantic-bg-hover: var(--color-neutral-300);
+
+  /* Text Colors */
+  --semantic-text-primary: var(--color-neutral-900);
+  --semantic-text-secondary: var(--color-primary-500);
+  --semantic-text-placeholder: var(--color-primary-200);
+  --semantic-text-link: var(--color-info-500);
+  --semantic-text-inverted: var(--color-white);
+  --semantic-text-muted: var(--color-neutral-500);
+
+  /* Border Colors */
+  --semantic-border-primary: var(--color-primary-500);
+  --semantic-border-secondary: var(--color-primary-300);
+  --semantic-border-accent: var(--color-secondary-600);
+  --semantic-border-layout: var(--color-neutral-200);
+  --semantic-border-input: var(--color-neutral-200);
+  --semantic-border-input-focus: var(--color-secondary-500);
+
+  /* Disabled State */
+  --semantic-disabled-primary: var(--color-primary-200);
+  --semantic-disabled-secondary: var(--color-primary-50);
+  --semantic-disabled-text: var(--color-neutral-500);
+  --semantic-disabled-border: var(--color-neutral-300);
+
+  /* Error State */
+  --semantic-error-primary: var(--color-error-500);
+  --semantic-error-surface: var(--color-error-50);
+  --semantic-error-text: var(--color-error-700);
+  --semantic-error-border: var(--color-error-300);
+  --semantic-error-hover: var(--color-error-600);
+
+  /* Warning State */
+  --semantic-warning-primary: var(--color-warning-500);
+  --semantic-warning-surface: var(--color-warning-50);
+  --semantic-warning-text: var(--color-warning-700);
+  --semantic-warning-border: var(--color-warning-300);
+  --semantic-warning-hover: var(--color-warning-600);
+
+  /* Success State */
+  --semantic-success-primary: var(--color-success-500);
+  --semantic-success-surface: var(--color-success-50);
+  --semantic-success-text: var(--color-success-700);
+  --semantic-success-border: var(--color-success-300);
+  --semantic-success-hover: var(--color-success-600);
+
+  /* Info State */
+  --semantic-info-primary: var(--color-info-500);
+  --semantic-info-surface: var(--color-info-50);
+  --semantic-info-text: var(--color-info-700);
+  --semantic-info-border: var(--color-info-200);
+  --semantic-info-hover: var(--color-info-600);
+
+  /* =========================================================================
+     LEGACY SHADCN VARIABLES (for compatibility)
+     ========================================================================= */
+  --background: 0 0% 100%;
+  --foreground: 220 20% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 20% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 20% 12%;
+  --primary: 222 26% 27%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 183 64% 46%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 183 64% 46%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 4 89% 58%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 222 26% 27%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222 47% 5%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 5%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 5%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 33% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 33% 17.5%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 33% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 33% 17.5%;
+  --input: 217 33% 17.5%;
+  --ring: 213 27% 84%;
+}
 
 /* End myOperator UI imports */
 
@@ -113,48 +534,236 @@ const CSS_VARIABLES_V3 = `@tailwind base;
 
 @layer base {
   :root {
+    /* =========================================================================
+       PRIMITIVE COLORS - CSS Custom Properties
+       ========================================================================= */
+
+    /* Base */
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+
+    /* Neutral (Gray) */
+    --color-neutral-25: #FDFDFD;
+    --color-neutral-50: #FAFAFA;
+    --color-neutral-100: #F5F5F5;
+    --color-neutral-200: #E9EAEB;
+    --color-neutral-300: #D5D7DA;
+    --color-neutral-400: #A4A7AE;
+    --color-neutral-500: #717680;
+    --color-neutral-600: #535862;
+    --color-neutral-700: #414651;
+    --color-neutral-800: #252B37;
+    --color-neutral-900: #181D27;
+    --color-neutral-950: #0A0D12;
+
+    /* Primary (Blue Gray) */
+    --color-primary-25: #F9FAFB;
+    --color-primary-50: #EBECEE;
+    --color-primary-100: #C0C3CA;
+    --color-primary-200: #A2A6B1;
+    --color-primary-300: #777E8D;
+    --color-primary-400: #5D6577;
+    --color-primary-500: #343E55;
+    --color-primary-600: #2F384D;
+    --color-primary-700: #252C3C;
+    --color-primary-800: #1D222F;
+    --color-primary-900: #161A24;
+    --color-primary-950: #0C0F12;
+
+    /* Secondary (Turquoise) */
+    --color-secondary-25: #F6FCFD;
+    --color-secondary-50: #EAF8FA;
+    --color-secondary-100: #BDEAEF;
+    --color-secondary-200: #9DE0E7;
+    --color-secondary-300: #71D2DB;
+    --color-secondary-400: #55C9D5;
+    --color-secondary-500: #2BBCCA;
+    --color-secondary-600: #27ABB8;
+    --color-secondary-700: #1F858F;
+    --color-secondary-800: #18676F;
+    --color-secondary-900: #124F55;
+    --color-secondary-950: #0F3D3D;
+
+    /* Error (Red) */
+    --color-error-25: #FFFBFA;
+    --color-error-50: #FEF3F2;
+    --color-error-100: #FEE4E2;
+    --color-error-200: #FECDCA;
+    --color-error-300: #FDA29B;
+    --color-error-400: #F97066;
+    --color-error-500: #F04438;
+    --color-error-600: #D92D20;
+    --color-error-700: #B42318;
+    --color-error-800: #912018;
+    --color-error-900: #7A271A;
+    --color-error-950: #55160C;
+
+    /* Warning (Amber) */
+    --color-warning-25: #FFFCF5;
+    --color-warning-50: #FFFAEB;
+    --color-warning-100: #FEF0C7;
+    --color-warning-200: #FEDF89;
+    --color-warning-300: #FEC84B;
+    --color-warning-400: #FDB022;
+    --color-warning-500: #F79009;
+    --color-warning-600: #DC6803;
+    --color-warning-700: #B54708;
+    --color-warning-800: #93370D;
+    --color-warning-900: #7A2E0E;
+    --color-warning-950: #4E1D09;
+
+    /* Success (Green) */
+    --color-success-25: #F6FEF9;
+    --color-success-50: #ECFDF3;
+    --color-success-100: #DCFAE6;
+    --color-success-200: #ABEFC6;
+    --color-success-300: #75E0A7;
+    --color-success-400: #47CD89;
+    --color-success-500: #17B26A;
+    --color-success-600: #079455;
+    --color-success-700: #067647;
+    --color-success-800: #085D3A;
+    --color-success-900: #074D31;
+    --color-success-950: #053321;
+
+    /* Info (Blue) */
+    --color-info-25: #F6F8FD;
+    --color-info-50: #ECF1FB;
+    --color-info-100: #C4D4F2;
+    --color-info-200: #A8C0EC;
+    --color-info-300: #80A3E4;
+    --color-info-400: #6891DE;
+    --color-info-500: #4275D6;
+    --color-info-600: #3C6AC3;
+    --color-info-700: #2F5398;
+    --color-info-800: #244076;
+    --color-info-900: #1C315A;
+    --color-info-950: #182A44;
+
+    /* =========================================================================
+       SEMANTIC COLORS - Purpose-driven tokens
+       ========================================================================= */
+
+    /* Primary UI Colors */
+    --semantic-primary: var(--color-primary-500);
+    --semantic-primary-hover: var(--color-primary-600);
+    --semantic-primary-selected: var(--color-primary-300);
+    --semantic-primary-selected-hover: var(--color-primary-400);
+    --semantic-primary-highlighted: var(--color-primary-700);
+    --semantic-primary-surface: var(--color-primary-50);
+
+    /* Brand Colors */
+    --semantic-brand: var(--color-secondary-500);
+    --semantic-brand-hover: var(--color-secondary-700);
+    --semantic-brand-selected: var(--color-secondary-300);
+    --semantic-brand-selected-hover: var(--color-secondary-600);
+    --semantic-brand-highlighted: var(--color-secondary-600);
+    --semantic-brand-surface: var(--color-secondary-50);
+
+    /* Background Colors */
+    --semantic-bg-primary: var(--color-white);
+    --semantic-bg-secondary: var(--color-primary-950);
+    --semantic-bg-ui: var(--color-neutral-100);
+    --semantic-bg-grey: var(--color-neutral-200);
+    --semantic-bg-grey-hover: var(--color-neutral-400);
+    --semantic-bg-inverted: var(--color-black);
+    --semantic-bg-hover: var(--color-neutral-300);
+
+    /* Text Colors */
+    --semantic-text-primary: var(--color-neutral-900);
+    --semantic-text-secondary: var(--color-primary-500);
+    --semantic-text-placeholder: var(--color-primary-200);
+    --semantic-text-link: var(--color-info-500);
+    --semantic-text-inverted: var(--color-white);
+    --semantic-text-muted: var(--color-neutral-500);
+
+    /* Border Colors */
+    --semantic-border-primary: var(--color-primary-500);
+    --semantic-border-secondary: var(--color-primary-300);
+    --semantic-border-accent: var(--color-secondary-600);
+    --semantic-border-layout: var(--color-neutral-200);
+    --semantic-border-input: var(--color-neutral-200);
+    --semantic-border-input-focus: var(--color-secondary-500);
+
+    /* Disabled State */
+    --semantic-disabled-primary: var(--color-primary-200);
+    --semantic-disabled-secondary: var(--color-primary-50);
+    --semantic-disabled-text: var(--color-neutral-500);
+    --semantic-disabled-border: var(--color-neutral-300);
+
+    /* Error State */
+    --semantic-error-primary: var(--color-error-500);
+    --semantic-error-surface: var(--color-error-50);
+    --semantic-error-text: var(--color-error-700);
+    --semantic-error-border: var(--color-error-300);
+    --semantic-error-hover: var(--color-error-600);
+
+    /* Warning State */
+    --semantic-warning-primary: var(--color-warning-500);
+    --semantic-warning-surface: var(--color-warning-50);
+    --semantic-warning-text: var(--color-warning-700);
+    --semantic-warning-border: var(--color-warning-300);
+    --semantic-warning-hover: var(--color-warning-600);
+
+    /* Success State */
+    --semantic-success-primary: var(--color-success-500);
+    --semantic-success-surface: var(--color-success-50);
+    --semantic-success-text: var(--color-success-700);
+    --semantic-success-border: var(--color-success-300);
+    --semantic-success-hover: var(--color-success-600);
+
+    /* Info State */
+    --semantic-info-primary: var(--color-info-500);
+    --semantic-info-surface: var(--color-info-50);
+    --semantic-info-text: var(--color-info-700);
+    --semantic-info-border: var(--color-info-200);
+    --semantic-info-hover: var(--color-info-600);
+
+    /* =========================================================================
+       LEGACY SHADCN VARIABLES (for compatibility)
+       ========================================================================= */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 20% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --popover-foreground: 220 20% 12%;
+    --primary: 222 26% 27%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 183 64% 46%;
+    --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 183 64% 46%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 4 89% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 222 26% 27%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 47% 5%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 47% 5%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 47% 5%;
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 17.5%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 217 33% 17.5%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17.5%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 217 33% 17.5%;
+    --input: 217 33% 17.5%;
+    --ring: 213 27% 84%;
   }
 }
 
@@ -343,7 +952,7 @@ export async function init() {
   let tailwindVersion = detectedTailwindVersion
   let userPrefix = detectedPrefix
 
-  const questions: any[] = []
+  const questions: prompts.PromptObject[] = []
 
   if (!tailwindVersion) {
     questions.push({
