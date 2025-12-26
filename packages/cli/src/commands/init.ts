@@ -1132,31 +1132,33 @@ export function cn(...inputs: ClassValue[]) {
       await fs.writeFile(globalCssPath, cssContent)
       cssUpdated = true
     } else {
-      // Check if myOperator UI imports are already present
+      // Check if semantic CSS variables are already present (not just the comment)
       const existingCss = await fs.readFile(globalCssPath, 'utf-8')
-      if (!existingCss.includes('myOperator UI') && !existingCss.includes('--mo-background:')) {
-        // Auto-update for v3, prompt for v4
-        let updateCss = tailwindVersion === 'v3'
+      const hasSemanticVariables = existingCss.includes('--semantic-text-primary')
 
-        if (!updateCss) {
-          spinner.stop()
-          const result = await prompts({
-            type: 'confirm',
-            name: 'updateCss',
-            message: `${globalCss} exists. Add myOperator UI imports to the top?`,
-            initial: true,
-          })
-          updateCss = result.updateCss
-          spinner.start('Initializing project...')
-        }
+      if (!hasSemanticVariables) {
+        // Semantic variables missing - need to update
+        spinner.stop()
+        const result = await prompts({
+          type: 'confirm',
+          name: 'updateCss',
+          message: `${globalCss} is missing semantic CSS variables. Update with full variable set?`,
+          initial: true,
+        })
+        spinner.start('Initializing project...')
 
-        if (updateCss) {
-          // PREPEND to existing CSS instead of replacing
-          if (hasBootstrap) {
-            // For Bootstrap projects, prepend the imports
-            await fs.writeFile(globalCssPath, cssContent + existingCss)
+        if (result.updateCss) {
+          // Replace the CSS content entirely to ensure all variables are present
+          // But preserve any custom imports at the end (like Bootstrap imports)
+          const customImports = existingCss.match(/@import\s+["'][^"']+["'];?\s*$/gm) || []
+          const importsToKeep = customImports.filter(imp =>
+            !imp.includes('tailwindcss') &&
+            !imp.includes('@tailwind')
+          ).join('\n')
+
+          if (importsToKeep) {
+            await fs.writeFile(globalCssPath, cssContent + '\n' + importsToKeep + '\n')
           } else {
-            // For standalone projects, replace entirely
             await fs.writeFile(globalCssPath, cssContent)
           }
           cssUpdated = true
