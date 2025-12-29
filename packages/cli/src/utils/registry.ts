@@ -5505,7 +5505,7 @@ export const EventGroupComponent = React.forwardRef<
         >
           <AccordionItem value={group.id}>
             {/* Header row with checkbox OUTSIDE the trigger button to avoid nested buttons */}
-            <div className="flex items-center gap-3 p-4 hover:bg-semantic-bg-ui">
+            <div className="flex items-center gap-3 p-4 hover:bg-neutral-200">
               <Checkbox
                 checked={checkboxState}
                 onCheckedChange={handleGroupCheckbox}
@@ -5587,7 +5587,10 @@ export const EventItemComponent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("flex items-start gap-3 py-2 pl-8 pr-4", className)}
+      className={cn(
+        "flex items-start gap-3 py-2 pl-8 pr-4 hover:bg-neutral-200",
+        className
+      )}
       {...props}
     >
       <Checkbox

@@ -13,7 +13,10 @@ export const EventItemComponent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("flex items-start gap-3 py-2 pl-8 pr-4", className)}
+      className={cn(
+        "flex items-start gap-3 py-2 pl-8 pr-4 hover:bg-neutral-200",
+        className
+      )}
       {...props}
     >
       <Checkbox
