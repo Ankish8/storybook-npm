@@ -320,7 +320,10 @@ export default {
   darkMode: ["class"],
   prefix: "${prefix}",${hasBootstrap ? `
   important: true,  // Required to override Bootstrap styles` : ''}
-  content: ["./src/components/ui/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./src/components/ui/**/*.{js,ts,jsx,tsx}",
+    "./src/modules/Shadcn/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     container: {
       center: true,

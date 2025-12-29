@@ -172,16 +172,16 @@ describe('Registry', () => {
       // Check that basic classes are prefixed
       expect(content).toContain('tw-inline-flex')
       expect(content).toContain('tw-items-center')
-      expect(content).toContain('tw-text-white')
+      expect(content).toContain('tw-text-semantic-text-inverted')
     })
 
-    it('prefixes classes with arbitrary values', async () => {
+    it('prefixes classes with semantic tokens', async () => {
       const registry = await getRegistry('tw-')
       const button = registry.button
       const content = button.files[0].content
 
-      // Check that arbitrary value classes are prefixed
-      expect(content).toContain('tw-bg-[#343E55]')
+      // Check that semantic token classes are prefixed
+      expect(content).toContain('tw-bg-semantic-primary')
     })
 
     it('prefixes variant classes correctly', async () => {
@@ -190,7 +190,7 @@ describe('Registry', () => {
       const content = button.files[0].content
 
       // Check that hover: prefix is preserved and utility is prefixed
-      expect(content).toContain('hover:tw-bg-[#2F384D]')
+      expect(content).toContain('hover:tw-bg-semantic-primary-hover')
     })
 
     it('preserves import paths without prefixing', async () => {
@@ -249,7 +249,7 @@ describe('Registry', () => {
       // Wrong:   tw-data-[state=open]:animate-in (prefix on selector)
       expect(content).toContain('data-[state=open]:tw-animate-in')
       expect(content).toContain('data-[disabled]:tw-pointer-events-none')
-      expect(content).toContain('data-[state=open]:tw-bg-[#F5F5F5]')
+      expect(content).toContain('data-[state=open]:tw-bg-semantic-bg-ui')
 
       // Should NOT have prefix before data-
       expect(content).not.toMatch(/tw-data-\[/)
@@ -359,7 +359,7 @@ describe('Registry', () => {
 
       // Error variant CSS classes should be prefixed
       expect(content).toContain('error: "tw-border')
-      expect(content).not.toContain('error: "border border-[#FF3B3B]')
+      expect(content).not.toContain('error: "border border-semantic-error-primary')
     })
 
     it('prefixes default variant values in cva', async () => {
