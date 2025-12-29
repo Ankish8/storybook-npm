@@ -150,29 +150,29 @@ export const KeyValueInput = React.forwardRef<
       <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="mb-3">
-          <h3 className="m-0 text-base font-semibold text-[#333333]">
+          <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
             {title}
           </h3>
           {description && (
-            <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
+            <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
           )}
         </div>
 
         {/* Content Container with Background - only show when there are items */}
         {pairs.length > 0 && (
-          <div className="bg-[#F9FAFB] rounded-lg p-4 mb-4">
+          <div className="bg-semantic-bg-ui rounded-lg p-4 mb-4">
             {/* Column Headers */}
             <div className="flex items-center gap-3 mb-3">
               <div className="flex-1">
-                <span className="text-sm font-medium text-[#333333]">
+                <span className="text-sm font-medium text-semantic-text-primary">
                   {keyLabel}
-                  {keyRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+                  {keyRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
                 </span>
               </div>
               <div className="flex-1">
-                <span className="text-sm font-medium text-[#333333]">
+                <span className="text-sm font-medium text-semantic-text-primary">
                   {valueLabel}
-                  {valueRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+                  {valueRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
                 </span>
               </div>
               {/* Spacer for delete button column */}
@@ -216,7 +216,7 @@ export const KeyValueInput = React.forwardRef<
 
         {/* Limit indicator */}
         {isAtLimit && (
-          <p className="m-0 text-xs text-[#6B7280] mt-2 text-center">
+          <p className="m-0 text-xs text-semantic-text-muted mt-2 text-center">
             Maximum of {maxItems} items reached
           </p>
         )}

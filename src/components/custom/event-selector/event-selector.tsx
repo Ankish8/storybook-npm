@@ -126,28 +126,28 @@ export const EventSelector = React.forwardRef<
             return (
               <div
                 key={category.id}
-                className="border border-[#E5E7EB] rounded-lg overflow-hidden"
+                className="border border-semantic-border-layout rounded-lg overflow-hidden"
               >
                 {/* Category Header - no checkbox, just label */}
-                <div className="flex items-center justify-between p-4 bg-white border-b border-[#E5E7EB]">
+                <div className="flex items-center justify-between p-4 bg-white border-b border-semantic-border-layout">
                   <div className="flex items-center gap-3">
                     {category.icon && (
-                      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#F3F4F6]">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-semantic-bg-ui">
                         {category.icon}
                       </div>
                     )}
-                    <span className="font-medium text-[#333333]">
+                    <span className="font-medium text-semantic-text-primary">
                       {category.name}
                     </span>
                   </div>
                   {selectedInCategory.length > 0 && (
-                    <span className="text-sm text-[#6B7280]">
+                    <span className="text-sm text-semantic-text-muted">
                       {selectedInCategory.length} Selected
                     </span>
                   )}
                 </div>
                 {/* Category Groups */}
-                <div className="divide-y divide-[#E5E7EB]">
+                <div className="divide-y divide-semantic-border-layout">
                   {renderGroups(categoryGroups)}
                 </div>
               </div>
@@ -164,20 +164,20 @@ export const EventSelector = React.forwardRef<
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="m-0 text-base font-semibold text-[#333333]">
+            <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
               {title}
             </h3>
             {description && (
-              <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
+              <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
             )}
           </div>
-          <span className="text-sm font-medium text-[#333333]">
+          <span className="text-sm font-medium text-semantic-text-primary">
             {totalSelected} Selected
           </span>
         </div>
 
         {/* Groups */}
-        <div className="border border-[#E5E7EB] rounded-lg overflow-hidden divide-y divide-[#E5E7EB]">
+        <div className="border border-semantic-border-layout rounded-lg overflow-hidden divide-y divide-semantic-border-layout">
           {renderCategories()}
         </div>
       </div>

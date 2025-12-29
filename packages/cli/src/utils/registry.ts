@@ -5251,28 +5251,28 @@ export const EventSelector = React.forwardRef<
             return (
               <div
                 key={category.id}
-                className="border border-[#E5E7EB] rounded-lg overflow-hidden"
+                className="border border-semantic-border-layout rounded-lg overflow-hidden"
               >
                 {/* Category Header - no checkbox, just label */}
-                <div className="flex items-center justify-between p-4 bg-white border-b border-[#E5E7EB]">
+                <div className="flex items-center justify-between p-4 bg-white border-b border-semantic-border-layout">
                   <div className="flex items-center gap-3">
                     {category.icon && (
-                      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#F3F4F6]">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-semantic-bg-ui">
                         {category.icon}
                       </div>
                     )}
-                    <span className="font-medium text-[#333333]">
+                    <span className="font-medium text-semantic-text-primary">
                       {category.name}
                     </span>
                   </div>
                   {selectedInCategory.length > 0 && (
-                    <span className="text-sm text-[#6B7280]">
+                    <span className="text-sm text-semantic-text-muted">
                       {selectedInCategory.length} Selected
                     </span>
                   )}
                 </div>
                 {/* Category Groups */}
-                <div className="divide-y divide-[#E5E7EB]">
+                <div className="divide-y divide-semantic-border-layout">
                   {renderGroups(categoryGroups)}
                 </div>
               </div>
@@ -5289,20 +5289,20 @@ export const EventSelector = React.forwardRef<
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="m-0 text-base font-semibold text-[#333333]">
+            <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
               {title}
             </h3>
             {description && (
-              <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
+              <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
             )}
           </div>
-          <span className="text-sm font-medium text-[#333333]">
+          <span className="text-sm font-medium text-semantic-text-primary">
             {totalSelected} Selected
           </span>
         </div>
 
         {/* Groups */}
-        <div className="border border-[#E5E7EB] rounded-lg overflow-hidden divide-y divide-[#E5E7EB]">
+        <div className="border border-semantic-border-layout rounded-lg overflow-hidden divide-y divide-semantic-border-layout">
           {renderCategories()}
         </div>
       </div>
@@ -5412,8 +5412,8 @@ export const EventGroupComponent = React.forwardRef<
               className="mt-0.5"
             />
             <div className="flex-1 min-w-0">
-              <span className="font-medium text-[#333333]">{event.name}</span>
-              <p className="m-0 text-sm text-[#6B7280] mt-0.5">
+              <span className="font-medium text-semantic-text-primary">{event.name}</span>
+              <p className="m-0 text-sm text-semantic-text-muted mt-0.5">
                 {event.description}
               </p>
             </div>
@@ -5428,7 +5428,7 @@ export const EventGroupComponent = React.forwardRef<
         <Accordion type="multiple" defaultValue={defaultExpanded ? [group.id] : []}>
           <AccordionItem value={group.id}>
             {/* Header row with checkbox OUTSIDE the trigger button to avoid nested buttons */}
-            <div className="flex items-center gap-3 p-4 hover:bg-[#F9FAFB]">
+            <div className="flex items-center gap-3 p-4 hover:bg-semantic-bg-ui">
               <Checkbox
                 checked={checkboxState}
                 onCheckedChange={handleGroupCheckbox}
@@ -5442,18 +5442,18 @@ export const EventGroupComponent = React.forwardRef<
                   <div className="flex flex-col items-start text-left flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       {group.icon && (
-                        <span className="text-[#6B7280]">{group.icon}</span>
+                        <span className="text-semantic-text-muted">{group.icon}</span>
                       )}
-                      <span className="font-medium text-[#333333]">
+                      <span className="font-medium text-semantic-text-primary">
                         {group.name}
                       </span>
                     </div>
-                    <span className="text-sm text-[#6B7280] mt-0.5">
+                    <span className="text-sm text-semantic-text-muted mt-0.5">
                       {group.description}
                     </span>
                   </div>
                   {selectedCount > 0 && (
-                    <span className="text-sm text-[#6B7280] whitespace-nowrap">
+                    <span className="text-sm text-semantic-text-muted whitespace-nowrap">
                       {selectedCount} Selected
                     </span>
                   )}
@@ -5461,7 +5461,7 @@ export const EventGroupComponent = React.forwardRef<
               </AccordionTrigger>
             </div>
             <AccordionContent>
-              <div className="border-t border-[#E5E7EB]">
+              <div className="border-t border-semantic-border-layout">
                 {events.length > 0 ? (
                   events.map((event) => (
                     <EventItemComponent
@@ -5476,7 +5476,7 @@ export const EventGroupComponent = React.forwardRef<
                 ) : renderEmptyGroup ? (
                   <div className="py-4 px-8">{renderEmptyGroup(group)}</div>
                 ) : (
-                  <div className="py-4 px-8 text-sm text-[#6B7280] italic">
+                  <div className="py-4 px-8 text-sm text-semantic-text-muted italic">
                     {emptyGroupMessage}
                   </div>
                 )}
@@ -5517,8 +5517,8 @@ export const EventItemComponent = React.forwardRef<
         aria-label={\`Select \${event.name}\`}
       />
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-[#333333]">{event.name}</div>
-        <div className="text-sm text-[#6B7280] mt-0.5 leading-relaxed">
+        <div className="text-sm font-medium text-semantic-text-primary">{event.name}</div>
+        <div className="text-sm text-semantic-text-muted mt-0.5 leading-relaxed">
           {event.description}
         </div>
       </div>
@@ -5816,29 +5816,29 @@ export const KeyValueInput = React.forwardRef<
       <div ref={ref} className={cn("w-full", className)} {...props}>
         {/* Header */}
         <div className="mb-3">
-          <h3 className="m-0 text-base font-semibold text-[#333333]">
+          <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
             {title}
           </h3>
           {description && (
-            <p className="m-0 text-sm text-[#6B7280] mt-1">{description}</p>
+            <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
           )}
         </div>
 
         {/* Content Container with Background - only show when there are items */}
         {pairs.length > 0 && (
-          <div className="bg-[#F9FAFB] rounded-lg p-4 mb-4">
+          <div className="bg-semantic-bg-ui rounded-lg p-4 mb-4">
             {/* Column Headers */}
             <div className="flex items-center gap-3 mb-3">
               <div className="flex-1">
-                <span className="text-sm font-medium text-[#333333]">
+                <span className="text-sm font-medium text-semantic-text-primary">
                   {keyLabel}
-                  {keyRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+                  {keyRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
                 </span>
               </div>
               <div className="flex-1">
-                <span className="text-sm font-medium text-[#333333]">
+                <span className="text-sm font-medium text-semantic-text-primary">
                   {valueLabel}
-                  {valueRequired && <span className="text-[#FF3B3B] ml-0.5">*</span>}
+                  {valueRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
                 </span>
               </div>
               {/* Spacer for delete button column */}
@@ -5882,7 +5882,7 @@ export const KeyValueInput = React.forwardRef<
 
         {/* Limit indicator */}
         {isAtLimit && (
-          <p className="m-0 text-xs text-[#6B7280] mt-2 text-center">
+          <p className="m-0 text-xs text-semantic-text-muted mt-2 text-center">
             Maximum of {maxItems} items reached
           </p>
         )}
@@ -5967,7 +5967,7 @@ export const KeyValueRow = React.forwardRef<
           variant="ghost"
           size="icon"
           onClick={() => onDelete(pair.id)}
-          className="text-gray-400 hover:text-[#EF4444] hover:bg-[#FEF2F2] flex-shrink-0"
+          className="text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface flex-shrink-0"
           aria-label="Delete row"
         >
           <Trash2 className="h-4 w-4" />

@@ -96,8 +96,8 @@ export const EventGroupComponent = React.forwardRef<
               className="mt-0.5"
             />
             <div className="flex-1 min-w-0">
-              <span className="font-medium text-[#333333]">{event.name}</span>
-              <p className="m-0 text-sm text-[#6B7280] mt-0.5">
+              <span className="font-medium text-semantic-text-primary">{event.name}</span>
+              <p className="m-0 text-sm text-semantic-text-muted mt-0.5">
                 {event.description}
               </p>
             </div>
@@ -112,7 +112,7 @@ export const EventGroupComponent = React.forwardRef<
         <Accordion type="multiple" defaultValue={defaultExpanded ? [group.id] : []}>
           <AccordionItem value={group.id}>
             {/* Header row with checkbox OUTSIDE the trigger button to avoid nested buttons */}
-            <div className="flex items-center gap-3 p-4 hover:bg-[#F9FAFB]">
+            <div className="flex items-center gap-3 p-4 hover:bg-semantic-bg-ui">
               <Checkbox
                 checked={checkboxState}
                 onCheckedChange={handleGroupCheckbox}
@@ -126,18 +126,18 @@ export const EventGroupComponent = React.forwardRef<
                   <div className="flex flex-col items-start text-left flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       {group.icon && (
-                        <span className="text-[#6B7280]">{group.icon}</span>
+                        <span className="text-semantic-text-muted">{group.icon}</span>
                       )}
-                      <span className="font-medium text-[#333333]">
+                      <span className="font-medium text-semantic-text-primary">
                         {group.name}
                       </span>
                     </div>
-                    <span className="text-sm text-[#6B7280] mt-0.5">
+                    <span className="text-sm text-semantic-text-muted mt-0.5">
                       {group.description}
                     </span>
                   </div>
                   {selectedCount > 0 && (
-                    <span className="text-sm text-[#6B7280] whitespace-nowrap">
+                    <span className="text-sm text-semantic-text-muted whitespace-nowrap">
                       {selectedCount} Selected
                     </span>
                   )}
@@ -145,7 +145,7 @@ export const EventGroupComponent = React.forwardRef<
               </AccordionTrigger>
             </div>
             <AccordionContent>
-              <div className="border-t border-[#E5E7EB]">
+              <div className="border-t border-semantic-border-layout">
                 {events.length > 0 ? (
                   events.map((event) => (
                     <EventItemComponent
@@ -160,7 +160,7 @@ export const EventGroupComponent = React.forwardRef<
                 ) : renderEmptyGroup ? (
                   <div className="py-4 px-8">{renderEmptyGroup(group)}</div>
                 ) : (
-                  <div className="py-4 px-8 text-sm text-[#6B7280] italic">
+                  <div className="py-4 px-8 text-sm text-semantic-text-muted italic">
                     {emptyGroupMessage}
                   </div>
                 )}

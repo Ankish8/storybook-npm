@@ -70,7 +70,7 @@ export const KeyValueRow = React.forwardRef<
           variant="ghost"
           size="icon"
           onClick={() => onDelete(pair.id)}
-          className="text-gray-400 hover:text-[#EF4444] hover:bg-[#FEF2F2] flex-shrink-0"
+          className="text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface flex-shrink-0"
           aria-label="Delete row"
         >
           <Trash2 className="h-4 w-4" />
