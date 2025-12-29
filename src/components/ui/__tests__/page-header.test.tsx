@@ -151,7 +151,7 @@ describe("PageHeader", () => {
     render(<PageHeader title="Title" description="Description" />);
     const description = screen.getByText("Description");
     expect(description).toHaveClass("text-sm");
-    expect(description).toHaveClass("text-semantic-text-primary");
+    expect(description).toHaveClass("text-semantic-text-secondary");
   });
 
   // Accessibility

@@ -269,7 +269,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
               )}
             </div>
             {description && (
-              <p className="m-0 text-sm text-semantic-text-primary font-normal mt-1 line-clamp-2">
+              <p className="m-0 text-sm text-semantic-text-secondary font-normal mt-1 line-clamp-2">
                 {description}
               </p>
             )}
