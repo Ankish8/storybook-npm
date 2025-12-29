@@ -129,8 +129,8 @@ describe("Tooltip", () => {
 
     await waitFor(() => {
       const tooltip = getTooltipContent();
-      expect(tooltip).toHaveClass("bg-[#343E55]");
-      expect(tooltip).toHaveClass("text-white");
+      expect(tooltip).toHaveClass("bg-semantic-primary");
+      expect(tooltip).toHaveClass("text-semantic-text-inverted");
       expect(tooltip).toHaveClass("text-xs");
       expect(tooltip).toHaveClass("rounded-md");
       expect(tooltip).toHaveClass("px-3");
@@ -250,7 +250,7 @@ describe("Tooltip", () => {
 
       await waitFor(() => {
         const arrow = screen.getByTestId("arrow");
-        expect(arrow).toHaveClass("fill-[#343E55]");
+        expect(arrow).toHaveClass("fill-semantic-primary");
       });
     });
 

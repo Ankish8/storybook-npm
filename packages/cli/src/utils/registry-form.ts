@@ -338,14 +338,14 @@ import { cn } from "../../lib/utils";
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -412,14 +412,14 @@ import { cn } from "../../lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA] [&>span]:line-clamp-1",
+  "flex h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -450,7 +450,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-[#717680] opacity-70" />
+      <ChevronDown className="size-4 text-semantic-text-muted opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -468,7 +468,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronUp className="size-4 text-[#717680]" />
+    <ChevronUp className="size-4 text-semantic-text-muted" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -485,7 +485,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronDown className="size-4 text-[#717680]" />
+    <ChevronDown className="size-4 text-semantic-text-muted" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -499,7 +499,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9EAEB] shadow-md",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -534,7 +534,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-[#717680]", className)}
+    className={cn("px-4 py-1.5 text-xs font-medium text-semantic-text-muted", className)}
     {...props}
   />
 ));
@@ -547,8 +547,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
-      "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+      "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -556,7 +556,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-[#2BBCCA]" />
+        <Check className="size-4 text-semantic-brand" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -570,7 +570,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
+    className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
     {...props}
   />
 ));
@@ -617,7 +617,7 @@ import { cn } from "../../lib/utils";
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E9EAEB] data-[state=unchecked]:hover:border-[#A4A7AE]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
   {
     variants: {
       size: {
@@ -749,7 +749,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#181D27] cursor-pointer",
+                  "text-semantic-text-primary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -763,7 +763,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#181D27] cursor-pointer",
+                  "text-semantic-text-primary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -787,7 +787,7 @@ const Checkbox = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50",
                 labelClassName
               )}
@@ -800,7 +800,7 @@ const Checkbox = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50",
                 labelClassName
               )}
@@ -844,7 +844,7 @@ import { cn } from "../../lib/utils";
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E9EAEB]",
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-bg-grey",
   {
     variants: {
       size: {
@@ -948,7 +948,7 @@ const Switch = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >
@@ -960,7 +960,7 @@ const Switch = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >
@@ -1003,17 +1003,17 @@ import { cn } from "../../lib/utils";
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
-  "relative flex items-center rounded bg-white transition-all",
+  "relative flex items-center rounded bg-semantic-bg-primary transition-all",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
-        true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
+        true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
         false: "",
       },
     },
@@ -1028,14 +1028,14 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -1156,7 +1156,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         id={inputId}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className })
         )}
         disabled={disabled || loading}
@@ -1176,10 +1176,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -1196,26 +1196,26 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             )}
           >
             {prefix && (
-              <span className="text-sm text-[#717680] mr-2 select-none">
+              <span className="text-sm text-semantic-text-muted mr-2 select-none">
                 {prefix}
               </span>
             )}
             {leftIcon && (
-              <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+              <span className="mr-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {leftIcon}
               </span>
             )}
             {inputElement}
             {loading && (
-              <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />
+              <Loader2 className="animate-spin size-4 text-semantic-text-muted ml-2 flex-shrink-0" />
             )}
             {!loading && rightIcon && (
-              <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+              <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
             )}
             {suffix && (
-              <span className="text-sm text-[#717680] ml-2 select-none">
+              <span className="text-sm text-semantic-text-muted ml-2 select-none">
                 {suffix}
               </span>
             )}
@@ -1228,11 +1228,11 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : (
@@ -1242,7 +1242,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-[#F04438]" : "text-[#717680]"
+                  charCount > maxLength ? "text-semantic-error-primary" : "text-semantic-text-muted"
                 )}
               >
                 {charCount}/{maxLength}
@@ -1439,10 +1439,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -1465,7 +1465,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           >
             <SelectValue placeholder={placeholder} />
             {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-[#717680]" />
+              <Loader2 className="absolute right-8 size-4 animate-spin text-semantic-text-muted" />
             )}
           </SelectTrigger>
           <SelectContent>
@@ -1477,7 +1477,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
+                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
@@ -1520,7 +1520,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
               searchQuery &&
               groupedOptions.ungrouped.length === 0 &&
               Object.keys(groupedOptions.groups).length === 0 && (
-                <div className="py-6 text-center text-sm text-[#717680]">
+                <div className="py-6 text-center text-sm text-semantic-text-muted">
                   No results found
                 </div>
               )}
@@ -1531,11 +1531,11 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}
@@ -1574,14 +1574,14 @@ import { cn } from "../../lib/utils";
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded bg-white px-4 py-2 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "flex min-h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -1799,10 +1799,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -1827,12 +1827,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-[#A2A6B1]">{placeholder}</span>
+              <span className="text-semantic-text-placeholder">{placeholder}</span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-[#F5F5F5] text-[#181D27] text-xs px-2 py-0.5 rounded"
+                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-xs px-2 py-0.5 rounded"
                 >
                   {label}
                   <span
@@ -1848,7 +1848,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                         );
                       }
                     }}
-                    className="cursor-pointer hover:text-[#F04438] focus:outline-none"
+                    className="cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                     aria-label={\`Remove \${label}\`}
                   >
                     <X className="size-3" />
@@ -1869,18 +1869,18 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                     clearAll(e as unknown as React.MouseEvent);
                   }
                 }}
-                className="p-0.5 cursor-pointer hover:text-[#F04438] focus:outline-none"
+                className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                 aria-label="Clear all"
               >
-                <X className="size-4 text-[#717680]" />
+                <X className="size-4 text-semantic-text-muted" />
               </span>
             )}
             {loading ? (
-              <Loader2 className="size-4 animate-spin text-[#717680]" />
+              <Loader2 className="size-4 animate-spin text-semantic-text-muted" />
             ) : (
               <ChevronDown
                 className={cn(
-                  "size-4 text-[#717680] transition-transform",
+                  "size-4 text-semantic-text-muted transition-transform",
                   isOpen && "rotate-180"
                 )}
               />
@@ -1892,7 +1892,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {isOpen && (
           <div
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-white border border-[#E9EAEB] shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -1900,13 +1900,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-[#E9EAEB]">
+              <div className="p-2 border-b border-semantic-border-layout">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
+                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -1915,7 +1915,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
             {/* Options */}
             <div className="max-h-60 overflow-auto p-1">
               {filteredOptions.length === 0 ? (
-                <div className="py-6 text-center text-sm text-[#717680]">
+                <div className="py-6 text-center text-sm text-semantic-text-muted">
                   No results found
                 </div>
               ) : (
@@ -1937,15 +1937,15 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       disabled={isDisabled}
                       onClick={() => !isDisabled && toggleOption(option.value)}
                       className={cn(
-                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
-                        "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
-                        isSelected && "bg-[#F5F5F5]",
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+                        "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                        isSelected && "bg-semantic-bg-ui",
                         isDisabled && "pointer-events-none opacity-50"
                       )}
                     >
                       <span className="absolute right-2 flex size-4 items-center justify-center">
                         {isSelected && (
-                          <Check className="size-4 text-[#2BBCCA]" />
+                          <Check className="size-4 text-semantic-brand" />
                         )}
                       </span>
                       {option.label}
@@ -1957,7 +1957,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-[#E9EAEB] text-xs text-[#717680]">
+              <div className="p-2 border-t border-semantic-border-layout text-xs text-semantic-text-muted">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}
@@ -1974,11 +1974,11 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}

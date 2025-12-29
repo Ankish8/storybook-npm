@@ -27,12 +27,12 @@ describe("Alert", () => {
 
   // Variants - text is always black (#181D27), only icon color varies
   it.each([
-    ["default", "bg-[#F5F5F5]", "border-[#E9EAEB]"],
-    ["success", "bg-[#ECFDF3]", "border-[#17B26A]/20"],
-    ["error", "bg-[#FEF3F2]", "border-[#F04438]/20"],
-    ["destructive", "bg-[#FEF3F2]", "border-[#F04438]/20"],
-    ["warning", "bg-[#FFFAEB]", "border-[#F79009]/20"],
-    ["info", "bg-[#EBF5FF]", "border-[#4275D6]/20"],
+    ["default", "bg-semantic-bg-ui", "border-semantic-border-layout"],
+    ["success", "bg-semantic-success-surface", "border-semantic-success-border"],
+    ["error", "bg-semantic-error-surface", "border-semantic-error-border"],
+    ["destructive", "bg-semantic-error-surface", "border-semantic-error-border"],
+    ["warning", "bg-semantic-warning-surface", "border-semantic-warning-border"],
+    ["info", "bg-semantic-info-surface", "border-semantic-info-border"],
   ] as const)(
     "renders %s variant with correct classes",
     (variant, bgClass, borderClass) => {
@@ -43,7 +43,7 @@ describe("Alert", () => {
       );
       const element = screen.getByTestId("alert");
       expect(element).toHaveClass(bgClass);
-      expect(element).toHaveClass("text-[#181D27]"); // Always black text
+      expect(element).toHaveClass("text-semantic-text-primary"); // Always primary text
       expect(element).toHaveClass(borderClass);
     }
   );

@@ -9,14 +9,14 @@ import { cn } from "@/lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA] [&>span]:line-clamp-1",
+  "flex h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -47,7 +47,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-[#717680] opacity-70" />
+      <ChevronDown className="size-4 text-semantic-text-muted opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -65,7 +65,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronUp className="size-4 text-[#717680]" />
+    <ChevronUp className="size-4 text-semantic-text-muted" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -82,7 +82,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronDown className="size-4 text-[#717680]" />
+    <ChevronDown className="size-4 text-semantic-text-muted" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -96,7 +96,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9EAEB] shadow-md",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -131,7 +131,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-[#717680]", className)}
+    className={cn("px-4 py-1.5 text-xs font-medium text-semantic-text-muted", className)}
     {...props}
   />
 ));
@@ -144,8 +144,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
-      "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+      "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -153,7 +153,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-[#2BBCCA]" />
+        <Check className="size-4 text-semantic-brand" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -167,7 +167,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
+    className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
     {...props}
   />
 ));

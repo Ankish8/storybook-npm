@@ -120,14 +120,14 @@ describe("Typography", () => {
 
   describe("Color Prop", () => {
     const colorTestCases: Array<[Color, string]> = [
-      ["primary", "text-[#181D27]"],
-      ["secondary", "text-[#343E55]"],
-      ["muted", "text-[#717680]"],
-      ["placeholder", "text-[#A2A6B1]"],
-      ["link", "text-[#4275D6]"],
-      ["inverted", "text-white"],
-      ["error", "text-[#F04438]"],
-      ["success", "text-[#17B26A]"],
+      ["primary", "text-semantic-text-primary"],
+      ["secondary", "text-semantic-text-secondary"],
+      ["muted", "text-semantic-text-muted"],
+      ["placeholder", "text-semantic-text-placeholder"],
+      ["link", "text-semantic-text-link"],
+      ["inverted", "text-semantic-text-inverted"],
+      ["error", "text-semantic-error-primary"],
+      ["success", "text-semantic-success-primary"],
     ];
 
     it.each(colorTestCases)(
@@ -479,7 +479,7 @@ describe("Typography", () => {
       expect(element).toHaveClass("font-semibold");
 
       // Color
-      expect(element).toHaveClass("text-[#F04438]");
+      expect(element).toHaveClass("text-semantic-error-primary");
 
       // Align
       expect(element).toHaveClass("text-center");

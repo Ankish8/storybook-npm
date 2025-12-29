@@ -10,18 +10,18 @@ describe("Badge", () => {
 
   it("applies default variant classes", () => {
     const { container } = render(<Badge>Default</Badge>);
-    expect(container.firstChild).toHaveClass("bg-[#F5F5F5]");
-    expect(container.firstChild).toHaveClass("text-[#181D27]");
+    expect(container.firstChild).toHaveClass("bg-semantic-bg-ui");
+    expect(container.firstChild).toHaveClass("text-semantic-text-primary");
   });
 
   it.each([
-    ["active", "bg-[#ECFDF3]", "text-[#17B26A]"],
-    ["failed", "bg-[#FEF3F2]", "text-[#F04438]"],
-    ["disabled", "bg-[#F5F5F5]", "text-[#717680]"],
-    ["default", "bg-[#F5F5F5]", "text-[#181D27]"],
-    ["primary", "bg-[#F5F5F5]", "text-[#181D27]"],
-    ["secondary", "bg-[#F5F5F5]", "text-[#181D27]"],
-    ["destructive", "bg-[#FEF3F2]", "text-[#F04438]"],
+    ["active", "bg-semantic-success-surface", "text-semantic-success-primary"],
+    ["failed", "bg-semantic-error-surface", "text-semantic-error-primary"],
+    ["disabled", "bg-semantic-bg-ui", "text-semantic-text-muted"],
+    ["default", "bg-semantic-bg-ui", "text-semantic-text-primary"],
+    ["primary", "bg-semantic-bg-ui", "text-semantic-text-primary"],
+    ["secondary", "bg-semantic-bg-ui", "text-semantic-text-primary"],
+    ["destructive", "bg-semantic-error-surface", "text-semantic-error-primary"],
   ] as const)(
     "renders %s variant with correct classes",
     (variant, bgClass, textClass) => {
@@ -34,7 +34,7 @@ describe("Badge", () => {
   it("renders outline variant with border", () => {
     const { container } = render(<Badge variant="outline">Outline</Badge>);
     expect(container.firstChild).toHaveClass("border");
-    expect(container.firstChild).toHaveClass("border-[#E9EAEB]");
+    expect(container.firstChild).toHaveClass("border-semantic-border-layout");
     expect(container.firstChild).toHaveClass("bg-transparent");
   });
 
@@ -113,6 +113,6 @@ describe("Badge", () => {
     const link = screen.getByRole("link");
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/status");
-    expect(link).toHaveClass("bg-[#F5F5F5]");
+    expect(link).toHaveClass("bg-semantic-bg-ui");
   });
 });

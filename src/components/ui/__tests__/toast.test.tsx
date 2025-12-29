@@ -208,7 +208,7 @@ describe("Toast", () => {
       );
 
       const toast = screen.getByTestId("toast");
-      expect(toast).toHaveClass("bg-[#ECFDF3]");
+      expect(toast).toHaveClass("bg-semantic-success-surface");
     });
 
     it("renders with error variant", () => {
@@ -222,7 +222,7 @@ describe("Toast", () => {
       );
 
       const toast = screen.getByTestId("toast");
-      expect(toast).toHaveClass("bg-[#FEF3F2]");
+      expect(toast).toHaveClass("bg-semantic-error-surface");
     });
 
     it("renders with warning variant", () => {
@@ -236,7 +236,7 @@ describe("Toast", () => {
       );
 
       const toast = screen.getByTestId("toast");
-      expect(toast).toHaveClass("bg-[#FFFAEB]");
+      expect(toast).toHaveClass("bg-semantic-warning-surface");
     });
 
     it("renders with info variant", () => {
@@ -250,7 +250,7 @@ describe("Toast", () => {
       );
 
       const toast = screen.getByTestId("toast");
-      expect(toast).toHaveClass("bg-[#EBF5FF]");
+      expect(toast).toHaveClass("bg-semantic-info-surface");
     });
 
     it("applies custom className", () => {
@@ -379,27 +379,27 @@ describe("Toast", () => {
   describe("toastVariants", () => {
     it("returns correct classes for default variant", () => {
       const classes = toastVariants({ variant: "default" });
-      expect(classes).toContain("bg-white");
+      expect(classes).toContain("bg-semantic-bg-primary");
     });
 
     it("returns correct classes for success variant", () => {
       const classes = toastVariants({ variant: "success" });
-      expect(classes).toContain("bg-[#ECFDF3]");
+      expect(classes).toContain("bg-semantic-success-surface");
     });
 
     it("returns correct classes for error variant", () => {
       const classes = toastVariants({ variant: "error" });
-      expect(classes).toContain("bg-[#FEF3F2]");
+      expect(classes).toContain("bg-semantic-error-surface");
     });
 
     it("returns correct classes for warning variant", () => {
       const classes = toastVariants({ variant: "warning" });
-      expect(classes).toContain("bg-[#FFFAEB]");
+      expect(classes).toContain("bg-semantic-warning-surface");
     });
 
     it("returns correct classes for info variant", () => {
       const classes = toastVariants({ variant: "info" });
-      expect(classes).toContain("bg-[#EBF5FF]");
+      expect(classes).toContain("bg-semantic-info-surface");
     });
   });
 

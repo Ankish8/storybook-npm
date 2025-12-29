@@ -40,7 +40,7 @@ describe("SelectField", () => {
       <SelectField label="Test Label" options={defaultOptions} required />
     );
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-[#F04438]");
+    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
   });
 
   it("does not render required indicator when not required", () => {
@@ -66,7 +66,7 @@ describe("SelectField", () => {
       <SelectField options={defaultOptions} helperText="Helper text here" />
     );
     expect(screen.getByText("Helper text here")).toBeInTheDocument();
-    expect(screen.getByText("Helper text here")).toHaveClass("text-[#717680]");
+    expect(screen.getByText("Helper text here")).toHaveClass("text-semantic-text-muted");
   });
 
   // Error message tests
@@ -76,7 +76,7 @@ describe("SelectField", () => {
     );
     expect(screen.getByText("This field is required")).toBeInTheDocument();
     expect(screen.getByText("This field is required")).toHaveClass(
-      "text-[#F04438]"
+      "text-semantic-error-primary"
     );
   });
 
@@ -90,7 +90,7 @@ describe("SelectField", () => {
 
   it("applies error state styling when error is set", () => {
     render(<SelectField options={defaultOptions} error="Error" />);
-    expect(screen.getByRole("combobox")).toHaveClass("border-[#F04438]/40");
+    expect(screen.getByRole("combobox")).toHaveClass("border-semantic-error-primary/40");
   });
 
   it("sets aria-invalid when error is present", () => {

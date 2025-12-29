@@ -10,14 +10,14 @@ import { cn } from "@/lib/utils";
 const tagVariants = cva("inline-flex items-center rounded text-sm", {
   variants: {
     variant: {
-      default: "bg-[#F5F5F5] text-[#181D27]",
-      primary: "bg-[#F5F5F5] text-[#181D27]",
-      accent: "bg-[#EBECEE] text-[#343E55]",
-      secondary: "bg-[#E9EAEB] text-[#414651]",
-      success: "bg-[#ECFDF3] text-[#17B26A]",
-      warning: "bg-[#FFFAEB] text-[#F79009]",
-      error: "bg-[#FEF3F2] text-[#F04438]",
-      destructive: "bg-[#FEF3F2] text-[#F04438]",
+      default: "bg-semantic-bg-ui text-semantic-text-primary",
+      primary: "bg-semantic-bg-ui text-semantic-text-primary",
+      accent: "bg-semantic-primary-surface text-semantic-text-secondary",
+      secondary: "bg-semantic-bg-grey text-[var(--color-neutral-700)]",
+      success: "bg-semantic-success-surface text-semantic-success-primary",
+      warning: "bg-semantic-warning-surface text-semantic-warning-primary",
+      error: "bg-semantic-error-surface text-semantic-error-primary",
+      destructive: "bg-semantic-error-surface text-semantic-error-primary",
     },
     size: {
       default: "px-2 py-1",

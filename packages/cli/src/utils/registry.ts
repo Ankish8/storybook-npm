@@ -357,20 +357,20 @@ import { Loader2 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        destructive: "bg-[#F04438] text-white hover:bg-[#D92D20]",
+        default: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        primary: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        destructive: "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
         outline:
-          "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#EBECEE]",
-        secondary: "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
-        ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
-        link: "text-[#343E55] underline-offset-4 hover:underline",
+          "border border-semantic-border-primary bg-transparent text-semantic-text-secondary hover:bg-semantic-primary-surface",
+        secondary: "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
+        ghost: "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
+        link: "text-semantic-text-secondary underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-[#D5D7DA] bg-transparent text-[#717680] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#FAFAFA]",
+          "border border-dashed border-semantic-bg-hover bg-transparent text-semantic-text-muted hover:border-semantic-border-primary hover:text-semantic-text-secondary hover:bg-[var(--color-neutral-50)]",
       },
       size: {
         default: "min-w-20 py-2.5 px-4 [&_svg]:size-4",
@@ -491,15 +491,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Status-based variants (existing)
-        active: "bg-[#ECFDF3] text-[#17B26A]",
-        failed: "bg-[#FEF3F2] text-[#F04438]",
-        disabled: "bg-[#F5F5F5] text-[#717680]",
-        default: "bg-[#F5F5F5] text-[#181D27]",
-        primary: "bg-[#F5F5F5] text-[#181D27]",
+        active: "bg-semantic-success-surface text-semantic-success-primary",
+        failed: "bg-semantic-error-surface text-semantic-error-primary",
+        disabled: "bg-semantic-bg-ui text-semantic-text-muted",
+        default: "bg-semantic-bg-ui text-semantic-text-primary",
+        primary: "bg-semantic-bg-ui text-semantic-text-primary",
         // shadcn-style variants (new)
-        secondary: "bg-[#F5F5F5] text-[#181D27]",
-        outline: "border border-[#E9EAEB] bg-transparent text-[#181D27]",
-        destructive: "bg-[#FEF3F2] text-[#F04438]",
+        secondary: "bg-semantic-bg-ui text-semantic-text-primary",
+        outline: "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+        destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {
         default: "px-3 py-1",
@@ -675,14 +675,14 @@ const mapClassName: { [key in Key]: string } = {
  * Maps color variants to Tailwind text color classes
  */
 const mapColorClassName: { [key in Color]: string } = {
-  primary: "text-[#181D27]",
-  secondary: "text-[#343E55]",
-  muted: "text-[#717680]",
-  placeholder: "text-[#A2A6B1]",
-  link: "text-[#4275D6]",
-  inverted: "text-white",
-  error: "text-[#F04438]",
-  success: "text-[#17B26A]",
+  primary: "text-semantic-text-primary",
+  secondary: "text-semantic-text-secondary",
+  muted: "text-semantic-text-muted",
+  placeholder: "text-semantic-text-placeholder",
+  link: "text-semantic-text-link",
+  inverted: "text-semantic-text-inverted",
+  error: "text-semantic-error-primary",
+  success: "text-semantic-success-primary",
 };
 
 /**
@@ -813,14 +813,14 @@ import { cn } from "../../lib/utils";
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -887,14 +887,14 @@ import { cn } from "../../lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA] [&>span]:line-clamp-1",
+  "flex h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -925,7 +925,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-[#717680] opacity-70" />
+      <ChevronDown className="size-4 text-semantic-text-muted opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -943,7 +943,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronUp className="size-4 text-[#717680]" />
+    <ChevronUp className="size-4 text-semantic-text-muted" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -960,7 +960,7 @@ const SelectScrollDownButton = React.forwardRef<
     )}
     {...props}
   >
-    <ChevronDown className="size-4 text-[#717680]" />
+    <ChevronDown className="size-4 text-semantic-text-muted" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -974,7 +974,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-white border border-[#E9EAEB] shadow-md",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -1009,7 +1009,7 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-[#717680]", className)}
+    className={cn("px-4 py-1.5 text-xs font-medium text-semantic-text-muted", className)}
     {...props}
   />
 ));
@@ -1022,8 +1022,8 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
-      "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+      "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -1031,7 +1031,7 @@ const SelectItem = React.forwardRef<
   >
     <span className="absolute right-2 flex size-4 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-[#2BBCCA]" />
+        <Check className="size-4 text-semantic-brand" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -1045,7 +1045,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
+    className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
     {...props}
   />
 ));
@@ -1092,7 +1092,7 @@ import { cn } from "../../lib/utils";
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E9EAEB] data-[state=unchecked]:hover:border-[#A4A7AE]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
   {
     variants: {
       size: {
@@ -1224,7 +1224,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#181D27] cursor-pointer",
+                  "text-semantic-text-primary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -1238,7 +1238,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#181D27] cursor-pointer",
+                  "text-semantic-text-primary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -1262,7 +1262,7 @@ const Checkbox = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50",
                 labelClassName
               )}
@@ -1275,7 +1275,7 @@ const Checkbox = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50",
                 labelClassName
               )}
@@ -1319,7 +1319,7 @@ import { cn } from "../../lib/utils";
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=unchecked]:bg-[#E9EAEB]",
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-bg-grey",
   {
     variants: {
       size: {
@@ -1423,7 +1423,7 @@ const Switch = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >
@@ -1435,7 +1435,7 @@ const Switch = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >
@@ -1478,17 +1478,17 @@ import { cn } from "../../lib/utils";
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
-  "relative flex items-center rounded bg-white transition-all",
+  "relative flex items-center rounded bg-semantic-bg-primary transition-all",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
-        true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
+        true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
         false: "",
       },
     },
@@ -1503,14 +1503,14 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -1631,7 +1631,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         id={inputId}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className })
         )}
         disabled={disabled || loading}
@@ -1651,10 +1651,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -1671,26 +1671,26 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             )}
           >
             {prefix && (
-              <span className="text-sm text-[#717680] mr-2 select-none">
+              <span className="text-sm text-semantic-text-muted mr-2 select-none">
                 {prefix}
               </span>
             )}
             {leftIcon && (
-              <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+              <span className="mr-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {leftIcon}
               </span>
             )}
             {inputElement}
             {loading && (
-              <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />
+              <Loader2 className="animate-spin size-4 text-semantic-text-muted ml-2 flex-shrink-0" />
             )}
             {!loading && rightIcon && (
-              <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+              <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
             )}
             {suffix && (
-              <span className="text-sm text-[#717680] ml-2 select-none">
+              <span className="text-sm text-semantic-text-muted ml-2 select-none">
                 {suffix}
               </span>
             )}
@@ -1703,11 +1703,11 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : (
@@ -1717,7 +1717,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-[#F04438]" : "text-[#717680]"
+                  charCount > maxLength ? "text-semantic-error-primary" : "text-semantic-text-muted"
                 )}
               >
                 {charCount}/{maxLength}
@@ -1914,10 +1914,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -1940,7 +1940,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           >
             <SelectValue placeholder={placeholder} />
             {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-[#717680]" />
+              <Loader2 className="absolute right-8 size-4 animate-spin text-semantic-text-muted" />
             )}
           </SelectTrigger>
           <SelectContent>
@@ -1952,7 +1952,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
+                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
@@ -1995,7 +1995,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
               searchQuery &&
               groupedOptions.ungrouped.length === 0 &&
               Object.keys(groupedOptions.groups).length === 0 && (
-                <div className="py-6 text-center text-sm text-[#717680]">
+                <div className="py-6 text-center text-sm text-semantic-text-muted">
                   No results found
                 </div>
               )}
@@ -2006,11 +2006,11 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}
@@ -2049,14 +2049,14 @@ import { cn } from "../../lib/utils";
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded bg-white px-4 py-2 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "flex min-h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -2274,10 +2274,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -2302,12 +2302,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-[#A2A6B1]">{placeholder}</span>
+              <span className="text-semantic-text-placeholder">{placeholder}</span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-[#F5F5F5] text-[#181D27] text-xs px-2 py-0.5 rounded"
+                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-xs px-2 py-0.5 rounded"
                 >
                   {label}
                   <span
@@ -2323,7 +2323,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                         );
                       }
                     }}
-                    className="cursor-pointer hover:text-[#F04438] focus:outline-none"
+                    className="cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                     aria-label={\`Remove \${label}\`}
                   >
                     <X className="size-3" />
@@ -2344,18 +2344,18 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                     clearAll(e as unknown as React.MouseEvent);
                   }
                 }}
-                className="p-0.5 cursor-pointer hover:text-[#F04438] focus:outline-none"
+                className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                 aria-label="Clear all"
               >
-                <X className="size-4 text-[#717680]" />
+                <X className="size-4 text-semantic-text-muted" />
               </span>
             )}
             {loading ? (
-              <Loader2 className="size-4 animate-spin text-[#717680]" />
+              <Loader2 className="size-4 animate-spin text-semantic-text-muted" />
             ) : (
               <ChevronDown
                 className={cn(
-                  "size-4 text-[#717680] transition-transform",
+                  "size-4 text-semantic-text-muted transition-transform",
                   isOpen && "rotate-180"
                 )}
               />
@@ -2367,7 +2367,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {isOpen && (
           <div
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-white border border-[#E9EAEB] shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -2375,13 +2375,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-[#E9EAEB]">
+              <div className="p-2 border-b border-semantic-border-layout">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
+                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -2390,7 +2390,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
             {/* Options */}
             <div className="max-h-60 overflow-auto p-1">
               {filteredOptions.length === 0 ? (
-                <div className="py-6 text-center text-sm text-[#717680]">
+                <div className="py-6 text-center text-sm text-semantic-text-muted">
                   No results found
                 </div>
               ) : (
@@ -2412,15 +2412,15 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       disabled={isDisabled}
                       onClick={() => !isDisabled && toggleOption(option.value)}
                       className={cn(
-                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
-                        "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
-                        isSelected && "bg-[#F5F5F5]",
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+                        "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                        isSelected && "bg-semantic-bg-ui",
                         isDisabled && "pointer-events-none opacity-50"
                       )}
                     >
                       <span className="absolute right-2 flex size-4 items-center justify-center">
                         {isSelected && (
-                          <Check className="size-4 text-[#2BBCCA]" />
+                          <Check className="size-4 text-semantic-brand" />
                         )}
                       </span>
                       {option.label}
@@ -2432,7 +2432,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-[#E9EAEB] text-xs text-[#717680]">
+              <div className="p-2 border-t border-semantic-border-layout text-xs text-semantic-text-muted">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}
@@ -2449,11 +2449,11 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}
@@ -2538,7 +2538,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     <div
       className={cn(
         "relative w-full overflow-auto",
-        !withoutBorder && "rounded-lg border border-[#E9EAEB]"
+        !withoutBorder && "rounded-lg border border-semantic-border-layout"
       )}
     >
       <table
@@ -2557,7 +2557,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-[#FAFAFA] [&_tr]:border-b", className)}
+    className={cn("bg-[var(--color-neutral-50)] [&_tr]:border-b", className)}
     {...props}
   />
 ));
@@ -2582,7 +2582,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[#FAFAFA] font-medium [&>tr]:last:border-b-0",
+      "border-t bg-[var(--color-neutral-50)] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -2600,10 +2600,10 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-[#E9EAEB] transition-colors",
+        "border-b border-semantic-border-layout transition-colors",
         highlighted
-          ? "bg-[#ECF1FB]"
-          : "hover:bg-[#FAFAFA]/50 data-[state=selected]:bg-[#F5F5F5]",
+          ? "bg-semantic-info-surface"
+          : "hover:bg-[var(--color-neutral-50)]/50 data-[state=selected]:bg-semantic-bg-ui",
         className
       )}
       {...props}
@@ -2629,8 +2629,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-[#717680] text-sm [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-[#FAFAFA] z-10",
+        "h-12 px-4 text-left align-middle font-medium text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-[var(--color-neutral-50)] z-10",
         sortDirection && "cursor-pointer select-none",
         className
       )}
@@ -2639,12 +2639,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       <div className="flex items-center gap-1">
         {children}
         {sortDirection && (
-          <span className="text-[#A4A7AE]">
+          <span className="text-[var(--color-neutral-400)]">
             {sortDirection === "asc" ? "↑" : "↓"}
           </span>
         )}
         {infoTooltip && (
-          <span className="text-[#A4A7AE] cursor-help" title={infoTooltip}>
+          <span className="text-[var(--color-neutral-400)] cursor-help" title={infoTooltip}>
             ⓘ
           </span>
         )}
@@ -2664,8 +2664,8 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     <td
       ref={ref}
       className={cn(
-        "px-4 align-middle text-[#181D27] [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-white z-10",
+        "px-4 align-middle text-semantic-text-primary [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-semantic-bg-primary z-10",
         className
       )}
       {...props}
@@ -2680,7 +2680,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-[#717680]", className)}
+    className={cn("mt-4 text-sm text-semantic-text-muted", className)}
     {...props}
   />
 ));
@@ -2703,7 +2703,7 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
             <div
-              className="h-4 bg-[#E9EAEB] rounded animate-pulse"
+              className="h-4 bg-semantic-bg-grey rounded animate-pulse"
               style={{
                 width: colIndex === 1 ? "80%" : colIndex === 2 ? "30%" : "60%",
               }}
@@ -2728,7 +2728,7 @@ export interface TableEmptyProps {
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-8 text-[#717680]">
+    <TableCell colSpan={colSpan} className="text-center py-8 text-semantic-text-muted">
       {children || "No data available"}
     </TableCell>
   </TableRow>
@@ -3021,7 +3021,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-[#F5F5F5] data-[state=open]:bg-[#F5F5F5]",
+      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-semantic-bg-ui data-[state=open]:bg-semantic-bg-ui",
       inset && "pl-8",
       className
     )}
@@ -3041,7 +3041,7 @@ const DropdownMenuSubContent = React.forwardRef<
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E9EAEB] bg-white p-1 text-[#181D27] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 min-w-[8rem] overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className
     )}
     {...props}
@@ -3059,7 +3059,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[#E9EAEB] bg-white p-1 text-[#181D27] shadow-md",
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
@@ -3078,7 +3078,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-[#F5F5F5] focus:text-[#181D27] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className
     )}
@@ -3094,7 +3094,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F5F5F5] focus:text-[#181D27] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     checked={checked}
@@ -3118,7 +3118,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-[#F5F5F5] focus:text-[#181D27] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
@@ -3157,7 +3157,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-[#E9EAEB]", className)}
+    className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
     {...props}
   />
 ));
@@ -3228,7 +3228,7 @@ const TooltipContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 overflow-hidden rounded-md bg-[#343E55] px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "z-50 overflow-hidden rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
       {...props}
@@ -3243,7 +3243,7 @@ const TooltipArrow = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TooltipPrimitive.Arrow
     ref={ref}
-    className={cn("fill-[#343E55]", className)}
+    className={cn("fill-semantic-primary", className)}
     {...props}
   />
 ));
@@ -3617,14 +3617,14 @@ import { cn } from "../../lib/utils";
 const tagVariants = cva("inline-flex items-center rounded text-sm", {
   variants: {
     variant: {
-      default: "bg-[#F5F5F5] text-[#181D27]",
-      primary: "bg-[#F5F5F5] text-[#181D27]",
-      accent: "bg-[#EBECEE] text-[#343E55]",
-      secondary: "bg-[#E9EAEB] text-[#414651]",
-      success: "bg-[#ECFDF3] text-[#17B26A]",
-      warning: "bg-[#FFFAEB] text-[#F79009]",
-      error: "bg-[#FEF3F2] text-[#F04438]",
-      destructive: "bg-[#FEF3F2] text-[#F04438]",
+      default: "bg-semantic-bg-ui text-semantic-text-primary",
+      primary: "bg-semantic-bg-ui text-semantic-text-primary",
+      accent: "bg-semantic-primary-surface text-semantic-text-secondary",
+      secondary: "bg-semantic-bg-grey text-[var(--color-neutral-700)]",
+      success: "bg-semantic-success-surface text-semantic-success-primary",
+      warning: "bg-semantic-warning-surface text-semantic-warning-primary",
+      error: "bg-semantic-error-surface text-semantic-error-primary",
+      destructive: "bg-semantic-error-surface text-semantic-error-primary",
     },
     size: {
       default: "px-2 py-1",
@@ -3767,16 +3767,16 @@ import { cn } from "../../lib/utils";
  * Colors are hardcoded for Bootstrap compatibility.
  */
 const alertVariants = cva(
-  "relative w-full rounded border p-4 text-sm text-[#181D27] [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
+  "relative w-full rounded border p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
   {
     variants: {
       variant: {
-        default: "bg-[#F5F5F5] border-[#E9EAEB] [&>svg]:text-[#181D27]",
-        success: "bg-[#ECFDF3] border-[#17B26A]/20 [&>svg]:text-[#17B26A]",
-        error: "bg-[#FEF3F2] border-[#F04438]/20 [&>svg]:text-[#F04438]",
-        destructive: "bg-[#FEF3F2] border-[#F04438]/20 [&>svg]:text-[#F04438]",
-        warning: "bg-[#FFFAEB] border-[#F79009]/20 [&>svg]:text-[#F79009]",
-        info: "bg-[#EBF5FF] border-[#4275D6]/20 [&>svg]:text-[#4275D6]",
+        default: "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
+        success: "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
+        error: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        destructive: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        warning: "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
+        info: "bg-semantic-info-surface border-semantic-info-border [&>svg]:text-semantic-info-primary",
       },
     },
     defaultVariants: {
@@ -3908,12 +3908,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
                   onClick={handleClose}
                   className={cn(
                     "rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                    variant === "default" && "focus:ring-[#181D27]",
-                    variant === "success" && "focus:ring-[#17B26A]",
+                    variant === "default" && "focus:ring-semantic-text-primary",
+                    variant === "success" && "focus:ring-semantic-success-primary",
                     (variant === "error" || variant === "destructive") &&
-                      "focus:ring-[#F04438]",
-                    variant === "warning" && "focus:ring-[#F79009]",
-                    variant === "info" && "focus:ring-[#4275D6]"
+                      "focus:ring-semantic-error-primary",
+                    variant === "warning" && "focus:ring-semantic-warning-primary",
+                    variant === "info" && "focus:ring-semantic-info-primary"
                   )}
                   aria-label="Close alert"
                 >
@@ -4002,11 +4002,11 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-[#E9EAEB] bg-white text-[#181D27]",
-        success: "border-[#17B26A]/20 bg-[#ECFDF3] text-[#067647]",
-        error: "border-[#F04438]/20 bg-[#FEF3F2] text-[#B42318]",
-        warning: "border-[#F79009]/20 bg-[#FFFAEB] text-[#B54708]",
-        info: "border-[#4275D6]/20 bg-[#EBF5FF] text-[#1849A9]",
+        default: "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+        success: "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
+        error: "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
+        warning: "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
+        info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-hover",
       },
     },
     defaultVariants: {
@@ -4037,11 +4037,11 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-[#E9EAEB] bg-transparent px-3 text-sm font-medium transition-colors hover:bg-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#4275D6] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-      "group-[.success]:border-[#17B26A]/30 group-[.success]:hover:border-[#17B26A]/50 group-[.success]:hover:bg-[#17B26A]/10",
-      "group-[.error]:border-[#F04438]/30 group-[.error]:hover:border-[#F04438]/50 group-[.error]:hover:bg-[#F04438]/10",
-      "group-[.warning]:border-[#F79009]/30 group-[.warning]:hover:border-[#F79009]/50 group-[.warning]:hover:bg-[#F79009]/10",
-      "group-[.info]:border-[#4275D6]/30 group-[.info]:hover:border-[#4275D6]/50 group-[.info]:hover:bg-[#4275D6]/10",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-semantic-border-layout bg-transparent px-3 text-sm font-medium transition-colors hover:bg-semantic-bg-ui focus:outline-none focus:ring-2 focus:ring-semantic-info-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      "group-[.success]:border-semantic-success-primary/30 group-[.success]:hover:border-semantic-success-primary/50 group-[.success]:hover:bg-semantic-success-primary/10",
+      "group-[.error]:border-semantic-error-primary/30 group-[.error]:hover:border-semantic-error-primary/50 group-[.error]:hover:bg-semantic-error-primary/10",
+      "group-[.warning]:border-semantic-warning-primary/30 group-[.warning]:hover:border-semantic-warning-primary/50 group-[.warning]:hover:bg-semantic-warning-primary/10",
+      "group-[.info]:border-semantic-info-primary/30 group-[.info]:hover:border-semantic-info-primary/50 group-[.info]:hover:bg-semantic-info-primary/10",
       className
     )}
     {...props}
@@ -4056,11 +4056,11 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-[#717680] opacity-0 transition-opacity hover:text-[#181D27] focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
-      "group-[.success]:text-[#067647] group-[.success]:hover:text-[#067647]",
-      "group-[.error]:text-[#B42318] group-[.error]:hover:text-[#B42318]",
-      "group-[.warning]:text-[#B54708] group-[.warning]:hover:text-[#B54708]",
-      "group-[.info]:text-[#1849A9] group-[.info]:hover:text-[#1849A9]",
+      "absolute right-2 top-2 rounded-md p-1 text-semantic-text-muted opacity-0 transition-opacity hover:text-semantic-text-primary focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
+      "group-[.success]:text-semantic-success-hover group-[.success]:hover:text-semantic-success-hover",
+      "group-[.error]:text-semantic-error-hover group-[.error]:hover:text-semantic-error-hover",
+      "group-[.warning]:text-semantic-warning-hover group-[.warning]:hover:text-semantic-warning-hover",
+      "group-[.info]:text-semantic-info-hover group-[.info]:hover:text-semantic-info-hover",
       className
     )}
     toast-close=""
@@ -4354,10 +4354,10 @@ function Toaster() {
                 <Icon
                   className={cn(
                     "h-5 w-5 shrink-0",
-                    variant === "success" && "text-[#17B26A]",
-                    variant === "error" && "text-[#F04438]",
-                    variant === "warning" && "text-[#F79009]",
-                    variant === "info" && "text-[#4275D6]"
+                    variant === "success" && "text-semantic-success-primary",
+                    variant === "error" && "text-semantic-error-primary",
+                    variant === "warning" && "text-semantic-warning-primary",
+                    variant === "info" && "text-semantic-info-primary"
                   )}
                 />
               )}
@@ -4469,7 +4469,7 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      bordered: "border border-[#E9EAEB] rounded-lg divide-y divide-[#E9EAEB]",
+      bordered: "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {
@@ -4496,12 +4496,12 @@ const accordionItemVariants = cva("", {
  * Accordion trigger variants
  */
 const accordionTriggerVariants = cva(
-  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
         default: "py-3",
-        bordered: "p-4 hover:bg-[#FAFAFA]",
+        bordered: "p-4 hover:bg-[var(--color-neutral-50)]",
       },
     },
     defaultVariants: {
@@ -4739,7 +4739,7 @@ const AccordionTrigger = React.forwardRef<
       {showChevron && (
         <ChevronDown
           className={cn(
-            "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
+            "h-4 w-4 shrink-0 text-semantic-text-muted transition-transform duration-300",
             isOpen && "rotate-180"
           )}
         />
@@ -4826,7 +4826,7 @@ import { Button } from "./button";
  * PageHeader variants for layout styles.
  */
 const pageHeaderVariants = cva(
-  "flex flex-col sm:flex-row sm:items-center w-full bg-white",
+  "flex flex-col sm:flex-row sm:items-center w-full bg-semantic-bg-primary",
   {
     variants: {},
     defaultVariants: {},
@@ -4917,7 +4917,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F5F5F5] transition-colors text-[#181D27]"
+            className="flex items-center justify-center w-10 h-10 rounded hover:bg-semantic-bg-ui transition-colors text-semantic-text-primary"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -4926,7 +4926,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       }
       if (icon) {
         return (
-          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#717680]">
+          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-semantic-text-muted">
             {icon}
           </div>
         );
@@ -5058,10 +5058,10 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          "flex w-full bg-white px-4",
+          "flex w-full bg-semantic-bg-primary px-4",
           layoutClasses[layout],
           heightClasses[layout],
-          showBorder && "border-b border-[#E9EAEB]",
+          showBorder && "border-b border-semantic-border-layout",
           className
         )}
         {...props}
@@ -5076,17 +5076,17 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="m-0 text-base font-semibold text-[#181D27] truncate">
+              <h1 className="m-0 text-base font-semibold text-semantic-text-primary truncate">
                 {title}
               </h1>
               {infoIcon && (
-                <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[#717680]">
+                <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-semantic-text-muted">
                   {infoIcon}
                 </span>
               )}
             </div>
             {description && (
-              <p className="m-0 text-sm text-[#181D27] font-normal mt-1 line-clamp-2">
+              <p className="m-0 text-sm text-semantic-text-primary font-normal mt-1 line-clamp-2">
                 {description}
               </p>
             )}

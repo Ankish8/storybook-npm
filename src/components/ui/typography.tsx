@@ -70,14 +70,14 @@ const mapClassName: { [key in Key]: string } = {
  * Maps color variants to Tailwind text color classes
  */
 const mapColorClassName: { [key in Color]: string } = {
-  primary: "text-[#181D27]",
-  secondary: "text-[#343E55]",
-  muted: "text-[#717680]",
-  placeholder: "text-[#A2A6B1]",
-  link: "text-[#4275D6]",
-  inverted: "text-white",
-  error: "text-[#F04438]",
-  success: "text-[#17B26A]",
+  primary: "text-semantic-text-primary",
+  secondary: "text-semantic-text-secondary",
+  muted: "text-semantic-text-muted",
+  placeholder: "text-semantic-text-placeholder",
+  link: "text-semantic-text-link",
+  inverted: "text-semantic-text-inverted",
+  error: "text-semantic-error-primary",
+  success: "text-semantic-success-primary",
 };
 
 /**

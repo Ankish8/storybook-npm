@@ -341,14 +341,14 @@ import { cn } from "../../lib/utils";
 const tagVariants = cva("inline-flex items-center rounded text-sm", {
   variants: {
     variant: {
-      default: "bg-[#F5F5F5] text-[#181D27]",
-      primary: "bg-[#F5F5F5] text-[#181D27]",
-      accent: "bg-[#EBECEE] text-[#343E55]",
-      secondary: "bg-[#E9EAEB] text-[#414651]",
-      success: "bg-[#ECFDF3] text-[#17B26A]",
-      warning: "bg-[#FFFAEB] text-[#F79009]",
-      error: "bg-[#FEF3F2] text-[#F04438]",
-      destructive: "bg-[#FEF3F2] text-[#F04438]",
+      default: "bg-semantic-bg-ui text-semantic-text-primary",
+      primary: "bg-semantic-bg-ui text-semantic-text-primary",
+      accent: "bg-semantic-primary-surface text-semantic-text-secondary",
+      secondary: "bg-semantic-bg-grey text-[var(--color-neutral-700)]",
+      success: "bg-semantic-success-surface text-semantic-success-primary",
+      warning: "bg-semantic-warning-surface text-semantic-warning-primary",
+      error: "bg-semantic-error-surface text-semantic-error-primary",
+      destructive: "bg-semantic-error-surface text-semantic-error-primary",
     },
     size: {
       default: "px-2 py-1",
@@ -491,16 +491,16 @@ import { cn } from "../../lib/utils";
  * Colors are hardcoded for Bootstrap compatibility.
  */
 const alertVariants = cva(
-  "relative w-full rounded border p-4 text-sm text-[#181D27] [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
+  "relative w-full rounded border p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
   {
     variants: {
       variant: {
-        default: "bg-[#F5F5F5] border-[#E9EAEB] [&>svg]:text-[#181D27]",
-        success: "bg-[#ECFDF3] border-[#17B26A]/20 [&>svg]:text-[#17B26A]",
-        error: "bg-[#FEF3F2] border-[#F04438]/20 [&>svg]:text-[#F04438]",
-        destructive: "bg-[#FEF3F2] border-[#F04438]/20 [&>svg]:text-[#F04438]",
-        warning: "bg-[#FFFAEB] border-[#F79009]/20 [&>svg]:text-[#F79009]",
-        info: "bg-[#EBF5FF] border-[#4275D6]/20 [&>svg]:text-[#4275D6]",
+        default: "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
+        success: "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
+        error: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        destructive: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        warning: "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
+        info: "bg-semantic-info-surface border-semantic-info-border [&>svg]:text-semantic-info-primary",
       },
     },
     defaultVariants: {
@@ -632,12 +632,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
                   onClick={handleClose}
                   className={cn(
                     "rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                    variant === "default" && "focus:ring-[#181D27]",
-                    variant === "success" && "focus:ring-[#17B26A]",
+                    variant === "default" && "focus:ring-semantic-text-primary",
+                    variant === "success" && "focus:ring-semantic-success-primary",
                     (variant === "error" || variant === "destructive") &&
-                      "focus:ring-[#F04438]",
-                    variant === "warning" && "focus:ring-[#F79009]",
-                    variant === "info" && "focus:ring-[#4275D6]"
+                      "focus:ring-semantic-error-primary",
+                    variant === "warning" && "focus:ring-semantic-warning-primary",
+                    variant === "info" && "focus:ring-semantic-info-primary"
                   )}
                   aria-label="Close alert"
                 >
@@ -726,11 +726,11 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-[#E9EAEB] bg-white text-[#181D27]",
-        success: "border-[#17B26A]/20 bg-[#ECFDF3] text-[#067647]",
-        error: "border-[#F04438]/20 bg-[#FEF3F2] text-[#B42318]",
-        warning: "border-[#F79009]/20 bg-[#FFFAEB] text-[#B54708]",
-        info: "border-[#4275D6]/20 bg-[#EBF5FF] text-[#1849A9]",
+        default: "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+        success: "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
+        error: "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
+        warning: "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
+        info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-hover",
       },
     },
     defaultVariants: {
@@ -761,11 +761,11 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-[#E9EAEB] bg-transparent px-3 text-sm font-medium transition-colors hover:bg-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#4275D6] focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-      "group-[.success]:border-[#17B26A]/30 group-[.success]:hover:border-[#17B26A]/50 group-[.success]:hover:bg-[#17B26A]/10",
-      "group-[.error]:border-[#F04438]/30 group-[.error]:hover:border-[#F04438]/50 group-[.error]:hover:bg-[#F04438]/10",
-      "group-[.warning]:border-[#F79009]/30 group-[.warning]:hover:border-[#F79009]/50 group-[.warning]:hover:bg-[#F79009]/10",
-      "group-[.info]:border-[#4275D6]/30 group-[.info]:hover:border-[#4275D6]/50 group-[.info]:hover:bg-[#4275D6]/10",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-semantic-border-layout bg-transparent px-3 text-sm font-medium transition-colors hover:bg-semantic-bg-ui focus:outline-none focus:ring-2 focus:ring-semantic-info-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      "group-[.success]:border-semantic-success-primary/30 group-[.success]:hover:border-semantic-success-primary/50 group-[.success]:hover:bg-semantic-success-primary/10",
+      "group-[.error]:border-semantic-error-primary/30 group-[.error]:hover:border-semantic-error-primary/50 group-[.error]:hover:bg-semantic-error-primary/10",
+      "group-[.warning]:border-semantic-warning-primary/30 group-[.warning]:hover:border-semantic-warning-primary/50 group-[.warning]:hover:bg-semantic-warning-primary/10",
+      "group-[.info]:border-semantic-info-primary/30 group-[.info]:hover:border-semantic-info-primary/50 group-[.info]:hover:bg-semantic-info-primary/10",
       className
     )}
     {...props}
@@ -780,11 +780,11 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-[#717680] opacity-0 transition-opacity hover:text-[#181D27] focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
-      "group-[.success]:text-[#067647] group-[.success]:hover:text-[#067647]",
-      "group-[.error]:text-[#B42318] group-[.error]:hover:text-[#B42318]",
-      "group-[.warning]:text-[#B54708] group-[.warning]:hover:text-[#B54708]",
-      "group-[.info]:text-[#1849A9] group-[.info]:hover:text-[#1849A9]",
+      "absolute right-2 top-2 rounded-md p-1 text-semantic-text-muted opacity-0 transition-opacity hover:text-semantic-text-primary focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
+      "group-[.success]:text-semantic-success-hover group-[.success]:hover:text-semantic-success-hover",
+      "group-[.error]:text-semantic-error-hover group-[.error]:hover:text-semantic-error-hover",
+      "group-[.warning]:text-semantic-warning-hover group-[.warning]:hover:text-semantic-warning-hover",
+      "group-[.info]:text-semantic-info-hover group-[.info]:hover:text-semantic-info-hover",
       className
     )}
     toast-close=""
@@ -1078,10 +1078,10 @@ function Toaster() {
                 <Icon
                   className={cn(
                     "h-5 w-5 shrink-0",
-                    variant === "success" && "text-[#17B26A]",
-                    variant === "error" && "text-[#F04438]",
-                    variant === "warning" && "text-[#F79009]",
-                    variant === "info" && "text-[#4275D6]"
+                    variant === "success" && "text-semantic-success-primary",
+                    variant === "error" && "text-semantic-error-primary",
+                    variant === "warning" && "text-semantic-warning-primary",
+                    variant === "info" && "text-semantic-info-primary"
                   )}
                 />
               )}

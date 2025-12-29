@@ -9,16 +9,16 @@ import { cn } from "@/lib/utils";
  * Colors are hardcoded for Bootstrap compatibility.
  */
 const alertVariants = cva(
-  "relative w-full rounded border p-4 text-sm text-[#181D27] [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
+  "relative w-full rounded border p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
   {
     variants: {
       variant: {
-        default: "bg-[#F5F5F5] border-[#E9EAEB] [&>svg]:text-[#181D27]",
-        success: "bg-[#ECFDF3] border-[#17B26A]/20 [&>svg]:text-[#17B26A]",
-        error: "bg-[#FEF3F2] border-[#F04438]/20 [&>svg]:text-[#F04438]",
-        destructive: "bg-[#FEF3F2] border-[#F04438]/20 [&>svg]:text-[#F04438]",
-        warning: "bg-[#FFFAEB] border-[#F79009]/20 [&>svg]:text-[#F79009]",
-        info: "bg-[#EBF5FF] border-[#4275D6]/20 [&>svg]:text-[#4275D6]",
+        default: "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
+        success: "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
+        error: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        destructive: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        warning: "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
+        info: "bg-semantic-info-surface border-semantic-info-border [&>svg]:text-semantic-info-primary",
       },
     },
     defaultVariants: {
@@ -150,12 +150,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
                   onClick={handleClose}
                   className={cn(
                     "rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
-                    variant === "default" && "focus:ring-[#181D27]",
-                    variant === "success" && "focus:ring-[#17B26A]",
+                    variant === "default" && "focus:ring-semantic-text-primary",
+                    variant === "success" && "focus:ring-semantic-success-primary",
                     (variant === "error" || variant === "destructive") &&
-                      "focus:ring-[#F04438]",
-                    variant === "warning" && "focus:ring-[#F79009]",
-                    variant === "info" && "focus:ring-[#4275D6]"
+                      "focus:ring-semantic-error-primary",
+                    variant === "warning" && "focus:ring-semantic-warning-primary",
+                    variant === "info" && "focus:ring-semantic-info-primary"
                   )}
                   aria-label="Close alert"
                 >

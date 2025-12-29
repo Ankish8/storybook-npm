@@ -24,7 +24,7 @@ describe("TextField", () => {
   it("renders required indicator when required", () => {
     render(<TextField label="Email" required />);
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-[#F04438]");
+    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
   });
 
   it("does not render required indicator when not required", () => {
@@ -41,7 +41,7 @@ describe("TextField", () => {
   // State tests
   it("applies error state styling when error is set", () => {
     render(<TextField error="Error" data-testid="input" />);
-    expect(screen.getByTestId("input")).toHaveClass("border-[#F04438]/40");
+    expect(screen.getByTestId("input")).toHaveClass("border-semantic-error-primary/40");
   });
 
   it("sets aria-invalid when error is present", () => {
@@ -56,7 +56,7 @@ describe("TextField", () => {
       screen.getByText("We will never share your email")
     ).toBeInTheDocument();
     expect(screen.getByText("We will never share your email")).toHaveClass(
-      "text-[#717680]"
+      "text-semantic-text-muted"
     );
   });
 
@@ -65,7 +65,7 @@ describe("TextField", () => {
     render(<TextField error="This field is required" />);
     expect(screen.getByText("This field is required")).toBeInTheDocument();
     expect(screen.getByText("This field is required")).toHaveClass(
-      "text-[#F04438]"
+      "text-semantic-error-primary"
     );
   });
 
@@ -130,7 +130,7 @@ describe("TextField", () => {
 
   it("shows character count in red when over limit", () => {
     render(<TextField showCount maxLength={3} defaultValue="hello" />);
-    expect(screen.getByText("5/3")).toHaveClass("text-[#F04438]");
+    expect(screen.getByText("5/3")).toHaveClass("text-semantic-error-primary");
   });
 
   // Loading state tests
@@ -255,7 +255,7 @@ describe("TextField", () => {
   it("uses container with focus-within styling when has addons", () => {
     const { container } = render(<TextField leftIcon={<span>L</span>} />);
     const inputContainer = container.querySelector(
-      ".focus-within\\:border-\\[\\#2BBCCA\\]\\/50"
+      ".focus-within\\:border-semantic-border-input-focus\\/50"
     );
     expect(inputContainer).toBeInTheDocument();
   });
@@ -265,7 +265,7 @@ describe("TextField", () => {
       <TextField leftIcon={<span>L</span>} error="Error" />
     );
     const inputContainer = container.querySelector(
-      ".border-\\[\\#F04438\\]\\/40"
+      ".border-semantic-error-primary\\/40"
     );
     expect(inputContainer).toBeInTheDocument();
   });

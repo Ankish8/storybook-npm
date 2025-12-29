@@ -14,15 +14,15 @@ const badgeVariants = cva(
     variants: {
       variant: {
         // Status-based variants (existing)
-        active: "bg-[#ECFDF3] text-[#17B26A]",
-        failed: "bg-[#FEF3F2] text-[#F04438]",
-        disabled: "bg-[#F5F5F5] text-[#717680]",
-        default: "bg-[#F5F5F5] text-[#181D27]",
-        primary: "bg-[#F5F5F5] text-[#181D27]",
+        active: "bg-semantic-success-surface text-semantic-success-primary",
+        failed: "bg-semantic-error-surface text-semantic-error-primary",
+        disabled: "bg-semantic-bg-ui text-semantic-text-muted",
+        default: "bg-semantic-bg-ui text-semantic-text-primary",
+        primary: "bg-semantic-bg-ui text-semantic-text-primary",
         // shadcn-style variants (new)
-        secondary: "bg-[#F5F5F5] text-[#181D27]",
-        outline: "border border-[#E9EAEB] bg-transparent text-[#181D27]",
-        destructive: "bg-[#FEF3F2] text-[#F04438]",
+        secondary: "bg-semantic-bg-ui text-semantic-text-primary",
+        outline: "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+        destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {
         default: "px-3 py-1",

@@ -8,14 +8,14 @@ import { cn } from "@/lib/utils";
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded bg-white px-4 py-2 text-sm text-[#181D27] transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "flex min-h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -233,10 +233,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -261,12 +261,12 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-[#A2A6B1]">{placeholder}</span>
+              <span className="text-semantic-text-placeholder">{placeholder}</span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-[#F5F5F5] text-[#181D27] text-xs px-2 py-0.5 rounded"
+                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-xs px-2 py-0.5 rounded"
                 >
                   {label}
                   <span
@@ -282,7 +282,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                         );
                       }
                     }}
-                    className="cursor-pointer hover:text-[#F04438] focus:outline-none"
+                    className="cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                     aria-label={`Remove ${label}`}
                   >
                     <X className="size-3" />
@@ -303,18 +303,18 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                     clearAll(e as unknown as React.MouseEvent);
                   }
                 }}
-                className="p-0.5 cursor-pointer hover:text-[#F04438] focus:outline-none"
+                className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                 aria-label="Clear all"
               >
-                <X className="size-4 text-[#717680]" />
+                <X className="size-4 text-semantic-text-muted" />
               </span>
             )}
             {loading ? (
-              <Loader2 className="size-4 animate-spin text-[#717680]" />
+              <Loader2 className="size-4 animate-spin text-semantic-text-muted" />
             ) : (
               <ChevronDown
                 className={cn(
-                  "size-4 text-[#717680] transition-transform",
+                  "size-4 text-semantic-text-muted transition-transform",
                   isOpen && "rotate-180"
                 )}
               />
@@ -326,7 +326,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {isOpen && (
           <div
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-white border border-[#E9EAEB] shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -334,13 +334,13 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-[#E9EAEB]">
+              <div className="p-2 border-b border-semantic-border-layout">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
+                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -349,7 +349,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
             {/* Options */}
             <div className="max-h-60 overflow-auto p-1">
               {filteredOptions.length === 0 ? (
-                <div className="py-6 text-center text-sm text-[#717680]">
+                <div className="py-6 text-center text-sm text-semantic-text-muted">
                   No results found
                 </div>
               ) : (
@@ -371,15 +371,15 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       disabled={isDisabled}
                       onClick={() => !isDisabled && toggleOption(option.value)}
                       className={cn(
-                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-[#181D27] outline-none",
-                        "hover:bg-[#F5F5F5] focus:bg-[#F5F5F5]",
-                        isSelected && "bg-[#F5F5F5]",
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+                        "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                        isSelected && "bg-semantic-bg-ui",
                         isDisabled && "pointer-events-none opacity-50"
                       )}
                     >
                       <span className="absolute right-2 flex size-4 items-center justify-center">
                         {isSelected && (
-                          <Check className="size-4 text-[#2BBCCA]" />
+                          <Check className="size-4 text-semantic-brand" />
                         )}
                       </span>
                       {option.label}
@@ -391,7 +391,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-[#E9EAEB] text-xs text-[#717680]">
+              <div className="p-2 border-t border-semantic-border-layout text-xs text-semantic-text-muted">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}
@@ -408,11 +408,11 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}

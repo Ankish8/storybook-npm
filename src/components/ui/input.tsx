@@ -7,14 +7,14 @@ import { cn } from "@/lib/utils";
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {

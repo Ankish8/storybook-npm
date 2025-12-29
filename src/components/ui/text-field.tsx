@@ -8,17 +8,17 @@ import { cn } from "@/lib/utils";
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
-  "relative flex items-center rounded bg-white transition-all",
+  "relative flex items-center rounded bg-semantic-bg-primary transition-all",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus-within:border-[#2BBCCA]/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus-within:border-[#F04438]/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
-        true: "cursor-not-allowed opacity-50 bg-[#FAFAFA]",
+        true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
         false: "",
       },
     },
@@ -33,14 +33,14 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-white px-4 py-2.5 text-sm text-[#181D27] transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[#FAFAFA]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
         default:
-          "border border-[#E9EAEB] focus:outline-none focus:border-[#2BBCCA]/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-[#F04438]/40 focus:outline-none focus:border-[#F04438]/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -161,7 +161,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         id={inputId}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-[#181D27] placeholder:text-[#A2A6B1] disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className })
         )}
         disabled={disabled || loading}
@@ -181,10 +181,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -201,26 +201,26 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
             )}
           >
             {prefix && (
-              <span className="text-sm text-[#717680] mr-2 select-none">
+              <span className="text-sm text-semantic-text-muted mr-2 select-none">
                 {prefix}
               </span>
             )}
             {leftIcon && (
-              <span className="mr-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+              <span className="mr-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {leftIcon}
               </span>
             )}
             {inputElement}
             {loading && (
-              <Loader2 className="animate-spin size-4 text-[#717680] ml-2 flex-shrink-0" />
+              <Loader2 className="animate-spin size-4 text-semantic-text-muted ml-2 flex-shrink-0" />
             )}
             {!loading && rightIcon && (
-              <span className="ml-2 text-[#717680] [&_svg]:size-4 flex-shrink-0">
+              <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
             )}
             {suffix && (
-              <span className="text-sm text-[#717680] ml-2 select-none">
+              <span className="text-sm text-semantic-text-muted ml-2 select-none">
                 {suffix}
               </span>
             )}
@@ -233,11 +233,11 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : (
@@ -247,7 +247,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-[#F04438]" : "text-[#717680]"
+                  charCount > maxLength ? "text-semantic-error-primary" : "text-semantic-text-muted"
                 )}
               >
                 {charCount}/{maxLength}

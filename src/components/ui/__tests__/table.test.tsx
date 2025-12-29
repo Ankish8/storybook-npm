@@ -53,7 +53,7 @@ describe("Table", () => {
 
     const wrapper = screen.getByRole("table").parentElement;
     expect(wrapper).toHaveClass("border");
-    expect(wrapper).toHaveClass("border-[#E9EAEB]");
+    expect(wrapper).toHaveClass("border-semantic-border-layout");
   });
 
   it("renders without border when withoutBorder is true", () => {
@@ -116,7 +116,7 @@ describe("TableHeader", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("header")).toHaveClass("bg-[#FAFAFA]");
+    expect(screen.getByTestId("header")).toHaveClass("bg-[var(--color-neutral-50)]");
   });
 });
 
@@ -146,7 +146,7 @@ describe("TableRow", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("row")).toHaveClass("bg-[#ECF1FB]");
+    expect(screen.getByTestId("row")).toHaveClass("bg-semantic-info-surface");
   });
 
   it("renders non-highlighted row with hover styles", () => {
@@ -160,7 +160,7 @@ describe("TableRow", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("row")).toHaveClass("hover:bg-[#FAFAFA]/50");
+    expect(screen.getByTestId("row")).toHaveClass("hover:bg-[var(--color-neutral-50)]/50");
   });
 });
 
@@ -302,7 +302,7 @@ describe("TableFooter", () => {
     );
 
     expect(screen.getByTestId("footer")).toHaveClass("border-t");
-    expect(screen.getByTestId("footer")).toHaveClass("bg-[#FAFAFA]");
+    expect(screen.getByTestId("footer")).toHaveClass("bg-[var(--color-neutral-50)]");
   });
 });
 

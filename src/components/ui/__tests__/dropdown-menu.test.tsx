@@ -275,7 +275,7 @@ describe("DropdownMenuSeparator", () => {
     await user.click(screen.getByText("Open"));
     expect(screen.getByTestId("separator")).toBeInTheDocument();
     expect(screen.getByTestId("separator")).toHaveClass("h-px");
-    expect(screen.getByTestId("separator")).toHaveClass("bg-[#E9EAEB]");
+    expect(screen.getByTestId("separator")).toHaveClass("bg-semantic-border-layout");
   });
 });
 
@@ -404,7 +404,7 @@ describe("DropdownMenuContent styling", () => {
     expect(content).toHaveClass("z-50");
     expect(content).toHaveClass("rounded-md");
     expect(content).toHaveClass("border");
-    expect(content).toHaveClass("bg-white");
+    expect(content).toHaveClass("bg-semantic-bg-primary");
   });
 
   it("applies custom className", async () => {

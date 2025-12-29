@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#343E55] data-[state=checked]:border-[#343E55] data-[state=checked]:text-white data-[state=indeterminate]:bg-[#343E55] data-[state=indeterminate]:border-[#343E55] data-[state=indeterminate]:text-white data-[state=unchecked]:bg-white data-[state=unchecked]:border-[#E9EAEB] data-[state=unchecked]:hover:border-[#A4A7AE]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
   {
     variants: {
       size: {
@@ -141,7 +141,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#181D27] cursor-pointer",
+                  "text-semantic-text-primary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -155,7 +155,7 @@ const Checkbox = React.forwardRef<
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-[#181D27] cursor-pointer",
+                  "text-semantic-text-primary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -179,7 +179,7 @@ const Checkbox = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50",
                 labelClassName
               )}
@@ -192,7 +192,7 @@ const Checkbox = React.forwardRef<
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-[#181D27]",
+                "text-semantic-text-primary",
                 disabled && "opacity-50",
                 labelClassName
               )}

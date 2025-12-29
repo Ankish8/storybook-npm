@@ -6,20 +6,20 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        primary: "bg-[#343E55] text-white hover:bg-[#2F384D]",
-        destructive: "bg-[#F04438] text-white hover:bg-[#D92D20]",
+        default: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        primary: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        destructive: "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
         outline:
-          "border border-[#343E55] bg-transparent text-[#343E55] hover:bg-[#EBECEE]",
-        secondary: "bg-[#EBECEE] text-[#343E55] hover:bg-[#D5D7DA]",
-        ghost: "text-[#717680] hover:bg-[#F5F5F5] hover:text-[#181D27]",
-        link: "text-[#343E55] underline-offset-4 hover:underline",
+          "border border-semantic-border-primary bg-transparent text-semantic-text-secondary hover:bg-semantic-primary-surface",
+        secondary: "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
+        ghost: "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
+        link: "text-semantic-text-secondary underline-offset-4 hover:underline",
         dashed:
-          "border border-dashed border-[#D5D7DA] bg-transparent text-[#717680] hover:border-[#343E55] hover:text-[#343E55] hover:bg-[#FAFAFA]",
+          "border border-dashed border-semantic-bg-hover bg-transparent text-semantic-text-muted hover:border-semantic-border-primary hover:text-semantic-text-secondary hover:bg-[var(--color-neutral-50)]",
       },
       size: {
         default: "min-w-20 py-2.5 px-4 [&_svg]:size-4",

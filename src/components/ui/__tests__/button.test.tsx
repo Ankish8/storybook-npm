@@ -11,17 +11,17 @@ describe("Button", () => {
   it("applies default variant classes", () => {
     render(<Button>Default</Button>);
     const button = screen.getByRole("button");
-    expect(button).toHaveClass("bg-[#343E55]");
-    expect(button).toHaveClass("text-white");
+    expect(button).toHaveClass("bg-semantic-primary");
+    expect(button).toHaveClass("text-semantic-text-inverted");
   });
 
   it.each([
-    ["default", "bg-[#343E55]"],
-    ["primary", "bg-[#343E55]"],
-    ["destructive", "bg-[#F04438]"],
-    ["outline", "border-[#343E55]"],
-    ["secondary", "bg-[#EBECEE]"],
-    ["ghost", "hover:bg-[#F5F5F5]"],
+    ["default", "bg-semantic-primary"],
+    ["primary", "bg-semantic-primary"],
+    ["destructive", "bg-semantic-error-primary"],
+    ["outline", "border-semantic-border-primary"],
+    ["secondary", "bg-semantic-primary-surface"],
+    ["ghost", "hover:bg-semantic-bg-ui"],
     ["link", "underline-offset-4"],
     ["dashed", "border-dashed"],
   ] as const)("renders %s variant", (variant, expectedClass) => {

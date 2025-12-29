@@ -34,21 +34,21 @@ describe("MultiSelect", () => {
       <MultiSelect label="Test Label" options={defaultOptions} required />
     );
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-[#F04438]");
+    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
   });
 
   // Helper text tests
   it("renders helper text when provided", () => {
     render(<MultiSelect options={defaultOptions} helperText="Helper text" />);
     expect(screen.getByText("Helper text")).toBeInTheDocument();
-    expect(screen.getByText("Helper text")).toHaveClass("text-[#717680]");
+    expect(screen.getByText("Helper text")).toHaveClass("text-semantic-text-muted");
   });
 
   // Error message tests
   it("shows error message when error prop is set", () => {
     render(<MultiSelect options={defaultOptions} error="Required field" />);
     expect(screen.getByText("Required field")).toBeInTheDocument();
-    expect(screen.getByText("Required field")).toHaveClass("text-[#F04438]");
+    expect(screen.getByText("Required field")).toHaveClass("text-semantic-error-primary");
   });
 
   it("error message takes precedence over helper text", () => {
@@ -61,7 +61,7 @@ describe("MultiSelect", () => {
 
   it("applies error state styling when error is set", () => {
     render(<MultiSelect options={defaultOptions} error="Error" />);
-    expect(screen.getByRole("combobox")).toHaveClass("border-[#F04438]/40");
+    expect(screen.getByRole("combobox")).toHaveClass("border-semantic-error-primary/40");
   });
 
   // Dropdown interaction

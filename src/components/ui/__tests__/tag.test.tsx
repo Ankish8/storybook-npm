@@ -11,19 +11,19 @@ describe("Tag", () => {
   it("applies default variant classes", () => {
     render(<Tag data-testid="tag">Default</Tag>);
     const tag = screen.getByTestId("tag");
-    expect(tag).toHaveClass("bg-[#F5F5F5]");
-    expect(tag).toHaveClass("text-[#181D27]");
+    expect(tag).toHaveClass("bg-semantic-bg-ui");
+    expect(tag).toHaveClass("text-semantic-text-primary");
   });
 
   it.each([
-    ["default", "bg-[#F5F5F5]", "text-[#181D27]"],
-    ["primary", "bg-[#F5F5F5]", "text-[#181D27]"],
-    ["accent", "bg-[#EBECEE]", "text-[#343E55]"],
-    ["secondary", "bg-[#E9EAEB]", "text-[#414651]"],
-    ["success", "bg-[#ECFDF3]", "text-[#17B26A]"],
-    ["warning", "bg-[#FFFAEB]", "text-[#F79009]"],
-    ["error", "bg-[#FEF3F2]", "text-[#F04438]"],
-    ["destructive", "bg-[#FEF3F2]", "text-[#F04438]"],
+    ["default", "bg-semantic-bg-ui", "text-semantic-text-primary"],
+    ["primary", "bg-semantic-bg-ui", "text-semantic-text-primary"],
+    ["accent", "bg-semantic-primary-surface", "text-semantic-text-secondary"],
+    ["secondary", "bg-semantic-bg-grey", "text-[var(--color-neutral-700)]"],
+    ["success", "bg-semantic-success-surface", "text-semantic-success-primary"],
+    ["warning", "bg-semantic-warning-surface", "text-semantic-warning-primary"],
+    ["error", "bg-semantic-error-surface", "text-semantic-error-primary"],
+    ["destructive", "bg-semantic-error-surface", "text-semantic-error-primary"],
   ] as const)("renders %s variant", (variant, bgClass, textClass) => {
     render(
       <Tag variant={variant} data-testid="tag">

@@ -386,7 +386,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     <div
       className={cn(
         "relative w-full overflow-auto",
-        !withoutBorder && "rounded-lg border border-[#E9EAEB]"
+        !withoutBorder && "rounded-lg border border-semantic-border-layout"
       )}
     >
       <table
@@ -405,7 +405,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-[#FAFAFA] [&_tr]:border-b", className)}
+    className={cn("bg-[var(--color-neutral-50)] [&_tr]:border-b", className)}
     {...props}
   />
 ));
@@ -430,7 +430,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[#FAFAFA] font-medium [&>tr]:last:border-b-0",
+      "border-t bg-[var(--color-neutral-50)] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -448,10 +448,10 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-[#E9EAEB] transition-colors",
+        "border-b border-semantic-border-layout transition-colors",
         highlighted
-          ? "bg-[#ECF1FB]"
-          : "hover:bg-[#FAFAFA]/50 data-[state=selected]:bg-[#F5F5F5]",
+          ? "bg-semantic-info-surface"
+          : "hover:bg-[var(--color-neutral-50)]/50 data-[state=selected]:bg-semantic-bg-ui",
         className
       )}
       {...props}
@@ -477,8 +477,8 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-[#717680] text-sm [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-[#FAFAFA] z-10",
+        "h-12 px-4 text-left align-middle font-medium text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-[var(--color-neutral-50)] z-10",
         sortDirection && "cursor-pointer select-none",
         className
       )}
@@ -487,12 +487,12 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       <div className="flex items-center gap-1">
         {children}
         {sortDirection && (
-          <span className="text-[#A4A7AE]">
+          <span className="text-[var(--color-neutral-400)]">
             {sortDirection === "asc" ? "↑" : "↓"}
           </span>
         )}
         {infoTooltip && (
-          <span className="text-[#A4A7AE] cursor-help" title={infoTooltip}>
+          <span className="text-[var(--color-neutral-400)] cursor-help" title={infoTooltip}>
             ⓘ
           </span>
         )}
@@ -512,8 +512,8 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
     <td
       ref={ref}
       className={cn(
-        "px-4 align-middle text-[#181D27] [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-white z-10",
+        "px-4 align-middle text-semantic-text-primary [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-semantic-bg-primary z-10",
         className
       )}
       {...props}
@@ -528,7 +528,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-[#717680]", className)}
+    className={cn("mt-4 text-sm text-semantic-text-muted", className)}
     {...props}
   />
 ));
@@ -551,7 +551,7 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
             <div
-              className="h-4 bg-[#E9EAEB] rounded animate-pulse"
+              className="h-4 bg-semantic-bg-grey rounded animate-pulse"
               style={{
                 width: colIndex === 1 ? "80%" : colIndex === 2 ? "30%" : "60%",
               }}
@@ -576,7 +576,7 @@ export interface TableEmptyProps {
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-8 text-[#717680]">
+    <TableCell colSpan={colSpan} className="text-center py-8 text-semantic-text-muted">
       {children || "No data available"}
     </TableCell>
   </TableRow>

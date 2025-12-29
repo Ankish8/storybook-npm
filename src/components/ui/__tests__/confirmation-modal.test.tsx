@@ -78,8 +78,8 @@ describe("ConfirmationModal", () => {
     );
 
     const confirmButton = screen.getByRole("button", { name: /yes/i });
-    // Button uses hardcoded hex colors
-    expect(confirmButton).toHaveClass("bg-[#343E55]");
+    // Button uses semantic color tokens
+    expect(confirmButton).toHaveClass("bg-semantic-primary");
   });
 
   it("renders destructive variant button when variant is destructive", () => {
@@ -93,8 +93,8 @@ describe("ConfirmationModal", () => {
     );
 
     const confirmButton = screen.getByRole("button", { name: /yes/i });
-    // Button uses hardcoded hex colors
-    expect(confirmButton).toHaveClass("bg-[#F04438]");
+    // Button uses semantic color tokens
+    expect(confirmButton).toHaveClass("bg-semantic-error-primary");
   });
 
   it("uses custom button text", () => {

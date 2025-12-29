@@ -9,7 +9,7 @@ import { Button } from "./button";
  * PageHeader variants for layout styles.
  */
 const pageHeaderVariants = cva(
-  "flex flex-col sm:flex-row sm:items-center w-full bg-white",
+  "flex flex-col sm:flex-row sm:items-center w-full bg-semantic-bg-primary",
   {
     variants: {},
     defaultVariants: {},
@@ -100,7 +100,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded hover:bg-[#F5F5F5] transition-colors text-[#181D27]"
+            className="flex items-center justify-center w-10 h-10 rounded hover:bg-semantic-bg-ui transition-colors text-semantic-text-primary"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -109,7 +109,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       }
       if (icon) {
         return (
-          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[#717680]">
+          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-semantic-text-muted">
             {icon}
           </div>
         );
@@ -241,10 +241,10 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          "flex w-full bg-white px-4",
+          "flex w-full bg-semantic-bg-primary px-4",
           layoutClasses[layout],
           heightClasses[layout],
-          showBorder && "border-b border-[#E9EAEB]",
+          showBorder && "border-b border-semantic-border-layout",
           className
         )}
         {...props}
@@ -259,17 +259,17 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="m-0 text-base font-semibold text-[#181D27] truncate">
+              <h1 className="m-0 text-base font-semibold text-semantic-text-primary truncate">
                 {title}
               </h1>
               {infoIcon && (
-                <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[#717680]">
+                <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-semantic-text-muted">
                   {infoIcon}
                 </span>
               )}
             </div>
             {description && (
-              <p className="m-0 text-sm text-[#181D27] font-normal mt-1 line-clamp-2">
+              <p className="m-0 text-sm text-semantic-text-primary font-normal mt-1 line-clamp-2">
                 {description}
               </p>
             )}

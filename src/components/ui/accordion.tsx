@@ -11,7 +11,7 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      bordered: "border border-[#E9EAEB] rounded-lg divide-y divide-[#E9EAEB]",
+      bordered: "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {
@@ -38,12 +38,12 @@ const accordionItemVariants = cva("", {
  * Accordion trigger variants
  */
 const accordionTriggerVariants = cva(
-  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#343E55] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
         default: "py-3",
-        bordered: "p-4 hover:bg-[#FAFAFA]",
+        bordered: "p-4 hover:bg-[var(--color-neutral-50)]",
       },
     },
     defaultVariants: {
@@ -281,7 +281,7 @@ const AccordionTrigger = React.forwardRef<
       {showChevron && (
         <ChevronDown
           className={cn(
-            "h-4 w-4 shrink-0 text-[#717680] transition-transform duration-300",
+            "h-4 w-4 shrink-0 text-semantic-text-muted transition-transform duration-300",
             isOpen && "rotate-180"
           )}
         />

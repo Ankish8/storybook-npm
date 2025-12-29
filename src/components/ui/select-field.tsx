@@ -164,10 +164,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-[#181D27]", labelClassName)}
+            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
           >
             {label}
-            {required && <span className="text-[#F04438] ml-0.5">*</span>}
+            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
           </label>
         )}
 
@@ -190,7 +190,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           >
             <SelectValue placeholder={placeholder} />
             {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-[#717680]" />
+              <Loader2 className="absolute right-8 size-4 animate-spin text-semantic-text-muted" />
             )}
           </SelectTrigger>
           <SelectContent>
@@ -202,7 +202,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-[#E9EAEB] rounded bg-white placeholder:text-[#A2A6B1] focus:outline-none focus:border-[#2BBCCA]/50"
+                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
@@ -245,7 +245,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
               searchQuery &&
               groupedOptions.ungrouped.length === 0 &&
               Object.keys(groupedOptions.groups).length === 0 && (
-                <div className="py-6 text-center text-sm text-[#717680]">
+                <div className="py-6 text-center text-sm text-semantic-text-muted">
                   No results found
                 </div>
               )}
@@ -256,11 +256,11 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-[#F04438]">
+              <span id={errorId} className="text-xs text-semantic-error-primary">
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-[#717680]">
+              <span id={helperId} className="text-xs text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}
