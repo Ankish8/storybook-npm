@@ -41,7 +41,9 @@ describe("TextField", () => {
   // State tests
   it("applies error state styling when error is set", () => {
     render(<TextField error="Error" data-testid="input" />);
-    expect(screen.getByTestId("input")).toHaveClass("border-semantic-error-primary/40");
+    expect(screen.getByTestId("input")).toHaveClass(
+      "border-semantic-error-primary/40"
+    );
   });
 
   it("sets aria-invalid when error is present", () => {

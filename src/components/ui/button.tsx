@@ -10,13 +10,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
-        primary: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
-        destructive: "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
+        default:
+          "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        primary:
+          "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        destructive:
+          "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
         outline:
           "border border-semantic-border-primary bg-transparent text-semantic-text-secondary hover:bg-semantic-primary-surface",
-        secondary: "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
-        ghost: "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
+        secondary:
+          "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
+        ghost:
+          "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
         link: "text-semantic-text-secondary underline-offset-4 hover:underline",
         dashed:
           "border border-dashed border-semantic-bg-hover bg-transparent text-semantic-text-muted hover:border-semantic-border-primary hover:text-semantic-text-secondary hover:bg-[var(--color-neutral-50)]",

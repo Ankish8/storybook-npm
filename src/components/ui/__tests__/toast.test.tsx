@@ -126,9 +126,7 @@ describe("Toast", () => {
       });
 
       await waitFor(() => {
-        expect(
-          screen.queryByText("Dismissable toast")
-        ).not.toBeInTheDocument();
+        expect(screen.queryByText("Dismissable toast")).not.toBeInTheDocument();
       });
     });
 

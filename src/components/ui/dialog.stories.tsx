@@ -81,7 +81,8 @@ npx myoperator-ui add dialog
     },
     modal: {
       control: { type: "boolean" },
-      description: "Whether the dialog is modal (blocks interaction with rest of page)",
+      description:
+        "Whether the dialog is modal (blocks interaction with rest of page)",
       table: { category: "Dialog", defaultValue: { summary: "true" } },
     },
     onOpenChange: {
@@ -94,7 +95,10 @@ npx myoperator-ui add dialog
       control: { type: "select" },
       options: ["sm", "default", "lg", "xl", "full"],
       description: "Size of the dialog content",
-      table: { category: "DialogContent", defaultValue: { summary: "default" } },
+      table: {
+        category: "DialogContent",
+        defaultValue: { summary: "default" },
+      },
     },
     hideCloseButton: {
       control: { type: "boolean" },
@@ -113,8 +117,11 @@ type Story = StoryObj<typeof meta>;
  */
 export const Playground: Story = {
   render: (args) => {
-    const size = (args as { size?: "sm" | "default" | "lg" | "xl" | "full" }).size || "default";
-    const hideCloseButton = (args as { hideCloseButton?: boolean }).hideCloseButton || false;
+    const size =
+      (args as { size?: "sm" | "default" | "lg" | "xl" | "full" }).size ||
+      "default";
+    const hideCloseButton =
+      (args as { hideCloseButton?: boolean }).hideCloseButton || false;
 
     return (
       <Dialog>
@@ -125,11 +132,14 @@ export const Playground: Story = {
           <DialogHeader>
             <DialogTitle>Dialog Title</DialogTitle>
             <DialogDescription>
-              This is the dialog description. Adjust the controls to see different configurations.
+              This is the dialog description. Adjust the controls to see
+              different configurations.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground">Dialog content goes here.</p>
+            <p className="text-sm text-muted-foreground">
+              Dialog content goes here.
+            </p>
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -352,4 +362,3 @@ export const Controlled: Story = {
     );
   },
 };
-

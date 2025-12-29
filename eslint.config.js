@@ -1,17 +1,18 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from "eslint-plugin-storybook";
+import prettier from "eslint-config-prettier";
 
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(["dist"]),
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ["**/*.{ts,tsx}"],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -24,19 +25,29 @@ export default defineConfig([
     },
     rules: {
       // Allow exporting variants alongside components (shadcn/ui pattern)
-      'react-refresh/only-export-components': [
-        'warn',
+      "react-refresh/only-export-components": [
+        "warn",
         { allowConstantExport: true },
+      ],
+      // Allow unused vars with underscore prefix (common pattern)
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          args: "none",
+          ignoreRestSiblings: true,
+        },
       ],
     },
   },
   // Storybook-specific rules for story files
-  ...storybook.configs['flat/recommended'],
+  ...storybook.configs["flat/recommended"],
   {
-    files: ['**/*.stories.tsx'],
+    files: ["**/*.stories.tsx"],
     rules: {
       // Allow @storybook/react import (our project uses react-vite internally but exposes react types)
-      'storybook/no-renderer-packages': 'off',
+      "storybook/no-renderer-packages": "off",
     },
   },
-])
+  // Prettier must be last to override other formatting rules
+  prettier,
+]);

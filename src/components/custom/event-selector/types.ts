@@ -1,17 +1,17 @@
-import * as React from "react"
+import * as React from "react";
 
 /**
  * Represents an individual event item
  */
 export interface EventItem {
   /** Unique identifier for the event */
-  id: string
+  id: string;
   /** Display name of the event (e.g., "Call.Initiated") */
-  name: string
+  name: string;
   /** Description of when this event is triggered */
-  description: string
+  description: string;
   /** Group ID this event belongs to */
-  group: string
+  group: string;
 }
 
 /**
@@ -19,13 +19,13 @@ export interface EventItem {
  */
 export interface EventGroup {
   /** Unique identifier for the group */
-  id: string
+  id: string;
   /** Display name of the group (e.g., "In-Call Events") */
-  name: string
+  name: string;
   /** Description of the group */
-  description: string
+  description: string;
   /** Optional icon to display next to the group name */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
 }
 
 /**
@@ -33,13 +33,13 @@ export interface EventGroup {
  */
 export interface EventCategory {
   /** Unique identifier for the category */
-  id: string
+  id: string;
   /** Display name of the category (e.g., "Call Events (Voice)") */
-  name: string
+  name: string;
   /** Optional icon to display next to the category name */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
   /** Array of group IDs that belong to this category */
-  groups: string[]
+  groups: string[];
 }
 
 /**
@@ -48,35 +48,35 @@ export interface EventCategory {
 export interface EventSelectorProps {
   // Data
   /** Array of event items */
-  events: EventItem[]
+  events: EventItem[];
   /** Array of event groups */
-  groups: EventGroup[]
+  groups: EventGroup[];
   /** Optional array of categories for top-level grouping */
-  categories?: EventCategory[]
+  categories?: EventCategory[];
 
   // State (controlled mode)
   /** Array of selected event IDs (controlled) */
-  selectedEvents?: string[]
+  selectedEvents?: string[];
   /** Callback when selection changes */
-  onSelectionChange?: (selectedIds: string[]) => void
+  onSelectionChange?: (selectedIds: string[]) => void;
 
   // State (uncontrolled mode)
   /** Default selected events for uncontrolled usage */
-  defaultSelectedEvents?: string[]
+  defaultSelectedEvents?: string[];
 
   // Customization
   /** Title displayed at the top (default: "Events") */
-  title?: string
+  title?: string;
   /** Description displayed below the title */
-  description?: string
+  description?: string;
   /** Message shown when a group has no events */
-  emptyGroupMessage?: string
+  emptyGroupMessage?: string;
   /** Custom render function for empty group state (overrides emptyGroupMessage) */
-  renderEmptyGroup?: (group: EventGroup) => React.ReactNode
+  renderEmptyGroup?: (group: EventGroup) => React.ReactNode;
 
   // Styling
   /** Additional CSS classes for the root element */
-  className?: string
+  className?: string;
 }
 
 /**
@@ -84,19 +84,19 @@ export interface EventSelectorProps {
  */
 export interface EventGroupComponentProps {
   /** The group data */
-  group: EventGroup
+  group: EventGroup;
   /** Events that belong to this group */
-  events: EventItem[]
+  events: EventItem[];
   /** Currently selected event IDs */
-  selectedEvents: string[]
+  selectedEvents: string[];
   /** Callback to update selected events */
-  onSelectionChange: (selectedIds: string[]) => void
+  onSelectionChange: (selectedIds: string[]) => void;
   /** Message shown when group has no events */
-  emptyGroupMessage?: string
+  emptyGroupMessage?: string;
   /** Custom render function for empty group state */
-  renderEmptyGroup?: (group: EventGroup) => React.ReactNode
+  renderEmptyGroup?: (group: EventGroup) => React.ReactNode;
   /** Whether the accordion should be expanded by default (default: false) */
-  defaultExpanded?: boolean
+  defaultExpanded?: boolean;
 }
 
 /**
@@ -104,9 +104,9 @@ export interface EventGroupComponentProps {
  */
 export interface EventItemComponentProps {
   /** The event data */
-  event: EventItem
+  event: EventItem;
   /** Whether this event is selected */
-  isSelected: boolean
+  isSelected: boolean;
   /** Callback when selection changes */
-  onSelectionChange: (selected: boolean) => void
+  onSelectionChange: (selected: boolean) => void;
 }

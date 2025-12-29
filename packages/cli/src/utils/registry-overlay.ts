@@ -380,7 +380,8 @@ const dialogContentVariants = cva(
 );
 
 export interface DialogContentProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+  extends
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
     VariantProps<typeof dialogContentVariants> {
   /** Hide the default close button in the top-right corner */
   hideCloseButton?: boolean;
@@ -931,7 +932,8 @@ const DeleteConfirmationModal = React.forwardRef<
           <DialogHeader>
             <DialogTitle>{title || defaultTitle}</DialogTitle>
             <DialogDescription className={description ? undefined : "sr-only"}>
-              {description || "Delete confirmation dialog - this action cannot be undone"}
+              {description ||
+                "Delete confirmation dialog - this action cannot be undone"}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2 py-4">

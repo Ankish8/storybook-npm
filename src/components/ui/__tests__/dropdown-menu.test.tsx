@@ -275,7 +275,9 @@ describe("DropdownMenuSeparator", () => {
     await user.click(screen.getByText("Open"));
     expect(screen.getByTestId("separator")).toBeInTheDocument();
     expect(screen.getByTestId("separator")).toHaveClass("h-px");
-    expect(screen.getByTestId("separator")).toHaveClass("bg-semantic-border-layout");
+    expect(screen.getByTestId("separator")).toHaveClass(
+      "bg-semantic-border-layout"
+    );
   });
 });
 

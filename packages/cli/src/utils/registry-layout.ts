@@ -343,7 +343,8 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      bordered: "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
+      bordered:
+        "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {
@@ -849,7 +850,9 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
 
     // Render actions for desktop (all inline)
     const renderDesktopActions = () => (
-      <div className="hidden sm:flex items-center gap-2 ml-6">{actionsArray}</div>
+      <div className="hidden sm:flex items-center gap-2 ml-6">
+        {actionsArray}
+      </div>
     );
 
     // Render expandable actions (for mobile and vertical layout)

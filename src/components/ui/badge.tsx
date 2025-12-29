@@ -21,7 +21,8 @@ const badgeVariants = cva(
         primary: "bg-semantic-bg-ui text-semantic-text-primary",
         // shadcn-style variants (new)
         secondary: "bg-semantic-bg-ui text-semantic-text-primary",
-        outline: "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+        outline:
+          "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
         destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {

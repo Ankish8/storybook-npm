@@ -6,9 +6,7 @@ import { Button } from "../button";
 
 describe("DeleteConfirmationModal", () => {
   it("renders with default title when itemName is provided", () => {
-    render(
-      <DeleteConfirmationModal open={true} itemName="webhook" />
-    );
+    render(<DeleteConfirmationModal open={true} itemName="webhook" />);
 
     expect(
       screen.getByText("Are you sure you want to delete this webhook?")
@@ -16,9 +14,7 @@ describe("DeleteConfirmationModal", () => {
   });
 
   it("renders with custom title when provided", () => {
-    render(
-      <DeleteConfirmationModal open={true} title="Custom Title" />
-    );
+    render(<DeleteConfirmationModal open={true} title="Custom Title" />);
 
     expect(screen.getByText("Custom Title")).toBeInTheDocument();
   });
@@ -147,9 +143,7 @@ describe("DeleteConfirmationModal", () => {
   });
 
   it("resets input when modal closes", async () => {
-    const { rerender } = render(
-      <DeleteConfirmationModal open={true} />
-    );
+    const { rerender } = render(<DeleteConfirmationModal open={true} />);
 
     const input = screen.getByRole("textbox");
     fireEvent.change(input, { target: { value: "DELETE" } });
@@ -188,12 +182,7 @@ describe("DeleteConfirmationModal", () => {
   });
 
   it("applies custom className", () => {
-    render(
-      <DeleteConfirmationModal
-        open={true}
-        className="custom-class"
-      />
-    );
+    render(<DeleteConfirmationModal open={true} className="custom-class" />);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });

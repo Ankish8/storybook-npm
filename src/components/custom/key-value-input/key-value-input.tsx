@@ -154,7 +154,9 @@ export const KeyValueInput = React.forwardRef<
             {title}
           </h3>
           {description && (
-            <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
+            <p className="m-0 text-sm text-semantic-text-muted mt-1">
+              {description}
+            </p>
           )}
         </div>
 
@@ -166,13 +168,21 @@ export const KeyValueInput = React.forwardRef<
               <div className="flex-1">
                 <span className="text-sm font-medium text-semantic-text-primary">
                   {keyLabel}
-                  {keyRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
+                  {keyRequired && (
+                    <span className="text-semantic-error-primary ml-0.5">
+                      *
+                    </span>
+                  )}
                 </span>
               </div>
               <div className="flex-1">
                 <span className="text-sm font-medium text-semantic-text-primary">
                   {valueLabel}
-                  {valueRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
+                  {valueRequired && (
+                    <span className="text-semantic-error-primary ml-0.5">
+                      *
+                    </span>
+                  )}
                 </span>
               </div>
               {/* Spacer for delete button column */}
@@ -187,7 +197,9 @@ export const KeyValueInput = React.forwardRef<
                   pair={pair}
                   isDuplicateKey={duplicateKeys.has(pair.key.toLowerCase())}
                   isKeyEmpty={touchedKeys.has(pair.id) && !pair.key.trim()}
-                  isValueEmpty={touchedValues.has(pair.id) && !pair.value.trim()}
+                  isValueEmpty={
+                    touchedValues.has(pair.id) && !pair.value.trim()
+                  }
                   keyRequired={keyRequired}
                   valueRequired={valueRequired}
                   keyPlaceholder={keyPlaceholder}

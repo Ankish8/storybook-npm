@@ -90,12 +90,16 @@ describe("Select", () => {
   // State variants
   it("applies default state styling", () => {
     renderSelect();
-    expect(screen.getByTestId("trigger")).toHaveClass("border-semantic-border-input");
+    expect(screen.getByTestId("trigger")).toHaveClass(
+      "border-semantic-border-input"
+    );
   });
 
   it("applies error state styling", () => {
     renderSelect({ triggerProps: { state: "error" } });
-    expect(screen.getByTestId("trigger")).toHaveClass("border-semantic-error-primary/40");
+    expect(screen.getByTestId("trigger")).toHaveClass(
+      "border-semantic-error-primary/40"
+    );
   });
 
   // Disabled state

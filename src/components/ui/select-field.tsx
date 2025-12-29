@@ -164,10 +164,15 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -256,7 +261,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (

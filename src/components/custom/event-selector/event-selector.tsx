@@ -168,7 +168,9 @@ export const EventSelector = React.forwardRef<
               {title}
             </h3>
             {description && (
-              <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
+              <p className="m-0 text-sm text-semantic-text-muted mt-1">
+                {description}
+              </p>
             )}
           </div>
           <span className="text-sm font-medium text-semantic-text-primary">

@@ -116,7 +116,9 @@ describe("TableHeader", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("header")).toHaveClass("bg-[var(--color-neutral-50)]");
+    expect(screen.getByTestId("header")).toHaveClass(
+      "bg-[var(--color-neutral-50)]"
+    );
   });
 });
 
@@ -160,7 +162,9 @@ describe("TableRow", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("row")).toHaveClass("hover:bg-[var(--color-neutral-50)]/50");
+    expect(screen.getByTestId("row")).toHaveClass(
+      "hover:bg-[var(--color-neutral-50)]/50"
+    );
   });
 });
 
@@ -302,7 +306,9 @@ describe("TableFooter", () => {
     );
 
     expect(screen.getByTestId("footer")).toHaveClass("border-t");
-    expect(screen.getByTestId("footer")).toHaveClass("bg-[var(--color-neutral-50)]");
+    expect(screen.getByTestId("footer")).toHaveClass(
+      "bg-[var(--color-neutral-50)]"
+    );
   });
 });
 

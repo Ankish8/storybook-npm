@@ -161,7 +161,10 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
           </span>
         )}
         {infoTooltip && (
-          <span className="text-[var(--color-neutral-400)] cursor-help" title={infoTooltip}>
+          <span
+            className="text-[var(--color-neutral-400)] cursor-help"
+            title={infoTooltip}
+          >
             ⓘ
           </span>
         )}
@@ -245,7 +248,10 @@ export interface TableEmptyProps {
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-8 text-semantic-text-muted">
+    <TableCell
+      colSpan={colSpan}
+      className="text-center py-8 text-semantic-text-muted"
+    >
       {children || "No data available"}
     </TableCell>
   </TableRow>

@@ -3,11 +3,11 @@
  */
 export interface KeyValuePair {
   /** Unique identifier for the pair */
-  id: string
+  id: string;
   /** The key (e.g., header name) */
-  key: string
+  key: string;
   /** The value (e.g., header value) */
-  value: string
+  value: string;
 }
 
 /**
@@ -16,41 +16,41 @@ export interface KeyValuePair {
 export interface KeyValueInputProps {
   // Customization
   /** Title displayed at the top (e.g., "HTTP Headers") */
-  title: string
+  title: string;
   /** Description displayed below the title */
-  description?: string
+  description?: string;
   /** Text for the add button (default: "Add Header") */
-  addButtonText?: string
+  addButtonText?: string;
   /** Maximum number of items allowed (default: 10) */
-  maxItems?: number
+  maxItems?: number;
   /** Placeholder for key input */
-  keyPlaceholder?: string
+  keyPlaceholder?: string;
   /** Placeholder for value input */
-  valuePlaceholder?: string
+  valuePlaceholder?: string;
   /** Label for key column header (default: "Key") */
-  keyLabel?: string
+  keyLabel?: string;
   /** Label for value column header (default: "Value") */
-  valueLabel?: string
+  valueLabel?: string;
 
   // Validation
   /** Whether key field is required (default: true) */
-  keyRequired?: boolean
+  keyRequired?: boolean;
   /** Whether value field is required (default: true) */
-  valueRequired?: boolean
+  valueRequired?: boolean;
 
   // State (controlled mode)
   /** Array of key-value pairs (controlled) */
-  value?: KeyValuePair[]
+  value?: KeyValuePair[];
   /** Callback when pairs change */
-  onChange?: (pairs: KeyValuePair[]) => void
+  onChange?: (pairs: KeyValuePair[]) => void;
 
   // State (uncontrolled mode)
   /** Default key-value pairs for uncontrolled usage */
-  defaultValue?: KeyValuePair[]
+  defaultValue?: KeyValuePair[];
 
   // Styling
   /** Additional CSS classes for the root element */
-  className?: string
+  className?: string;
 }
 
 /**
@@ -58,25 +58,25 @@ export interface KeyValueInputProps {
  */
 export interface KeyValueRowProps {
   /** The key-value pair data */
-  pair: KeyValuePair
+  pair: KeyValuePair;
   /** Whether the key is a duplicate */
-  isDuplicateKey: boolean
+  isDuplicateKey: boolean;
   /** Whether key is empty (for validation) */
-  isKeyEmpty: boolean
+  isKeyEmpty: boolean;
   /** Whether value is empty (for validation) */
-  isValueEmpty: boolean
+  isValueEmpty: boolean;
   /** Whether key field is required */
-  keyRequired?: boolean
+  keyRequired?: boolean;
   /** Whether value field is required */
-  valueRequired?: boolean
+  valueRequired?: boolean;
   /** Placeholder for key input */
-  keyPlaceholder?: string
+  keyPlaceholder?: string;
   /** Placeholder for value input */
-  valuePlaceholder?: string
+  valuePlaceholder?: string;
   /** Callback when key changes */
-  onKeyChange: (id: string, key: string) => void
+  onKeyChange: (id: string, key: string) => void;
   /** Callback when value changes */
-  onValueChange: (id: string, value: string) => void
+  onValueChange: (id: string, value: string) => void;
   /** Callback when row is deleted */
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void;
 }

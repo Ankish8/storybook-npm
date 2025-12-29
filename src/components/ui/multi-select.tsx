@@ -233,10 +233,15 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -261,7 +266,9 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-semantic-text-placeholder">{placeholder}</span>
+              <span className="text-semantic-text-placeholder">
+                {placeholder}
+              </span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
@@ -408,7 +415,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (

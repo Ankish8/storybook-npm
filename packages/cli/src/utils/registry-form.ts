@@ -534,7 +534,10 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-semantic-text-muted", className)}
+    className={cn(
+      "px-4 py-1.5 text-xs font-medium text-semantic-text-muted",
+      className
+    )}
     {...props}
   />
 ));
@@ -1176,10 +1179,15 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -1228,7 +1236,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (
@@ -1242,7 +1253,9 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-semantic-error-primary" : "text-semantic-text-muted"
+                  charCount > maxLength
+                    ? "text-semantic-error-primary"
+                    : "text-semantic-text-muted"
                 )}
               >
                 {charCount}/{maxLength}
@@ -1439,10 +1452,15 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -1531,7 +1549,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (
@@ -1799,10 +1820,15 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -1827,7 +1853,9 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-semantic-text-placeholder">{placeholder}</span>
+              <span className="text-semantic-text-placeholder">
+                {placeholder}
+              </span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
@@ -1974,7 +2002,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (

@@ -136,9 +136,7 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {
   render: (args) => (
     <DeleteConfirmationModal
-      trigger={
-        <Button variant="destructive">Delete Webhook</Button>
-      }
+      trigger={<Button variant="destructive">Delete Webhook</Button>}
       itemName={args.itemName as string}
       confirmText={args.confirmText as string}
       deleteButtonText={args.deleteButtonText as string}
@@ -352,7 +350,8 @@ export const Usage: Story = {
         <div>
           <p className="font-medium text-sm">High-Impact Deletion</p>
           <p className="text-sm text-gray-600">
-            Use for important deletions like user accounts, projects, or large datasets
+            Use for important deletions like user accounts, projects, or large
+            datasets
           </p>
         </div>
       </div>
@@ -404,7 +403,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Do</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Clearly explain the consequences of deletion with detailed description.
+            Clearly explain the consequences of deletion with detailed
+            description.
           </p>
         </div>
         <div className="flex-1">
@@ -430,7 +430,9 @@ export const DosAndDonts: Story = {
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
             <DeleteConfirmationModal
-              trigger={<Button variant="destructive">Remove Integration</Button>}
+              trigger={
+                <Button variant="destructive">Remove Integration</Button>
+              }
               title="Remove Slack Integration?"
               confirmText="REMOVE INTEGRATION"
               deleteButtonText="Remove Integration"
@@ -458,7 +460,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Don't</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Don't always use generic "DELETE" - tailor it to the specific action.
+            Don't always use generic "DELETE" - tailor it to the specific
+            action.
           </p>
         </div>
       </div>
@@ -468,7 +471,9 @@ export const DosAndDonts: Story = {
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
             <DeleteConfirmationModal
-              trigger={<Button variant="destructive">Delete Permanently</Button>}
+              trigger={
+                <Button variant="destructive">Delete Permanently</Button>
+              }
               itemName="data"
               description="This permanent deletion cannot be recovered from backups."
               onConfirm={() => console.log("Deleted!")}
@@ -496,7 +501,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Don't</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Don't use delete confirmation for soft deletes or reversible actions.
+            Don't use delete confirmation for soft deletes or reversible
+            actions.
           </p>
         </div>
       </div>

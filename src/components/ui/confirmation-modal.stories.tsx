@@ -134,9 +134,7 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {
   render: (args) => (
     <ConfirmationModal
-      trigger={
-        <Button>Open Confirmation</Button>
-      }
+      trigger={<Button>Open Confirmation</Button>}
       title={args.title as string}
       description={args.description as string}
       variant={args.variant as "default" | "destructive"}

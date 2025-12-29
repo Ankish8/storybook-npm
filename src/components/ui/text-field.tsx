@@ -181,10 +181,15 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -233,7 +238,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (
@@ -247,7 +255,9 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-semantic-error-primary" : "text-semantic-text-muted"
+                  charCount > maxLength
+                    ? "text-semantic-error-primary"
+                    : "text-semantic-text-muted"
                 )}
               >
                 {charCount}/{maxLength}

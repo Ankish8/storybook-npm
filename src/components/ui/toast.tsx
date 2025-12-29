@@ -27,10 +27,14 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
-        success: "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
-        error: "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
-        warning: "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
+        default:
+          "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+        success:
+          "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
+        error:
+          "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
+        warning:
+          "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
         info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-hover",
       },
     },
@@ -124,7 +128,6 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
- 
 export {
   type ToastProps,
   type ToastActionElement,
@@ -369,11 +372,23 @@ function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+      {toasts.map(function ({
+        id,
+        title,
+        description,
+        action,
+        variant,
+        ...props
+      }) {
         const Icon = variant ? variantIcons[variant] : null;
 
         return (
-          <Toast key={id} variant={variant} className={variant ?? undefined} {...props}>
+          <Toast
+            key={id}
+            variant={variant}
+            className={variant ?? undefined}
+            {...props}
+          >
             <div className="flex gap-3">
               {Icon && (
                 <Icon

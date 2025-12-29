@@ -501,13 +501,16 @@ export const StackingBehavior: Story = {
     return (
       <div className="tw-space-y-4">
         <p className="tw-text-sm tw-text-gray-600">
-          Toasts stack up to 5 at a time. Older toasts are dismissed as new
-          ones arrive.
+          Toasts stack up to 5 at a time. Older toasts are dismissed as new ones
+          arrive.
         </p>
         <Button
           onClick={() => {
             setCount((c) => c + 1);
-            toast({ title: `Toast #${count + 1}`, description: "New notification" });
+            toast({
+              title: `Toast #${count + 1}`,
+              description: "New notification",
+            });
           }}
         >
           Add Toast (Count: {count})
@@ -533,7 +536,15 @@ export const Usage: Story = {
     <div className="flex flex-col gap-6 max-w-2xl">
       <div className="flex items-start gap-4">
         <div className="flex-1">
-          <Button variant="default" onClick={() => toast({ title: "Event created", description: "Your event has been created." })}>
+          <Button
+            variant="default"
+            onClick={() =>
+              toast({
+                title: "Event created",
+                description: "Your event has been created.",
+              })
+            }
+          >
             Default Toast
           </Button>
         </div>
@@ -546,7 +557,15 @@ export const Usage: Story = {
       </div>
       <div className="flex items-start gap-4">
         <div className="flex-1">
-          <Button variant="default" onClick={() => toast.success({ title: "Success!", description: "Your changes were saved." })}>
+          <Button
+            variant="default"
+            onClick={() =>
+              toast.success({
+                title: "Success!",
+                description: "Your changes were saved.",
+              })
+            }
+          >
             Success Toast
           </Button>
         </div>
@@ -559,7 +578,15 @@ export const Usage: Story = {
       </div>
       <div className="flex items-start gap-4">
         <div className="flex-1">
-          <Button variant="default" onClick={() => toast.error({ title: "Error", description: "Something went wrong." })}>
+          <Button
+            variant="default"
+            onClick={() =>
+              toast.error({
+                title: "Error",
+                description: "Something went wrong.",
+              })
+            }
+          >
             Error Toast
           </Button>
         </div>
@@ -572,7 +599,15 @@ export const Usage: Story = {
       </div>
       <div className="flex items-start gap-4">
         <div className="flex-1">
-          <Button variant="default" onClick={() => toast.warning({ title: "Warning", description: "This action cannot be undone." })}>
+          <Button
+            variant="default"
+            onClick={() =>
+              toast.warning({
+                title: "Warning",
+                description: "This action cannot be undone.",
+              })
+            }
+          >
             Warning Toast
           </Button>
         </div>
@@ -585,7 +620,15 @@ export const Usage: Story = {
       </div>
       <div className="flex items-start gap-4">
         <div className="flex-1">
-          <Button variant="default" onClick={() => toast.info({ title: "Info", description: "Here's some helpful information." })}>
+          <Button
+            variant="default"
+            onClick={() =>
+              toast.info({
+                title: "Info",
+                description: "Here's some helpful information.",
+              })
+            }
+          >
             Info Toast
           </Button>
         </div>
@@ -617,7 +660,14 @@ export const DosAndDonts: Story = {
       <div className="flex gap-8">
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
-            <Button onClick={() => toast({ title: "File uploaded", description: "Your document was uploaded successfully." })}>
+            <Button
+              onClick={() =>
+                toast({
+                  title: "File uploaded",
+                  description: "Your document was uploaded successfully.",
+                })
+              }
+            >
               Show Good Example
             </Button>
           </div>
@@ -626,12 +676,20 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Do</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Keep messages concise and actionable with a clear title and optional description.
+            Keep messages concise and actionable with a clear title and optional
+            description.
           </p>
         </div>
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
-            <Button onClick={() => toast({ title: "Your file called important-document-final-v3-updated-2024.pdf that was selected from your documents folder in the system has been uploaded and is now processing in the background." })}>
+            <Button
+              onClick={() =>
+                toast({
+                  title:
+                    "Your file called important-document-final-v3-updated-2024.pdf that was selected from your documents folder in the system has been uploaded and is now processing in the background.",
+                })
+              }
+            >
               Show Bad Example
             </Button>
           </div>
@@ -640,7 +698,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Don't</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Don't use overly long messages that won't fit on screen or overwhelm users.
+            Don't use overly long messages that won't fit on screen or overwhelm
+            users.
           </p>
         </div>
       </div>
@@ -649,7 +708,14 @@ export const DosAndDonts: Story = {
       <div className="flex gap-8">
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
-            <Button onClick={() => toast.error({ title: "Failed to save", description: "Please check your connection and try again." })}>
+            <Button
+              onClick={() =>
+                toast.error({
+                  title: "Failed to save",
+                  description: "Please check your connection and try again.",
+                })
+              }
+            >
               Use Appropriate Variant
             </Button>
           </div>
@@ -658,7 +724,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Do</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Choose the variant that matches the message type: success, error, warning, or info.
+            Choose the variant that matches the message type: success, error,
+            warning, or info.
           </p>
         </div>
         <div className="flex-1">
@@ -672,7 +739,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Don't</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Don't use inappropriate variants that confuse the user about the message status.
+            Don't use inappropriate variants that confuse the user about the
+            message status.
           </p>
         </div>
       </div>
@@ -690,12 +758,20 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Do</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Allow toasts to auto-dismiss for positive feedback. Add actions only when users need to respond.
+            Allow toasts to auto-dismiss for positive feedback. Add actions only
+            when users need to respond.
           </p>
         </div>
         <div className="flex-1">
           <div className="bg-[#F5F6F8] rounded-lg p-8 flex items-center justify-center min-h-[100px]">
-            <Button onClick={() => toast({ title: "This important notification requires your immediate attention and cannot be dismissed!" })}>
+            <Button
+              onClick={() =>
+                toast({
+                  title:
+                    "This important notification requires your immediate attention and cannot be dismissed!",
+                })
+              }
+            >
               Force User Interaction
             </Button>
           </div>
@@ -704,7 +780,8 @@ export const DosAndDonts: Story = {
             <span className="font-medium">Don't</span>
           </div>
           <p className="text-sm text-gray-600 mt-1">
-            Don't make users manually dismiss non-critical notifications or use toasts for blocking messages.
+            Don't make users manually dismiss non-critical notifications or use
+            toasts for blocking messages.
           </p>
         </div>
       </div>

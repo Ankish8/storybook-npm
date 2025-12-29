@@ -361,13 +361,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
-        primary: "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
-        destructive: "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
+        default:
+          "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        primary:
+          "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
+        destructive:
+          "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
         outline:
           "border border-semantic-border-primary bg-transparent text-semantic-text-secondary hover:bg-semantic-primary-surface",
-        secondary: "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
-        ghost: "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
+        secondary:
+          "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
+        ghost:
+          "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
         link: "text-semantic-text-secondary underline-offset-4 hover:underline",
         dashed:
           "border border-dashed border-semantic-bg-hover bg-transparent text-semantic-text-muted hover:border-semantic-border-primary hover:text-semantic-text-secondary hover:bg-[var(--color-neutral-50)]",
@@ -498,7 +503,8 @@ const badgeVariants = cva(
         primary: "bg-semantic-bg-ui text-semantic-text-primary",
         // shadcn-style variants (new)
         secondary: "bg-semantic-bg-ui text-semantic-text-primary",
-        outline: "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+        outline:
+          "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
         destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {
@@ -1009,7 +1015,10 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("px-4 py-1.5 text-xs font-medium text-semantic-text-muted", className)}
+    className={cn(
+      "px-4 py-1.5 text-xs font-medium text-semantic-text-muted",
+      className
+    )}
     {...props}
   />
 ));
@@ -1651,10 +1660,15 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -1703,7 +1717,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (
@@ -1717,7 +1734,9 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span
                 className={cn(
                   "text-xs",
-                  charCount > maxLength ? "text-semantic-error-primary" : "text-semantic-text-muted"
+                  charCount > maxLength
+                    ? "text-semantic-error-primary"
+                    : "text-semantic-text-muted"
                 )}
               >
                 {charCount}/{maxLength}
@@ -1914,10 +1933,15 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -2006,7 +2030,10 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (
@@ -2274,10 +2301,15 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
+            className={cn(
+              "text-xs font-normal text-semantic-text-muted",
+              labelClassName
+            )}
           >
             {label}
-            {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
           </label>
         )}
 
@@ -2302,7 +2334,9 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-semantic-text-placeholder">{placeholder}</span>
+              <span className="text-semantic-text-placeholder">
+                {placeholder}
+              </span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
@@ -2449,7 +2483,10 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-primary">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-primary"
+              >
                 {error}
               </span>
             ) : helperText ? (
@@ -2644,7 +2681,10 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
           </span>
         )}
         {infoTooltip && (
-          <span className="text-[var(--color-neutral-400)] cursor-help" title={infoTooltip}>
+          <span
+            className="text-[var(--color-neutral-400)] cursor-help"
+            title={infoTooltip}
+          >
             ⓘ
           </span>
         )}
@@ -2728,7 +2768,10 @@ export interface TableEmptyProps {
 
 const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
-    <TableCell colSpan={colSpan} className="text-center py-8 text-semantic-text-muted">
+    <TableCell
+      colSpan={colSpan}
+      className="text-center py-8 text-semantic-text-muted"
+    >
       {children || "No data available"}
     </TableCell>
   </TableRow>
@@ -2851,7 +2894,8 @@ const dialogContentVariants = cva(
 );
 
 export interface DialogContentProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+  extends
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
     VariantProps<typeof dialogContentVariants> {
   /** Hide the default close button in the top-right corner */
   hideCloseButton?: boolean;
@@ -3402,7 +3446,8 @@ const DeleteConfirmationModal = React.forwardRef<
           <DialogHeader>
             <DialogTitle>{title || defaultTitle}</DialogTitle>
             <DialogDescription className={description ? undefined : "sr-only"}>
-              {description || "Delete confirmation dialog - this action cannot be undone"}
+              {description ||
+                "Delete confirmation dialog - this action cannot be undone"}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-2 py-4">
@@ -3771,11 +3816,16 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
-        success: "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
-        error: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
-        destructive: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
-        warning: "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
+        default:
+          "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
+        success:
+          "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
+        error:
+          "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        destructive:
+          "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        warning:
+          "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
         info: "bg-semantic-info-surface border-semantic-info-border [&>svg]:text-semantic-info-primary",
       },
     },
@@ -3909,10 +3959,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
                   className={cn(
                     "rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
                     variant === "default" && "focus:ring-semantic-text-primary",
-                    variant === "success" && "focus:ring-semantic-success-primary",
+                    variant === "success" &&
+                      "focus:ring-semantic-success-primary",
                     (variant === "error" || variant === "destructive") &&
                       "focus:ring-semantic-error-primary",
-                    variant === "warning" && "focus:ring-semantic-warning-primary",
+                    variant === "warning" &&
+                      "focus:ring-semantic-warning-primary",
                     variant === "info" && "focus:ring-semantic-info-primary"
                   )}
                   aria-label="Close alert"
@@ -4002,10 +4054,14 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
-        success: "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
-        error: "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
-        warning: "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
+        default:
+          "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+        success:
+          "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
+        error:
+          "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
+        warning:
+          "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
         info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-hover",
       },
     },
@@ -4099,7 +4155,6 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
- 
 export {
   type ToastProps,
   type ToastActionElement,
@@ -4344,11 +4399,23 @@ function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+      {toasts.map(function ({
+        id,
+        title,
+        description,
+        action,
+        variant,
+        ...props
+      }) {
         const Icon = variant ? variantIcons[variant] : null;
 
         return (
-          <Toast key={id} variant={variant} className={variant ?? undefined} {...props}>
+          <Toast
+            key={id}
+            variant={variant}
+            className={variant ?? undefined}
+            {...props}
+          >
             <div className="flex gap-3">
               {Icon && (
                 <Icon
@@ -4469,7 +4536,8 @@ const accordionVariants = cva("w-full", {
   variants: {
     variant: {
       default: "",
-      bordered: "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
+      bordered:
+        "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {
@@ -4975,7 +5043,9 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
 
     // Render actions for desktop (all inline)
     const renderDesktopActions = () => (
-      <div className="hidden sm:flex items-center gap-2 ml-6">{actionsArray}</div>
+      <div className="hidden sm:flex items-center gap-2 ml-6">
+        {actionsArray}
+      </div>
     );
 
     // Render expandable actions (for mobile and vertical layout)
@@ -5293,7 +5363,9 @@ export const EventSelector = React.forwardRef<
               {title}
             </h3>
             {description && (
-              <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
+              <p className="m-0 text-sm text-semantic-text-muted mt-1">
+                {description}
+              </p>
             )}
           </div>
           <span className="text-sm font-medium text-semantic-text-primary">
@@ -5412,7 +5484,9 @@ export const EventGroupComponent = React.forwardRef<
               className="mt-0.5"
             />
             <div className="flex-1 min-w-0">
-              <span className="font-medium text-semantic-text-primary">{event.name}</span>
+              <span className="font-medium text-semantic-text-primary">
+                {event.name}
+              </span>
               <p className="m-0 text-sm text-semantic-text-muted mt-0.5">
                 {event.description}
               </p>
@@ -5425,7 +5499,10 @@ export const EventGroupComponent = React.forwardRef<
     // Multiple events: render as collapsible accordion
     return (
       <div ref={ref} className={cn("bg-white", className)} {...props}>
-        <Accordion type="multiple" defaultValue={defaultExpanded ? [group.id] : []}>
+        <Accordion
+          type="multiple"
+          defaultValue={defaultExpanded ? [group.id] : []}
+        >
           <AccordionItem value={group.id}>
             {/* Header row with checkbox OUTSIDE the trigger button to avoid nested buttons */}
             <div className="flex items-center gap-3 p-4 hover:bg-semantic-bg-ui">
@@ -5442,7 +5519,9 @@ export const EventGroupComponent = React.forwardRef<
                   <div className="flex flex-col items-start text-left flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       {group.icon && (
-                        <span className="text-semantic-text-muted">{group.icon}</span>
+                        <span className="text-semantic-text-muted">
+                          {group.icon}
+                        </span>
                       )}
                       <span className="font-medium text-semantic-text-primary">
                         {group.name}
@@ -5517,7 +5596,9 @@ export const EventItemComponent = React.forwardRef<
         aria-label={\`Select \${event.name}\`}
       />
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-semantic-text-primary">{event.name}</div>
+        <div className="text-sm font-medium text-semantic-text-primary">
+          {event.name}
+        </div>
         <div className="text-sm text-semantic-text-muted mt-0.5 leading-relaxed">
           {event.description}
         </div>
@@ -5530,20 +5611,20 @@ EventItemComponent.displayName = "EventItemComponent";
         },
         {
           name: 'types.ts',
-          content: prefixTailwindClasses(`import * as React from "react"
+          content: prefixTailwindClasses(`import * as React from "react";
 
 /**
  * Represents an individual event item
  */
 export interface EventItem {
   /** Unique identifier for the event */
-  id: string
+  id: string;
   /** Display name of the event (e.g., "Call.Initiated") */
-  name: string
+  name: string;
   /** Description of when this event is triggered */
-  description: string
+  description: string;
   /** Group ID this event belongs to */
-  group: string
+  group: string;
 }
 
 /**
@@ -5551,13 +5632,13 @@ export interface EventItem {
  */
 export interface EventGroup {
   /** Unique identifier for the group */
-  id: string
+  id: string;
   /** Display name of the group (e.g., "In-Call Events") */
-  name: string
+  name: string;
   /** Description of the group */
-  description: string
+  description: string;
   /** Optional icon to display next to the group name */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
 }
 
 /**
@@ -5565,13 +5646,13 @@ export interface EventGroup {
  */
 export interface EventCategory {
   /** Unique identifier for the category */
-  id: string
+  id: string;
   /** Display name of the category (e.g., "Call Events (Voice)") */
-  name: string
+  name: string;
   /** Optional icon to display next to the category name */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
   /** Array of group IDs that belong to this category */
-  groups: string[]
+  groups: string[];
 }
 
 /**
@@ -5580,35 +5661,35 @@ export interface EventCategory {
 export interface EventSelectorProps {
   // Data
   /** Array of event items */
-  events: EventItem[]
+  events: EventItem[];
   /** Array of event groups */
-  groups: EventGroup[]
+  groups: EventGroup[];
   /** Optional array of categories for top-level grouping */
-  categories?: EventCategory[]
+  categories?: EventCategory[];
 
   // State (controlled mode)
   /** Array of selected event IDs (controlled) */
-  selectedEvents?: string[]
+  selectedEvents?: string[];
   /** Callback when selection changes */
-  onSelectionChange?: (selectedIds: string[]) => void
+  onSelectionChange?: (selectedIds: string[]) => void;
 
   // State (uncontrolled mode)
   /** Default selected events for uncontrolled usage */
-  defaultSelectedEvents?: string[]
+  defaultSelectedEvents?: string[];
 
   // Customization
   /** Title displayed at the top (default: "Events") */
-  title?: string
+  title?: string;
   /** Description displayed below the title */
-  description?: string
+  description?: string;
   /** Message shown when a group has no events */
-  emptyGroupMessage?: string
+  emptyGroupMessage?: string;
   /** Custom render function for empty group state (overrides emptyGroupMessage) */
-  renderEmptyGroup?: (group: EventGroup) => React.ReactNode
+  renderEmptyGroup?: (group: EventGroup) => React.ReactNode;
 
   // Styling
   /** Additional CSS classes for the root element */
-  className?: string
+  className?: string;
 }
 
 /**
@@ -5616,19 +5697,19 @@ export interface EventSelectorProps {
  */
 export interface EventGroupComponentProps {
   /** The group data */
-  group: EventGroup
+  group: EventGroup;
   /** Events that belong to this group */
-  events: EventItem[]
+  events: EventItem[];
   /** Currently selected event IDs */
-  selectedEvents: string[]
+  selectedEvents: string[];
   /** Callback to update selected events */
-  onSelectionChange: (selectedIds: string[]) => void
+  onSelectionChange: (selectedIds: string[]) => void;
   /** Message shown when group has no events */
-  emptyGroupMessage?: string
+  emptyGroupMessage?: string;
   /** Custom render function for empty group state */
-  renderEmptyGroup?: (group: EventGroup) => React.ReactNode
+  renderEmptyGroup?: (group: EventGroup) => React.ReactNode;
   /** Whether the accordion should be expanded by default (default: false) */
-  defaultExpanded?: boolean
+  defaultExpanded?: boolean;
 }
 
 /**
@@ -5636,11 +5717,11 @@ export interface EventGroupComponentProps {
  */
 export interface EventItemComponentProps {
   /** The event data */
-  event: EventItem
+  event: EventItem;
   /** Whether this event is selected */
-  isSelected: boolean
+  isSelected: boolean;
   /** Callback when selection changes */
-  onSelectionChange: (selected: boolean) => void
+  onSelectionChange: (selected: boolean) => void;
 }
 `, prefix),
         }
@@ -5820,7 +5901,9 @@ export const KeyValueInput = React.forwardRef<
             {title}
           </h3>
           {description && (
-            <p className="m-0 text-sm text-semantic-text-muted mt-1">{description}</p>
+            <p className="m-0 text-sm text-semantic-text-muted mt-1">
+              {description}
+            </p>
           )}
         </div>
 
@@ -5832,13 +5915,21 @@ export const KeyValueInput = React.forwardRef<
               <div className="flex-1">
                 <span className="text-sm font-medium text-semantic-text-primary">
                   {keyLabel}
-                  {keyRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
+                  {keyRequired && (
+                    <span className="text-semantic-error-primary ml-0.5">
+                      *
+                    </span>
+                  )}
                 </span>
               </div>
               <div className="flex-1">
                 <span className="text-sm font-medium text-semantic-text-primary">
                   {valueLabel}
-                  {valueRequired && <span className="text-semantic-error-primary ml-0.5">*</span>}
+                  {valueRequired && (
+                    <span className="text-semantic-error-primary ml-0.5">
+                      *
+                    </span>
+                  )}
                 </span>
               </div>
               {/* Spacer for delete button column */}
@@ -5853,7 +5944,9 @@ export const KeyValueInput = React.forwardRef<
                   pair={pair}
                   isDuplicateKey={duplicateKeys.has(pair.key.toLowerCase())}
                   isKeyEmpty={touchedKeys.has(pair.id) && !pair.key.trim()}
-                  isValueEmpty={touchedValues.has(pair.id) && !pair.value.trim()}
+                  isValueEmpty={
+                    touchedValues.has(pair.id) && !pair.value.trim()
+                  }
                   keyRequired={keyRequired}
                   valueRequired={valueRequired}
                   keyPlaceholder={keyPlaceholder}
@@ -5986,11 +6079,11 @@ KeyValueRow.displayName = "KeyValueRow";
  */
 export interface KeyValuePair {
   /** Unique identifier for the pair */
-  id: string
+  id: string;
   /** The key (e.g., header name) */
-  key: string
+  key: string;
   /** The value (e.g., header value) */
-  value: string
+  value: string;
 }
 
 /**
@@ -5999,41 +6092,41 @@ export interface KeyValuePair {
 export interface KeyValueInputProps {
   // Customization
   /** Title displayed at the top (e.g., "HTTP Headers") */
-  title: string
+  title: string;
   /** Description displayed below the title */
-  description?: string
+  description?: string;
   /** Text for the add button (default: "Add Header") */
-  addButtonText?: string
+  addButtonText?: string;
   /** Maximum number of items allowed (default: 10) */
-  maxItems?: number
+  maxItems?: number;
   /** Placeholder for key input */
-  keyPlaceholder?: string
+  keyPlaceholder?: string;
   /** Placeholder for value input */
-  valuePlaceholder?: string
+  valuePlaceholder?: string;
   /** Label for key column header (default: "Key") */
-  keyLabel?: string
+  keyLabel?: string;
   /** Label for value column header (default: "Value") */
-  valueLabel?: string
+  valueLabel?: string;
 
   // Validation
   /** Whether key field is required (default: true) */
-  keyRequired?: boolean
+  keyRequired?: boolean;
   /** Whether value field is required (default: true) */
-  valueRequired?: boolean
+  valueRequired?: boolean;
 
   // State (controlled mode)
   /** Array of key-value pairs (controlled) */
-  value?: KeyValuePair[]
+  value?: KeyValuePair[];
   /** Callback when pairs change */
-  onChange?: (pairs: KeyValuePair[]) => void
+  onChange?: (pairs: KeyValuePair[]) => void;
 
   // State (uncontrolled mode)
   /** Default key-value pairs for uncontrolled usage */
-  defaultValue?: KeyValuePair[]
+  defaultValue?: KeyValuePair[];
 
   // Styling
   /** Additional CSS classes for the root element */
-  className?: string
+  className?: string;
 }
 
 /**
@@ -6041,27 +6134,27 @@ export interface KeyValueInputProps {
  */
 export interface KeyValueRowProps {
   /** The key-value pair data */
-  pair: KeyValuePair
+  pair: KeyValuePair;
   /** Whether the key is a duplicate */
-  isDuplicateKey: boolean
+  isDuplicateKey: boolean;
   /** Whether key is empty (for validation) */
-  isKeyEmpty: boolean
+  isKeyEmpty: boolean;
   /** Whether value is empty (for validation) */
-  isValueEmpty: boolean
+  isValueEmpty: boolean;
   /** Whether key field is required */
-  keyRequired?: boolean
+  keyRequired?: boolean;
   /** Whether value field is required */
-  valueRequired?: boolean
+  valueRequired?: boolean;
   /** Placeholder for key input */
-  keyPlaceholder?: string
+  keyPlaceholder?: string;
   /** Placeholder for value input */
-  valuePlaceholder?: string
+  valuePlaceholder?: string;
   /** Callback when key changes */
-  onKeyChange: (id: string, key: string) => void
+  onKeyChange: (id: string, key: string) => void;
   /** Callback when value changes */
-  onValueChange: (id: string, value: string) => void
+  onValueChange: (id: string, value: string) => void;
   /** Callback when row is deleted */
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void;
 }
 `, prefix),
         }

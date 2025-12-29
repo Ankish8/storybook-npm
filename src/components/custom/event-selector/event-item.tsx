@@ -22,7 +22,9 @@ export const EventItemComponent = React.forwardRef<
         aria-label={`Select ${event.name}`}
       />
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-semantic-text-primary">{event.name}</div>
+        <div className="text-sm font-medium text-semantic-text-primary">
+          {event.name}
+        </div>
         <div className="text-sm text-semantic-text-muted mt-0.5 leading-relaxed">
           {event.description}
         </div>

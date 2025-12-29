@@ -108,12 +108,8 @@ describe("ConfirmationModal", () => {
       />
     );
 
-    expect(
-      screen.getByRole("button", { name: "Proceed" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Go Back" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Proceed" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Go Back" })).toBeInTheDocument();
   });
 
   it("shows loading state on confirm button", () => {
@@ -249,12 +245,7 @@ describe("ConfirmationModal", () => {
     });
 
     it("provides sr-only description when none is provided", () => {
-      render(
-        <ConfirmationModal
-          open={true}
-          title="Confirm Action"
-        />
-      );
+      render(<ConfirmationModal open={true} title="Confirm Action" />);
 
       // Should have a hidden description for screen readers
       const srOnlyDescription = screen.getByText("Confirmation dialog");

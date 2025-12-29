@@ -495,11 +495,16 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
-        success: "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
-        error: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
-        destructive: "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
-        warning: "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
+        default:
+          "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary",
+        success:
+          "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary",
+        error:
+          "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        destructive:
+          "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary",
+        warning:
+          "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary",
         info: "bg-semantic-info-surface border-semantic-info-border [&>svg]:text-semantic-info-primary",
       },
     },
@@ -633,10 +638,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
                   className={cn(
                     "rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2",
                     variant === "default" && "focus:ring-semantic-text-primary",
-                    variant === "success" && "focus:ring-semantic-success-primary",
+                    variant === "success" &&
+                      "focus:ring-semantic-success-primary",
                     (variant === "error" || variant === "destructive") &&
                       "focus:ring-semantic-error-primary",
-                    variant === "warning" && "focus:ring-semantic-warning-primary",
+                    variant === "warning" &&
+                      "focus:ring-semantic-warning-primary",
                     variant === "info" && "focus:ring-semantic-info-primary"
                   )}
                   aria-label="Close alert"
@@ -726,10 +733,14 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
-        success: "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
-        error: "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
-        warning: "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
+        default:
+          "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+        success:
+          "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
+        error:
+          "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
+        warning:
+          "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
         info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-hover",
       },
     },
@@ -823,7 +834,6 @@ type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
 
- 
 export {
   type ToastProps,
   type ToastActionElement,
@@ -1068,11 +1078,23 @@ function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+      {toasts.map(function ({
+        id,
+        title,
+        description,
+        action,
+        variant,
+        ...props
+      }) {
         const Icon = variant ? variantIcons[variant] : null;
 
         return (
-          <Toast key={id} variant={variant} className={variant ?? undefined} {...props}>
+          <Toast
+            key={id}
+            variant={variant}
+            className={variant ?? undefined}
+            {...props}
+          >
             <div className="flex gap-3">
               {Icon && (
                 <Icon

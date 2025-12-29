@@ -158,7 +158,9 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
 
     // Render actions for desktop (all inline)
     const renderDesktopActions = () => (
-      <div className="hidden sm:flex items-center gap-2 ml-6">{actionsArray}</div>
+      <div className="hidden sm:flex items-center gap-2 ml-6">
+        {actionsArray}
+      </div>
     );
 
     // Render expandable actions (for mobile and vertical layout)

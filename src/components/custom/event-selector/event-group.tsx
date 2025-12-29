@@ -96,7 +96,9 @@ export const EventGroupComponent = React.forwardRef<
               className="mt-0.5"
             />
             <div className="flex-1 min-w-0">
-              <span className="font-medium text-semantic-text-primary">{event.name}</span>
+              <span className="font-medium text-semantic-text-primary">
+                {event.name}
+              </span>
               <p className="m-0 text-sm text-semantic-text-muted mt-0.5">
                 {event.description}
               </p>
@@ -109,7 +111,10 @@ export const EventGroupComponent = React.forwardRef<
     // Multiple events: render as collapsible accordion
     return (
       <div ref={ref} className={cn("bg-white", className)} {...props}>
-        <Accordion type="multiple" defaultValue={defaultExpanded ? [group.id] : []}>
+        <Accordion
+          type="multiple"
+          defaultValue={defaultExpanded ? [group.id] : []}
+        >
           <AccordionItem value={group.id}>
             {/* Header row with checkbox OUTSIDE the trigger button to avoid nested buttons */}
             <div className="flex items-center gap-3 p-4 hover:bg-semantic-bg-ui">
@@ -126,7 +131,9 @@ export const EventGroupComponent = React.forwardRef<
                   <div className="flex flex-col items-start text-left flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       {group.icon && (
-                        <span className="text-semantic-text-muted">{group.icon}</span>
+                        <span className="text-semantic-text-muted">
+                          {group.icon}
+                        </span>
                       )}
                       <span className="font-medium text-semantic-text-primary">
                         {group.name}

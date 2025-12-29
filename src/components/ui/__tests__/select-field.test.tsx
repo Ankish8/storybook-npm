@@ -66,7 +66,9 @@ describe("SelectField", () => {
       <SelectField options={defaultOptions} helperText="Helper text here" />
     );
     expect(screen.getByText("Helper text here")).toBeInTheDocument();
-    expect(screen.getByText("Helper text here")).toHaveClass("text-semantic-text-muted");
+    expect(screen.getByText("Helper text here")).toHaveClass(
+      "text-semantic-text-muted"
+    );
   });
 
   // Error message tests
@@ -90,7 +92,9 @@ describe("SelectField", () => {
 
   it("applies error state styling when error is set", () => {
     render(<SelectField options={defaultOptions} error="Error" />);
-    expect(screen.getByRole("combobox")).toHaveClass("border-semantic-error-primary/40");
+    expect(screen.getByRole("combobox")).toHaveClass(
+      "border-semantic-error-primary/40"
+    );
   });
 
   it("sets aria-invalid when error is present", () => {

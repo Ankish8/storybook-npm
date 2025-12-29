@@ -18,7 +18,9 @@ describe("Dialog", () => {
         <DialogTrigger>Open Dialog</DialogTrigger>
         <DialogContent>
           <DialogTitle>Dialog Title</DialogTitle>
-          <DialogDescription>Dialog description for accessibility</DialogDescription>
+          <DialogDescription>
+            Dialog description for accessibility
+          </DialogDescription>
         </DialogContent>
       </Dialog>
     );
@@ -307,7 +309,9 @@ describe("Dialog", () => {
         </Dialog>
       );
 
-      expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /close/i })
+      ).toBeInTheDocument();
     });
 
     it("provides sr-only description when none is provided", () => {
