@@ -1176,7 +1176,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
+            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
           >
             {label}
             {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
