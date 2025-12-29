@@ -1439,7 +1439,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
+            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
           >
             {label}
             {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
@@ -1799,7 +1799,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className={cn("text-sm font-medium text-semantic-text-primary", labelClassName)}
+            className={cn("text-xs font-normal text-semantic-text-muted", labelClassName)}
           >
             {label}
             {required && <span className="text-semantic-error-primary ml-0.5">*</span>}
