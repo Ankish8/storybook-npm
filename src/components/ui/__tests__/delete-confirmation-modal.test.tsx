@@ -215,7 +215,7 @@ describe("DeleteConfirmationModal", () => {
         "Delete confirmation dialog - this action cannot be undone"
       );
       expect(srOnlyDescription).toBeInTheDocument();
-      expect(srOnlyDescription).toHaveClass("sr-only");
+      expect(srOnlyDescription).toHaveClass("tw-sr-only");
     });
 
     it("shows visible description when provided", () => {

@@ -684,7 +684,7 @@ const mapColorClassName: { [key in Color]: string } = {
   primary: "text-semantic-text-primary",
   secondary: "text-semantic-text-secondary",
   muted: "text-semantic-text-muted",
-  placeholder: "text-semantic-text-placeholder",
+  placeholder: "tw-text-semantic-text-placeholder",
   link: "text-semantic-text-link",
   inverted: "text-semantic-text-inverted",
   error: "text-semantic-error-primary",
@@ -2932,7 +2932,7 @@ const DialogContent = React.forwardRef<
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
-        className={cn(dialogContentVariants({ size, className }))}
+        className={cn(dialogContentVariants({ size }), className)}
         {...props}
       >
         {children}
@@ -3445,7 +3445,7 @@ const DeleteConfirmationModal = React.forwardRef<
         <DialogContent ref={ref} size="sm" className={cn(className)}>
           <DialogHeader>
             <DialogTitle>{title || defaultTitle}</DialogTitle>
-            <DialogDescription className={description ? undefined : "sr-only"}>
+            <DialogDescription className={description ? undefined : "tw-sr-only"}>
               {description ||
                 "Delete confirmation dialog - this action cannot be undone"}
             </DialogDescription>
@@ -4357,7 +4357,7 @@ function useToast() {
         listeners.splice(index, 1);
       }
     };
-  }, [state]);
+  }, []);
 
   return {
     ...state,

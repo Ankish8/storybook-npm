@@ -5,9 +5,11 @@
 ## Project Structure
 
 ```
-src/components/ui/           # Source components (badge, button, table, tag, dropdown-menu)
+src/components/ui/           # Source components (21 total)
 src/components/ui/__tests__/ # Component tests (REQUIRED for all components)
+src/components/custom/       # Custom components (NOT in CLI distribution)
 packages/cli/                # NPM CLI package (myoperator-ui)
+packages/mcp/                # MCP server for AI integration (myoperator-mcp)
 scripts/                     # Development scripts (including component generator)
 ```
 
@@ -175,10 +177,31 @@ describe('Component', () => {
 - If component uses `bg-destructive` (not `bg-[#ef4444]`), test for `bg-destructive`
 - Always read the component file before writing/updating tests
 
-## Hardcoded Colors - DO NOT CHANGE
+## CSS Variables for Theming
 
-Colors are intentionally hardcoded (e.g., `bg-[#343E55]`) for Bootstrap compatibility.
-**NEVER** change these to CSS variables or Tailwind theme tokens.
+Use CSS variables (semantic color tokens) for theming, consistent with shadcn/ui patterns:
+
+```tsx
+// Preferred - uses theme tokens
+className="bg-background text-foreground border-border"
+className="bg-popover text-popover-foreground"
+className="bg-primary text-primary-foreground"
+className="bg-destructive text-destructive-foreground"
+
+// Avoid - hardcoded values
+className="bg-[#343E55] text-white"
+```
+
+**Common tokens:**
+- `background`, `foreground` - Base page colors
+- `card`, `card-foreground` - Card surfaces
+- `popover`, `popover-foreground` - Floating elements
+- `primary`, `primary-foreground` - Primary actions
+- `secondary`, `secondary-foreground` - Secondary actions
+- `muted`, `muted-foreground` - Muted/disabled states
+- `accent`, `accent-foreground` - Accent highlights
+- `destructive`, `destructive-foreground` - Destructive actions
+- `border`, `input`, `ring` - Borders and focus rings
 
 ## Tailwind Class Prefixing (tw- Prefix)
 

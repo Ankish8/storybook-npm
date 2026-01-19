@@ -123,7 +123,7 @@ describe("Typography", () => {
       ["primary", "text-semantic-text-primary"],
       ["secondary", "text-semantic-text-secondary"],
       ["muted", "text-semantic-text-muted"],
-      ["placeholder", "text-semantic-text-placeholder"],
+      ["placeholder", "tw-text-semantic-text-placeholder"],
       ["link", "text-semantic-text-link"],
       ["inverted", "text-semantic-text-inverted"],
       ["error", "text-semantic-error-primary"],

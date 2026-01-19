@@ -418,7 +418,7 @@ const DialogContent = React.forwardRef<
       <DialogOverlay />
       <DialogPrimitive.Content
         ref={ref}
-        className={cn(dialogContentVariants({ size, className }))}
+        className={cn(dialogContentVariants({ size }), className)}
         {...props}
       >
         {children}
@@ -931,7 +931,7 @@ const DeleteConfirmationModal = React.forwardRef<
         <DialogContent ref={ref} size="sm" className={cn(className)}>
           <DialogHeader>
             <DialogTitle>{title || defaultTitle}</DialogTitle>
-            <DialogDescription className={description ? undefined : "sr-only"}>
+            <DialogDescription className={description ? undefined : "tw-sr-only"}>
               {description ||
                 "Delete confirmation dialog - this action cannot be undone"}
             </DialogDescription>
