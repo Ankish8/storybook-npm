@@ -170,3 +170,10 @@ export type {
   WalletTopupProps,
   AmountOption,
 } from "./components/custom/wallet-topup";
+
+// PaymentSummary (Custom - NOT available via CLI)
+export { PaymentSummary } from "./components/custom/payment-summary";
+export type {
+  PaymentSummaryProps,
+  PaymentSummaryItem,
+} from "./components/custom/payment-summary";
