@@ -11,6 +11,12 @@ Complete publishing workflow for myOperator UI:
 2. Git commit and push (triggers Vercel deploy)
 3. Sync and publish MCP package to npm
 
+Note: The CLI package (`myoperator-ui`) is ALWAYS published because it serves as both:
+- The CLI tool (`npx myoperator-ui add ...`) for UI components
+- The npm package that exports ALL components (UI + custom) via `import { ... } from "myoperator-ui"`
+
+Even custom-only changes require a CLI package publish since custom components are exported from the same package bundle.
+
 ## Pre-flight Checks
 
 Before starting, verify:
@@ -39,7 +45,7 @@ This triggers Vercel auto-deploy for the Storybook documentation.
 ### Step 3: Sync and Publish MCP Package
 
 ```bash
-node scripts/sync-mcp-metadata.js
+node scripts/sync-mcp-metadata.js --write
 cd packages/mcp && npm version patch && npm run build && npm publish
 ```
 
