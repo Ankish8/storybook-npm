@@ -13,8 +13,8 @@ export interface AutoPaySetupProps {
   icon?: React.ReactNode;
 
   // Body
-  /** Description text displayed below the header when expanded */
-  bodyText?: string;
+  /** Description content displayed below the header when expanded. Accepts a string or JSX (e.g. text with a link). */
+  bodyText?: React.ReactNode;
 
   // Note callout
   /** Note/callout text displayed in a highlighted box */
@@ -23,6 +23,8 @@ export interface AutoPaySetupProps {
   noteLabel?: string;
 
   // CTA
+  /** Whether to show the CTA button (defaults to true) */
+  showCta?: boolean;
   /** Text for the CTA button (defaults to "Enable Auto-Pay") */
   ctaText?: string;
   /** Callback when CTA button is clicked */

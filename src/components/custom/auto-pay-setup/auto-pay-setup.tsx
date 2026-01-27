@@ -30,6 +30,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       bodyText = "Link your internet banking account or enroll your card for recurring payments on MyOperator, where your linked account/card is charged automatically for your subsequent bills and usages on MyOperator",
       noteText = "For card based subscriptions, your card would be charged minimum of \u20B91 every month even if there are no usages to keep the subscription active, and \u20B91 will be added as prepaid amount for your service. Initial deduction of \u20B95 would be made for subscription, which will be auto-refunded.",
       noteLabel = "Note:",
+      showCta = true,
       ctaText = "Enable Auto-Pay",
       onCtaClick,
       loading = false,
@@ -69,9 +70,9 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
               <div className="flex flex-col gap-4 border-t border-semantic-border-layout pt-4">
                 {/* Description */}
                 {bodyText && (
-                  <p className="m-0 text-sm font-normal text-semantic-text-primary leading-5 tracking-[0.035px]">
+                  <div className="m-0 text-sm font-normal text-semantic-text-primary leading-5 tracking-[0.035px]">
                     {bodyText}
-                  </p>
+                  </div>
                 )}
 
                 {/* Note callout */}
@@ -89,15 +90,17 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
                 )}
 
                 {/* CTA Button */}
-                <Button
-                  variant="default"
-                  className="w-full"
-                  onClick={onCtaClick}
-                  loading={loading}
-                  disabled={disabled}
-                >
-                  {ctaText}
-                </Button>
+                {showCta && (
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={onCtaClick}
+                    loading={loading}
+                    disabled={disabled}
+                  >
+                    {ctaText}
+                  </Button>
+                )}
               </div>
             </AccordionContent>
           </AccordionItem>

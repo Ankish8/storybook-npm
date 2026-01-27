@@ -146,3 +146,29 @@ export const CustomContent: Story = {
     ctaText: "Enable Auto-Renewal",
   },
 };
+
+export const ActiveSubscription: Story = {
+  name: "Active Subscription (No CTA)",
+  args: {
+    icon: <RefreshCw className="size-5 text-semantic-primary" />,
+    title: "Recurring payment setup",
+    bodyText: (
+      <p className="m-0">
+        Your MyOperator account is currently subscribed for monthly recurring
+        payments. If you wish to edit or discontinue the payment method, kindly
+        write to us at{" "}
+        <a
+          href="mailto:support@myoperator.co"
+          className="text-semantic-text-link underline"
+        >
+          support@myoperator.co
+        </a>
+        .
+      </p>
+    ),
+    noteLabel: "",
+    noteText:
+      "For card-based subscriptions, your card will be charged a minimum of ₹1 every month (even if there is no usage) to keep the subscription active, and ₹1 will be added as prepaid amount for your service. An initial deduction of ₹5 will be made for subscription, which will be auto-refunded.",
+    showCta: false,
+  },
+};
