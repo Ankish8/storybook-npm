@@ -181,3 +181,10 @@ export type {
 // AutoPaySetup (Custom - NOT available via CLI)
 export { AutoPaySetup } from "./components/custom/auto-pay-setup";
 export type { AutoPaySetupProps } from "./components/custom/auto-pay-setup";
+
+// BankDetails (Custom - NOT available via CLI)
+export { BankDetails } from "./components/custom/bank-details";
+export type {
+  BankDetailsProps,
+  BankDetailItem,
+} from "./components/custom/bank-details";

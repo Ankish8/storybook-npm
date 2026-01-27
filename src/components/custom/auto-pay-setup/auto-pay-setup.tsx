@@ -66,7 +66,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="flex flex-col gap-4 border-t border-semantic-border-layout px-4 pt-4">
+              <div className="flex flex-col gap-4 border-t border-semantic-border-layout pt-4">
                 {/* Description */}
                 {bodyText && (
                   <p className="m-0 text-sm font-normal text-semantic-text-primary leading-5 tracking-[0.035px]">
@@ -77,7 +77,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
                 {/* Note callout */}
                 {noteText && (
                   <div className="rounded bg-[var(--semantic-info-25,#f0f7ff)] border border-[#BEDBFF] px-4 py-3">
-                    <p className="m-0 text-xs font-normal text-semantic-text-muted leading-4 tracking-[0.048px]">
+                    <p className="m-0 text-sm font-normal text-semantic-text-muted leading-5 tracking-[0.035px]">
                       {noteLabel && (
                         <span className="font-medium text-semantic-text-primary">
                           {noteLabel}{" "}

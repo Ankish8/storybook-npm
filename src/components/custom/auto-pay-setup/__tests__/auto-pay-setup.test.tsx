@@ -43,12 +43,12 @@ describe("AutoPaySetup", () => {
 
   it("does not render body text when empty", () => {
     render(<AutoPaySetup bodyText="" />);
-    const paragraphs = document.querySelectorAll("p");
-    // Only note text paragraph should exist
-    const bodyParagraph = Array.from(paragraphs).find((p) =>
-      p.classList.contains("text-sm")
-    );
-    expect(bodyParagraph).toBeUndefined();
+    // The default body text should not appear when bodyText is empty
+    expect(
+      screen.queryByText(
+        /Link your internet banking account/
+      )
+    ).not.toBeInTheDocument();
   });
 
   it("renders note callout with label and text", () => {

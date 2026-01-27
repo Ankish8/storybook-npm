@@ -208,7 +208,7 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="flex flex-col gap-6 border-t border-semantic-border-layout px-4 pt-4">
+              <div className="flex flex-col gap-6 border-t border-semantic-border-layout pt-4">
                 {/* Amount Selection */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
