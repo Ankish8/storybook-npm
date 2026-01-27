@@ -177,3 +177,7 @@ export type {
   PaymentSummaryProps,
   PaymentSummaryItem,
 } from "./components/custom/payment-summary";
+
+// AutoPaySetup (Custom - NOT available via CLI)
+export { AutoPaySetup } from "./components/custom/auto-pay-setup";
+export type { AutoPaySetupProps } from "./components/custom/auto-pay-setup";
