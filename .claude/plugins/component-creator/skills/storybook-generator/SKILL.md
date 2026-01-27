@@ -69,6 +69,10 @@ import { Component } from './component'
  * ```
  */
 const meta: Meta<typeof Component> = {
+  // Title depends on component type and sub-group:
+  //   UI component:              'Components/ComponentName'
+  //   Custom (no sub-group):     'Custom/ComponentName'
+  //   Custom (with sub-group):   'Custom/SubGroup/ComponentName'
   title: 'Components/ComponentName',
   component: Component,
   parameters: {
@@ -748,6 +752,6 @@ After the component is fully implemented (Phase 5 complete), re-check:
 - [ ] Typography table matches **actual** font classes used
 - [ ] Docs page description accurately reflects final props (props may have changed during implementation)
 - [ ] Stories demonstrate the component's real behavior (not placeholder args)
-- [ ] Sidebar grouping is correct (`Components/Name` for UI, `Custom/Name` for custom)
+- [ ] Sidebar grouping is correct (`Components/Name` for UI, `Custom/Name` or `Custom/SubGroup/Name` for custom)
 
 This skill ensures comprehensive, consistent documentation that helps users understand and use components effectively.

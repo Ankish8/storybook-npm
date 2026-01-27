@@ -3,7 +3,7 @@ import { Landmark } from "lucide-react";
 import { BankDetails } from "./bank-details";
 
 const meta: Meta<typeof BankDetails> = {
-  title: "Custom/BankDetails",
+  title: "Custom/Plan & Payment/BankDetails",
   component: BankDetails,
   parameters: {
     layout: "padded",

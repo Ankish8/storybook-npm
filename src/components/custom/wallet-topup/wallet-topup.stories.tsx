@@ -49,7 +49,7 @@ import { WalletTopup } from "./wallet-topup";
  * ```
  */
 const meta: Meta<typeof WalletTopup> = {
-  title: "Custom/WalletTopup",
+  title: "Custom/Plan & Payment/WalletTopup",
   component: WalletTopup,
   parameters: {
     layout: "centered",

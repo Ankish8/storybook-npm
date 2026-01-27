@@ -60,23 +60,59 @@ When activated, follow these steps:
 
 ### 1. Component Discovery
 
-**Check if component exists:**
-```bash
-# Search UI components
-ls src/components/ui/*.tsx | grep <component-name>
+**Step 1: Choose starting approach** — Ask the user via AskUserQuestion:
+- "How would you like to start creating your component?"
+  - "I have a screenshot or Figma design" → Visual-first flow
+  - "I'll provide a name manually" → Manual flow
 
-# Search custom components
-ls -R src/components/custom/ | grep <component-name>
-```
+**Visual-first flow:**
+1. Ask how to provide the design (Figma link or screenshot file path)
+2. If Figma: extract fileKey/nodeId, fetch via `mcp__figma__get_screenshot` + `mcp__figma__get_design_context`. Store the context for reuse in Section 2.
+3. If screenshot: read image file with Read tool. Store analysis for Section 2.
+4. Auto-suggest component name: "Based on the design, I suggest: `<name>`. Use this?"
+   - "Yes" → proceed
+   - "No" → collect custom name via free text
+5. Collect brief description
 
-**Suggest variant if similar exists:**
-- If user wants "icon-button" and "button" exists → suggest variant
-- If user wants "data-table" and "table" exists → suggest enhancement
-- If user wants "avatar-group" and "avatar" exists → suggest wrapper component
+**Manual flow:**
+- Ask: "What component would you like to create?"
+- Collect: component name (kebab-case), brief description
+
+**Step 2: Deep component discovery** — Build a Component Capability Map:
+1. **Fetch ALL components**: Glob `src/components/ui/*.tsx` and `src/components/custom/*/*.tsx` (exclude `__tests__/*`, `*.stories.tsx`)
+2. **Extract metadata per component** using Grep:
+   - `export interface.*Props` → props interfaces
+   - `variants:` blocks → CVA variant names
+   - `export {` or `export const` → public exports
+3. **Present Capability Map**:
+   ```
+   | Component   | Location | Variants         | Key Props              |
+   |-------------|----------|------------------|------------------------|
+   | Button      | ui/      | 7 variants, 4 sz | onClick, loading       |
+   | Badge       | ui/      | 5 variants       | —                      |
+   | WalletTopup | custom/  | —                | amounts, onPay, currency|
+   ```
+4. **Semantic similarity** — Compare the new component's name AND description against the map. Suggest:
+   - **VARIANT** of existing component (same structure, different style)
+   - **COMPOSITION** of multiple existing components
+   - **NEW standalone** component (genuinely novel)
+
+### 1b. Sub-Group Selection (Custom Components Only)
+
+If the user selected "Custom component" in Step 1:
+1. Scan existing story titles: `Grep for title: "Custom/ in src/components/custom/**/*.stories.tsx`
+2. Parse sub-groups from pattern `"Custom/<SubGroup>/<Name>"`
+3. Ask user via AskUserQuestion: "Which Storybook sub-group should this component belong to?"
+   - Each existing sub-group (e.g., "Plan & Payment")
+   - "Create a new sub-group" → follow-up free text
+   - "None (top-level Custom/)"
+4. Store the selection for use in Section 7 (story title)
 
 ### 2. Design Context Gathering
 
-**If Figma link provided:**
+> **Conditional**: If design context was already gathered during the visual-first naming flow (Section 1), reuse the stored Figma/screenshot data — do NOT re-fetch the same link. Skip directly to the multi-state check (Step 5).
+
+**If Figma link provided** (skip Steps 1-4 if already fetched in Section 1):
 1. Extract fileKey and nodeId from URL pattern: `https://figma.com/design/:fileKey/:fileName?node-id=:nodeId`
 2. Call `mcp__figma__get_design_context` to fetch design
 3. Call `mcp__figma__get_screenshot` for visual reference
@@ -310,6 +346,11 @@ Include these sections in story description:
    ```
    ```
 
+**Story title pattern** — Set the `title` in meta based on component type and sub-group:
+- UI component: `title: 'Components/ComponentName'`
+- Custom component (no sub-group): `title: 'Custom/ComponentName'`
+- Custom component (with sub-group): `title: 'Custom/SubGroup/ComponentName'`
+
 **Create interactive stories:**
 ```tsx
 export const Default: Story = { args: { children: 'Component' } }
@@ -364,6 +405,9 @@ After all code is generated, verify documentation is complete:
 - Stories demonstrate key domain-specific prop combinations
 - Docs page description matches the final component (props may change during implementation)
 - If parent component stories reference this component, update those references
+- If the component is a custom component, verify the Storybook sidebar grouping uses the correct sub-group:
+  - With sub-group: `Custom/<SubGroup>/ComponentName` (e.g., `Custom/Plan & Payment/WalletTopup`)
+  - Without sub-group: `Custom/ComponentName`
 
 ## Communication Style
 

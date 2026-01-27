@@ -46,7 +46,7 @@ import { AutoPaySetup } from "./auto-pay-setup";
  * ```
  */
 const meta: Meta<typeof AutoPaySetup> = {
-  title: "Custom/AutoPaySetup",
+  title: "Custom/Plan & Payment/AutoPaySetup",
   component: AutoPaySetup,
   parameters: {
     layout: "centered",

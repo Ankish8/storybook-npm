@@ -19,42 +19,68 @@ Activate this skill when:
 
 ## Analysis Steps
 
-### 1. Component Existence Check
+### 1. Component Existence Check — Deep Discovery
 
-Search for existing components with similar names or functionality:
+Build a **Component Capability Map** by scanning the entire component library:
 
-```bash
-# Search UI components
-find src/components/ui -name "*.tsx" -not -path "*/__tests__/*" -not -name "*.stories.tsx"
-
-# Search custom components
-find src/components/custom -name "*.tsx" -not -path "*/__tests__/*" -not -name "*.stories.tsx"
+**a. Fetch ALL components:**
+```
+Glob: src/components/ui/*.tsx (exclude __tests__/*, *.stories.tsx)
+Glob: src/components/custom/*/*.tsx (exclude __tests__/*, *.stories.tsx)
 ```
 
-**Pattern matching:**
-- Exact match: `button.tsx` exists → Component exists
-- Similar name: Looking for `icon-button` → Found `button` → Suggest variant
-- Functionality match: Looking for `data-table` → Found `table` → Suggest enhancement
+**b. Extract metadata per component** using Grep:
+- `export interface.*Props` → props interfaces
+- `variants:` blocks → CVA variants and their names
+- `export {` or `export const` → public exports
+
+**c. Build and present a Capability Map:**
+```
+| Component   | Location | Variants              | Key Props                |
+|-------------|----------|-----------------------|--------------------------|
+| Button      | ui/      | 7 variants, 4 sizes   | onClick, loading, leftIcon |
+| Badge       | ui/      | 5 variants            | —                        |
+| TextField   | ui/      | —                     | label, error, helperText |
+| WalletTopup | custom/  | —                     | amounts, onPay, currency |
+```
+
+**d. Match against new component:**
+- **Exact match**: `button.tsx` exists → Component exists
+- **Similar name**: Looking for `icon-button` → Found `button` → Suggest variant
+- **Functionality match**: Looking for `data-table` → Found `table` → Suggest enhancement
+- **Semantic similarity**: Compare name AND description against capability map to catch non-obvious overlaps
 
 ### 2. Variant vs New Component Decision
 
-Use this decision tree:
+Use this decision tree informed by the Capability Map:
 
 **Create a VARIANT when:**
 - Component differs only in visual style (colors, sizes)
 - Component shares same structure and behavior
 - Component uses same props interface
+- The Capability Map shows an existing component with matching variants/props
 - Example: `button` with `variant="icon"` instead of new `icon-button`
+
+**Create a COMPOSITION when:**
+- New component combines multiple existing components
+- The Capability Map shows several components that together form the new one
+- Example: `user-settings-form` composes `form-modal` + `text-field` + `select-field` + `switch`
 
 **Create a NEW COMPONENT when:**
 - Component has different structure or behavior
 - Component needs different props interface
 - Component serves different purpose
+- No existing component in the Capability Map covers its functionality
 - Example: `avatar` is different from `badge` despite both being circular
 
 **Recommendation pattern:**
 ```
 Found existing component: `button` at src/components/ui/button.tsx
+
+Capability Map excerpt:
+| Component | Variants | Key Props |
+|-----------|----------|-----------|
+| Button | default, primary, secondary, destructive, outline, ghost, link | onClick, disabled, loading, leftIcon |
 
 Analysis:
 - Your "icon-button" differs only in having no text and centered icon

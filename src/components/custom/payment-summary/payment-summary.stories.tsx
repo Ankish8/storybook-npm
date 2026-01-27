@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { PaymentSummary } from "./payment-summary";
 
 const meta: Meta<typeof PaymentSummary> = {
-  title: "Custom/PaymentSummary",
+  title: "Custom/Plan & Payment/PaymentSummary",
   component: PaymentSummary,
   parameters: {
     layout: "padded",

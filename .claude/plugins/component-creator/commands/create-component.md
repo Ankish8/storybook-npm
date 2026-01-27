@@ -10,7 +10,29 @@ You are creating a new React component for the myOperator UI component library. 
 
 ## Phase 1: Component Discovery & Analysis
 
-1. **Ask for component name and description** using AskUserQuestion:
+1. **Choose starting approach** using AskUserQuestion:
+   - Question: "How would you like to start creating your component?"
+   - Options:
+     - "I have a screenshot or Figma design" → Go to Step 1a (visual-first)
+     - "I'll provide a name manually" → Go to Step 1d (manual)
+
+   **1a. Gather design reference** (visual-first path) using AskUserQuestion:
+   - Question: "How would you like to provide the design?"
+   - Options:
+     - "Figma link" → Extract fileKey and nodeId, fetch via `mcp__figma__get_screenshot` + `mcp__figma__get_design_context`. Store the design context for reuse in Phase 2.
+     - "Screenshot file path" → Read image file using the Read tool (Claude is multimodal). Store analysis for Phase 2.
+
+   **1b. Auto-suggest component name** (visual-first path):
+   - Analyze the fetched design to infer a descriptive component name (kebab-case)
+   - Using AskUserQuestion: "Based on the design, I suggest the name: `<suggested-name>`. Use this name?"
+   - Options:
+     - "Yes, use `<suggested-name>`"
+     - "No, I'll provide a different name" → Collect custom name via free text
+   - Also collect a brief description of the component
+
+   **1c.** Continue to Step 2 (existence check) with the chosen name.
+
+   **1d. Collect component name manually** (manual path):
    - Question: "What component would you like to create?"
    - Collect: Component name (kebab-case), brief description
 
@@ -22,10 +44,24 @@ You are creating a new React component for the myOperator UI component library. 
      - Create a different component
      - Proceed anyway
 
-3. **Identify similar components**:
-   - Use Grep to find components with similar functionality
-   - Suggest whether this should be a variant of existing component
-   - Example: If creating "icon-button", check if "button" exists and suggest variant
+3. **Deep component discovery** — Build a Component Capability Map:
+   - **a. Fetch ALL components**: Glob both `src/components/ui/*.tsx` and `src/components/custom/*/*.tsx` (excluding `__tests__/*` and `*.stories.tsx`)
+   - **b. Extract metadata per component** using Grep:
+     - `export interface.*Props` → props interfaces
+     - `variants:` blocks → CVA variants and their names
+     - `export {` or `export const` → public exports
+   - **c. Build and present a Capability Map** to the user:
+     ```
+     | Component | Location | Variants | Key Props |
+     |-----------|----------|----------|-----------|
+     | Button    | ui/      | 7 variants, 4 sizes | onClick, loading, leftIcon |
+     | Badge     | ui/      | 5 variants | — |
+     | WalletTopup | custom/ | —       | amounts, onPay, currency |
+     ```
+   - **d. Semantic similarity analysis** — Compare the new component's name AND description against the map. Suggest one of:
+     - **VARIANT** of an existing component (if same structure, different style)
+     - **COMPOSITION** of multiple existing components (if new component combines them)
+     - **NEW standalone** component (if genuinely novel)
 
 4. **Determine component type** using AskUserQuestion:
    - Question: "Where should this component be created?"
@@ -33,19 +69,35 @@ You are creating a new React component for the myOperator UI component library. 
      - `src/components/ui/` - "UI component (distributed via CLI)"
      - `src/components/custom/` - "Custom component (project-specific, not in CLI)"
 
-5. **Check for multi-file structure**:
+5. **Select Storybook sub-group** (only if "Custom component" was selected in Step 4):
+   - Scan existing custom component story titles:
+     ```
+     Grep for `title: "Custom/` in src/components/custom/**/*.stories.tsx
+     Parse sub-groups from pattern "Custom/<SubGroup>/<Name>"
+     ```
+   - Using AskUserQuestion: "Which Storybook sub-group should this component belong to?"
+     - Each existing sub-group discovered (e.g., "Plan & Payment")
+     - "Create a new sub-group" → follow-up free text input for the sub-group name
+     - "None (top-level Custom/)"
+   - Store the selected sub-group for use in Phase 7 story title:
+     - With sub-group: `title: "Custom/<SubGroup>/ComponentName"`
+     - Without sub-group: `title: "Custom/ComponentName"`
+
+6. **Check for multi-file structure**:
    - Ask if component needs multiple files (like event-selector, key-value-input)
    - If yes, ask for subcomponent names
 
 ## Phase 2: Design Context Gathering
 
-1. **Ask for Figma link** using AskUserQuestion:
+> **Conditional**: If design context was already gathered during Phase 1 (visual-first flow), reuse the stored Figma/screenshot data — do NOT re-fetch the same link. Skip directly to Step 3 (multi-state analysis).
+
+1. **Ask for Figma link** (skip if already gathered in Phase 1) using AskUserQuestion:
    - Question: "Do you have a Figma design for this component?"
    - Options:
      - "Yes, I have a Figma link" (provide input for URL)
      - "No, I'll describe it manually"
 
-2. **If Figma provided**:
+2. **If Figma provided** (skip if already gathered in Phase 1):
    - Extract fileKey and nodeId from URL
    - Use `mcp__figma__get_design_context` to fetch design
    - Use `mcp__figma__get_screenshot` to get visual reference
@@ -313,6 +365,10 @@ Activate the **storybook-generator** skill to create comprehensive documentation
    import { Component } from './component'
 
    const meta: Meta<typeof Component> = {
+     // Title depends on component type and sub-group selection:
+     // UI component:                    title: 'Components/ComponentName'
+     // Custom (no sub-group):           title: 'Custom/ComponentName'
+     // Custom (with sub-group):         title: 'Custom/SubGroup/ComponentName'
      title: 'Components/Component',
      component: Component,
      parameters: { layout: 'centered' },
@@ -395,7 +451,9 @@ Activate the **storybook-generator** skill to create comprehensive documentation
      - Complete **Typography** table with font sizes, weights, and letter spacing
      - Stories for every visual state from the State Inventory Table (Phase 2)
      - Stories demonstrating key prop combinations (especially domain-specific props)
-   - If the component is a custom component, verify the Storybook sidebar grouping (`Custom/ComponentName`)
+   - If the component is a custom component, verify the Storybook sidebar grouping:
+     - With sub-group: `Custom/<SubGroup>/ComponentName` (e.g., `Custom/Plan & Payment/WalletTopup`)
+     - Without sub-group: `Custom/ComponentName`
    - If any existing documentation or parent component stories reference the new component, update those references
    - Ensure the Storybook docs page description accurately reflects the final component (props may have changed during implementation)
 

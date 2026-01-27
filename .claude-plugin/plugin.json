@@ -2,5 +2,5 @@
   "name": "myoperator-publish",
   "version": "1.0.0",
   "description": "Automated publishing workflow for myOperator UI CLI and MCP packages",
-  "commands": "./commands"
+  "commands": "./.claude/commands"
 }

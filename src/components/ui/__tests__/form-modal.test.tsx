@@ -69,7 +69,10 @@ describe("FormModal", () => {
       </FormModal>
     );
 
-    expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+    // "Close" matches both the cancel button and the dialog's X close button,
+    // so we verify at least 2 buttons with that accessible name exist.
+    const closeButtons = screen.getAllByRole("button", { name: "Close" });
+    expect(closeButtons.length).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole("button", { name: "Create" })).toBeInTheDocument();
   });
 
@@ -136,7 +139,7 @@ describe("FormModal", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(
+    render(
       <FormModal
         open={true}
         onOpenChange={vi.fn()}
@@ -147,27 +150,31 @@ describe("FormModal", () => {
       </FormModal>
     );
 
-    const dialogContent = container.querySelector('[role="dialog"]');
+    // Radix DialogPortal renders into document.body, not inside the render container
+    const dialogContent = screen.getByRole("dialog");
     expect(dialogContent).toHaveClass("custom-class");
   });
 
   it("renders with different sizes", () => {
-    const { container: smContainer } = render(
+    // Radix DialogPortal renders into document.body, so use document.querySelector
+    const { unmount } = render(
       <FormModal open={true} onOpenChange={vi.fn()} title="Small" size="sm">
         <div>Content</div>
       </FormModal>
     );
 
-    const smDialog = smContainer.querySelector('[role="dialog"]');
+    const smDialog = screen.getByRole("dialog");
     expect(smDialog).toHaveClass("max-w-sm");
 
-    const { container: lgContainer } = render(
+    unmount();
+
+    render(
       <FormModal open={true} onOpenChange={vi.fn()} title="Large" size="lg">
         <div>Content</div>
       </FormModal>
     );
 
-    const lgDialog = lgContainer.querySelector('[role="dialog"]');
+    const lgDialog = screen.getByRole("dialog");
     expect(lgDialog).toHaveClass("max-w-2xl");
   });
 
