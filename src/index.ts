@@ -134,6 +134,10 @@ export type {
 export { PageHeader, pageHeaderVariants } from "./components/ui/page-header";
 export type { PageHeaderProps } from "./components/ui/page-header";
 
+// FormModal
+export { FormModal } from "./components/ui/form-modal";
+export type { FormModalProps } from "./components/ui/form-modal";
+
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
 export type {
@@ -149,3 +153,20 @@ export type {
   KeyValueInputProps,
   KeyValuePair,
 } from "./components/custom/key-value-input";
+
+// AlertConfiguration (Custom - NOT available via CLI)
+export {
+  AlertConfiguration,
+  AlertValuesModal,
+} from "./components/custom/alert-configuration";
+export type {
+  AlertConfigurationProps,
+  AlertValuesModalProps,
+} from "./components/custom/alert-configuration";
+
+// WalletTopup (Custom - NOT available via CLI)
+export { WalletTopup } from "./components/custom/wallet-topup";
+export type {
+  WalletTopupProps,
+  AmountOption,
+} from "./components/custom/wallet-topup";

@@ -1,0 +1,91 @@
+---
+# Component Creator Plugin Settings
+# Copy this file to: .claude/component-creator.local.md
+# and customize your preferences
+---
+
+# Component Creator Settings
+
+## Default Component Type
+
+Preferred location for new components:
+
+```yaml
+defaultComponentType: ui  # Options: ui, custom
+```
+
+## Figma Integration
+
+Figma API token (optional - for automated design extraction):
+
+```yaml
+figmaApiToken: ""  # Leave empty to be prompted each time
+```
+
+## Auto-Test Generation
+
+Automatically generate comprehensive test files:
+
+```yaml
+autoGenerateTests: true  # Options: true, false
+```
+
+## Design System Validation
+
+Enforce CSS variable usage (recommended):
+
+```yaml
+validateCssVariables: true  # Options: true, false
+strictValidation: true      # Block commits with hardcoded colors
+```
+
+## Storybook Documentation
+
+Auto-generate comprehensive Storybook stories:
+
+```yaml
+autoGenerateStories: true        # Options: true, false
+includeDesignTokensTable: true   # Include CSS variables table
+includeTypographyTable: true     # Include font specifications
+includeUsageExamples: true       # Include code examples
+```
+
+## Component Analysis
+
+Behavior for component existence checks:
+
+```yaml
+checkExistingComponents: true    # Always check before creating
+suggestVariants: true            # Suggest variants over new components
+identifySubcomponents: true      # Find reusable components
+```
+
+## Responsive Design
+
+Enforce responsive design patterns:
+
+```yaml
+requireResponsiveDesign: true    # Ensure mobile-first approach
+enforceBreakpoints: true         # Require breakpoint usage
+```
+
+## Registry Updates
+
+Automatically update component registry:
+
+```yaml
+autoUpdateRegistry: true         # Update components.yaml
+autoUpdateExports: true          # Update src/index.ts
+runIntegrityCheck: true          # Run integrity snapshot (UI components)
+```
+
+## Custom Preferences
+
+Add any custom notes or preferences here:
+
+```markdown
+- Always use semantic-* tokens for myOperator-specific components
+- Prefer composition over creating complex single components
+- Test coverage must be >90%
+- Include accessibility tests for interactive components
+```

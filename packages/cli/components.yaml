@@ -40,6 +40,7 @@ categories:
       - tooltip
       - delete-confirmation-modal
       - confirmation-modal
+      - form-modal
 
   feedback:
     description: "Status and notifications"
@@ -216,6 +217,16 @@ components:
 
   confirmation-modal:
     description: "A simple confirmation modal for yes/no decisions"
+    category: overlay
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - dialog
+      - button
+
+  form-modal:
+    description: "A reusable modal component for forms with consistent layout"
     category: overlay
     dependencies:
       - "clsx"

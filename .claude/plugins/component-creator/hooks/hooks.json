@@ -1,0 +1,15 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "Write|Edit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/validate-css-variables.sh",
+          "timeout": 10,
+          "description": "Validates that component files use CSS variables instead of hardcoded colors"
+        }
+      ]
+    }
+  ]
+}

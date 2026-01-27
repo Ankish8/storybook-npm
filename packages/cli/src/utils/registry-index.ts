@@ -128,6 +128,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'overlay',
     internalDependencies: ["dialog","button"],
   },
+  'form-modal': {
+    name: 'form-modal',
+    description: 'A reusable modal component for forms with consistent layout',
+    dependencies: ["clsx","tailwind-merge"],
+    category: 'overlay',
+    internalDependencies: ["dialog","button"],
+  },
   'tag': {
     name: 'tag',
     description: 'A tag component for event labels with optional bold label prefix',

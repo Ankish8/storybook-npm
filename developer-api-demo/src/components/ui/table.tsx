@@ -1,0 +1,244 @@
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "@/lib/utils";
+import { Switch, type SwitchProps } from "./switch";
+
+const tableVariants = cva("w-full caption-bottom text-sm", {
+  variants: {
+    size: {
+      sm: "[&_td]:py-2 [&_th]:py-2",
+      md: "[&_td]:py-3 [&_th]:py-3",
+      lg: "[&_td]:py-4 [&_th]:py-4",
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
+export interface TableProps
+  extends
+    React.HTMLAttributes<HTMLTableElement>,
+    VariantProps<typeof tableVariants> {
+  withoutBorder?: boolean;
+}
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, size, withoutBorder, ...props }, ref) => (
+    <div
+      className={cn(
+        "relative w-full overflow-auto",
+        !withoutBorder && "rounded-lg border border-semantic-border-layout"
+      )}
+    >
+      <table
+        ref={ref}
+        className={cn(tableVariants({ size, className }))}
+        {...props}
+      />
+    </div>
+  )
+);
+Table.displayName = "Table";
+
+const TableHeader = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <thead
+    ref={ref}
+    className={cn("bg-[var(--color-neutral-50)] [&_tr]:border-b", className)}
+    {...props}
+  />
+));
+TableHeader.displayName = "TableHeader";
+
+const TableBody = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <tbody
+    ref={ref}
+    className={cn("[&_tr:last-child]:border-0", className)}
+    {...props}
+  />
+));
+TableBody.displayName = "TableBody";
+
+const TableFooter = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <tfoot
+    ref={ref}
+    className={cn(
+      "border-t bg-[var(--color-neutral-50)] font-medium [&>tr]:last:border-b-0",
+      className
+    )}
+    {...props}
+  />
+));
+TableFooter.displayName = "TableFooter";
+
+export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  highlighted?: boolean;
+}
+
+const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+  ({ className, highlighted, ...props }, ref) => (
+    <tr
+      ref={ref}
+      className={cn(
+        "border-b border-semantic-border-layout transition-colors",
+        highlighted
+          ? "bg-semantic-info-surface"
+          : "hover:bg-[var(--color-neutral-50)]/50 data-[state=selected]:bg-semantic-bg-ui",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+TableRow.displayName = "TableRow";
+
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  sticky?: boolean;
+  sortDirection?: "asc" | "desc" | null;
+  infoTooltip?: string;
+}
+
+const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+  (
+    { className, sticky, sortDirection, infoTooltip, children, ...props },
+    ref
+  ) => (
+    <th
+      ref={ref}
+      className={cn(
+        "h-12 px-4 text-left align-middle font-medium text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-[var(--color-neutral-50)] z-10",
+        sortDirection && "cursor-pointer select-none",
+        className
+      )}
+      {...props}
+    >
+      <div className="flex items-center gap-1">
+        {children}
+        {sortDirection && (
+          <span className="text-[var(--color-neutral-400)]">
+            {sortDirection === "asc" ? "↑" : "↓"}
+          </span>
+        )}
+        {infoTooltip && (
+          <span
+            className="text-[var(--color-neutral-400)] cursor-help"
+            title={infoTooltip}
+          >
+            i
+          </span>
+        )}
+      </div>
+    </th>
+  )
+);
+TableHead.displayName = "TableHead";
+
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  sticky?: boolean;
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, sticky, ...props }, ref) => (
+    <td
+      ref={ref}
+      className={cn(
+        "px-4 align-middle text-semantic-text-primary [&:has([role=checkbox])]:pr-0",
+        sticky && "sticky left-0 bg-semantic-bg-primary z-10",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+TableCell.displayName = "TableCell";
+
+const TableCaption = React.forwardRef<
+  HTMLTableCaptionElement,
+  React.HTMLAttributes<HTMLTableCaptionElement>
+>(({ className, ...props }, ref) => (
+  <caption
+    ref={ref}
+    className={cn("mt-4 text-sm text-semantic-text-muted", className)}
+    {...props}
+  />
+));
+TableCaption.displayName = "TableCaption";
+
+export interface TableSkeletonProps {
+  rows?: number;
+  columns?: number;
+}
+
+const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
+  <>
+    {Array.from({ length: rows }).map((_, rowIndex) => (
+      <TableRow key={rowIndex}>
+        {Array.from({ length: columns }).map((_, colIndex) => (
+          <TableCell key={colIndex}>
+            <div
+              className="h-4 bg-semantic-bg-grey rounded animate-pulse"
+              style={{
+                width: colIndex === 1 ? "80%" : colIndex === 2 ? "30%" : "60%",
+              }}
+            />
+          </TableCell>
+        ))}
+      </TableRow>
+    ))}
+  </>
+);
+TableSkeleton.displayName = "TableSkeleton";
+
+export interface TableEmptyProps {
+  colSpan: number;
+  children?: React.ReactNode;
+}
+
+const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
+  <TableRow>
+    <TableCell
+      colSpan={colSpan}
+      className="text-center py-8 text-semantic-text-muted"
+    >
+      {children || "No data available"}
+    </TableCell>
+  </TableRow>
+);
+TableEmpty.displayName = "TableEmpty";
+
+export interface TableToggleProps extends Omit<SwitchProps, "size"> {
+  size?: "sm" | "default";
+}
+
+const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
+  ({ size = "sm", ...props }, ref) => (
+    <Switch ref={ref} size={size} {...props} />
+  )
+);
+TableToggle.displayName = "TableToggle";
+
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableCaption,
+  TableSkeleton,
+  TableEmpty,
+  TableToggle,
+  tableVariants,
+};

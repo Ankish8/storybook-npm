@@ -9,6 +9,11 @@
       "name": "myoperator-publish",
       "description": "Automated publishing workflow for myOperator UI CLI and MCP packages",
       "source": "./"
+    },
+    {
+      "name": "component-creator",
+      "description": "Intelligent React component creation with design system validation, Figma integration, and automated testing",
+      "source": "./.claude/plugins/component-creator"
     }
   ]
 }
