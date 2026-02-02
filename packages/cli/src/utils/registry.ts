@@ -3445,7 +3445,7 @@ const DeleteConfirmationModal = React.forwardRef<
         <DialogContent ref={ref} size="sm" className={cn(className)}>
           <DialogHeader>
             <DialogTitle>{title || defaultTitle}</DialogTitle>
-            <DialogDescription className={description ? undefined : "tw-sr-only"}>
+            <DialogDescription className={description ? undefined : "sr-only"}>
               {description ||
                 "Delete confirmation dialog - this action cannot be undone"}
             </DialogDescription>
@@ -4444,6 +4444,8 @@ export const reducer = (state: State, action: Action): State => {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
       };
+    default:
+      return state;
   }
 };
 

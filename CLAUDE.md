@@ -1,241 +1,171 @@
-# myOperator UI - Claude Instructions
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 **IMPORTANT: Never add "Co-Authored-By: Claude" or "Generated with Claude Code" to commit messages.**
 
-## Project Structure
+## Architecture Overview
 
-```
-src/components/ui/           # Source components (21 total)
-src/components/ui/__tests__/ # Component tests (REQUIRED for all components)
-src/components/custom/       # Custom components (NOT in CLI distribution)
-packages/cli/                # NPM CLI package (myoperator-ui)
-packages/mcp/                # MCP server for AI integration (myoperator-mcp)
-scripts/                     # Development scripts (including component generator)
-```
+This is a **React component library** (myOperator UI) distributed via a CLI tool, with an MCP server for AI integration. The monorepo contains three packages:
 
-## CRITICAL: Safe Component Update Workflow
+1. **Root** (`shadcn-react-app`) — Source components in `src/components/ui/`, Storybook for development, Vite for builds. Components follow the shadcn/ui pattern: `forwardRef` + CVA variants + `cn()` utility.
+2. **`packages/cli`** (`myoperator-ui`) — CLI that consumers run via `npx myoperator-ui add button`. It embeds component source code into generated registry files, applies a `tw-` Tailwind prefix for Bootstrap compatibility, and copies components into user projects.
+3. **`packages/mcp`** (`myoperator-mcp`) — MCP server providing component metadata to AI assistants via stdio transport.
 
-**ALWAYS follow this workflow when modifying components:**
+**Data flow**: Source components → `components.yaml` defines metadata → `generate-registry.js` reads YAML + source files → produces `registry-*.ts` files with embedded code → `tsup` bundles CLI → consumers get prefixed components.
+
+## Commands
 
 ```bash
+# Development
+npm run storybook          # Storybook on port 6006
+npm run dev                # Vite dev server
+npm test                   # Run all component tests (vitest)
+npm run test:watch         # Watch mode
+npx vitest run src/components/ui/__tests__/button.test.tsx  # Single test file
+
+# Linting & Formatting
+npm run lint               # ESLint (flat config)
+npm run format             # Prettier write
+npm run format:check       # Prettier check
+
+# API & Integrity
+npm run api:snapshot       # Generate .api-snapshot.json baseline
+npm run api:check          # Detect breaking changes against baseline
+
+# CLI package (from packages/cli/)
 cd packages/cli
+npm run build              # Full pipeline: validate → generate-registry → validate:prefix → tsup → verify
+npm test                   # CLI-specific tests
+npm run generate-registry  # Regenerate registry from components.yaml + source files
+npm run integrity:snapshot # Snapshot component hashes before changes
+node scripts/check-integrity.js verify <component-name>  # Verify only intended component changed
 
-# 1. BEFORE changes - create snapshot
-npm run integrity:snapshot
-
-# 2. Make changes to ONLY the specified component
-
-# 3. AFTER changes - verify integrity
-node scripts/check-integrity.js verify <component-name>
-
-# 4. Only if check PASSES, build and publish
-npm run build
-npm publish
+# MCP package (from packages/mcp/)
+cd packages/mcp
+npm run build              # tsup build
+npm run typecheck          # TypeScript check
 ```
 
-## Rules for Component Changes
+## Component Change Workflow
 
-1. **ONE component at a time** - Never modify multiple components unless explicitly asked
-2. **Run integrity check** - Always verify only intended component changed
-3. **Don't touch other files** - registry.ts is auto-generated, don't edit directly
-4. **Preserve imports** - Components use `@/lib/utils` (transformed to `../../lib/utils` during build)
-5. **Tests are REQUIRED** - Every component MUST have a corresponding test file
-6. **Stories are REQUIRED** - Every component MUST have a corresponding story file
+**ALWAYS follow this when modifying components:**
 
-## NPM Automation Token
+1. `cd packages/cli && npm run integrity:snapshot` — Before changes
+2. Edit ONLY the specified component in `src/components/ui/`
+3. `node scripts/check-integrity.js verify <component-name>` — After changes
+4. `npm run build` — Build and validate
 
-For publishing without 2FA OTP, use the automation token stored in `~/.npmrc` or set `NPM_TOKEN` environment variable.
+**Rules**: One component at a time. Don't edit registry files directly (auto-generated). Don't modify unrelated components.
 
-## Breaking Change Detection
+## Creating New Components
 
-Pre-commit hook automatically runs `npm run api:check` on component changes. It blocks commits if breaking changes (removed exports/props/variants) are detected. If intentional, run `npm run api:snapshot` to update the baseline and document in CHANGELOG.
-
-## Publishing Workflow
+**Always use the generator** — never create component files manually:
 
 ```bash
-cd packages/cli
-npm run integrity:snapshot          # Snapshot before changes
-# ... make changes ...
-node scripts/check-integrity.js verify button  # Verify (replace 'button' with component name)
-npm version patch                   # Bump version
-npm run build                       # Build (regenerates registry)
-npm publish                         # Publish to npm (requires ~/.npmrc with auth token)
-git add . && git commit && git push # Commit changes
+node scripts/create-component.js <name> "<description>"
 ```
 
-## Key Files
+This creates the component `.tsx`, test file, and Storybook story, and updates `components.yaml`.
 
-| File | Purpose |
-|------|---------|
-| `src/components/ui/*.tsx` | Source components - EDIT THESE |
-| `packages/cli/scripts/generate-registry.js` | Auto-generates registry from source |
-| `packages/cli/scripts/check-integrity.js` | Verifies only intended changes |
-| `packages/cli/src/commands/update.ts` | User-facing update command |
+## Component Patterns
 
-## Component Template
+Components use `@/lib/utils` imports (transformed to relative paths during CLI build). Standard pattern:
 
 ```tsx
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-const componentVariants = cva("base-classes", {
-  variants: { /* ... */ },
-  defaultVariants: { /* ... */ },
-})
+const variants = cva("base-classes", { variants: {}, defaultVariants: {} })
 
-export interface ComponentProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof componentVariants> {}
+export interface Props extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof variants> {}
 
-const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
-  ({ className, variant, ...props }, ref) => (
-    <div ref={ref} className={cn(componentVariants({ variant, className }))} {...props} />
-  )
-)
+const Component = React.forwardRef<HTMLElement, Props>(({ className, variant, ...props }, ref) => (
+  <div ref={ref} className={cn(variants({ variant, className }))} {...props} />
+))
 Component.displayName = "Component"
 
-export { Component, componentVariants }
+export { Component, variants }
 ```
 
-## If Integrity Check Fails
+**Multi-file components** (in `src/components/custom/`) have a directory with multiple `.tsx` files and are declared in `components.yaml` with `isMultiFile: true`.
 
-```bash
-# See what changed
-git diff src/components/ui/
+## Theming — CSS Variables
 
-# Revert unintended changes
-git checkout src/components/ui/<file>.tsx
-
-# Or if all changes were intentional, update snapshot
-npm run integrity:snapshot
-```
-
-## CRITICAL: Creating New Components
-
-**ALWAYS use the component generator to create new components:**
-
-```bash
-node scripts/create-component.js <component-name> "<description>"
-
-# Example:
-node scripts/create-component.js avatar "A circular avatar component for displaying user images"
-```
-
-This automatically creates:
-- `src/components/ui/<name>.tsx` - Component file
-- `src/components/ui/__tests__/<name>.test.tsx` - Test file (REQUIRED)
-- `src/components/ui/<name>.stories.tsx` - Storybook story
-- Updates `packages/cli/scripts/generate-registry.js` with metadata
-
-**DO NOT create components manually without these files.**
-
-## Required Test Coverage
-
-Every component test file MUST include tests for:
-
-1. **Renders correctly** - Basic render test with children
-2. **All variants** - Test each variant has correct classes
-3. **All sizes** - Test each size has correct classes
-4. **Custom className** - Verify custom classes are applied
-5. **Ref forwarding** - Verify ref is forwarded to DOM element
-6. **Accessibility** - Test ARIA attributes if applicable
-
-Example test structure:
-```tsx
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { Component } from '../component'
-
-describe('Component', () => {
-  it('renders children correctly', () => {
-    render(<Component>Content</Component>)
-    expect(screen.getByText('Content')).toBeInTheDocument()
-  })
-
-  it.each([
-    ['default', 'expected-class'],
-    ['primary', 'expected-class'],
-  ] as const)('renders %s variant', (variant, expectedClass) => {
-    render(<Component variant={variant} data-testid="el">Test</Component>)
-    expect(screen.getByTestId('el')).toHaveClass(expectedClass)
-  })
-
-  it('forwards ref correctly', () => {
-    const ref = { current: null }
-    render(<Component ref={ref}>Test</Component>)
-    expect(ref.current).toBeInstanceOf(HTMLDivElement)
-  })
-})
-```
-
-## Test Assertions Must Match Component Code
-
-**CRITICAL:** Test assertions must match the ACTUAL classes in the component:
-
-- If component uses `py-2.5 px-4` for default size, test for `py-2.5` and `px-4`
-- If component uses `bg-destructive` (not `bg-[#ef4444]`), test for `bg-destructive`
-- Always read the component file before writing/updating tests
-
-## CSS Variables for Theming
-
-Use CSS variables (semantic color tokens) for theming, consistent with shadcn/ui patterns:
+Use semantic tokens, not hardcoded colors:
 
 ```tsx
-// Preferred - uses theme tokens
+// Correct
 className="bg-background text-foreground border-border"
-className="bg-popover text-popover-foreground"
 className="bg-primary text-primary-foreground"
 className="bg-destructive text-destructive-foreground"
 
-// Avoid - hardcoded values
+// Wrong
 className="bg-[#343E55] text-white"
 ```
 
-**Common tokens:**
-- `background`, `foreground` - Base page colors
-- `card`, `card-foreground` - Card surfaces
-- `popover`, `popover-foreground` - Floating elements
-- `primary`, `primary-foreground` - Primary actions
-- `secondary`, `secondary-foreground` - Secondary actions
-- `muted`, `muted-foreground` - Muted/disabled states
-- `accent`, `accent-foreground` - Accent highlights
-- `destructive`, `destructive-foreground` - Destructive actions
-- `border`, `input`, `ring` - Borders and focus rings
+Tokens: `background/foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring`.
 
-## Tailwind Class Prefixing (tw- Prefix)
+## Tailwind tw- Prefix System
 
-The CLI adds a `tw-` prefix to all Tailwind classes during build. This happens automatically via `prefixTailwindClasses()`. The transformation recognizes these patterns:
+The CLI build adds `tw-` to all Tailwind classes for Bootstrap compatibility. The prefixer recognizes these patterns:
+- `cva("classes")` — CVA base/variant classes
+- `cn("classes")` / `cn('classes')` — Merged classes
+- `className="classes"` — JSX attributes
+- `key: "classes"` — Object property values
 
-1. `cva("classes")` - CVA base classes
-2. `cn("classes")` or `cn('classes')` - Merged classes (both quote styles)
-3. `className="classes"` - Direct JSX attributes
-4. `key: "classes"` or `key: 'classes'` - Object property values
+Avoid template literals or complex string concatenation for class strings — they won't be prefixed.
 
-**Best practices:**
-- Prefer `cva()` or `cn()` for dynamic classes
-- Both single and double quotes work, but be consistent
-- Avoid complex string concatenation or template literals for class strings
-- Run `npm run build` in `packages/cli` to verify transformation
+Validation: `npm run validate:prefix` (false prefixing) and `npm run validate:coverage` (missed classes).
 
-**Validation:**
-- `validate:prefix` - Checks for corrupted output (false prefixing)
-- `validate:coverage` - Checks for unprefixed Tailwind classes
+## Test Requirements
 
-If you see unprefixed classes in production:
-1. Check if classes are in a recognized pattern (listed above)
-2. Run `npm run generate-registry && npm run validate:coverage` to identify issues
-3. Refactor to use `cn()`, `cva()`, or direct `className=` patterns
+Every component needs a test file in `src/components/ui/__tests__/`. Required coverage:
+1. Renders correctly (basic render with children)
+2. All variants have correct classes
+3. All sizes have correct classes
+4. Custom className merging
+5. Ref forwarding
+6. ARIA attributes (if applicable)
 
-## Running Tests
+**Test assertions must match actual component classes** — always read the component file before writing tests.
+
+## Pre-commit Hooks
+
+Husky runs on commit:
+1. `check-component-tests.js` — Ensures all components have test files
+2. `validate-cva-props.js` — Validates CVA variant definitions match prop destructuring
+3. lint-staged: ESLint fix + `api:check` (breaking change detection) + `generate-registry`
+
+If `api:check` blocks a commit for intentional breaking changes, run `npm run api:snapshot` to update the baseline.
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/components/ui/*.tsx` | Source components — EDIT THESE |
+| `packages/cli/components.yaml` | Component registry definitions (YAML) |
+| `packages/cli/scripts/generate-registry.js` | Generates registry from YAML + source |
+| `packages/cli/scripts/check-integrity.js` | MD5 hash verification for changes |
+| `scripts/create-component.js` | New component generator |
+| `scripts/check-breaking-changes.js` | API regression detection |
+| `.api-snapshot.json` | Baseline for breaking change detection |
+
+## Publishing
 
 ```bash
-# Run all component tests
-npm test
+# CLI package
+cd packages/cli
+npm run integrity:snapshot
+# ... make changes & verify ...
+npm version patch
+npm run build
+npm publish                # Uses automation token from ~/.npmrc or NPM_TOKEN
 
-# Run CLI tests
-cd packages/cli && npm test
-
-# Watch mode
-npm run test:watch
+# MCP package
+cd packages/mcp
+npm version patch
+npm run build
+npm publish
 ```
