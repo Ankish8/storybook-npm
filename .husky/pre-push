@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# Block direct commits - only allow via /publish-all command
+# Block direct pushes - only allow via /publish-all command
 if [ "$MYOPERATOR_GIT_ALLOWED" != "1" ]; then
   echo ""
   echo "╔══════════════════════════════════════════════════════════════════╗"
-  echo "║                    ⛔ COMMIT BLOCKED ⛔                          ║"
+  echo "║                    ⛔ PUSH BLOCKED ⛔                            ║"
   echo "╠══════════════════════════════════════════════════════════════════╣"
   echo "║                                                                  ║"
-  echo "║  Direct 'git commit' is not allowed in this repository.         ║"
+  echo "║  Direct 'git push' is not allowed in this repository.           ║"
   echo "║                                                                  ║"
   echo "║  Use the /publish-all command instead, which ensures:           ║"
   echo "║    ✓ Proper version management                                  ║"
@@ -20,13 +20,4 @@ if [ "$MYOPERATOR_GIT_ALLOWED" != "1" ]; then
   exit 1
 fi
 
-echo "✓ Commit authorized via /publish-all"
-
-# Check that all components have test files
-node scripts/check-component-tests.js || exit 1
-
-# Validate CVA props alignment (prevents TypeScript consumer errors)
-node scripts/validate-cva-props.js || exit 1
-
-# Run lint-staged
-npx lint-staged
+echo "✓ Push authorized via /publish-all"
