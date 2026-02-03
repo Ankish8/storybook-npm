@@ -60,10 +60,6 @@ export async function sync(options: SyncOptions) {
     if (!exists) {
       toAdd.push(componentName)
     } else {
-      // Check if content differs (ignoring whitespace-only changes)
-      const existingContent = await fs.readFile(mainFilePath, 'utf-8')
-      const registryFile = component.files.find((f) => f.name === mainFileName)
-
       // Normalize content for comparison: trim lines, normalize line endings
       const normalizeForComparison = (content: string) =>
         content
@@ -73,12 +69,29 @@ export async function sync(options: SyncOptions) {
           .join('\n')
           .trim() // Remove leading/trailing whitespace
 
-      const existingNormalized = normalizeForComparison(existingContent)
-      const registryNormalized = registryFile
-        ? normalizeForComparison(registryFile.content)
-        : ''
+      // Check ALL files for multi-file components, not just main file
+      let needsUpdate = false
+      for (const registryFile of component.files) {
+        const filePath = path.join(targetDir, registryFile.name)
+        const fileExists = await fs.pathExists(filePath)
 
-      if (registryFile && existingNormalized !== registryNormalized) {
+        if (!fileExists) {
+          // Missing file = needs update
+          needsUpdate = true
+          break
+        }
+
+        const existingContent = await fs.readFile(filePath, 'utf-8')
+        const existingNormalized = normalizeForComparison(existingContent)
+        const registryNormalized = normalizeForComparison(registryFile.content)
+
+        if (existingNormalized !== registryNormalized) {
+          needsUpdate = true
+          break
+        }
+      }
+
+      if (needsUpdate) {
         toUpdate.push(componentName)
       } else {
         upToDate.push(componentName)
