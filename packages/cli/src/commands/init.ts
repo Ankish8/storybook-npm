@@ -900,13 +900,13 @@ export function cn(...inputs: ClassValue[]) {
     if (!(await fs.pathExists(postcssConfigPath))) {
       await fs.writeFile(postcssConfigPath, postcssConfigContent)
       postcssCreated = true
-    } else {
-      // Check if user wants to update existing config
+    } else if (tailwindVersion === 'v4') {
+      // Only ask about @tailwindcss/postcss for v4 - v3 uses standard tailwindcss plugin
       spinner.stop()
       const { updatePostcss } = await prompts({
         type: 'confirm',
         name: 'updatePostcss',
-        message: 'postcss.config.js exists. Update to use @tailwindcss/postcss?',
+        message: 'postcss.config.js exists. Update to use @tailwindcss/postcss (required for v4)?',
         initial: true,
       })
       spinner.start('Initializing project...')
@@ -916,6 +916,7 @@ export function cn(...inputs: ClassValue[]) {
         postcssCreated = true
       }
     }
+    // For v3, keep existing postcss.config.js - no changes needed
 
     // Install required dependencies automatically
     spinner.text = 'Installing dependencies...'
