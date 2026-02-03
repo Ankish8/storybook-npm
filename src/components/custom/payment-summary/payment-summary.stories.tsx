@@ -13,17 +13,15 @@ PaymentSummary displays a card with line-item rows and an optional totals sectio
 
 ## Installation
 
-This is a custom component (not available via CLI). Import directly from the package:
-
 \`\`\`bash
-npm install myoperator-ui
+npx myoperator-ui add payment-summary
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { PaymentSummary } from "myoperator-ui"
-import type { PaymentSummaryItem } from "myoperator-ui"
+import { PaymentSummary } from "@/components/custom/payment-summary"
+import type { PaymentSummaryItem } from "@/components/custom/payment-summary"
 \`\`\`
 
 ## Design Tokens

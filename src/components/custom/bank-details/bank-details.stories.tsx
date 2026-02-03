@@ -14,17 +14,15 @@ BankDetails displays bank account information inside a collapsible accordion car
 
 ## Installation
 
-This is a custom component (not available via CLI). Import directly from the package:
-
 \`\`\`bash
-npm install myoperator-ui
+npx myoperator-ui add bank-details
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { BankDetails } from "myoperator-ui"
-import type { BankDetailsProps, BankDetailItem } from "myoperator-ui"
+import { BankDetails } from "@/components/custom/bank-details"
+import type { BankDetailsProps, BankDetailItem } from "@/components/custom/bank-details"
 \`\`\`
 
 ## Design Tokens

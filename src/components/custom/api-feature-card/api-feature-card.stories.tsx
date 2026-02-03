@@ -14,16 +14,14 @@ ApiFeatureCard displays an API feature with icon, title, description, action but
 
 ## Installation
 
-This is a custom component (not available via CLI). Import directly from the package:
-
 \`\`\`bash
-npm install myoperator-ui
+npx myoperator-ui add api-feature-card
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { ApiFeatureCard } from "myoperator-ui"
+import { ApiFeatureCard } from "@/components/custom/api-feature-card"
 \`\`\`
 
 ## Design Tokens
@@ -133,7 +131,7 @@ import { ApiFeatureCard } from "myoperator-ui"
 ### Calling API Example
 
 \`\`\`tsx
-import { ApiFeatureCard } from "myoperator-ui"
+import { ApiFeatureCard } from "@/components/custom/api-feature-card"
 import { Phone } from "lucide-react"
 
 <ApiFeatureCard
@@ -152,7 +150,7 @@ import { Phone } from "lucide-react"
 ### WhatsApp API Example
 
 \`\`\`tsx
-import { ApiFeatureCard } from "myoperator-ui"
+import { ApiFeatureCard } from "@/components/custom/api-feature-card"
 import { MessageCircle } from "lucide-react"
 
 <ApiFeatureCard

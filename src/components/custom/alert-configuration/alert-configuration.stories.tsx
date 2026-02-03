@@ -15,16 +15,14 @@ AlertConfiguration displays current alert thresholds for minimum balance and top
 
 ## Installation
 
-This is a custom component (not available via CLI). Import directly from the package:
-
 \`\`\`bash
-npm install myoperator-ui
+npx myoperator-ui add alert-configuration
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { AlertConfiguration, AlertValuesModal } from "myoperator-ui"
+import { AlertConfiguration, AlertValuesModal } from "@/components/custom/alert-configuration"
 \`\`\`
 
 ## Design Tokens
@@ -127,7 +125,7 @@ import { AlertConfiguration, AlertValuesModal } from "myoperator-ui"
 
 \`\`\`tsx
 import { useState } from "react"
-import { AlertConfiguration, AlertValuesModal } from "myoperator-ui"
+import { AlertConfiguration, AlertValuesModal } from "@/components/custom/alert-configuration"
 
 function PaymentPage() {
   const [balance, setBalance] = useState(250)

@@ -322,6 +322,7 @@ export default {
   important: true,  // Required to override Bootstrap styles` : ''}
   content: [
     "./src/components/ui/**/*.{js,ts,jsx,tsx}",
+    "./src/components/custom/**/*.{js,ts,jsx,tsx}",
     "./src/modules/Shadcn/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {

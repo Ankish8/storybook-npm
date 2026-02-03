@@ -70,7 +70,7 @@ export const ApiFeatureCard = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-6 overflow-hidden",
+          "flex flex-col gap-6 rounded-lg border border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] p-6 overflow-hidden",
           className
         )}
         {...props}
@@ -79,18 +79,18 @@ export const ApiFeatureCard = React.forwardRef<
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             {/* Icon Container */}
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-semantic-info-surface">
-              <span className="text-[var(--color-primary-950)] [&_svg]:h-5 [&_svg]:w-5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-[var(--semantic-info-surface,#ECF1FB)]">
+              <span className="text-[var(--semantic-info-primary,#4275D6)] [&_svg]:h-5 [&_svg]:w-5">
                 {icon}
               </span>
             </div>
 
             {/* Title and Description */}
             <div className="flex flex-col gap-1.5">
-              <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+              <h3 className="m-0 text-base font-semibold text-[var(--semantic-text-primary,#181D27)]">
                 {title}
               </h3>
-              <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px]">
+              <p className="m-0 text-sm text-[var(--semantic-text-muted,#717680)] tracking-[0.035px]">
                 {description}
               </p>
             </div>
@@ -110,8 +110,8 @@ export const ApiFeatureCard = React.forwardRef<
 
         {/* Capabilities Section */}
         {capabilities.length > 0 && (
-          <div className="flex flex-col gap-2.5 border-t border-semantic-border-layout bg-[var(--color-neutral-50)] -mx-6 -mb-6 p-6">
-            <span className="text-sm font-semibold uppercase tracking-[0.014px] text-[var(--color-neutral-400)]">
+          <div className="flex flex-col gap-2.5 border-t border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--color-neutral-50,#FAFAFA)] -mx-6 -mb-6 p-6">
+            <span className="text-sm font-semibold uppercase tracking-[0.014px] text-[var(--color-neutral-400,#A4A7AE)]">
               {capabilitiesLabel}
             </span>
             <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -120,8 +120,8 @@ export const ApiFeatureCard = React.forwardRef<
                   key={capability.id}
                   className="flex items-center gap-1.5"
                 >
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-neutral-400)]" />
-                  <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--semantic-info-primary,#4275D6)]" />
+                  <span className="text-sm text-[var(--semantic-text-primary,#181D27)] tracking-[0.035px]">
                     {capability.label}
                   </span>
                 </div>

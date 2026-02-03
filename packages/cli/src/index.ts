@@ -2,6 +2,7 @@
 import { Command } from 'commander'
 import { createRequire } from 'module'
 import { add } from './commands/add.js'
+import { fix } from './commands/fix.js'
 import { init } from './commands/init.js'
 import { sync } from './commands/sync.js'
 import { update } from './commands/update.js'
@@ -49,5 +50,10 @@ program
   .option('-y, --yes', 'Skip confirmation prompt', false)
   .option('-p, --path <path>', 'Path to components directory', 'src/components/ui')
   .action(sync)
+
+program
+  .command('fix')
+  .description('Fix configuration issues (e.g., missing Tailwind content paths)')
+  .action(fix)
 
 program.parse()

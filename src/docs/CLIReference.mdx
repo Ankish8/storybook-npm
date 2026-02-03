@@ -22,6 +22,12 @@ To ensure you're using the latest version:
 npx myoperator-ui@latest [command]
 ```
 
+To test beta versions (pre-release features):
+
+```bash
+npx myoperator-ui@beta [command]
+```
+
 ---
 
 ## Commands
@@ -93,6 +99,11 @@ npx myoperator-ui add
       <td style={{ padding: '0.75rem' }}><code>-p</code></td>
       <td style={{ padding: '0.75rem' }}>Custom path (default: <code>src/components/ui</code>)</td>
     </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--category &lt;cat&gt;</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-c</code></td>
+      <td style={{ padding: '0.75rem' }}>Filter by category: <code>core</code>, <code>form</code>, <code>data</code>, <code>overlay</code>, <code>feedback</code>, <code>layout</code>, <code>custom</code></td>
+    </tr>
   </tbody>
 </table>
 
@@ -110,6 +121,12 @@ npx myoperator-ui add button --overwrite
 
 # Add to custom directory
 npx myoperator-ui add button -p src/ui
+
+# Add all form components
+npx myoperator-ui add --all --category form
+
+# Add all custom components (complex, multi-file components)
+npx myoperator-ui add --all --category custom
 ```
 
 ---
@@ -195,6 +212,117 @@ npx myoperator-ui@latest update button -y
 - `--backup` creates timestamped backups (e.g., `button.tsx.backup.1700000000`)
 - Only updates components that are already installed
 - Skips components with no changes
+
+---
+
+### `sync` - Sync All Components
+
+Automatically add new components and update existing ones in a single command. This is the recommended way to keep your project up-to-date.
+
+> **Recommended:** Use `sync` instead of manually running `add` and `update` separately.
+
+```bash
+# Sync all components (add new + update existing)
+npx myoperator-ui@latest sync
+
+# Sync without confirmation prompts
+npx myoperator-ui@latest sync -y
+```
+
+**What it does:**
+1. Scans all available components in the registry
+2. Identifies components not yet installed → **adds them**
+3. Identifies installed components with updates → **updates them**
+4. Shows a summary before making changes
+5. Installs internal dependencies automatically
+
+**Options:**
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem' }}>
+  <thead>
+    <tr style={{ borderBottom: '2px solid #E5E7EB' }}>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Option</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Short</th>
+      <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--yes</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-y</code></td>
+      <td style={{ padding: '0.75rem' }}>Skip confirmation prompt</td>
+    </tr>
+    <tr style={{ borderBottom: '1px solid #E5E7EB' }}>
+      <td style={{ padding: '0.75rem' }}><code>--path &lt;path&gt;</code></td>
+      <td style={{ padding: '0.75rem' }}><code>-p</code></td>
+      <td style={{ padding: '0.75rem' }}>Custom path (default: <code>src/components/ui</code>)</td>
+    </tr>
+  </tbody>
+</table>
+
+**Example output:**
+
+```
+  Scanning for 32 components...
+
+  Summary:
+    New components to add: 5
+    Components to update: 2
+    Already up to date: 25
+
+  Will add:
+    + alert-configuration
+    + endpoint-details
+    + payment-summary
+    + bank-details
+    + wallet-topup
+
+  Will update:
+    ~ button
+    ~ dialog
+
+  ? Proceed with 5 additions and 2 updates? (Y/n)
+```
+
+**Sync vs Update:**
+- `sync` adds **new** components + updates **existing** ones
+- `update` only updates components already in your project
+- Use `sync` to stay current with the full component library
+
+---
+
+### `fix` - Fix Configuration
+
+Diagnose and fix configuration issues without re-initializing your project.
+
+```bash
+# Check and fix configuration issues
+npx myoperator-ui fix
+```
+
+**What it does:**
+1. Checks if Tailwind config has required content paths
+2. Adds missing paths (e.g., `src/components/custom/` for custom components)
+3. Warns about missing theme files or outdated configurations
+4. Preserves your existing configuration (non-destructive)
+
+> **Note:** The `add` and `sync` commands automatically fix Tailwind config when installing custom components. Use `fix` for diagnostics or if you manually copied components.
+
+**When to use:**
+- As a diagnostic tool to check configuration health
+- After manually copying component files (not using CLI)
+- When styles aren't applying and you're unsure why
+
+**Example output:**
+
+```
+  myOperator UI - Fix Configuration
+
+  ✓ Updated tailwind.config.js with custom components path
+  ✓ Configuration looks good!
+
+  ℹ Tailwind prefix: "tw-"
+```
 
 ---
 

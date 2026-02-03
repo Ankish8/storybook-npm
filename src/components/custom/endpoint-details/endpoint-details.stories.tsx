@@ -17,16 +17,14 @@ Supports two variants:
 
 ## Installation
 
-This is a custom component (not available via CLI). Import directly from the package:
-
 \`\`\`bash
-npm install myoperator-ui
+npx myoperator-ui add endpoint-details
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { EndpointDetails } from "myoperator-ui"
+import { EndpointDetails } from "@/components/custom/endpoint-details"
 \`\`\`
 
 ## Design Tokens
@@ -112,7 +110,7 @@ import { EndpointDetails } from "myoperator-ui"
 ### Calling API (Default)
 
 \`\`\`tsx
-import { EndpointDetails } from "myoperator-ui"
+import { EndpointDetails } from "@/components/custom/endpoint-details"
 
 function CallingApiSettings() {
   return (
@@ -133,7 +131,7 @@ function CallingApiSettings() {
 ### WhatsApp API
 
 \`\`\`tsx
-import { EndpointDetails } from "myoperator-ui"
+import { EndpointDetails } from "@/components/custom/endpoint-details"
 
 function WhatsAppApiSettings() {
   return (

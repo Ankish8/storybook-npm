@@ -5,6 +5,7 @@ import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry } from '../utils/registry.js'
 import { configExists, getTailwindPrefix } from '../utils/config.js'
+import { ensureCustomComponentsInTailwindConfig } from '../utils/tailwind-fix.js'
 
 interface SyncOptions {
   yes: boolean
@@ -240,6 +241,12 @@ export async function sync(options: SyncOptions) {
     if (dependencies.size > 0) {
       console.log(chalk.yellow('\n  Required dependencies:'))
       console.log(chalk.cyan(`    npm install ${Array.from(dependencies).join(' ')}`))
+    }
+
+    // Automatically fix Tailwind config when custom components are installed
+    const hasCustomComponents = installed.some((file) => file.basePath.includes('custom'))
+    if (hasCustomComponents) {
+      await ensureCustomComponentsInTailwindConfig(cwd)
     }
 
     console.log('')

@@ -20,7 +20,7 @@ npx myoperator-ui add readable-field
 ## Import
 
 \`\`\`tsx
-import { ReadableField } from "myoperator-ui"
+import { ReadableField } from "@/components/ui/readable-field"
 \`\`\`
 
 ## Design Tokens
