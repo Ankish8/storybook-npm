@@ -1,495 +1,359 @@
 ---
 description: Create a new React component with intelligent analysis, design system validation, and auto-generated tests
-argument-hint: Optional component name (kebab-case)
+argument-hint: Optional screenshot path
 allowed-tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "AskUserQuestion", "Task", "Skill"]
+context: fork
 ---
 
 # Create Component Workflow
 
 You are creating a new React component for the myOperator UI component library. Follow this comprehensive workflow:
 
-## Phase 1: Component Discovery & Analysis
+## Phase 1: Screenshot Analysis & Component Discovery
 
-1. **Choose starting approach** using AskUserQuestion:
-   - Question: "How would you like to start creating your component?"
-   - Options:
-     - "I have a screenshot or Figma design" → Go to Step 1a (visual-first)
-     - "I'll provide a name manually" → Go to Step 1d (manual)
+### Step 1: Ask for Screenshot (REQUIRED - DO THIS FIRST)
 
-   **1a. Gather design reference** (visual-first path) using AskUserQuestion:
-   - Question: "How would you like to provide the design?"
-   - Options:
-     - "Figma link" → Extract fileKey and nodeId, fetch via `mcp__figma__get_screenshot` + `mcp__figma__get_design_context`. Store the design context for reuse in Phase 2.
-     - "Screenshot file path" → Read image file using the Read tool (Claude is multimodal). Store analysis for Phase 2.
+Your FIRST action must be to call AskUserQuestion with this exact format:
+- question: "Please provide a screenshot of the component you want to create."
+- header: "Screenshot"
+- options:
+  - label: "I'll paste/drag the screenshot", description: "I will paste or drag-drop the screenshot in the next message"
+  - label: "I have a file path", description: "I will provide the path to the screenshot file"
+- multiSelect: false
 
-   **1b. Auto-suggest component name** (visual-first path):
-   - Analyze the fetched design to infer a descriptive component name (kebab-case)
-   - Using AskUserQuestion: "Based on the design, I suggest the name: `<suggested-name>`. Use this name?"
-   - Options:
-     - "Yes, use `<suggested-name>`"
-     - "No, I'll provide a different name" → Collect custom name via free text
-   - Also collect a brief description of the component
+**IMPORTANT:** Do NOT suggest component names like "avatar", "skeleton", "progress". Do NOT ask about component type yet. Just ask for the screenshot and wait.
 
-   **1c.** Continue to Step 2 (existence check) with the chosen name.
+### Step 2: Read and Analyze the Screenshot
 
-   **1d. Collect component name manually** (manual path):
-   - Question: "What component would you like to create?"
-   - Collect: Component name (kebab-case), brief description
+Once you receive the screenshot:
+- Use the Read tool to view the screenshot (Claude is multimodal)
+- Analyze the design to determine:
+  - **Component structure**: What elements are visible (buttons, inputs, cards, lists, etc.)
+  - **Component purpose**: What does this component do?
+  - **Component type inference**: Is this a simple UI primitive or a complex custom component?
+  - **Suggested names**: Generate 3-4 kebab-case name suggestions based on the design
+  - **Description**: Generate a brief description of the component
 
-2. **Check if component exists**:
-   - Search `src/components/ui/` for UI components
-   - Search `src/components/custom/` for custom components
-   - If found, inform user and ask if they want to:
-     - Create a variant instead
-     - Create a different component
-     - Proceed anyway
+### Step 3: Present Name Options
 
-3. **Deep component discovery** — Build a Component Capability Map:
-   - **a. Fetch ALL components**: Glob both `src/components/ui/*.tsx` and `src/components/custom/*/*.tsx` (excluding `__tests__/*` and `*.stories.tsx`)
-   - **b. Extract metadata per component** using Grep:
-     - `export interface.*Props` → props interfaces
-     - `variants:` blocks → CVA variants and their names
-     - `export {` or `export const` → public exports
-   - **c. Build and present a Capability Map** to the user:
-     ```
-     | Component | Location | Variants | Key Props |
-     |-----------|----------|----------|-----------|
-     | Button    | ui/      | 7 variants, 4 sizes | onClick, loading, leftIcon |
-     | Badge     | ui/      | 5 variants | — |
-     | WalletTopup | custom/ | —       | amounts, onPay, currency |
-     ```
-   - **d. Semantic similarity analysis** — Compare the new component's name AND description against the map. Suggest one of:
-     - **VARIANT** of an existing component (if same structure, different style)
-     - **COMPOSITION** of multiple existing components (if new component combines them)
-     - **NEW standalone** component (if genuinely novel)
+Using AskUserQuestion, present 3-4 name suggestions based on YOUR ANALYSIS of the screenshot:
+- question: "Based on the screenshot, here are suggested names for this component:"
+- Options should be based on what you SEE in the screenshot, each with a description
+- Example: "feature-card" - "Card displaying a feature with icon, title, and capabilities"
+- User can also type a custom name via "Other"
 
-4. **Determine component type** using AskUserQuestion:
-   - Question: "Where should this component be created?"
-   - Options:
-     - `src/components/ui/` - "UI component (distributed via CLI)"
-     - `src/components/custom/` - "Custom component (project-specific, not in CLI)"
+### Step 4: Confirm Component Type
 
-5. **Select Storybook sub-group** (only if "Custom component" was selected in Step 4):
-   - Scan existing custom component story titles:
-     ```
-     Grep for `title: "Custom/` in src/components/custom/**/*.stories.tsx
-     Parse sub-groups from pattern "Custom/<SubGroup>/<Name>"
-     ```
-   - Using AskUserQuestion: "Which Storybook sub-group should this component belong to?"
-     - Each existing sub-group discovered (e.g., "Plan & Payment")
-     - "Create a new sub-group" → follow-up free text input for the sub-group name
-     - "None (top-level Custom/)"
-   - Store the selected sub-group for use in Phase 7 story title:
-     - With sub-group: `title: "Custom/<SubGroup>/ComponentName"`
-     - Without sub-group: `title: "Custom/ComponentName"`
+Based on screenshot analysis, pre-determine if this looks like:
+- A simple, reusable UI primitive (button, badge, input) → UI component
+- A complex, composite component with multiple elements → Custom component
 
-6. **Check for multi-file structure**:
-   - Ask if component needs multiple files (like event-selector, key-value-input)
-   - If yes, ask for subcomponent names
+Using AskUserQuestion:
+- question: "Based on the design, this appears to be a [Custom/UI] component. Confirm the type:"
+- Options:
+  - "UI component (src/components/ui/)" - "Distributed via CLI, simple reusable primitives"
+  - "Custom component (src/components/custom/)" - "Complex composites, not in CLI"
 
-## Phase 2: Design Context Gathering
+### Step 5: Select Folder Location (ONLY if Custom component)
 
-> **Conditional**: If design context was already gathered during Phase 1 (visual-first flow), reuse the stored Figma/screenshot data — do NOT re-fetch the same link. Skip directly to Step 3 (multi-state analysis).
+First, scan existing Storybook sub-groups:
+```
+Grep for `title: "Custom/` in src/components/custom/**/*.stories.tsx
+Parse sub-groups from pattern "Custom/<SubGroup>/<Name>"
+```
 
-1. **Ask for Figma link** (skip if already gathered in Phase 1) using AskUserQuestion:
-   - Question: "Do you have a Figma design for this component?"
-   - Options:
-     - "Yes, I have a Figma link" (provide input for URL)
-     - "No, I'll describe it manually"
+Using AskUserQuestion:
+- question: "Which Storybook folder/sub-group should this component belong to?"
+- Options (dynamically generated):
+  - Each existing sub-group discovered (e.g., "Plan & Payment", "API & Features")
+  - "Create a new folder" → Follow-up question for folder name
 
-2. **If Figma provided** (skip if already gathered in Phase 1):
-   - Extract fileKey and nodeId from URL
-   - Use `mcp__figma__get_design_context` to fetch design
-   - Use `mcp__figma__get_screenshot` to get visual reference
-   - Analyze colors and map to CSS variables using design-system-validator skill
+If "Create a new folder" selected:
+- Suggest a folder name based on screenshot analysis
+- question: "What should the new folder be named?"
+- Options: Suggested name + "Other"
 
-3. **Multi-state Figma analysis** — Ask if the component has multiple visual states/modes using AskUserQuestion:
-   - Question: "Does this component have multiple visual states or modes? (e.g., default, loading, success, error, empty)"
-   - Options:
-     - "Yes, I have additional Figma links for other states"
-     - "Yes, but all states are in the same Figma frame"
-     - "No, single state only"
-   - If additional links provided, fetch each with `mcp__figma__get_design_context` and `mcp__figma__get_screenshot`
-   - Create a **State Inventory Table**:
-     ```markdown
-     | State | Trigger | Key Visual Differences | Figma Node |
-     |-------|---------|----------------------|------------|
-     | Default | Initial render | Base layout, primary CTA | node-id=X |
-     | Success | After action completes | Green CTA, confirmation text | node-id=Y |
-     | Error | Validation fails | Red border, error message | node-id=Z |
-     ```
+### Step 6: Check if Component Exists
 
-4. **Interaction flow mapping** — Map all user interactions to state changes:
-   - Identify every interactive element (click, type, submit, toggle, hover)
-   - Map each interaction to its resulting state change and callback
-   - Create an **Interaction Flow Map**:
-     ```markdown
-     | Element | Action | State Change | Callback Prop |
-     |---------|--------|-------------|---------------|
-     | Input field | onChange | Updates value state | `onValueChange` |
-     | Submit button | onClick | Default → Loading → Success/Error | `onSubmit` |
-     | Close button | onClick | Closes component | `onClose` |
-     ```
-   - This map becomes the implementation checklist for Phase 5 and test checklist for Phase 6
+- Search `src/components/ui/` for UI components
+- Search `src/components/custom/` for custom components
+- If found, inform user and ask:
+  - "Create a variant instead"
+  - "Create a different component"
+  - "Proceed anyway (will overwrite)"
 
-5. **If manual description**:
-   - Ask user to describe:
-     - Visual appearance (colors, spacing, typography)
-     - Variants needed (primary, secondary, destructive, etc.)
-     - Sizes (sm, default, lg, xl)
-     - Interactive states (hover, focus, active, disabled)
+## Phase 2: Figma Design Context (REQUIRED)
+
+### Step 1: Ask for Figma Link (REQUIRED - no skip option)
+
+Using AskUserQuestion:
+- question: "Please provide the Figma link for this component. This is required for accurate design implementation."
+- header: "Figma"
+- Options:
+  - "I'll paste the Figma URL" - "Provide the Figma design link"
+  - "I need help finding the link" - "Show me how to get a Figma link"
+
+### Step 2: Fetch Figma Design
+
+- Extract fileKey and nodeId from URL pattern: `https://figma.com/design/:fileKey/:fileName?node-id=:nodeId`
+- Use `mcp__figma__get_design_context` to fetch design metadata
+- Use `mcp__figma__get_screenshot` to get visual reference
+- Store design context for component generation
+
+### Step 3: Analyze Figma Design
+
+- Extract colors and map to CSS variables using design-system-validator skill
+- Identify typography (font sizes, weights, line heights)
+- Identify spacing values
+- Identify interactive states (hover, focus, active, disabled)
+
+### Step 4: Multi-state Analysis
+
+Using AskUserQuestion:
+- question: "Does this component have multiple visual states? (e.g., default, loading, success, error)"
+- Options:
+  - "Yes, I have additional Figma links for other states" → Collect additional links
+  - "Yes, but all states are in the same Figma frame" → Analyze single frame for states
+  - "No, single state only"
+
+If multiple states, create a **State Inventory Table**:
+```markdown
+| State | Trigger | Key Visual Differences | Figma Node |
+|-------|---------|----------------------|------------|
+| Default | Initial render | Base layout, primary CTA | node-id=X |
+| Success | After action completes | Green CTA, confirmation text | node-id=Y |
+```
 
 ## Phase 3: Subcomponent Identification
 
-1. **Analyze design for reusable components**:
-   - Check if design includes text inputs → suggest using `text-field` or `input`
-   - Check if design includes buttons → suggest using `button`
-   - Check if design includes selects → suggest using `select-field`
-   - Check if design includes checkboxes → suggest using `checkbox`
-   - Check if design includes switches → suggest using `switch`
-   - Check if design includes dialogs/modals → suggest using `dialog` or `form-modal`
-   - Check if design includes dropdowns → suggest using `dropdown-menu`
-   - Check if design includes tooltips → suggest using `tooltip`
-   - Check if design includes accordions → suggest using `accordion`
-   - Check if design includes badges → suggest using `badge`
-   - Check if design includes tags → suggest using `tag`
-   - Check if design includes alerts → suggest using `alert`
+### Step 1: Analyze Figma Design for Reusable Components
 
-2. **Present identified subcomponents** using AskUserQuestion:
-   - List all identified subcomponents
-   - Ask user to confirm which ones to use
-   - Multi-select: true
+Check if design includes these patterns and map to existing components:
+- Text inputs → suggest using `text-field` or `input`
+- Buttons → suggest using `button`
+- Select dropdowns → suggest using `select-field`
+- Checkboxes → suggest using `checkbox`
+- Switches/toggles → suggest using `switch`
+- Dialogs/modals → suggest using `dialog` or `form-modal`
+- Dropdown menus → suggest using `dropdown-menu`
+- Tooltips → suggest using `tooltip`
+- Accordions → suggest using `accordion`
+- Badges/status indicators → suggest using `badge`
+- Tags → suggest using `tag`
+- Alerts → suggest using `alert`
+
+### Step 2: Present Identified Subcomponents
+
+Using AskUserQuestion:
+- question: "I identified these existing components that can be reused. Confirm which to use:"
+- List all identified subcomponents with their purpose
+- multiSelect: true
+- Options example:
+  - "Button - For the action button"
+  - "Badge - For status indicators"
+  - "None of these"
 
 ## Phase 4: Design System Validation
 
 Activate the **design-system-validator** skill to:
 
-1. **Map colors to CSS variables**:
-   - NEVER use hardcoded hex colors (`#F3F4F6`, `#343E55`)
-   - ALWAYS use semantic tokens:
-     - Backgrounds: `bg-background`, `bg-card`, `bg-popover`, `bg-primary`, `bg-secondary`, `bg-muted`, `bg-accent`, `bg-destructive`
-     - Text: `text-foreground`, `text-card-foreground`, `text-primary-foreground`, `text-muted-foreground`
-     - Borders: `border-border`, `border-input`
-     - Semantic colors: `text-semantic-text-primary`, `text-semantic-text-muted`, `bg-semantic-bg-primary`, `border-semantic-border-layout`
-   - **Verify tokens via codebase grep** (MANDATORY):
-     - Before using any semantic token, grep `src/index.css` for the exact CSS variable name
-     - Example: Before using `bg-semantic-success-primary`, verify `--semantic-success-primary` exists in `src/index.css`
-     - If variable not found, check for alternative naming (e.g., `--success` vs `--semantic-success-primary`)
-     - Document any tokens that require creation
+### Step 1: Map Figma Colors to CSS Variables
 
-2. **Validate responsive design**:
-   - Ensure component uses responsive breakpoints (`sm:`, `md:`, `lg:`, `xl:`)
-   - Check for responsive padding, margin, font sizes
-   - Validate mobile-first approach
+- NEVER use hardcoded hex colors (`#F3F4F6`, `#343E55`)
+- ALWAYS use semantic tokens:
+  - Backgrounds: `bg-background`, `bg-card`, `bg-popover`, `bg-primary`, `bg-secondary`, `bg-muted`, `bg-accent`, `bg-destructive`
+  - Text: `text-foreground`, `text-card-foreground`, `text-primary-foreground`, `text-muted-foreground`
+  - Borders: `border-border`, `border-input`
+  - Semantic colors: `text-semantic-text-primary`, `text-semantic-text-muted`, `bg-semantic-bg-primary`, `border-semantic-border-layout`
 
-3. **Check accessibility**:
-   - Ensure proper ARIA attributes
-   - Verify keyboard navigation support
-   - Check focus states
+**Verify tokens via codebase grep** (MANDATORY):
+- Before using any semantic token, grep `src/index.css` for the exact CSS variable name
+- If variable not found, check for alternative naming
+- Document any tokens that require creation
+
+### Step 2: Validate Responsive Design
+
+- Ensure component uses responsive breakpoints (`sm:`, `md:`, `lg:`, `xl:`)
+- Check for responsive padding, margin, font sizes
+- Validate mobile-first approach
+
+### Step 3: Check Accessibility
+
+- Ensure proper ARIA attributes
+- Verify keyboard navigation support
+- Check focus states
 
 ## Phase 5: Component Generation
 
-1. **Create component file(s)**:
-   - Use CVA (class-variance-authority) for variants
-   - Follow the template pattern from existing components
-   - Include proper TypeScript types
-   - Add JSDoc comments with examples
-   - Export variants for reusability
-   - Use `React.forwardRef` for ref forwarding
-   - Import identified subcomponents
+### Step 1: Create Component File(s)
 
-1b. **Detect validation patterns** — If the component contains input fields paired with action buttons (e.g., text field + submit button):
-   - Prompt user for validation requirements using AskUserQuestion:
-     - Question: "This component has input + action button. What validation is needed?"
-     - Options:
-       - "Regex pattern validation (e.g., phone number, email)"
-       - "Custom validator function prop"
-       - "Both regex and custom validator"
-       - "No validation needed"
-   - If validation needed, include a `useMemo`-based validation pattern:
-     ```tsx
-     const isValid = React.useMemo(() => {
-       if (!value) return false
-       if (pattern && !pattern.test(value)) return false
-       if (validate && !validate(value)) return false
-       return true
-     }, [value, pattern, validate])
-     ```
-   - Add props: `pattern?: RegExp`, `validate?: (value: string) => boolean`, `errorMessage?: string`
+Based on Figma design:
+- Use CVA (class-variance-authority) for variants
+- Follow the template pattern from existing components
+- Include proper TypeScript types
+- Add JSDoc comments with examples
+- Export variants for reusability
+- Use `React.forwardRef` for ref forwarding
+- Import identified subcomponents
+- **Extend `React.HTMLAttributes`** to allow passing data-testid, aria-*, etc.
+- Spread `...props` to the root element
 
-1c. **Default icon detection** — When Figma design includes icons on interactive elements (buttons, inputs, badges):
-   - Match each icon to the closest `lucide-react` equivalent
-   - Set matched icons as **default prop values** (not purely optional):
-     ```tsx
-     interface ComponentProps {
-       icon?: LucideIcon  // defaults to matched icon
-     }
-     // In component:
-     const IconComponent = icon ?? DefaultMatchedIcon
-     ```
-   - Use AskUserQuestion to confirm icon matches if ambiguous
+### Step 2: For UI Components (`src/components/ui/`)
 
-1d. **CTA state awareness** — If the component has multiple states with different CTA button styles (e.g., "Add" vs "Success" states):
-   - Detect distinct button styles across component states from the State Inventory Table (Phase 2)
-   - Prompt for styling approach using AskUserQuestion:
-     - Question: "The design has different CTA styles across states. How should these be styled?"
-     - Options:
-       - "CVA variants for each CTA state"
-       - "Conditional className based on component state"
-       - "Separate button components per state"
-   - **Enforce semantic CSS variables** for all CTA colors:
-     - Use `bg-primary`, `bg-destructive`, `bg-semantic-success-primary` etc.
-     - NEVER use hardcoded Tailwind colors (`bg-emerald-600`, `bg-blue-500`)
+```tsx
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
 
-1e. **Prompt for domain-specific props** — Beyond the standard props (`className`, `variant`, `size`, `ref`, `children`), ask the user what additional props this component needs:
-   - Using AskUserQuestion, present props inferred from the Figma analysis and Interaction Flow Map:
-     - Question: "I've inferred these domain-specific props from the design. Which do you want, and are there any others?"
-     - Multi-select: true
-     - List inferred props (e.g., `amounts`, `currency`, `onSubmit`, `voucherLink`)
-   - Allow user to add custom props not visible in the design
-   - Categorize accepted props into:
-     - **Data props**: Values the component displays (e.g., `amounts: number[]`, `currency: string`)
-     - **Callback props**: Event handlers (e.g., `onSubmit`, `onAmountSelect`, `onValueChange`)
-     - **Customization props**: Override defaults (e.g., `voucherLink`, `headerIcon`, `ctaLabel`)
-   - For each accepted prop, define:
-     - TypeScript type (prefer specific types over `string` — e.g., `currency?: "INR" | "USD"` or a generic)
-     - Whether required or optional
-     - Default value if optional
+const componentVariants = cva(
+  "base-classes",
+  {
+    variants: {
+      variant: { /* use CSS variables */ },
+      size: { /* responsive sizes */ },
+    },
+    defaultVariants: { /* ... */ },
+  }
+)
 
-2. **For UI components** (`src/components/ui/`):
-   ```tsx
-   import * as React from "react"
-   import { cva, type VariantProps } from "class-variance-authority"
-   import { cn } from "@/lib/utils"
+export interface ComponentProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof componentVariants> {}
 
-   const componentVariants = cva(
-     "base-classes",
-     {
-       variants: {
-         variant: { /* use CSS variables */ },
-         size: { /* responsive sizes */ },
-       },
-       defaultVariants: { /* ... */ },
-     }
-   )
+const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
+  ({ className, variant, size, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(componentVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+)
+Component.displayName = "Component"
 
-   export interface ComponentProps
-     extends React.HTMLAttributes<HTMLDivElement>,
-       VariantProps<typeof componentVariants> {}
+export { Component, componentVariants }
+```
 
-   const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
-     ({ className, variant, size, ...props }, ref) => (
-       <div
-         ref={ref}
-         className={cn(componentVariants({ variant, size, className }))}
-         {...props}
-       />
-     )
-   )
-   Component.displayName = "Component"
+### Step 3: For Custom Components (`src/components/custom/`)
 
-   export { Component, componentVariants }
-   ```
-
-3. **For custom multi-file components** (`src/components/custom/`):
-   - Create directory: `src/components/custom/component-name/`
-   - Create main component file
-   - Create subcomponent files
-   - Create types file if needed
-   - Create index.ts with exports
+- Create directory: `src/components/custom/component-name/`
+- Create main component file
+- Create subcomponent files if needed
+- Create types file if needed
+- Create index.ts with exports
 
 ## Phase 6: Test Generation
 
-Activate auto-test generation to create comprehensive test file:
+### Required Test Cases
 
-1. **Required test cases**:
-   - ✓ Renders children correctly
-   - ✓ All variants render with correct classes
-   - ✓ All sizes render with correct classes
-   - ✓ Custom className is applied
-   - ✓ Ref forwarding works
-   - ✓ Additional props are spread
-   - ✓ Type compatibility tests
+- ✓ Renders correctly
+- ✓ All variants render with correct classes
+- ✓ All sizes render with correct classes
+- ✓ Custom className is applied
+- ✓ Ref forwarding works
+- ✓ Additional props are spread (data-testid, aria-*, etc.)
+- ✓ Interactive behavior (clicks, callbacks)
 
-2. **Test assertions must match actual classes**:
-   - Read the component file first
-   - Extract actual CVA classes
-   - Use those EXACT classes in test assertions
-   - Example: If component uses `bg-primary`, test for `bg-primary` (NOT `bg-[#343E55]`)
+### Test Assertions
 
-3. **Test file template**:
-   ```tsx
-   import { describe, it, expect } from 'vitest'
-   import { render, screen } from '@testing-library/react'
-   import { Component } from '../component'
+- Read the component file first
+- Extract actual CVA classes
+- Use those EXACT classes in test assertions
 
-   describe('Component', () => {
-     it('renders children correctly', () => {
-       render(<Component>Test</Component>)
-       expect(screen.getByText('Test')).toBeInTheDocument()
-     })
+### Test File Location
 
-     it.each([
-       ['default', 'expected-class-1', 'expected-class-2'],
-       ['primary', 'expected-class-1', 'expected-class-2'],
-     ] as const)('renders %s variant', (variant, class1, class2) => {
-       render(<Component variant={variant} data-testid="el">Test</Component>)
-       const element = screen.getByTestId('el')
-       expect(element).toHaveClass(class1)
-       expect(element).toHaveClass(class2)
-     })
-
-     it('forwards ref correctly', () => {
-       const ref = { current: null }
-       render(<Component ref={ref}>Test</Component>)
-       expect(ref.current).toBeInstanceOf(HTMLDivElement)
-     })
-   })
-   ```
+- UI components: `src/components/ui/__tests__/<component>.test.tsx`
+- Custom components: `src/components/custom/<component>/__tests__/<component>.test.tsx`
 
 ## Phase 7: Storybook Story Generation
 
 Activate the **storybook-generator** skill to create comprehensive documentation:
 
-1. **Follow the Button/AlertConfiguration pattern**:
-   - Installation section with CLI command
-   - Import statement
-   - Design Tokens table (Token | CSS Variable | Usage | Preview)
-   - Typography table if applicable (Element | Font Size | Line Height | Weight)
-   - Usage example code block
-   - Interactive stories for each variant/size
+### Story Title Based on Component Type and Folder
 
-2. **Story file structure**:
-   ```tsx
-   import type { Meta, StoryObj } from '@storybook/react'
-   import { Component } from './component'
+- UI component: `title: 'Components/ComponentName'`
+- Custom (no sub-group): `title: 'Custom/ComponentName'`
+- Custom (with sub-group): `title: 'Custom/SubGroup/ComponentName'`
 
-   const meta: Meta<typeof Component> = {
-     // Title depends on component type and sub-group selection:
-     // UI component:                    title: 'Components/ComponentName'
-     // Custom (no sub-group):           title: 'Custom/ComponentName'
-     // Custom (with sub-group):         title: 'Custom/SubGroup/ComponentName'
-     title: 'Components/Component',
-     component: Component,
-     parameters: { layout: 'centered' },
-     tags: ['autodocs'],
-   }
+### Required Story Sections
 
-   export default meta
-   type Story = StoryObj<typeof meta>
-
-   export const Default: Story = { args: { children: 'Component' } }
-   export const Primary: Story = { args: { variant: 'primary', children: 'Primary' } }
-   // ... more variants
-   ```
-
-3. **Design Tokens Table**:
-   - Extract all CSS variables used in component
-   - Create markdown table in story description:
-   ```markdown
-   | Token | CSS Variable | Usage | Preview |
-   |-------|--------------|-------|---------|
-   | Background Primary | `--semantic-bg-primary` | Component background | [swatch] |
-   | Text Primary | `--semantic-text-primary` | Primary text | [swatch] |
-   ```
+- Installation section with CLI command (or npm install for custom)
+- Import statement
+- Design Tokens table (Token | CSS Variable | Usage | Preview)
+- Typography table if applicable (Element | Font Size | Line Height | Weight)
+- Usage example code block
+- Interactive stories for each variant/size/state
 
 ## Phase 8: Registry & Export Updates
 
-1. **For UI components**:
-   - Add to `src/index.ts`:
-     ```tsx
-     export { Component, componentVariants } from "./components/ui/component"
-     export type { ComponentProps } from "./components/ui/component"
-     ```
+### For UI Components
 
-   - Add to `packages/cli/components.yaml`:
-     ```yaml
-     component:
-       description: "Component description"
-       category: core  # or form, data, overlay, feedback, layout
-       dependencies:
-         - "class-variance-authority"
-         - "clsx"
-         - "tailwind-merge"
-       internalDependencies:
-         - button  # if using Button
-     ```
+1. Add to `src/index.ts`:
+```tsx
+export { Component, componentVariants } from "./components/ui/component"
+export type { ComponentProps } from "./components/ui/component"
+```
 
-2. **For custom components**:
-   - Add to `src/index.ts`:
-     ```tsx
-     export { Component } from "./components/custom/component"
-     export type { ComponentProps } from "./components/custom/component"
-     ```
-   - Add comment noting it's NOT available via CLI
+2. Add to `packages/cli/components.yaml`:
+```yaml
+component:
+  description: "Component description"
+  category: core  # or form, data, overlay, feedback, layout
+  dependencies:
+    - "class-variance-authority"
+    - "clsx"
+    - "tailwind-merge"
+  internalDependencies:
+    - button  # if using Button
+```
+
+### For Custom Components
+
+Add to `src/index.ts` with comment noting it's NOT available via CLI:
+```tsx
+// ComponentName (Custom - NOT available via CLI)
+export { Component } from "./components/custom/component"
+export type { ComponentProps } from "./components/custom/component"
+```
 
 ## Phase 9: Validation & Summary
 
-1. **Run integrity check** (if UI component):
-   ```bash
-   cd packages/cli
-   npm run integrity:snapshot
-   ```
+### Run Tests
 
-2. **Verify files created**:
-   - Component file(s)
-   - Test file
-   - Story file
-   - Updated exports
-   - Updated components.yaml (if UI component)
+```bash
+npx vitest run src/components/.../<component>.test.tsx
+```
 
-3. **Summary report**:
-   - List all files created
-   - Show CSS variables used
-   - List identified subcomponents
-   - Note responsive breakpoints used
-   - Provide next steps (run tests, view in Storybook)
+### TypeScript Check
 
-4. **Update documentation if needed**:
-   - Review the Storybook story to ensure it includes:
-     - Complete **Design Tokens** table with all CSS variables actually used in the component
-     - Complete **Typography** table with font sizes, weights, and letter spacing
-     - Stories for every visual state from the State Inventory Table (Phase 2)
-     - Stories demonstrating key prop combinations (especially domain-specific props)
-   - If the component is a custom component, verify the Storybook sidebar grouping:
-     - With sub-group: `Custom/<SubGroup>/ComponentName` (e.g., `Custom/Plan & Payment/WalletTopup`)
-     - Without sub-group: `Custom/ComponentName`
-   - If any existing documentation or parent component stories reference the new component, update those references
-   - Ensure the Storybook docs page description accurately reflects the final component (props may have changed during implementation)
+```bash
+npx tsc --noEmit
+```
+
+### Summary Report
+
+- List all files created
+- Show CSS variables used
+- List subcomponents used
+- Provide next steps (run storybook, etc.)
 
 ## Important Rules
 
-1. **NEVER use hardcoded colors** - Always use CSS variables
-2. **ALWAYS generate tests** - No component without tests
-3. **ALWAYS create Storybook stories** - Follow established pattern
-4. **ALWAYS check for existing components** - Suggest variants first
-5. **ALWAYS identify reusable subcomponents** - Don't reinvent the wheel
-6. **ALWAYS validate responsive design** - Mobile-first approach
+1. **NEVER use hardcoded colors** - Always use CSS variables from Figma mapping
+2. **ALWAYS require Figma link** - No component creation without Figma
+3. **ALWAYS generate tests** - No component without tests
+4. **ALWAYS create Storybook stories** - Follow established pattern
+5. **ALWAYS check for existing components** - Suggest reuse first
+6. **ALWAYS extend HTMLAttributes** - Enable data-testid, aria-*, etc.
 7. **ALWAYS use CVA for variants** - Consistent variant system
 8. **ALWAYS forward refs** - Enable parent ref access
 9. **ALWAYS export variants** - Enable variant reusability
 
-## Example Workflow
-
-User: "Create an avatar component for displaying user profile images"
-
-1. Check existence → No "avatar" found
-2. Check similar → Found "badge" (circular), suggest as reference
-3. Ask component type → User selects UI component
-4. Ask for Figma → User provides link
-5. Fetch Figma design → Extract colors, sizes, variants
-6. Map colors → `bg-muted`, `text-muted-foreground`, `border-border`
-7. Identify subcomponents → None needed (simple component)
-8. Generate component → With image fallback, size variants
-9. Generate tests → 15 test cases covering all variants, sizes, fallback
-10. Generate story → With design tokens table, usage examples
-11. Update registry → Add to components.yaml, exports
-12. Summary → Files created, next steps
-
 ## Error Handling
 
-- If Figma link is invalid → Fall back to manual description
+- If screenshot not provided → Keep asking, it's required
+- If Figma link not provided → Keep asking, it's required
+- If Figma link is invalid → Ask for correct link, don't fall back to manual
 - If component exists → Ask user to confirm override or create variant
 - If CSS variable not found → Use closest semantic token and document
 - If test fails → Fix component or test, don't skip
-- If registry update fails → Show manual instructions
