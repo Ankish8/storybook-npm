@@ -3,21 +3,6 @@ import { XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CopyableField } from "@/components/ui/copyable-field";
 
-export interface EndpointCredential {
-  /** Unique identifier */
-  id: string;
-  /** Field label */
-  label: string;
-  /** Field value */
-  value: string;
-  /** Helper text below the field */
-  helperText?: string;
-  /** Whether this is a secret field (masked with eye toggle) */
-  secret?: boolean;
-  /** Whether to show regenerate action */
-  showRegenerate?: boolean;
-}
-
 export interface EndpointDetailsProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /** Card title */
@@ -169,7 +154,7 @@ export const EndpointDetails = React.forwardRef<
               <button
                 type="button"
                 onClick={onRevokeAccess}
-                className="flex items-center gap-1 text-sm text-semantic-error-primary hover:text-semantic-error-hover transition-colors tracking-[0.035px]"
+                className="flex items-center gap-1 text-sm text-semantic-error-primary hover:text-semantic-error-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-error-primary transition-colors tracking-[0.035px] rounded"
               >
                 <XCircle className="size-4" />
                 <span>Revoke Access</span>
