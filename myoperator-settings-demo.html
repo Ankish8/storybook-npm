@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - myOperator Design Demo</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* =========================================================================
+       myOperator Design System - CSS Variables
+       ========================================================================= */
+    :root {
+      /* Base */
+      --color-white: #FFFFFF;
+      --color-black: #000000;
+
+      /* Neutral (Gray) */
+      --color-neutral-50: #FAFAFA;
+      --color-neutral-100: #F5F5F5;
+      --color-neutral-200: #E9EAEB;
+      --color-neutral-300: #D5D7DA;
+      --color-neutral-400: #A4A7AE;
+      --color-neutral-500: #717680;
+      --color-neutral-600: #535862;
+      --color-neutral-700: #414651;
+      --color-neutral-800: #252B37;
+      --color-neutral-900: #181D27;
+
+      /* Primary (Blue Gray) */
+      --color-primary-50: #EBECEE;
+      --color-primary-100: #C0C3CA;
+      --color-primary-200: #A2A6B1;
+      --color-primary-300: #777E8D;
+      --color-primary-400: #5D6577;
+      --color-primary-500: #343E55;
+      --color-primary-600: #2F384D;
+      --color-primary-700: #252C3C;
+
+      /* Secondary (Turquoise) - Brand */
+      --color-secondary-50: #EAF8FA;
+      --color-secondary-100: #BDEAEF;
+      --color-secondary-300: #71D2DB;
+      --color-secondary-500: #2BBCCA;
+      --color-secondary-600: #27ABB8;
+      --color-secondary-700: #1F858F;
+
+      /* Error (Red) */
+      --color-error-50: #FEF3F2;
+      --color-error-500: #F04438;
+      --color-error-600: #D92D20;
+
+      /* Success (Green) */
+      --color-success-50: #ECFDF3;
+      --color-success-500: #17B26A;
+      --color-success-700: #067647;
+
+      /* Semantic Tokens */
+      --semantic-primary: var(--color-primary-500);
+      --semantic-primary-hover: var(--color-primary-600);
+      --semantic-primary-surface: var(--color-primary-50);
+
+      --semantic-brand: var(--color-secondary-500);
+      --semantic-brand-hover: var(--color-secondary-700);
+
+      --semantic-bg-primary: var(--color-white);
+      --semantic-bg-ui: var(--color-neutral-100);
+      --semantic-bg-hover: var(--color-neutral-300);
+
+      --semantic-text-primary: var(--color-neutral-900);
+      --semantic-text-secondary: var(--color-primary-500);
+      --semantic-text-muted: var(--color-neutral-500);
+      --semantic-text-placeholder: var(--color-primary-200);
+      --semantic-text-inverted: var(--color-white);
+
+      --semantic-border-input: var(--color-neutral-200);
+      --semantic-border-layout: var(--color-neutral-200);
+      --semantic-border-input-focus: var(--color-secondary-500);
+
+      --semantic-success-primary: var(--color-success-500);
+      --semantic-success-surface: var(--color-success-50);
+    }
+
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      background: var(--semantic-bg-ui);
+      color: var(--semantic-text-primary);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Custom switch styles */
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--color-neutral-300);
+      transition: 0.2s;
+      border-radius: 24px;
+    }
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.2s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    input:checked + .switch-slider {
+      background-color: var(--semantic-brand);
+    }
+    input:checked + .switch-slider:before {
+      transform: translateX(20px);
+    }
+    input:focus + .switch-slider {
+      box-shadow: 0 0 0 2px rgba(43, 188, 202, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="min-h-screen p-8">
+    <!-- Page Header -->
+    <div class="max-w-4xl mx-auto mb-8">
+      <h1 class="text-[32px] leading-[40px] font-semibold" style="color: var(--semantic-text-primary);">
+        Settings
+      </h1>
+      <p class="mt-2 text-base" style="color: var(--semantic-text-muted);">
+        Manage your account settings and notification preferences.
+      </p>
+    </div>
+
+    <div class="max-w-4xl mx-auto grid gap-6">
+
+      <!-- Profile Card -->
+      <div class="rounded-lg border p-6 shadow-sm" style="background: var(--semantic-bg-primary); border-color: var(--semantic-border-layout);">
+        <h2 class="text-lg font-semibold leading-none tracking-tight mb-6" style="color: var(--semantic-text-primary);">
+          Profile Information
+        </h2>
+
+        <div class="flex items-start gap-6">
+          <!-- Avatar -->
+          <div class="relative">
+            <div class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-semibold"
+                 style="background: var(--semantic-primary); color: var(--semantic-text-inverted);">
+              AK
+            </div>
+            <button class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center border-2 shadow-sm transition-all hover:scale-105"
+                    style="background: var(--semantic-bg-primary); border-color: var(--semantic-border-layout);">
+              <svg class="w-3.5 h-3.5" style="color: var(--semantic-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Profile Details -->
+          <div class="flex-1 grid gap-4">
+            <div class="grid grid-cols-2 gap-4">
+              <!-- Name Field -->
+              <div class="space-y-1.5">
+                <label class="text-sm font-semibold leading-5" style="color: var(--semantic-text-secondary);">
+                  Full Name
+                </label>
+                <input type="text" value="Ankish Kumar"
+                       class="h-10 w-full rounded px-4 py-2.5 text-base transition-all focus:outline-none"
+                       style="background: var(--semantic-bg-primary); color: var(--semantic-text-primary); border: 1px solid var(--semantic-border-input);"
+                       onfocus="this.style.borderColor='var(--semantic-border-input-focus)'; this.style.boxShadow='0 0 0 1px rgba(43,188,202,0.15)';"
+                       onblur="this.style.borderColor='var(--semantic-border-input)'; this.style.boxShadow='none';">
+              </div>
+
+              <!-- Role Field -->
+              <div class="space-y-1.5">
+                <label class="text-sm font-semibold leading-5" style="color: var(--semantic-text-secondary);">
+                  Role
+                </label>
+                <input type="text" value="Product Engineer"
+                       class="h-10 w-full rounded px-4 py-2.5 text-base transition-all focus:outline-none"
+                       style="background: var(--semantic-bg-primary); color: var(--semantic-text-primary); border: 1px solid var(--semantic-border-input);"
+                       onfocus="this.style.borderColor='var(--semantic-border-input-focus)'; this.style.boxShadow='0 0 0 1px rgba(43,188,202,0.15)';"
+                       onblur="this.style.borderColor='var(--semantic-border-input)'; this.style.boxShadow='none';">
+              </div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="space-y-1.5">
+              <label class="text-sm font-semibold leading-5" style="color: var(--semantic-text-secondary);">
+                Email Address
+              </label>
+              <input type="email" value="ankish@myoperator.com"
+                     class="h-10 w-full rounded px-4 py-2.5 text-base transition-all focus:outline-none"
+                     style="background: var(--semantic-bg-primary); color: var(--semantic-text-primary); border: 1px solid var(--semantic-border-input);"
+                     onfocus="this.style.borderColor='var(--semantic-border-input-focus)'; this.style.boxShadow='0 0 0 1px rgba(43,188,202,0.15)';"
+                     onblur="this.style.borderColor='var(--semantic-border-input)'; this.style.boxShadow='none';">
+              <p class="text-sm" style="color: var(--semantic-text-muted);">
+                This email is used for account notifications and login.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-6 flex justify-end">
+          <button class="inline-flex items-center justify-center gap-2 rounded text-base font-medium transition-all duration-200 py-2.5 px-4 min-w-20"
+                  style="background: var(--semantic-primary); color: var(--semantic-text-inverted);"
+                  onmouseover="this.style.background='var(--semantic-primary-hover)'"
+                  onmouseout="this.style.background='var(--semantic-primary)'">
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- Notification Preferences Card -->
+      <div class="rounded-lg border p-6 shadow-sm" style="background: var(--semantic-bg-primary); border-color: var(--semantic-border-layout);">
+        <h2 class="text-lg font-semibold leading-none tracking-tight mb-2" style="color: var(--semantic-text-primary);">
+          Notification Preferences
+        </h2>
+        <p class="text-base mb-6" style="color: var(--semantic-text-muted);">
+          Choose how you want to be notified about activity.
+        </p>
+
+        <div class="space-y-4">
+          <!-- Email Notifications -->
+          <div class="flex items-center justify-between py-3 border-b" style="border-color: var(--semantic-border-layout);">
+            <div>
+              <h3 class="text-base font-semibold" style="color: var(--semantic-text-primary);">Email Notifications</h3>
+              <p class="text-sm mt-0.5" style="color: var(--semantic-text-muted);">Receive email updates about your account activity</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Push Notifications -->
+          <div class="flex items-center justify-between py-3 border-b" style="border-color: var(--semantic-border-layout);">
+            <div>
+              <h3 class="text-base font-semibold" style="color: var(--semantic-text-primary);">Push Notifications</h3>
+              <p class="text-sm mt-0.5" style="color: var(--semantic-text-muted);">Receive push notifications on your devices</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- SMS Alerts -->
+          <div class="flex items-center justify-between py-3 border-b" style="border-color: var(--semantic-border-layout);">
+            <div>
+              <h3 class="text-base font-semibold" style="color: var(--semantic-text-primary);">SMS Alerts</h3>
+              <p class="text-sm mt-0.5" style="color: var(--semantic-text-muted);">Get text messages for critical alerts only</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Weekly Digest -->
+          <div class="flex items-center justify-between py-3 border-b" style="border-color: var(--semantic-border-layout);">
+            <div>
+              <h3 class="text-base font-semibold" style="color: var(--semantic-text-primary);">Weekly Digest</h3>
+              <p class="text-sm mt-0.5" style="color: var(--semantic-text-muted);">Receive a weekly summary of your activity</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Marketing Emails -->
+          <div class="flex items-center justify-between py-3">
+            <div>
+              <h3 class="text-base font-semibold" style="color: var(--semantic-text-primary);">Marketing Emails</h3>
+              <p class="text-sm mt-0.5" style="color: var(--semantic-text-muted);">Receive updates about new features and offers</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Badge Demo -->
+      <div class="rounded-lg border p-6 shadow-sm" style="background: var(--semantic-bg-primary); border-color: var(--semantic-border-layout);">
+        <h2 class="text-lg font-semibold leading-none tracking-tight mb-4" style="color: var(--semantic-text-primary);">
+          Account Status
+        </h2>
+
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center justify-center rounded-full px-3 py-1 text-base font-medium"
+                style="background: var(--semantic-success-surface); color: var(--semantic-success-primary);">
+            <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            Active
+          </span>
+          <span class="text-base" style="color: var(--semantic-text-muted);">
+            Your account is verified and in good standing.
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="max-w-4xl mx-auto mt-8 text-center">
+      <p class="text-sm" style="color: var(--semantic-text-muted);">
+        myOperator Design System Demo • Built with CSS Variables + Tailwind
+      </p>
+    </div>
+  </div>
+</body>
+</html>

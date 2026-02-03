@@ -90,25 +90,29 @@ async function readMultiFileComponent(componentName, meta) {
 
     let content = fs.readFileSync(filePath, 'utf-8')
 
-    // Transform @/lib/utils import (goes up to component dir, then to lib)
+    // Transform @/lib/utils import for multi-file components
+    // Multi-file components are installed to src/components/ui/{component}/
+    // So from ui/component-name/ to src/lib/ is ../../../lib/
     content = content.replace(
       /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
       'import { cn } from "../../../lib/utils"'
     )
 
     // Transform @/components/ui/... imports to relative paths
-    // Custom components are in src/components/custom/component-name/
-    // UI components are in src/components/ui/
-    // So from custom/component-name/ to ui/ is ../../ui/
+    // Multi-file components are installed to src/components/ui/{component}/
+    // Other UI components are in src/components/ui/
+    // So from ui/component-name/ to ui/ is ../
     content = content.replace(
       /from\s*["']@\/components\/ui\/([^"']+)["']/g,
-      'from "../../ui/$1"'
+      'from "../$1"'
     )
 
-    // Transform relative imports to sibling ui components
+    // Transform relative imports from source location (../../ui/) to target location (../)
+    // Source: src/components/custom/component-name/ uses ../../ui/X
+    // Target: src/components/ui/component-name/ uses ../X
     content = content.replace(
       /from\s*["']\.\.\/\.\.\/ui\/([^"']+)["']/g,
-      'from "../../ui/$1"'
+      'from "../$1"'
     )
 
     componentFiles.push({

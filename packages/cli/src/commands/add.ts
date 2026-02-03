@@ -5,7 +5,6 @@ import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry } from '../utils/registry.js'
 import { configExists, getTailwindPrefix } from '../utils/config.js'
-import { ensureCustomComponentsInTailwindConfig } from '../utils/tailwind-fix.js'
 
 interface AddOptions {
   all: boolean
@@ -165,16 +164,11 @@ export async function add(components: string[], options: AddOptions) {
 
       spinner.text = `Installing ${componentName}...`
 
-      // Determine base directory based on category
-      const isCustomComponent = component.category === 'custom'
-      const baseDir = isCustomComponent 
-        ? path.join(cwd, 'src/components/custom')
-        : componentsDir
-
       // Determine target directory
+      // Multi-file components go into a subdirectory, single-file components go directly
       const targetDir = component.isMultiFile
-        ? path.join(baseDir, component.directory!)
-        : baseDir
+        ? path.join(componentsDir, component.directory!)
+        : componentsDir
 
       // Check for existing files
       for (const file of component.files) {
@@ -194,11 +188,10 @@ export async function add(components: string[], options: AddOptions) {
         await fs.writeFile(filePath, file.content)
 
         // Track installed file path relative to components dir
-        const basePath = isCustomComponent ? 'src/components/custom' : options.path
         const relativePath = component.isMultiFile
           ? `${component.directory}/${file.name}`
           : file.name
-        installed.push({ path: relativePath, basePath })
+        installed.push({ path: relativePath, basePath: options.path })
       }
 
       // Collect npm dependencies
@@ -226,12 +219,6 @@ export async function add(components: string[], options: AddOptions) {
     if (dependencies.size > 0) {
       console.log(chalk.yellow('\n  Required dependencies:'))
       console.log(chalk.cyan(`    npm install ${Array.from(dependencies).join(' ')}`))
-    }
-
-    // Automatically fix Tailwind config when custom components are installed
-    const hasCustomComponents = installed.some((file) => file.basePath.includes('custom'))
-    if (hasCustomComponents) {
-      await ensureCustomComponentsInTailwindConfig(cwd)
     }
 
     console.log('')

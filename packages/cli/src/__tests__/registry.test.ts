@@ -484,9 +484,9 @@ describe('Registry', () => {
       const eventItem = eventSelector.files.find(f => f.name === 'event-item.tsx')
       expect(eventItem).toBeDefined()
 
-      // Custom components (in src/components/custom/event-selector/) import UI components
-      // from src/components/ui/, so the path is ../../ui/checkbox
-      expect(eventItem!.content).toContain('from "../../ui/checkbox"')
+      // Multi-file components are installed to src/components/ui/event-selector/
+      // and import sibling UI components from src/components/ui/, so the path is ../checkbox
+      expect(eventItem!.content).toContain('from "../checkbox"')
     })
 
     it('prefixes tailwind classes in multi-file components', async () => {
@@ -509,7 +509,7 @@ describe('Registry', () => {
       const mainFile = eventSelector.files.find(f => f.name === 'event-selector.tsx')
       expect(mainFile).toBeDefined()
 
-      // Should use ../../../lib/utils (going up from event-selector directory)
+      // Should use ../../../lib/utils (going up from ui/event-selector/ to src/lib/)
       expect(mainFile!.content).toContain('from "../../../lib/utils"')
       expect(mainFile!.content).not.toContain('@/lib/utils')
     })

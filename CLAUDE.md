@@ -14,6 +14,8 @@ This is a **React component library** (myOperator UI) distributed via a CLI tool
 
 **Data flow**: Source components → `components.yaml` defines metadata → `generate-registry.js` reads YAML + source files → produces `registry-*.ts` files with embedded code → `tsup` bundles CLI → consumers get prefixed components.
 
+**Categories** control how the CLI lazy-loads component registries. Each category (`core`, `form`, `data`, `overlay`, `feedback`, `layout`, `custom`) generates a separate `registry-{category}.ts` file, allowing the CLI to load only needed code.
+
 ## Commands
 
 ```bash
@@ -45,6 +47,9 @@ node scripts/check-integrity.js verify <component-name>  # Verify only intended 
 cd packages/mcp
 npm run build              # tsup build
 npm run typecheck          # TypeScript check
+
+# Sync MCP metadata (from root)
+node scripts/sync-mcp-metadata.js  # Updates MCP package with component info from components.yaml
 ```
 
 ## Component Change Workflow
@@ -57,6 +62,8 @@ npm run typecheck          # TypeScript check
 4. `npm run build` — Build and validate
 
 **Rules**: One component at a time. Don't edit registry files directly (auto-generated). Don't modify unrelated components.
+
+**Primary development tool**: Storybook (`npm run storybook`). All components should have stories in `src/components/ui/{component}.stories.tsx`. Use Storybook to visually test variants, states, and interactions before committing.
 
 ## Creating New Components
 
@@ -90,6 +97,18 @@ export { Component, variants }
 ```
 
 **Multi-file components** (in `src/components/custom/`) have a directory with multiple `.tsx` files and are declared in `components.yaml` with `isMultiFile: true`.
+
+**Internal dependencies** — Some components depend on other components (e.g., `delete-confirmation-modal` uses `dialog`, `button`, `input`). The CLI automatically installs these when a user adds the component. Check `internalDependencies` in `components.yaml` when adding new composed components.
+
+### components.yaml Structure
+
+Each component entry in `packages/cli/components.yaml` supports:
+- `description` — User-facing description for CLI output
+- `category` — Groups components for lazy-loading (core, form, data, overlay, feedback, layout, custom)
+- `dependencies` — npm packages to install
+- `internalDependencies` — Other myOperator components this depends on (auto-installed by CLI)
+- `isMultiFile` — Set to true for components with multiple files
+- `directory`, `files`, `mainFile` — Required for multi-file components
 
 ## Theming — CSS Variables
 
@@ -163,7 +182,9 @@ npm version patch
 npm run build
 npm publish                # Uses automation token from ~/.npmrc or NPM_TOKEN
 
-# MCP package
+# MCP package (sync metadata first!)
+cd ../..                   # Return to root
+node scripts/sync-mcp-metadata.js  # Sync component data from components.yaml
 cd packages/mcp
 npm version patch
 npm run build

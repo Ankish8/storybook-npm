@@ -5968,13 +5968,13 @@ EventSelector.displayName = "EventSelector";
           name: 'event-group.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
-import { Checkbox, type CheckedState } from "../../ui/checkbox";
+import { Checkbox, type CheckedState } from "../checkbox";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../../ui/accordion";
+} from "../accordion";
 import { EventItemComponent } from "./event-item";
 import type { EventGroupComponentProps } from "./types";
 
@@ -6154,7 +6154,7 @@ EventGroupComponent.displayName = "EventGroupComponent";
           name: 'event-item.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
-import { Checkbox } from "../../ui/checkbox";
+import { Checkbox } from "../checkbox";
 import type { EventItemComponentProps } from "./types";
 
 /**
@@ -6332,7 +6332,7 @@ export interface EventItemComponentProps {
           content: prefixTailwindClasses(`import * as React from "react";
 import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { Button } from "../../ui/button";
+import { Button } from "../button";
 import { KeyValueRow } from "./key-value-row";
 import type { KeyValueInputProps, KeyValuePair } from "./types";
 
@@ -6575,8 +6575,8 @@ KeyValueInput.displayName = "KeyValueInput";
           content: prefixTailwindClasses(`import * as React from "react";
 import { Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
+import { Input } from "../input";
+import { Button } from "../button";
 import type { KeyValueRowProps } from "./types";
 
 /**
@@ -6763,7 +6763,7 @@ export interface KeyValueRowProps {
         {
           name: 'api-feature-card.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
-import { Button } from "../../ui/button";
+import { Button } from "../button";
 import { cn } from "../../../lib/utils";
 
 export interface Capability {
@@ -6930,7 +6930,7 @@ export type { ApiFeatureCardProps, Capability } from "./api-feature-card";
           content: prefixTailwindClasses(`import * as React from "react";
 import { XCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { ReadableField } from "../../ui/readable-field";
+import { ReadableField } from "../readable-field";
 
 export interface EndpointDetailsProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -7161,7 +7161,7 @@ export type { EndpointDetailsProps } from "./endpoint-details";
         {
           name: 'alert-configuration.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
-import { Button } from "../../ui/button";
+import { Button } from "../button";
 import { Pencil } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -7288,8 +7288,8 @@ AlertConfiguration.displayName = "AlertConfiguration";
         {
           name: 'alert-values-modal.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
-import { FormModal } from "../../ui/form-modal";
-import { Input } from "../../ui/input";
+import { FormModal } from "../form-modal";
+import { Input } from "../input";
 
 export interface AlertValuesModalProps {
   /** Whether the modal is open */
@@ -7455,13 +7455,13 @@ export type { AlertValuesModalProps } from "./alert-values-modal";
           name: 'auto-pay-setup.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
-import { Button } from "../../ui/button";
+import { Button } from "../button";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../../ui/accordion";
+} from "../accordion";
 import type { AutoPaySetupProps } from "./types";
 
 /**
@@ -7650,7 +7650,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../../ui/accordion";
+} from "../accordion";
 import type { BankDetailsProps, BankDetailItem } from "./types";
 
 /**
@@ -7869,7 +7869,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
   TooltipArrow,
-} from "../../ui/tooltip";
+} from "../tooltip";
 
 /**
  * Represents a single row in the payment summary.
@@ -8047,14 +8047,14 @@ export type {
           content: prefixTailwindClasses(`import * as React from "react";
 import { Check, Ticket } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
+import { Button } from "../button";
+import { Input } from "../input";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../../ui/accordion";
+} from "../accordion";
 import type { AmountOption, WalletTopupProps } from "./types";
 
 /**
