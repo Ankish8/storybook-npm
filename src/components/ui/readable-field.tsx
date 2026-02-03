@@ -134,7 +134,7 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
           )}
         >
           {/* Value Display */}
-          <span className="text-base text-[var(--color-primary-950)] tracking-[0.08px] truncate">
+          <span className="text-base text-semantic-text-primary tracking-[0.08px] truncate">
             {displayValue}
           </span>
 

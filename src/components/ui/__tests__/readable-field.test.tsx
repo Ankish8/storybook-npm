@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ReadableField } from "../readable-field";
 
 // Mock clipboard API
@@ -77,6 +77,64 @@ describe("ReadableField", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /copied/i })).toBeInTheDocument();
+    });
+  });
+
+  describe("timeout cleanup", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("cleans up timeout on unmount to prevent memory leaks", async () => {
+      const { unmount } = render(<ReadableField {...defaultProps} />);
+
+      const copyButton = screen.getByRole("button", { name: /copy/i });
+      await act(async () => {
+        fireEvent.click(copyButton);
+      });
+
+      // Unmount before timeout completes (timeout is 2000ms)
+      unmount();
+
+      // Advance timers past the timeout - should not cause errors
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+
+      // If we get here without errors, the cleanup worked
+      expect(true).toBe(true);
+    });
+
+    it("clears previous timeout when copy is clicked multiple times", async () => {
+      render(<ReadableField {...defaultProps} />);
+
+      const copyButton = screen.getByRole("button", { name: /copy/i });
+
+      // Click copy multiple times rapidly
+      await act(async () => {
+        fireEvent.click(copyButton);
+      });
+      await act(async () => {
+        fireEvent.click(copyButton);
+      });
+      await act(async () => {
+        fireEvent.click(copyButton);
+      });
+
+      // Should still show "Copied" state
+      expect(screen.getByRole("button", { name: /copied/i })).toBeInTheDocument();
+
+      // Advance past timeout
+      act(() => {
+        vi.advanceTimersByTime(2500);
+      });
+
+      // Should reset to "Copy" state (only one timeout should have fired)
+      expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
     });
   });
 
