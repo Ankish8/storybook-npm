@@ -503,6 +503,7 @@ export function getCustomRegistry(prefix: string = ''): Registry {
     'event-selector': {
       name: 'event-selector',
       description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -1057,6 +1058,7 @@ export interface EventItemComponentProps {
     'key-value-input': {
       name: 'key-value-input',
       description: 'A component for managing key-value pairs with validation and duplicate detection',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1490,6 +1492,7 @@ export interface KeyValueRowProps {
     'api-feature-card': {
       name: 'api-feature-card',
       description: 'A card component for displaying API features with icon, title, description, and action button',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1654,6 +1657,7 @@ export type { ApiFeatureCardProps, Capability } from "./api-feature-card";
     'endpoint-details': {
       name: 'endpoint-details',
       description: 'A component for displaying API endpoint details with copy-to-clipboard and secret field support',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1884,6 +1888,7 @@ export type { EndpointDetailsProps } from "./endpoint-details";
     'alert-configuration': {
       name: 'alert-configuration',
       description: 'A configuration card for alert settings with inline editing modal',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2177,6 +2182,7 @@ export type { AlertValuesModalProps } from "./alert-values-modal";
     'auto-pay-setup': {
       name: 'auto-pay-setup',
       description: 'A setup wizard component for configuring automatic payments with payment method selection',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2366,6 +2372,7 @@ export type { AutoPaySetupProps } from "./types";
     'bank-details': {
       name: 'bank-details',
       description: 'A component for displaying bank account details with copy-to-clipboard functionality',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2583,6 +2590,7 @@ export type { BankDetailsProps, BankDetailItem } from "./types";
     'payment-summary': {
       name: 'payment-summary',
       description: 'A component for displaying payment summary with line items and total',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2764,6 +2772,7 @@ export type {
     'wallet-topup': {
       name: 'wallet-topup',
       description: 'A component for wallet top-up with amount selection and coupon support',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",

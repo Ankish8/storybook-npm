@@ -503,6 +503,7 @@ export function getLayoutRegistry(prefix: string = ''): Registry {
     'accordion': {
       name: 'accordion',
       description: 'An expandable/collapsible accordion component with single or multiple mode support',
+      category: 'layout',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -863,6 +864,7 @@ export {
     'page-header': {
       name: 'page-header',
       description: 'A page header component with icon, title, description, and action buttons',
+      category: 'layout',
       dependencies: [
             "class-variance-authority",
             "clsx",

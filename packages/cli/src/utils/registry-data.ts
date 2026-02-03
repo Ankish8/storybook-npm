@@ -503,6 +503,7 @@ export function getDataRegistry(prefix: string = ''): Registry {
     'table': {
       name: 'table',
       description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
+      category: 'data',
       dependencies: [
             "class-variance-authority",
             "clsx",

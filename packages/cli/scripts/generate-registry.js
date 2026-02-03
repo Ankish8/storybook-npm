@@ -685,6 +685,7 @@ function generateCategoryFile(category, components) {
       return `    '${comp.name}': {
       name: '${comp.name}',
       description: '${comp.description}',
+      category: '${comp.category}',
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
@@ -704,6 +705,7 @@ ${filesArray}
     return `    '${comp.name}': {
       name: '${comp.name}',
       description: '${comp.description}',
+      category: '${comp.category}',
       dependencies: ${deps},${internalDeps ? `
       internalDependencies: ${internalDeps},` : ''}
       files: [
@@ -782,6 +784,7 @@ function generateIndexFile(config, components) {
     return `  '${comp.name}': {
     name: '${comp.name}',
     description: '${comp.description}',
+      category: '${comp.category}',
     dependencies: ${JSON.stringify(comp.dependencies)},
     category: '${comp.category}',
     internalDependencies: ${internalDeps},
@@ -893,6 +896,7 @@ function generateLegacyRegistryFile(components) {
       return `    '${comp.name}': {
       name: '${comp.name}',
       description: '${comp.description}',
+      category: '${comp.category}',
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
@@ -912,6 +916,7 @@ ${filesArray}
     return `    '${comp.name}': {
       name: '${comp.name}',
       description: '${comp.description}',
+      category: '${comp.category}',
       dependencies: ${deps},${internalDeps ? `
       internalDependencies: ${internalDeps},` : ''}
       files: [

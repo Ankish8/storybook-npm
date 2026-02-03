@@ -521,6 +521,7 @@ export async function getRegistry(prefix: string = ''): Promise<Registry> {
     'button': {
       name: 'button',
       description: 'A customizable button component with variants, sizes, and icons',
+      category: 'core',
       dependencies: [
             "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
@@ -653,6 +654,7 @@ export { Button, buttonVariants };
     'badge': {
       name: 'badge',
       description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants',
+      category: 'core',
       dependencies: [
             "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
@@ -784,6 +786,7 @@ export { Badge, badgeVariants };
     'typography': {
       name: 'typography',
       description: 'A semantic typography component with kind, variant, color, alignment, and truncation support',
+      category: 'core',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -984,6 +987,7 @@ export {
     'input': {
       name: 'input',
       description: 'A text input component with error and disabled states',
+      category: 'form',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1054,6 +1058,7 @@ export { Input, inputVariants };
     'select': {
       name: 'select',
       description: 'A select dropdown component built on Radix UI Select',
+      category: 'form',
       dependencies: [
             "@radix-ui/react-select@^2.2.6",
             "class-variance-authority",
@@ -1262,6 +1267,7 @@ export {
     'checkbox': {
       name: 'checkbox',
       description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
+      category: 'form',
       dependencies: [
             "@radix-ui/react-checkbox@^1.3.3",
             "class-variance-authority",
@@ -1491,6 +1497,7 @@ export { Checkbox, checkboxVariants };
     'switch': {
       name: 'switch',
       description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
+      category: 'form',
       dependencies: [
             "@radix-ui/react-switch@^1.2.6",
             "class-variance-authority",
@@ -1650,6 +1657,7 @@ export { Switch, switchVariants };
     'text-field': {
       name: 'text-field',
       description: 'A text field with label, helper text, icons, and validation states',
+      category: 'form',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1940,6 +1948,7 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
     'readable-field': {
       name: 'readable-field',
       description: 'A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.',
+      category: 'form',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2146,6 +2155,7 @@ ReadableField.displayName = "ReadableField";
     'select-field': {
       name: 'select-field',
       description: 'A select field with label, helper text, and validation states',
+      category: 'form',
       dependencies: [
             "@radix-ui/react-select@^2.2.6",
             "clsx",
@@ -2445,6 +2455,7 @@ export { SelectField };
     'multi-select': {
       name: 'multi-select',
       description: 'A multi-select dropdown component with search, badges, and async loading',
+      category: 'form',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -2898,6 +2909,7 @@ export { MultiSelect, multiSelectTriggerVariants };
     'table': {
       name: 'table',
       description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
+      category: 'data',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -3223,6 +3235,7 @@ export {
     'dialog': {
       name: 'dialog',
       description: 'A modal dialog component built on Radix UI Dialog with size variants and animations',
+      category: 'overlay',
       dependencies: [
             "@radix-ui/react-dialog@^1.1.15",
             "class-variance-authority",
@@ -3417,6 +3430,7 @@ export {
     'dropdown-menu': {
       name: 'dropdown-menu',
       description: 'A dropdown menu component for displaying actions and options',
+      category: 'overlay',
       dependencies: [
             "@radix-ui/react-dropdown-menu@^2.1.16",
             "clsx",
@@ -3632,6 +3646,7 @@ export {
     'tooltip': {
       name: 'tooltip',
       description: 'A popup that displays information related to an element when hovered or focused',
+      category: 'overlay',
       dependencies: [
             "@radix-ui/react-tooltip@^1.2.8",
             "clsx",
@@ -3695,6 +3710,7 @@ export {
     'delete-confirmation-modal': {
       name: 'delete-confirmation-modal',
       description: 'A confirmation modal requiring text input to confirm deletion',
+      category: 'overlay',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -3882,6 +3898,7 @@ export { DeleteConfirmationModal };
     'confirmation-modal': {
       name: 'confirmation-modal',
       description: 'A simple confirmation modal for yes/no decisions',
+      category: 'overlay',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -4030,6 +4047,7 @@ export { ConfirmationModal };
     'form-modal': {
       name: 'form-modal',
       description: 'A reusable modal component for forms with consistent layout',
+      category: 'overlay',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -4185,6 +4203,7 @@ export { FormModal };
     'tag': {
       name: 'tag',
       description: 'A tag component for event labels with optional bold label prefix',
+      category: 'feedback',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -4335,6 +4354,7 @@ export { Tag, TagGroup, tagVariants };
     'alert': {
       name: 'alert',
       description: 'A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility',
+      category: 'feedback',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -4558,6 +4578,7 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
     'toast': {
       name: 'toast',
       description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
+      category: 'feedback',
       dependencies: [
             "@radix-ui/react-toast@^1.2.15",
             "class-variance-authority",
@@ -5059,6 +5080,7 @@ export { useToast, toast, Toaster };
     'accordion': {
       name: 'accordion',
       description: 'An expandable/collapsible accordion component with single or multiple mode support',
+      category: 'layout',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -5419,6 +5441,7 @@ export {
     'page-header': {
       name: 'page-header',
       description: 'A page header component with icon, title, description, and action buttons',
+      category: 'layout',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -5724,6 +5747,7 @@ export { PageHeader, pageHeaderVariants };
     'event-selector': {
       name: 'event-selector',
       description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -6278,6 +6302,7 @@ export interface EventItemComponentProps {
     'key-value-input': {
       name: 'key-value-input',
       description: 'A component for managing key-value pairs with validation and duplicate detection',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -6711,6 +6736,7 @@ export interface KeyValueRowProps {
     'api-feature-card': {
       name: 'api-feature-card',
       description: 'A card component for displaying API features with icon, title, description, and action button',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -6875,6 +6901,7 @@ export type { ApiFeatureCardProps, Capability } from "./api-feature-card";
     'endpoint-details': {
       name: 'endpoint-details',
       description: 'A component for displaying API endpoint details with copy-to-clipboard and secret field support',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -7105,6 +7132,7 @@ export type { EndpointDetailsProps } from "./endpoint-details";
     'alert-configuration': {
       name: 'alert-configuration',
       description: 'A configuration card for alert settings with inline editing modal',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -7398,6 +7426,7 @@ export type { AlertValuesModalProps } from "./alert-values-modal";
     'auto-pay-setup': {
       name: 'auto-pay-setup',
       description: 'A setup wizard component for configuring automatic payments with payment method selection',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -7587,6 +7616,7 @@ export type { AutoPaySetupProps } from "./types";
     'bank-details': {
       name: 'bank-details',
       description: 'A component for displaying bank account details with copy-to-clipboard functionality',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -7804,6 +7834,7 @@ export type { BankDetailsProps, BankDetailItem } from "./types";
     'payment-summary': {
       name: 'payment-summary',
       description: 'A component for displaying payment summary with line items and total',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -7985,6 +8016,7 @@ export type {
     'wallet-topup': {
       name: 'wallet-topup',
       description: 'A component for wallet top-up with amount selection and coupon support',
+      category: 'custom',
       dependencies: [
             "clsx",
             "tailwind-merge",

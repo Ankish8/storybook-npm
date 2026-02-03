@@ -503,6 +503,7 @@ export function getOverlayRegistry(prefix: string = ''): Registry {
     'dialog': {
       name: 'dialog',
       description: 'A modal dialog component built on Radix UI Dialog with size variants and animations',
+      category: 'overlay',
       dependencies: [
             "@radix-ui/react-dialog@^1.1.15",
             "class-variance-authority",
@@ -697,6 +698,7 @@ export {
     'dropdown-menu': {
       name: 'dropdown-menu',
       description: 'A dropdown menu component for displaying actions and options',
+      category: 'overlay',
       dependencies: [
             "@radix-ui/react-dropdown-menu@^2.1.16",
             "clsx",
@@ -912,6 +914,7 @@ export {
     'tooltip': {
       name: 'tooltip',
       description: 'A popup that displays information related to an element when hovered or focused',
+      category: 'overlay',
       dependencies: [
             "@radix-ui/react-tooltip@^1.2.8",
             "clsx",
@@ -975,6 +978,7 @@ export {
     'delete-confirmation-modal': {
       name: 'delete-confirmation-modal',
       description: 'A confirmation modal requiring text input to confirm deletion',
+      category: 'overlay',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -1162,6 +1166,7 @@ export { DeleteConfirmationModal };
     'confirmation-modal': {
       name: 'confirmation-modal',
       description: 'A simple confirmation modal for yes/no decisions',
+      category: 'overlay',
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -1310,6 +1315,7 @@ export { ConfirmationModal };
     'form-modal': {
       name: 'form-modal',
       description: 'A reusable modal component for forms with consistent layout',
+      category: 'overlay',
       dependencies: [
             "clsx",
             "tailwind-merge"

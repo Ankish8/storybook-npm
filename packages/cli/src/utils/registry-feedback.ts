@@ -503,6 +503,7 @@ export function getFeedbackRegistry(prefix: string = ''): Registry {
     'tag': {
       name: 'tag',
       description: 'A tag component for event labels with optional bold label prefix',
+      category: 'feedback',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -653,6 +654,7 @@ export { Tag, TagGroup, tagVariants };
     'alert': {
       name: 'alert',
       description: 'A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility',
+      category: 'feedback',
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -876,6 +878,7 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
     'toast': {
       name: 'toast',
       description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
+      category: 'feedback',
       dependencies: [
             "@radix-ui/react-toast@^1.2.15",
             "class-variance-authority",
