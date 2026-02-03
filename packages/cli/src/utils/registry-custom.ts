@@ -1629,7 +1629,7 @@ export const ApiFeatureCard = React.forwardRef<
                   key={capability.id}
                   className="flex items-center gap-1.5"
                 >
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--semantic-info-primary,#4275D6)]" />
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-neutral-400,#A4A7AE)]" />
                   <span className="text-sm text-[var(--semantic-text-primary,#181D27)] tracking-[0.035px]">
                     {capability.label}
                   </span>
