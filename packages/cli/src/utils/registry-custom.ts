@@ -1486,6 +1486,1736 @@ export interface KeyValueRowProps {
 `, prefix),
         }
       ],
+    },
+    'api-feature-card': {
+      name: 'api-feature-card',
+      description: 'A card component for displaying API features with icon, title, description, and action button',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button"
+      ],
+      isMultiFile: true,
+      directory: 'api-feature-card',
+      mainFile: 'api-feature-card.tsx',
+      files: [
+        {
+          name: 'api-feature-card.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "../../../lib/utils";
+
+export interface Capability {
+  /** Unique identifier for the capability */
+  id: string;
+  /** Display text for the capability */
+  label: string;
+}
+
+export interface ApiFeatureCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Icon component to display */
+  icon: React.ReactNode;
+  /** Card title */
+  title: string;
+  /** Card description */
+  description: string;
+  /** List of key capabilities */
+  capabilities?: Capability[];
+  /** Text for the action button */
+  actionLabel?: string;
+  /** Icon for the action button */
+  actionIcon?: React.ReactNode;
+  /** Callback when action button is clicked */
+  onAction?: () => void;
+  /** Label for the capabilities section */
+  capabilitiesLabel?: string;
+}
+
+/**
+ * ApiFeatureCard displays an API feature with icon, title, description,
+ * action button, and a list of key capabilities.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ApiFeatureCard
+ *   icon={<Phone className="h-5 w-5" />}
+ *   title="Calling API"
+ *   description="Manage real-time call flow, recordings, and intelligent routing."
+ *   capabilities={[
+ *     { id: "1", label: "Real-time Call Control" },
+ *     { id: "2", label: "Live Call Events (Webhooks)" },
+ *   ]}
+ *   onAction={() => console.log("Manage clicked")}
+ * />
+ * \`\`\`
+ */
+export const ApiFeatureCard = React.forwardRef<
+  HTMLDivElement,
+  ApiFeatureCardProps
+>(
+  (
+    {
+      icon,
+      title,
+      description,
+      capabilities = [],
+      actionLabel = "Manage",
+      actionIcon,
+      onAction,
+      capabilitiesLabel = "Key Capabilities",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col gap-6 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-6 overflow-hidden",
+          className
+        )}
+        {...props}
+      >
+        {/* Header Section */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            {/* Icon Container */}
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-semantic-info-surface">
+              <span className="text-[var(--color-primary-950)] [&_svg]:h-5 [&_svg]:w-5">
+                {icon}
+              </span>
+            </div>
+
+            {/* Title and Description */}
+            <div className="flex flex-col gap-1.5">
+              <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+                {title}
+              </h3>
+              <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px]">
+                {description}
+              </p>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <Button
+            variant="default"
+            size="default"
+            leftIcon={actionIcon}
+            onClick={onAction}
+            className="shrink-0"
+          >
+            {actionLabel}
+          </Button>
+        </div>
+
+        {/* Capabilities Section */}
+        {capabilities.length > 0 && (
+          <div className="flex flex-col gap-2.5 border-t border-semantic-border-layout bg-[var(--color-neutral-50)] -mx-6 -mb-6 p-6">
+            <span className="text-sm font-semibold uppercase tracking-[0.014px] text-[var(--color-neutral-400)]">
+              {capabilitiesLabel}
+            </span>
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {capabilities.map((capability) => (
+                <div
+                  key={capability.id}
+                  className="flex items-center gap-1.5"
+                >
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-neutral-400)]" />
+                  <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                    {capability.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+ApiFeatureCard.displayName = "ApiFeatureCard";
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { ApiFeatureCard } from "./api-feature-card";
+export type { ApiFeatureCardProps, Capability } from "./api-feature-card";
+`, prefix),
+        }
+      ],
+    },
+    'endpoint-details': {
+      name: 'endpoint-details',
+      description: 'A component for displaying API endpoint details with copy-to-clipboard and secret field support',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "readable-field"
+      ],
+      isMultiFile: true,
+      directory: 'endpoint-details',
+      mainFile: 'endpoint-details.tsx',
+      files: [
+        {
+          name: 'endpoint-details.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { XCircle } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { ReadableField } from "@/components/ui/readable-field";
+
+export interface EndpointDetailsProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Card title */
+  title?: string;
+  /** Variant determines field layout and visibility */
+  variant?: "calling" | "whatsapp";
+  /** Base URL for the API endpoint */
+  baseUrl: string;
+  /** Company ID */
+  companyId: string;
+  /** Authentication token (secret in calling variant, visible in whatsapp variant) */
+  authToken: string;
+  /** Secret key (secret) - only shown in calling variant */
+  secretKey?: string;
+  /** API key (visible) - only shown in calling variant */
+  apiKey?: string;
+  /** Callback when a field value is copied */
+  onValueCopy?: (field: string, value: string) => void;
+  /** Callback when regenerate is clicked for a field - only used in calling variant */
+  onRegenerate?: (field: "authToken" | "secretKey") => void;
+  /** Callback when revoke access is clicked - only used in calling variant */
+  onRevokeAccess?: () => void;
+  /** Whether to show the revoke access section - only used in calling variant */
+  showRevokeSection?: boolean;
+  /** Custom revoke section title */
+  revokeTitle?: string;
+  /** Custom revoke section description */
+  revokeDescription?: string;
+}
+
+/**
+ * EndpointDetails displays API endpoint credentials with copy functionality.
+ * Used for showing API keys, authentication tokens, and other sensitive credentials.
+ *
+ * Supports two variants:
+ * - \`calling\` (default): Full version with all 5 fields + revoke section
+ * - \`whatsapp\`: Simplified with 3 fields (baseUrl, companyId, authToken), no revoke
+ *
+ * @example
+ * \`\`\`tsx
+ * // Calling API (default)
+ * <EndpointDetails
+ *   variant="calling"
+ *   baseUrl="https://api.myoperator.co/v3/voice/gateway"
+ *   companyId="12"
+ *   authToken="sk_live_abc123"
+ *   secretKey="whsec_xyz789"
+ *   apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
+ *   onRegenerate={(field) => console.log(\`Regenerate \${field}\`)}
+ *   onRevokeAccess={() => console.log("Revoke access")}
+ * />
+ *
+ * // WhatsApp API
+ * <EndpointDetails
+ *   variant="whatsapp"
+ *   baseUrl="https://api.myoperator.co/whatsapp"
+ *   companyId="WA-12345"
+ *   authToken="waba_token_abc123"
+ * />
+ * \`\`\`
+ */
+export const EndpointDetails = React.forwardRef<
+  HTMLDivElement,
+  EndpointDetailsProps
+>(
+  (
+    {
+      title = "Endpoint Details",
+      variant = "calling",
+      baseUrl,
+      companyId,
+      authToken,
+      secretKey,
+      apiKey,
+      onValueCopy,
+      onRegenerate,
+      onRevokeAccess,
+      showRevokeSection = true,
+      revokeTitle = "Revoke API Access",
+      revokeDescription = "Revoking access will immediately disable all integrations using these keys.",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const isCalling = variant === "calling";
+
+    const handleCopy = (field: string) => (value: string) => {
+      onValueCopy?.(field, value);
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col gap-6 rounded-lg border border-semantic-border-layout p-6",
+          className
+        )}
+        {...props}
+      >
+        {/* Title */}
+        <div className="flex items-start gap-5">
+          <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
+            {title}
+          </h2>
+        </div>
+
+        {/* Credentials Grid */}
+        <div className="flex flex-col gap-[30px]">
+          {/* Row 1: Base URL + Company ID */}
+          <div className="grid grid-cols-2 gap-[25px]">
+            <ReadableField
+              label="Base URL"
+              value={baseUrl}
+              onValueCopy={handleCopy("baseUrl")}
+            />
+            <ReadableField
+              label="Company ID"
+              value={companyId}
+              onValueCopy={handleCopy("companyId")}
+            />
+          </div>
+
+          {/* Authentication field - different based on variant */}
+          {isCalling ? (
+            /* Calling variant: 2-col row with Authentication + Secret Key */
+            <div className="grid grid-cols-2 gap-[25px]">
+              <ReadableField
+                label="Authentication"
+                value={authToken}
+                secret
+                helperText="Used for client-side integrations."
+                headerAction={{
+                  label: "Regenerate",
+                  onClick: () => onRegenerate?.("authToken"),
+                }}
+                onValueCopy={handleCopy("authToken")}
+              />
+              {secretKey && (
+                <ReadableField
+                  label="Secret Key"
+                  value={secretKey}
+                  secret
+                  helperText="Never share this key or expose it in client-side code."
+                  headerAction={{
+                    label: "Regenerate",
+                    onClick: () => onRegenerate?.("secretKey"),
+                  }}
+                  onValueCopy={handleCopy("secretKey")}
+                />
+              )}
+            </div>
+          ) : (
+            /* WhatsApp variant: full-width Authentication, NOT secret, NO regenerate */
+            <ReadableField
+              label="Authentication"
+              value={authToken}
+              onValueCopy={handleCopy("authToken")}
+            />
+          )}
+
+          {/* x-api-key (full width) - only for calling variant */}
+          {isCalling && apiKey && (
+            <ReadableField
+              label="x-api-key"
+              value={apiKey}
+              onValueCopy={handleCopy("apiKey")}
+            />
+          )}
+
+          {/* Revoke Section - only for calling variant */}
+          {isCalling && showRevokeSection && (
+            <div className="flex items-center justify-between border-t border-semantic-border-layout pt-6">
+              <div className="flex flex-col gap-1">
+                <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+                  {revokeTitle}
+                </h3>
+                <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px]">
+                  {revokeDescription}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onRevokeAccess}
+                className="flex items-center gap-1 text-sm text-semantic-error-primary hover:text-semantic-error-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-error-primary transition-colors tracking-[0.035px] rounded"
+              >
+                <XCircle className="size-4" />
+                <span>Revoke Access</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
+EndpointDetails.displayName = "EndpointDetails";
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { EndpointDetails } from "./endpoint-details";
+export type { EndpointDetailsProps } from "./endpoint-details";
+`, prefix),
+        }
+      ],
+    },
+    'alert-configuration': {
+      name: 'alert-configuration',
+      description: 'A configuration card for alert settings with inline editing modal',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button",
+            "form-modal",
+            "input"
+      ],
+      isMultiFile: true,
+      directory: 'alert-configuration',
+      mainFile: 'alert-configuration.tsx',
+      files: [
+        {
+          name: 'alert-configuration.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+import { cn } from "../../../lib/utils";
+
+export interface AlertConfigurationProps {
+  /** Minimum balance threshold */
+  minimumBalance: number;
+  /** Minimum top-up amount */
+  minimumTopup: number;
+  /** Currency symbol (default: ₹) */
+  currencySymbol?: string;
+  /** Callback when edit button is clicked */
+  onEdit?: () => void;
+  /** Custom className for the container */
+  className?: string;
+}
+
+/**
+ * AlertConfiguration component displays current alert values for minimum balance and top-up.
+ * Used in payment auto-pay setup to show notification thresholds.
+ */
+export const AlertConfiguration = React.forwardRef<
+  HTMLDivElement,
+  AlertConfigurationProps
+>(
+  (
+    {
+      minimumBalance,
+      minimumTopup,
+      currencySymbol = "₹",
+      onEdit,
+      className,
+    },
+    ref
+  ) => {
+    const formatCurrency = (amount: number) => {
+      const formatted = amount.toLocaleString("en-IN", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      return \`\${currencySymbol} \${formatted}\`;
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "rounded-lg border border-semantic-border-layout bg-semantic-bg-primary",
+          className
+        )}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-4 py-4">
+          <div className="flex flex-col gap-1">
+            <h3 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0px]">
+              Alert configurations
+            </h3>
+            <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px]">
+              Define when and how you receive balance notifications
+            </p>
+          </div>
+          <Button
+            variant="default"
+            size="default"
+            leftIcon={<Pencil className="h-3.5 w-3.5" />}
+            onClick={onEdit}
+            className="shrink-0"
+          >
+            Edit alert values
+          </Button>
+        </div>
+
+        {/* Alert Values Section with Top Border */}
+        <div className="border-t border-semantic-border-layout px-4 py-4">
+          <div className="flex items-start justify-between gap-4">
+            {/* Minimum Balance */}
+            <div className="flex flex-col gap-1.5 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-semantic-text-primary tracking-[0.014px]">
+                  Minimum balance
+                </span>
+                <span
+                  className={cn(
+                    "text-sm tracking-[0.035px]",
+                    minimumBalance < 0
+                      ? "text-semantic-error-primary"
+                      : "text-semantic-text-primary"
+                  )}
+                >
+                  {minimumBalance < 0 ? "-" : ""}{formatCurrency(Math.abs(minimumBalance))}
+                </span>
+              </div>
+              <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px] leading-relaxed">
+                You'll be notified by email and SMS when your balance falls below this level.
+              </p>
+            </div>
+
+            {/* Vertical Divider */}
+            <div className="w-px h-14 bg-semantic-border-layout shrink-0" />
+
+            {/* Minimum Top-up */}
+            <div className="flex flex-col gap-1.5 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-semantic-text-primary tracking-[0.014px]">
+                  Minimum topup
+                </span>
+                <span className="text-sm text-semantic-text-link tracking-[0.035px]">
+                  {formatCurrency(minimumTopup)}
+                </span>
+              </div>
+              <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px] leading-relaxed">
+                A suggested recharge amount to top up your balance when it falls below the minimum.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+AlertConfiguration.displayName = "AlertConfiguration";
+`, prefix),
+        },
+        {
+          name: 'alert-values-modal.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { FormModal } from "@/components/ui/form-modal";
+import { Input } from "@/components/ui/input";
+
+export interface AlertValuesModalProps {
+  /** Whether the modal is open */
+  open: boolean;
+  /** Callback when modal should close */
+  onOpenChange: (open: boolean) => void;
+  /** Initial minimum balance value */
+  initialMinimumBalance?: number;
+  /** Initial minimum top-up value */
+  initialMinimumTopup?: number;
+  /** Currency symbol (default: ₹) */
+  currencySymbol?: string;
+  /** Callback when values are saved */
+  onSave?: (values: { minimumBalance: number; minimumTopup: number }) => void;
+  /** Loading state for save button */
+  loading?: boolean;
+}
+
+/**
+ * AlertValuesModal component for editing alert configuration values.
+ * Displays a form with inputs for minimum balance and minimum top-up.
+ */
+export const AlertValuesModal = React.forwardRef<
+  HTMLDivElement,
+  AlertValuesModalProps
+>(
+  (
+    {
+      open,
+      onOpenChange,
+      initialMinimumBalance = 0,
+      initialMinimumTopup = 0,
+      currencySymbol = "₹",
+      onSave,
+      loading = false,
+    },
+    ref
+  ) => {
+    const [minimumBalance, setMinimumBalance] = React.useState(
+      initialMinimumBalance.toString()
+    );
+    const [minimumTopup, setMinimumTopup] = React.useState(
+      initialMinimumTopup.toString()
+    );
+
+    // Update form values when initial values change
+    React.useEffect(() => {
+      setMinimumBalance(initialMinimumBalance.toString());
+      setMinimumTopup(initialMinimumTopup.toString());
+    }, [initialMinimumBalance, initialMinimumTopup, open]);
+
+    const handleSave = () => {
+      const balanceValue = parseFloat(minimumBalance) || 0;
+      const topupValue = parseFloat(minimumTopup) || 0;
+
+      onSave?.({
+        minimumBalance: balanceValue,
+        minimumTopup: topupValue,
+      });
+    };
+
+    const handleCancel = () => {
+      // Reset to initial values
+      setMinimumBalance(initialMinimumBalance.toString());
+      setMinimumTopup(initialMinimumTopup.toString());
+    };
+
+    return (
+      <FormModal
+        ref={ref}
+        open={open}
+        onOpenChange={onOpenChange}
+        title="Alert values"
+        onSave={handleSave}
+        onCancel={handleCancel}
+        loading={loading}
+        size="sm"
+      >
+        {/* Minimum Balance Input */}
+        <div className="grid gap-2">
+          <label
+            htmlFor="minimum-balance"
+            className="text-sm font-medium text-semantic-text-secondary"
+          >
+            Minimum balance
+          </label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted">
+              {currencySymbol}
+            </span>
+            <Input
+              id="minimum-balance"
+              type="number"
+              value={minimumBalance}
+              onChange={(e) => setMinimumBalance(e.target.value)}
+              className="pl-8"
+              placeholder="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+
+        {/* Minimum Top-up Input */}
+        <div className="grid gap-2">
+          <label
+            htmlFor="minimum-topup"
+            className="text-sm font-medium text-semantic-text-secondary"
+          >
+            Minimum topup
+          </label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted">
+              {currencySymbol}
+            </span>
+            <Input
+              id="minimum-topup"
+              type="number"
+              value={minimumTopup}
+              onChange={(e) => setMinimumTopup(e.target.value)}
+              className="pl-8"
+              placeholder="0"
+              step="0.01"
+            />
+          </div>
+        </div>
+      </FormModal>
+    );
+  }
+);
+
+AlertValuesModal.displayName = "AlertValuesModal";
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { AlertConfiguration } from "./alert-configuration";
+export type { AlertConfigurationProps } from "./alert-configuration";
+
+export { AlertValuesModal } from "./alert-values-modal";
+export type { AlertValuesModalProps } from "./alert-values-modal";
+`, prefix),
+        }
+      ],
+    },
+    'auto-pay-setup': {
+      name: 'auto-pay-setup',
+      description: 'A setup wizard component for configuring automatic payments with payment method selection',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "accordion",
+            "button"
+      ],
+      isMultiFile: true,
+      directory: 'auto-pay-setup',
+      mainFile: 'auto-pay-setup.tsx',
+      files: [
+        {
+          name: 'auto-pay-setup.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import type { AutoPaySetupProps } from "./types";
+
+/**
+ * AutoPaySetup provides a collapsible panel for setting up automatic payments.
+ * It displays a description, an informational note callout, and a CTA button.
+ *
+ * @example
+ * \`\`\`tsx
+ * <AutoPaySetup
+ *   icon={<RefreshCw className="size-5 text-semantic-primary" />}
+ *   onCtaClick={() => console.log("Enable auto-pay")}
+ * />
+ * \`\`\`
+ */
+export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
+  (
+    {
+      title = "Auto-pay setup",
+      subtitle = "Hassle-free monthly billing",
+      icon,
+      bodyText = "Link your internet banking account or enroll your card for recurring payments on MyOperator, where your linked account/card is charged automatically for your subsequent bills and usages on MyOperator",
+      noteText = "For card based subscriptions, your card would be charged minimum of \\u20B91 every month even if there are no usages to keep the subscription active, and \\u20B91 will be added as prepaid amount for your service. Initial deduction of \\u20B95 would be made for subscription, which will be auto-refunded.",
+      noteLabel = "Note:",
+      showCta = true,
+      ctaText = "Enable Auto-Pay",
+      onCtaClick,
+      loading = false,
+      disabled = false,
+      defaultOpen = true,
+      className,
+    },
+    ref
+  ) => {
+    return (
+      <div ref={ref} className={cn("w-full", className)}>
+        <Accordion
+          type="single"
+          variant="bordered"
+          defaultValue={defaultOpen ? ["auto-pay-setup"] : []}
+        >
+          <AccordionItem value="auto-pay-setup">
+            <AccordionTrigger className="px-4 py-4">
+              <div className="flex items-center gap-3">
+                {icon && (
+                  <div className="flex items-center justify-center size-10 rounded-[10px] bg-[var(--semantic-info-surface)] shrink-0">
+                    {icon}
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 text-left">
+                  <span className="text-sm font-semibold text-semantic-text-primary tracking-[0.01px]">
+                    {title}
+                  </span>
+                  <span className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
+                    {subtitle}
+                  </span>
+                </div>
+              </div>
+            </AccordionTrigger>
+
+            <AccordionContent>
+              <div className="flex flex-col gap-4 border-t border-semantic-border-layout pt-4">
+                {/* Description */}
+                {bodyText && (
+                  <div className="m-0 text-sm font-normal text-semantic-text-primary leading-5 tracking-[0.035px]">
+                    {bodyText}
+                  </div>
+                )}
+
+                {/* Note callout */}
+                {noteText && (
+                  <div className="rounded bg-[var(--semantic-info-25,#f0f7ff)] border border-[#BEDBFF] px-4 py-3">
+                    <p className="m-0 text-sm font-normal text-semantic-text-muted leading-5 tracking-[0.035px]">
+                      {noteLabel && (
+                        <span className="font-medium text-semantic-text-primary">
+                          {noteLabel}{" "}
+                        </span>
+                      )}
+                      {noteText}
+                    </p>
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                {showCta && (
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={onCtaClick}
+                    loading={loading}
+                    disabled={disabled}
+                  >
+                    {ctaText}
+                  </Button>
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  }
+);
+
+AutoPaySetup.displayName = "AutoPaySetup";
+`, prefix),
+        },
+        {
+          name: 'types.ts',
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * Props for the AutoPaySetup component
+ */
+export interface AutoPaySetupProps {
+  // Header
+  /** Title displayed in the accordion header */
+  title?: string;
+  /** Subtitle displayed below the title */
+  subtitle?: string;
+  /** Icon displayed in the header (rendered inside a rounded container) */
+  icon?: React.ReactNode;
+
+  // Body
+  /** Description content displayed below the header when expanded. Accepts a string or JSX (e.g. text with a link). */
+  bodyText?: React.ReactNode;
+
+  // Note callout
+  /** Note/callout text displayed in a highlighted box */
+  noteText?: string;
+  /** Label prefix for the note (e.g., "Note:") */
+  noteLabel?: string;
+
+  // CTA
+  /** Whether to show the CTA button (defaults to true) */
+  showCta?: boolean;
+  /** Text for the CTA button (defaults to "Enable Auto-Pay") */
+  ctaText?: string;
+  /** Callback when CTA button is clicked */
+  onCtaClick?: () => void;
+  /** Whether the CTA button shows loading state */
+  loading?: boolean;
+  /** Whether the CTA button is disabled */
+  disabled?: boolean;
+
+  // Accordion
+  /** Whether the accordion is open by default */
+  defaultOpen?: boolean;
+
+  // Styling
+  /** Additional className for the root element */
+  className?: string;
+}
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { AutoPaySetup } from "./auto-pay-setup";
+export type { AutoPaySetupProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    'bank-details': {
+      name: 'bank-details',
+      description: 'A component for displaying bank account details with copy-to-clipboard functionality',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "accordion"
+      ],
+      isMultiFile: true,
+      directory: 'bank-details',
+      mainFile: 'bank-details.tsx',
+      files: [
+        {
+          name: 'bank-details.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Copy, Check } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import type { BankDetailsProps, BankDetailItem } from "./types";
+
+/**
+ * BankDetails displays bank account information inside a collapsible accordion
+ * card. Each row shows a label-value pair, with optional copy-to-clipboard
+ * support for individual values.
+ *
+ * @example
+ * \`\`\`tsx
+ * <BankDetails
+ *   icon={<Landmark className="size-5 text-semantic-primary" />}
+ *   items={[
+ *     { label: "Account holder's name", value: "MyOperator" },
+ *     { label: "Account Number", value: "2223330026552601", copyable: true },
+ *     { label: "IFSC Code", value: "UTIB000RAZP", copyable: true },
+ *     { label: "Bank Name", value: "AXIS BANK" },
+ *   ]}
+ * />
+ * \`\`\`
+ */
+export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
+  (
+    {
+      title = "Bank details",
+      subtitle = "Direct NEFT/RTGS transfer",
+      icon,
+      items,
+      defaultOpen = true,
+      onCopy,
+      className,
+    },
+    ref
+  ) => {
+    return (
+      <div ref={ref} className={cn("w-full", className)}>
+        <Accordion
+          type="single"
+          variant="bordered"
+          defaultValue={defaultOpen ? ["bank-details"] : []}
+        >
+          <AccordionItem value="bank-details">
+            <AccordionTrigger className="px-4 py-4">
+              <div className="flex items-center gap-3">
+                {icon && (
+                  <div className="flex items-center justify-center size-10 rounded-[10px] bg-[var(--semantic-info-surface)] shrink-0">
+                    {icon}
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 text-left">
+                  <span className="text-sm font-semibold text-semantic-text-primary tracking-[0.01px]">
+                    {title}
+                  </span>
+                  <span className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
+                    {subtitle}
+                  </span>
+                </div>
+              </div>
+            </AccordionTrigger>
+
+            <AccordionContent>
+              <div className="border-t border-semantic-border-layout pt-4">
+                <div className="rounded-md border border-[var(--semantic-info-200,#e8f1fc)] bg-[var(--semantic-info-25,#f6f8fd)] p-3">
+                  <div className="flex flex-col gap-4">
+                    {items.map((item, index) => (
+                      <BankDetailRow
+                        key={index}
+                        item={item}
+                        onCopy={onCopy}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  }
+);
+
+BankDetails.displayName = "BankDetails";
+
+/* ─── Internal row component ─── */
+
+function BankDetailRow({
+  item,
+  onCopy,
+}: {
+  item: BankDetailItem;
+  onCopy?: (item: BankDetailItem) => void;
+}) {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(item.value);
+      setCopied(true);
+      onCopy?.(item);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard API may fail in insecure contexts; silently ignore
+    }
+  };
+
+  return (
+    <div className="group flex items-center justify-between text-sm tracking-[0.035px]">
+      <span className="text-semantic-text-muted">{item.label}</span>
+      <div className="flex items-center">
+        <span className="text-semantic-text-primary text-right">
+          {item.value}
+        </span>
+        {item.copyable && (
+          <button
+            type="button"
+            onClick={handleCopy}
+            className={cn(
+              "inline-flex items-center justify-center rounded p-0.5 transition-all duration-200 overflow-hidden",
+              copied
+                ? "w-5 ml-1.5 opacity-100 text-semantic-success-primary"
+                : "w-0 opacity-0 group-hover:w-5 group-hover:ml-1.5 group-hover:opacity-100 text-semantic-text-muted hover:text-semantic-text-primary"
+            )}
+            aria-label={\`Copy \${item.label}\`}
+          >
+            {copied ? (
+              <Check className="size-3.5 shrink-0" />
+            ) : (
+              <Copy className="size-3.5 shrink-0" />
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+`, prefix),
+        },
+        {
+          name: 'types.ts',
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * A single row of bank detail information.
+ */
+export interface BankDetailItem {
+  /** Label text displayed on the left (e.g., "Account Number") */
+  label: string;
+  /** Value text displayed on the right (e.g., "2223330026552601") */
+  value: string;
+  /** Whether to show a copy-to-clipboard button for this item's value */
+  copyable?: boolean;
+}
+
+/**
+ * Props for the BankDetails component
+ */
+export interface BankDetailsProps {
+  // Header
+  /** Title displayed in the accordion header */
+  title?: string;
+  /** Subtitle displayed below the title */
+  subtitle?: string;
+  /** Icon displayed in the header (rendered inside a rounded container) */
+  icon?: React.ReactNode;
+
+  // Data
+  /** Array of bank detail items to display */
+  items: BankDetailItem[];
+
+  // Accordion
+  /** Whether the accordion is open by default */
+  defaultOpen?: boolean;
+
+  // Callbacks
+  /** Callback fired when a value is copied to clipboard */
+  onCopy?: (item: BankDetailItem) => void;
+
+  // Styling
+  /** Additional className for the root element */
+  className?: string;
+}
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { BankDetails } from "./bank-details";
+export type { BankDetailsProps, BankDetailItem } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    'payment-summary': {
+      name: 'payment-summary',
+      description: 'A component for displaying payment summary with line items and total',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "tooltip"
+      ],
+      isMultiFile: true,
+      directory: 'payment-summary',
+      mainFile: 'payment-summary.tsx',
+      files: [
+        {
+          name: 'payment-summary.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Info } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from "@/components/ui/tooltip";
+
+/**
+ * Represents a single row in the payment summary.
+ */
+export interface PaymentSummaryItem {
+  /** Label text displayed on the left */
+  label: string;
+  /** Value text displayed on the right */
+  value: string;
+  /** Color variant for the value text */
+  valueColor?: "default" | "success" | "error";
+  /** Tooltip text shown when hovering the info icon next to the label */
+  tooltip?: string;
+  /** Whether to render label in bold (semibold weight) */
+  bold?: boolean;
+  /** Font size for the value — "lg" renders at 18px semibold */
+  valueSize?: "default" | "lg";
+}
+
+export interface PaymentSummaryProps {
+  /** Line items displayed in the top section */
+  items: PaymentSummaryItem[];
+  /** Summary items displayed below the divider (e.g. totals) */
+  summaryItems?: PaymentSummaryItem[];
+  /** Custom className for the outer container */
+  className?: string;
+}
+
+const valueColorMap: Record<string, string> = {
+  default: "text-semantic-text-primary",
+  success: "text-semantic-success-primary",
+  error: "text-semantic-error-primary",
+};
+
+const SummaryRow = ({ item }: { item: PaymentSummaryItem }) => (
+  <div className="flex items-center justify-between w-full">
+    <div className="flex items-center gap-1.5">
+      <span
+        className={cn(
+          "text-sm tracking-[0.035px]",
+          item.bold
+            ? "font-semibold text-semantic-text-primary"
+            : "text-semantic-text-muted"
+        )}
+      >
+        {item.label}
+      </span>
+      {item.tooltip && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-full w-5 h-5 text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
+              aria-label={\`Info about \${item.label}\`}
+            >
+              <Info className="h-3.5 w-3.5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <TooltipArrow />
+            {item.tooltip}
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </div>
+    <span
+      className={cn(
+        "tracking-[0.035px]",
+        item.valueSize === "lg" ? "text-lg font-semibold" : "text-sm",
+        valueColorMap[item.valueColor ?? "default"]
+      )}
+    >
+      {item.value}
+    </span>
+  </div>
+);
+
+/**
+ * PaymentSummary displays a card with line-item rows and an optional totals section
+ * separated by a divider. Values can be color-coded (default, success, error) and
+ * labels can optionally show info tooltips.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PaymentSummary
+ *   items={[
+ *     { label: "Pending Rental", value: "₹0.00" },
+ *     { label: "Current Usage", value: "₹163.98" },
+ *     { label: "Prepaid Wallet", value: "₹78,682.92", valueColor: "success" },
+ *   ]}
+ *   summaryItems={[
+ *     { label: "Total amount due", value: "-₹78,518.94", valueColor: "error", valueSize: "lg", bold: true, tooltip: "Sum of all charges" },
+ *     { label: "Credit limit", value: "₹10,000.00", tooltip: "Your current credit limit" },
+ *   ]}
+ * />
+ * \`\`\`
+ */
+export const PaymentSummary = React.forwardRef<
+  HTMLDivElement,
+  PaymentSummaryProps
+>(({ items, summaryItems, className }, ref) => {
+  return (
+    <TooltipProvider delayDuration={100}>
+      <div
+        ref={ref}
+        className={cn(
+          "rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-5",
+          className
+        )}
+      >
+        <div className="flex flex-col gap-5">
+          {/* Line items */}
+          {items.length > 0 && (
+            <div
+              className={cn(
+                "flex flex-col gap-5",
+                summaryItems && summaryItems.length > 0 &&
+                  "border-b border-semantic-border-layout pb-5"
+              )}
+            >
+              {items.map((item, index) => (
+                <SummaryRow key={index} item={item} />
+              ))}
+            </div>
+          )}
+
+          {/* Summary items (below divider) */}
+          {summaryItems && summaryItems.length > 0 && (
+            <div className="flex flex-col gap-5">
+              {summaryItems.map((item, index) => (
+                <SummaryRow key={index} item={item} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </TooltipProvider>
+  );
+});
+
+PaymentSummary.displayName = "PaymentSummary";
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { PaymentSummary } from "./payment-summary";
+export type {
+  PaymentSummaryProps,
+  PaymentSummaryItem,
+} from "./payment-summary";
+`, prefix),
+        }
+      ],
+    },
+    'wallet-topup': {
+      name: 'wallet-topup',
+      description: 'A component for wallet top-up with amount selection and coupon support',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "accordion",
+            "button",
+            "input"
+      ],
+      isMultiFile: true,
+      directory: 'wallet-topup',
+      mainFile: 'wallet-topup.tsx',
+      files: [
+        {
+          name: 'wallet-topup.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Check, Ticket } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import type { AmountOption, WalletTopupProps } from "./types";
+
+/**
+ * Normalize amount option to a consistent format
+ */
+function normalizeAmountOption(option: number | AmountOption): AmountOption {
+  return typeof option === "number" ? { value: option } : option;
+}
+
+/**
+ * Format currency amount with symbol
+ */
+function formatCurrency(amount: number, symbol: string = "₹"): string {
+  return \`\${symbol}\${amount.toLocaleString("en-IN")}\`;
+}
+
+/**
+ * WalletTopup provides a collapsible panel for wallet recharge with
+ * preset amount selection, custom amount input, voucher link, and payment CTA.
+ *
+ * @example
+ * \`\`\`tsx
+ * <WalletTopup
+ *   icon={<CreditCard className="size-5 text-semantic-primary" />}
+ *   amounts={[500, 1000, 5000, 10000]}
+ *   onPay={(amount) => console.log("Pay", amount)}
+ * />
+ * \`\`\`
+ */
+export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
+  (
+    {
+      title = "Instant wallet top-up",
+      description = "Add funds to your account balance",
+      icon,
+      amounts = [500, 1000, 5000, 10000],
+      selectedAmount: controlledAmount,
+      defaultSelectedAmount,
+      onAmountChange,
+      amountSectionLabel = "Select Amount",
+      customAmount: controlledCustomAmount,
+      onCustomAmountChange,
+      customAmountPlaceholder = "Enter amount",
+      customAmountLabel = "Custom Amount",
+      currencySymbol = "₹",
+      showVoucherLink = true,
+      voucherLinkText = "Have an offline code or voucher?",
+      voucherIcon = <Ticket className="size-4" />,
+      onVoucherClick,
+      voucherCode: controlledVoucherCode,
+      onVoucherCodeChange,
+      voucherCodePlaceholder = "XXXX-XXXX-XXXX",
+      voucherCodeLabel = "Enter Offline Code",
+      voucherCancelText = "Cancel",
+      voucherCodePattern,
+      validateVoucherCode,
+      redeemText = "Redeem voucher",
+      onRedeem,
+      ctaText,
+      onPay,
+      loading = false,
+      disabled = false,
+      defaultOpen = true,
+      className,
+    },
+    ref
+  ) => {
+    // Controlled/uncontrolled amount selection
+    const isControlled = controlledAmount !== undefined;
+    const [internalAmount, setInternalAmount] = React.useState<number | null>(
+      defaultSelectedAmount ?? null
+    );
+    const selectedValue = isControlled ? controlledAmount : internalAmount;
+
+    // Custom amount state
+    const isCustomControlled = controlledCustomAmount !== undefined;
+    const [internalCustom, setInternalCustom] = React.useState("");
+    const customValue = isCustomControlled
+      ? controlledCustomAmount
+      : internalCustom;
+
+    // Voucher code input state
+    const [showVoucherInput, setShowVoucherInput] = React.useState(false);
+    const isVoucherCodeControlled = controlledVoucherCode !== undefined;
+    const [internalVoucherCode, setInternalVoucherCode] = React.useState("");
+    const voucherCodeValue = isVoucherCodeControlled
+      ? controlledVoucherCode
+      : internalVoucherCode;
+
+    const handleVoucherLinkClick = () => {
+      setShowVoucherInput(true);
+      onVoucherClick?.();
+    };
+
+    const handleVoucherCancel = () => {
+      setShowVoucherInput(false);
+      if (!isVoucherCodeControlled) {
+        setInternalVoucherCode("");
+      }
+      onVoucherCodeChange?.("");
+    };
+
+    const handleVoucherCodeChange = (
+      e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const value = e.target.value;
+      if (!isVoucherCodeControlled) {
+        setInternalVoucherCode(value);
+      }
+      onVoucherCodeChange?.(value);
+    };
+
+    const isVoucherCodeValid = React.useMemo(() => {
+      if (!voucherCodeValue) return false;
+      if (validateVoucherCode) return validateVoucherCode(voucherCodeValue);
+      if (voucherCodePattern) return voucherCodePattern.test(voucherCodeValue);
+      return true;
+    }, [voucherCodeValue, validateVoucherCode, voucherCodePattern]);
+
+    const handleRedeem = () => {
+      if (isVoucherCodeValid) {
+        onRedeem?.(voucherCodeValue);
+      }
+    };
+
+    const normalizedAmounts = amounts.map(normalizeAmountOption);
+
+    const handleAmountSelect = (value: number) => {
+      const newValue = selectedValue === value ? null : value;
+      if (!isControlled) {
+        setInternalAmount(newValue);
+      }
+      // Clear custom amount when preset is selected
+      if (!isCustomControlled && newValue !== null) {
+        setInternalCustom("");
+      }
+      onAmountChange?.(newValue);
+    };
+
+    const handleCustomAmountChange = (
+      e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const value = e.target.value;
+      if (!isCustomControlled) {
+        setInternalCustom(value);
+      }
+      // Clear preset selection when custom amount is entered
+      if (value && !isControlled) {
+        setInternalAmount(null);
+      }
+      if (value) {
+        onAmountChange?.(null);
+      }
+      onCustomAmountChange?.(value);
+    };
+
+    // Determine the effective pay amount
+    const payAmount =
+      selectedValue ?? (customValue ? Number(customValue) : 0);
+
+    const handlePay = () => {
+      if (payAmount > 0) {
+        onPay?.(payAmount);
+      }
+    };
+
+    const buttonText =
+      ctaText ||
+      (payAmount > 0
+        ? \`Pay \${formatCurrency(payAmount, currencySymbol)} now\`
+        : "Select an amount");
+
+    return (
+      <div ref={ref} className={cn("w-full", className)}>
+        <Accordion
+          type="single"
+          variant="bordered"
+          defaultValue={defaultOpen ? ["wallet-topup"] : []}
+        >
+          <AccordionItem value="wallet-topup">
+            <AccordionTrigger className="px-4 py-4">
+              <div className="flex items-center gap-3">
+                {icon && (
+                  <div className="flex items-center justify-center size-10 rounded-[10px] bg-[var(--semantic-info-surface)] shrink-0">
+                    {icon}
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 text-left">
+                  <span className="text-sm font-semibold text-semantic-text-primary tracking-[0.01px]">
+                    {title}
+                  </span>
+                  <span className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
+                    {description}
+                  </span>
+                </div>
+              </div>
+            </AccordionTrigger>
+
+            <AccordionContent>
+              <div className="flex flex-col gap-6 border-t border-semantic-border-layout pt-4">
+                {/* Amount Selection */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
+                    {amountSectionLabel}
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {normalizedAmounts.map((option) => {
+                      const isSelected = selectedValue === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={isSelected}
+                          onClick={() => handleAmountSelect(option.value)}
+                          className={cn(
+                            "flex items-center justify-between h-10 px-4 py-2.5 rounded text-sm text-semantic-text-primary transition-all cursor-pointer",
+                            isSelected
+                              ? "border border-semantic-primary shadow-sm"
+                              : "border border-semantic-border-input hover:border-semantic-text-muted"
+                          )}
+                        >
+                          <span>
+                            {option.label ||
+                              formatCurrency(option.value, currencySymbol)}
+                          </span>
+                          {isSelected && (
+                            <Check className="size-5 text-semantic-primary" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Custom Amount */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
+                    {customAmountLabel}
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder={customAmountPlaceholder}
+                    value={customValue}
+                    onChange={handleCustomAmountChange}
+                  />
+                </div>
+
+                {/* Voucher Link or Voucher Code Input */}
+                {showVoucherLink && !showVoucherInput && (
+                  <button
+                    type="button"
+                    onClick={handleVoucherLinkClick}
+                    className="flex items-center gap-2 text-sm text-semantic-text-link tracking-[0.035px] hover:underline w-fit"
+                  >
+                    {voucherIcon}
+                    <span>{voucherLinkText}</span>
+                  </button>
+                )}
+
+                {showVoucherInput && (
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
+                        {voucherCodeLabel}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleVoucherCancel}
+                        className="text-xs text-semantic-text-link tracking-[0.048px] hover:underline"
+                      >
+                        {voucherCancelText}
+                      </button>
+                    </div>
+                    <Input
+                      placeholder={voucherCodePlaceholder}
+                      value={voucherCodeValue}
+                      onChange={handleVoucherCodeChange}
+                    />
+                  </div>
+                )}
+
+                {/* CTA Button */}
+                {showVoucherInput ? (
+                  <Button
+                    variant="default"
+                    className="w-full bg-[var(--semantic-success-primary)] hover:bg-[var(--semantic-success-hover)]"
+                    onClick={handleRedeem}
+                    loading={loading}
+                    disabled={disabled || !isVoucherCodeValid}
+                  >
+                    {redeemText}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    onClick={handlePay}
+                    loading={loading}
+                    disabled={disabled || payAmount <= 0}
+                  >
+                    {buttonText}
+                  </Button>
+                )}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  }
+);
+
+WalletTopup.displayName = "WalletTopup";
+`, prefix),
+        },
+        {
+          name: 'types.ts',
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * Represents a preset amount option in the selector grid
+ */
+export interface AmountOption {
+  /** The numeric value of the amount */
+  value: number;
+  /** Optional custom display label (defaults to formatted currency) */
+  label?: string;
+}
+
+/**
+ * Props for the WalletTopup component
+ */
+export interface WalletTopupProps {
+  // Header
+  /** Title displayed in the accordion header */
+  title?: string;
+  /** Description displayed below the title */
+  description?: string;
+  /** Icon displayed in the header (rendered inside a rounded container) */
+  icon?: React.ReactNode;
+
+  // Amount selection
+  /** Preset amount options to display in the grid */
+  amounts?: number[] | AmountOption[];
+  /** Currently selected amount (controlled) */
+  selectedAmount?: number | null;
+  /** Default selected amount (uncontrolled) */
+  defaultSelectedAmount?: number;
+  /** Callback when amount selection changes */
+  onAmountChange?: (amount: number | null) => void;
+  /** Label for the amount selection section */
+  amountSectionLabel?: string;
+
+  // Custom amount
+  /** Custom amount input value (controlled) */
+  customAmount?: string;
+  /** Callback when custom amount input changes */
+  onCustomAmountChange?: (value: string) => void;
+  /** Placeholder text for custom amount input */
+  customAmountPlaceholder?: string;
+  /** Label for the custom amount field */
+  customAmountLabel?: string;
+
+  // Currency
+  /** Currency symbol (default: "₹") */
+  currencySymbol?: string;
+
+  // Voucher link
+  /** Whether to show the voucher/code link */
+  showVoucherLink?: boolean;
+  /** Custom text for the voucher link */
+  voucherLinkText?: string;
+  /** Icon for the voucher link */
+  voucherIcon?: React.ReactNode;
+  /** Callback when voucher link is clicked (also toggles inline code input) */
+  onVoucherClick?: () => void;
+
+  // Voucher code input
+  /** Voucher code value (controlled) */
+  voucherCode?: string;
+  /** Callback when voucher code changes */
+  onVoucherCodeChange?: (code: string) => void;
+  /** Placeholder for voucher code input */
+  voucherCodePlaceholder?: string;
+  /** Label for voucher code input */
+  voucherCodeLabel?: string;
+  /** Text for cancel link in voucher mode */
+  voucherCancelText?: string;
+  /** Regex pattern the voucher code must match to enable redeem (e.g. /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/) */
+  voucherCodePattern?: RegExp;
+  /** Custom validator function — return true if code is valid. Takes priority over voucherCodePattern. */
+  validateVoucherCode?: (code: string) => boolean;
+  /** Text for the redeem button */
+  redeemText?: string;
+  /** Callback when redeem voucher is clicked */
+  onRedeem?: (code: string) => void;
+
+  // CTA
+  /** Text for the pay button (defaults to "Pay {amount} now") */
+  ctaText?: string;
+  /** Callback when pay button is clicked */
+  onPay?: (amount: number) => void;
+  /** Whether the pay button shows loading state */
+  loading?: boolean;
+  /** Whether the pay button is disabled */
+  disabled?: boolean;
+
+  // Accordion
+  /** Whether the accordion is open by default */
+  defaultOpen?: boolean;
+
+  // Styling
+  /** Additional className for the root element */
+  className?: string;
+}
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { WalletTopup } from "./wallet-topup";
+export type { WalletTopupProps, AmountOption } from "./types";
+`, prefix),
+        }
+      ],
     }
   }
 }

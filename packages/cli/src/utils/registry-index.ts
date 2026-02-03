@@ -190,6 +190,55 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: 'custom',
     internalDependencies: ["button","input"],
+  },
+  'api-feature-card': {
+    name: 'api-feature-card',
+    description: 'A card component for displaying API features with icon, title, description, and action button',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["button"],
+  },
+  'endpoint-details': {
+    name: 'endpoint-details',
+    description: 'A component for displaying API endpoint details with copy-to-clipboard and secret field support',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["readable-field"],
+  },
+  'alert-configuration': {
+    name: 'alert-configuration',
+    description: 'A configuration card for alert settings with inline editing modal',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["button","form-modal","input"],
+  },
+  'auto-pay-setup': {
+    name: 'auto-pay-setup',
+    description: 'A setup wizard component for configuring automatic payments with payment method selection',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["accordion","button"],
+  },
+  'bank-details': {
+    name: 'bank-details',
+    description: 'A component for displaying bank account details with copy-to-clipboard functionality',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["accordion"],
+  },
+  'payment-summary': {
+    name: 'payment-summary',
+    description: 'A component for displaying payment summary with line items and total',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["tooltip"],
+  },
+  'wallet-topup': {
+    name: 'wallet-topup',
+    description: 'A component for wallet top-up with amount selection and coupon support',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["accordion","button","input"],
   }
 }
 

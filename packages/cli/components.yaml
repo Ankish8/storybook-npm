@@ -61,6 +61,13 @@ categories:
     components:
       - event-selector
       - key-value-input
+      - api-feature-card
+      - endpoint-details
+      - alert-configuration
+      - auto-pay-setup
+      - bank-details
+      - payment-summary
+      - wallet-topup
 
 # =============================================================================
 # COMPONENT DEFINITIONS
@@ -333,3 +340,124 @@ components:
       - "key-value-row.tsx"
       - "types.ts"
     mainFile: "key-value-input.tsx"
+
+  api-feature-card:
+    description: "A card component for displaying API features with icon, title, description, and action button"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+    isMultiFile: true
+    directory: "api-feature-card"
+    files:
+      - "api-feature-card.tsx"
+      - "index.ts"
+    mainFile: "api-feature-card.tsx"
+
+  endpoint-details:
+    description: "A component for displaying API endpoint details with copy-to-clipboard and secret field support"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - readable-field
+    isMultiFile: true
+    directory: "endpoint-details"
+    files:
+      - "endpoint-details.tsx"
+      - "index.ts"
+    mainFile: "endpoint-details.tsx"
+
+  alert-configuration:
+    description: "A configuration card for alert settings with inline editing modal"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - form-modal
+      - input
+    isMultiFile: true
+    directory: "alert-configuration"
+    files:
+      - "alert-configuration.tsx"
+      - "alert-values-modal.tsx"
+      - "index.ts"
+    mainFile: "alert-configuration.tsx"
+
+  auto-pay-setup:
+    description: "A setup wizard component for configuring automatic payments with payment method selection"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - accordion
+      - button
+    isMultiFile: true
+    directory: "auto-pay-setup"
+    files:
+      - "auto-pay-setup.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "auto-pay-setup.tsx"
+
+  bank-details:
+    description: "A component for displaying bank account details with copy-to-clipboard functionality"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - accordion
+    isMultiFile: true
+    directory: "bank-details"
+    files:
+      - "bank-details.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "bank-details.tsx"
+
+  payment-summary:
+    description: "A component for displaying payment summary with line items and total"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - tooltip
+    isMultiFile: true
+    directory: "payment-summary"
+    files:
+      - "payment-summary.tsx"
+      - "index.ts"
+    mainFile: "payment-summary.tsx"
+
+  wallet-topup:
+    description: "A component for wallet top-up with amount selection and coupon support"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - accordion
+      - button
+      - input
+    isMultiFile: true
+    directory: "wallet-topup"
+    files:
+      - "wallet-topup.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "wallet-topup.tsx"
