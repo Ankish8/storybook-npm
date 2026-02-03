@@ -1,29 +1,31 @@
 import * as React from "react";
 import { XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CopyableField } from "@/components/ui/copyable-field";
+import { ReadableField } from "@/components/ui/readable-field";
 
 export interface EndpointDetailsProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /** Card title */
   title?: string;
+  /** Variant determines field layout and visibility */
+  variant?: "calling" | "whatsapp";
   /** Base URL for the API endpoint */
   baseUrl: string;
   /** Company ID */
   companyId: string;
-  /** Authentication token (secret) */
+  /** Authentication token (secret in calling variant, visible in whatsapp variant) */
   authToken: string;
-  /** Secret key (secret) */
-  secretKey: string;
-  /** API key (visible) */
-  apiKey: string;
+  /** Secret key (secret) - only shown in calling variant */
+  secretKey?: string;
+  /** API key (visible) - only shown in calling variant */
+  apiKey?: string;
   /** Callback when a field value is copied */
   onValueCopy?: (field: string, value: string) => void;
-  /** Callback when regenerate is clicked for a field */
+  /** Callback when regenerate is clicked for a field - only used in calling variant */
   onRegenerate?: (field: "authToken" | "secretKey") => void;
-  /** Callback when revoke access is clicked */
+  /** Callback when revoke access is clicked - only used in calling variant */
   onRevokeAccess?: () => void;
-  /** Whether to show the revoke access section */
+  /** Whether to show the revoke access section - only used in calling variant */
   showRevokeSection?: boolean;
   /** Custom revoke section title */
   revokeTitle?: string;
@@ -35,9 +37,15 @@ export interface EndpointDetailsProps
  * EndpointDetails displays API endpoint credentials with copy functionality.
  * Used for showing API keys, authentication tokens, and other sensitive credentials.
  *
+ * Supports two variants:
+ * - `calling` (default): Full version with all 5 fields + revoke section
+ * - `whatsapp`: Simplified with 3 fields (baseUrl, companyId, authToken), no revoke
+ *
  * @example
  * ```tsx
+ * // Calling API (default)
  * <EndpointDetails
+ *   variant="calling"
  *   baseUrl="https://api.myoperator.co/v3/voice/gateway"
  *   companyId="12"
  *   authToken="sk_live_abc123"
@@ -45,6 +53,14 @@ export interface EndpointDetailsProps
  *   apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
  *   onRegenerate={(field) => console.log(`Regenerate ${field}`)}
  *   onRevokeAccess={() => console.log("Revoke access")}
+ * />
+ *
+ * // WhatsApp API
+ * <EndpointDetails
+ *   variant="whatsapp"
+ *   baseUrl="https://api.myoperator.co/whatsapp"
+ *   companyId="WA-12345"
+ *   authToken="waba_token_abc123"
  * />
  * ```
  */
@@ -55,6 +71,7 @@ export const EndpointDetails = React.forwardRef<
   (
     {
       title = "Endpoint Details",
+      variant = "calling",
       baseUrl,
       companyId,
       authToken,
@@ -71,6 +88,8 @@ export const EndpointDetails = React.forwardRef<
     },
     ref
   ) => {
+    const isCalling = variant === "calling";
+
     const handleCopy = (field: string) => (value: string) => {
       onValueCopy?.(field, value);
     };
@@ -95,53 +114,67 @@ export const EndpointDetails = React.forwardRef<
         <div className="flex flex-col gap-[30px]">
           {/* Row 1: Base URL + Company ID */}
           <div className="grid grid-cols-2 gap-[25px]">
-            <CopyableField
+            <ReadableField
               label="Base URL"
               value={baseUrl}
               onValueCopy={handleCopy("baseUrl")}
             />
-            <CopyableField
+            <ReadableField
               label="Company ID"
               value={companyId}
               onValueCopy={handleCopy("companyId")}
             />
           </div>
 
-          {/* Row 2: Authentication + Secret Key */}
-          <div className="grid grid-cols-2 gap-[25px]">
-            <CopyableField
+          {/* Authentication field - different based on variant */}
+          {isCalling ? (
+            /* Calling variant: 2-col row with Authentication + Secret Key */
+            <div className="grid grid-cols-2 gap-[25px]">
+              <ReadableField
+                label="Authentication"
+                value={authToken}
+                secret
+                helperText="Used for client-side integrations."
+                headerAction={{
+                  label: "Regenerate",
+                  onClick: () => onRegenerate?.("authToken"),
+                }}
+                onValueCopy={handleCopy("authToken")}
+              />
+              {secretKey && (
+                <ReadableField
+                  label="Secret Key"
+                  value={secretKey}
+                  secret
+                  helperText="Never share this key or expose it in client-side code."
+                  headerAction={{
+                    label: "Regenerate",
+                    onClick: () => onRegenerate?.("secretKey"),
+                  }}
+                  onValueCopy={handleCopy("secretKey")}
+                />
+              )}
+            </div>
+          ) : (
+            /* WhatsApp variant: full-width Authentication, NOT secret, NO regenerate */
+            <ReadableField
               label="Authentication"
               value={authToken}
-              secret
-              helperText="Used for client-side integrations."
-              headerAction={{
-                label: "Regenerate",
-                onClick: () => onRegenerate?.("authToken"),
-              }}
               onValueCopy={handleCopy("authToken")}
             />
-            <CopyableField
-              label="Secret Key"
-              value={secretKey}
-              secret
-              helperText="Never share this key or expose it in client-side code."
-              headerAction={{
-                label: "Regenerate",
-                onClick: () => onRegenerate?.("secretKey"),
-              }}
-              onValueCopy={handleCopy("secretKey")}
+          )}
+
+          {/* x-api-key (full width) - only for calling variant */}
+          {isCalling && apiKey && (
+            <ReadableField
+              label="x-api-key"
+              value={apiKey}
+              onValueCopy={handleCopy("apiKey")}
             />
-          </div>
+          )}
 
-          {/* Row 3: x-api-key (full width) */}
-          <CopyableField
-            label="x-api-key"
-            value={apiKey}
-            onValueCopy={handleCopy("apiKey")}
-          />
-
-          {/* Revoke Section */}
-          {showRevokeSection && (
+          {/* Revoke Section - only for calling variant */}
+          {isCalling && showRevokeSection && (
             <div className="flex items-center justify-between border-t border-semantic-border-layout pt-6">
               <div className="flex flex-col gap-1">
                 <h3 className="m-0 text-base font-semibold text-semantic-text-primary">

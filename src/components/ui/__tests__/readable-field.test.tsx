@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { CopyableField } from "../copyable-field";
+import { ReadableField } from "../readable-field";
 
 // Mock clipboard API
 const mockClipboard = {
@@ -12,14 +12,14 @@ beforeEach(() => {
   Object.assign(navigator, { clipboard: mockClipboard });
 });
 
-describe("CopyableField", () => {
+describe("ReadableField", () => {
   const defaultProps = {
     label: "Base URL",
     value: "https://api.myoperator.co/v3/voice/gateway",
   };
 
   it("renders correctly with required props", () => {
-    render(<CopyableField {...defaultProps} />);
+    render(<ReadableField {...defaultProps} />);
 
     expect(screen.getByText("Base URL")).toBeInTheDocument();
     expect(
@@ -29,7 +29,7 @@ describe("CopyableField", () => {
 
   it("renders helper text when provided", () => {
     render(
-      <CopyableField
+      <ReadableField
         {...defaultProps}
         helperText="Used for client-side integrations."
       />
@@ -43,7 +43,7 @@ describe("CopyableField", () => {
   it("renders header action when provided", () => {
     const onAction = vi.fn();
     render(
-      <CopyableField
+      <ReadableField
         {...defaultProps}
         headerAction={{ label: "Regenerate", onClick: onAction }}
       />
@@ -58,7 +58,7 @@ describe("CopyableField", () => {
 
   it("copies value to clipboard when copy button is clicked", async () => {
     const onValueCopy = vi.fn();
-    render(<CopyableField {...defaultProps} onValueCopy={onValueCopy} />);
+    render(<ReadableField {...defaultProps} onValueCopy={onValueCopy} />);
 
     const copyButton = screen.getByRole("button", { name: /copy/i });
     fireEvent.click(copyButton);
@@ -70,7 +70,7 @@ describe("CopyableField", () => {
   });
 
   it("shows check icon after copying", async () => {
-    render(<CopyableField {...defaultProps} />);
+    render(<ReadableField {...defaultProps} />);
 
     const copyButton = screen.getByRole("button", { name: /copy/i });
     fireEvent.click(copyButton);
@@ -82,7 +82,7 @@ describe("CopyableField", () => {
 
   describe("secret mode", () => {
     it("masks value by default in secret mode", () => {
-      render(<CopyableField {...defaultProps} secret />);
+      render(<ReadableField {...defaultProps} secret />);
 
       expect(screen.getByText("••••••••••••••••••••")).toBeInTheDocument();
       expect(
@@ -91,7 +91,7 @@ describe("CopyableField", () => {
     });
 
     it("shows eye toggle button in secret mode", () => {
-      render(<CopyableField {...defaultProps} secret />);
+      render(<ReadableField {...defaultProps} secret />);
 
       expect(
         screen.getByRole("button", { name: /show value/i })
@@ -99,7 +99,7 @@ describe("CopyableField", () => {
     });
 
     it("toggles visibility when eye button is clicked", () => {
-      render(<CopyableField {...defaultProps} secret />);
+      render(<ReadableField {...defaultProps} secret />);
 
       // Initially masked
       expect(screen.getByText("••••••••••••••••••••")).toBeInTheDocument();
@@ -123,7 +123,7 @@ describe("CopyableField", () => {
 
     it("copies actual value even when masked", async () => {
       const onValueCopy = vi.fn();
-      render(<CopyableField {...defaultProps} secret onValueCopy={onValueCopy} />);
+      render(<ReadableField {...defaultProps} secret onValueCopy={onValueCopy} />);
 
       const copyButton = screen.getByRole("button", { name: /copy/i });
       fireEvent.click(copyButton);
@@ -136,7 +136,7 @@ describe("CopyableField", () => {
 
   it("applies custom className", () => {
     const { container } = render(
-      <CopyableField {...defaultProps} className="custom-class" />
+      <ReadableField {...defaultProps} className="custom-class" />
     );
 
     expect(container.firstChild).toHaveClass("custom-class");
@@ -144,7 +144,7 @@ describe("CopyableField", () => {
 
   it("applies custom inputClassName", () => {
     render(
-      <CopyableField {...defaultProps} inputClassName="custom-input-class" />
+      <ReadableField {...defaultProps} inputClassName="custom-input-class" />
     );
 
     const inputContainer = screen
@@ -155,20 +155,20 @@ describe("CopyableField", () => {
 
   it("forwards ref correctly", () => {
     const ref = vi.fn();
-    render(<CopyableField {...defaultProps} ref={ref} />);
+    render(<ReadableField {...defaultProps} ref={ref} />);
 
     expect(ref).toHaveBeenCalled();
     expect(ref.mock.calls[0][0]).toBeInstanceOf(HTMLDivElement);
   });
 
   it("spreads additional props to root element", () => {
-    render(<CopyableField {...defaultProps} data-testid="copyable-field" />);
+    render(<ReadableField {...defaultProps} data-testid="readable-field" />);
 
-    expect(screen.getByTestId("copyable-field")).toBeInTheDocument();
+    expect(screen.getByTestId("readable-field")).toBeInTheDocument();
   });
 
   it("has correct base styles on input container", () => {
-    render(<CopyableField {...defaultProps} />);
+    render(<ReadableField {...defaultProps} />);
 
     const inputContainer = screen
       .getByText(defaultProps.value)

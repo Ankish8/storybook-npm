@@ -1,26 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CopyableField } from "./copyable-field";
+import { ReadableField } from "./readable-field";
 
-const meta: Meta<typeof CopyableField> = {
-  title: "Components/CopyableField",
-  component: CopyableField,
+const meta: Meta<typeof ReadableField> = {
+  title: "Components/ReadableField",
+  component: ReadableField,
   parameters: {
     layout: "padded",
     docs: {
       description: {
         component: `
-CopyableField displays a read-only value with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys, passwords, and authentication tokens.
+ReadableField displays a read-only value with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys, passwords, and authentication tokens.
 
 ## Installation
 
 \`\`\`bash
-npx myoperator-ui add copyable-field
+npx myoperator-ui add readable-field
 \`\`\`
 
 ## Import
 
 \`\`\`tsx
-import { CopyableField } from "myoperator-ui"
+import { ReadableField } from "myoperator-ui"
 \`\`\`
 
 ## Design Tokens
@@ -109,10 +109,10 @@ import { CopyableField } from "myoperator-ui"
 
 ## Usage
 
-### Simple Copyable Field
+### Simple Readable Field
 
 \`\`\`tsx
-<CopyableField
+<ReadableField
   label="Base URL"
   value="https://api.myoperator.co/v3/voice/gateway"
 />
@@ -121,7 +121,7 @@ import { CopyableField } from "myoperator-ui"
 ### Secret Field with Regenerate Action
 
 \`\`\`tsx
-<CopyableField
+<ReadableField
   label="Authentication"
   value="sk_live_abc123xyz789"
   secret
@@ -166,10 +166,10 @@ import { CopyableField } from "myoperator-ui"
 };
 
 export default meta;
-type Story = StoryObj<typeof CopyableField>;
+type Story = StoryObj<typeof ReadableField>;
 
 /**
- * Simple copyable field for displaying URLs or IDs.
+ * Simple readable field for displaying URLs or IDs.
  * Click the copy icon to copy the value to clipboard.
  */
 export const BaseUrl: Story = {
@@ -180,7 +180,7 @@ export const BaseUrl: Story = {
 };
 
 /**
- * Copyable field for short values like IDs.
+ * Readable field for short values like IDs.
  */
 export const CompanyId: Story = {
   args: {
@@ -264,12 +264,12 @@ export const WithHeaderAction: Story = {
 export const EndpointDetailsLayout: Story = {
   render: () => (
     <div className="space-y-6 max-w-[550px]">
-      <CopyableField
+      <ReadableField
         label="Base URL"
         value="https://api.myoperator.co/v3/voice/gateway"
       />
-      <CopyableField label="Company ID" value="12" />
-      <CopyableField
+      <ReadableField label="Company ID" value="12" />
+      <ReadableField
         label="Authentication"
         value="sk_live_51abc123xyz789def456ghi"
         secret
@@ -279,7 +279,7 @@ export const EndpointDetailsLayout: Story = {
           onClick: () => console.log("Regenerate"),
         }}
       />
-      <CopyableField
+      <ReadableField
         label="Secret Key"
         value="whsec_abc123xyz789def456ghi789jkl"
         secret
@@ -289,7 +289,7 @@ export const EndpointDetailsLayout: Story = {
           onClick: () => console.log("Regenerate"),
         }}
       />
-      <CopyableField
+      <ReadableField
         label="x-api-key"
         value="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
       />
@@ -303,12 +303,12 @@ export const EndpointDetailsLayout: Story = {
 export const TwoColumnLayout: Story = {
   render: () => (
     <div className="grid grid-cols-2 gap-6">
-      <CopyableField
+      <ReadableField
         label="Base URL"
         value="https://api.myoperator.co/v3/voice/gateway"
       />
-      <CopyableField label="Company ID" value="12" />
-      <CopyableField
+      <ReadableField label="Company ID" value="12" />
+      <ReadableField
         label="Authentication"
         value="sk_live_51abc123xyz789def456ghi"
         secret
@@ -318,7 +318,7 @@ export const TwoColumnLayout: Story = {
           onClick: () => console.log("Regenerate"),
         }}
       />
-      <CopyableField
+      <ReadableField
         label="Secret Key"
         value="whsec_abc123xyz789def456ghi789jkl"
         secret

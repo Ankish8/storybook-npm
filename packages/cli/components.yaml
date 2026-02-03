@@ -26,7 +26,7 @@ categories:
       - text-field
       - select-field
       - multi-select
-      - copyable-field
+      - readable-field
 
   data:
     description: "Data display components"
@@ -146,7 +146,7 @@ components:
       - "tailwind-merge"
       - "lucide-react"
 
-  copyable-field:
+  readable-field:
     description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys."
     category: form
     dependencies:
