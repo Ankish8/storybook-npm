@@ -44,9 +44,18 @@ npx myoperator-ui init
 - Creates a `components.json` configuration file
 - Sets up the utils file with the `cn` helper
 - Creates the components directory (`src/components/ui`)
+- Creates the theme file (`src/lib/myoperator-ui-theme.css`) with CSS variables
 - Creates/updates your global CSS with Tailwind imports
-- Creates/updates `postcss.config.js` with the correct PostCSS plugin
 - Configures Tailwind with `tw-` prefix (for Bootstrap compatibility)
+
+**For existing projects:**
+
+If `components.json` already exists, you'll see options:
+- **"Update missing files only"** - Creates missing theme/CSS files without changing your config
+- **"Overwrite everything"** - Full re-initialization
+- **"Cancel"** - Exit without changes
+
+This is useful when you need to add missing theme files or update CSS without losing your existing configuration.
 
 ---
 
@@ -235,6 +244,7 @@ npx myoperator-ui@latest sync -y
 3. Identifies installed components with updates → **updates them**
 4. Shows a summary before making changes
 5. Installs internal dependencies automatically
+6. **Auto-fixes Tailwind config** when custom components are installed
 
 **Options:**
 
