@@ -26,6 +26,7 @@ categories:
       - text-field
       - select-field
       - multi-select
+      - copyable-field
 
   data:
     description: "Data display components"
@@ -141,6 +142,14 @@ components:
     category: form
     dependencies:
       - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  copyable-field:
+    description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys."
+    category: form
+    dependencies:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"

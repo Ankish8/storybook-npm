@@ -113,7 +113,7 @@ const sampleCategoriesWithIcons: EventCategory[] = [
 ];
 
 const meta: Meta<typeof EventSelector> = {
-  title: "Custom/Event Selector",
+  title: "Custom/Webhook/Event Selector",
   component: EventSelector,
   parameters: {
     layout: "centered",

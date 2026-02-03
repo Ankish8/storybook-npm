@@ -4,7 +4,7 @@ import { KeyValueInput } from "./key-value-input";
 import type { KeyValuePair } from "./types";
 
 const meta: Meta<typeof KeyValueInput> = {
-  title: "Custom/Key Value Input",
+  title: "Custom/Webhook/Key Value Input",
   component: KeyValueInput,
   parameters: {
     layout: "centered",

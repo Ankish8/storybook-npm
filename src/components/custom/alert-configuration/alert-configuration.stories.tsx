@@ -4,7 +4,7 @@ import { AlertConfiguration } from "./alert-configuration";
 import { AlertValuesModal } from "./alert-values-modal";
 
 const meta: Meta<typeof AlertConfiguration> = {
-  title: "Custom/AlertConfiguration",
+  title: "Custom/Webhook/AlertConfiguration",
   component: AlertConfiguration,
   parameters: {
     layout: "padded",

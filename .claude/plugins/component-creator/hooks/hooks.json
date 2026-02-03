@@ -11,6 +11,29 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/scripts/enforce-screenshot-first.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "create-component|/create-component|/component-creator:create-component",
+        "hooks": [
+          {
+            "type": "prompt-based-hook",
+            "prompt": "IMPORTANT: The user wants to create a component. You MUST ask for a screenshot FIRST before anything else. Do NOT ask about component name. Do NOT suggest names like avatar, skeleton, progress. Do NOT ask about component type. Your FIRST action must be to call AskUserQuestion asking: 'Please provide a screenshot of the component you want to create.' with options 'I'll paste the screenshot' and 'I have a file path'."
+          }
+        ]
+      }
     ]
   }
 }

@@ -138,6 +138,10 @@ export type { PageHeaderProps } from "./components/ui/page-header";
 export { FormModal } from "./components/ui/form-modal";
 export type { FormModalProps } from "./components/ui/form-modal";
 
+// CopyableField
+export { CopyableField } from "./components/ui/copyable-field";
+export type { CopyableFieldProps } from "./components/ui/copyable-field";
+
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
 export type {
@@ -188,3 +192,17 @@ export type {
   BankDetailsProps,
   BankDetailItem,
 } from "./components/custom/bank-details";
+
+// ApiFeatureCard (Custom - NOT available via CLI)
+export { ApiFeatureCard } from "./components/custom/api-feature-card";
+export type {
+  ApiFeatureCardProps,
+  Capability,
+} from "./components/custom/api-feature-card";
+
+// EndpointDetails (Custom - NOT available via CLI)
+export { EndpointDetails } from "./components/custom/endpoint-details";
+export type {
+  EndpointDetailsProps,
+  EndpointCredential,
+} from "./components/custom/endpoint-details";

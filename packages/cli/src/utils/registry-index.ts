@@ -72,6 +72,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'form',
     internalDependencies: [],
   },
+  'copyable-field': {
+    name: 'copyable-field',
+    description: 'A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'form',
+    internalDependencies: [],
+  },
   'select-field': {
     name: 'select-field',
     description: 'A select field with label, helper text, and validation states',
