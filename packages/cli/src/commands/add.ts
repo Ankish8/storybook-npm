@@ -115,7 +115,7 @@ export async function add(components: string[], options: AddOptions) {
   const spinner = ora('Installing components...').start()
 
   try {
-    const installed: string[] = []
+    const installed: { path: string; basePath: string }[] = []
     const dependencies: Set<string> = new Set()
     const installedComponents: Set<string> = new Set()
 
@@ -142,10 +142,16 @@ export async function add(components: string[], options: AddOptions) {
 
       spinner.text = `Installing ${componentName}...`
 
+      // Determine base directory based on category
+      const isCustomComponent = component.category === 'custom'
+      const baseDir = isCustomComponent 
+        ? path.join(cwd, 'src/components/custom')
+        : componentsDir
+
       // Determine target directory
       const targetDir = component.isMultiFile
-        ? path.join(componentsDir, component.directory!)
-        : componentsDir
+        ? path.join(baseDir, component.directory!)
+        : baseDir
 
       // Check for existing files
       for (const file of component.files) {
@@ -165,10 +171,11 @@ export async function add(components: string[], options: AddOptions) {
         await fs.writeFile(filePath, file.content)
 
         // Track installed file path relative to components dir
+        const basePath = isCustomComponent ? 'src/components/custom' : options.path
         const relativePath = component.isMultiFile
           ? `${component.directory}/${file.name}`
           : file.name
-        installed.push(relativePath)
+        installed.push({ path: relativePath, basePath })
       }
 
       // Collect npm dependencies
@@ -189,7 +196,7 @@ export async function add(components: string[], options: AddOptions) {
     if (installed.length > 0) {
       console.log(chalk.green('\n  Installed files:'))
       installed.forEach((file) => {
-        console.log(chalk.green(`    ✓ ${options.path}/${file}`))
+        console.log(chalk.green(`    ✓ ${file.basePath}/${file.path}`))
       })
     }
 
