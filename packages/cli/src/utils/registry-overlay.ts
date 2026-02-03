@@ -509,7 +509,8 @@ export function getOverlayRegistry(prefix: string = ''): Registry {
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
-            "lucide-react"
+            "lucide-react",
+            "tailwindcss-animate"
       ],
       files: [
         {
@@ -703,7 +704,8 @@ export {
             "@radix-ui/react-dropdown-menu@^2.1.16",
             "clsx",
             "tailwind-merge",
-            "lucide-react"
+            "lucide-react",
+            "tailwindcss-animate"
       ],
       files: [
         {
@@ -918,7 +920,8 @@ export {
       dependencies: [
             "@radix-ui/react-tooltip@^1.2.8",
             "clsx",
-            "tailwind-merge"
+            "tailwind-merge",
+            "tailwindcss-animate"
       ],
       files: [
         {

@@ -202,6 +202,7 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+      - "tailwindcss-animate"
 
   dropdown-menu:
     description: "A dropdown menu component for displaying actions and options"
@@ -211,6 +212,7 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+      - "tailwindcss-animate"
 
   tooltip:
     description: "A popup that displays information related to an element when hovered or focused"
@@ -219,6 +221,7 @@ components:
       - "@radix-ui/react-tooltip@^1.2.8"
       - "clsx"
       - "tailwind-merge"
+      - "tailwindcss-animate"
 
   delete-confirmation-modal:
     description: "A confirmation modal requiring text input to confirm deletion"
@@ -280,6 +283,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge"
+      - "tailwindcss-animate"
 
   # ---------------------------------------------------------------------------
   # LAYOUT COMPONENTS

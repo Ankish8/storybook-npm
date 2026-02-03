@@ -884,7 +884,8 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
             "class-variance-authority",
             "lucide-react",
             "clsx",
-            "tailwind-merge"
+            "tailwind-merge",
+            "tailwindcss-animate"
       ],
       files: [
         {

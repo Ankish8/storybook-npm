@@ -96,10 +96,19 @@ async function readMultiFileComponent(componentName, meta) {
       'import { cn } from "../../../lib/utils"'
     )
 
+    // Transform @/components/ui/... imports to relative paths
+    // Custom components are in src/components/custom/component-name/
+    // UI components are in src/components/ui/
+    // So from custom/component-name/ to ui/ is ../../ui/
+    content = content.replace(
+      /from\s*["']@\/components\/ui\/([^"']+)["']/g,
+      'from "../../ui/$1"'
+    )
+
     // Transform relative imports to sibling ui components
     content = content.replace(
       /from\s*["']\.\.\/\.\.\/ui\/([^"']+)["']/g,
-      'from "../$1"'
+      'from "../../ui/$1"'
     )
 
     componentFiles.push({
