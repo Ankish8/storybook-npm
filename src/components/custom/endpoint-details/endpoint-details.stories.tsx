@@ -11,6 +11,10 @@ const meta: Meta<typeof EndpointDetails> = {
         component: `
 EndpointDetails displays API endpoint credentials with copy functionality. Used for showing API keys, authentication tokens, and other sensitive credentials in a structured card layout.
 
+Supports two variants:
+- **calling** (default): Full version with 5 fields (Base URL, Company ID, Authentication, Secret Key, x-api-key) + revoke section
+- **whatsapp**: Simplified version with 3 fields (Base URL, Company ID, Authentication), no revoke section, authentication is visible (not secret)
+
 ## Installation
 
 This is a custom component (not available via CLI). Import directly from the package:
@@ -105,29 +109,40 @@ import { EndpointDetails } from "myoperator-ui"
 
 ## Usage
 
+### Calling API (Default)
+
 \`\`\`tsx
 import { EndpointDetails } from "myoperator-ui"
 
-function ApiSettingsPage() {
-  const handleRegenerate = (field: "authToken" | "secretKey") => {
-    console.log(\`Regenerating \${field}\`)
-    // Call API to regenerate the token
-  }
-
-  const handleRevokeAccess = () => {
-    console.log("Revoking API access")
-    // Show confirmation modal, then revoke
-  }
-
+function CallingApiSettings() {
   return (
     <EndpointDetails
+      variant="calling"
       baseUrl="https://api.myoperator.co/v3/voice/gateway"
       companyId="12"
       authToken="sk_live_abc123xyz789"
       secretKey="whsec_def456uvw012"
       apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
-      onRegenerate={handleRegenerate}
-      onRevokeAccess={handleRevokeAccess}
+      onRegenerate={(field) => console.log(\`Regenerating \${field}\`)}
+      onRevokeAccess={() => console.log("Revoking access")}
+    />
+  )
+}
+\`\`\`
+
+### WhatsApp API
+
+\`\`\`tsx
+import { EndpointDetails } from "myoperator-ui"
+
+function WhatsAppApiSettings() {
+  return (
+    <EndpointDetails
+      variant="whatsapp"
+      title="WhatsApp API"
+      baseUrl="https://api.myoperator.co/whatsapp"
+      companyId="WA-12345"
+      authToken="waba_live_token_abc123xyz"
     />
   )
 }
@@ -138,6 +153,11 @@ function ApiSettingsPage() {
   },
   tags: ["autodocs"],
   argTypes: {
+    variant: {
+      control: "radio",
+      options: ["calling", "whatsapp"],
+      description: "Variant determines field layout and visibility",
+    },
     title: {
       control: "text",
       description: "Card title",
@@ -152,19 +172,19 @@ function ApiSettingsPage() {
     },
     authToken: {
       control: "text",
-      description: "Authentication token (secret)",
+      description: "Authentication token (secret in calling, visible in whatsapp)",
     },
     secretKey: {
       control: "text",
-      description: "Secret key (secret)",
+      description: "Secret key (only shown in calling variant)",
     },
     apiKey: {
       control: "text",
-      description: "API key (visible)",
+      description: "API key (only shown in calling variant)",
     },
     showRevokeSection: {
       control: "boolean",
-      description: "Whether to show the revoke access section",
+      description: "Whether to show the revoke access section (calling variant only)",
     },
     revokeTitle: {
       control: "text",
@@ -180,11 +200,11 @@ function ApiSettingsPage() {
     },
     onRegenerate: {
       action: "regenerate",
-      description: "Callback when regenerate is clicked",
+      description: "Callback when regenerate is clicked (calling variant only)",
     },
     onRevokeAccess: {
       action: "revoke",
-      description: "Callback when revoke access is clicked",
+      description: "Callback when revoke access is clicked (calling variant only)",
     },
   },
 };
@@ -193,11 +213,12 @@ export default meta;
 type Story = StoryObj<typeof EndpointDetails>;
 
 /**
- * Default endpoint details card with all fields and revoke section.
- * This matches the exact Figma design.
+ * Default endpoint details card for Calling API with all fields and revoke section.
+ * This is the full version matching the Figma design.
  */
 export const Default: Story = {
   args: {
+    variant: "calling",
     baseUrl: "https://api.myoperator.co/v3/voice/gateway",
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
@@ -207,11 +228,27 @@ export const Default: Story = {
 };
 
 /**
- * Endpoint details without the revoke section.
+ * WhatsApp API variant with simplified layout.
+ * Shows only 3 fields: Base URL, Company ID, and Authentication (visible, not secret).
+ * No regenerate buttons or revoke section.
+ */
+export const WhatsApp: Story = {
+  args: {
+    variant: "whatsapp",
+    title: "WhatsApp API",
+    baseUrl: "https://api.myoperator.co/whatsapp",
+    companyId: "WA-12345",
+    authToken: "waba_live_token_abc123xyz789",
+  },
+};
+
+/**
+ * Calling API endpoint without the revoke section.
  * Useful when revoke functionality is not needed.
  */
-export const WithoutRevokeSection: Story = {
+export const CallingWithoutRevoke: Story = {
   args: {
+    variant: "calling",
     baseUrl: "https://api.myoperator.co/v3/voice/gateway",
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
@@ -222,10 +259,11 @@ export const WithoutRevokeSection: Story = {
 };
 
 /**
- * Endpoint details with custom title.
+ * Calling API with custom title.
  */
 export const CustomTitle: Story = {
   args: {
+    variant: "calling",
     title: "API Credentials",
     baseUrl: "https://api.myoperator.co/v3/voice/gateway",
     companyId: "12",
@@ -236,10 +274,11 @@ export const CustomTitle: Story = {
 };
 
 /**
- * Endpoint details with custom revoke section text.
+ * Calling API with custom revoke section text.
  */
 export const CustomRevokeText: Story = {
   args: {
+    variant: "calling",
     baseUrl: "https://api.myoperator.co/v3/voice/gateway",
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
@@ -252,31 +291,29 @@ export const CustomRevokeText: Story = {
 };
 
 /**
- * WhatsApp API endpoint details example.
+ * Side by side comparison of both variants.
  */
-export const WhatsAppEndpoint: Story = {
-  args: {
-    title: "WhatsApp API Credentials",
-    baseUrl: "https://api.myoperator.co/v3/whatsapp/messages",
-    companyId: "WA-12345",
-    authToken: "waba_live_token_abc123xyz",
-    secretKey: "waba_secret_def456uvw",
-    apiKey: "whatsapp_api_key_789ghi012jkl",
-  },
-};
-
-/**
- * Calling API endpoint details example.
- */
-export const CallingEndpoint: Story = {
-  args: {
-    title: "Calling API Credentials",
-    baseUrl: "https://api.myoperator.co/v3/voice/gateway",
-    companyId: "12",
-    authToken: "voice_live_token_abc123",
-    secretKey: "voice_secret_def456",
-    apiKey: "voice_api_key_789ghi",
-  },
+export const VariantComparison: Story = {
+  render: () => (
+    <div className="grid grid-cols-2 gap-6">
+      <EndpointDetails
+        variant="calling"
+        title="Calling API"
+        baseUrl="https://api.myoperator.co/v3/voice/gateway"
+        companyId="12"
+        authToken="sk_live_51abc123xyz789def456ghi"
+        secretKey="whsec_abc123xyz789def456ghi789jkl"
+        apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
+      />
+      <EndpointDetails
+        variant="whatsapp"
+        title="WhatsApp API"
+        baseUrl="https://api.myoperator.co/whatsapp"
+        companyId="WA-12345"
+        authToken="waba_live_token_abc123xyz789"
+      />
+    </div>
+  ),
 };
 
 /**
@@ -285,6 +322,7 @@ export const CallingEndpoint: Story = {
  */
 export const Interactive: Story = {
   args: {
+    variant: "calling",
     baseUrl: "https://api.myoperator.co/v3/voice/gateway",
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
@@ -296,15 +334,12 @@ export const Interactive: Story = {
       {...args}
       onValueCopy={(field, value) => {
         console.log(`Copied ${field}: ${value}`);
-        alert(`Copied ${field} to clipboard!`);
       }}
       onRegenerate={(field) => {
         console.log(`Regenerate ${field}`);
-        alert(`Regenerating ${field}...`);
       }}
       onRevokeAccess={() => {
         console.log("Revoke access clicked");
-        alert("Are you sure you want to revoke access?");
       }}
     />
   ),

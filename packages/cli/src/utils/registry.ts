@@ -1755,8 +1755,8 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
         },
       ],
     },
-    'copyable-field': {
-      name: 'copyable-field',
+    'readable-field': {
+      name: 'readable-field',
       description: 'A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.',
       dependencies: [
             "clsx",
@@ -1765,12 +1765,12 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
       ],
       files: [
         {
-          name: 'copyable-field.tsx',
+          name: 'readable-field.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
 import { Copy, Check, Eye, EyeOff } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-export interface CopyableFieldProps
+export interface ReadableFieldProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
   /** Label text displayed above the field */
   label: string;
@@ -1792,19 +1792,19 @@ export interface CopyableFieldProps
 }
 
 /**
- * CopyableField displays a read-only value with copy-to-clipboard functionality.
+ * ReadableField displays a read-only value with copy-to-clipboard functionality.
  * Supports secret mode for sensitive data like API keys and passwords.
  *
  * @example
  * \`\`\`tsx
- * // Simple copyable field
- * <CopyableField
+ * // Simple readable field
+ * <ReadableField
  *   label="Base URL"
  *   value="https://api.myoperator.co/v3/voice/gateway"
  * />
  *
  * // Secret field with regenerate action
- * <CopyableField
+ * <ReadableField
  *   label="Authentication"
  *   value="sk_live_abc123xyz"
  *   secret
@@ -1816,7 +1816,7 @@ export interface CopyableFieldProps
  * />
  * \`\`\`
  */
-export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps>(
+export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps>(
   (
     {
       label,
@@ -1833,13 +1833,33 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
   ) => {
     const [copied, setCopied] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(!secret);
+    const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Sync visibility state when secret prop changes
+    React.useEffect(() => {
+      setIsVisible(!secret);
+    }, [secret]);
+
+    // Cleanup timeout on unmount to prevent memory leaks
+    React.useEffect(() => {
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    }, []);
 
     const handleCopy = async () => {
       try {
         await navigator.clipboard.writeText(value);
         setCopied(true);
         onValueCopy?.(value);
-        setTimeout(() => setCopied(false), 2000);
+
+        // Clear existing timeout before setting new one
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => setCopied(false), 2000);
       } catch {
         // Clipboard API may fail in insecure contexts
       }
@@ -1860,14 +1880,14 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
       >
         {/* Header Row: Label + Optional Action */}
         <div className="flex items-start justify-between">
-          <label className="text-sm text-semantic-text-muted tracking-[0.035px]">
+          <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
             {label}
-          </label>
+          </span>
           {headerAction && (
             <button
               type="button"
               onClick={headerAction.onClick}
-              className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary transition-colors"
+              className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
             >
               {headerAction.label}
             </button>
@@ -1882,7 +1902,7 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
           )}
         >
           {/* Value Display */}
-          <span className="text-base text-[var(--color-primary-950)] tracking-[0.08px] truncate">
+          <span className="text-base text-semantic-text-primary tracking-[0.08px] truncate">
             {displayValue}
           </span>
 
@@ -1893,7 +1913,7 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
               <button
                 type="button"
                 onClick={toggleVisibility}
-                className="text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                className="text-semantic-text-muted hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
                 aria-label={isVisible ? "Hide value" : "Show value"}
               >
                 {isVisible ? (
@@ -1909,7 +1929,7 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
               type="button"
               onClick={handleCopy}
               className={cn(
-                "transition-colors",
+                "rounded transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary",
                 copied
                   ? "text-semantic-success-primary"
                   : "text-semantic-text-muted hover:text-semantic-text-primary"
@@ -1936,7 +1956,7 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
   }
 );
 
-CopyableField.displayName = "CopyableField";
+ReadableField.displayName = "ReadableField";
 `, prefix),
         },
       ],

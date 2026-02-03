@@ -138,9 +138,9 @@ export type { PageHeaderProps } from "./components/ui/page-header";
 export { FormModal } from "./components/ui/form-modal";
 export type { FormModalProps } from "./components/ui/form-modal";
 
-// CopyableField
-export { CopyableField } from "./components/ui/copyable-field";
-export type { CopyableFieldProps } from "./components/ui/copyable-field";
+// ReadableField
+export { ReadableField } from "./components/ui/readable-field";
+export type { ReadableFieldProps } from "./components/ui/readable-field";
 
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
@@ -202,7 +202,4 @@ export type {
 
 // EndpointDetails (Custom - NOT available via CLI)
 export { EndpointDetails } from "./components/custom/endpoint-details";
-export type {
-  EndpointDetailsProps,
-  EndpointCredential,
-} from "./components/custom/endpoint-details";
+export type { EndpointDetailsProps } from "./components/custom/endpoint-details";

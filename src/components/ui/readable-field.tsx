@@ -2,7 +2,7 @@ import * as React from "react";
 import { Copy, Check, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export interface CopyableFieldProps
+export interface ReadableFieldProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
   /** Label text displayed above the field */
   label: string;
@@ -24,19 +24,19 @@ export interface CopyableFieldProps
 }
 
 /**
- * CopyableField displays a read-only value with copy-to-clipboard functionality.
+ * ReadableField displays a read-only value with copy-to-clipboard functionality.
  * Supports secret mode for sensitive data like API keys and passwords.
  *
  * @example
  * ```tsx
- * // Simple copyable field
- * <CopyableField
+ * // Simple readable field
+ * <ReadableField
  *   label="Base URL"
  *   value="https://api.myoperator.co/v3/voice/gateway"
  * />
  *
  * // Secret field with regenerate action
- * <CopyableField
+ * <ReadableField
  *   label="Authentication"
  *   value="sk_live_abc123xyz"
  *   secret
@@ -48,7 +48,7 @@ export interface CopyableFieldProps
  * />
  * ```
  */
-export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps>(
+export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps>(
   (
     {
       label,
@@ -134,7 +134,7 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
           )}
         >
           {/* Value Display */}
-          <span className="text-base text-[var(--color-primary-950)] tracking-[0.08px] truncate">
+          <span className="text-base text-semantic-text-primary tracking-[0.08px] truncate">
             {displayValue}
           </span>
 
@@ -188,4 +188,4 @@ export const CopyableField = React.forwardRef<HTMLDivElement, CopyableFieldProps
   }
 );
 
-CopyableField.displayName = "CopyableField";
+ReadableField.displayName = "ReadableField";
