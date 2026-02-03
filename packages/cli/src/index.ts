@@ -3,6 +3,7 @@ import { Command } from 'commander'
 import { createRequire } from 'module'
 import { add } from './commands/add.js'
 import { init } from './commands/init.js'
+import { sync } from './commands/sync.js'
 import { update } from './commands/update.js'
 
 const require = createRequire(import.meta.url)
@@ -41,5 +42,12 @@ program
   .option('-b, --backup', 'Create backup files before updating', false)
   .option('-p, --path <path>', 'Path to components directory', 'src/components/ui')
   .action(update)
+
+program
+  .command('sync')
+  .description('Add new components and update existing ones in one command')
+  .option('-y, --yes', 'Skip confirmation prompt', false)
+  .option('-p, --path <path>', 'Path to components directory', 'src/components/ui')
+  .action(sync)
 
 program.parse()
