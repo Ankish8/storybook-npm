@@ -52,7 +52,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     name: 'select',
     description: 'A select dropdown component built on Radix UI Select',
       category: 'form',
-    dependencies: ["@radix-ui/react-select@^2.2.6","class-variance-authority","clsx","tailwind-merge","lucide-react"],
+    dependencies: ["@radix-ui/react-select@^2.2.6","class-variance-authority","clsx","tailwind-merge","lucide-react","tailwindcss-animate"],
     category: 'form',
     internalDependencies: [],
   },

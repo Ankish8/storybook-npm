@@ -124,6 +124,7 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+      - "tailwindcss-animate"
 
   checkbox:
     description: "A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox."

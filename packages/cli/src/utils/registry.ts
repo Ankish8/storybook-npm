@@ -1064,7 +1064,8 @@ export { Input, inputVariants };
             "class-variance-authority",
             "clsx",
             "tailwind-merge",
-            "lucide-react"
+            "lucide-react",
+            "tailwindcss-animate"
       ],
       files: [
         {

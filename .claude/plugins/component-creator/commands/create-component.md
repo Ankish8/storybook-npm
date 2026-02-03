@@ -348,6 +348,53 @@ npx tsc --noEmit
 7. **ALWAYS use CVA for variants** - Consistent variant system
 8. **ALWAYS forward refs** - Enable parent ref access
 9. **ALWAYS export variants** - Enable variant reusability
+10. **NEVER use `@/components` imports in custom components** - Use relative paths like `../../ui/button`
+11. **ALWAYS add `tailwindcss-animate` dependency** if using animation classes (`animate-in`, `animate-out`, `fade-in-*`, `zoom-in-*`, etc.)
+
+## Import Path Rules (CRITICAL)
+
+### For UI Components (`src/components/ui/`)
+```tsx
+// ✅ CORRECT - Use @/lib/utils (will be transformed by CLI)
+import { cn } from "@/lib/utils"
+
+// ✅ CORRECT - Import from sibling UI components
+import { Button } from "./button"
+```
+
+### For Custom Components (`src/components/custom/component-name/`)
+```tsx
+// ✅ CORRECT - Use relative path to lib/utils
+import { cn } from "../../../lib/utils"
+
+// ✅ CORRECT - Use relative path to UI components
+import { Button } from "../../ui/button"
+import { Dialog, DialogContent } from "../../ui/dialog"
+
+// ❌ WRONG - @/components will NOT work in user's project
+import { Button } from "@/components/ui/button"
+```
+
+**Why this matters:** The `@/` path alias only exists in our source project. When components are installed in user projects, `@/components/ui/button` fails because users don't have that alias configured.
+
+## Animation Dependency Rule (CRITICAL)
+
+If your component uses ANY of these Tailwind classes, add `tailwindcss-animate` to dependencies in `components.yaml`:
+
+```
+animate-in, animate-out, fade-in-*, fade-out-*, zoom-in-*, zoom-out-*,
+slide-in-from-*, slide-out-to-*, spin-in-*, spin-out-*
+```
+
+**Example components.yaml entry:**
+```yaml
+dialog:
+  description: "Modal dialog with animations"
+  category: overlay
+  dependencies:
+    - "@radix-ui/react-dialog"
+    - "tailwindcss-animate"  # Required for animate-in/out classes
+```
 
 ## Error Handling
 
