@@ -468,17 +468,33 @@ export async function init() {
   const configPath = path.join(cwd, 'components.json')
 
   // Check if config already exists
+  let skipConfigCreation = false
+  let existingConfig: Record<string, unknown> | null = null
+
   if (await fs.pathExists(configPath)) {
-    const { overwrite } = await prompts({
-      type: 'confirm',
-      name: 'overwrite',
-      message: 'components.json already exists. Overwrite?',
-      initial: false,
+    existingConfig = await fs.readJson(configPath)
+
+    const { action } = await prompts({
+      type: 'select',
+      name: 'action',
+      message: 'components.json already exists. What would you like to do?',
+      choices: [
+        { title: 'Update missing files only (theme, CSS)', value: 'update' },
+        { title: 'Overwrite everything', value: 'overwrite' },
+        { title: 'Cancel', value: 'cancel' },
+      ],
+      initial: 0,
     })
 
-    if (!overwrite) {
+    if (action === 'cancel') {
       console.log(chalk.yellow('  Initialization cancelled.\n'))
       process.exit(0)
+    }
+
+    skipConfigCreation = action === 'update'
+
+    if (skipConfigCreation) {
+      console.log(chalk.blue('  ℹ Keeping existing config, updating missing files...\n'))
     }
   }
 
@@ -583,22 +599,24 @@ export async function init() {
     })
   }
 
-  // Always ask for prefix preference (even if detected)
-  questions.push({
-    type: 'text',
-    name: 'prefix',
-    message: detectedPrefix
-      ? `Confirm Tailwind prefix (detected: "${detectedPrefix}"):`
-      : 'Enter Tailwind CSS prefix (default: tw-):',
-    initial: detectedPrefix || 'tw-',
-    validate: (value: string) => {
-      // Allow empty string or valid CSS identifier
-      if (value === '' || /^[a-zA-Z_-][a-zA-Z0-9_-]*$/.test(value)) {
-        return true
+  // Only ask for prefix when not in update mode
+  if (!skipConfigCreation) {
+    questions.push({
+      type: 'text',
+      name: 'prefix',
+      message: detectedPrefix
+        ? `Confirm Tailwind prefix (detected: "${detectedPrefix}"):`
+        : 'Enter Tailwind CSS prefix (default: tw-):',
+      initial: detectedPrefix || 'tw-',
+      validate: (value: string) => {
+        // Allow empty string or valid CSS identifier
+        if (value === '' || /^[a-zA-Z_-][a-zA-Z0-9_-]*$/.test(value)) {
+          return true
+        }
+        return 'Prefix must be a valid CSS identifier (letters, numbers, hyphens, underscores)'
       }
-      return 'Prefix must be a valid CSS identifier (letters, numbers, hyphens, underscores)'
-    }
-  })
+    })
+  }
 
   if (questions.length > 0) {
     const response = await prompts(questions)
@@ -617,22 +635,28 @@ export async function init() {
   const spinner = ora('Initializing project...').start()
 
   try {
-    // Create config
-    const config = {
-      ...DEFAULT_CONFIG,
-      tailwind: {
-        ...DEFAULT_CONFIG.tailwind,
-        config: tailwindConfig,
-        css: globalCss,
-        prefix: userPrefix,
-      },
-      aliases: {
-        ...DEFAULT_CONFIG.aliases,
-        ui: `@/${componentsPath.replace('src/', '')}`,
-      },
-    }
+    // Create config (skip if updating)
+    if (!skipConfigCreation) {
+      const config = {
+        ...DEFAULT_CONFIG,
+        tailwind: {
+          ...DEFAULT_CONFIG.tailwind,
+          config: tailwindConfig,
+          css: globalCss,
+          prefix: userPrefix,
+        },
+        aliases: {
+          ...DEFAULT_CONFIG.aliases,
+          ui: `@/${componentsPath.replace('src/', '')}`,
+        },
+      }
 
-    await fs.writeJson(configPath, config, { spaces: 2 })
+      await fs.writeJson(configPath, config, { spaces: 2 })
+    } else if (existingConfig) {
+      // In update mode, use prefix from existing config
+      const existingTailwind = existingConfig.tailwind as Record<string, unknown> | undefined
+      userPrefix = (existingTailwind?.prefix as string) || ''
+    }
 
     // Create utils file or add cn function if missing
     const utilsFullPath = path.join(cwd, utilsPath)
@@ -909,9 +933,13 @@ export function cn(...inputs: ClassValue[]) {
       console.log(chalk.cyan(`    npm install ${deps}\n`))
     }
 
-    spinner.succeed('Project initialized successfully!')
+    spinner.succeed(skipConfigCreation ? 'Project updated successfully!' : 'Project initialized successfully!')
 
-    console.log(chalk.green('\n  ✓ Created components.json'))
+    if (!skipConfigCreation) {
+      console.log(chalk.green('\n  ✓ Created components.json'))
+    } else {
+      console.log(chalk.green('\n  ✓ Using existing components.json'))
+    }
     if (userPrefix) {
       console.log(chalk.blue(`    ℹ Components will use prefix: "${userPrefix}"`))
     } else {
