@@ -8,6 +8,7 @@ import { configExists, getTailwindPrefix } from '../utils/config.js'
 
 interface AddOptions {
   all: boolean
+  category?: string
   yes: boolean
   overwrite: boolean
   path: string
@@ -39,6 +40,27 @@ export async function add(components: string[], options: AddOptions) {
   if (options.all) {
     components = availableComponents
     console.log(chalk.blue(`  Adding all ${components.length} components...\n`))
+  }
+
+  // If --category flag is used, add all components from that category
+  if (options.category) {
+    const validCategories = ['core', 'form', 'data', 'overlay', 'feedback', 'layout', 'custom']
+    const categoryLower = options.category.toLowerCase()
+
+    if (!validCategories.includes(categoryLower)) {
+      console.log(chalk.red(`\n  Error: Unknown category: ${options.category}`))
+      console.log(chalk.yellow(`  Available categories: ${validCategories.join(', ')}\n`))
+      process.exit(1)
+    }
+
+    components = availableComponents.filter((name) => registry[name].category === categoryLower)
+
+    if (components.length === 0) {
+      console.log(chalk.yellow(`\n  No components found in category: ${categoryLower}\n`))
+      process.exit(0)
+    }
+
+    console.log(chalk.blue(`  Adding all ${components.length} ${categoryLower} components...\n`))
   }
 
   // If no components specified, show selection
