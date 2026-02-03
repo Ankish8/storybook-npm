@@ -60,10 +60,25 @@ export async function sync(options: SyncOptions) {
     if (!exists) {
       toAdd.push(componentName)
     } else {
-      // Check if content differs
+      // Check if content differs (ignoring whitespace-only changes)
       const existingContent = await fs.readFile(mainFilePath, 'utf-8')
       const registryFile = component.files.find((f) => f.name === mainFileName)
-      if (registryFile && existingContent !== registryFile.content) {
+
+      // Normalize content for comparison: trim lines, normalize line endings
+      const normalizeForComparison = (content: string) =>
+        content
+          .replace(/\r\n/g, '\n') // Normalize line endings
+          .split('\n')
+          .map((line) => line.trimEnd()) // Remove trailing whitespace from each line
+          .join('\n')
+          .trim() // Remove leading/trailing whitespace
+
+      const existingNormalized = normalizeForComparison(existingContent)
+      const registryNormalized = registryFile
+        ? normalizeForComparison(registryFile.content)
+        : ''
+
+      if (registryFile && existingNormalized !== registryNormalized) {
         toUpdate.push(componentName)
       } else {
         upToDate.push(componentName)
