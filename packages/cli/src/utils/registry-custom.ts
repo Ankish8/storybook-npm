@@ -1687,7 +1687,7 @@ export interface EndpointDetailsProps
   baseUrl?: string;
   /** Company ID */
   companyId?: string;
-  /** Authentication token (secret in calling variant, visible in whatsapp variant) */
+  /** Authentication token (secret, masked by default in both variants) */
   authToken: string;
   /** Secret key (secret) - only shown in calling variant */
   secretKey?: string;
@@ -1695,7 +1695,7 @@ export interface EndpointDetailsProps
   apiKey?: string;
   /** Callback when a field value is copied */
   onValueCopy?: (field: string, value: string) => void;
-  /** Callback when regenerate is clicked for a field - only used in calling variant */
+  /** Callback when regenerate is clicked for a field */
   onRegenerate?: (field: "authToken" | "secretKey") => void;
   /** Callback when revoke access is clicked - only used in calling variant */
   onRevokeAccess?: () => void;
@@ -1735,6 +1735,7 @@ export interface EndpointDetailsProps
  *   baseUrl="https://api.myoperator.co/whatsapp"
  *   companyId="WA-12345"
  *   authToken="waba_token_abc123"
+ *   onRegenerate={(field) => console.log(\`Regenerate \${field}\`)}
  * />
  * \`\`\`
  */
@@ -1856,10 +1857,15 @@ export const EndpointDetails = React.forwardRef<
               )}
             </div>
           ) : (
-            /* WhatsApp variant: full-width Authentication, NOT secret, NO regenerate */
+            /* WhatsApp variant: full-width Authentication, secret with regenerate */
             <ReadableField
               label="Authentication"
               value={authToken}
+              secret
+              headerAction={{
+                label: "Regenerate",
+                onClick: () => onRegenerate?.("authToken"),
+              }}
               onValueCopy={handleCopy("authToken")}
             />
           )}

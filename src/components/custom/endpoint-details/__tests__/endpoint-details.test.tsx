@@ -192,19 +192,34 @@ describe("EndpointDetails", () => {
       expect(screen.queryByText("Revoke API Access")).not.toBeInTheDocument();
     });
 
-    it("displays authentication token as visible (not masked)", () => {
+    it("masks authentication token by default", () => {
       render(<EndpointDetails variant="whatsapp" {...whatsappProps} />);
 
-      // Auth token should be visible, not masked
-      expect(screen.getByText("waba_token_abc123")).toBeInTheDocument();
-      // Should not have masked values
-      expect(screen.queryByText("••••••••••••••••••••")).not.toBeInTheDocument();
+      // Auth token should be masked
+      expect(screen.getByText("••••••••••••••••••••")).toBeInTheDocument();
+      // Should not show the raw token
+      expect(screen.queryByText("waba_token_abc123")).not.toBeInTheDocument();
     });
 
-    it("does not show regenerate button for authentication", () => {
+    it("shows regenerate button for authentication", () => {
       render(<EndpointDetails variant="whatsapp" {...whatsappProps} />);
 
-      expect(screen.queryByText("Regenerate")).not.toBeInTheDocument();
+      expect(screen.getByText("Regenerate")).toBeInTheDocument();
+    });
+
+    it("calls onRegenerate with authToken when regenerate is clicked", () => {
+      const onRegenerate = vi.fn();
+      render(
+        <EndpointDetails
+          variant="whatsapp"
+          {...whatsappProps}
+          onRegenerate={onRegenerate}
+        />
+      );
+
+      fireEvent.click(screen.getByText("Regenerate"));
+
+      expect(onRegenerate).toHaveBeenCalledWith("authToken");
     });
 
     it("does not show revoke section even with showRevokeSection true", () => {

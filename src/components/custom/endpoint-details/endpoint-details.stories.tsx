@@ -13,7 +13,7 @@ EndpointDetails displays API endpoint credentials with copy functionality. Used 
 
 Supports two variants:
 - **calling** (default): Full version with up to 5 fields (Base URL, Company ID, Authentication, Secret Key, x-api-key) + revoke section. Company ID is optional — when omitted, Base URL spans full width.
-- **whatsapp**: Simplified version with up to 3 fields (Base URL, Company ID, Authentication), no revoke section, authentication is visible (not secret). Company ID is optional.
+- **whatsapp**: Simplified version with up to 3 fields (Base URL, Company ID, Authentication), no revoke section. Authentication is secret with a Regenerate button. Company ID is optional.
 
 ## Installation
 
@@ -140,6 +140,7 @@ function WhatsAppApiSettings() {
       baseUrl="https://api.myoperator.co/whatsapp"
       companyId="WA-12345"
       authToken="waba_live_token_abc123xyz"
+      onRegenerate={(field) => console.log(\`Regenerating \${field}\`)}
     />
   )
 }
@@ -169,7 +170,7 @@ function WhatsAppApiSettings() {
     },
     authToken: {
       control: "text",
-      description: "Authentication token (secret in calling, visible in whatsapp)",
+      description: "Authentication token (secret in both variants)",
     },
     secretKey: {
       control: "text",
@@ -197,7 +198,7 @@ function WhatsAppApiSettings() {
     },
     onRegenerate: {
       action: "regenerate",
-      description: "Callback when regenerate is clicked (calling variant only)",
+      description: "Callback when regenerate is clicked for a secret field",
     },
     onRevokeAccess: {
       action: "revoke",
@@ -226,8 +227,8 @@ export const Default: Story = {
 
 /**
  * WhatsApp API variant with simplified layout.
- * Shows only 3 fields: Base URL, Company ID, and Authentication (visible, not secret).
- * No regenerate buttons or revoke section.
+ * Shows only 3 fields: Base URL, Company ID, and Authentication (secret with Regenerate).
+ * No revoke section.
  */
 export const WhatsApp: Story = {
   args: {
