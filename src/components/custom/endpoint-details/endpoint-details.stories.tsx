@@ -12,8 +12,8 @@ const meta: Meta<typeof EndpointDetails> = {
 EndpointDetails displays API endpoint credentials with copy functionality. Used for showing API keys, authentication tokens, and other sensitive credentials in a structured card layout.
 
 Supports two variants:
-- **calling** (default): Full version with 5 fields (Base URL, Company ID, Authentication, Secret Key, x-api-key) + revoke section
-- **whatsapp**: Simplified version with 3 fields (Base URL, Company ID, Authentication), no revoke section, authentication is visible (not secret)
+- **calling** (default): Full version with up to 5 fields (Base URL, Company ID, Authentication, Secret Key, x-api-key) + revoke section. Company ID is optional — when omitted, Base URL spans full width.
+- **whatsapp**: Simplified version with up to 3 fields (Base URL, Company ID, Authentication), no revoke section, authentication is visible (not secret). Company ID is optional.
 
 ## Installation
 
@@ -117,7 +117,6 @@ function CallingApiSettings() {
     <EndpointDetails
       variant="calling"
       baseUrl="https://api.myoperator.co/v3/voice/gateway"
-      companyId="12"
       authToken="sk_live_abc123xyz789"
       secretKey="whsec_def456uvw012"
       apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
@@ -162,11 +161,11 @@ function WhatsAppApiSettings() {
     },
     baseUrl: {
       control: "text",
-      description: "Base URL for the API endpoint",
+      description: "Base URL for the API endpoint (optional — omit to hide the field)",
     },
     companyId: {
       control: "text",
-      description: "Company ID",
+      description: "Company ID (optional — omit to hide the field)",
     },
     authToken: {
       control: "text",
@@ -237,6 +236,20 @@ export const WhatsApp: Story = {
     baseUrl: "https://api.myoperator.co/whatsapp",
     companyId: "WA-12345",
     authToken: "waba_live_token_abc123xyz789",
+  },
+};
+
+/**
+ * Calling API without Base URL — matches the Calling API design where
+ * Company ID and x-api-key appear side by side in the first row.
+ */
+export const CallingWithoutBaseUrl: Story = {
+  args: {
+    variant: "calling",
+    companyId: "12",
+    authToken: "sk_live_51abc123xyz789def456ghi",
+    secretKey: "whsec_abc123xyz789def456ghi789jkl",
+    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
   },
 };
 

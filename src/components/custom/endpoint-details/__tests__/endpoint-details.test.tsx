@@ -157,6 +157,24 @@ describe("EndpointDetails", () => {
 
       expect(screen.queryByText("x-api-key")).not.toBeInTheDocument();
     });
+
+    it("works without companyId", () => {
+      const { companyId, ...propsWithoutCompanyId } = callingProps;
+      render(<EndpointDetails {...propsWithoutCompanyId} />);
+
+      expect(screen.queryByText("Company ID")).not.toBeInTheDocument();
+      expect(screen.getByText("Base URL")).toBeInTheDocument();
+    });
+
+    it("works without baseUrl — companyId and apiKey appear in first row", () => {
+      const { baseUrl, ...propsWithoutBaseUrl } = callingProps;
+      render(<EndpointDetails {...propsWithoutBaseUrl} />);
+
+      expect(screen.queryByText("Base URL")).not.toBeInTheDocument();
+      expect(screen.getByText("Company ID")).toBeInTheDocument();
+      expect(screen.getByText("x-api-key")).toBeInTheDocument();
+      expect(screen.getByText("Authentication")).toBeInTheDocument();
+    });
   });
 
   describe("whatsapp variant", () => {

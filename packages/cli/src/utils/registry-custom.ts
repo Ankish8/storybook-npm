@@ -1684,9 +1684,9 @@ export interface EndpointDetailsProps
   /** Variant determines field layout and visibility */
   variant?: "calling" | "whatsapp";
   /** Base URL for the API endpoint */
-  baseUrl: string;
+  baseUrl?: string;
   /** Company ID */
-  companyId: string;
+  companyId?: string;
   /** Authentication token (secret in calling variant, visible in whatsapp variant) */
   authToken: string;
   /** Secret key (secret) - only shown in calling variant */
@@ -1768,6 +1768,26 @@ export const EndpointDetails = React.forwardRef<
       onValueCopy?.(field, value);
     };
 
+    // Collect non-secret visible fields for the top rows
+    const topFields: Array<{ label: string; value: string; field: string }> =
+      [];
+    if (baseUrl)
+      topFields.push({ label: "Base URL", value: baseUrl, field: "baseUrl" });
+    if (companyId)
+      topFields.push({
+        label: "Company ID",
+        value: companyId,
+        field: "companyId",
+      });
+    if (isCalling && apiKey)
+      topFields.push({ label: "x-api-key", value: apiKey, field: "apiKey" });
+
+    // Group fields into rows of 2
+    const topRows: Array<typeof topFields> = [];
+    for (let i = 0; i < topFields.length; i += 2) {
+      topRows.push(topFields.slice(i, i + 2));
+    }
+
     return (
       <div
         ref={ref}
@@ -1786,19 +1806,25 @@ export const EndpointDetails = React.forwardRef<
 
         {/* Credentials Grid */}
         <div className="flex flex-col gap-[30px]">
-          {/* Row 1: Base URL + Company ID */}
-          <div className="grid grid-cols-2 gap-[25px]">
-            <ReadableField
-              label="Base URL"
-              value={baseUrl}
-              onValueCopy={handleCopy("baseUrl")}
-            />
-            <ReadableField
-              label="Company ID"
-              value={companyId}
-              onValueCopy={handleCopy("companyId")}
-            />
-          </div>
+          {/* Non-secret fields in rows of 2 */}
+          {topRows.map((row, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                "grid gap-[25px]",
+                row.length === 2 ? "grid-cols-2" : "grid-cols-1"
+              )}
+            >
+              {row.map((f) => (
+                <ReadableField
+                  key={f.field}
+                  label={f.label}
+                  value={f.value}
+                  onValueCopy={handleCopy(f.field)}
+                />
+              ))}
+            </div>
+          ))}
 
           {/* Authentication field - different based on variant */}
           {isCalling ? (
@@ -1835,15 +1861,6 @@ export const EndpointDetails = React.forwardRef<
               label="Authentication"
               value={authToken}
               onValueCopy={handleCopy("authToken")}
-            />
-          )}
-
-          {/* x-api-key (full width) - only for calling variant */}
-          {isCalling && apiKey && (
-            <ReadableField
-              label="x-api-key"
-              value={apiKey}
-              onValueCopy={handleCopy("apiKey")}
             />
           )}
 
