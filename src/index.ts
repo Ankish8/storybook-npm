@@ -142,6 +142,14 @@ export type { FormModalProps } from "./components/ui/form-modal";
 export { ReadableField } from "./components/ui/readable-field";
 export type { ReadableFieldProps } from "./components/ui/readable-field";
 
+// Spinner
+export { Spinner, spinnerVariants } from "./components/ui/spinner";
+export type { SpinnerProps } from "./components/ui/spinner";
+
+// Skeleton
+export { Skeleton, skeletonVariants } from "./components/ui/skeleton";
+export type { SkeletonProps } from "./components/ui/skeleton";
+
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
 export type {

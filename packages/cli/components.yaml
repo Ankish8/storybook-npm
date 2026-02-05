@@ -49,6 +49,8 @@ categories:
       - tag
       - alert
       - toast
+      - spinner
+      - skeleton
 
   layout:
     description: "Layout and structure components"
@@ -285,6 +287,22 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "tailwindcss-animate"
+
+  spinner:
+    description: "A loading spinner component with customizable size and color variants for indicating progress"
+    category: feedback
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  skeleton:
+    description: "A placeholder loading component with pulse animation for content loading states"
+    category: feedback
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
 
   # ---------------------------------------------------------------------------
   # LAYOUT COMPONENTS

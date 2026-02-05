@@ -184,6 +184,22 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'feedback',
     internalDependencies: [],
   },
+  'spinner': {
+    name: 'spinner',
+    description: 'A loading spinner component with customizable size and color variants for indicating progress',
+      category: 'feedback',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'feedback',
+    internalDependencies: [],
+  },
+  'skeleton': {
+    name: 'skeleton',
+    description: 'A placeholder loading component with pulse animation for content loading states',
+      category: 'feedback',
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: 'feedback',
+    internalDependencies: [],
+  },
   'accordion': {
     name: 'accordion',
     description: 'An expandable/collapsible accordion component with single or multiple mode support',
