@@ -26,6 +26,24 @@ const OUTPUT_DIR = path.resolve(__dirname, '../src/utils')
 // For backwards compatibility, also generate the combined registry.ts
 const LEGACY_OUTPUT_FILE = path.resolve(OUTPUT_DIR, 'registry.ts')
 
+// Single source of truth: read prefix arrays from prefix-utils.ts
+const PREFIX_UTILS_PATH = path.resolve(__dirname, '../src/utils/prefix-utils.ts')
+const prefixUtilsSource = fs.readFileSync(PREFIX_UTILS_PATH, 'utf-8')
+
+const prefixArrayMatch = prefixUtilsSource.match(/const tailwindUtilityPrefixes = (\[.*?\])/)
+if (!prefixArrayMatch) {
+  console.error('Error: Could not extract tailwindUtilityPrefixes from prefix-utils.ts')
+  process.exit(1)
+}
+const TAILWIND_UTILITY_PREFIXES_LITERAL = prefixArrayMatch[1]
+
+const singleWordMatch = prefixUtilsSource.match(/const singleWordUtilities = (\/\^.*?\$\/)/)
+if (!singleWordMatch) {
+  console.error('Error: Could not extract singleWordUtilities from prefix-utils.ts')
+  process.exit(1)
+}
+const SINGLE_WORD_UTILITIES_LITERAL = singleWordMatch[1]
+
 /**
  * Load and parse components.yaml
  */
@@ -389,7 +407,7 @@ function looksLikeTailwindClasses(str: string): boolean {
 
   // Skip npm package names - but NOT if they look like Tailwind utility classes
   // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)
-  const tailwindUtilityPrefixes = ['text', 'bg', 'p', 'm', 'px', 'py', 'mx', 'my', 'pt', 'pb', 'pl', 'pr', 'mt', 'mb', 'ml', 'mr', 'w', 'h', 'min', 'max', 'gap', 'space', 'border', 'rounded', 'shadow', 'opacity', 'font', 'leading', 'tracking', 'z', 'inset', 'top', 'bottom', 'left', 'right', 'flex', 'grid', 'col', 'row', 'justify', 'items', 'content', 'self', 'place', 'order', 'float', 'clear', 'object', 'overflow', 'overscroll', 'scroll', 'list', 'appearance', 'cursor', 'pointer', 'resize', 'select', 'fill', 'stroke', 'table', 'caption', 'transition', 'duration', 'ease', 'delay', 'animate', 'transform', 'origin', 'scale', 'rotate', 'translate', 'skew', 'accent', 'caret', 'outline', 'ring', 'blur', 'brightness', 'contrast', 'grayscale', 'hue', 'invert', 'saturate', 'sepia', 'backdrop', 'divide', 'sr', 'not', 'snap', 'touch', 'will', 'aspect', 'container', 'columns', 'break', 'box', 'isolation', 'mix', 'filter', 'drop', 'size']
+  const tailwindUtilityPrefixes = ${TAILWIND_UTILITY_PREFIXES_LITERAL}
 
   // Check if it looks like a Tailwind utility (prefix-value pattern) before npm check
   if (str.includes('-') && !str.includes(' ')) {
@@ -412,7 +430,7 @@ function looksLikeTailwindClasses(str: string): boolean {
     if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return false
 
     // Single word utilities that are valid Tailwind classes
-    const singleWordUtilities = /^(flex|grid|block|inline|contents|flow-root|hidden|invisible|visible|static|fixed|absolute|relative|sticky|isolate|isolation-auto|overflow-auto|overflow-hidden|overflow-clip|overflow-visible|overflow-scroll|overflow-x-auto|overflow-y-auto|overscroll-auto|overscroll-contain|overscroll-none|truncate|antialiased|subpixel-antialiased|italic|not-italic|underline|overline|line-through|no-underline|uppercase|lowercase|capitalize|normal-case|ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stacked-fractions|sr-only|not-sr-only|resize|resize-none|resize-x|resize-y|snap-start|snap-end|snap-center|snap-align-none|snap-normal|snap-always|touch-auto|touch-none|touch-pan-x|touch-pan-left|touch-pan-right|touch-pan-y|touch-pan-up|touch-pan-down|touch-pinch-zoom|touch-manipulation|select-none|select-text|select-all|select-auto|will-change-auto|will-change-scroll|will-change-contents|will-change-transform|grow|grow-0|shrink|shrink-0|transform|transform-cpu|transform-gpu|transform-none|transition|transition-none|transition-all|transition-colors|transition-opacity|transition-shadow|transition-transform|animate-none|animate-spin|animate-ping|animate-pulse|animate-bounce)$/
+    const singleWordUtilities = ${SINGLE_WORD_UTILITIES_LITERAL}
     if (singleWordUtilities.test(cls)) return true
 
     // Classes with hyphens are likely Tailwind (bg-*, text-*, p-*, m-*, etc.)

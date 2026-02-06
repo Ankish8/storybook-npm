@@ -16,27 +16,28 @@ const __dirname = path.dirname(__filename)
 
 const PREFIX = 'tw-'
 
-// Single-word Tailwind utilities that should be prefixed
-const SINGLE_WORD_UTILITIES = new Set([
-  'flex', 'grid', 'block', 'inline', 'contents', 'hidden', 'invisible', 'visible',
-  'static', 'fixed', 'absolute', 'relative', 'sticky', 'isolate',
-  'truncate', 'antialiased', 'italic', 'underline', 'overline', 'uppercase', 'lowercase', 'capitalize',
-  'resize', 'grow', 'shrink', 'transform', 'transition'
-])
+// Single source of truth: derive prefix lists from prefix-utils.ts
+const PREFIX_UTILS_PATH = path.resolve(__dirname, '../src/utils/prefix-utils.ts')
+const prefixUtilsSource = fs.readFileSync(PREFIX_UTILS_PATH, 'utf-8')
 
-// Tailwind utility prefixes that indicate a class
+// Derive TAILWIND_PREFIXES from tailwindUtilityPrefixes (add '-' suffix for prefix matching)
+const prefixArrayMatch = prefixUtilsSource.match(/const tailwindUtilityPrefixes = \[([\s\S]*?)\]/)
+if (!prefixArrayMatch) {
+  console.error('Error: Could not extract tailwindUtilityPrefixes from prefix-utils.ts')
+  process.exit(1)
+}
 const TAILWIND_PREFIXES = [
-  'text-', 'bg-', 'p-', 'm-', 'px-', 'py-', 'mx-', 'my-', 'pt-', 'pb-', 'pl-', 'pr-',
-  'mt-', 'mb-', 'ml-', 'mr-', 'w-', 'h-', 'min-', 'max-', 'gap-', 'space-',
-  'border-', 'rounded-', 'shadow-', 'opacity-', 'font-', 'leading-', 'tracking-',
-  'z-', 'inset-', 'top-', 'bottom-', 'left-', 'right-',
-  'flex-', 'grid-', 'col-', 'row-', 'justify-', 'items-', 'content-', 'self-', 'place-',
-  'order-', 'float-', 'clear-', 'object-', 'overflow-', 'overscroll-', 'scroll-',
-  'list-', 'cursor-', 'select-', 'fill-', 'stroke-', 'divide-', 'size-',
-  'transition-', 'duration-', 'ease-', 'delay-', 'animate-',
-  'origin-', 'scale-', 'rotate-', 'translate-', 'skew-',
-  'ring-', 'outline-', 'focus:', 'hover:', 'active:', 'disabled:'
+  ...prefixArrayMatch[1].match(/'([^']+)'/g).map(s => s.replace(/'/g, '') + '-'),
+  'focus:', 'hover:', 'active:', 'disabled:'  // variant pseudo-classes
 ]
+
+// Derive SINGLE_WORD_UTILITIES from singleWordUtilities regex
+const singleWordMatch = prefixUtilsSource.match(/const singleWordUtilities = \/\^\(([^)]+)\)\$\//)
+if (!singleWordMatch) {
+  console.error('Error: Could not extract singleWordUtilities from prefix-utils.ts')
+  process.exit(1)
+}
+const SINGLE_WORD_UTILITIES = new Set(singleWordMatch[1].split('|'))
 
 /**
  * Check if a class is an unprefixed Tailwind class that should have been transformed
