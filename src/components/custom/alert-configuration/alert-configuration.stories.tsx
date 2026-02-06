@@ -2,6 +2,25 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { AlertConfiguration } from "./alert-configuration";
 import { AlertValuesModal } from "./alert-values-modal";
+import type { AlertValueOption } from "./alert-values-modal";
+
+const balanceOptions: AlertValueOption[] = [
+  { value: -500, label: "- ₹ 500" },
+  { value: -250, label: "- ₹ 250" },
+  { value: 0, label: "₹ 0" },
+  { value: 250, label: "₹ 250" },
+  { value: 500, label: "₹ 500" },
+  { value: 1000, label: "₹ 1000" },
+];
+
+const topupOptions: AlertValueOption[] = [
+  { value: 100, label: "₹ 100" },
+  { value: 250, label: "₹ 250" },
+  { value: 500, label: "₹ 500" },
+  { value: 1000, label: "₹ 1000" },
+  { value: 2000, label: "₹ 2000" },
+  { value: 5000, label: "₹ 5000" },
+];
 
 const meta: Meta<typeof AlertConfiguration> = {
   title: "Custom/Webhook/AlertConfiguration",
@@ -126,6 +145,18 @@ import { AlertConfiguration, AlertValuesModal } from "@/components/custom/alert-
 \`\`\`tsx
 import { useState } from "react"
 import { AlertConfiguration, AlertValuesModal } from "@/components/custom/alert-configuration"
+import type { AlertValueOption } from "@/components/custom/alert-configuration"
+
+const balanceOptions: AlertValueOption[] = [
+  { value: -500, label: "- ₹ 500" },
+  { value: 250, label: "₹ 250" },
+  { value: 500, label: "₹ 500" },
+]
+
+const topupOptions: AlertValueOption[] = [
+  { value: 500, label: "₹ 500" },
+  { value: 1000, label: "₹ 1000" },
+]
 
 function PaymentPage() {
   const [balance, setBalance] = useState(250)
@@ -151,6 +182,8 @@ function PaymentPage() {
         onOpenChange={setModalOpen}
         initialMinimumBalance={balance}
         initialMinimumTopup={topup}
+        balanceOptions={balanceOptions}
+        topupOptions={topupOptions}
         onSave={handleSave}
       />
     </>
@@ -221,6 +254,8 @@ export const Default: Story = {
           onOpenChange={setModalOpen}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
+          balanceOptions={balanceOptions}
+          topupOptions={topupOptions}
           onSave={handleSave}
           loading={loading}
         />
@@ -265,6 +300,8 @@ export const NegativeBalance: Story = {
           onOpenChange={setModalOpen}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
+          balanceOptions={balanceOptions}
+          topupOptions={topupOptions}
           onSave={handleSave}
           loading={loading}
         />
@@ -343,6 +380,8 @@ export const WithModal: Story = {
           onOpenChange={setModalOpen}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
+          balanceOptions={balanceOptions}
+          topupOptions={topupOptions}
           onSave={handleSave}
           loading={loading}
         />
@@ -386,6 +425,8 @@ export const ModalOnly: Story = {
           onOpenChange={setOpen}
           initialMinimumBalance={250}
           initialMinimumTopup={500}
+          balanceOptions={balanceOptions}
+          topupOptions={topupOptions}
           onSave={handleSave}
           loading={loading}
         />
@@ -471,6 +512,8 @@ export const PaymentPageContext: Story = {
           onOpenChange={setModalOpen}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
+          balanceOptions={balanceOptions}
+          topupOptions={topupOptions}
           onSave={handleSave}
         />
       </div>

@@ -254,7 +254,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: 'custom',
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: 'custom',
-    internalDependencies: ["button","form-modal","input"],
+    internalDependencies: ["button","form-modal","select"],
   },
   'auto-pay-setup': {
     name: 'auto-pay-setup',

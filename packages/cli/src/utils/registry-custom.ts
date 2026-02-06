@@ -1920,7 +1920,7 @@ export type { EndpointDetailsProps } from "./endpoint-details";
       internalDependencies: [
             "button",
             "form-modal",
-            "input"
+            "select"
       ],
       isMultiFile: true,
       directory: 'alert-configuration',
@@ -2057,7 +2057,20 @@ AlertConfiguration.displayName = "AlertConfiguration";
           name: 'alert-values-modal.tsx',
           content: prefixTailwindClasses(`import * as React from "react";
 import { FormModal } from "../form-modal";
-import { Input } from "../input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../select";
+
+export interface AlertValueOption {
+  /** The numeric value */
+  value: number;
+  /** Display label (e.g. "₹ 250"). If omitted, formatted automatically from value + currencySymbol */
+  label?: string;
+}
 
 export interface AlertValuesModalProps {
   /** Whether the modal is open */
@@ -2070,6 +2083,10 @@ export interface AlertValuesModalProps {
   initialMinimumTopup?: number;
   /** Currency symbol (default: ₹) */
   currencySymbol?: string;
+  /** Options for the minimum balance dropdown */
+  balanceOptions: AlertValueOption[];
+  /** Options for the minimum topup dropdown */
+  topupOptions: AlertValueOption[];
   /** Callback when values are saved */
   onSave?: (values: { minimumBalance: number; minimumTopup: number }) => void;
   /** Loading state for save button */
@@ -2091,6 +2108,8 @@ export const AlertValuesModal = React.forwardRef<
       initialMinimumBalance = 0,
       initialMinimumTopup = 0,
       currencySymbol = "₹",
+      balanceOptions,
+      topupOptions,
       onSave,
       loading = false,
     },
@@ -2102,6 +2121,9 @@ export const AlertValuesModal = React.forwardRef<
     const [minimumTopup, setMinimumTopup] = React.useState(
       initialMinimumTopup.toString()
     );
+
+    const formatOptionLabel = (option: AlertValueOption) =>
+      option.label ?? \`\${currencySymbol} \${option.value}\`;
 
     // Update form values when initial values change
     React.useEffect(() => {
@@ -2136,52 +2158,48 @@ export const AlertValuesModal = React.forwardRef<
         loading={loading}
         size="sm"
       >
-        {/* Minimum Balance Input */}
+        {/* Minimum Balance Select */}
         <div className="grid gap-2">
-          <label
-            htmlFor="minimum-balance"
-            className="text-sm font-medium text-semantic-text-secondary"
-          >
+          <label className="text-sm font-medium text-semantic-text-secondary">
             Minimum balance
           </label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted">
-              {currencySymbol}
-            </span>
-            <Input
-              id="minimum-balance"
-              type="number"
-              value={minimumBalance}
-              onChange={(e) => setMinimumBalance(e.target.value)}
-              className="pl-8"
-              placeholder="0"
-              step="0.01"
-            />
-          </div>
+          <Select value={minimumBalance} onValueChange={setMinimumBalance}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select amount" />
+            </SelectTrigger>
+            <SelectContent>
+              {balanceOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value.toString()}
+                >
+                  {formatOptionLabel(option)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Minimum Top-up Input */}
+        {/* Minimum Top-up Select */}
         <div className="grid gap-2">
-          <label
-            htmlFor="minimum-topup"
-            className="text-sm font-medium text-semantic-text-secondary"
-          >
+          <label className="text-sm font-medium text-semantic-text-secondary">
             Minimum topup
           </label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted">
-              {currencySymbol}
-            </span>
-            <Input
-              id="minimum-topup"
-              type="number"
-              value={minimumTopup}
-              onChange={(e) => setMinimumTopup(e.target.value)}
-              className="pl-8"
-              placeholder="0"
-              step="0.01"
-            />
-          </div>
+          <Select value={minimumTopup} onValueChange={setMinimumTopup}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select amount" />
+            </SelectTrigger>
+            <SelectContent>
+              {topupOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value.toString()}
+                >
+                  {formatOptionLabel(option)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </FormModal>
     );
@@ -2197,7 +2215,7 @@ AlertValuesModal.displayName = "AlertValuesModal";
 export type { AlertConfigurationProps } from "./alert-configuration";
 
 export { AlertValuesModal } from "./alert-values-modal";
-export type { AlertValuesModalProps } from "./alert-values-modal";
+export type { AlertValuesModalProps, AlertValueOption } from "./alert-values-modal";
 `, prefix),
         }
       ],
