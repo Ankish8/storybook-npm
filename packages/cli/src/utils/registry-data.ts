@@ -588,7 +588,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-[var(--color-neutral-50)] [&_tr]:border-b", className)}
+    className={cn("bg-[var(--color-neutral-100)] [&_tr]:border-b", className)}
     {...props}
   />
 ));
@@ -613,7 +613,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[var(--color-neutral-50)] font-medium [&>tr]:last:border-b-0",
+      "border-t bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -661,7 +661,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
       ref={ref}
       className={cn(
         "h-12 px-4 text-left align-middle font-medium text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-[var(--color-neutral-50)] z-10",
+        sticky && "sticky left-0 bg-[var(--color-neutral-100)] z-10",
         sortDirection && "cursor-pointer select-none",
         className
       )}

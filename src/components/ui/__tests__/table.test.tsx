@@ -117,7 +117,7 @@ describe("TableHeader", () => {
     );
 
     expect(screen.getByTestId("header")).toHaveClass(
-      "bg-[var(--color-neutral-50)]"
+      "bg-[var(--color-neutral-100)]"
     );
   });
 });
@@ -307,7 +307,7 @@ describe("TableFooter", () => {
 
     expect(screen.getByTestId("footer")).toHaveClass("border-t");
     expect(screen.getByTestId("footer")).toHaveClass(
-      "bg-[var(--color-neutral-50)]"
+      "bg-[var(--color-neutral-100)]"
     );
   });
 });
