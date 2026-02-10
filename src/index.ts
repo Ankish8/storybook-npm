@@ -211,3 +211,10 @@ export type {
 // EndpointDetails (Custom - NOT available via CLI)
 export { EndpointDetails } from "./components/custom/endpoint-details";
 export type { EndpointDetailsProps } from "./components/custom/endpoint-details";
+
+// PaymentOptionCard (Custom)
+export { PaymentOptionCard } from "./components/custom/payment-option-card";
+export type {
+  PaymentOptionCardProps,
+  PaymentOption,
+} from "./components/custom/payment-option-card";

@@ -1,0 +1,152 @@
+---
+description: Apply Storybook story patterns when creating or editing story files
+globs: src/components/ui/*.stories.tsx, src/components/custom/**/*.stories.tsx
+alwaysApply: false
+---
+
+# Storybook Story Patterns
+
+## Story File Template
+
+```tsx
+import type { Meta, StoryObj } from "@storybook/react"
+import { Component } from "./component"
+
+const meta: Meta<typeof Component> = {
+  title: "Components/ComponentName",  // or "Custom/SubGroup/Name"
+  component: Component,
+  parameters: {
+    layout: "centered",
+    docs: {
+      description: {
+        component: `
+Component description here.
+
+\`\`\`bash
+npx myoperator-ui add component-name
+\`\`\`
+
+## Import
+
+\`\`\`tsx
+import { Component } from "@/components/ui/component"
+\`\`\`
+
+## Design Tokens
+
+[Include design tokens table with CSS variables, values, and color previews]
+
+## Typography
+
+[Include typography table if applicable]
+        `,
+      },
+    },
+  },
+  tags: ["autodocs"],
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["default", "primary", "destructive"],
+      description: "The visual style",
+    },
+    size: {
+      control: "select",
+      options: ["sm", "default", "lg"],
+      description: "The size",
+    },
+  },
+}
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+// Interactive overview
+export const Overview: Story = {
+  args: {
+    children: "Component",
+    variant: "default",
+    size: "default",
+  },
+}
+
+// Individual variants
+export const Primary: Story = {
+  args: { children: "Primary", variant: "primary" },
+}
+
+// Showcase all variants
+export const AllVariants: Story = {
+  name: "All Variants",
+  render: () => (
+    <div className="flex flex-wrap items-center gap-4">
+      <Component variant="default">Default</Component>
+      <Component variant="primary">Primary</Component>
+    </div>
+  ),
+}
+
+// Showcase all sizes
+export const AllSizes: Story = {
+  name: "All Sizes",
+  render: () => (
+    <div className="flex flex-wrap items-center gap-4">
+      <Component size="sm">Small</Component>
+      <Component size="default">Default</Component>
+      <Component size="lg">Large</Component>
+    </div>
+  ),
+}
+```
+
+## Story Title Convention
+
+- UI component: `title: "Components/ComponentName"`
+- Custom (no sub-group): `title: "Custom/ComponentName"`
+- Custom (with sub-group): `title: "Custom/SubGroup/ComponentName"`
+
+## Required Stories
+
+1. **Overview** — interactive with args controls
+2. **Each variant** — individual stories
+3. **All Variants** — side-by-side comparison render
+4. **All Sizes** — side-by-side comparison render
+5. **With Icons** — if component supports icons
+6. **States** — loading, disabled, error (if applicable)
+7. **Usage examples** — real-world scenarios
+
+## Documentation Section
+
+The `docs.description.component` should include:
+1. Brief description of the component
+2. CLI install command: `` `npx myoperator-ui add component-name` ``
+3. Import statement
+4. Design Tokens table (Token | CSS Variable | Value | Preview)
+5. Typography table if applicable (Element | Style | Size/Weight | CSS Class)
+
+## Design Tokens Table Format
+
+Use HTML tables with color preview swatches:
+
+```html
+<table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+  <thead>
+    <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
+      <th style="padding: 12px 16px; text-align: left;">Token</th>
+      <th style="padding: 12px 16px; text-align: left;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left;">Value</th>
+      <th style="padding: 12px 16px; text-align: left;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Primary</td>
+      <td style="padding: 12px 16px;"><code>--semantic-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace;">343E55</td>
+      <td style="padding: 12px 16px;">
+        <div style="width: 32px; height: 32px; background-color: #343E55; border-radius: 6px;"></div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+```

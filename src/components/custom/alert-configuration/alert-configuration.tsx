@@ -52,7 +52,7 @@ export const AlertConfiguration = React.forwardRef<
       >
         {/* Header */}
         <div className="flex items-center justify-between gap-3 px-4 py-4">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 min-w-0">
             <h3 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0px]">
               Alert configurations
             </h3>

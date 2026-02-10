@@ -4,7 +4,7 @@ import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry } from '../utils/registry.js'
-import { configExists, getTailwindPrefix } from '../utils/config.js'
+import { configExists, getTailwindPrefix, ensureUtilsPrefixConfig } from '../utils/config.js'
 
 interface SyncOptions {
   yes: boolean
@@ -102,6 +102,18 @@ export async function sync(options: SyncOptions) {
   console.log(chalk.yellow(`    Components to update: ${toUpdate.length}`))
   console.log(chalk.gray(`    Already up to date: ${upToDate.length}`))
   console.log('')
+
+  // Check utils.ts prefix configuration (before early return so it always runs)
+  if (prefix) {
+    const utilsResult = await ensureUtilsPrefixConfig(cwd)
+    if (utilsResult.fixed) {
+      if (utilsResult.existed) {
+        console.log(chalk.green('  ✓ Fixed src/lib/utils.ts — cn() is now prefix-aware\n'))
+      } else {
+        console.log(chalk.green('  ✓ Created src/lib/utils.ts with prefix-aware cn()\n'))
+      }
+    }
+  }
 
   if (toAdd.length === 0 && toUpdate.length === 0) {
     console.log(chalk.green('  ✓ All components are up to date!\n'))

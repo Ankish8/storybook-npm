@@ -68,6 +68,7 @@ categories:
       - alert-configuration
       - auto-pay-setup
       - bank-details
+      - payment-option-card
       - payment-summary
       - wallet-topup
 
@@ -465,6 +466,23 @@ components:
       - "payment-summary.tsx"
       - "index.ts"
     mainFile: "payment-summary.tsx"
+
+  payment-option-card:
+    description: "A selectable payment method list with icons, titles, and descriptions"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+    isMultiFile: true
+    directory: "payment-option-card"
+    files:
+      - "payment-option-card.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "payment-option-card.tsx"
 
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"

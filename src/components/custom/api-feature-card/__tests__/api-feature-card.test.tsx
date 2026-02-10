@@ -126,8 +126,8 @@ describe("ApiFeatureCard", () => {
     expect(card).toHaveClass("gap-6");
     expect(card).toHaveClass("rounded-lg");
     expect(card).toHaveClass("border");
-    expect(card).toHaveClass("border-semantic-border-layout");
-    expect(card).toHaveClass("bg-semantic-bg-primary");
+    expect(card).toHaveClass("border-[var(--semantic-border-layout,#E9EAEB)]");
+    expect(card).toHaveClass("bg-[var(--semantic-bg-primary,#FFFFFF)]");
     expect(card).toHaveClass("p-6");
   });
 
@@ -139,7 +139,7 @@ describe("ApiFeatureCard", () => {
     expect(iconContainer).toHaveClass("h-11");
     expect(iconContainer).toHaveClass("w-11");
     expect(iconContainer).toHaveClass("rounded-[10px]");
-    expect(iconContainer).toHaveClass("bg-semantic-info-surface");
+    expect(iconContainer).toHaveClass("bg-[var(--semantic-info-surface,#ECF1FB)]");
   });
 
   it("renders bullet dots with gray color", () => {
@@ -149,6 +149,6 @@ describe("ApiFeatureCard", () => {
     );
 
     const dot = container.querySelector(".rounded-full");
-    expect(dot).toHaveClass("bg-[var(--color-neutral-400)]");
+    expect(dot).toHaveClass("bg-[var(--color-neutral-400,#A4A7AE)]");
   });
 });

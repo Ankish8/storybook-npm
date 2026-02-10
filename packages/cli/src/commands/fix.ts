@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import fs from 'fs-extra'
 import path from 'path'
 import ora from 'ora'
-import { configExists, getTailwindPrefix } from '../utils/config.js'
+import { configExists, getTailwindPrefix, ensureUtilsPrefixConfig } from '../utils/config.js'
 import { ensureCustomComponentsInTailwindConfig } from '../utils/tailwind-fix.js'
 
 export async function fix() {
@@ -71,6 +71,23 @@ export async function fix() {
       if (!themeContent.includes('--semantic-info-surface')) {
         console.log(chalk.yellow('\n  ⚠️  Theme file outdated - missing semantic variables'))
         console.log(chalk.white('  Run `npx myoperator-ui init` to update it'))
+      }
+    }
+
+    // Check utils.ts prefix configuration
+    if (prefix) {
+      spinner.text = 'Checking utils.ts prefix configuration...'
+      const utilsResult = await ensureUtilsPrefixConfig(cwd)
+      if (utilsResult.fixed) {
+        fixesApplied++
+        if (utilsResult.existed) {
+          console.log(chalk.green('\n  ✓ Fixed src/lib/utils.ts — cn() now uses extendTailwindMerge with prefix'))
+        } else {
+          console.log(chalk.green('\n  ✓ Created src/lib/utils.ts with prefix-aware cn()'))
+        }
+      } else if (!utilsResult.existed) {
+        console.log(chalk.yellow('\n  ⚠️  src/lib/utils.ts missing'))
+        console.log(chalk.white('  Run `npx myoperator-ui init` to create it'))
       }
     }
 

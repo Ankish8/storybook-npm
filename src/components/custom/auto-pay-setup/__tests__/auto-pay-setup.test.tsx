@@ -121,6 +121,15 @@ describe("AutoPaySetup", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
+  it("renders outline CTA when ctaVariant is outline", () => {
+    render(
+      <AutoPaySetup ctaText="Edit subscription" ctaVariant="outline" />
+    );
+    const ctaButton = screen.getByText("Edit subscription").closest("button");
+    expect(ctaButton).toBeInTheDocument();
+    expect(ctaButton?.className).not.toContain("bg-semantic-primary ");
+  });
+
   it("applies custom className", () => {
     const { container } = render(<AutoPaySetup className="custom-class" />);
     expect(container.firstChild).toHaveClass("custom-class");

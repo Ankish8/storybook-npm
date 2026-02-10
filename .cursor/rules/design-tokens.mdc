@@ -1,0 +1,99 @@
+---
+description: Map Figma colors to semantic design tokens when styling components
+globs: src/components/ui/*.tsx, src/components/custom/**/*.tsx, src/index.css
+alwaysApply: false
+---
+
+# Design System Tokens
+
+## Color Mapping from Figma
+
+When extracting colors from Figma designs, ALWAYS map them to semantic tokens:
+
+### Mapping Algorithm
+
+1. **Identify color purpose** from context:
+   - Button background → `bg-semantic-primary` or `bg-secondary`
+   - Text color → `text-semantic-text-primary`, `text-semantic-text-muted`
+   - Border → `border-semantic-border-layout`, `border-semantic-border-input`
+   - Background → `bg-semantic-bg-primary`, `bg-semantic-bg-ui`
+
+2. **Match to existing tokens** by usage:
+   ```
+   #343E55 (dark blue) → primary button → bg-semantic-primary
+   #F5F5F5 (light gray) → disabled/surface → bg-semantic-bg-ui
+   #717680 (medium gray) → muted text → text-semantic-text-muted
+   #F04438 (red) → error → bg-semantic-error-primary
+   #17B26A (green) → success → bg-semantic-success-primary
+   #E9EAEB (border gray) → layout border → border-semantic-border-layout
+   ```
+
+3. **Verify token exists** — ALWAYS grep `src/index.css` before using:
+   ```bash
+   grep "--semantic-success-primary" src/index.css
+   ```
+
+## Available Semantic Tokens
+
+### Backgrounds
+| Token | Tailwind Class | Usage |
+|-------|---------------|-------|
+| `--semantic-primary` | `bg-semantic-primary` | Primary action surfaces |
+| `--semantic-primary-hover` | `bg-semantic-primary-hover` | Primary hover state |
+| `--semantic-primary-surface` | `bg-semantic-primary-surface` | Light primary background |
+| `--semantic-bg-primary` | `bg-semantic-bg-primary` | Page/component background |
+| `--semantic-bg-ui` | `bg-semantic-bg-ui` | UI element background |
+| `--semantic-bg-hover` | `bg-semantic-bg-hover` | Hover state background |
+| `--semantic-success-surface` | `bg-semantic-success-surface` | Success state background |
+| `--semantic-error-surface` | `bg-semantic-error-surface` | Error state background |
+| `--semantic-warning-surface` | `bg-semantic-warning-surface` | Warning state background |
+| `--semantic-info-surface` | `bg-semantic-info-surface` | Info state background |
+
+### Text
+| Token | Tailwind Class | Usage |
+|-------|---------------|-------|
+| `--semantic-text-primary` | `text-semantic-text-primary` | Primary text |
+| `--semantic-text-secondary` | `text-semantic-text-secondary` | Secondary text |
+| `--semantic-text-muted` | `text-semantic-text-muted` | Muted/placeholder text |
+| `--semantic-text-inverted` | `text-semantic-text-inverted` | Text on dark backgrounds |
+| `--semantic-text-link` | `text-semantic-text-link` | Link text |
+| `--semantic-success-primary` | `text-semantic-success-primary` | Success text |
+| `--semantic-error-primary` | `text-semantic-error-primary` | Error text |
+| `--semantic-warning-primary` | `text-semantic-warning-primary` | Warning text |
+
+### Borders
+| Token | Tailwind Class | Usage |
+|-------|---------------|-------|
+| `--semantic-border-primary` | `border-semantic-border-primary` | Primary borders |
+| `--semantic-border-layout` | `border-semantic-border-layout` | Container/card borders |
+| `--semantic-border-input` | `border-semantic-border-input` | Form input borders |
+| `--semantic-border-focus` | `border-semantic-border-focus` | Focus indicators |
+
+## Typography
+
+Use Tailwind utility classes, not hardcoded values:
+
+```tsx
+text-xs     // 12px
+text-sm     // 14px
+text-base   // 16px
+text-lg     // 18px
+text-xl     // 20px
+
+font-normal    // 400
+font-medium    // 500
+font-semibold  // 600
+font-bold      // 700
+
+leading-none     // 1
+leading-tight    // 1.25
+leading-normal   // 1.5
+leading-relaxed  // 1.625
+```
+
+## Accessibility
+
+- Ensure proper ARIA attributes where needed
+- Add focus-visible states: `focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2`
+- Keyboard navigation support for interactive elements
+- Sufficient color contrast (use semantic token pairs that guarantee contrast)

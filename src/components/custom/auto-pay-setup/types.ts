@@ -27,6 +27,8 @@ export interface AutoPaySetupProps {
   showCta?: boolean;
   /** Text for the CTA button (defaults to "Enable Auto-Pay") */
   ctaText?: string;
+  /** CTA button variant — use "outline" for the subscribed "Edit subscription" state */
+  ctaVariant?: "default" | "outline";
   /** Callback when CTA button is clicked */
   onCtaClick?: () => void;
   /** Whether the CTA button shows loading state */

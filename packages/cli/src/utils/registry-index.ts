@@ -280,6 +280,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'custom',
     internalDependencies: ["tooltip"],
   },
+  'payment-option-card': {
+    name: 'payment-option-card',
+    description: 'A selectable payment method list with icons, titles, and descriptions',
+      category: 'custom',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'custom',
+    internalDependencies: ["button"],
+  },
   'wallet-topup': {
     name: 'wallet-topup',
     description: 'A component for wallet top-up with amount selection and coupon support',

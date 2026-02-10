@@ -1,0 +1,152 @@
+---
+description: Apply component patterns when creating or editing React component files
+globs: src/components/ui/*.tsx, src/components/custom/**/*.tsx
+alwaysApply: false
+---
+
+# Component Patterns
+
+## Standard Component Template
+
+Every UI component follows this exact pattern:
+
+```tsx
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const componentVariants = cva(
+  "base-classes-here",
+  {
+    variants: {
+      variant: {
+        default: "bg-semantic-bg-ui text-semantic-text-primary",
+        primary: "bg-semantic-primary text-semantic-text-inverted",
+        destructive: "bg-semantic-error-primary text-semantic-text-inverted",
+      },
+      size: {
+        default: "px-3 py-1",
+        sm: "px-2 py-0.5 text-xs",
+        lg: "px-4 py-1.5",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface ComponentProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof componentVariants> {}
+
+const Component = React.forwardRef<HTMLDivElement, ComponentProps>(
+  ({ className, variant, size, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(componentVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+)
+Component.displayName = "Component"
+
+export { Component, componentVariants }
+```
+
+## Required Elements
+
+1. **`forwardRef`** — every component must support ref forwarding
+2. **`displayName`** — set to the component name for debugging
+3. **CVA variants** — use `cva()` for all variant/size definitions
+4. **`cn()` utility** — use for className merging (import from `@/lib/utils`)
+5. **Named exports** — export both the component AND variants
+6. **Extend HTMLAttributes** — allow data-testid, aria-*, etc.
+7. **Spread `...props`** — pass remaining props to root element
+
+## Color Rules (CRITICAL)
+
+NEVER use hardcoded colors. Always use semantic tokens:
+
+```tsx
+// WRONG
+className="bg-[#343E55] text-white border-[#E4E4E4]"
+className="bg-gray-50 text-gray-900"
+className="bg-white text-black"
+
+// CORRECT
+className="bg-semantic-primary text-semantic-text-inverted"
+className="bg-semantic-bg-ui text-semantic-text-primary"
+className="border-semantic-border-layout"
+```
+
+### Available Semantic Tokens
+
+**Backgrounds:** `bg-semantic-primary`, `bg-semantic-bg-primary`, `bg-semantic-bg-ui`, `bg-semantic-bg-hover`, `bg-semantic-success-surface`, `bg-semantic-error-surface`, `bg-semantic-warning-surface`, `bg-semantic-info-surface`
+
+**Text:** `text-semantic-text-primary`, `text-semantic-text-secondary`, `text-semantic-text-muted`, `text-semantic-text-inverted`, `text-semantic-text-link`, `text-semantic-success-primary`, `text-semantic-error-primary`, `text-semantic-warning-primary`
+
+**Borders:** `border-semantic-border-primary`, `border-semantic-border-layout`, `border-semantic-border-input`, `border-semantic-border-focus`
+
+**Always verify tokens exist** — grep `src/index.css` for the CSS variable before using it.
+
+## Import Path Rules
+
+### For UI Components (`src/components/ui/`)
+```tsx
+import { cn } from "@/lib/utils"          // Will be transformed by CLI
+import { Button } from "./button"          // Sibling imports
+```
+
+### For Custom Components (`src/components/custom/component-name/`)
+```tsx
+import { cn } from "../../../lib/utils"    // Relative path to lib
+import { Button } from "../../ui/button"   // Relative path to UI components
+// NEVER use @/components/ui/button in custom components
+```
+
+## components.yaml Entry
+
+After creating a component, add it to `packages/cli/components.yaml`:
+
+```yaml
+component-name:
+  description: "Description for CLI output"
+  category: core  # core | form | data | overlay | feedback | layout | custom
+  dependencies:
+    - "class-variance-authority"
+    - "clsx"
+    - "tailwind-merge"
+  internalDependencies:  # Other myOperator components used
+    - button
+    - dialog
+```
+
+## Multi-File Components
+
+For complex components in `src/components/custom/`:
+
+```yaml
+component-name:
+  description: "Complex component"
+  category: custom
+  isMultiFile: true
+  directory: "component-name"
+  files:
+    - "component-name.tsx"
+    - "sub-component.tsx"
+    - "types.ts"
+  mainFile: "component-name.tsx"
+```
+
+## Tailwind tw- Prefix
+
+The CLI build adds `tw-` to all Tailwind classes. Avoid template literals or complex string concatenation for class strings — they won't be prefixed correctly. Keep classes in:
+- `cva("classes")` — CVA base/variant classes
+- `cn("classes")` — Merged classes
+- `className="classes"` — JSX attributes
+
+## Animation Dependencies
+
+If using animation classes (`animate-in`, `animate-out`, `fade-in-*`, `zoom-in-*`, `slide-in-from-*`), add `tailwindcss-animate` to dependencies in `components.yaml`.

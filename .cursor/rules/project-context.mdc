@@ -1,0 +1,50 @@
+---
+description: Core project context for myOperator UI component library
+alwaysApply: true
+---
+
+# myOperator UI Component Library
+
+This is a React component library distributed via a CLI tool, with an MCP server for AI integration.
+
+## Architecture
+
+1. **Root** (`shadcn-react-app`) — Source components in `src/components/ui/`, Storybook for development, Vite for builds.
+2. **`packages/cli`** (`myoperator-ui`) — CLI consumers run via `npx myoperator-ui add button`. Embeds component source into registry files with `tw-` Tailwind prefix for Bootstrap compatibility.
+3. **`packages/mcp`** (`myoperator-mcp`) — MCP server providing component metadata to AI assistants.
+
+## Data Flow
+
+Source components → `components.yaml` → `generate-registry.js` → `registry-*.ts` files → `tsup` bundles CLI → consumers get prefixed components.
+
+## Critical Rules
+
+- **NEVER use hardcoded colors** — always use semantic tokens (`bg-semantic-primary`, not `bg-[#343E55]`)
+- **NEVER edit registry files** (`packages/cli/src/registry*.ts`) — they are auto-generated
+- **NEVER commit directly** — use the `/publish-all` workflow (pre-commit hooks block direct commits)
+- **One component at a time** — don't modify unrelated components
+- **Every component needs 3 files**: `.tsx` component, `.test.tsx` test, `.stories.tsx` story
+- **Always follow the forwardRef + CVA pattern** for components
+
+## Key Commands
+
+```bash
+npm run storybook          # Visual development on port 6006
+npm test                   # Run all tests (vitest)
+npm run lint               # ESLint
+npm run api:check          # Breaking change detection
+
+# CLI package (from packages/cli/)
+npm run integrity:snapshot # Before changes
+npm run build              # Full build pipeline
+node scripts/check-integrity.js verify <name>  # After changes
+```
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/components/ui/*.tsx` | Source components — EDIT THESE |
+| `packages/cli/components.yaml` | Component registry definitions |
+| `scripts/create-component.js` | New component generator |
+| `.api-snapshot.json` | Breaking change baseline |

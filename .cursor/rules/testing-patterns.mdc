@@ -1,0 +1,128 @@
+---
+description: Apply testing patterns when creating or editing component test files
+globs: src/components/ui/__tests__/*.test.tsx, src/components/custom/**/__tests__/*.test.tsx
+alwaysApply: false
+---
+
+# Testing Patterns
+
+## Framework
+
+- **Vitest** with jsdom environment
+- **@testing-library/react** for rendering
+- **@testing-library/jest-dom** for DOM matchers
+
+## Required Test Coverage
+
+Every component MUST have tests for:
+
+1. **Renders correctly** — basic render with children
+2. **All variants** — each variant applies correct CSS classes
+3. **All sizes** — each size applies correct CSS classes
+4. **Custom className** — user's className is merged correctly
+5. **Ref forwarding** — `React.forwardRef` works
+6. **Additional props** — data-testid, aria-* pass through
+7. **Component-specific behavior** — icons, loading states, etc.
+
+## Test File Template
+
+```tsx
+import { describe, it, expect } from "vitest"
+import { render, screen } from "@testing-library/react"
+import { Component } from "../component"
+
+describe("Component", () => {
+  // 1. Basic render
+  it("renders children correctly", () => {
+    render(<Component>Test Content</Component>)
+    expect(screen.getByText("Test Content")).toBeInTheDocument()
+  })
+
+  // 2. Default variant
+  it("applies default variant classes", () => {
+    const { container } = render(<Component>Default</Component>)
+    expect(container.firstChild).toHaveClass("bg-semantic-bg-ui")
+    expect(container.firstChild).toHaveClass("text-semantic-text-primary")
+  })
+
+  // 3. All variants with it.each
+  it.each([
+    ["default", "bg-semantic-bg-ui", "text-semantic-text-primary"],
+    ["primary", "bg-semantic-primary", "text-semantic-text-inverted"],
+    ["destructive", "bg-semantic-error-primary", "text-semantic-text-inverted"],
+  ] as const)(
+    "renders %s variant with correct classes",
+    (variant, bgClass, textClass) => {
+      const { container } = render(<Component variant={variant}>Test</Component>)
+      expect(container.firstChild).toHaveClass(bgClass)
+      expect(container.firstChild).toHaveClass(textClass)
+    }
+  )
+
+  // 4. All sizes with it.each
+  it.each([
+    ["default", "px-3", "py-1"],
+    ["sm", "px-2", "py-0.5"],
+    ["lg", "px-4", "py-1.5"],
+  ] as const)(
+    "renders %s size with correct classes",
+    (size, pxClass, pyClass) => {
+      const { container } = render(<Component size={size}>Test</Component>)
+      expect(container.firstChild).toHaveClass(pxClass)
+      expect(container.firstChild).toHaveClass(pyClass)
+    }
+  )
+
+  // 5. Custom className
+  it("applies custom className", () => {
+    const { container } = render(<Component className="custom-class">Test</Component>)
+    expect(container.firstChild).toHaveClass("custom-class")
+  })
+
+  // 6. Ref forwarding
+  it("forwards ref correctly", () => {
+    const ref = { current: null }
+    render(<Component ref={ref}>Test</Component>)
+    expect(ref.current).toBeInstanceOf(HTMLDivElement)
+  })
+
+  // 7. Additional props
+  it("passes through additional props", () => {
+    render(
+      <Component data-testid="custom" aria-label="Label">Test</Component>
+    )
+    const el = screen.getByTestId("custom")
+    expect(el).toHaveAttribute("aria-label", "Label")
+  })
+})
+```
+
+## CRITICAL: Test Assertions Must Match Component
+
+**ALWAYS read the component source file first** before writing tests. Extract the ACTUAL CVA classes and use those exact classes in assertions. Do not guess or use generic class names.
+
+Example — if the component has:
+```tsx
+variant: {
+  active: "bg-semantic-success-surface text-semantic-success-primary",
+}
+```
+
+Then the test must assert:
+```tsx
+expect(container.firstChild).toHaveClass("bg-semantic-success-surface")
+expect(container.firstChild).toHaveClass("text-semantic-success-primary")
+```
+
+## Test File Location
+
+- UI components: `src/components/ui/__tests__/<component>.test.tsx`
+- Custom components: `src/components/custom/<component>/__tests__/<component>.test.tsx`
+
+## Running Tests
+
+```bash
+npm test                                    # All tests
+npx vitest run src/components/ui/__tests__/button.test.tsx  # Single file
+npm run test:watch                          # Watch mode
+```

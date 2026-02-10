@@ -32,6 +32,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       noteLabel = "Note:",
       showCta = true,
       ctaText = "Enable Auto-Pay",
+      ctaVariant = "default",
       onCtaClick,
       loading = false,
       disabled = false,
@@ -92,7 +93,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
                 {/* CTA Button */}
                 {showCta && (
                   <Button
-                    variant="default"
+                    variant={ctaVariant}
                     className="w-full"
                     onClick={onCtaClick}
                     loading={loading}

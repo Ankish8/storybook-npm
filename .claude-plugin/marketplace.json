@@ -14,6 +14,11 @@
       "name": "component-creator",
       "description": "Intelligent React component creation with design system validation, Figma integration, and automated testing",
       "source": "./.claude/plugins/component-creator"
+    },
+    {
+      "name": "myoperator-design",
+      "description": "Create UIs matching the myOperator design system aesthetic. Generates standalone React/Tailwind code with consistent visual language.",
+      "source": "./.claude/plugins/myoperator-design"
     }
   ]
 }

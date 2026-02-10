@@ -156,15 +156,89 @@ function transformClasses(classes: string, prefix: string): string {
 function shouldSkipClass(cls: string): boolean {
   // Skip empty classes
   if (!cls) return true
-  
+
   // Skip classes that start with CSS custom properties
   if (cls.startsWith('--')) return true
-  
+
   // Skip classes that are obviously not Tailwind (contain dots but not in bracket notation)
   if (cls.includes('.') && !cls.includes('[') && !cls.includes(']')) return true
-  
+
   // Skip classes that look like CSS modules or other naming conventions
   if (/^[A-Z]/.test(cls) && cls.includes('_')) return true
-  
+
   return false
+}
+
+/**
+ * Generate the correct utils.ts content based on whether a prefix is configured.
+ * When a prefix is set, tailwind-merge needs extendTailwindMerge to understand prefixed classes.
+ */
+function getUtilsContent(prefix: string): string {
+  if (prefix) {
+    return `import { type ClassValue, clsx } from "clsx"
+import { extendTailwindMerge } from "tailwind-merge"
+
+// Configure tailwind-merge to understand the "${prefix}" prefix
+const twMerge = extendTailwindMerge({
+  prefix: "${prefix}",
+})
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+`
+  }
+  return `import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+`
+}
+
+/**
+ * Ensure src/lib/utils.ts has a prefix-aware cn() when a Tailwind prefix is configured.
+ * Returns { fixed, existed } so callers can report what happened.
+ */
+export async function ensureUtilsPrefixConfig(
+  cwd: string = process.cwd()
+): Promise<{ fixed: boolean; existed: boolean }> {
+  const config = await readConfig(cwd)
+  const prefix = config?.tailwind?.prefix || ''
+
+  // Nothing to fix if no prefix is configured
+  if (!prefix) {
+    return { fixed: false, existed: true }
+  }
+
+  const utilsPath = path.join(cwd, 'src/lib/utils.ts')
+  const existed = await fs.pathExists(utilsPath)
+
+  if (!existed) {
+    // File doesn't exist — create it with prefix-aware content
+    await fs.ensureDir(path.dirname(utilsPath))
+    await fs.writeFile(utilsPath, getUtilsContent(prefix))
+    return { fixed: true, existed: false }
+  }
+
+  const content = await fs.readFile(utilsPath, 'utf-8')
+
+  // Check if cn exists but extendTailwindMerge is missing
+  const hasCn = content.includes('export function cn') || content.includes('export const cn')
+  const hasExtend = content.includes('extendTailwindMerge')
+
+  if (hasCn && hasExtend) {
+    // Already correct
+    return { fixed: false, existed: true }
+  }
+
+  if (hasCn && !hasExtend) {
+    // cn exists but is not prefix-aware — replace with correct version
+    await fs.writeFile(utilsPath, getUtilsContent(prefix))
+    return { fixed: true, existed: true }
+  }
+
+  // cn doesn't exist at all — not our concern here (init handles adding cn)
+  return { fixed: false, existed: true }
 }

@@ -551,7 +551,7 @@ const buttonVariants = cva(
         destructive:
           "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
         outline:
-          "border border-semantic-border-primary bg-transparent text-semantic-text-secondary hover:bg-semantic-primary-surface",
+          "border border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
           "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
         ghost:
@@ -7759,6 +7759,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       noteLabel = "Note:",
       showCta = true,
       ctaText = "Enable Auto-Pay",
+      ctaVariant = "default",
       onCtaClick,
       loading = false,
       disabled = false,
@@ -7819,7 +7820,7 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
                 {/* CTA Button */}
                 {showCta && (
                   <Button
-                    variant="default"
+                    variant={ctaVariant}
                     className="w-full"
                     onClick={onCtaClick}
                     loading={loading}
@@ -7871,6 +7872,8 @@ export interface AutoPaySetupProps {
   showCta?: boolean;
   /** Text for the CTA button (defaults to "Enable Auto-Pay") */
   ctaText?: string;
+  /** CTA button variant — use "outline" for the subscribed "Edit subscription" state */
+  ctaVariant?: "default" | "outline";
   /** Callback when CTA button is clicked */
   onCtaClick?: () => void;
   /** Whether the CTA button shows loading state */
@@ -8292,6 +8295,220 @@ export type {
   PaymentSummaryProps,
   PaymentSummaryItem,
 } from "./payment-summary";
+`, prefix),
+        }
+      ],
+    },
+    'payment-option-card': {
+      name: 'payment-option-card',
+      description: 'A selectable payment method list with icons, titles, and descriptions',
+      category: 'custom',
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button"
+      ],
+      isMultiFile: true,
+      directory: 'payment-option-card',
+      mainFile: 'payment-option-card.tsx',
+      files: [
+        {
+          name: 'payment-option-card.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { X } from "lucide-react";
+import type { PaymentOptionCardProps } from "./types";
+
+/**
+ * PaymentOptionCard displays a selectable list of payment methods with icons,
+ * titles, and descriptions. One option can be highlighted as selected.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PaymentOptionCard
+ *   options={[
+ *     { id: "net-banking", icon: <Globe className="size-5" />, title: "Net banking", description: "Pay securely through your bank" },
+ *     { id: "upi", icon: <Smartphone className="size-5" />, title: "UPI", description: "Pay using UPI ID or QR" },
+ *   ]}
+ *   onOptionSelect={(id) => console.log(id)}
+ *   onCtaClick={() => console.log("proceed")}
+ * />
+ * \`\`\`
+ */
+export const PaymentOptionCard = React.forwardRef<
+  HTMLDivElement,
+  PaymentOptionCardProps
+>(
+  (
+    {
+      title = "Select payment method",
+      subtitle = "Preferred method with secure transactions",
+      options,
+      selectedOptionId,
+      defaultSelectedOptionId,
+      onOptionSelect,
+      ctaText = "Proceed to pay",
+      onCtaClick,
+      onClose,
+      loading = false,
+      disabled = false,
+      className,
+    },
+    ref
+  ) => {
+    const [internalSelected, setInternalSelected] = React.useState<
+      string | undefined
+    >(defaultSelectedOptionId);
+
+    const isControlled = selectedOptionId !== undefined;
+    const activeId = isControlled ? selectedOptionId : internalSelected;
+
+    const handleSelect = (optionId: string) => {
+      if (!isControlled) {
+        setInternalSelected(optionId);
+      }
+      onOptionSelect?.(optionId);
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "relative w-full rounded-lg bg-background border-b border-[#e4e4e4] p-6",
+          className
+        )}
+      >
+        {/* Close button */}
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-6 top-6 text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+            aria-label="Close"
+          >
+            <X className="size-3.5" />
+          </button>
+        )}
+
+        <div className="flex flex-col gap-6">
+          {/* Header */}
+          <div className="flex flex-col gap-2">
+            <h3 className="text-lg font-semibold text-semantic-text-primary m-0">
+              {title}
+            </h3>
+            <p className="text-sm text-semantic-text-muted tracking-[0.035px] m-0">
+              {subtitle}
+            </p>
+          </div>
+
+          {/* Options list */}
+          <div className="flex flex-col gap-2.5">
+            {options.map((option) => {
+              const isSelected = activeId === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => handleSelect(option.id)}
+                  className={cn(
+                    "flex items-center gap-2.5 w-full rounded-lg border p-3 text-left transition-colors cursor-pointer bg-transparent",
+                    isSelected
+                      ? "border-[var(--semantic-brand)]"
+                      : "border-semantic-border-layout hover:border-[var(--semantic-brand-selected-hover)]"
+                  )}
+                >
+                  <div className="flex items-center justify-center size-[34px] rounded-lg bg-[var(--color-info-25)] shrink-0">
+                    {option.icon}
+                  </div>
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                      {option.title}
+                    </span>
+                    <span className="text-xs text-semantic-text-muted tracking-[0.048px]">
+                      {option.description}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* CTA button */}
+          <Button
+            variant="default"
+            className="w-full"
+            onClick={onCtaClick}
+            loading={loading}
+            disabled={disabled}
+          >
+            {ctaText}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+);
+
+PaymentOptionCard.displayName = "PaymentOptionCard";
+`, prefix),
+        },
+        {
+          name: 'types.ts',
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * A single payment option entry.
+ */
+export interface PaymentOption {
+  /** Unique identifier for this option */
+  id: string;
+  /** Icon rendered inside a rounded container (e.g. an SVG or Lucide icon) */
+  icon: React.ReactNode;
+  /** Primary label (e.g. "Net banking") */
+  title: string;
+  /** Secondary description (e.g. "Pay securely through your bank") */
+  description: string;
+}
+
+/**
+ * Props for the PaymentOptionCard component.
+ */
+export interface PaymentOptionCardProps {
+  /** Header title */
+  title?: string;
+  /** Header subtitle */
+  subtitle?: string;
+  /** List of selectable payment options */
+  options: PaymentOption[];
+  /** Currently selected option id */
+  selectedOptionId?: string;
+  /** Default selected option id (uncontrolled mode) */
+  defaultSelectedOptionId?: string;
+  /** Callback fired when an option is selected */
+  onOptionSelect?: (optionId: string) => void;
+  /** CTA button text */
+  ctaText?: string;
+  /** Callback fired when CTA button is clicked */
+  onCtaClick?: () => void;
+  /** Callback fired when close button is clicked */
+  onClose?: () => void;
+  /** Whether the CTA button shows loading state */
+  loading?: boolean;
+  /** Whether the CTA button is disabled */
+  disabled?: boolean;
+  /** Additional className for the root element */
+  className?: string;
+}
+`, prefix),
+        },
+        {
+          name: 'index.ts',
+          content: prefixTailwindClasses(`export { PaymentOptionCard } from "./payment-option-card";
+export type { PaymentOptionCardProps, PaymentOption } from "./types";
 `, prefix),
         }
       ],

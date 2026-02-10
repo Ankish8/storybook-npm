@@ -148,7 +148,7 @@ export const CustomContent: Story = {
 };
 
 export const ActiveSubscription: Story = {
-  name: "Active Subscription (No CTA)",
+  name: "Active Subscription",
   args: {
     icon: <RefreshCw className="size-5 text-semantic-primary" />,
     title: "Recurring payment setup",
@@ -169,6 +169,7 @@ export const ActiveSubscription: Story = {
     noteLabel: "",
     noteText:
       "For card-based subscriptions, your card will be charged a minimum of ₹1 every month (even if there is no usage) to keep the subscription active, and ₹1 will be added as prepaid amount for your service. An initial deduction of ₹5 will be made for subscription, which will be auto-refunded.",
-    showCta: false,
+    ctaText: "Edit subscription",
+    ctaVariant: "outline",
   },
 };

@@ -699,7 +699,9 @@ export function cn(...inputs: ClassValue[]) {
     } else {
       // File exists - check if cn function is present
       const existingUtils = await fs.readFile(utilsFullPath, 'utf-8')
-      if (!existingUtils.includes('export function cn') && !existingUtils.includes('export const cn')) {
+      const hasCn = existingUtils.includes('export function cn') || existingUtils.includes('export const cn')
+
+      if (!hasCn) {
         // cn function missing - need to add it with proper imports
         let updatedContent = existingUtils
 
@@ -749,6 +751,10 @@ export function cn(...inputs: ClassValue[]) {
         updatedContent = updatedContent.trimEnd() + '\n' + cnFunction
 
         await fs.writeFile(utilsFullPath, updatedContent)
+        utilsUpdated = true
+      } else if (hasCn && userPrefix && !existingUtils.includes('extendTailwindMerge')) {
+        // cn exists but is not prefix-aware — replace with correct version
+        await fs.writeFile(utilsFullPath, cnUtilsContent)
         utilsUpdated = true
       }
     }
