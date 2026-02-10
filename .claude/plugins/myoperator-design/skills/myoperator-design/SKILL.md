@@ -356,7 +356,7 @@ For detailed token values and component examples, see `references/design-tokens.
 
 ## Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 34 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 35 components across 7 categories.
 
 ### Quick Reference
 
@@ -394,6 +394,7 @@ For detailed token values and component examples, see `references/design-tokens.
 | AlertConfiguration | custom | `npx myoperator-ui add alert-configuration` |
 | AutoPaySetup | custom | `npx myoperator-ui add auto-pay-setup` |
 | BankDetails | custom | `npx myoperator-ui add bank-details` |
+| PaymentOptionCard | custom | `npx myoperator-ui add payment-option-card` |
 | PaymentSummary | custom | `npx myoperator-ui add payment-summary` |
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
 
@@ -926,6 +927,15 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add bank-details`
 **Requires**: `accordion` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### PaymentOptionCard
+> A selectable payment method list with icons, titles, and descriptions
+
+**Install**: `npx myoperator-ui add payment-option-card`
+**Requires**: `button` (auto-installed)
 **Type**: Multi-file component
 
 ---
