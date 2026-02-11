@@ -356,7 +356,7 @@ For detailed token values and component examples, see `references/design-tokens.
 
 ## Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 35 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 36 components across 7 categories.
 
 ### Quick Reference
 
@@ -387,6 +387,7 @@ For detailed token values and component examples, see `references/design-tokens.
 | Skeleton | feedback | `npx myoperator-ui add skeleton` |
 | Accordion | layout | `npx myoperator-ui add accordion` |
 | PageHeader | layout | `npx myoperator-ui add page-header` |
+| Pagination | layout | `npx myoperator-ui add pagination` |
 | EventSelector | custom | `npx myoperator-ui add event-selector` |
 | KeyValueInput | custom | `npx myoperator-ui add key-value-input` |
 | ApiFeatureCard | custom | `npx myoperator-ui add api-feature-card` |
@@ -866,6 +867,14 @@ import { Mail } from "lucide-react"
 
 ---
 
+#### Pagination
+> A composable pagination component with page navigation, next/previous links, and ellipsis
+
+**Install**: `npx myoperator-ui add pagination`
+**Requires**: `button` (auto-installed)
+
+---
+
 ### Custom — Multi-file complex components
 
 #### EventSelector
@@ -932,10 +941,10 @@ import { Mail } from "lucide-react"
 ---
 
 #### PaymentOptionCard
-> A selectable payment method list with icons, titles, and descriptions
+> A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage.
 
 **Install**: `npx myoperator-ui add payment-option-card`
-**Requires**: `button` (auto-installed)
+**Requires**: `button`, `dialog` (auto-installed)
 **Type**: Multi-file component
 
 ---
