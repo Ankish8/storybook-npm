@@ -65,6 +65,19 @@ node scripts/sync-mcp-metadata.js  # Updates MCP package with component info fro
 
 **Primary development tool**: Storybook (`npm run storybook`). All components should have stories in `src/components/ui/{component}.stories.tsx`. Use Storybook to visually test variants, states, and interactions before committing.
 
+## Storybook Conventions
+
+**Title patterns**: UI components use `title: "Components/ComponentName"`, custom components use `title: "Custom/ComponentName"` (or `"Custom/SubGroup/ComponentName"` for sub-grouped).
+
+**Required stories** for each component:
+1. **Overview** — interactive with `args` controls
+2. **Individual variant stories** — one per variant
+3. **All Variants** — side-by-side comparison render
+4. **All Sizes** — side-by-side comparison render
+5. **With Icons** / **States** / **Usage examples** — as applicable
+
+**Docs section** (`docs.description.component`) must include: brief description, CLI install command (`npx myoperator-ui add <name>`), import statement, and a Design Tokens table showing CSS variables with color preview swatches.
+
 ## Creating New Components
 
 **Always use the generator** — never create component files manually:
@@ -98,7 +111,21 @@ export { Component, variants }
 
 **Multi-file components** (in `src/components/custom/`) have a directory with multiple `.tsx` files and are declared in `components.yaml` with `isMultiFile: true`.
 
+**Import path rules** — UI and custom components use different import styles:
+```tsx
+// UI components (src/components/ui/) — use @/ alias
+import { cn } from "@/lib/utils"
+import { Button } from "./button"          // sibling UI import
+
+// Custom components (src/components/custom/name/) — use relative paths
+import { cn } from "../../../lib/utils"
+import { Button } from "../../ui/button"
+// NEVER use @/components/ui/button in custom components
+```
+
 **Internal dependencies** — Some components depend on other components (e.g., `delete-confirmation-modal` uses `dialog`, `button`, `input`). The CLI automatically installs these when a user adds the component. Check `internalDependencies` in `components.yaml` when adding new composed components.
+
+**Animation dependencies** — If a component uses animation classes (`animate-in`, `animate-out`, `fade-in-*`, `zoom-in-*`, `slide-in-from-*`), add `tailwindcss-animate` to its `dependencies` in `components.yaml`.
 
 ### components.yaml Structure
 
@@ -112,19 +139,48 @@ Each component entry in `packages/cli/components.yaml` supports:
 
 ## Theming — CSS Variables
 
-Use semantic tokens, not hardcoded colors:
+NEVER use hardcoded colors. The codebase has two token systems; **prefer `semantic-*` tokens** for new work:
 
 ```tsx
-// Correct
-className="bg-background text-foreground border-border"
-className="bg-primary text-primary-foreground"
-className="bg-destructive text-destructive-foreground"
+// BEST — semantic tokens (preferred for new components)
+className="bg-semantic-primary text-semantic-text-inverted"
+className="bg-semantic-bg-ui text-semantic-text-primary"
+className="border-semantic-border-layout"
 
-// Wrong
+// OK — legacy tokens (still used in older components)
+className="bg-primary text-primary-foreground"
+className="bg-background text-foreground border-border"
+
+// WRONG — hardcoded colors
 className="bg-[#343E55] text-white"
+className="bg-gray-50 text-gray-900"
 ```
 
-Tokens: `background/foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring`.
+### Semantic Token Reference
+
+| Category | Tokens |
+|----------|--------|
+| Backgrounds | `bg-semantic-primary`, `bg-semantic-primary-hover`, `bg-semantic-primary-surface`, `bg-semantic-bg-primary`, `bg-semantic-bg-ui`, `bg-semantic-bg-hover` |
+| Status surfaces | `bg-semantic-success-surface`, `bg-semantic-error-surface`, `bg-semantic-warning-surface`, `bg-semantic-info-surface` |
+| Text | `text-semantic-text-primary`, `text-semantic-text-secondary`, `text-semantic-text-muted`, `text-semantic-text-inverted`, `text-semantic-text-link` |
+| Status text | `text-semantic-success-primary`, `text-semantic-error-primary`, `text-semantic-warning-primary` |
+| Borders | `border-semantic-border-primary`, `border-semantic-border-layout`, `border-semantic-border-input`, `border-semantic-border-focus` |
+| Legacy | `background/foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring` |
+
+### Figma Color Mapping
+
+When translating Figma designs to code, map hex values to semantic tokens by purpose:
+
+```
+#343E55 (dark blue)   → bg-semantic-primary (primary actions)
+#F5F5F5 (light gray)  → bg-semantic-bg-ui (surfaces)
+#717680 (medium gray)  → text-semantic-text-muted (secondary text)
+#F04438 (red)          → bg-semantic-error-primary / text-semantic-error-primary
+#17B26A (green)        → bg-semantic-success-primary / text-semantic-success-primary
+#E9EAEB (border gray)  → border-semantic-border-layout
+```
+
+Always verify a token exists before using it: `grep "--semantic-<name>" src/index.css`.
 
 ## Tailwind tw- Prefix System
 

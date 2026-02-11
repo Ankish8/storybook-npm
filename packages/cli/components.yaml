@@ -57,6 +57,7 @@ categories:
     components:
       - accordion
       - page-header
+      - pagination
 
   custom:
     description: "Multi-file complex components"
@@ -325,6 +326,16 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+
+  pagination:
+    description: "A composable pagination component with page navigation, next/previous links, and ellipsis"
+    category: layout
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
 
   # ---------------------------------------------------------------------------
   # CUSTOM MULTI-FILE COMPONENTS

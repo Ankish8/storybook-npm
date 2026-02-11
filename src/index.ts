@@ -150,6 +150,26 @@ export type { SpinnerProps } from "./components/ui/spinner";
 export { Skeleton, skeletonVariants } from "./components/ui/skeleton";
 export type { SkeletonProps } from "./components/ui/skeleton";
 
+// Pagination
+export {
+  Pagination,
+  PaginationContent,
+  PaginationLink,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "./components/ui/pagination";
+export type {
+  PaginationProps,
+  PaginationContentProps,
+  PaginationItemProps,
+  PaginationLinkProps,
+  PaginationPreviousProps,
+  PaginationNextProps,
+  PaginationEllipsisProps,
+} from "./components/ui/pagination";
+
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
 export type {

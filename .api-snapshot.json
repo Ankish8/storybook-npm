@@ -1,7 +1,113 @@
 {
   "version": "1.0",
-  "generatedAt": "2025-12-03T12:39:17.995Z",
+  "generatedAt": "2026-02-11T10:20:19.356Z",
   "components": {
+    "accordion": {
+      "exports": [
+        "Accordion",
+        "AccordionContent",
+        "AccordionContentProps",
+        "AccordionItem",
+        "AccordionItemProps",
+        "AccordionProps",
+        "AccordionTrigger",
+        "AccordionTriggerProps",
+        "accordionContentVariants",
+        "accordionItemVariants",
+        "accordionTriggerVariants",
+        "accordionVariants"
+      ],
+      "interfaces": {
+        "AccordionProps": {
+          "type": {
+            "type": "AccordionType",
+            "optional": true
+          },
+          "value": {
+            "type": "string[]",
+            "optional": true
+          },
+          "defaultValue": {
+            "type": "string[]",
+            "optional": true
+          },
+          "onValueChange": {
+            "type": "(value: string[]) => void",
+            "optional": true
+          }
+        },
+        "AccordionItemProps": {
+          "value": {
+            "type": "string",
+            "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "AccordionTriggerProps": {
+          "showChevron": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "accordionVariants": {},
+        "accordionItemVariants": {},
+        "accordionTriggerVariants": {},
+        "accordionContentVariants": {}
+      }
+    },
+    "alert": {
+      "exports": [
+        "Alert",
+        "AlertDescription",
+        "AlertProps",
+        "AlertTitle",
+        "alertVariants"
+      ],
+      "interfaces": {
+        "AlertProps": {
+          "icon": {
+            "type": "React.ReactNode | null",
+            "optional": true
+          },
+          "showIcon": {
+            "type": "boolean",
+            "optional": true
+          },
+          "closable": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onClose": {
+            "type": "() => void",
+            "optional": true
+          },
+          "action": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "secondaryAction": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "open": {
+            "type": "boolean",
+            "optional": true
+          },
+          "defaultOpen": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "alertVariants": {}
+      }
+    },
     "badge": {
       "exports": [
         "Badge",
@@ -16,6 +122,10 @@
           },
           "rightIcon": {
             "type": "React.ReactNode",
+            "optional": true
+          },
+          "asChild": {
+            "type": "boolean",
             "optional": true
           }
         }
@@ -58,6 +168,192 @@
         "buttonVariants": {}
       }
     },
+    "checkbox": {
+      "exports": [
+        "Checkbox",
+        "CheckboxProps",
+        "CheckedState",
+        "checkboxVariants"
+      ],
+      "interfaces": {
+        "CheckboxProps": {
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "labelPosition": {
+            "type": "\"left\" | \"right\"",
+            "optional": true
+          },
+          "checkboxClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "labelClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "separateLabel": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "checkboxVariants": {},
+        "iconSizeVariants": {},
+        "labelSizeVariants": {}
+      }
+    },
+    "confirmation-modal": {
+      "exports": [
+        "ConfirmationModal",
+        "ConfirmationModalProps"
+      ],
+      "interfaces": {
+        "ConfirmationModalProps": {
+          "open": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onOpenChange": {
+            "type": "(open: boolean) => void",
+            "optional": true
+          },
+          "title": {
+            "type": "React.ReactNode",
+            "optional": false
+          },
+          "description": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "variant": {
+            "type": "\"default\" | \"destructive\"",
+            "optional": true
+          },
+          "onConfirm": {
+            "type": "() => void",
+            "optional": true
+          },
+          "onCancel": {
+            "type": "() => void",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "confirmButtonText": {
+            "type": "string",
+            "optional": true
+          },
+          "cancelButtonText": {
+            "type": "string",
+            "optional": true
+          },
+          "trigger": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "delete-confirmation-modal": {
+      "exports": [
+        "DeleteConfirmationModal",
+        "DeleteConfirmationModalProps"
+      ],
+      "interfaces": {
+        "DeleteConfirmationModalProps": {
+          "open": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onOpenChange": {
+            "type": "(open: boolean) => void",
+            "optional": true
+          },
+          "itemName": {
+            "type": "string",
+            "optional": true
+          },
+          "title": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "description": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "confirmText": {
+            "type": "string",
+            "optional": true
+          },
+          "onConfirm": {
+            "type": "() => void",
+            "optional": true
+          },
+          "onCancel": {
+            "type": "() => void",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "deleteButtonText": {
+            "type": "string",
+            "optional": true
+          },
+          "cancelButtonText": {
+            "type": "string",
+            "optional": true
+          },
+          "trigger": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "dialog": {
+      "exports": [
+        "Dialog",
+        "DialogClose",
+        "DialogContent",
+        "DialogContentProps",
+        "DialogDescription",
+        "DialogFooter",
+        "DialogHeader",
+        "DialogOverlay",
+        "DialogPortal",
+        "DialogTitle",
+        "DialogTrigger",
+        "dialogContentVariants"
+      ],
+      "interfaces": {
+        "DialogContentProps": {
+          "hideCloseButton": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "dialogContentVariants": {}
+      }
+    },
     "dropdown-menu": {
       "exports": [
         "DropdownMenu",
@@ -78,6 +374,524 @@
       ],
       "interfaces": {},
       "variants": {}
+    },
+    "form-modal": {
+      "exports": [
+        "FormModal",
+        "FormModalProps"
+      ],
+      "interfaces": {
+        "FormModalProps": {
+          "open": {
+            "type": "boolean",
+            "optional": false
+          },
+          "onOpenChange": {
+            "type": "(open: boolean) => void",
+            "optional": false
+          },
+          "title": {
+            "type": "React.ReactNode",
+            "optional": false
+          },
+          "description": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "children": {
+            "type": "React.ReactNode",
+            "optional": false
+          },
+          "onSave": {
+            "type": "() => void",
+            "optional": true
+          },
+          "onCancel": {
+            "type": "() => void",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "saveButtonText": {
+            "type": "string",
+            "optional": true
+          },
+          "cancelButtonText": {
+            "type": "string",
+            "optional": true
+          },
+          "disableSave": {
+            "type": "boolean",
+            "optional": true
+          },
+          "className": {
+            "type": "string",
+            "optional": true
+          },
+          "size": {
+            "type": "\"sm\" | \"default\" | \"lg\" | \"xl\" | \"full\"",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "input": {
+      "exports": [
+        "Input",
+        "InputProps",
+        "inputVariants"
+      ],
+      "interfaces": {},
+      "variants": {
+        "inputVariants": {}
+      }
+    },
+    "multi-select": {
+      "exports": [
+        "MultiSelect",
+        "MultiSelectOption",
+        "MultiSelectProps",
+        "multiSelectTriggerVariants"
+      ],
+      "interfaces": {
+        "MultiSelectOption": {
+          "value": {
+            "type": "string",
+            "optional": false
+          },
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "MultiSelectProps": {
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "required": {
+            "type": "boolean",
+            "optional": true
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          },
+          "error": {
+            "type": "string",
+            "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "placeholder": {
+            "type": "string",
+            "optional": true
+          },
+          "value": {
+            "type": "string[]",
+            "optional": true
+          },
+          "defaultValue": {
+            "type": "string[]",
+            "optional": true
+          },
+          "onValueChange": {
+            "type": "(value: string[]) => void",
+            "optional": true
+          },
+          "options": {
+            "type": "MultiSelectOption[]",
+            "optional": false
+          },
+          "searchable": {
+            "type": "boolean",
+            "optional": true
+          },
+          "searchPlaceholder": {
+            "type": "string",
+            "optional": true
+          },
+          "maxSelections": {
+            "type": "number",
+            "optional": true
+          },
+          "wrapperClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "triggerClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "labelClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "id": {
+            "type": "string",
+            "optional": true
+          },
+          "name": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "multiSelectTriggerVariants": {}
+      }
+    },
+    "page-header": {
+      "exports": [
+        "PageHeader",
+        "PageHeaderProps",
+        "pageHeaderVariants"
+      ],
+      "interfaces": {
+        "PageHeaderProps": {
+          "title": {
+            "type": "string",
+            "optional": false
+          },
+          "description": {
+            "type": "string",
+            "optional": true
+          },
+          "icon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "showBackButton": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onBackClick": {
+            "type": "() => void",
+            "optional": true
+          },
+          "infoIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "actions": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "showBorder": {
+            "type": "boolean",
+            "optional": true
+          },
+          "layout": {
+            "type": "\"horizontal\" | \"vertical\" | \"responsive\"",
+            "optional": true
+          },
+          "mobileOverflowLimit": {
+            "type": "number",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "pagination": {
+      "exports": [
+        "Pagination",
+        "PaginationContent",
+        "PaginationContentProps",
+        "PaginationEllipsis",
+        "PaginationEllipsisProps",
+        "PaginationItem",
+        "PaginationItemProps",
+        "PaginationLink",
+        "PaginationLinkProps",
+        "PaginationNext",
+        "PaginationNextProps",
+        "PaginationPrevious",
+        "PaginationPreviousProps",
+        "PaginationProps"
+      ],
+      "interfaces": {
+        "PaginationProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationContentProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationItemProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationLinkProps": {
+          "isActive": {
+            "type": "boolean",
+            "optional": true
+          },
+          "size": {
+            "type": "ButtonProps[\"size\"]",
+            "optional": true
+          },
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationPreviousProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationNextProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationEllipsisProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "readable-field": {
+      "exports": [
+        "ReadableField",
+        "ReadableFieldProps"
+      ],
+      "interfaces": {
+        "ReadableFieldProps": {
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "value": {
+            "type": "string",
+            "optional": false
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          },
+          "secret": {
+            "type": "boolean",
+            "optional": true
+          },
+          "headerAction": {
+            "type": "{",
+            "optional": true
+          },
+          "onClick": {
+            "type": "() => void",
+            "optional": false
+          }
+        }
+      },
+      "variants": {}
+    },
+    "select-field": {
+      "exports": [
+        "SelectField",
+        "SelectFieldProps",
+        "SelectOption"
+      ],
+      "interfaces": {
+        "SelectOption": {
+          "value": {
+            "type": "string",
+            "optional": false
+          },
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "group": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "SelectFieldProps": {
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "required": {
+            "type": "boolean",
+            "optional": true
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          },
+          "error": {
+            "type": "string",
+            "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "placeholder": {
+            "type": "string",
+            "optional": true
+          },
+          "value": {
+            "type": "string",
+            "optional": true
+          },
+          "defaultValue": {
+            "type": "string",
+            "optional": true
+          },
+          "onValueChange": {
+            "type": "(value: string) => void",
+            "optional": true
+          },
+          "options": {
+            "type": "SelectOption[]",
+            "optional": false
+          },
+          "searchable": {
+            "type": "boolean",
+            "optional": true
+          },
+          "searchPlaceholder": {
+            "type": "string",
+            "optional": true
+          },
+          "wrapperClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "triggerClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "labelClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "id": {
+            "type": "string",
+            "optional": true
+          },
+          "name": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "select": {
+      "exports": [
+        "Select",
+        "SelectContent",
+        "SelectGroup",
+        "SelectItem",
+        "SelectLabel",
+        "SelectScrollDownButton",
+        "SelectScrollUpButton",
+        "SelectSeparator",
+        "SelectTrigger",
+        "SelectTriggerProps",
+        "SelectValue",
+        "selectTriggerVariants"
+      ],
+      "interfaces": {},
+      "variants": {
+        "selectTriggerVariants": {}
+      }
+    },
+    "skeleton": {
+      "exports": [
+        "Skeleton",
+        "SkeletonProps",
+        "skeletonVariants"
+      ],
+      "interfaces": {
+        "SkeletonProps": {
+          "width": {
+            "type": "number | string",
+            "optional": true
+          },
+          "height": {
+            "type": "number | string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "skeletonVariants": {}
+      }
+    },
+    "spinner": {
+      "exports": [
+        "Spinner",
+        "SpinnerProps",
+        "spinnerVariants"
+      ],
+      "interfaces": {
+        "SpinnerProps": {}
+      },
+      "variants": {
+        "spinnerVariants": {}
+      }
+    },
+    "switch": {
+      "exports": [
+        "Switch",
+        "SwitchProps",
+        "switchVariants"
+      ],
+      "interfaces": {
+        "SwitchProps": {
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "labelPosition": {
+            "type": "\"left\" | \"right\"",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "switchVariants": {},
+        "switchThumbVariants": {},
+        "labelSizeVariants": {}
+      }
     },
     "table": {
       "exports": [
@@ -122,7 +936,7 @@
             "optional": true
           },
           "sortDirection": {
-            "type": "'asc' | 'desc' | null",
+            "type": "\"asc\" | \"desc\" | null",
             "optional": true
           },
           "infoTooltip": {
@@ -168,7 +982,7 @@
         },
         "TableToggleProps": {
           "size": {
-            "type": "'sm' | 'default'",
+            "type": "\"sm\" | \"default\"",
             "optional": true
           }
         }
@@ -203,40 +1017,154 @@
         "tagVariants": {}
       }
     },
-    "toggle": {
+    "text-field": {
       "exports": [
-        "Toggle",
-        "ToggleProps",
-        "toggleVariants"
+        "TextField",
+        "TextFieldProps",
+        "textFieldContainerVariants",
+        "textFieldInputVariants"
       ],
       "interfaces": {
-        "ToggleProps": {
-          "checked": {
-            "type": "boolean",
-            "optional": true
-          },
-          "defaultChecked": {
-            "type": "boolean",
-            "optional": true
-          },
-          "onCheckedChange": {
-            "type": "(checked: boolean) => void",
-            "optional": true
-          },
+        "TextFieldProps": {
           "label": {
             "type": "string",
             "optional": true
           },
-          "labelPosition": {
-            "type": "\"left\" | \"right\"",
+          "required": {
+            "type": "boolean",
+            "optional": true
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          },
+          "error": {
+            "type": "string",
+            "optional": true
+          },
+          "leftIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "rightIcon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "prefix": {
+            "type": "string",
+            "optional": true
+          },
+          "suffix": {
+            "type": "string",
+            "optional": true
+          },
+          "showCount": {
+            "type": "boolean",
+            "optional": true
+          },
+          "loading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "wrapperClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "labelClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "inputContainerClassName": {
+            "type": "string",
             "optional": true
           }
         }
       },
       "variants": {
-        "toggleVariants": {},
-        "toggleThumbVariants": {}
+        "textFieldContainerVariants": {},
+        "textFieldInputVariants": {}
       }
+    },
+    "toast": {
+      "exports": [
+        "Toast",
+        "ToastAction",
+        "ToastClose",
+        "ToastDescription",
+        "ToastProvider",
+        "ToastTitle",
+        "ToastViewport",
+        "reducer",
+        "toastVariants",
+        "type ToastActionElement",
+        "type ToastProps"
+      ],
+      "interfaces": {},
+      "variants": {
+        "toastVariants": {}
+      }
+    },
+    "tooltip": {
+      "exports": [
+        "Tooltip",
+        "TooltipArrow",
+        "TooltipContent",
+        "TooltipProvider",
+        "TooltipTrigger"
+      ],
+      "interfaces": {},
+      "variants": {}
+    },
+    "typography": {
+      "exports": [
+        "Align",
+        "Color",
+        "Kind",
+        "Typography",
+        "TypographyProps",
+        "Variant",
+        "mapAlignClassName",
+        "mapClassName",
+        "mapColorClassName",
+        "mapTagName"
+      ],
+      "interfaces": {
+        "TypographyProps": {
+          "children": {
+            "type": "React.ReactNode",
+            "optional": false
+          },
+          "kind": {
+            "type": "Kind",
+            "optional": true
+          },
+          "variant": {
+            "type": "Variant",
+            "optional": true
+          },
+          "color": {
+            "type": "Color",
+            "optional": true
+          },
+          "align": {
+            "type": "Align",
+            "optional": true
+          },
+          "truncate": {
+            "type": "boolean",
+            "optional": true
+          },
+          "tag": {
+            "type": "keyof React.JSX.IntrinsicElements",
+            "optional": true
+          },
+          "htmlFor": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
     }
   }
 }

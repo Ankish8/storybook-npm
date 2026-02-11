@@ -216,6 +216,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: 'layout',
     internalDependencies: [],
   },
+  'pagination': {
+    name: 'pagination',
+    description: 'A composable pagination component with page navigation, next/previous links, and ellipsis',
+      category: 'layout',
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: 'layout',
+    internalDependencies: ["button"],
+  },
   'event-selector': {
     name: 'event-selector',
     description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
