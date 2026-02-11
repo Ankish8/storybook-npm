@@ -1,2 +1,7 @@
 export { PaymentOptionCard } from "./payment-option-card";
-export type { PaymentOptionCardProps, PaymentOption } from "./types";
+export { PaymentOptionCardModal } from "./payment-option-card-modal";
+export type {
+  PaymentOptionCardProps,
+  PaymentOptionCardModalProps,
+  PaymentOption,
+} from "./types";

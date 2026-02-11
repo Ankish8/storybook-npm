@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import {
   Globe,
   CreditCard,
@@ -6,7 +7,9 @@ import {
   Smartphone,
   Landmark,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PaymentOptionCard } from "./payment-option-card";
+import { PaymentOptionCardModal } from "./payment-option-card-modal";
 import type { PaymentOption } from "./types";
 
 const defaultOptions: PaymentOption[] = [
@@ -52,6 +55,8 @@ const meta: Meta<typeof PaymentOptionCard> = {
         component: `
 A selectable payment method list with icons, titles, and descriptions. Users pick a payment method and click the CTA to proceed. Supports both controlled and uncontrolled selection modes.
 
+Also includes a **PaymentOptionCardModal** variant that wraps the card in a Dialog overlay for modal usage.
+
 ## Installation
 
 \`\`\`bash
@@ -61,8 +66,8 @@ npx myoperator-ui add payment-option-card
 ## Import
 
 \`\`\`tsx
-import { PaymentOptionCard } from "@/components/custom/payment-option-card"
-import type { PaymentOptionCardProps, PaymentOption } from "@/components/custom/payment-option-card"
+import { PaymentOptionCard, PaymentOptionCardModal } from "@/components/custom/payment-option-card"
+import type { PaymentOptionCardProps, PaymentOptionCardModalProps, PaymentOption } from "@/components/custom/payment-option-card"
 \`\`\`
 
 ## Design Tokens
@@ -157,6 +162,8 @@ import type { PaymentOptionCardProps, PaymentOption } from "@/components/custom/
 
 ## Usage
 
+### Inline Card
+
 \`\`\`tsx
 import { PaymentOptionCard } from "@/components/custom/payment-option-card";
 import { Globe, CreditCard, Smartphone } from "lucide-react";
@@ -170,6 +177,28 @@ import { Globe, CreditCard, Smartphone } from "lucide-react";
   onOptionSelect={(id) => console.log("Selected:", id)}
   onCtaClick={() => console.log("Proceed")}
   onClose={() => console.log("Closed")}
+/>
+\`\`\`
+
+### Modal Variant
+
+\`\`\`tsx
+import { PaymentOptionCardModal } from "@/components/custom/payment-option-card";
+import { Globe, Smartphone } from "lucide-react";
+
+const [open, setOpen] = useState(false);
+
+<Button onClick={() => setOpen(true)}>Select Payment</Button>
+
+<PaymentOptionCardModal
+  open={open}
+  onOpenChange={setOpen}
+  options={[
+    { id: "net-banking", icon: <Globe className="size-5" />, title: "Net banking", description: "Pay securely through your bank" },
+    { id: "upi", icon: <Smartphone className="size-5" />, title: "UPI", description: "Pay using UPI ID or QR" },
+  ]}
+  onOptionSelect={(id) => console.log("Selected:", id)}
+  onCtaClick={() => { handlePayment(); setOpen(false); }}
 />
 \`\`\`
 `,
@@ -296,6 +325,107 @@ export const AutoPaySetupVariant: Story = {
     defaultSelectedOptionId: "net-banking",
     ctaText: "Continue",
     onClose: () => {},
+  },
+};
+
+// ─── Modal Variant Stories ──────────────────────────────────────────────
+
+export const ModalVariant: Story = {
+  name: "Modal",
+  decorators: [
+    (Story) => (
+      <div style={{ width: "100%" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => {
+    const [open, setOpen] = React.useState(false);
+    const [selected, setSelected] = React.useState("net-banking");
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Select Payment Method</Button>
+        <PaymentOptionCardModal
+          open={open}
+          onOpenChange={setOpen}
+          options={defaultOptions}
+          selectedOptionId={selected}
+          onOptionSelect={setSelected}
+          onCtaClick={() => setOpen(false)}
+        />
+      </>
+    );
+  },
+};
+
+export const ModalWithPreSelection: Story = {
+  name: "Modal (Pre-selected)",
+  decorators: [
+    (Story) => (
+      <div style={{ width: "100%" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => {
+    const [open, setOpen] = React.useState(false);
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Open Payment Modal</Button>
+        <PaymentOptionCardModal
+          open={open}
+          onOpenChange={setOpen}
+          options={defaultOptions}
+          defaultSelectedOptionId="upi"
+          onCtaClick={() => setOpen(false)}
+        />
+      </>
+    );
+  },
+};
+
+export const ModalAutoPaySetup: Story = {
+  name: "Modal (Auto-Pay Setup)",
+  decorators: [
+    (Story) => (
+      <div style={{ width: "100%" }}>
+        <Story />
+      </div>
+    ),
+  ],
+  render: () => {
+    const [open, setOpen] = React.useState(false);
+
+    return (
+      <>
+        <Button onClick={() => setOpen(true)}>Setup Auto-Pay</Button>
+        <PaymentOptionCardModal
+          open={open}
+          onOpenChange={setOpen}
+          title="Setup auto-pay method"
+          subtitle="Choose how recurring payments are processed"
+          options={[
+            {
+              id: "net-banking",
+              icon: <Globe className="size-5 text-semantic-text-muted" />,
+              title: "Net banking",
+              description: "Pay securely through your bank",
+            },
+            {
+              id: "card-subscription",
+              icon: <CreditCard className="size-5 text-semantic-text-muted" />,
+              title: "Card based subscription",
+              description: "Credit or Debit card payment",
+            },
+          ]}
+          defaultSelectedOptionId="net-banking"
+          ctaText="Continue"
+          onCtaClick={() => setOpen(false)}
+        />
+      </>
+    );
   },
 };
 

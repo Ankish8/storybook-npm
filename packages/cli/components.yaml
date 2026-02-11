@@ -468,7 +468,7 @@ components:
     mainFile: "payment-summary.tsx"
 
   payment-option-card:
-    description: "A selectable payment method list with icons, titles, and descriptions"
+    description: "A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage."
     category: custom
     dependencies:
       - "clsx"
@@ -476,10 +476,12 @@ components:
       - "lucide-react"
     internalDependencies:
       - button
+      - dialog
     isMultiFile: true
     directory: "payment-option-card"
     files:
       - "payment-option-card.tsx"
+      - "payment-option-card-modal.tsx"
       - "types.ts"
       - "index.ts"
     mainFile: "payment-option-card.tsx"

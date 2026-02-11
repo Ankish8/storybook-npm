@@ -213,8 +213,9 @@ export { EndpointDetails } from "./components/custom/endpoint-details";
 export type { EndpointDetailsProps } from "./components/custom/endpoint-details";
 
 // PaymentOptionCard (Custom)
-export { PaymentOptionCard } from "./components/custom/payment-option-card";
+export { PaymentOptionCard, PaymentOptionCardModal } from "./components/custom/payment-option-card";
 export type {
   PaymentOptionCardProps,
+  PaymentOptionCardModalProps,
   PaymentOption,
 } from "./components/custom/payment-option-card";

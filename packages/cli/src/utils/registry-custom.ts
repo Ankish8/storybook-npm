@@ -2815,7 +2815,7 @@ export type {
     },
     'payment-option-card': {
       name: 'payment-option-card',
-      description: 'A selectable payment method list with icons, titles, and descriptions',
+      description: 'A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage.',
       category: 'custom',
       dependencies: [
             "clsx",
@@ -2823,7 +2823,8 @@ export type {
             "lucide-react"
       ],
       internalDependencies: [
-            "button"
+            "button",
+            "dialog"
       ],
       isMultiFile: true,
       directory: 'payment-option-card',
@@ -2971,6 +2972,96 @@ PaymentOptionCard.displayName = "PaymentOptionCard";
 `, prefix),
         },
         {
+          name: 'payment-option-card-modal.tsx',
+          content: prefixTailwindClasses(`import * as React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "../dialog";
+import { PaymentOptionCard } from "./payment-option-card";
+import type { PaymentOptionCardModalProps } from "./types";
+
+/**
+ * PaymentOptionCardModal wraps the PaymentOptionCard in a centered Dialog overlay.
+ * Use this when you want to show payment method selection as a modal popup rather
+ * than an inline card.
+ *
+ * @example
+ * \`\`\`tsx
+ * const [open, setOpen] = useState(false);
+ *
+ * <PaymentOptionCardModal
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   options={paymentOptions}
+ *   onOptionSelect={(id) => console.log(id)}
+ *   onCtaClick={() => { handlePayment(); setOpen(false); }}
+ * />
+ * \`\`\`
+ */
+export const PaymentOptionCardModal = React.forwardRef<
+  HTMLDivElement,
+  PaymentOptionCardModalProps
+>(
+  (
+    {
+      open,
+      onOpenChange,
+      title,
+      subtitle,
+      options,
+      selectedOptionId,
+      defaultSelectedOptionId,
+      onOptionSelect,
+      ctaText,
+      onCtaClick,
+      loading,
+      disabled,
+      className,
+    },
+    ref
+  ) => {
+    const handleClose = () => {
+      onOpenChange(false);
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          ref={ref}
+          size="sm"
+          hideCloseButton
+          className="p-0 border-0 bg-transparent shadow-none"
+        >
+          {/* Visually hidden title for accessibility */}
+          <DialogTitle className="sr-only">
+            {title || "Select payment method"}
+          </DialogTitle>
+          <PaymentOptionCard
+            title={title}
+            subtitle={subtitle}
+            options={options}
+            selectedOptionId={selectedOptionId}
+            defaultSelectedOptionId={defaultSelectedOptionId}
+            onOptionSelect={onOptionSelect}
+            ctaText={ctaText}
+            onCtaClick={onCtaClick}
+            onClose={handleClose}
+            loading={loading}
+            disabled={disabled}
+            className={className}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+
+PaymentOptionCardModal.displayName = "PaymentOptionCardModal";
+`, prefix),
+        },
+        {
           name: 'types.ts',
           content: prefixTailwindClasses(`import * as React from "react";
 
@@ -3017,12 +3108,30 @@ export interface PaymentOptionCardProps {
   /** Additional className for the root element */
   className?: string;
 }
+
+/**
+ * Props for the PaymentOptionCardModal component.
+ * Extends the card props with Dialog open/close control, omitting \`onClose\`
+ * which is handled internally by the modal.
+ */
+export interface PaymentOptionCardModalProps
+  extends Omit<PaymentOptionCardProps, "onClose"> {
+  /** Whether the modal is open */
+  open: boolean;
+  /** Callback when modal should open or close */
+  onOpenChange: (open: boolean) => void;
+}
 `, prefix),
         },
         {
           name: 'index.ts',
           content: prefixTailwindClasses(`export { PaymentOptionCard } from "./payment-option-card";
-export type { PaymentOptionCardProps, PaymentOption } from "./types";
+export { PaymentOptionCardModal } from "./payment-option-card-modal";
+export type {
+  PaymentOptionCardProps,
+  PaymentOptionCardModalProps,
+  PaymentOption,
+} from "./types";
 `, prefix),
         }
       ],
