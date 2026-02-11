@@ -8593,6 +8593,8 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       voucherLinkText = "Have an offline code or voucher?",
       voucherIcon = <Ticket className="size-4" />,
       onVoucherClick,
+      showVoucherInput: controlledShowVoucherInput,
+      onShowVoucherInputChange,
       voucherCode: controlledVoucherCode,
       onVoucherCodeChange,
       voucherCodePlaceholder = "XXXX-XXXX-XXXX",
@@ -8625,8 +8627,15 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       ? controlledCustomAmount
       : internalCustom;
 
+    // Voucher input visibility (controlled/uncontrolled)
+    const isVoucherInputControlled = controlledShowVoucherInput !== undefined;
+    const [internalShowVoucherInput, setInternalShowVoucherInput] =
+      React.useState(false);
+    const showVoucherInput = isVoucherInputControlled
+      ? controlledShowVoucherInput
+      : internalShowVoucherInput;
+
     // Voucher code input state
-    const [showVoucherInput, setShowVoucherInput] = React.useState(false);
     const isVoucherCodeControlled = controlledVoucherCode !== undefined;
     const [internalVoucherCode, setInternalVoucherCode] = React.useState("");
     const voucherCodeValue = isVoucherCodeControlled
@@ -8634,12 +8643,18 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       : internalVoucherCode;
 
     const handleVoucherLinkClick = () => {
-      setShowVoucherInput(true);
+      if (!isVoucherInputControlled) {
+        setInternalShowVoucherInput(true);
+      }
+      onShowVoucherInputChange?.(true);
       onVoucherClick?.();
     };
 
     const handleVoucherCancel = () => {
-      setShowVoucherInput(false);
+      if (!isVoucherInputControlled) {
+        setInternalShowVoucherInput(false);
+      }
+      onShowVoucherInputChange?.(false);
       if (!isVoucherCodeControlled) {
         setInternalVoucherCode("");
       }
@@ -8921,6 +8936,12 @@ export interface WalletTopupProps {
   voucherIcon?: React.ReactNode;
   /** Callback when voucher link is clicked (also toggles inline code input) */
   onVoucherClick?: () => void;
+
+  // Voucher input visibility
+  /** Whether the voucher input is visible (controlled). When provided, the component won't toggle visibility internally. */
+  showVoucherInput?: boolean;
+  /** Callback when voucher input visibility changes (from link click or cancel) */
+  onShowVoucherInputChange?: (show: boolean) => void;
 
   // Voucher code input
   /** Voucher code value (controlled) */

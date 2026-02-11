@@ -58,6 +58,12 @@ export interface WalletTopupProps {
   /** Callback when voucher link is clicked (also toggles inline code input) */
   onVoucherClick?: () => void;
 
+  // Voucher input visibility
+  /** Whether the voucher input is visible (controlled). When provided, the component won't toggle visibility internally. */
+  showVoucherInput?: boolean;
+  /** Callback when voucher input visibility changes (from link click or cancel) */
+  onShowVoucherInputChange?: (show: boolean) => void;
+
   // Voucher code input
   /** Voucher code value (controlled) */
   voucherCode?: string;

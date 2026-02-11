@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { CreditCard, Gift } from "lucide-react";
 import { WalletTopup } from "./wallet-topup";
@@ -196,5 +197,34 @@ export const CustomVoucherLabels: Story = {
     voucherCodePlaceholder: "Enter promo code",
     voucherCancelText: "Go back",
     redeemText: "Apply code",
+  },
+};
+
+export const ControlledVoucherInput: Story = {
+  name: "Controlled Voucher Input (Hide on Redeem)",
+  render: () => {
+    const [showVoucherInput, setShowVoucherInput] = React.useState(false);
+    const [redeemed, setRedeemed] = React.useState(false);
+
+    return (
+      <div className="flex flex-col gap-3">
+        <WalletTopup
+          icon={<CreditCard className="size-5 text-semantic-primary" />}
+          amounts={[500, 1000, 5000, 10000]}
+          defaultSelectedAmount={500}
+          showVoucherInput={showVoucherInput}
+          onShowVoucherInputChange={setShowVoucherInput}
+          onRedeem={(code) => {
+            setRedeemed(true);
+            setShowVoucherInput(false);
+          }}
+        />
+        {redeemed && (
+          <p className="text-xs text-semantic-success-primary px-4">
+            Voucher redeemed successfully!
+          </p>
+        )}
+      </div>
+    );
   },
 };
