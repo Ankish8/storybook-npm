@@ -562,10 +562,12 @@ export interface TableProps
     VariantProps<typeof tableVariants> {
   /** Remove outer border from the table */
   withoutBorder?: boolean;
+  /** Allow cell content to wrap to multiple lines. By default, content is kept on a single line with horizontal scroll. */
+  wrapContent?: boolean;
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, size, withoutBorder, ...props }, ref) => (
+  ({ className, size, withoutBorder, wrapContent, ...props }, ref) => (
     <div
       className={cn(
         "relative w-full overflow-auto",
@@ -574,7 +576,11 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
     >
       <table
         ref={ref}
-        className={cn(tableVariants({ size, className }))}
+        className={cn(
+          tableVariants({ size }),
+          !wrapContent && "[&_th]:whitespace-nowrap [&_td]:whitespace-nowrap",
+          className
+        )}
         {...props}
       />
     </div>

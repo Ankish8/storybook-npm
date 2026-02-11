@@ -142,6 +142,15 @@ import {
         type: { summary: "boolean" },
       },
     },
+    wrapContent: {
+      control: "boolean",
+      description:
+        "Allow cell content to wrap to multiple lines. By default, content is kept on a single line with horizontal scroll.",
+      table: {
+        defaultValue: { summary: "false" },
+        type: { summary: "boolean" },
+      },
+    },
   },
 };
 
@@ -189,11 +198,13 @@ const statusVariants: Record<string, "active" | "failed" | "disabled"> = {
 const OverviewTable = ({
   size,
   withoutBorder,
+  wrapContent,
   showToggle,
   showActions,
 }: {
   size: "sm" | "md" | "lg";
   withoutBorder: boolean;
+  wrapContent: boolean;
   showToggle: boolean;
   showActions: boolean;
 }) => {
@@ -208,7 +219,7 @@ const OverviewTable = ({
   };
 
   return (
-    <Table size={size} withoutBorder={withoutBorder}>
+    <Table size={size} withoutBorder={withoutBorder} wrapContent={wrapContent}>
       <TableHeader>
         <TableRow>
           <TableHead>Sent on</TableHead>
@@ -287,11 +298,13 @@ export const Overview: Story = {
   args: {
     size: "md",
     withoutBorder: false,
+    wrapContent: false,
   },
   render: (args) => (
     <OverviewTable
       size={args.size || "md"}
       withoutBorder={args.withoutBorder || false}
+      wrapContent={args.wrapContent || false}
       showToggle={false}
       showActions={false}
     />
@@ -446,6 +459,88 @@ export const Borders: Story = {
             ))}
           </TableBody>
         </Table>
+      </div>
+    </div>
+  ),
+};
+
+export const ContentWrapping: Story = {
+  name: "Content Wrapping",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "By default, cell content stays on a single line and the table scrolls horizontally. Use `wrapContent` to allow multi-line content in cells.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <div>
+        <h4 className="text-sm font-medium mb-2">
+          No Wrap (default) — single-line cells, horizontal scroll
+        </h4>
+        <div className="max-w-[500px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sent on</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Sent by</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleData.map((row, i) => (
+                <TableRow key={i}>
+                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.subject}</TableCell>
+                  <TableCell>
+                    <TableAvatar initials={row.sentBy} />
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={statusVariants[row.status]}>
+                      {row.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-medium mb-2">
+          Wrap Content — multi-line cells
+        </h4>
+        <div className="max-w-[500px]">
+          <Table wrapContent>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sent on</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Sent by</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sampleData.map((row, i) => (
+                <TableRow key={i}>
+                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.subject}</TableCell>
+                  <TableCell>
+                    <TableAvatar initials={row.sentBy} />
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={statusVariants[row.status]}>
+                      {row.status}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   ),

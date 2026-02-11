@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-02-11T10:20:19.356Z",
+  "generatedAt": "2026-02-11T10:43:58.415Z",
   "components": {
     "accordion": {
       "exports": [
@@ -920,6 +920,10 @@
       "interfaces": {
         "TableProps": {
           "withoutBorder": {
+            "type": "boolean",
+            "optional": true
+          },
+          "wrapContent": {
             "type": "boolean",
             "optional": true
           }

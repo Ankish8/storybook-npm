@@ -102,6 +102,42 @@ describe("Table", () => {
 
     expect(screen.getByRole("table")).toHaveClass("custom-table");
   });
+
+  it("applies nowrap to cells by default", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>Content</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    expect(screen.getByRole("table")).toHaveClass(
+      "[&_th]:whitespace-nowrap",
+      "[&_td]:whitespace-nowrap"
+    );
+  });
+
+  it("removes nowrap when wrapContent is true", () => {
+    render(
+      <Table wrapContent>
+        <TableBody>
+          <TableRow>
+            <TableCell>Content</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    expect(screen.getByRole("table")).not.toHaveClass(
+      "[&_th]:whitespace-nowrap"
+    );
+    expect(screen.getByRole("table")).not.toHaveClass(
+      "[&_td]:whitespace-nowrap"
+    );
+  });
 });
 
 describe("TableHeader", () => {
