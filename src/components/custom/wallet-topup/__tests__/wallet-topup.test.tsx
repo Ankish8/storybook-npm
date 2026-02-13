@@ -120,7 +120,7 @@ describe("WalletTopup", () => {
     expect(onAmountChange).toHaveBeenCalledWith(null);
   });
 
-  it("shows check icon on selected amount", () => {
+  it("marks selected amount with aria-checked and primary text", () => {
     render(
       <WalletTopup amounts={[500, 1000]} defaultSelectedAmount={500} />
     );
@@ -449,6 +449,189 @@ describe("WalletTopup", () => {
     expect(screen.getByText("Go back")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter code")).toBeInTheDocument();
     expect(screen.getByText("Apply code")).toBeInTheDocument();
+  });
+
+  // ─── Tax / Summary Section ─────────────────────────────
+  it("shows summary section with static taxAmount", () => {
+    render(
+      <WalletTopup
+        amounts={[500]}
+        defaultSelectedAmount={500}
+        taxAmount={90}
+      />
+    );
+    expect(screen.getByText("Recharge amount")).toBeInTheDocument();
+    expect(screen.getByText("Taxes (GST)")).toBeInTheDocument();
+    expect(screen.getByText("₹90")).toBeInTheDocument();
+    // Amount appears in both the button and summary
+    expect(screen.getAllByText("₹500")).toHaveLength(2);
+  });
+
+  it("shows summary section with taxCalculator", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        defaultSelectedAmount={1000}
+        taxCalculator={(amount) => Math.round(amount * 0.18)}
+      />
+    );
+    expect(screen.getByText("Recharge amount")).toBeInTheDocument();
+    expect(screen.getByText("Taxes (GST)")).toBeInTheDocument();
+    expect(screen.getByText("₹180")).toBeInTheDocument();
+    // Amount appears in both the button and summary
+    expect(screen.getAllByText("₹1,000")).toHaveLength(2);
+  });
+
+  it("taxCalculator takes priority over taxAmount", () => {
+    render(
+      <WalletTopup
+        amounts={[500]}
+        defaultSelectedAmount={500}
+        taxAmount={50}
+        taxCalculator={() => 99}
+      />
+    );
+    expect(screen.getByText("₹99")).toBeInTheDocument();
+  });
+
+  it("hides summary section when no tax props provided", () => {
+    render(
+      <WalletTopup amounts={[500]} defaultSelectedAmount={500} />
+    );
+    expect(screen.queryByText("Recharge amount")).not.toBeInTheDocument();
+  });
+
+  it("hides summary section when no amount selected", () => {
+    render(
+      <WalletTopup amounts={[500]} taxAmount={90} />
+    );
+    expect(screen.queryByText("Recharge amount")).not.toBeInTheDocument();
+  });
+
+  it("includes tax in pay button text", () => {
+    render(
+      <WalletTopup
+        amounts={[500]}
+        defaultSelectedAmount={500}
+        taxAmount={90}
+      />
+    );
+    expect(screen.getByText("Pay ₹590 now")).toBeInTheDocument();
+  });
+
+  it("calls onPay with total including tax", () => {
+    const onPay = vi.fn();
+    render(
+      <WalletTopup
+        amounts={[500]}
+        defaultSelectedAmount={500}
+        taxAmount={90}
+        onPay={onPay}
+      />
+    );
+    fireEvent.click(screen.getByText("Pay ₹590 now"));
+    expect(onPay).toHaveBeenCalledWith(590);
+  });
+
+  it("renders custom tax and recharge labels", () => {
+    render(
+      <WalletTopup
+        amounts={[500]}
+        defaultSelectedAmount={500}
+        taxAmount={90}
+        taxLabel="VAT (20%)"
+        rechargeAmountLabel="Subtotal"
+      />
+    );
+    expect(screen.getByText("Subtotal")).toBeInTheDocument();
+    expect(screen.getByText("VAT (20%)")).toBeInTheDocument();
+  });
+
+  // ─── Outstanding Amount ───────────────────────────────
+  it("auto-prepends outstanding-only option when outstandingAmount is set", () => {
+    render(
+      <WalletTopup
+        amounts={[1000, 5000]}
+        outstandingAmount={10000}
+      />
+    );
+    // Should have 3 options: outstanding-only + 2 amounts
+    const radioButtons = screen.getAllByRole("radio");
+    expect(radioButtons).toHaveLength(3);
+  });
+
+  it("shows outstanding breakdown in amount buttons", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        outstandingAmount={10000}
+      />
+    );
+    // Outstanding-only option
+    expect(screen.getByText("₹10,000")).toBeInTheDocument();
+    // Outstanding + 1000 option
+    expect(screen.getByText("₹11,000")).toBeInTheDocument();
+    // Breakdown labels
+    expect(screen.getAllByText(/Outstanding:/)).toHaveLength(2);
+    expect(screen.getAllByText(/Top-up:/)).toHaveLength(2);
+  });
+
+  it("shows dash for topup in outstanding-only option", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        outstandingAmount={10000}
+      />
+    );
+    const topupTexts = screen.getAllByText(/Top-up:/);
+    expect(topupTexts[0].textContent).toContain("-");
+  });
+
+  it("includes outstanding in pay button total", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        outstandingAmount={10000}
+        defaultSelectedAmount={1000}
+      />
+    );
+    expect(screen.getByText("Pay ₹11,000 now")).toBeInTheDocument();
+  });
+
+  it("includes outstanding and tax in pay button total", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        outstandingAmount={10000}
+        defaultSelectedAmount={1000}
+        taxAmount={500}
+      />
+    );
+    expect(screen.getByText("Pay ₹11,500 now")).toBeInTheDocument();
+  });
+
+  it("smart formats amounts with decimals only when needed", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        outstandingAmount={10000.5}
+      />
+    );
+    // Outstanding amount with decimals
+    expect(screen.getAllByText(/₹10,000.50/).length).toBeGreaterThan(0);
+  });
+
+  it("renders custom outstanding and topup labels", () => {
+    render(
+      <WalletTopup
+        amounts={[1000]}
+        outstandingAmount={10000}
+        outstandingLabel="Due"
+        topupLabel="Extra"
+      />
+    );
+    expect(screen.getAllByText(/Due:/)).toHaveLength(2);
+    expect(screen.getAllByText(/Extra:/)).toHaveLength(2);
   });
 
   // ─── Ref & className ───────────────────────────────────

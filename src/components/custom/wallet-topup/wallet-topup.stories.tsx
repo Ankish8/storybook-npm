@@ -14,7 +14,8 @@ import { WalletTopup } from "./wallet-topup";
  * | Token | CSS Variable | Usage |
  * |-------|--------------|-------|
  * | Info Surface | `--semantic-info-surface` | Header icon background |
- * | Primary | `--semantic-primary` | Selected amount border, check icon |
+ * | Primary | `--semantic-primary` | Selected amount border & text |
+ * | Warning Surface | `--semantic-warning-surface` | Recharge summary background |
  * | Text Primary | `--semantic-text-primary` | Title, amount labels |
  * | Text Muted | `--semantic-text-muted` | Description, section labels |
  * | Text Link | `--semantic-text-link` | Voucher link text |
@@ -226,5 +227,46 @@ export const ControlledVoucherInput: Story = {
         )}
       </div>
     );
+  },
+};
+
+export const WithStaticTax: Story = {
+  name: "With Static Tax",
+  args: {
+    icon: <CreditCard className="size-5 text-semantic-primary" />,
+    amounts: [500, 1000, 5000, 10000],
+    defaultSelectedAmount: 500,
+    taxAmount: 90,
+  },
+};
+
+export const WithTaxCalculator: Story = {
+  name: "With Tax Calculator (18% GST)",
+  args: {
+    icon: <CreditCard className="size-5 text-semantic-primary" />,
+    amounts: [500, 1000, 5000, 10000],
+    defaultSelectedAmount: 500,
+    taxCalculator: (amount: number) => Math.round(amount * 0.18),
+  },
+};
+
+export const WithOutstandingAmount: Story = {
+  name: "With Outstanding Amount",
+  args: {
+    icon: <CreditCard className="size-5 text-semantic-primary" />,
+    amounts: [1000, 5000, 10000],
+    outstandingAmount: 102543.32,
+    taxCalculator: (amount: number) => Math.round(amount * 0.18),
+  },
+};
+
+export const WithOutstandingAndPreselected: Story = {
+  name: "Outstanding with Preselected Amount",
+  args: {
+    icon: <CreditCard className="size-5 text-semantic-primary" />,
+    amounts: [1000, 5000, 10000],
+    outstandingAmount: 102543.32,
+    defaultSelectedAmount: 0,
+    taxCalculator: (amount: number) => Math.round(amount * 0.18),
   },
 };

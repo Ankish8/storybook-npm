@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Check, Ticket } from "lucide-react";
+import { Ticket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,11 @@ function normalizeAmountOption(option: number | AmountOption): AmountOption {
  * Format currency amount with symbol
  */
 function formatCurrency(amount: number, symbol: string = "₹"): string {
-  return `${symbol}${amount.toLocaleString("en-IN")}`;
+  const hasDecimals = amount % 1 !== 0;
+  return `${symbol}${amount.toLocaleString("en-IN", {
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: hasDecimals ? 2 : 0,
+  })}`;
 }
 
 /**
@@ -54,6 +58,13 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       customAmountPlaceholder = "Enter amount",
       customAmountLabel = "Custom Amount",
       currencySymbol = "₹",
+      taxAmount: taxAmountProp,
+      taxCalculator,
+      taxLabel = "Taxes (GST)",
+      rechargeAmountLabel = "Recharge amount",
+      outstandingAmount,
+      outstandingLabel = "Outstanding",
+      topupLabel = "Top-up",
       showVoucherLink = true,
       voucherLinkText = "Have an offline code or voucher?",
       voucherIcon = <Ticket className="size-4" />,
@@ -150,6 +161,10 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
     };
 
     const normalizedAmounts = amounts.map(normalizeAmountOption);
+    const displayAmounts =
+      outstandingAmount && outstandingAmount > 0
+        ? [{ value: 0 } as AmountOption, ...normalizedAmounts]
+        : normalizedAmounts;
 
     const handleAmountSelect = (value: number) => {
       const newValue = selectedValue === value ? null : value;
@@ -181,19 +196,39 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
     };
 
     // Determine the effective pay amount
-    const payAmount =
-      selectedValue ?? (customValue ? Number(customValue) : 0);
+    const baseSelection =
+      selectedValue ?? (customValue ? Number(customValue) : null);
+
+    // Effective recharge amount (includes outstanding if present)
+    const effectiveRechargeAmount =
+      baseSelection !== null
+        ? outstandingAmount
+          ? outstandingAmount + baseSelection
+          : baseSelection
+        : 0;
+
+    // Tax computation
+    const hasTax = taxCalculator !== undefined || taxAmountProp !== undefined;
+    const computedTax =
+      effectiveRechargeAmount > 0
+        ? taxCalculator
+          ? taxCalculator(effectiveRechargeAmount)
+          : (taxAmountProp ?? 0)
+        : 0;
+
+    // Total payable (recharge + tax)
+    const totalPayable = effectiveRechargeAmount + computedTax;
 
     const handlePay = () => {
-      if (payAmount > 0) {
-        onPay?.(payAmount);
+      if (totalPayable > 0) {
+        onPay?.(totalPayable);
       }
     };
 
     const buttonText =
       ctaText ||
-      (payAmount > 0
-        ? `Pay ${formatCurrency(payAmount, currencySymbol)} now`
+      (totalPayable > 0
+        ? `Pay ${formatCurrency(totalPayable, currencySymbol)} now`
         : "Select an amount");
 
     return (
@@ -230,8 +265,15 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
                     {amountSectionLabel}
                   </label>
                   <div className="grid grid-cols-2 gap-4">
-                    {normalizedAmounts.map((option) => {
+                    {displayAmounts.map((option) => {
                       const isSelected = selectedValue === option.value;
+                      const hasOutstanding =
+                        outstandingAmount !== undefined &&
+                        outstandingAmount > 0;
+                      const totalForOption = hasOutstanding
+                        ? outstandingAmount + option.value
+                        : option.value;
+
                       return (
                         <button
                           key={option.value}
@@ -240,18 +282,53 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
                           aria-checked={isSelected}
                           onClick={() => handleAmountSelect(option.value)}
                           className={cn(
-                            "flex items-center justify-between h-10 px-4 py-2.5 rounded text-sm text-semantic-text-primary transition-all cursor-pointer",
+                            "flex px-4 rounded text-sm transition-all cursor-pointer",
+                            hasOutstanding
+                              ? "flex-col items-start gap-0.5 h-auto py-3"
+                              : "items-center h-10 py-2.5",
                             isSelected
-                              ? "border border-semantic-primary shadow-sm"
+                              ? "border border-[var(--semantic-brand)] shadow-sm"
                               : "border border-semantic-border-input hover:border-semantic-text-muted"
                           )}
                         >
-                          <span>
-                            {option.label ||
-                              formatCurrency(option.value, currencySymbol)}
+                          <span
+                            className={cn(
+                              isSelected
+                                ? "text-semantic-primary"
+                                : "text-semantic-text-primary",
+                              hasOutstanding && "font-medium"
+                            )}
+                          >
+                            {hasOutstanding
+                              ? formatCurrency(
+                                  totalForOption,
+                                  currencySymbol
+                                )
+                              : option.label ||
+                                formatCurrency(
+                                  option.value,
+                                  currencySymbol
+                                )}
                           </span>
-                          {isSelected && (
-                            <Check className="size-5 text-semantic-primary" />
+                          {hasOutstanding && (
+                            <>
+                              <span className="text-xs text-semantic-text-muted">
+                                {outstandingLabel}:{" "}
+                                {formatCurrency(
+                                  outstandingAmount,
+                                  currencySymbol
+                                )}
+                              </span>
+                              <span className="text-xs text-semantic-text-muted">
+                                {topupLabel}:{" "}
+                                {option.value > 0
+                                  ? formatCurrency(
+                                      option.value,
+                                      currencySymbol
+                                    )
+                                  : "-"}
+                              </span>
+                            </>
                           )}
                         </button>
                       );
@@ -271,6 +348,31 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
                     onChange={handleCustomAmountChange}
                   />
                 </div>
+
+                {/* Recharge Summary */}
+                {hasTax && effectiveRechargeAmount > 0 && (
+                  <div className="flex flex-col gap-2 rounded-lg bg-[var(--semantic-warning-surface)] px-4 py-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-semantic-text-primary">
+                        {rechargeAmountLabel}
+                      </span>
+                      <span className="text-semantic-text-primary font-medium">
+                        {formatCurrency(
+                          effectiveRechargeAmount,
+                          currencySymbol
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-semantic-text-muted">
+                        {taxLabel}
+                      </span>
+                      <span className="text-semantic-text-muted">
+                        {formatCurrency(computedTax, currencySymbol)}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Voucher Link or Voucher Code Input */}
                 {showVoucherLink && !showVoucherInput && (
@@ -323,7 +425,7 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
                     className="w-full"
                     onClick={handlePay}
                     loading={loading}
-                    disabled={disabled || payAmount <= 0}
+                    disabled={disabled || totalPayable <= 0}
                   >
                     {buttonText}
                   </Button>

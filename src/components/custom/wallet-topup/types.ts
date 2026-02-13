@@ -48,6 +48,24 @@ export interface WalletTopupProps {
   /** Currency symbol (default: "₹") */
   currencySymbol?: string;
 
+  // Tax / Summary
+  /** Static tax amount to display in the summary section */
+  taxAmount?: number;
+  /** Function to dynamically compute tax from the recharge amount. Takes priority over taxAmount. */
+  taxCalculator?: (amount: number) => number;
+  /** Label for the tax line in the summary (default: "Taxes (GST)") */
+  taxLabel?: string;
+  /** Label for the recharge amount line in the summary (default: "Recharge amount") */
+  rechargeAmountLabel?: string;
+
+  // Outstanding balance
+  /** Outstanding balance. When set, auto-prepends an outstanding-only option and shows breakdowns in each amount button. */
+  outstandingAmount?: number;
+  /** Label for the outstanding breakdown in amount buttons (default: "Outstanding") */
+  outstandingLabel?: string;
+  /** Label for the topup breakdown in amount buttons (default: "Top-up") */
+  topupLabel?: string;
+
   // Voucher link
   /** Whether to show the voucher/code link */
   showVoucherLink?: boolean;
