@@ -250,6 +250,19 @@ export const WithTaxCalculator: Story = {
   },
 };
 
+export const WithMultipleTaxes: Story = {
+  name: "With Multiple Taxes (CGST + IGST)",
+  args: {
+    icon: <CreditCard className="size-5 text-semantic-primary" />,
+    amounts: [500, 1000, 5000, 10000],
+    defaultSelectedAmount: 500,
+    taxes: [
+      { label: "CGST (9%)", calculator: (amount: number) => Math.round(amount * 0.09) },
+      { label: "IGST (9%)", calculator: (amount: number) => Math.round(amount * 0.09) },
+    ],
+  },
+};
+
 export const WithOutstandingAmount: Story = {
   name: "With Outstanding Amount",
   args: {

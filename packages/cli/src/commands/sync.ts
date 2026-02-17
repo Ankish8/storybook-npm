@@ -5,6 +5,7 @@ import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry } from '../utils/registry.js'
 import { configExists, getTailwindPrefix, ensureUtilsPrefixConfig } from '../utils/config.js'
+import { MYOPERATOR_THEME_CSS, getTailwindConfig } from './init.js'
 
 interface SyncOptions {
   yes: boolean
@@ -112,6 +113,70 @@ export async function sync(options: SyncOptions) {
       } else {
         console.log(chalk.green('  ✓ Created src/lib/utils.ts with prefix-aware cn()\n'))
       }
+    }
+  }
+
+  // Check if tailwind.config.js needs new color tokens injected
+  // Extract all semantic tokens from the template and inject any missing ones
+  const tailwindConfigCandidates = ['tailwind.config.js', 'tailwind.config.ts', 'tailwind.config.mjs', 'tailwind.config.cjs']
+  for (const candidate of tailwindConfigCandidates) {
+    const configPath = path.join(cwd, candidate)
+    if (await fs.pathExists(configPath)) {
+      let configContent = await fs.readFile(configPath, 'utf-8')
+
+      // Extract ordered list of all semantic color tokens from the template
+      const templateConfig = getTailwindConfig('', false)
+      const templateTokens: Array<{ key: string; value: string }> = []
+      for (const m of templateConfig.matchAll(/"(semantic-[^"]+)":\s*"([^"]+)"/g)) {
+        templateTokens.push({ key: m[1], value: m[2] })
+      }
+
+      // Find which tokens are missing from the consumer config
+      const missingTokens = templateTokens.filter((t) => !configContent.includes(`"${t.key}"`))
+
+      if (missingTokens.length > 0) {
+        for (const token of missingTokens) {
+          // Find the nearest preceding template token that exists in consumer config
+          const idx = templateTokens.indexOf(token)
+          let insertAfterKey: string | null = null
+          for (let i = idx - 1; i >= 0; i--) {
+            if (configContent.includes(`"${templateTokens[i].key}"`)) {
+              insertAfterKey = templateTokens[i].key
+              break
+            }
+          }
+          if (insertAfterKey) {
+            // Insert the new token on the line after its nearest existing neighbour
+            configContent = configContent.replace(
+              new RegExp(`("${insertAfterKey}":[^\\n]*)`),
+              `$1\n        "${token.key}": "${token.value}",`
+            )
+          }
+        }
+        await fs.writeFile(configPath, configContent)
+        console.log(chalk.green(`  ✓ Updated ${candidate} (${missingTokens.length} new color token${missingTokens.length === 1 ? '' : 's'} added)\n`))
+      } else {
+        console.log(chalk.gray(`  ✓ ${candidate} color tokens up to date\n`))
+      }
+      break
+    }
+  }
+
+  // Check if theme file needs updating — detect any missing CSS variables
+  const themeFilePath = path.join(cwd, 'src/lib/myoperator-ui-theme.css')
+  if (await fs.pathExists(themeFilePath)) {
+    const existingTheme = await fs.readFile(themeFilePath, 'utf-8')
+    const extractVars = (css: string) => new Set(
+      [...css.matchAll(/--[\w-]+\s*:/g)].map((m) => m[0].replace(/\s*:$/, ''))
+    )
+    const templateVars = extractVars(MYOPERATOR_THEME_CSS)
+    const existingVars = extractVars(existingTheme)
+    const missingVars = [...templateVars].filter((v) => !existingVars.has(v))
+    if (missingVars.length > 0) {
+      await fs.writeFile(themeFilePath, MYOPERATOR_THEME_CSS)
+      console.log(chalk.green(`  ✓ Updated src/lib/myoperator-ui-theme.css (${missingVars.length} new token${missingVars.length === 1 ? '' : 's'} added)\n`))
+    } else {
+      console.log(chalk.gray(`  ✓ src/lib/myoperator-ui-theme.css tokens up to date\n`))
     }
   }
 

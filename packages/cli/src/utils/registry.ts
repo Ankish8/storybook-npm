@@ -10122,6 +10122,7 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       taxAmount: taxAmountProp,
       taxCalculator,
       taxLabel = "Taxes (GST)",
+      taxes,
       rechargeAmountLabel = "Recharge amount",
       outstandingAmount,
       outstandingLabel = "Outstanding",
@@ -10268,16 +10269,37 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
           : baseSelection
         : 0;
 
-    // Tax computation
-    const hasTax = taxCalculator !== undefined || taxAmountProp !== undefined;
-    const computedTax =
-      effectiveRechargeAmount > 0
-        ? taxCalculator
-          ? taxCalculator(effectiveRechargeAmount)
-          : (taxAmountProp ?? 0)
-        : 0;
+    // Tax computation — multi-line takes priority over legacy single-line props
+    const hasTax =
+      taxes !== undefined ||
+      taxCalculator !== undefined ||
+      taxAmountProp !== undefined;
 
-    // Total payable (recharge + tax)
+    // Resolve each tax line's computed value (multi-line takes priority over legacy single-line)
+    const resolvedTaxLines =
+      effectiveRechargeAmount <= 0
+        ? []
+        : taxes
+          ? taxes.map((line) => ({
+              label: line.label,
+              value: line.calculator
+                ? line.calculator(effectiveRechargeAmount)
+                : (line.amount ?? 0),
+            }))
+          : taxCalculator !== undefined || taxAmountProp !== undefined
+            ? [
+                {
+                  label: taxLabel,
+                  value: taxCalculator
+                    ? taxCalculator(effectiveRechargeAmount)
+                    : (taxAmountProp ?? 0),
+                },
+              ]
+            : [];
+
+    const computedTax = resolvedTaxLines.reduce((sum, l) => sum + l.value, 0);
+
+    // Total payable (recharge + all taxes)
     const totalPayable = effectiveRechargeAmount + computedTax;
 
     const handlePay = () => {
@@ -10412,7 +10434,7 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
 
                 {/* Recharge Summary */}
                 {hasTax && effectiveRechargeAmount > 0 && (
-                  <div className="flex flex-col gap-2 rounded-lg bg-[var(--semantic-warning-surface)] px-4 py-3">
+                  <div className="flex flex-col gap-2 rounded-lg bg-semantic-info-surface-subtle border border-semantic-info-surface px-4 py-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-semantic-text-primary">
                         {rechargeAmountLabel}
@@ -10424,14 +10446,19 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
                         )}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-semantic-text-muted">
-                        {taxLabel}
-                      </span>
-                      <span className="text-semantic-text-muted">
-                        {formatCurrency(computedTax, currencySymbol)}
-                      </span>
-                    </div>
+                    {resolvedTaxLines.map((line) => (
+                      <div
+                        key={line.label}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="text-semantic-text-muted">
+                          {line.label}
+                        </span>
+                        <span className="text-semantic-text-muted">
+                          {formatCurrency(line.value, currencySymbol)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
@@ -10518,6 +10545,18 @@ export interface AmountOption {
 }
 
 /**
+ * A single tax line entry for the recharge summary
+ */
+export interface TaxLine {
+  /** Display label for this tax (e.g. "CGST (9%)", "IGST (18%)") */
+  label: string;
+  /** Static tax amount */
+  amount?: number;
+  /** Dynamic calculator — receives the recharge amount and returns the tax */
+  calculator?: (amount: number) => number;
+}
+
+/**
  * Props for the WalletTopup component
  */
 export interface WalletTopupProps {
@@ -10556,12 +10595,18 @@ export interface WalletTopupProps {
   currencySymbol?: string;
 
   // Tax / Summary
-  /** Static tax amount to display in the summary section */
+  /** Static tax amount to display in the summary section (single-line, kept for backwards compat) */
   taxAmount?: number;
-  /** Function to dynamically compute tax from the recharge amount. Takes priority over taxAmount. */
+  /** Function to dynamically compute tax from the recharge amount (single-line, kept for backwards compat). Takes priority over taxAmount. */
   taxCalculator?: (amount: number) => number;
-  /** Label for the tax line in the summary (default: "Taxes (GST)") */
+  /** Label for the single tax line (default: "Taxes (GST)") */
   taxLabel?: string;
+  /**
+   * Multiple tax lines for the summary (e.g. CGST + IGST).
+   * When provided, takes priority over taxAmount/taxCalculator/taxLabel.
+   * Each line can have a static amount or a dynamic calculator.
+   */
+  taxes?: TaxLine[];
   /** Label for the recharge amount line in the summary (default: "Recharge amount") */
   rechargeAmountLabel?: string;
 

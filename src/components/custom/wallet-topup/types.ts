@@ -11,6 +11,18 @@ export interface AmountOption {
 }
 
 /**
+ * A single tax line entry for the recharge summary
+ */
+export interface TaxLine {
+  /** Display label for this tax (e.g. "CGST (9%)", "IGST (18%)") */
+  label: string;
+  /** Static tax amount */
+  amount?: number;
+  /** Dynamic calculator — receives the recharge amount and returns the tax */
+  calculator?: (amount: number) => number;
+}
+
+/**
  * Props for the WalletTopup component
  */
 export interface WalletTopupProps {
@@ -49,12 +61,18 @@ export interface WalletTopupProps {
   currencySymbol?: string;
 
   // Tax / Summary
-  /** Static tax amount to display in the summary section */
+  /** Static tax amount to display in the summary section (single-line, kept for backwards compat) */
   taxAmount?: number;
-  /** Function to dynamically compute tax from the recharge amount. Takes priority over taxAmount. */
+  /** Function to dynamically compute tax from the recharge amount (single-line, kept for backwards compat). Takes priority over taxAmount. */
   taxCalculator?: (amount: number) => number;
-  /** Label for the tax line in the summary (default: "Taxes (GST)") */
+  /** Label for the single tax line (default: "Taxes (GST)") */
   taxLabel?: string;
+  /**
+   * Multiple tax lines for the summary (e.g. CGST + IGST).
+   * When provided, takes priority over taxAmount/taxCalculator/taxLabel.
+   * Each line can have a static amount or a dynamic calculator.
+   */
+  taxes?: TaxLine[];
   /** Label for the recharge amount line in the summary (default: "Recharge amount") */
   rechargeAmountLabel?: string;
 

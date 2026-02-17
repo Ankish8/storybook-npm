@@ -95,24 +95,28 @@ export default {
         "semantic-disabled-border": "var(--semantic-disabled-border)",
         // Semantic colors - Error
         "semantic-error-primary": "var(--semantic-error-primary)",
+        "semantic-error-surface-subtle": "var(--semantic-error-surface-subtle)",
         "semantic-error-surface": "var(--semantic-error-surface)",
         "semantic-error-text": "var(--semantic-error-text)",
         "semantic-error-border": "var(--semantic-error-border)",
         "semantic-error-hover": "var(--semantic-error-hover)",
         // Semantic colors - Warning
         "semantic-warning-primary": "var(--semantic-warning-primary)",
+        "semantic-warning-surface-subtle": "var(--semantic-warning-surface-subtle)",
         "semantic-warning-surface": "var(--semantic-warning-surface)",
         "semantic-warning-text": "var(--semantic-warning-text)",
         "semantic-warning-border": "var(--semantic-warning-border)",
         "semantic-warning-hover": "var(--semantic-warning-hover)",
         // Semantic colors - Success
         "semantic-success-primary": "var(--semantic-success-primary)",
+        "semantic-success-surface-subtle": "var(--semantic-success-surface-subtle)",
         "semantic-success-surface": "var(--semantic-success-surface)",
         "semantic-success-text": "var(--semantic-success-text)",
         "semantic-success-border": "var(--semantic-success-border)",
         "semantic-success-hover": "var(--semantic-success-hover)",
         // Semantic colors - Info
         "semantic-info-primary": "var(--semantic-info-primary)",
+        "semantic-info-surface-subtle": "var(--semantic-info-surface-subtle)",
         "semantic-info-surface": "var(--semantic-info-surface)",
         "semantic-info-text": "var(--semantic-info-text)",
         "semantic-info-border": "var(--semantic-info-border)",

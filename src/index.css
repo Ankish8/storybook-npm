@@ -165,6 +165,7 @@
 
     /* Error State */
     --semantic-error-primary: var(--color-error-500);
+    --semantic-error-surface-subtle: var(--color-error-25);
     --semantic-error-surface: var(--color-error-50);
     --semantic-error-text: var(--color-error-700);
     --semantic-error-border: var(--color-error-300);
@@ -172,6 +173,7 @@
 
     /* Warning State */
     --semantic-warning-primary: var(--color-warning-500);
+    --semantic-warning-surface-subtle: var(--color-warning-25);
     --semantic-warning-surface: var(--color-warning-50);
     --semantic-warning-text: var(--color-warning-700);
     --semantic-warning-border: var(--color-warning-300);
@@ -179,6 +181,7 @@
 
     /* Success State */
     --semantic-success-primary: var(--color-success-500);
+    --semantic-success-surface-subtle: var(--color-success-25);
     --semantic-success-surface: var(--color-success-50);
     --semantic-success-text: var(--color-success-700);
     --semantic-success-border: var(--color-success-300);
@@ -186,6 +189,7 @@
 
     /* Info State */
     --semantic-info-primary: var(--color-info-500);
+    --semantic-info-surface-subtle: var(--color-info-25);
     --semantic-info-surface: var(--color-info-50);
     --semantic-info-text: var(--color-info-700);
     --semantic-info-border: var(--color-info-200);

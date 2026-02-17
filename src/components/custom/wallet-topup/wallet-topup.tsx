@@ -61,6 +61,7 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       taxAmount: taxAmountProp,
       taxCalculator,
       taxLabel = "Taxes (GST)",
+      taxes,
       rechargeAmountLabel = "Recharge amount",
       outstandingAmount,
       outstandingLabel = "Outstanding",
@@ -207,16 +208,37 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
           : baseSelection
         : 0;
 
-    // Tax computation
-    const hasTax = taxCalculator !== undefined || taxAmountProp !== undefined;
-    const computedTax =
-      effectiveRechargeAmount > 0
-        ? taxCalculator
-          ? taxCalculator(effectiveRechargeAmount)
-          : (taxAmountProp ?? 0)
-        : 0;
+    // Tax computation — multi-line takes priority over legacy single-line props
+    const hasTax =
+      taxes !== undefined ||
+      taxCalculator !== undefined ||
+      taxAmountProp !== undefined;
 
-    // Total payable (recharge + tax)
+    // Resolve each tax line's computed value (multi-line takes priority over legacy single-line)
+    const resolvedTaxLines =
+      effectiveRechargeAmount <= 0
+        ? []
+        : taxes
+          ? taxes.map((line) => ({
+              label: line.label,
+              value: line.calculator
+                ? line.calculator(effectiveRechargeAmount)
+                : (line.amount ?? 0),
+            }))
+          : taxCalculator !== undefined || taxAmountProp !== undefined
+            ? [
+                {
+                  label: taxLabel,
+                  value: taxCalculator
+                    ? taxCalculator(effectiveRechargeAmount)
+                    : (taxAmountProp ?? 0),
+                },
+              ]
+            : [];
+
+    const computedTax = resolvedTaxLines.reduce((sum, l) => sum + l.value, 0);
+
+    // Total payable (recharge + all taxes)
     const totalPayable = effectiveRechargeAmount + computedTax;
 
     const handlePay = () => {
@@ -351,7 +373,7 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
 
                 {/* Recharge Summary */}
                 {hasTax && effectiveRechargeAmount > 0 && (
-                  <div className="flex flex-col gap-2 rounded-lg bg-[var(--semantic-warning-surface)] px-4 py-3">
+                  <div className="flex flex-col gap-2 rounded-lg bg-semantic-info-surface-subtle border border-semantic-info-surface px-4 py-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-semantic-text-primary">
                         {rechargeAmountLabel}
@@ -363,14 +385,19 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
                         )}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-semantic-text-muted">
-                        {taxLabel}
-                      </span>
-                      <span className="text-semantic-text-muted">
-                        {formatCurrency(computedTax, currencySymbol)}
-                      </span>
-                    </div>
+                    {resolvedTaxLines.map((line) => (
+                      <div
+                        key={line.label}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="text-semantic-text-muted">
+                          {line.label}
+                        </span>
+                        <span className="text-semantic-text-muted">
+                          {formatCurrency(line.value, currencySymbol)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
