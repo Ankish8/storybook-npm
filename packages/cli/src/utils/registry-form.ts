@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getFormRegistry(prefix: string = ''): Registry {
   return {
-    'input': {
-      name: 'input',
-      description: 'A text input component with error and disabled states',
-      category: 'form',
+    "input": {
+      name: "input",
+      description: "A text input component with error and disabled states",
+      category: "form",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -511,7 +511,7 @@ export function getFormRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'input.tsx',
+          name: "input.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -571,10 +571,10 @@ export { Input, inputVariants };
         },
       ],
     },
-    'select': {
-      name: 'select',
-      description: 'A select dropdown component built on Radix UI Select',
-      category: 'form',
+    "select": {
+      name: "select",
+      description: "A select dropdown component built on Radix UI Select",
+      category: "form",
       dependencies: [
             "@radix-ui/react-select@^2.2.6",
             "class-variance-authority",
@@ -585,7 +585,7 @@ export { Input, inputVariants };
       ],
       files: [
         {
-          name: 'select.tsx',
+          name: "select.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -781,10 +781,10 @@ export {
         },
       ],
     },
-    'checkbox': {
-      name: 'checkbox',
-      description: 'A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.',
-      category: 'form',
+    "checkbox": {
+      name: "checkbox",
+      description: "A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.",
+      category: "form",
       dependencies: [
             "@radix-ui/react-checkbox@^1.3.3",
             "class-variance-authority",
@@ -794,7 +794,7 @@ export {
       ],
       files: [
         {
-          name: 'checkbox.tsx',
+          name: "checkbox.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -1011,10 +1011,10 @@ export { Checkbox, checkboxVariants };
         },
       ],
     },
-    'switch': {
-      name: 'switch',
-      description: 'A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.',
-      category: 'form',
+    "switch": {
+      name: "switch",
+      description: "A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.",
+      category: "form",
       dependencies: [
             "@radix-ui/react-switch@^1.2.6",
             "class-variance-authority",
@@ -1023,7 +1023,7 @@ export { Checkbox, checkboxVariants };
       ],
       files: [
         {
-          name: 'switch.tsx',
+          name: "switch.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -1171,10 +1171,10 @@ export { Switch, switchVariants };
         },
       ],
     },
-    'text-field': {
-      name: 'text-field',
-      description: 'A text field with label, helper text, icons, and validation states',
-      category: 'form',
+    "text-field": {
+      name: "text-field",
+      description: "A text field with label, helper text, icons, and validation states",
+      category: "form",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1183,7 +1183,7 @@ export { Switch, switchVariants };
       ],
       files: [
         {
-          name: 'text-field.tsx',
+          name: "text-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
@@ -1462,10 +1462,10 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
         },
       ],
     },
-    'readable-field': {
-      name: 'readable-field',
-      description: 'A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.',
-      category: 'form',
+    "readable-field": {
+      name: "readable-field",
+      description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.",
+      category: "form",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1473,7 +1473,7 @@ export { TextField, textFieldContainerVariants, textFieldInputVariants };
       ],
       files: [
         {
-          name: 'readable-field.tsx',
+          name: "readable-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Copy, Check, Eye, EyeOff } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -1669,10 +1669,10 @@ ReadableField.displayName = "ReadableField";
         },
       ],
     },
-    'select-field': {
-      name: 'select-field',
-      description: 'A select field with label, helper text, and validation states',
-      category: 'form',
+    "select-field": {
+      name: "select-field",
+      description: "A select field with label, helper text, and validation states",
+      category: "form",
       dependencies: [
             "@radix-ui/react-select@^2.2.6",
             "clsx",
@@ -1681,7 +1681,7 @@ ReadableField.displayName = "ReadableField";
       ],
       files: [
         {
-          name: 'select-field.tsx',
+          name: "select-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Loader2 } from "lucide-react";
 
@@ -1969,10 +1969,10 @@ export { SelectField };
         },
       ],
     },
-    'multi-select': {
-      name: 'multi-select',
-      description: 'A multi-select dropdown component with search, badges, and async loading',
-      category: 'form',
+    "multi-select": {
+      name: "multi-select",
+      description: "A multi-select dropdown component with search, badges, and async loading",
+      category: "form",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1981,7 +1981,7 @@ export { SelectField };
       ],
       files: [
         {
-          name: 'multi-select.tsx',
+          name: "multi-select.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, X, Loader2 } from "lucide-react";

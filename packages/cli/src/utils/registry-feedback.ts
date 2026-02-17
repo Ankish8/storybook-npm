@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getFeedbackRegistry(prefix: string = ''): Registry {
   return {
-    'tag': {
-      name: 'tag',
-      description: 'A tag component for event labels with optional bold label prefix',
-      category: 'feedback',
+    "tag": {
+      name: "tag",
+      description: "A tag component for event labels with optional bold label prefix",
+      category: "feedback",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -511,7 +511,7 @@ export function getFeedbackRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'tag.tsx',
+          name: "tag.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -651,10 +651,10 @@ export { Tag, TagGroup, tagVariants };
         },
       ],
     },
-    'alert': {
-      name: 'alert',
-      description: 'A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility',
-      category: 'feedback',
+    "alert": {
+      name: "alert",
+      description: "A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility",
+      category: "feedback",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -663,7 +663,7 @@ export { Tag, TagGroup, tagVariants };
       ],
       files: [
         {
-          name: 'alert.tsx',
+          name: "alert.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from "lucide-react";
@@ -875,10 +875,10 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
         },
       ],
     },
-    'toast': {
-      name: 'toast',
-      description: 'A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support',
-      category: 'feedback',
+    "toast": {
+      name: "toast",
+      description: "A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support",
+      category: "feedback",
       dependencies: [
             "@radix-ui/react-toast@^1.2.15",
             "class-variance-authority",
@@ -889,7 +889,7 @@ export { Alert, AlertTitle, AlertDescription, alertVariants };
       ],
       files: [
         {
-          name: 'toast.tsx',
+          name: "toast.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -1378,10 +1378,10 @@ export { useToast, toast, Toaster };
         },
       ],
     },
-    'spinner': {
-      name: 'spinner',
-      description: 'A loading spinner component with customizable size and color variants for indicating progress',
-      category: 'feedback',
+    "spinner": {
+      name: "spinner",
+      description: "A loading spinner component with customizable size and color variants for indicating progress",
+      category: "feedback",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1389,7 +1389,7 @@ export { useToast, toast, Toaster };
       ],
       files: [
         {
-          name: 'spinner.tsx',
+          name: "spinner.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -1512,10 +1512,10 @@ export { Spinner, spinnerVariants };
         },
       ],
     },
-    'skeleton': {
-      name: 'skeleton',
-      description: 'A placeholder loading component with pulse animation for content loading states',
-      category: 'feedback',
+    "skeleton": {
+      name: "skeleton",
+      description: "A placeholder loading component with pulse animation for content loading states",
+      category: "feedback",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -1523,7 +1523,7 @@ export { Spinner, spinnerVariants };
       ],
       files: [
         {
-          name: 'skeleton.tsx',
+          name: "skeleton.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 

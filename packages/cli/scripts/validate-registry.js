@@ -45,7 +45,7 @@ async function validate() {
   console.log('Checking component presence:')
   for (const file of sourceFiles) {
     const componentName = file.replace('.tsx', '')
-    if (!registryContent.includes(`'${componentName}':`)) {
+    if (!registryContent.includes(`'${componentName}':`) && !registryContent.includes(`"${componentName}":`)) {
       console.error(`  ❌ ${componentName} - not in registry`)
       errors++
     } else {

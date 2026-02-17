@@ -43,16 +43,3 @@ export interface PaymentOptionCardProps {
   /** Additional className for the root element */
   className?: string;
 }
-
-/**
- * Props for the PaymentOptionCardModal component.
- * Extends the card props with Dialog open/close control, omitting `onClose`
- * which is handled internally by the modal.
- */
-export interface PaymentOptionCardModalProps
-  extends Omit<PaymentOptionCardProps, "onClose"> {
-  /** Whether the modal is open */
-  open: boolean;
-  /** Callback when modal should open or close */
-  onOpenChange: (open: boolean) => void;
-}

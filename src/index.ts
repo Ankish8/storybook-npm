@@ -232,6 +232,10 @@ export type {
 export { EndpointDetails } from "./components/custom/endpoint-details";
 export type { EndpointDetailsProps } from "./components/custom/endpoint-details";
 
+// PricingCard (Custom)
+export { PricingCard, CompactCarIcon, SedanCarIcon, SuvCarIcon } from "./components/custom/pricing-card";
+export type { PricingCardProps, PricingCardAddon, PricingCardFeature, UsageDetail } from "./components/custom/pricing-card";
+
 // PaymentOptionCard (Custom)
 export { PaymentOptionCard, PaymentOptionCardModal } from "./components/custom/payment-option-card";
 export type {
@@ -239,3 +243,19 @@ export type {
   PaymentOptionCardModalProps,
   PaymentOption,
 } from "./components/custom/payment-option-card";
+
+// PowerUpCard (Custom)
+export { PowerUpCard } from "./components/custom/power-up-card";
+export type { PowerUpCardProps } from "./components/custom/power-up-card";
+
+// LetUsDriveCard (Custom)
+export { LetUsDriveCard } from "./components/custom/let-us-drive-card";
+export type { LetUsDriveCardProps } from "./components/custom/let-us-drive-card";
+
+// PricingToggle (Custom)
+export { PricingToggle } from "./components/custom/pricing-toggle";
+export type { PricingToggleProps, PricingToggleTab } from "./components/custom/pricing-toggle";
+
+// PricingPage (Custom)
+export { PricingPage } from "./components/custom/pricing-page";
+export type { PricingPageProps } from "./components/custom/pricing-page";

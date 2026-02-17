@@ -27,7 +27,7 @@ const preview: Preview = {
           'Components',
           ['Button', 'Badge', 'Checkbox', 'Collapsible', 'Dropdown Menu', 'Input', 'MultiSelect', 'Select', 'SelectField', 'Table', 'Tag', 'TextField', 'Toggle'],
           'Custom',
-          ['Event Selector'],
+          ['Event Selector', 'Plan & Payment', ['Plan & Pricing', ['PricingPage', '*']]],
           '*',
         ],
       },

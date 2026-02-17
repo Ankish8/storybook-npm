@@ -5,7 +5,13 @@ import {
   DialogTitle,
 } from "../../ui/dialog";
 import { PaymentOptionCard } from "./payment-option-card";
-import type { PaymentOptionCardModalProps } from "./types";
+import type { PaymentOptionCardProps } from "./types";
+
+interface PaymentOptionCardModalProps
+  extends Omit<PaymentOptionCardProps, "onClose"> {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
 /**
  * PaymentOptionCardModal wraps the PaymentOptionCard in a centered Dialog overlay.

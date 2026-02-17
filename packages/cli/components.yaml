@@ -71,6 +71,11 @@ categories:
       - bank-details
       - payment-option-card
       - payment-summary
+      - let-us-drive-card
+      - power-up-card
+      - pricing-card
+      - pricing-page
+      - pricing-toggle
       - wallet-topup
 
 # =============================================================================
@@ -496,6 +501,97 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "payment-option-card.tsx"
+
+  let-us-drive-card:
+    description: "A managed service card with pricing, billing badge, 'Show details' link, and CTA for the full-service management section"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - button
+      - badge
+    isMultiFile: true
+    directory: "let-us-drive-card"
+    files:
+      - "let-us-drive-card.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "let-us-drive-card.tsx"
+
+  power-up-card:
+    description: "An add-on service card with icon, title, pricing, description, and CTA button for the power-ups section"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - button
+    isMultiFile: true
+    directory: "power-up-card"
+    files:
+      - "power-up-card.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "power-up-card.tsx"
+
+  pricing-card:
+    description: "A pricing tier card with plan name, pricing, feature checklist, CTA button, and optional popularity badge and addon footer"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - badge
+    isMultiFile: true
+    directory: "pricing-card"
+    files:
+      - "pricing-card.tsx"
+      - "plan-icons.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "pricing-card.tsx"
+
+  pricing-page:
+    description: "A full pricing page layout composing plan-type tabs, billing toggle, pricing cards grid, power-ups section, and let-us-drive managed services section"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - page-header
+      - pricing-toggle
+      - pricing-card
+      - power-up-card
+      - let-us-drive-card
+    isMultiFile: true
+    directory: "pricing-page"
+    files:
+      - "pricing-page.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "pricing-page.tsx"
+
+  pricing-toggle:
+    description: "A plan type tab selector with billing period toggle for pricing pages. Pill-shaped tabs switch plan categories, and an optional switch toggles between monthly/yearly billing."
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "@radix-ui/react-switch@^1.2.6"
+    internalDependencies:
+      - switch
+    isMultiFile: true
+    directory: "pricing-toggle"
+    files:
+      - "pricing-toggle.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "pricing-toggle.tsx"
 
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"

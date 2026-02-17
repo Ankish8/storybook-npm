@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getCustomRegistry(prefix: string = ''): Registry {
   return {
-    'event-selector': {
-      name: 'event-selector',
-      description: 'A component for selecting webhook events with groups, categories, and tri-state checkboxes',
-      category: 'custom',
+    "event-selector": {
+      name: "event-selector",
+      description: "A component for selecting webhook events with groups, categories, and tri-state checkboxes",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -513,11 +513,11 @@ export function getCustomRegistry(prefix: string = ''): Registry {
             "accordion"
       ],
       isMultiFile: true,
-      directory: 'event-selector',
-      mainFile: 'event-selector.tsx',
+      directory: "event-selector",
+      mainFile: "event-selector.tsx",
       files: [
         {
-          name: 'event-selector.tsx',
+          name: "event-selector.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
 import { EventGroupComponent } from "./event-group";
@@ -710,7 +710,7 @@ EventSelector.displayName = "EventSelector";
 `, prefix),
         },
         {
-          name: 'event-group.tsx',
+          name: "event-group.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
 import { Checkbox, type CheckedState } from "../checkbox";
@@ -896,7 +896,7 @@ EventGroupComponent.displayName = "EventGroupComponent";
 `, prefix),
         },
         {
-          name: 'event-item.tsx',
+          name: "event-item.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
 import { Checkbox } from "../checkbox";
@@ -938,7 +938,7 @@ EventItemComponent.displayName = "EventItemComponent";
 `, prefix),
         },
         {
-          name: 'types.ts',
+          name: "types.ts",
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
@@ -1055,10 +1055,10 @@ export interface EventItemComponentProps {
         }
       ],
     },
-    'key-value-input': {
-      name: 'key-value-input',
-      description: 'A component for managing key-value pairs with validation and duplicate detection',
-      category: 'custom',
+    "key-value-input": {
+      name: "key-value-input",
+      description: "A component for managing key-value pairs with validation and duplicate detection",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1069,11 +1069,11 @@ export interface EventItemComponentProps {
             "input"
       ],
       isMultiFile: true,
-      directory: 'key-value-input',
-      mainFile: 'key-value-input.tsx',
+      directory: "key-value-input",
+      mainFile: "key-value-input.tsx",
       files: [
         {
-          name: 'key-value-input.tsx',
+          name: "key-value-input.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -1316,7 +1316,7 @@ KeyValueInput.displayName = "KeyValueInput";
 `, prefix),
         },
         {
-          name: 'key-value-row.tsx',
+          name: "key-value-row.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -1402,7 +1402,7 @@ KeyValueRow.displayName = "KeyValueRow";
 `, prefix),
         },
         {
-          name: 'types.ts',
+          name: "types.ts",
           content: prefixTailwindClasses(`/**
  * Represents a single key-value pair
  */
@@ -1489,10 +1489,10 @@ export interface KeyValueRowProps {
         }
       ],
     },
-    'api-feature-card': {
-      name: 'api-feature-card',
-      description: 'A card component for displaying API features with icon, title, description, and action button',
-      category: 'custom',
+    "api-feature-card": {
+      name: "api-feature-card",
+      description: "A card component for displaying API features with icon, title, description, and action button",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1502,11 +1502,11 @@ export interface KeyValueRowProps {
             "button"
       ],
       isMultiFile: true,
-      directory: 'api-feature-card',
-      mainFile: 'api-feature-card.tsx',
+      directory: "api-feature-card",
+      mainFile: "api-feature-card.tsx",
       files: [
         {
-          name: 'api-feature-card.tsx',
+          name: "api-feature-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Button } from "../button";
 import { cn } from "../../../lib/utils";
@@ -1647,17 +1647,17 @@ ApiFeatureCard.displayName = "ApiFeatureCard";
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { ApiFeatureCard } from "./api-feature-card";
 export type { ApiFeatureCardProps, Capability } from "./api-feature-card";
 `, prefix),
         }
       ],
     },
-    'endpoint-details': {
-      name: 'endpoint-details',
-      description: 'A component for displaying API endpoint details with copy-to-clipboard and secret field support',
-      category: 'custom',
+    "endpoint-details": {
+      name: "endpoint-details",
+      description: "A component for displaying API endpoint details with copy-to-clipboard and secret field support",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1667,11 +1667,11 @@ export type { ApiFeatureCardProps, Capability } from "./api-feature-card";
             "readable-field"
       ],
       isMultiFile: true,
-      directory: 'endpoint-details',
-      mainFile: 'endpoint-details.tsx',
+      directory: "endpoint-details",
+      mainFile: "endpoint-details.tsx",
       files: [
         {
-          name: 'endpoint-details.tsx',
+          name: "endpoint-details.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { XCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -1901,17 +1901,17 @@ EndpointDetails.displayName = "EndpointDetails";
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { EndpointDetails } from "./endpoint-details";
 export type { EndpointDetailsProps } from "./endpoint-details";
 `, prefix),
         }
       ],
     },
-    'alert-configuration': {
-      name: 'alert-configuration',
-      description: 'A configuration card for alert settings with inline editing modal',
-      category: 'custom',
+    "alert-configuration": {
+      name: "alert-configuration",
+      description: "A configuration card for alert settings with inline editing modal",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1923,11 +1923,11 @@ export type { EndpointDetailsProps } from "./endpoint-details";
             "select"
       ],
       isMultiFile: true,
-      directory: 'alert-configuration',
-      mainFile: 'alert-configuration.tsx',
+      directory: "alert-configuration",
+      mainFile: "alert-configuration.tsx",
       files: [
         {
-          name: 'alert-configuration.tsx',
+          name: "alert-configuration.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Button } from "../button";
 import { Pencil } from "lucide-react";
@@ -2054,7 +2054,7 @@ AlertConfiguration.displayName = "AlertConfiguration";
 `, prefix),
         },
         {
-          name: 'alert-values-modal.tsx',
+          name: "alert-values-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { FormModal } from "../form-modal";
 import {
@@ -2210,7 +2210,7 @@ AlertValuesModal.displayName = "AlertValuesModal";
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { AlertConfiguration } from "./alert-configuration";
 export type { AlertConfigurationProps } from "./alert-configuration";
 
@@ -2220,10 +2220,10 @@ export type { AlertValuesModalProps, AlertValueOption } from "./alert-values-mod
         }
       ],
     },
-    'auto-pay-setup': {
-      name: 'auto-pay-setup',
-      description: 'A setup wizard component for configuring automatic payments with payment method selection',
-      category: 'custom',
+    "auto-pay-setup": {
+      name: "auto-pay-setup",
+      description: "A setup wizard component for configuring automatic payments with payment method selection",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2234,11 +2234,11 @@ export type { AlertValuesModalProps, AlertValueOption } from "./alert-values-mod
             "button"
       ],
       isMultiFile: true,
-      directory: 'auto-pay-setup',
-      mainFile: 'auto-pay-setup.tsx',
+      directory: "auto-pay-setup",
+      mainFile: "auto-pay-setup.tsx",
       files: [
         {
-          name: 'auto-pay-setup.tsx',
+          name: "auto-pay-setup.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../button";
@@ -2356,7 +2356,7 @@ AutoPaySetup.displayName = "AutoPaySetup";
 `, prefix),
         },
         {
-          name: 'types.ts',
+          name: "types.ts",
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
@@ -2406,17 +2406,17 @@ export interface AutoPaySetupProps {
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { AutoPaySetup } from "./auto-pay-setup";
 export type { AutoPaySetupProps } from "./types";
 `, prefix),
         }
       ],
     },
-    'bank-details': {
-      name: 'bank-details',
-      description: 'A component for displaying bank account details with copy-to-clipboard functionality',
-      category: 'custom',
+    "bank-details": {
+      name: "bank-details",
+      description: "A component for displaying bank account details with copy-to-clipboard functionality",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2426,11 +2426,11 @@ export type { AutoPaySetupProps } from "./types";
             "accordion"
       ],
       isMultiFile: true,
-      directory: 'bank-details',
-      mainFile: 'bank-details.tsx',
+      directory: "bank-details",
+      mainFile: "bank-details.tsx",
       files: [
         {
-          name: 'bank-details.tsx',
+          name: "bank-details.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Copy, Check } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -2578,7 +2578,7 @@ function BankDetailRow({
 `, prefix),
         },
         {
-          name: 'types.ts',
+          name: "types.ts",
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
@@ -2624,17 +2624,17 @@ export interface BankDetailsProps {
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { BankDetails } from "./bank-details";
 export type { BankDetailsProps, BankDetailItem } from "./types";
 `, prefix),
         }
       ],
     },
-    'payment-summary': {
-      name: 'payment-summary',
-      description: 'A component for displaying payment summary with line items and total',
-      category: 'custom',
+    "payment-summary": {
+      name: "payment-summary",
+      description: "A component for displaying payment summary with line items and total",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2644,11 +2644,11 @@ export type { BankDetailsProps, BankDetailItem } from "./types";
             "tooltip"
       ],
       isMultiFile: true,
-      directory: 'payment-summary',
-      mainFile: 'payment-summary.tsx',
+      directory: "payment-summary",
+      mainFile: "payment-summary.tsx",
       files: [
         {
-          name: 'payment-summary.tsx',
+          name: "payment-summary.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -2803,7 +2803,7 @@ PaymentSummary.displayName = "PaymentSummary";
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { PaymentSummary } from "./payment-summary";
 export type {
   PaymentSummaryProps,
@@ -2813,10 +2813,10 @@ export type {
         }
       ],
     },
-    'payment-option-card': {
-      name: 'payment-option-card',
-      description: 'A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage.',
-      category: 'custom',
+    "payment-option-card": {
+      name: "payment-option-card",
+      description: "A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage.",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -2827,11 +2827,11 @@ export type {
             "dialog"
       ],
       isMultiFile: true,
-      directory: 'payment-option-card',
-      mainFile: 'payment-option-card.tsx',
+      directory: "payment-option-card",
+      mainFile: "payment-option-card.tsx",
       files: [
         {
-          name: 'payment-option-card.tsx',
+          name: "payment-option-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../button";
@@ -2972,7 +2972,7 @@ PaymentOptionCard.displayName = "PaymentOptionCard";
 `, prefix),
         },
         {
-          name: 'payment-option-card-modal.tsx',
+          name: "payment-option-card-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import {
   Dialog,
@@ -2980,7 +2980,13 @@ import {
   DialogTitle,
 } from "../dialog";
 import { PaymentOptionCard } from "./payment-option-card";
-import type { PaymentOptionCardModalProps } from "./types";
+import type { PaymentOptionCardProps } from "./types";
+
+interface PaymentOptionCardModalProps
+  extends Omit<PaymentOptionCardProps, "onClose"> {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
 /**
  * PaymentOptionCardModal wraps the PaymentOptionCard in a centered Dialog overlay.
@@ -3062,7 +3068,7 @@ PaymentOptionCardModal.displayName = "PaymentOptionCardModal";
 `, prefix),
         },
         {
-          name: 'types.ts',
+          name: "types.ts",
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
@@ -3108,38 +3114,1254 @@ export interface PaymentOptionCardProps {
   /** Additional className for the root element */
   className?: string;
 }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { PaymentOptionCard } from "./payment-option-card";
+export { PaymentOptionCardModal } from "./payment-option-card-modal";
+export type { PaymentOptionCardProps, PaymentOption } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "let-us-drive-card": {
+      name: "let-us-drive-card",
+      description: "A managed service card with pricing, billing badge, 'Show details' link, and CTA for the full-service management section",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "button",
+            "badge"
+      ],
+      isMultiFile: true,
+      directory: "let-us-drive-card",
+      mainFile: "let-us-drive-card.tsx",
+      files: [
+        {
+          name: "let-us-drive-card.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { Badge } from "../badge";
+import type { LetUsDriveCardProps } from "./types";
 
 /**
- * Props for the PaymentOptionCardModal component.
- * Extends the card props with Dialog open/close control, omitting \`onClose\`
- * which is handled internally by the modal.
+ * LetUsDriveCard displays a managed service offering with pricing, billing
+ * frequency badge, and a CTA. Used in the "Let us drive — Full-service
+ * management" section of the pricing page.
+ *
+ * Supports a "free/discount" state where the original price is shown with
+ * strikethrough and a green label (e.g., "FREE") replaces it.
+ *
+ * @example
+ * \`\`\`tsx
+ * <LetUsDriveCard
+ *   title="Account Manager"
+ *   price="15,000"
+ *   period="/month"
+ *   billingBadge="Annually"
+ *   description="One expert who knows your business. And moves it forward."
+ *   onShowDetails={() => console.log("details")}
+ *   onCtaClick={() => console.log("talk")}
+ * />
+ * \`\`\`
  */
-export interface PaymentOptionCardModalProps
-  extends Omit<PaymentOptionCardProps, "onClose"> {
-  /** Whether the modal is open */
-  open: boolean;
-  /** Callback when modal should open or close */
-  onOpenChange: (open: boolean) => void;
+const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
+  (
+    {
+      title,
+      price,
+      period,
+      startsAt = false,
+      billingBadge,
+      description,
+      freeLabel,
+      showDetailsLabel = "Show details",
+      ctaLabel = "Talk to us",
+      onShowDetails,
+      onCtaClick,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5",
+          className
+        )}
+        {...props}
+      >
+        {/* Header: title + optional billing badge */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold text-semantic-text-primary m-0">
+            {title}
+          </h3>
+          {billingBadge && (
+            <Badge
+              size="sm"
+              className="bg-semantic-info-surface text-semantic-info-primary font-normal"
+            >
+              {billingBadge}
+            </Badge>
+          )}
+        </div>
+
+        {/* Price section */}
+        <div className="flex flex-col gap-2.5">
+          {startsAt && (
+            <span className="text-xs text-semantic-text-muted tracking-[0.048px]">
+              Starts at
+            </span>
+          )}
+          <div className="flex gap-1 items-end">
+            {freeLabel ? (
+              <span className="text-[28px] font-semibold leading-[36px]">
+                <span className="line-through text-semantic-text-muted">
+                  ₹{price}
+                </span>{" "}
+                <span className="text-semantic-success-primary">
+                  {freeLabel}
+                </span>
+              </span>
+            ) : (
+              <span className="text-[28px] font-semibold leading-[36px] text-semantic-text-primary">
+                ₹{price}
+              </span>
+            )}
+            {period && (
+              <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
+                {period}
+              </span>
+            )}
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-semantic-text-secondary tracking-[0.035px] m-0">
+            {description}
+          </p>
+        </div>
+
+        {/* Actions: Show details link + CTA button */}
+        <div className="flex flex-col gap-3 w-full">
+          {onShowDetails && (
+            <Button
+              variant="link"
+              className="text-semantic-text-link p-0 h-auto min-w-0 justify-start"
+              onClick={onShowDetails}
+            >
+              {showDetailsLabel}
+            </Button>
+          )}
+          <Button variant="outline" className="w-full" onClick={onCtaClick}>
+            {ctaLabel}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+);
+
+LetUsDriveCard.displayName = "LetUsDriveCard";
+
+export { LetUsDriveCard };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * Props for the LetUsDriveCard component.
+ */
+export interface LetUsDriveCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Service title (e.g., "Dedicated Onboarding", "Account Manager") */
+  title: string;
+  /** Price amount as formatted string (e.g., "20,000", "15,000") */
+  price: string;
+  /** Billing period label (e.g., "/one-time fee", "/month") */
+  period?: string;
+  /** Show "Starts at" prefix above the price */
+  startsAt?: boolean;
+  /** Billing frequency badge text (e.g., "Annually", "Quarterly") */
+  billingBadge?: string;
+  /** Service description text */
+  description: string;
+  /** When provided, price is shown with strikethrough and this label (e.g., "FREE") is displayed in green */
+  freeLabel?: string;
+  /** Text for the details link (default: "Show details") */
+  showDetailsLabel?: string;
+  /** CTA button text (default: "Talk to us") */
+  ctaLabel?: string;
+  /** Callback when "Show details" link is clicked */
+  onShowDetails?: () => void;
+  /** Callback when CTA button is clicked */
+  onCtaClick?: () => void;
 }
 `, prefix),
         },
         {
-          name: 'index.ts',
-          content: prefixTailwindClasses(`export { PaymentOptionCard } from "./payment-option-card";
-export { PaymentOptionCardModal } from "./payment-option-card-modal";
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { LetUsDriveCard } from "./let-us-drive-card";
+export type { LetUsDriveCardProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "power-up-card": {
+      name: "power-up-card",
+      description: "An add-on service card with icon, title, pricing, description, and CTA button for the power-ups section",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "button"
+      ],
+      isMultiFile: true,
+      directory: "power-up-card",
+      mainFile: "power-up-card.tsx",
+      files: [
+        {
+          name: "power-up-card.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import type { PowerUpCardProps } from "./types";
+
+/**
+ * PowerUpCard displays an add-on service with icon, pricing, description,
+ * and a CTA button. Used in the "Power-ups and charges" section of
+ * the pricing page.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PowerUpCard
+ *   icon={<PhoneCall className="size-6" />}
+ *   title="Auto-Dialer"
+ *   price="Starts @ ₹700/user/month"
+ *   description="Available for SUV & Enterprise plans as an add-on per user."
+ *   onCtaClick={() => console.log("clicked")}
+ * />
+ * \`\`\`
+ */
+const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
+  (
+    {
+      icon,
+      title,
+      price,
+      description,
+      ctaLabel = "Talk to us",
+      onCtaClick,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col justify-between gap-8 rounded-md border border-semantic-border-layout bg-card p-5",
+          className
+        )}
+        {...props}
+      >
+        {/* Content */}
+        <div className="flex flex-col gap-4">
+          {/* Icon + title/price row */}
+          <div className="flex gap-4 items-start">
+            {icon && (
+              <div className="flex items-center justify-center size-[47px] rounded bg-[var(--color-info-25)] shrink-0">
+                {icon}
+              </div>
+            )}
+            <div className="flex flex-col gap-2 min-w-0">
+              <h3 className="text-base font-semibold text-semantic-text-primary m-0 leading-normal">
+                {title}
+              </h3>
+              <p className="text-sm text-semantic-text-primary tracking-[0.035px] m-0 leading-normal">
+                {price}
+              </p>
+            </div>
+          </div>
+
+          {/* Description */}
+          <p className="text-sm text-semantic-text-secondary tracking-[0.035px] m-0 leading-normal">
+            {description}
+          </p>
+        </div>
+
+        {/* CTA */}
+        <Button variant="outline" className="w-full" onClick={onCtaClick}>
+          {ctaLabel}
+        </Button>
+      </div>
+    );
+  }
+);
+
+PowerUpCard.displayName = "PowerUpCard";
+
+export { PowerUpCard };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * Props for the PowerUpCard component.
+ */
+export interface PowerUpCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Icon or illustration displayed in the tinted container */
+  icon?: React.ReactNode;
+  /** Service title (e.g., "Truecaller business") */
+  title: string;
+  /** Pricing text (e.g., "Starts @ ₹30,000/month") */
+  price: string;
+  /** Description explaining the service value */
+  description: string;
+  /** CTA button label (default: "Talk to us") */
+  ctaLabel?: string;
+  /** Callback when CTA button is clicked */
+  onCtaClick?: () => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { PowerUpCard } from "./power-up-card";
+export type { PowerUpCardProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "pricing-card": {
+      name: "pricing-card",
+      description: "A pricing tier card with plan name, pricing, feature checklist, CTA button, and optional popularity badge and addon footer",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button",
+            "badge"
+      ],
+      isMultiFile: true,
+      directory: "pricing-card",
+      mainFile: "pricing-card.tsx",
+      files: [
+        {
+          name: "pricing-card.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { Badge } from "../badge";
+import { CircleCheck } from "lucide-react";
+import type { PricingCardProps } from "./types";
+
+/**
+ * PricingCard displays a plan tier with pricing, features, and a CTA button.
+ * Supports current-plan state (outlined button), popularity badge, and an
+ * optional add-on footer.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PricingCard
+ *   planName="Compact"
+ *   price="2,5000"
+ *   planDetails="3 Users | 12 Month plan"
+ *   description="For small teams that need a WhatsApp-first plan"
+ *   headerBgColor="#d7eae9"
+ *   features={["WhatsApp Campaigns", "Missed Call Tracking"]}
+ *   onCtaClick={() => console.log("selected")}
+ *   onFeatureDetails={() => console.log("details")}
+ * />
+ * \`\`\`
+ */
+const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
+  (
+    {
+      planName,
+      price,
+      period = "/Month",
+      planDetails,
+      planIcon,
+      description,
+      headerBgColor,
+      features = [],
+      isCurrentPlan = false,
+      showPopularBadge = false,
+      badgeText = "MOST POPULAR",
+      ctaText,
+      onCtaClick,
+      onFeatureDetails,
+      addon,
+      usageDetails,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const buttonText =
+      ctaText || (isCurrentPlan ? "Current plan" : "Select plan");
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col gap-6 rounded-t-xl rounded-b-lg border border-semantic-border-layout p-4",
+          className
+        )}
+        {...props}
+      >
+        {/* Header */}
+        <div
+          className="flex flex-col gap-4 rounded-t-xl rounded-b-lg p-4"
+          style={
+            headerBgColor ? { backgroundColor: headerBgColor } : undefined
+          }
+        >
+          {/* Plan name + badge */}
+          <div className="flex items-center gap-4">
+            <h3 className="text-xl font-semibold text-semantic-text-primary m-0">
+              {planName}
+            </h3>
+            {showPopularBadge && (
+              <Badge
+                size="sm"
+                className="bg-[#e3fdfe] text-[#119ba8] uppercase tracking-wider font-semibold"
+              >
+                {badgeText}
+              </Badge>
+            )}
+          </div>
+
+          {/* Price */}
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-end gap-1">
+              <span className="text-4xl leading-[44px] text-semantic-text-primary">
+                ₹{price}
+              </span>
+              <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
+                {period}
+              </span>
+            </div>
+            {planDetails && (
+              <p className="text-sm tracking-[0.035px] text-semantic-text-primary m-0">
+                {planDetails}
+              </p>
+            )}
+          </div>
+
+          {/* Plan icon */}
+          {planIcon && <div className="size-[30px]">{planIcon}</div>}
+
+          {/* Description */}
+          {description && (
+            <p className="text-sm text-semantic-text-secondary tracking-[0.035px] m-0">
+              {description}
+            </p>
+          )}
+
+          {/* Feature details link + CTA */}
+          <div className="flex flex-col gap-3.5 w-full">
+            {onFeatureDetails && (
+              <div className="flex justify-center">
+                <Button
+                  variant="link"
+                  className="text-semantic-text-link p-0 h-auto min-w-0"
+                  onClick={onFeatureDetails}
+                >
+                  Feature details
+                </Button>
+              </div>
+            )}
+            <Button
+              variant={isCurrentPlan ? "outline" : "default"}
+              className="w-full"
+              onClick={onCtaClick}
+            >
+              {buttonText}
+            </Button>
+          </div>
+        </div>
+
+        {/* Features */}
+        {features.length > 0 && (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm font-semibold text-semantic-text-primary tracking-[0.014px] uppercase m-0">
+              Includes
+            </p>
+            <div className="flex flex-col gap-4">
+              {features.map((feature, index) => {
+                const text =
+                  typeof feature === "string" ? feature : feature.text;
+                const isBold =
+                  typeof feature !== "string" && feature.bold;
+                return (
+                  <div key={index} className="flex items-start gap-2">
+                    <CircleCheck className="size-[18px] text-semantic-text-secondary shrink-0 mt-0.5" />
+                    <span
+                      className={cn(
+                        "text-sm text-semantic-text-secondary tracking-[0.035px]",
+                        isBold && "font-semibold"
+                      )}
+                    >
+                      {text}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Addon */}
+        {addon && (
+          <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
+            {addon.icon && (
+              <div className="size-5 shrink-0">{addon.icon}</div>
+            )}
+            <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+              {addon.text}
+            </span>
+          </div>
+        )}
+
+        {/* Usage Details */}
+        {usageDetails && usageDetails.length > 0 && (
+          <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
+            {usageDetails.map((detail, index) => (
+              <div key={index} className="flex items-start gap-2">
+                <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+                <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                  <strong>{detail.label}:</strong> {detail.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+PricingCard.displayName = "PricingCard";
+
+export { PricingCard };
+`, prefix),
+        },
+        {
+          name: "plan-icons.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+interface PlanIconProps extends React.SVGAttributes<SVGElement> {
+  className?: string;
+}
+
+const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
+  ({ className, ...props }, ref) => (
+    <svg
+      ref={ref}
+      className={className}
+      viewBox="0 0 30 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <ellipse cx="25.2" cy="14.72" rx="3.33" ry="3.03" fill="white" />
+      <path
+        d="M25.12 11.21c-1.95 0-3.5 1.56-3.5 3.5 0 1.95 1.55 3.5 3.5 3.5 1.94 0 3.5-1.55 3.5-3.5 0-1.94-1.56-3.5-3.5-3.5zm0 5.45c-1.09 0-2.02-.93-2.02-2.02s.93-2.02 2.02-2.02 2.02.93 2.02 2.02-.93 2.02-2.02 2.02z"
+        stroke="#2BBAC8"
+        strokeLinejoin="round"
+      />
+      <ellipse cx="4.09" cy="14.72" rx="3.33" ry="3.03" fill="white" />
+      <path
+        d="M4.26 11.21c-1.95 0-3.5 1.56-3.5 3.5 0 1.95 1.55 3.5 3.5 3.5 1.94 0 3.5-1.55 3.5-3.5 0-1.94-1.56-3.5-3.5-3.5zm0 5.45c-1.09 0-2.02-.93-2.02-2.02s.93-2.02 2.02-2.02 2.02.93 2.02 2.02-.93 2.02-2.02 2.02z"
+        stroke="#2BBAC8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M28.85 12.38c-.08-.16-.31-.31-.39-.47-.16-.39-.16-1.09-.23-1.48-.31-1.17-1.17-2.02-2.02-2.72-1.64-1.25-3.66-2.57-5.45-3.74C18 2.11 15.85.78 12.35.63c-1.79-.08-4.51 0-6.23.23-.15 0-1.4.31-1.24.62 1.25.23.55.93.24 1.63-.31.62-1.09 2.49-1.64 2.8-.15 0-.23.08-.31 0-.23-.31.16-1.4.31-1.71.16-.47.86-1.4.93-1.79 0-.31 0-.7-.39-.62L2.62 4.75c-.62 1.17-.62 2.18-.78 3.42-.15 1.56-1.09 2.88-1.24 4.36 0 .16 0 .39 0 .54.08.31.23.31.47.08.54-1.17 1.71-2.02 3.11-2.02 1.4 0 3.5 1.56 3.5 3.5s-.08 1.86-.23 2.25l.85-.08h11.75c.78-.08 1.4-.47 1.56-1.24 0-1.79 1.56-3.35 3.5-3.35 1.95 0 3.5 1.56 3.5 3.5 0 1.95-.16.93 0 1.09 1.09-.54.86-2.57.23-3.35v-.08z"
+        fill="white"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10.02 1.41c3.81-.23 8.56 1.4 11.44 3.89 2.88 2.49 1.79 1.64.16 1.79-3.58-.31-7.16-.62-10.74-.93-.86 0-2.65 0-3.27-.47-.62-.47-.54-1.87-.23-2.72.54-1.25 1.4-1.48 2.64-1.56z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+);
+CompactCarIcon.displayName = "CompactCarIcon";
+
+const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
+  ({ className, ...props }, ref) => (
+    <svg
+      ref={ref}
+      className={className}
+      viewBox="0 0 31 13"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <ellipse cx="24.98" cy="9.51" rx="2.19" ry="2.56" fill="white" />
+      <path
+        d="M24.8 7.16c-1.33 0-2.38 1.09-2.38 2.45 0 1.37 1.05 2.46 2.38 2.46 1.33 0 2.38-1.09 2.38-2.46 0-1.36-1.05-2.45-2.38-2.45zm0 3.82c-.74 0-1.38-.66-1.38-1.42 0-.76.64-1.42 1.38-1.42.74 0 1.38.66 1.38 1.42 0 .76-.64 1.42-1.38 1.42z"
+        stroke="#2BBAC8"
+        strokeLinejoin="round"
+      />
+      <ellipse cx="6.33" cy="9.51" rx="2.19" ry="2.56" fill="white" />
+      <path
+        d="M6.32 7.16c-1.32 0-2.38 1.09-2.38 2.45 0 1.37 1.06 2.46 2.38 2.46 1.33 0 2.39-1.09 2.39-2.46 0-1.36-1.06-2.45-2.39-2.45zm0 3.82c-.74 0-1.38-.66-1.38-1.42 0-.76.64-1.42 1.38-1.42.74 0 1.38.66 1.38 1.42 0 .76-.64 1.42-1.38 1.42z"
+        stroke="#2BBAC8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M29.7 7.79l-.24.81c0 .08-.16.4-.23.49-.24.16-1.97.57-2.05.49.24-1.22-.47-2.6-1.57-3 -2.05-.81-4.09 1.05-3.54 3.24H8.99v-.81c0-.32-.39-1.05-.55-1.3C7.03 5.6 4.27 6.33 3.8 8.6c-.47 2.27 0 .49 0 .49l-2.28-.41C.81 8.27.49 7.14.73 6.33c.23-.81.39-.57.39-.73.08-.49-.16-1.62.16-2.03.31-.4 1.97-.4 2.44-.57 1.42-.4 2.76-1.22 4.17-1.62 2.91-.89 6.61-1.05 9.53 0 2.91 1.05 3.7 1.95 5.51 2.51 1.81.57 4.09.65 5.83 1.62 1.73.97.62 1.05.93 1.78v.57z"
+        fill="white"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.48 1.38l.63 2.6 4.8.16c0-.32 0-.64.32-.89-1.58-1.38-3.78-1.78-5.83-1.87h.08z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.99 1.87s-.63.97-.63 1.05c0 .16.16.65.24.81l4.41.16-.39-2.51c-.87 0-1.81 0-2.68.16-.87.16-.87.16-.95.24v.09z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.08 3.81h1.18l1.26-1.78c-.47.32-2.2.81-2.36 1.3-.16.49 0 .32 0 .49h-.08z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+);
+SedanCarIcon.displayName = "SedanCarIcon";
+
+const SuvCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
+  ({ className, ...props }, ref) => (
+    <svg
+      ref={ref}
+      className={className}
+      viewBox="0 0 32 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <ellipse cx="25.57" cy="11.14" rx="2.65" ry="2.78" fill="white" />
+      <ellipse cx="9.12" cy="11.14" rx="2.89" ry="2.78" fill="white" />
+      <path
+        d="M25.32 8.18c-1.61 0-2.9 1.3-2.9 2.94 0 1.63 1.29 2.93 2.9 2.93 1.62 0 2.9-1.3 2.9-2.93 0-1.64-1.28-2.94-2.9-2.94zm0 4.57c-.9 0-1.68-.78-1.68-1.7 0-.91.78-1.69 1.68-1.69.9 0 1.68.78 1.68 1.7 0 .91-.78 1.69-1.68 1.69z"
+        stroke="#2BBAC8"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <ellipse cx="9.14" cy="11.09" rx="1.4" ry="1.37" fill="white" />
+      <path
+        d="M8.96 8.18c-1.61 0-2.9 1.3-2.9 2.94 0 1.63 1.29 2.93 2.9 2.93 1.61 0 2.9-1.3 2.9-2.93 0-1.64-1.29-2.94-2.9-2.94zm0 4.57c-.9 0-1.68-.78-1.68-1.7 0-.91.78-1.69 1.68-1.69.9 0 1.68.78 1.68 1.7 0 .91-.78 1.69-1.68 1.69z"
+        stroke="#2BBAC8"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M30.6 10.78l-.26.99c-.3 1-.36.56-1.09.64.48-3.15-2.66-5.79-5.13-3.7-.43.37-1.18 1.52-1.18 2.1v1.5H12.06c.33-2.62-1.84-5.01-4.24-4.06-1.53.61-2.13 2.39-1.98 4.06-1.61-.14-3.18.68-3.39-1.7-.05-.6.07-1.21-.04-1.8-.65-.34-1.63.37-1.75-.77C.57 7.13.59 4.97.67 4.03c.03-.33.06-.79.43-.87.28-.06 1.83-.08 1.83.26v1.49l.29-.06c.67-1.75.59-3.97 2.76-4.15 3.76-.3 7.87.23 11.67.02 1.75.22 4.02 3.02 5.39 4.18 1.24.15 2.5.24 3.73.44.5.09 1.95.3 2.31.56.7.49.57 2.79.67 2.91.02.03.37.04.56.26.19.23.12.47.28.67v1.03z"
+        fill="white"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14.32 1.53c.25 1.41.16 2.98.61 4.32h6.22l.1-.21c-.48-1.34-1.41-2.72-2.51-3.53-.15-.11-.86-.59-.98-.59h-3.44z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.71 1.53l-.19 4.32h4.33c-.17-1.3-.17-2.78-.38-4.06-.02-.12-.04-.2-.14-.26H9.71z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.58 5.84l.29-4.07-.09-.31c-1.1.07-2.89-.32-3.46.95-.23.51-.74 2.67-.74 3.2 0 .12.01.13.1.21h3.91v-.01z"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+);
+SuvCarIcon.displayName = "SuvCarIcon";
+
+export { CompactCarIcon, SedanCarIcon, SuvCarIcon };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * Add-on info displayed at the bottom of the pricing card.
+ */
+export interface PricingCardAddon {
+  /** Icon rendered in the addon section */
+  icon?: React.ReactNode;
+  /** Addon description text */
+  text: string;
+}
+
+/**
+ * A single usage detail item (e.g., "Usage: Includes 2,000 AI conversations/month").
+ */
+export interface UsageDetail {
+  /** Bold label (e.g., "Usage") */
+  label: string;
+  /** Value text (e.g., "Includes 2,000 AI conversations/month") */
+  value: string;
+}
+
+/**
+ * A feature can be a plain string or an object with bold styling.
+ */
+export type PricingCardFeature = string | { text: string; bold?: boolean };
+
+/**
+ * Props for the PricingCard component.
+ */
+export interface PricingCardProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Plan name displayed in the header (e.g., "Compact", "Sedan", "SUV") */
+  planName: string;
+  /** Price amount as formatted string (e.g., "2,5000") */
+  price: string;
+  /** Billing period label (default: "/Month") */
+  period?: string;
+  /** Plan detail line (e.g., "3 Users | 12 Month plan") */
+  planDetails?: React.ReactNode;
+  /** Plan icon or illustration */
+  planIcon?: React.ReactNode;
+  /** Plan description text */
+  description?: string;
+  /** Background color for the header section */
+  headerBgColor?: string;
+  /** List of included features shown with checkmarks. Supports bold items via object form. */
+  features?: PricingCardFeature[];
+  /** Whether this is the currently active plan (shows outlined button) */
+  isCurrentPlan?: boolean;
+  /** Show a popularity badge next to the plan name */
+  showPopularBadge?: boolean;
+  /** Custom badge text (defaults to "MOST POPULAR") */
+  badgeText?: string;
+  /** Custom CTA button text (overrides default "Select plan" / "Current plan") */
+  ctaText?: string;
+  /** Callback when CTA button is clicked */
+  onCtaClick?: () => void;
+  /** Callback when "Feature details" link is clicked */
+  onFeatureDetails?: () => void;
+  /** Add-on info displayed at the bottom of the card */
+  addon?: PricingCardAddon;
+  /** Usage details displayed in a bulleted list at the bottom (e.g., AIO plan) */
+  usageDetails?: UsageDetail[];
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { PricingCard } from "./pricing-card";
+export { CompactCarIcon, SedanCarIcon, SuvCarIcon } from "./plan-icons";
 export type {
-  PaymentOptionCardProps,
-  PaymentOptionCardModalProps,
-  PaymentOption,
+  PricingCardProps,
+  PricingCardAddon,
+  PricingCardFeature,
+  UsageDetail,
 } from "./types";
 `, prefix),
         }
       ],
     },
-    'wallet-topup': {
-      name: 'wallet-topup',
-      description: 'A component for wallet top-up with amount selection and coupon support',
-      category: 'custom',
+    "pricing-page": {
+      name: "pricing-page",
+      description: "A full pricing page layout composing plan-type tabs, billing toggle, pricing cards grid, power-ups section, and let-us-drive managed services section",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button",
+            "page-header",
+            "pricing-toggle",
+            "pricing-card",
+            "power-up-card",
+            "let-us-drive-card"
+      ],
+      isMultiFile: true,
+      directory: "pricing-page",
+      mainFile: "pricing-page.tsx",
+      files: [
+        {
+          name: "pricing-page.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { PageHeader } from "../page-header";
+import { Button } from "../button";
+import { PricingToggle } from "../pricing-toggle/pricing-toggle";
+import { PricingCard } from "../pricing-card/pricing-card";
+import { PowerUpCard } from "../power-up-card/power-up-card";
+import { LetUsDriveCard } from "../let-us-drive-card/let-us-drive-card";
+import { ExternalLink } from "lucide-react";
+import type { PricingPageProps } from "./types";
+
+/**
+ * PricingPage composes all plan-selection sub-components into a full
+ * page layout: header, plan-type tabs with billing toggle, pricing
+ * cards grid, power-ups section, and let-us-drive section.
+ *
+ * Supports controlled or uncontrolled tab / billing state.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PricingPage
+ *   tabs={[
+ *     { label: "Team-Led Plans", value: "team" },
+ *     { label: "Go-AI First", value: "ai" },
+ *   ]}
+ *   planCards={compactCard, sedanCard, suvCard}
+ *   powerUpCards={[truecaller, tollFree, autoDialer]}
+ *   letUsDriveCards={[onboarding, accountMgr, managed]}
+ * />
+ * \`\`\`
+ */
+const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
+  (
+    {
+      title = "Select business plan",
+      headerActions,
+      tabs = [],
+      activeTab: controlledTab,
+      onTabChange,
+      showBillingToggle = false,
+      billingPeriod: controlledBilling,
+      onBillingPeriodChange,
+      planCards = [],
+      powerUpCards = [],
+      powerUpsTitle = "Power-ups and charges",
+      featureComparisonText = "See full feature comparison",
+      onFeatureComparisonClick,
+      letUsDriveCards = [],
+      letUsDriveTitle = "Let us drive — Full-service management",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    // Internal state for uncontrolled mode
+    const [internalTab, setInternalTab] = React.useState(
+      tabs[0]?.value ?? ""
+    );
+    const [internalBilling, setInternalBilling] = React.useState<
+      "monthly" | "yearly"
+    >("monthly");
+
+    const currentTab = controlledTab ?? internalTab;
+    const currentBilling = controlledBilling ?? internalBilling;
+
+    const handleTabChange = (value: string) => {
+      if (!controlledTab) setInternalTab(value);
+      onTabChange?.(value);
+    };
+
+    const handleBillingChange = (period: "monthly" | "yearly") => {
+      if (!controlledBilling) setInternalBilling(period);
+      onBillingPeriodChange?.(period);
+    };
+
+    const hasPowerUps = powerUpCards.length > 0;
+    const hasLetUsDrive = letUsDriveCards.length > 0;
+
+    return (
+      <div
+        ref={ref}
+        className={cn("flex flex-col bg-card", className)}
+        {...props}
+      >
+        {/* ───── Header ───── */}
+        <PageHeader
+          title={title}
+          actions={headerActions}
+          layout="horizontal"
+        />
+
+        {/* ───── Plan Selection Area ───── */}
+        <div className="flex flex-col gap-6 px-6 py-6">
+          {/* Tabs + billing toggle */}
+          {tabs.length > 0 && (
+            <PricingToggle
+              tabs={tabs}
+              activeTab={currentTab}
+              onTabChange={handleTabChange}
+              showBillingToggle={showBillingToggle}
+              billingPeriod={currentBilling}
+              onBillingPeriodChange={handleBillingChange}
+            />
+          )}
+
+          {/* Plan cards grid */}
+          {planCards.length > 0 && (
+            <div
+              className={cn(
+                "grid gap-6 justify-center",
+                planCards.length <= 2
+                  ? "grid-cols-1 md:grid-cols-2 max-w-[960px] mx-auto"
+                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              )}
+            >
+              {planCards.map((cardProps, index) => (
+                <PricingCard key={index} {...cardProps} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ───── Power-ups Section ───── */}
+        {hasPowerUps && (
+          <div className="bg-semantic-bg-ui px-6 py-[60px]">
+            <div className="flex flex-col gap-4">
+              {/* Section header */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
+                  {powerUpsTitle}
+                </h2>
+                {onFeatureComparisonClick && (
+                  <Button
+                    variant="link"
+                    className="text-semantic-text-link p-0 h-auto min-w-0 gap-1"
+                    onClick={onFeatureComparisonClick}
+                  >
+                    {featureComparisonText}
+                    <ExternalLink className="size-3.5" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Power-up cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {powerUpCards.map((cardProps, index) => (
+                  <PowerUpCard key={index} {...cardProps} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ───── Let Us Drive Section ───── */}
+        {hasLetUsDrive && (
+          <div className="bg-card px-6 py-[60px]">
+            <div className="flex flex-col gap-4">
+              {/* Section header */}
+              <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
+                {letUsDriveTitle}
+              </h2>
+
+              {/* Service cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {letUsDriveCards.map((cardProps, index) => (
+                  <LetUsDriveCard key={index} {...cardProps} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+PricingPage.displayName = "PricingPage";
+
+export { PricingPage };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+import type { PricingCardProps } from "../pricing-card/types";
+import type { PowerUpCardProps } from "../power-up-card/types";
+import type { LetUsDriveCardProps } from "../let-us-drive-card/types";
+import type { PricingToggleTab } from "../pricing-toggle/types";
+
+export type { PricingToggleTab };
+
+/**
+ * Props for the PricingPage component.
+ *
+ * PricingPage is a layout compositor that orchestrates PricingToggle,
+ * PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into
+ * the full plan selection page.
+ */
+export interface PricingPageProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /* ───── Header ───── */
+
+  /** Page title (default: "Select business plan") */
+  title?: string;
+  /** Actions rendered on the right side of the header (e.g., number-type dropdown) */
+  headerActions?: React.ReactNode;
+
+  /* ───── Tabs & Billing ───── */
+
+  /** Plan type tabs shown in the pill selector */
+  tabs?: PricingToggleTab[];
+  /** Currently active tab value (controlled). Falls back to first tab when unset. */
+  activeTab?: string;
+  /** Callback when the active tab changes */
+  onTabChange?: (value: string) => void;
+  /** Whether to show the monthly/yearly billing toggle */
+  showBillingToggle?: boolean;
+  /** Current billing period (controlled) */
+  billingPeriod?: "monthly" | "yearly";
+  /** Callback when the billing period changes */
+  onBillingPeriodChange?: (period: "monthly" | "yearly") => void;
+
+  /* ───── Plan Cards ───── */
+
+  /** Array of plan card props to render in the main pricing grid */
+  planCards?: PricingCardProps[];
+
+  /* ───── Power-ups Section ───── */
+
+  /** Array of power-up card props */
+  powerUpCards?: PowerUpCardProps[];
+  /** Power-ups section heading (default: "Power-ups and charges") */
+  powerUpsTitle?: string;
+  /** Feature comparison link text (default: "See full feature comparison") */
+  featureComparisonText?: string;
+  /** Callback when the feature comparison link is clicked */
+  onFeatureComparisonClick?: () => void;
+
+  /* ───── Let Us Drive Section ───── */
+
+  /** Array of let-us-drive card props */
+  letUsDriveCards?: LetUsDriveCardProps[];
+  /** Let-us-drive section heading (default: "Let us drive — Full-service management") */
+  letUsDriveTitle?: string;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { PricingPage } from "./pricing-page";
+export type { PricingPageProps, PricingToggleTab } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "pricing-toggle": {
+      name: "pricing-toggle",
+      description: "A plan type tab selector with billing period toggle for pricing pages. Pill-shaped tabs switch plan categories, and an optional switch toggles between monthly/yearly billing.",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "@radix-ui/react-switch@^1.2.6"
+      ],
+      internalDependencies: [
+            "switch"
+      ],
+      isMultiFile: true,
+      directory: "pricing-toggle",
+      mainFile: "pricing-toggle.tsx",
+      files: [
+        {
+          name: "pricing-toggle.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Switch } from "../switch";
+import type { PricingToggleProps } from "./types";
+
+/**
+ * PricingToggle provides a plan type tab selector with an optional
+ * billing period toggle. The pill-shaped tabs switch between plan
+ * categories (e.g. "Team-Led Plans" vs "Go-AI First"), and the
+ * billing toggle switches between monthly/yearly pricing.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PricingToggle
+ *   tabs={[
+ *     { label: "Team-Led Plans", value: "team" },
+ *     { label: "Go-AI First", value: "ai" },
+ *   ]}
+ *   activeTab="team"
+ *   onTabChange={(value) => setActiveTab(value)}
+ *   showBillingToggle
+ *   billingPeriod="monthly"
+ *   onBillingPeriodChange={(period) => setBillingPeriod(period)}
+ * />
+ * \`\`\`
+ */
+const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
+  (
+    {
+      tabs,
+      activeTab,
+      onTabChange,
+      showBillingToggle = false,
+      billingPeriod = "monthly",
+      onBillingPeriodChange,
+      monthlyLabel = "Monthly",
+      yearlyLabel = "Yearly (Save 20%)",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const isYearly = billingPeriod === "yearly";
+
+    return (
+      <div
+        ref={ref}
+        className={cn("flex flex-col items-center gap-4", className)}
+        {...props}
+      >
+        {/* Plan type tabs */}
+        <div className="inline-flex items-start gap-1 rounded-full bg-semantic-bg-ui p-1">
+          {tabs.map((tab) => {
+            const isActive = tab.value === activeTab;
+            return (
+              <button
+                key={tab.value}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={cn(
+                  "h-10 shrink-0 rounded-full px-4 py-1 text-base transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-brand focus-visible:ring-offset-2",
+                  isActive
+                    ? "bg-semantic-brand font-semibold text-white shadow-sm"
+                    : "font-normal text-semantic-text-primary"
+                )}
+                onClick={() => onTabChange(tab.value)}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Billing period toggle */}
+        {showBillingToggle && (
+          <div className="flex items-center gap-4">
+            <span
+              className={cn(
+                "text-sm font-semibold tracking-[0.014px]",
+                !isYearly
+                  ? "text-semantic-text-secondary"
+                  : "text-semantic-text-muted"
+              )}
+            >
+              {monthlyLabel}
+            </span>
+            <Switch
+              size="sm"
+              checked={isYearly}
+              onCheckedChange={(checked) =>
+                onBillingPeriodChange?.(checked ? "yearly" : "monthly")
+              }
+            />
+            <span
+              className={cn(
+                "text-sm font-semibold tracking-[0.014px]",
+                isYearly
+                  ? "text-semantic-text-secondary"
+                  : "text-semantic-text-muted"
+              )}
+            >
+              {yearlyLabel}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+PricingToggle.displayName = "PricingToggle";
+
+export { PricingToggle };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`/** A single tab option in the plan tab selector */
+export interface PricingToggleTab {
+  /** Display label for the tab */
+  label: string;
+  /** Unique value identifier for the tab */
+  value: string;
+}
+
+export interface PricingToggleProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Array of tab options for the plan type selector */
+  tabs: PricingToggleTab[];
+  /** Currently active tab value (controlled) */
+  activeTab: string;
+  /** Callback when the active tab changes */
+  onTabChange: (value: string) => void;
+  /** Whether to show the billing period toggle below the tabs */
+  showBillingToggle?: boolean;
+  /** Current billing period — "monthly" or "yearly" (controlled) */
+  billingPeriod?: "monthly" | "yearly";
+  /** Callback when the billing period changes */
+  onBillingPeriodChange?: (period: "monthly" | "yearly") => void;
+  /** Left label for the billing toggle (default: "Monthly") */
+  monthlyLabel?: string;
+  /** Right label for the billing toggle (default: "Yearly (Save 20%)") */
+  yearlyLabel?: string;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { PricingToggle } from "./pricing-toggle";
+export type { PricingToggleProps, PricingToggleTab } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "wallet-topup": {
+      name: "wallet-topup",
+      description: "A component for wallet top-up with amount selection and coupon support",
+      category: "custom",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -3151,11 +4373,11 @@ export type {
             "input"
       ],
       isMultiFile: true,
-      directory: 'wallet-topup',
-      mainFile: 'wallet-topup.tsx',
+      directory: "wallet-topup",
+      mainFile: "wallet-topup.tsx",
       files: [
         {
-          name: 'wallet-topup.tsx',
+          name: "wallet-topup.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Ticket } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -3601,7 +4823,7 @@ WalletTopup.displayName = "WalletTopup";
 `, prefix),
         },
         {
-          name: 'types.ts',
+          name: "types.ts",
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
@@ -3727,7 +4949,7 @@ export interface WalletTopupProps {
 `, prefix),
         },
         {
-          name: 'index.ts',
+          name: "index.ts",
           content: prefixTailwindClasses(`export { WalletTopup } from "./wallet-topup";
 export type { WalletTopupProps, AmountOption } from "./types";
 `, prefix),

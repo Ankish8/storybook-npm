@@ -708,20 +708,20 @@ function generateCategoryFile(category, components) {
       const filesArray = comp.files.map(file => {
         const escapedContent = escapeForTemplate(file.content)
         return `        {
-          name: '${file.name}',
+          name: ${JSON.stringify(file.name)},
           content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
         }`
       }).join(',\n')
 
-      return `    '${comp.name}': {
-      name: '${comp.name}',
-      description: '${comp.description}',
-      category: '${comp.category}',
+      return `    ${JSON.stringify(comp.name)}: {
+      name: ${JSON.stringify(comp.name)},
+      description: ${JSON.stringify(comp.description)},
+      category: ${JSON.stringify(comp.category)},
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
-      directory: '${comp.directory}',
-      mainFile: '${comp.mainFile}',
+      directory: ${JSON.stringify(comp.directory)},
+      mainFile: ${JSON.stringify(comp.mainFile)},
       files: [
 ${filesArray}
       ],
@@ -733,15 +733,15 @@ ${filesArray}
       ? JSON.stringify(comp.internalDependencies, null, 6).replace(/\n/g, '\n      ')
       : null
 
-    return `    '${comp.name}': {
-      name: '${comp.name}',
-      description: '${comp.description}',
-      category: '${comp.category}',
+    return `    ${JSON.stringify(comp.name)}: {
+      name: ${JSON.stringify(comp.name)},
+      description: ${JSON.stringify(comp.description)},
+      category: ${JSON.stringify(comp.category)},
       dependencies: ${deps},${internalDeps ? `
       internalDependencies: ${internalDeps},` : ''}
       files: [
         {
-          name: '${comp.fileName}',
+          name: ${JSON.stringify(comp.fileName)},
           content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
         },
       ],
@@ -812,12 +812,12 @@ function generateIndexFile(config, components) {
       ? JSON.stringify(comp.internalDependencies)
       : '[]'
 
-    return `  '${comp.name}': {
-    name: '${comp.name}',
-    description: '${comp.description}',
-      category: '${comp.category}',
+    return `  ${JSON.stringify(comp.name)}: {
+    name: ${JSON.stringify(comp.name)},
+    description: ${JSON.stringify(comp.description)},
+      category: ${JSON.stringify(comp.category)},
     dependencies: ${JSON.stringify(comp.dependencies)},
-    category: '${comp.category}',
+    category: ${JSON.stringify(comp.category)},
     internalDependencies: ${internalDeps},
   }`
   }).join(',\n')
@@ -919,20 +919,20 @@ function generateLegacyRegistryFile(components) {
       const filesArray = comp.files.map(file => {
         const escapedContent = escapeForTemplate(file.content)
         return `        {
-          name: '${file.name}',
+          name: ${JSON.stringify(file.name)},
           content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
         }`
       }).join(',\n')
 
-      return `    '${comp.name}': {
-      name: '${comp.name}',
-      description: '${comp.description}',
-      category: '${comp.category}',
+      return `    ${JSON.stringify(comp.name)}: {
+      name: ${JSON.stringify(comp.name)},
+      description: ${JSON.stringify(comp.description)},
+      category: ${JSON.stringify(comp.category)},
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
-      directory: '${comp.directory}',
-      mainFile: '${comp.mainFile}',
+      directory: ${JSON.stringify(comp.directory)},
+      mainFile: ${JSON.stringify(comp.mainFile)},
       files: [
 ${filesArray}
       ],
@@ -944,15 +944,15 @@ ${filesArray}
       ? JSON.stringify(comp.internalDependencies, null, 6).replace(/\n/g, '\n      ')
       : null
 
-    return `    '${comp.name}': {
-      name: '${comp.name}',
-      description: '${comp.description}',
-      category: '${comp.category}',
+    return `    ${JSON.stringify(comp.name)}: {
+      name: ${JSON.stringify(comp.name)},
+      description: ${JSON.stringify(comp.description)},
+      category: ${JSON.stringify(comp.category)},
       dependencies: ${deps},${internalDeps ? `
       internalDependencies: ${internalDeps},` : ''}
       files: [
         {
-          name: '${comp.fileName}',
+          name: ${JSON.stringify(comp.fileName)},
           content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
         },
       ],

@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getOverlayRegistry(prefix: string = ''): Registry {
   return {
-    'dialog': {
-      name: 'dialog',
-      description: 'A modal dialog component built on Radix UI Dialog with size variants and animations',
-      category: 'overlay',
+    "dialog": {
+      name: "dialog",
+      description: "A modal dialog component built on Radix UI Dialog with size variants and animations",
+      category: "overlay",
       dependencies: [
             "@radix-ui/react-dialog@^1.1.15",
             "class-variance-authority",
@@ -514,7 +514,7 @@ export function getOverlayRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'dialog.tsx',
+          name: "dialog.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
@@ -696,10 +696,10 @@ export {
         },
       ],
     },
-    'dropdown-menu': {
-      name: 'dropdown-menu',
-      description: 'A dropdown menu component for displaying actions and options',
-      category: 'overlay',
+    "dropdown-menu": {
+      name: "dropdown-menu",
+      description: "A dropdown menu component for displaying actions and options",
+      category: "overlay",
       dependencies: [
             "@radix-ui/react-dropdown-menu@^2.1.16",
             "clsx",
@@ -709,7 +709,7 @@ export {
       ],
       files: [
         {
-          name: 'dropdown-menu.tsx',
+          name: "dropdown-menu.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Check, ChevronRight, Circle } from "lucide-react";
@@ -913,10 +913,10 @@ export {
         },
       ],
     },
-    'tooltip': {
-      name: 'tooltip',
-      description: 'A popup that displays information related to an element when hovered or focused',
-      category: 'overlay',
+    "tooltip": {
+      name: "tooltip",
+      description: "A popup that displays information related to an element when hovered or focused",
+      category: "overlay",
       dependencies: [
             "@radix-ui/react-tooltip@^1.2.8",
             "clsx",
@@ -925,7 +925,7 @@ export {
       ],
       files: [
         {
-          name: 'tooltip.tsx',
+          name: "tooltip.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
@@ -978,10 +978,10 @@ export {
         },
       ],
     },
-    'delete-confirmation-modal': {
-      name: 'delete-confirmation-modal',
-      description: 'A confirmation modal requiring text input to confirm deletion',
-      category: 'overlay',
+    "delete-confirmation-modal": {
+      name: "delete-confirmation-modal",
+      description: "A confirmation modal requiring text input to confirm deletion",
+      category: "overlay",
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -993,7 +993,7 @@ export {
       ],
       files: [
         {
-          name: 'delete-confirmation-modal.tsx',
+          name: "delete-confirmation-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 
 import { cn } from "../../lib/utils";
@@ -1166,10 +1166,10 @@ export { DeleteConfirmationModal };
         },
       ],
     },
-    'confirmation-modal': {
-      name: 'confirmation-modal',
-      description: 'A simple confirmation modal for yes/no decisions',
-      category: 'overlay',
+    "confirmation-modal": {
+      name: "confirmation-modal",
+      description: "A simple confirmation modal for yes/no decisions",
+      category: "overlay",
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -1180,7 +1180,7 @@ export { DeleteConfirmationModal };
       ],
       files: [
         {
-          name: 'confirmation-modal.tsx',
+          name: "confirmation-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 
 import { cn } from "../../lib/utils";
@@ -1315,10 +1315,10 @@ export { ConfirmationModal };
         },
       ],
     },
-    'form-modal': {
-      name: 'form-modal',
-      description: 'A reusable modal component for forms with consistent layout',
-      category: 'overlay',
+    "form-modal": {
+      name: "form-modal",
+      description: "A reusable modal component for forms with consistent layout",
+      category: "overlay",
       dependencies: [
             "clsx",
             "tailwind-merge"
@@ -1329,7 +1329,7 @@ export { ConfirmationModal };
       ],
       files: [
         {
-          name: 'form-modal.tsx',
+          name: "form-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 
 import { cn } from "../../lib/utils";

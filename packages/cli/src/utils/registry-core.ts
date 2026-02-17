@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getCoreRegistry(prefix: string = ''): Registry {
   return {
-    'button': {
-      name: 'button',
-      description: 'A customizable button component with variants, sizes, and icons',
-      category: 'core',
+    "button": {
+      name: "button",
+      description: "A customizable button component with variants, sizes, and icons",
+      category: "core",
       dependencies: [
             "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
@@ -513,7 +513,7 @@ export function getCoreRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'button.tsx',
+          name: "button.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -633,10 +633,10 @@ export { Button, buttonVariants };
         },
       ],
     },
-    'badge': {
-      name: 'badge',
-      description: 'A status badge component with active, failed, disabled, outline, secondary, and destructive variants',
-      category: 'core',
+    "badge": {
+      name: "badge",
+      description: "A status badge component with active, failed, disabled, outline, secondary, and destructive variants",
+      category: "core",
       dependencies: [
             "@radix-ui/react-slot@^1.2.4",
             "class-variance-authority",
@@ -645,7 +645,7 @@ export { Button, buttonVariants };
       ],
       files: [
         {
-          name: 'badge.tsx',
+          name: "badge.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -765,17 +765,17 @@ export { Badge, badgeVariants };
         },
       ],
     },
-    'typography': {
-      name: 'typography',
-      description: 'A semantic typography component with kind, variant, color, alignment, and truncation support',
-      category: 'core',
+    "typography": {
+      name: "typography",
+      description: "A semantic typography component with kind, variant, color, alignment, and truncation support",
+      category: "core",
       dependencies: [
             "clsx",
             "tailwind-merge"
       ],
       files: [
         {
-          name: 'typography.tsx',
+          name: "typography.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../lib/utils";
 

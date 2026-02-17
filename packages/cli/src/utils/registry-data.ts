@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getDataRegistry(prefix: string = ''): Registry {
   return {
-    'table': {
-      name: 'table',
-      description: 'A composable table component with size variants, loading/empty states, sticky columns, and sorting support',
-      category: 'data',
+    "table": {
+      name: "table",
+      description: "A composable table component with size variants, loading/empty states, sticky columns, and sorting support",
+      category: "data",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -511,7 +511,7 @@ export function getDataRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'table.tsx',
+          name: "table.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 

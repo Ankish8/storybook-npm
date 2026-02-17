@@ -500,10 +500,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getLayoutRegistry(prefix: string = ''): Registry {
   return {
-    'accordion': {
-      name: 'accordion',
-      description: 'An expandable/collapsible accordion component with single or multiple mode support',
-      category: 'layout',
+    "accordion": {
+      name: "accordion",
+      description: "An expandable/collapsible accordion component with single or multiple mode support",
+      category: "layout",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -512,7 +512,7 @@ export function getLayoutRegistry(prefix: string = ''): Registry {
       ],
       files: [
         {
-          name: 'accordion.tsx',
+          name: "accordion.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
@@ -861,10 +861,10 @@ export {
         },
       ],
     },
-    'page-header': {
-      name: 'page-header',
-      description: 'A page header component with icon, title, description, and action buttons',
-      category: 'layout',
+    "page-header": {
+      name: "page-header",
+      description: "A page header component with icon, title, description, and action buttons",
+      category: "layout",
       dependencies: [
             "class-variance-authority",
             "clsx",
@@ -873,7 +873,7 @@ export {
       ],
       files: [
         {
-          name: 'page-header.tsx',
+          name: "page-header.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowLeft, MoreHorizontal, X } from "lucide-react";
@@ -1173,10 +1173,10 @@ export { PageHeader, pageHeaderVariants };
         },
       ],
     },
-    'pagination': {
-      name: 'pagination',
-      description: 'A composable pagination component with page navigation, next/previous links, and ellipsis',
-      category: 'layout',
+    "pagination": {
+      name: "pagination",
+      description: "A composable pagination component with page navigation, next/previous links, and ellipsis",
+      category: "layout",
       dependencies: [
             "clsx",
             "tailwind-merge",
@@ -1187,7 +1187,7 @@ export { PageHeader, pageHeaderVariants };
       ],
       files: [
         {
-          name: 'pagination.tsx',
+          name: "pagination.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import {
   ChevronLeftIcon,
