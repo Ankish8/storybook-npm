@@ -356,7 +356,7 @@ For detailed token values and component examples, see `references/design-tokens.
 
 ## Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 36 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 41 components across 7 categories.
 
 ### Quick Reference
 
@@ -397,6 +397,11 @@ For detailed token values and component examples, see `references/design-tokens.
 | BankDetails | custom | `npx myoperator-ui add bank-details` |
 | PaymentOptionCard | custom | `npx myoperator-ui add payment-option-card` |
 | PaymentSummary | custom | `npx myoperator-ui add payment-summary` |
+| LetUsDriveCard | custom | `npx myoperator-ui add let-us-drive-card` |
+| PowerUpCard | custom | `npx myoperator-ui add power-up-card` |
+| PricingCard | custom | `npx myoperator-ui add pricing-card` |
+| PricingPage | custom | `npx myoperator-ui add pricing-page` |
+| PricingToggle | custom | `npx myoperator-ui add pricing-toggle` |
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
 
 ### Core — Essential UI primitives
@@ -954,6 +959,51 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add payment-summary`
 **Requires**: `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### LetUsDriveCard
+> A managed service card with pricing, billing badge, 'Show details' link, and CTA for the full-service management section
+
+**Install**: `npx myoperator-ui add let-us-drive-card`
+**Requires**: `button`, `badge` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### PowerUpCard
+> An add-on service card with icon, title, pricing, description, and CTA button for the power-ups section
+
+**Install**: `npx myoperator-ui add power-up-card`
+**Requires**: `button` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### PricingCard
+> A pricing tier card with plan name, pricing, feature checklist, CTA button, and optional popularity badge and addon footer
+
+**Install**: `npx myoperator-ui add pricing-card`
+**Requires**: `button`, `badge` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### PricingPage
+> A full pricing page layout composing plan-type tabs, billing toggle, pricing cards grid, power-ups section, and let-us-drive managed services section
+
+**Install**: `npx myoperator-ui add pricing-page`
+**Requires**: `button`, `page-header`, `pricing-toggle`, `pricing-card`, `power-up-card`, `let-us-drive-card` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### PricingToggle
+> A plan type tab selector with billing period toggle for pricing pages. Pill-shaped tabs switch plan categories, and an optional switch toggles between monthly/yearly billing.
+
+**Install**: `npx myoperator-ui add pricing-toggle`
+**Requires**: `switch` (auto-installed)
 **Type**: Multi-file component
 
 ---
