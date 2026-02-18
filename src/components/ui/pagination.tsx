@@ -93,17 +93,25 @@ PaginationLink.displayName = "PaginationLink";
 export interface PaginationPreviousProps extends PaginationLinkProps {
   /** Additional CSS classes */
   className?: string;
+  /** Disables the previous button */
+  disabled?: boolean;
 }
 
 function PaginationPrevious({
   className,
+  disabled,
   ...props
 }: PaginationPreviousProps) {
   return (
     <PaginationLink
       aria-label="Go to previous page"
+      aria-disabled={disabled}
       size="default"
-      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      className={cn(
+        "gap-1 px-2.5 sm:pl-2.5",
+        disabled && "pointer-events-none opacity-50",
+        className
+      )}
       {...props}
     >
       <ChevronLeftIcon />
@@ -116,17 +124,25 @@ PaginationPrevious.displayName = "PaginationPrevious";
 export interface PaginationNextProps extends PaginationLinkProps {
   /** Additional CSS classes */
   className?: string;
+  /** Disables the next button */
+  disabled?: boolean;
 }
 
 function PaginationNext({
   className,
+  disabled,
   ...props
 }: PaginationNextProps) {
   return (
     <PaginationLink
       aria-label="Go to next page"
+      aria-disabled={disabled}
       size="default"
-      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      className={cn(
+        "gap-1 px-2.5 sm:pr-2.5",
+        disabled && "pointer-events-none opacity-50",
+        className
+      )}
       {...props}
     >
       <span className="hidden sm:block">Next</span>
@@ -159,6 +175,115 @@ function PaginationEllipsis({
 }
 PaginationEllipsis.displayName = "PaginationEllipsis";
 
+export interface PaginationWidgetProps {
+  /** Current page (1-based) */
+  currentPage: number;
+  /** Total number of pages */
+  totalPages: number;
+  /** Called when the user navigates to a new page */
+  onPageChange: (page: number) => void;
+  /** Number of pages shown on each side of current page (default: 1) */
+  siblingCount?: number;
+  /** Additional CSS classes */
+  className?: string;
+}
+
+function usePaginationRange(
+  currentPage: number,
+  totalPages: number,
+  siblingCount: number
+): (number | "ellipsis")[] {
+  if (totalPages <= 1) return [1];
+
+  const range = (start: number, end: number): number[] =>
+    Array.from({ length: end - start + 1 }, (_, i) => start + i);
+
+  const leftSibling = Math.max(currentPage - siblingCount, 2);
+  const rightSibling = Math.min(currentPage + siblingCount, totalPages - 1);
+
+  const showLeftEllipsis = leftSibling > 2;
+  const showRightEllipsis = rightSibling < totalPages - 1;
+
+  const pages: (number | "ellipsis")[] = [1];
+
+  if (showLeftEllipsis) {
+    pages.push("ellipsis");
+  } else {
+    // fill in pages between 1 and leftSibling if no ellipsis
+    for (let p = 2; p < leftSibling; p++) pages.push(p);
+  }
+
+  pages.push(...range(leftSibling, rightSibling));
+
+  if (showRightEllipsis) {
+    pages.push("ellipsis");
+  } else {
+    for (let p = rightSibling + 1; p < totalPages; p++) pages.push(p);
+  }
+
+  if (totalPages > 1) pages.push(totalPages);
+
+  return pages;
+}
+
+function PaginationWidget({
+  currentPage,
+  totalPages,
+  onPageChange,
+  siblingCount = 1,
+  className,
+}: PaginationWidgetProps) {
+  const pages = usePaginationRange(currentPage, totalPages, siblingCount);
+
+  return (
+    <Pagination className={className}>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            href="#"
+            disabled={currentPage === 1}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage > 1) onPageChange(currentPage - 1);
+            }}
+          />
+        </PaginationItem>
+        {pages.map((page, idx) =>
+          page === "ellipsis" ? (
+            <PaginationItem key={`ellipsis-${idx}`}>
+              <PaginationEllipsis />
+            </PaginationItem>
+          ) : (
+            <PaginationItem key={page}>
+              <PaginationLink
+                href="#"
+                isActive={page === currentPage}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPageChange(page);
+                }}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          )
+        )}
+        <PaginationItem>
+          <PaginationNext
+            href="#"
+            disabled={currentPage === totalPages}
+            onClick={(e) => {
+              e.preventDefault();
+              if (currentPage < totalPages) onPageChange(currentPage + 1);
+            }}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+}
+PaginationWidget.displayName = "PaginationWidget";
+
 export {
   Pagination,
   PaginationContent,
@@ -167,4 +292,5 @@ export {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationWidget,
 };

@@ -200,6 +200,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "feedback",
     internalDependencies: [],
   },
+  "empty-state": {
+    name: "empty-state",
+    description: "Centered empty state with icon, title, description, and optional action buttons",
+      category: "feedback",
+    dependencies: ["clsx","tailwind-merge"],
+    category: "feedback",
+    internalDependencies: [],
+  },
   "accordion": {
     name: "accordion",
     description: "An expandable/collapsible accordion component with single or multiple mode support",
@@ -279,6 +287,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",
     internalDependencies: ["accordion"],
+  },
+  "date-range-modal": {
+    name: "date-range-modal",
+    description: "A modal for selecting a date range with start and end date pickers",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: "custom",
+    internalDependencies: ["dialog","button","input"],
   },
   "payment-summary": {
     name: "payment-summary",

@@ -159,6 +159,7 @@ export {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationWidget,
 } from "./components/ui/pagination";
 export type {
   PaginationProps,
@@ -168,7 +169,12 @@ export type {
   PaginationPreviousProps,
   PaginationNextProps,
   PaginationEllipsisProps,
+  PaginationWidgetProps,
 } from "./components/ui/pagination";
+
+// EmptyState
+export { EmptyState } from "./components/ui/empty-state";
+export type { EmptyStateProps } from "./components/ui/empty-state";
 
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
@@ -259,3 +265,7 @@ export type { PricingToggleProps, PricingToggleTab } from "./components/custom/p
 // PricingPage (Custom)
 export { PricingPage } from "./components/custom/pricing-page";
 export type { PricingPageProps } from "./components/custom/pricing-page";
+
+// DateRangeModal (Custom)
+export { DateRangeModal } from "./components/custom/date-range-modal/index";
+export type { DateRangeModalProps } from "./components/custom/date-range-modal/index";

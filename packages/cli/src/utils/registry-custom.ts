@@ -2631,6 +2631,423 @@ export type { BankDetailsProps, BankDetailItem } from "./types";
         }
       ],
     },
+    "date-range-modal": {
+      name: "date-range-modal",
+      description: "A modal for selecting a date range with start and end date pickers",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "dialog",
+            "button",
+            "input"
+      ],
+      isMultiFile: true,
+      directory: "date-range-modal",
+      mainFile: "index.tsx",
+      files: [
+        {
+          name: "index.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../dialog";
+import { Button } from "../button";
+import { DateInput } from "./date-input";
+
+export interface DateRangeModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** Modal title. Defaults to "Select custom date" */
+  title?: string;
+  /** Called when the user confirms with both dates selected */
+  onConfirm: (start: Date, end: Date) => void;
+  /** Called when the user cancels */
+  onCancel?: () => void;
+  /** Confirm button label. Defaults to "Select custom date range" */
+  confirmButtonText?: string;
+  /** Cancel button label. Defaults to "Cancel" */
+  cancelButtonText?: string;
+  /** Disables confirm button and shows loading state */
+  loading?: boolean;
+  minDate?: Date;
+  maxDate?: Date;
+}
+
+function DateRangeModal({
+  open,
+  onOpenChange,
+  title = "Select custom date",
+  onConfirm,
+  onCancel,
+  confirmButtonText = "Select custom date range",
+  cancelButtonText = "Cancel",
+  loading = false,
+  minDate,
+  maxDate,
+}: DateRangeModalProps) {
+  const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
+
+  const canConfirm = !!startDate && !!endDate;
+
+  function handleConfirm() {
+    if (startDate && endDate) {
+      onConfirm(startDate, endDate);
+    }
+  }
+
+  function handleCancel() {
+    onCancel?.();
+    onOpenChange(false);
+  }
+
+  // Reset state when modal closes
+  React.useEffect(() => {
+    if (!open) {
+      setStartDate(undefined);
+      setEndDate(undefined);
+    }
+  }, [open]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+
+        <hr className="border-semantic-border-layout -mx-6" />
+
+        <div className="flex flex-col gap-4 py-2">
+          <DateInput
+            label="Start date"
+            value={startDate}
+            onChange={setStartDate}
+            placeholder="MM/DD/YYYY"
+            minDate={minDate}
+            maxDate={maxDate}
+          />
+          <DateInput
+            label="End date"
+            value={endDate}
+            onChange={setEndDate}
+            placeholder="MM/DD/YYYY"
+            minDate={startDate ?? minDate}
+            maxDate={maxDate}
+          />
+        </div>
+
+        <hr className="border-semantic-border-layout -mx-6" />
+
+        <div className="flex items-center justify-end gap-3 pt-1">
+          <Button variant="outline" onClick={handleCancel} disabled={loading}>
+            {cancelButtonText}
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            disabled={!canConfirm || loading}
+          >
+            {loading ? "Loading..." : confirmButtonText}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+DateRangeModal.displayName = "DateRangeModal";
+
+export { DateRangeModal };
+`, prefix),
+        },
+        {
+          name: "calendar.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { cn } from "../../../lib/utils";
+
+const DAYS_OF_WEEK = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+export interface CalendarProps {
+  value?: Date;
+  onChange: (date: Date) => void;
+  minDate?: Date;
+  maxDate?: Date;
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function isBeforeDay(a: Date, b: Date): boolean {
+  const aD = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+  const bD = new Date(b.getFullYear(), b.getMonth(), b.getDate());
+  return aD < bD;
+}
+
+function isAfterDay(a: Date, b: Date): boolean {
+  const aD = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+  const bD = new Date(b.getFullYear(), b.getMonth(), b.getDate());
+  return aD > bD;
+}
+
+function getDaysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getFirstDayOfWeek(year: number, month: number): number {
+  return new Date(year, month, 1).getDay();
+}
+
+function Calendar({ value, onChange, minDate, maxDate }: CalendarProps) {
+  const today = new Date();
+  const initial = value ?? today;
+
+  const [viewYear, setViewYear] = React.useState(initial.getFullYear());
+  const [viewMonth, setViewMonth] = React.useState(initial.getMonth());
+
+  const daysInMonth = getDaysInMonth(viewYear, viewMonth);
+  const firstDayOfWeek = getFirstDayOfWeek(viewYear, viewMonth);
+
+  // Previous month fill days
+  const prevMonthDays = getDaysInMonth(
+    viewMonth === 0 ? viewYear - 1 : viewYear,
+    viewMonth === 0 ? 11 : viewMonth - 1
+  );
+
+  const handlePrevMonth = () => {
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear((y) => y - 1);
+    } else {
+      setViewMonth((m) => m - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear((y) => y + 1);
+    } else {
+      setViewMonth((m) => m + 1);
+    }
+  };
+
+  const cells: { day: number; currentMonth: boolean; date: Date }[] = [];
+
+  // Fill leading days from previous month
+  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+    const d = prevMonthDays - i;
+    const prevMonth = viewMonth === 0 ? 11 : viewMonth - 1;
+    const prevYear = viewMonth === 0 ? viewYear - 1 : viewYear;
+    cells.push({ day: d, currentMonth: false, date: new Date(prevYear, prevMonth, d) });
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    cells.push({ day: d, currentMonth: true, date: new Date(viewYear, viewMonth, d) });
+  }
+
+  // Fill trailing days from next month
+  const remainder = cells.length % 7;
+  if (remainder !== 0) {
+    const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+    const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear;
+    for (let d = 1; d <= 7 - remainder; d++) {
+      cells.push({ day: d, currentMonth: false, date: new Date(nextYear, nextMonth, d) });
+    }
+  }
+
+  return (
+    <div className="select-none w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <button
+          type="button"
+          onClick={handlePrevMonth}
+          className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+          aria-label="Previous month"
+        >
+          <ChevronLeftIcon className="size-4" />
+        </button>
+        <span className="text-sm font-semibold text-semantic-text-primary">
+          {MONTHS[viewMonth]} {viewYear}
+        </span>
+        <button
+          type="button"
+          onClick={handleNextMonth}
+          className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+          aria-label="Next month"
+        >
+          <ChevronRightIcon className="size-4" />
+        </button>
+      </div>
+
+      {/* Days of week */}
+      <div className="grid grid-cols-7 mb-1">
+        {DAYS_OF_WEEK.map((d) => (
+          <div
+            key={d}
+            className="text-center text-xs font-medium text-semantic-text-muted py-1"
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+
+      {/* Day grid */}
+      <div className="grid grid-cols-7">
+        {cells.map(({ day, currentMonth, date }, idx) => {
+          const isToday = currentMonth && isSameDay(date, today);
+          const isSelected = value ? isSameDay(date, value) : false;
+          const isDisabled =
+            (minDate && isBeforeDay(date, minDate)) ||
+            (maxDate && isAfterDay(date, maxDate));
+
+          return (
+            <button
+              key={idx}
+              type="button"
+              disabled={!!isDisabled}
+              onClick={() => {
+                if (!isDisabled) onChange(date);
+              }}
+              className={cn(
+                "relative flex items-center justify-center size-8 mx-auto rounded-full text-xs transition-colors",
+                isSelected
+                  ? "bg-semantic-primary text-semantic-text-inverted font-semibold"
+                  : currentMonth
+                  ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
+                  : "text-semantic-text-muted hover:bg-semantic-bg-hover",
+                isDisabled && "opacity-40 cursor-not-allowed pointer-events-none"
+              )}
+              aria-label={date.toDateString()}
+              aria-pressed={isSelected}
+              aria-current={isToday ? "date" : undefined}
+            >
+              {day}
+              {isToday && !isSelected && (
+                <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 size-1 rounded-full bg-semantic-primary" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+Calendar.displayName = "Calendar";
+
+export { Calendar };
+`, prefix),
+        },
+        {
+          name: "date-input.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Calendar } from "./calendar";
+
+export interface DateInputProps {
+  label: string;
+  value?: Date;
+  onChange: (date: Date) => void;
+  placeholder?: string;
+  minDate?: Date;
+  maxDate?: Date;
+}
+
+function formatDate(date: Date): string {
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  return \`\${mm}/\${dd}/\${yyyy}\`;
+}
+
+function DateInput({
+  label,
+  value,
+  onChange,
+  placeholder = "MM/DD/YYYY",
+  minDate,
+  maxDate,
+}: DateInputProps) {
+  const [open, setOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  React.useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClick);
+    }
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative flex flex-col gap-1.5">
+      <label className="text-sm font-medium text-semantic-text-primary">
+        {label}
+      </label>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border text-sm transition-colors outline-none",
+          "border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary",
+          "hover:border-semantic-border-input-focus/50",
+          open && "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          !value && "text-semantic-text-muted"
+        )}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        <span>{value ? formatDate(value) : placeholder}</span>
+        <CalendarIcon className="size-4 text-semantic-text-muted shrink-0" />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 z-50 mt-1 w-72 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary shadow-lg p-3">
+          <Calendar
+            value={value}
+            onChange={(date) => {
+              onChange(date);
+              setOpen(false);
+            }}
+            minDate={minDate}
+            maxDate={maxDate}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+DateInput.displayName = "DateInput";
+
+export { DateInput };
+`, prefix),
+        }
+      ],
+    },
     "payment-summary": {
       name: "payment-summary",
       description: "A component for displaying payment summary with line items and total",

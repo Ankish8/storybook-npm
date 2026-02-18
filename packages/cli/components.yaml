@@ -51,6 +51,7 @@ categories:
       - toast
       - spinner
       - skeleton
+      - empty-state
 
   layout:
     description: "Layout and structure components"
@@ -69,6 +70,7 @@ categories:
       - alert-configuration
       - auto-pay-setup
       - bank-details
+      - date-range-modal
       - payment-option-card
       - payment-summary
       - let-us-drive-card
@@ -311,6 +313,13 @@ components:
       - "clsx"
       - "tailwind-merge"
 
+  empty-state:
+    description: "Centered empty state with icon, title, description, and optional action buttons"
+    category: feedback
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+
   # ---------------------------------------------------------------------------
   # LAYOUT COMPONENTS
   # ---------------------------------------------------------------------------
@@ -466,6 +475,25 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "bank-details.tsx"
+
+  date-range-modal:
+    description: "A modal for selecting a date range with start and end date pickers"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - dialog
+      - button
+      - input
+    isMultiFile: true
+    directory: "date-range-modal"
+    files:
+      - "index.tsx"
+      - "calendar.tsx"
+      - "date-input.tsx"
+    mainFile: "index.tsx"
 
   payment-summary:
     description: "A component for displaying payment summary with line items and total"

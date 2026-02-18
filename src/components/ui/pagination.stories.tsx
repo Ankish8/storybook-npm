@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   Pagination,
@@ -7,6 +8,7 @@ import {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationWidget,
 } from "./pagination";
 
 const meta: Meta<typeof Pagination> = {
@@ -455,6 +457,110 @@ export const Usage: Story = {
         </Pagination>
       </div>
     </div>
+  ),
+};
+
+const meta2: Meta<typeof PaginationWidget> = {
+  title: "Components/PaginationWidget",
+  component: PaginationWidget,
+  parameters: {
+    layout: "centered",
+    docs: {
+      description: {
+        component: `
+A convenience wrapper around the Pagination primitives. Handles page range computation, ellipsis logic, and prev/next disabled states automatically.
+
+\`\`\`bash
+npx myoperator-ui add pagination
+\`\`\`
+
+## Import
+
+\`\`\`tsx
+import { PaginationWidget } from "@/components/ui/pagination"
+\`\`\`
+
+## Usage
+
+\`\`\`tsx
+const [page, setPage] = React.useState(1);
+<PaginationWidget
+  currentPage={page}
+  totalPages={20}
+  onPageChange={setPage}
+/>
+\`\`\`
+        `,
+      },
+    },
+  },
+  tags: ["autodocs"],
+  argTypes: {
+    currentPage: { control: { type: "number", min: 1 } },
+    totalPages: { control: { type: "number", min: 1 } },
+    siblingCount: { control: { type: "number", min: 0 } },
+  },
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _meta2 = meta2;
+
+function WidgetDemo(props: React.ComponentProps<typeof PaginationWidget>) {
+  const [page, setPage] = React.useState(props.currentPage);
+  return (
+    <PaginationWidget
+      {...props}
+      currentPage={page}
+      onPageChange={setPage}
+    />
+  );
+}
+
+export const Widget: Story = {
+  name: "PaginationWidget — Interactive",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A self-contained pagination widget that computes visible pages, ellipses, and disabled states. Use the controls to explore different total pages and sibling counts.",
+      },
+    },
+  },
+  render: (args) => <WidgetDemo {...args} currentPage={5} totalPages={20} siblingCount={1} />,
+};
+
+export const WidgetFirstPage: Story = {
+  name: "PaginationWidget — First Page (Prev disabled)",
+  parameters: {
+    docs: {
+      description: {
+        story: "When on page 1, the Previous button is disabled.",
+      },
+    },
+  },
+  render: () => (
+    <WidgetDemo currentPage={1} totalPages={10} onPageChange={() => {}} />
+  ),
+};
+
+export const WidgetLastPage: Story = {
+  name: "PaginationWidget — Last Page (Next disabled)",
+  parameters: {
+    docs: {
+      description: {
+        story: "When on the last page, the Next button is disabled.",
+      },
+    },
+  },
+  render: () => (
+    <WidgetDemo currentPage={10} totalPages={10} onPageChange={() => {}} />
+  ),
+};
+
+export const WidgetFewPages: Story = {
+  name: "PaginationWidget — Few Pages (No ellipsis)",
+  render: () => (
+    <WidgetDemo currentPage={3} totalPages={5} onPageChange={() => {}} />
   ),
 };
 
