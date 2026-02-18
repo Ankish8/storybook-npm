@@ -356,7 +356,7 @@ For detailed token values and component examples, see `references/design-tokens.
 
 ## Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 41 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 43 components across 7 categories.
 
 ### Quick Reference
 
@@ -385,6 +385,7 @@ For detailed token values and component examples, see `references/design-tokens.
 | Toast | feedback | `npx myoperator-ui add toast` |
 | Spinner | feedback | `npx myoperator-ui add spinner` |
 | Skeleton | feedback | `npx myoperator-ui add skeleton` |
+| EmptyState | feedback | `npx myoperator-ui add empty-state` |
 | Accordion | layout | `npx myoperator-ui add accordion` |
 | PageHeader | layout | `npx myoperator-ui add page-header` |
 | Pagination | layout | `npx myoperator-ui add pagination` |
@@ -395,6 +396,7 @@ For detailed token values and component examples, see `references/design-tokens.
 | AlertConfiguration | custom | `npx myoperator-ui add alert-configuration` |
 | AutoPaySetup | custom | `npx myoperator-ui add auto-pay-setup` |
 | BankDetails | custom | `npx myoperator-ui add bank-details` |
+| DateRangeModal | custom | `npx myoperator-ui add date-range-modal` |
 | PaymentOptionCard | custom | `npx myoperator-ui add payment-option-card` |
 | PaymentSummary | custom | `npx myoperator-ui add payment-summary` |
 | LetUsDriveCard | custom | `npx myoperator-ui add let-us-drive-card` |
@@ -835,6 +837,13 @@ import { Mail } from "lucide-react"
 
 ---
 
+#### EmptyState
+> Centered empty state with icon, title, description, and optional action buttons
+
+**Install**: `npx myoperator-ui add empty-state`
+
+---
+
 ### Layout — Layout and structure components
 
 #### Accordion
@@ -941,6 +950,15 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add bank-details`
 **Requires**: `accordion` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### DateRangeModal
+> A modal for selecting a date range with start and end date pickers
+
+**Install**: `npx myoperator-ui add date-range-modal`
+**Requires**: `dialog`, `button`, `input` (auto-installed)
 **Type**: Multi-file component
 
 ---
