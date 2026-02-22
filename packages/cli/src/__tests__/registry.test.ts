@@ -58,9 +58,12 @@ describe('Registry', () => {
       // Should have exports
       expect(content).toContain('export')
 
-      // Should import cn utility (transformed path) - single-file or multi-file components
-      const hasCnImport = content.includes('../../lib/utils') || content.includes('../../../lib/utils')
-      expect(hasCnImport).toBe(true)
+      // Should import cn utility if component uses cn() - some composing components don't need it
+      const usesCn = content.includes('cn(')
+      if (usesCn) {
+        const hasCnImport = content.includes('../../lib/utils') || content.includes('../../../lib/utils')
+        expect(hasCnImport).toBe(true)
+      }
 
       // Should not have Tailwind v4 syntax
       expect(content).not.toContain('@theme')
@@ -432,6 +435,41 @@ describe('Registry', () => {
         expect(content).toContain('export')
         expect(content).toContain('import')
       }
+    })
+
+    it('prefixes arbitrary CSS properties like [appearance:textfield]', async () => {
+      const registry = await getRegistry('tw-')
+      const input = registry.input
+      const content = input.files[0].content
+
+      // [appearance:textfield] should become tw-[appearance:textfield]
+      expect(content).toContain('tw-[appearance:textfield]')
+      expect(content).not.toMatch(/(?<![w]-)\[appearance:textfield\]/)
+    })
+
+    it('prefixes pseudo-element selectors like [&::-webkit-*]', async () => {
+      const registry = await getRegistry('tw-')
+      const input = registry.input
+      const content = input.files[0].content
+
+      // [&::-webkit-outer-spin-button]:appearance-none → [&::-webkit-outer-spin-button]:tw-appearance-none
+      expect(content).toContain('[&::-webkit-outer-spin-button]:tw-appearance-none')
+      expect(content).toContain('[&::-webkit-inner-spin-button]:tw-appearance-none')
+
+      // Should NOT have unprefixed utility after pseudo-element selector
+      expect(content).not.toContain('[&::-webkit-outer-spin-button]:appearance-none')
+      expect(content).not.toContain('[&::-webkit-inner-spin-button]:appearance-none')
+    })
+
+    it('prefixes number spinner classes in text-field component', async () => {
+      const registry = await getRegistry('tw-')
+      const textField = registry['text-field']
+      const content = textField.files[0].content
+
+      // text-field should also have prefixed spinner classes
+      expect(content).toContain('tw-[appearance:textfield]')
+      expect(content).toContain('[&::-webkit-outer-spin-button]:tw-appearance-none')
+      expect(content).toContain('[&::-webkit-inner-spin-button]:tw-appearance-none')
     })
 
     it('preserves interface definitions without corruption', async () => {

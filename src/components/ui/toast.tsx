@@ -146,13 +146,18 @@ export {
 // ============================================================================
 
 const TOAST_LIMIT = 5;
-const TOAST_REMOVE_DELAY = 5000;
+const TOAST_REMOVE_DELAY = 2000;
 
 type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
+  /**
+   * Duration in milliseconds before the toast is removed after dismissal.
+   * Defaults to 2000ms (2 seconds).
+   */
+  duration?: number;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -196,7 +201,7 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-const addToRemoveQueue = (toastId: string) => {
+const addToRemoveQueue = (toastId: string, duration?: number) => {
   if (toastTimeouts.has(toastId)) {
     return;
   }
@@ -207,7 +212,7 @@ const addToRemoveQueue = (toastId: string) => {
       type: "REMOVE_TOAST",
       toastId: toastId,
     });
-  }, TOAST_REMOVE_DELAY);
+  }, duration ?? TOAST_REMOVE_DELAY);
 
   toastTimeouts.set(toastId, timeout);
 };
@@ -232,10 +237,11 @@ export const reducer = (state: State, action: Action): State => {
       const { toastId } = action;
 
       if (toastId) {
-        addToRemoveQueue(toastId);
+        const toastItem = state.toasts.find((t) => t.id === toastId);
+        addToRemoveQueue(toastId, toastItem?.duration);
       } else {
-        state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id);
+        state.toasts.forEach((toastItem) => {
+          addToRemoveQueue(toastItem.id, toastItem.duration);
         });
       }
 

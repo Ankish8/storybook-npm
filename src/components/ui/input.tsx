@@ -43,7 +43,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         type={type}
-        className={cn(inputVariants({ state, className }))}
+        className={cn(
+          inputVariants({ state, className }),
+          type === "number" &&
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        )}
         ref={ref}
         {...props}
       />

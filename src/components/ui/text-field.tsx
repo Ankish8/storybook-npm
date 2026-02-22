@@ -115,6 +115,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       onChange,
       disabled,
       id,
+      type,
       ...props
     },
     ref
@@ -159,10 +160,13 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       <input
         ref={ref}
         id={inputId}
+        type={type}
         className={cn(
           hasAddons
             ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
-            : textFieldInputVariants({ state: derivedState, className })
+            : textFieldInputVariants({ state: derivedState, className }),
+          type === "number" &&
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
         disabled={disabled || loading}
         maxLength={maxLength}

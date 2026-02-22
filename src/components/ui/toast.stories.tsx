@@ -203,15 +203,18 @@ const PlaygroundComponent = ({
   variant,
   title,
   description,
+  duration,
 }: {
   variant: "default" | "success" | "error" | "warning" | "info";
   title: string;
   description: string;
+  duration: number;
 }) => {
   const handleClick = () => {
     const toastOptions = {
       title,
       description: description || undefined,
+      duration: duration || undefined,
     };
 
     switch (variant) {
@@ -259,6 +262,7 @@ export const Playground: Story = {
     title: "Toast Title",
     description: "This is the toast description",
     showIcon: true,
+    duration: 2000,
   },
   argTypes: {
     variant: {
@@ -282,6 +286,15 @@ export const Playground: Story = {
       description: "Optional description text below the title",
       table: {
         type: { summary: "string" },
+      },
+    },
+    duration: {
+      control: { type: "number", min: 500, max: 30000, step: 500 },
+      description:
+        "Duration in milliseconds before the toast is removed after dismissal",
+      table: {
+        type: { summary: "number" },
+        defaultValue: { summary: "2000" },
       },
     },
     showIcon: {
@@ -362,6 +375,60 @@ export const DismissToasts: Story = {
       </div>
     );
   },
+};
+
+export const CustomDuration: Story = {
+  name: "Custom duration",
+  render: () => (
+    <div className="tw-flex tw-flex-wrap tw-gap-3">
+      <Button
+        onClick={() =>
+          toast.success({
+            title: "Quick flash (1s)",
+            description: "This disappears in 1 second.",
+            duration: 1000,
+          })
+        }
+      >
+        1 second
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast({
+            title: "Default (2s)",
+            description: "This uses the default 2-second duration.",
+          })
+        }
+      >
+        2 seconds (default)
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.info({
+            title: "Longer toast (5s)",
+            description: "This sticks around for 5 seconds.",
+            duration: 5000,
+          })
+        }
+      >
+        5 seconds
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.warning({
+            title: "Extended toast (10s)",
+            description: "This stays for 10 seconds — useful for important messages.",
+            duration: 10000,
+          })
+        }
+      >
+        10 seconds
+      </Button>
+    </div>
+  ),
 };
 
 export const MultipleToasts: Story = {

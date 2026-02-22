@@ -206,7 +206,8 @@ function looksLikeTailwindClasses(str: string): boolean {
   if (/^[A-Z][a-zA-Z]*$/.test(str)) return false
 
   // Skip strings that look like paths or imports
-  if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || str.includes('::')) return false
+  // Allow :: inside arbitrary selectors like [&::-webkit-inner-spin-button]
+  if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || (str.includes('::') && !str.includes('[&'))) return false
 
   // Skip npm package names - but NOT if they look like Tailwind utility classes
   // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)

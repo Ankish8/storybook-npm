@@ -206,7 +206,8 @@ function looksLikeTailwindClasses(str: string): boolean {
   if (/^[A-Z][a-zA-Z]*$/.test(str)) return false
 
   // Skip strings that look like paths or imports
-  if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || str.includes('::')) return false
+  // Allow :: inside arbitrary selectors like [&::-webkit-inner-spin-button]
+  if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || (str.includes('::') && !str.includes('[&'))) return false
 
   // Skip npm package names - but NOT if they look like Tailwind utility classes
   // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)
@@ -557,7 +558,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         type={type}
-        className={cn(inputVariants({ state, className }))}
+        className={cn(
+          inputVariants({ state, className }),
+          type === "number" &&
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        )}
         ref={ref}
         {...props}
       />
@@ -1301,6 +1306,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       onChange,
       disabled,
       id,
+      type,
       ...props
     },
     ref
@@ -1345,10 +1351,13 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       <input
         ref={ref}
         id={inputId}
+        type={type}
         className={cn(
           hasAddons
             ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
-            : textFieldInputVariants({ state: derivedState, className })
+            : textFieldInputVariants({ state: derivedState, className }),
+          type === "number" &&
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
         disabled={disabled || loading}
         maxLength={maxLength}
