@@ -2286,18 +2286,14 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
 
-    // Handle value change and call both onValueChange and onSelect
-    const handleValueChange = React.useCallback(
-      (newValue: string) => {
-        onValueChange?.(newValue);
-        if (onSelect) {
-          const selectedOption = options.find((o) => o.value === newValue);
-          if (selectedOption) {
-            onSelect(selectedOption);
-          }
+    // Handle onSelect at item level (fires even when same value is re-selected)
+    const handleItemSelect = React.useCallback(
+      (option: SelectOption) => {
+        if (!option.disabled) {
+          onSelect?.(option);
         }
       },
-      [onValueChange, onSelect, options]
+      [onSelect]
     );
 
     // Derive state from props
@@ -2374,7 +2370,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         <Select
           value={value}
           defaultValue={defaultValue}
-          onValueChange={handleValueChange}
+          onValueChange={onValueChange}
           disabled={disabled || loading}
           name={name}
           onOpenChange={handleOpenChange}
@@ -2415,6 +2411,12 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
+                onPointerUp={() => handleItemSelect(option)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleItemSelect(option);
+                  }
+                }}
               >
                 {option.label}
               </SelectItem>
@@ -2431,6 +2433,12 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                         key={option.value}
                         value={option.value}
                         disabled={option.disabled}
+                        onPointerUp={() => handleItemSelect(option)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            handleItemSelect(option);
+                          }
+                        }}
                       >
                         {option.label}
                       </SelectItem>
