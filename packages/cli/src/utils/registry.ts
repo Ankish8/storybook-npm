@@ -2412,11 +2412,6 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                 value={option.value}
                 disabled={option.disabled}
                 onPointerUp={() => handleItemSelect(option)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleItemSelect(option);
-                  }
-                }}
               >
                 {option.label}
               </SelectItem>
@@ -2434,11 +2429,6 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                         value={option.value}
                         disabled={option.disabled}
                         onPointerUp={() => handleItemSelect(option)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            handleItemSelect(option);
-                          }
-                        }}
                       >
                         {option.label}
                       </SelectItem>
