@@ -2221,6 +2221,8 @@ export interface SelectFieldProps {
   defaultValue?: string;
   /** Callback when value changes */
   onValueChange?: (value: string) => void;
+  /** Callback when an option is selected, provides the full option object */
+  onSelect?: (option: SelectOption) => void;
   /** Options to display */
   options: SelectOption[];
   /** Enable search/filter functionality */
@@ -2269,6 +2271,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       value,
       defaultValue,
       onValueChange,
+      onSelect,
       options,
       searchable,
       searchPlaceholder = "Search...",
@@ -2282,6 +2285,20 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
   ) => {
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
+
+    // Handle value change and call both onValueChange and onSelect
+    const handleValueChange = React.useCallback(
+      (newValue: string) => {
+        onValueChange?.(newValue);
+        if (onSelect) {
+          const selectedOption = options.find((o) => o.value === newValue);
+          if (selectedOption) {
+            onSelect(selectedOption);
+          }
+        }
+      },
+      [onValueChange, onSelect, options]
+    );
 
     // Derive state from props
     const derivedState = error ? "error" : "default";
@@ -2357,7 +2374,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         <Select
           value={value}
           defaultValue={defaultValue}
-          onValueChange={onValueChange}
+          onValueChange={handleValueChange}
           disabled={disabled || loading}
           name={name}
           onOpenChange={handleOpenChange}

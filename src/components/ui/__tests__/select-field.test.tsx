@@ -175,6 +175,47 @@ describe("SelectField", () => {
     expect(handleValueChange).toHaveBeenCalledWith("option2");
   });
 
+  // onSelect callback
+  it("calls onSelect with full option object when selection changes", async () => {
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField options={defaultOptions} onSelect={handleSelect} />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option2",
+      label: "Option 2",
+    });
+  });
+
+  it("calls both onValueChange and onSelect when selection changes", async () => {
+    const handleValueChange = vi.fn();
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        onValueChange={handleValueChange}
+        onSelect={handleSelect}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 3"));
+
+    expect(handleValueChange).toHaveBeenCalledWith("option3");
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option3",
+      label: "Option 3",
+    });
+  });
+
   // Uncontrolled mode
   it("works in uncontrolled mode with defaultValue", () => {
     render(<SelectField options={defaultOptions} defaultValue="option2" />);

@@ -456,6 +456,39 @@ export const Controlled: Story = {
   render: () => <ControlledExample />,
 };
 
+// onSelect Example
+const OnSelectExample = () => {
+  const [selectedOption, setSelectedOption] = useState<SelectOption | null>(
+    null
+  );
+
+  return (
+    <div className="flex flex-col gap-4 w-80">
+      <SelectField
+        label="Country"
+        placeholder="Select a country"
+        options={countryOptions}
+        onSelect={(option) => setSelectedOption(option)}
+      />
+      {selectedOption && (
+        <div className="rounded border border-semantic-border-layout bg-semantic-bg-ui p-3 text-xs font-mono">
+          <p className="font-semibold text-semantic-text-primary mb-1">
+            onSelect payload:
+          </p>
+          <pre className="text-semantic-text-secondary">
+            {JSON.stringify(selectedOption, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const OnSelect: Story = {
+  name: "onSelect callback",
+  render: () => <OnSelectExample />,
+};
+
 // Loading State
 export const LoadingState: Story = {
   name: "Loading state",
