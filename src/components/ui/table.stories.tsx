@@ -103,7 +103,7 @@ import {
       <td style="padding: 12px 16px;">Header Cell</td>
       <td style="padding: 12px 16px;">Title/Small</td>
       <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / SemiBold</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm font-medium</code></td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm font-semibold</code></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Caption</td>

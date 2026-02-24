@@ -667,7 +667,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
     <th
       ref={ref}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
+        "h-12 px-4 text-left align-middle font-semibold text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-[var(--color-neutral-100)] z-10",
         sortDirection && "cursor-pointer select-none",
         className
