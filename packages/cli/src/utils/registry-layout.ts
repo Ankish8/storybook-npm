@@ -1135,7 +1135,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
         {...props}
       >
         {/* Top Row: Icon/Back + Title + Description */}
-        <div className="flex items-center flex-1 min-w-0">
+        <div className="flex items-start sm:items-center flex-1 min-w-0">
           {/* Left Section: Icon or Back Button */}
           {leftElement && (
             <div className="flex-shrink-0 mr-4">{leftElement}</div>
