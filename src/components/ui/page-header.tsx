@@ -267,7 +267,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="m-0 text-base font-semibold text-semantic-text-primary truncate">
+              <h1 className="m-0 text-lg font-semibold text-semantic-text-primary truncate">
                 {title}
               </h1>
               {infoIcon && (
@@ -277,7 +277,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
               )}
             </div>
             {description && (
-              <p className="m-0 text-sm text-semantic-text-secondary font-normal mt-1 line-clamp-2">
+              <p className="m-0 text-sm text-semantic-text-muted font-normal mt-1 line-clamp-2">
                 {description}
               </p>
             )}

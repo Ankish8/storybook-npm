@@ -1,4 +1,8 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import type { StorybookConfig } from '@storybook/react-vite';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
   stories: [
@@ -16,6 +20,14 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {}
   },
-  docs: {}
+  docs: {},
+  viteFinal: async (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": path.resolve(__dirname, "../src"),
+    };
+    return config;
+  },
 };
 export default config;

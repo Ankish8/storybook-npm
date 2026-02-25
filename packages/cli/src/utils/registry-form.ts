@@ -1802,14 +1802,18 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
 
-    // Handle onSelect at item level (fires even when same value is re-selected)
-    const handleItemSelect = React.useCallback(
-      (option: SelectOption) => {
-        if (!option.disabled) {
-          onSelect?.(option);
+    // Combined value change handler that also fires onSelect with full option object
+    const handleValueChange = React.useCallback(
+      (newValue: string) => {
+        onValueChange?.(newValue);
+        if (onSelect) {
+          const option = options.find((o) => o.value === newValue);
+          if (option) {
+            onSelect(option);
+          }
         }
       },
-      [onSelect]
+      [onValueChange, onSelect, options]
     );
 
     // Derive state from props
@@ -1886,7 +1890,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
         <Select
           value={value}
           defaultValue={defaultValue}
-          onValueChange={onValueChange}
+          onValueChange={handleValueChange}
           disabled={disabled || loading}
           name={name}
           onOpenChange={handleOpenChange}
@@ -1927,7 +1931,6 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
-                onPointerUp={() => handleItemSelect(option)}
               >
                 {option.label}
               </SelectItem>
@@ -1944,8 +1947,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                         key={option.value}
                         value={option.value}
                         disabled={option.disabled}
-                        onPointerUp={() => handleItemSelect(option)}
-                      >
+                              >
                         {option.label}
                       </SelectItem>
                     ))}

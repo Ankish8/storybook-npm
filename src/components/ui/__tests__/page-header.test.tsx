@@ -142,7 +142,7 @@ describe("PageHeader", () => {
   it("applies correct title styling", () => {
     render(<PageHeader title="Title" />);
     const title = screen.getByRole("heading", { name: "Title" });
-    expect(title).toHaveClass("text-base");
+    expect(title).toHaveClass("text-lg");
     expect(title).toHaveClass("font-semibold");
     expect(title).toHaveClass("text-semantic-text-primary");
   });
@@ -151,7 +151,7 @@ describe("PageHeader", () => {
     render(<PageHeader title="Title" description="Description" />);
     const description = screen.getByText("Description");
     expect(description).toHaveClass("text-sm");
-    expect(description).toHaveClass("text-semantic-text-secondary");
+    expect(description).toHaveClass("text-semantic-text-muted");
   });
 
   // Accessibility

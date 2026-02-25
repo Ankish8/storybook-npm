@@ -138,8 +138,8 @@ if (issuesFound.length > 0) {
 
   console.log('─'.repeat(60))
   console.log(`\n❌ ${issuesFound.length} element(s) need Bootstrap margin resets`)
-  console.log('\n📖 See COMPONENT_GUIDE.md section "Reset Bootstrap Default Margins"')
-  console.log('   Add m-0 class to h1-h6, p, ul, ol, blockquote, pre elements\n')
+  console.log('\n📖 Add m-0 (or tw-m-0 with prefix) to h1-h6, p, ul, ol, blockquote, pre elements')
+  console.log('   This resets Bootstrap default margins for consistent spacing\n')
   process.exit(1)
 } else {
   console.log(`✅ Checked ${checkedFiles} components`)
