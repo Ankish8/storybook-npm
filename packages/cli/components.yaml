@@ -78,6 +78,7 @@ categories:
       - pricing-card
       - pricing-page
       - pricing-toggle
+      - talk-to-us-modal
       - wallet-topup
 
 # =============================================================================
@@ -620,6 +621,25 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "pricing-toggle.tsx"
+
+  talk-to-us-modal:
+    description: "A modal dialog with icon, heading, description, and two action buttons prompting users to contact support. Triggered by PowerUpCard's Talk to us button."
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "@radix-ui/react-dialog"
+    internalDependencies:
+      - button
+      - dialog
+    isMultiFile: true
+    directory: "talk-to-us-modal"
+    files:
+      - "talk-to-us-modal.tsx"
+      - "icon.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "talk-to-us-modal.tsx"
 
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"

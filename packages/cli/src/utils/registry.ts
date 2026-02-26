@@ -315,13 +315,27 @@ function prefixClassString(classString: string, prefix: string): string {
       const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria|group|peer)(\/[a-z0-9-]+)?-?\[[^\]]+\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
-        const utility = cls.slice(variants.length)
+        let utility = cls.slice(variants.length)
         if (!utility) return cls
+
+        // Handle ! important modifier: hover:!p-0 → hover:!tw-p-0
+        const isImportant = utility.startsWith('!')
+        if (isImportant) utility = utility.slice(1)
+
         // Prefix the utility part, keep variants as-is
         if (utility.startsWith('-')) {
-          return `${variants}-${prefix}${utility.slice(1)}`
+          return `${variants}${isImportant ? '!' : ''}-${prefix}${utility.slice(1)}`
         }
-        return `${variants}${prefix}${utility}`
+        return `${variants}${isImportant ? '!' : ''}${prefix}${utility}`
+      }
+
+      // Handle ! important modifier: !p-0 → !tw-p-0
+      if (cls.startsWith('!') && cls.length > 1) {
+        const rest = cls.slice(1)
+        if (rest.startsWith('-') && rest.length > 1) {
+          return `!-${prefix}${rest.slice(1)}`
+        }
+        return `!${prefix}${rest}`
       }
 
       // Handle negative values like -mt-4
@@ -10695,6 +10709,206 @@ export interface PricingToggleProps
           name: "index.ts",
           content: prefixTailwindClasses(`export { PricingToggle } from "./pricing-toggle";
 export type { PricingToggleProps, PricingToggleTab } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "talk-to-us-modal": {
+      name: "talk-to-us-modal",
+      description: "A modal dialog with icon, heading, description, and two action buttons prompting users to contact support. Triggered by PowerUpCard's Talk to us button.",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "@radix-ui/react-dialog"
+      ],
+      internalDependencies: [
+            "button",
+            "dialog"
+      ],
+      isMultiFile: true,
+      directory: "talk-to-us-modal",
+      mainFile: "talk-to-us-modal.tsx",
+      files: [
+        {
+          name: "talk-to-us-modal.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { MyOperatorChatIcon } from "./icon";
+import { Button } from "../button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../dialog";
+import type { TalkToUsModalProps } from "./types";
+
+/**
+ * TalkToUsModal is a dialog that prompts users to contact support.
+ * Features a centered icon, heading, description, and two action buttons
+ * (cancel + primary CTA).
+ *
+ * Used on the pricing page when a power-up or plan requires sales contact.
+ * Typically triggered by the PowerUpCard's "Talk to us" button.
+ *
+ * @example
+ * \`\`\`tsx
+ * const [open, setOpen] = useState(false);
+ *
+ * <PowerUpCard onCtaClick={() => setOpen(true)} ... />
+ * <TalkToUsModal
+ *   open={open}
+ *   onOpenChange={setOpen}
+ *   onPrimaryAction={() => window.open("mailto:support@myoperator.com")}
+ * />
+ * \`\`\`
+ */
+const TalkToUsModal: React.FC<TalkToUsModalProps> = ({
+  open,
+  onOpenChange,
+  title = "Let's Talk!",
+  description = "Please contact our team for more details. We're here to help you choose the right plan.",
+  icon,
+  primaryActionLabel = "Contact support",
+  secondaryActionLabel = "Cancel",
+  onPrimaryAction,
+  onSecondaryAction,
+  className,
+}) => {
+  const handleSecondaryAction = () => {
+    onSecondaryAction?.();
+    onOpenChange?.(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        size="sm"
+        hideCloseButton
+        className={cn("!p-0 !gap-0", className)}
+      >
+        <div className="flex flex-col items-center gap-6 px-[60px] py-10 text-center">
+          {/* Icon + Text section */}
+          <div className="flex flex-col items-center gap-[18px]">
+            {icon ?? <MyOperatorChatIcon />}
+            <div className="flex flex-col gap-1">
+              <DialogTitle className="m-0 text-base font-semibold text-semantic-text-primary">
+                {title}
+              </DialogTitle>
+              <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
+                {description}
+              </DialogDescription>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-4">
+            <Button variant="outline" onClick={handleSecondaryAction}>
+              {secondaryActionLabel}
+            </Button>
+            <Button onClick={onPrimaryAction}>{primaryActionLabel}</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+TalkToUsModal.displayName = "TalkToUsModal";
+
+export { TalkToUsModal };
+`, prefix),
+        },
+        {
+          name: "icon.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+interface BrandIconProps extends React.SVGAttributes<SVGElement> {
+  className?: string;
+}
+
+/**
+ * MyOperator branded chat icon — teal speech-bubble with white phone
+ * on a light gray circle. Extracted from the Figma design system.
+ *
+ * Used in TalkToUsModal and available for any component that needs
+ * the MyOperator contact/chat branding.
+ */
+const MyOperatorChatIcon = React.forwardRef<SVGSVGElement, BrandIconProps>(
+  ({ className, ...props }, ref) => (
+    <svg
+      ref={ref}
+      className={className}
+      width="61"
+      height="61"
+      viewBox="0 0 61 61"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="30.6" cy="30.6" r="30.6" fill="#F3F5F6" />
+      <g transform="translate(14.1, 13.6)">
+        <path
+          d="M32.9562 21.4404C31.5008 27.6441 26.7424 32.5167 20.7061 33.9765L28.3074 33.932C28.4772 33.9415 28.6454 33.94 28.8121 33.9288H28.8168C30.9282 33.7825 32.6846 32.0523 32.8821 29.8466V29.8355C32.9038 29.5906 32.9084 29.3393 32.8883 29.0833L32.9562 21.4404Z"
+          fill="#DBDBDB"
+        />
+        <path
+          d="M0.0664 29.1656C0.0571 29.3405 0.0587 29.5138 0.0695 29.6856V29.6904C0.2114 31.8659 1.8907 33.6756 4.0314 33.8791H4.0422C4.28 33.9014 4.5238 33.9062 4.7723 33.8855L16.2646 33.9936C16.3433 33.9936 16.4205 34 16.4992 34C16.5363 34 16.5718 33.9968 16.6088 33.9968L16.9129 34L16.9098 33.9889C25.8323 33.7646 33 26.2458 33 16.9984C33 7.751 25.6116 0 16.4992 0C7.3868 0 0 7.611 0 17L0.0664 29.1656Z"
+          fill="#2BBBC9"
+        />
+        <path
+          d="M23.7962 20.8195C23.398 20.6143 21.444 19.6236 21.0797 19.4868C20.7155 19.3501 20.45 19.2817 20.1846 19.692C19.9191 20.1023 19.1582 21.0246 18.9251 21.2982C18.6936 21.5717 18.4605 21.6051 18.0639 21.4015C17.6672 21.1964 16.3862 20.7638 14.8674 19.3676C13.6852 18.2814 12.8872 16.9408 12.6557 16.5305C12.4242 16.1202 12.631 15.8992 12.8301 15.694C13.0092 15.5096 13.2283 15.2154 13.4274 14.9768C13.6265 14.7383 13.6929 14.5665 13.8241 14.293C13.9568 14.0195 13.8905 13.781 13.7917 13.5758C13.6929 13.3707 12.898 11.3542 12.5662 10.5336C12.2436 9.7353 11.9149 9.8434 11.671 9.8307C11.4395 9.818 11.174 9.8164 10.9086 9.8164C10.6431 9.8164 10.2125 9.9182 9.8482 10.3285C9.484 10.7388 8.4561 11.7295 8.4561 13.746C8.4561 15.7624 9.8806 17.7105 10.0797 17.984C10.2788 18.2576 12.8826 22.3939 16.8708 24.1702C17.8185 24.5916 18.5593 24.8445 19.1366 25.0337C20.0889 25.3454 20.9563 25.3009 21.6415 25.1959C22.4055 25.0782 23.9937 24.2052 24.3256 23.2494C24.6574 22.2921 24.6574 21.4715 24.5571 21.3013C24.4583 21.1312 24.1928 21.0278 23.7946 20.8227"
+          fill="white"
+        />
+      </g>
+    </svg>
+  )
+);
+MyOperatorChatIcon.displayName = "MyOperatorChatIcon";
+
+export { MyOperatorChatIcon };
+export type { BrandIconProps };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+/**
+ * Props for the TalkToUsModal component.
+ */
+export interface TalkToUsModalProps {
+  /** Whether the modal is open */
+  open?: boolean;
+  /** Callback when open state changes */
+  onOpenChange?: (open: boolean) => void;
+  /** Heading text (default: "Let's Talk!") */
+  title?: string;
+  /** Description text below the heading */
+  description?: string;
+  /** Custom icon element. Defaults to a phone icon in a circular badge */
+  icon?: React.ReactNode;
+  /** Label for the primary action button (default: "Contact support") */
+  primaryActionLabel?: string;
+  /** Label for the secondary action button (default: "Cancel") */
+  secondaryActionLabel?: string;
+  /** Callback when primary action button is clicked */
+  onPrimaryAction?: () => void;
+  /** Callback when secondary action button is clicked (also closes the modal) */
+  onSecondaryAction?: () => void;
+  /** Additional className for the dialog content */
+  className?: string;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { TalkToUsModal } from "./talk-to-us-modal";
+export type { TalkToUsModalProps } from "./types";
+export { MyOperatorChatIcon } from "./icon";
+export type { BrandIconProps } from "./icon";
 `, prefix),
         }
       ],

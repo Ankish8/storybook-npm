@@ -496,13 +496,27 @@ function prefixClassString(classString: string, prefix: string): string {
       const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria|group|peer)(\\/[a-z0-9-]+)?-?\\[[^\\]]+\\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
-        const utility = cls.slice(variants.length)
+        let utility = cls.slice(variants.length)
         if (!utility) return cls
+
+        // Handle ! important modifier: hover:!p-0 → hover:!tw-p-0
+        const isImportant = utility.startsWith('!')
+        if (isImportant) utility = utility.slice(1)
+
         // Prefix the utility part, keep variants as-is
         if (utility.startsWith('-')) {
-          return \`\${variants}-\${prefix}\${utility.slice(1)}\`
+          return \`\${variants}\${isImportant ? '!' : ''}-\${prefix}\${utility.slice(1)}\`
         }
-        return \`\${variants}\${prefix}\${utility}\`
+        return \`\${variants}\${isImportant ? '!' : ''}\${prefix}\${utility}\`
+      }
+
+      // Handle ! important modifier: !p-0 → !tw-p-0
+      if (cls.startsWith('!') && cls.length > 1) {
+        const rest = cls.slice(1)
+        if (rest.startsWith('-') && rest.length > 1) {
+          return \`!-\${prefix}\${rest.slice(1)}\`
+        }
+        return \`!\${prefix}\${rest}\`
       }
 
       // Handle negative values like -mt-4

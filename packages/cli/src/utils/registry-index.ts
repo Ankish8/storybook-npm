@@ -352,6 +352,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["switch"],
   },
+  "talk-to-us-modal": {
+    name: "talk-to-us-modal",
+    description: "A modal dialog with icon, heading, description, and two action buttons prompting users to contact support. Triggered by PowerUpCard's Talk to us button.",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","@radix-ui/react-dialog"],
+    category: "custom",
+    internalDependencies: ["button","dialog"],
+  },
   "wallet-topup": {
     name: "wallet-topup",
     description: "A component for wallet top-up with amount selection and coupon support",

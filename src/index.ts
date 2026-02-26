@@ -1,6 +1,10 @@
 // Utils
 export { cn } from "./lib/utils";
 
+// Brand Icons
+export { MyOperatorChatIcon } from "./components/custom/talk-to-us-modal/icon";
+export type { BrandIconProps } from "./components/custom/talk-to-us-modal/icon";
+
 // Button
 export { Button, buttonVariants } from "./components/ui/button";
 export type { ButtonProps } from "./components/ui/button";
@@ -253,6 +257,10 @@ export type {
 // PowerUpCard (Custom)
 export { PowerUpCard } from "./components/custom/power-up-card";
 export type { PowerUpCardProps } from "./components/custom/power-up-card";
+
+// TalkToUsModal (Custom)
+export { TalkToUsModal } from "./components/custom/talk-to-us-modal";
+export type { TalkToUsModalProps } from "./components/custom/talk-to-us-modal";
 
 // LetUsDriveCard (Custom)
 export { LetUsDriveCard } from "./components/custom/let-us-drive-card";

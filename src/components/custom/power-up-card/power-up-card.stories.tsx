@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import React, { useState } from "react";
 import { Shield, Hash, PhoneCall, ExternalLink } from "lucide-react";
 import { PowerUpCard } from "./power-up-card";
+import { TalkToUsModal } from "../talk-to-us-modal";
 
 const meta: Meta<typeof PowerUpCard> = {
   title: "Custom/Plan & Payment/Plan & Pricing/PowerUpCard",
@@ -218,49 +219,118 @@ export const CustomCTA: Story = {
 export const PowerUpsSection: Story = {
   name: "Power-ups Section",
   parameters: { layout: "padded" },
-  render: () => (
-    <div
-      className="flex flex-col gap-4 bg-semantic-bg-ui rounded-lg px-6 py-10"
-      style={{ width: "1091px" }}
-    >
-      {/* Section header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
-          Power-ups and charges
-        </h2>
-        <button className="flex items-center gap-1 text-sm font-semibold text-semantic-text-link hover:underline bg-transparent border-none cursor-pointer p-0">
-          See full feature comparison
-          <ExternalLink className="size-3.5" />
-        </button>
-      </div>
+  render: () => {
+    const Section = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <div
+          className="flex flex-col gap-4 bg-semantic-bg-ui rounded-lg px-6 py-10"
+          style={{ width: "1091px" }}
+        >
+          {/* Section header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
+              Power-ups and charges
+            </h2>
+            <button className="flex items-center gap-1 text-sm font-semibold text-semantic-text-link hover:underline bg-transparent border-none cursor-pointer p-0">
+              See full feature comparison
+              <ExternalLink className="size-3.5" />
+            </button>
+          </div>
 
-      {/* Cards grid */}
-      <div className="flex gap-6">
-        <PowerUpCard
-          className="flex-1"
-          icon={<Shield className="size-6 text-semantic-text-secondary" />}
-          title="Truecaller business"
-          price="Starts @ ₹30,000/month"
-          description="Leverage the power of Truecaller Business to grow your reach and reputation."
-          onCtaClick={() => {}}
-        />
-        <PowerUpCard
-          className="flex-1"
-          icon={<Hash className="size-6 text-semantic-text-secondary" />}
-          title="1800 Toll-free"
-          price="Starts @ ₹500/month"
-          description="Strengthen your brand accessibility with a professional 1800 line."
-          onCtaClick={() => {}}
-        />
-        <PowerUpCard
-          className="flex-1"
-          icon={<PhoneCall className="size-6 text-semantic-text-secondary" />}
-          title="Auto-Dialer"
-          price="Starts @ ₹700/user/month"
-          description="Available for SUV & Enterprise plans as an add-on per user."
-          onCtaClick={() => {}}
-        />
-      </div>
-    </div>
-  ),
+          {/* Cards grid */}
+          <div className="flex gap-6">
+            <PowerUpCard
+              className="flex-1"
+              icon={<Shield className="size-6 text-semantic-text-secondary" />}
+              title="Truecaller business"
+              price="Starts @ ₹30,000/month"
+              description="Leverage the power of Truecaller Business to grow your reach and reputation."
+              onCtaClick={() => setOpen(true)}
+            />
+            <PowerUpCard
+              className="flex-1"
+              icon={<Hash className="size-6 text-semantic-text-secondary" />}
+              title="1800 Toll-free"
+              price="Starts @ ₹500/month"
+              description="Strengthen your brand accessibility with a professional 1800 line."
+              onCtaClick={() => setOpen(true)}
+            />
+            <PowerUpCard
+              className="flex-1"
+              icon={<PhoneCall className="size-6 text-semantic-text-secondary" />}
+              title="Auto-Dialer"
+              price="Starts @ ₹700/user/month"
+              description="Available for SUV & Enterprise plans as an add-on per user."
+              onCtaClick={() => setOpen(true)}
+            />
+          </div>
+          <TalkToUsModal
+            open={open}
+            onOpenChange={setOpen}
+            onPrimaryAction={() => alert("Contacting support...")}
+          />
+        </div>
+      );
+    };
+    return <Section />;
+  },
+};
+
+// ─── With TalkToUsModal (Interactive) ────────────────────────────────────
+
+export const WithTalkToUsModal: Story = {
+  name: "With TalkToUsModal",
+  parameters: { layout: "padded" },
+  render: () => {
+    const Demo = () => {
+      const [open, setOpen] = useState(false);
+      return (
+        <div
+          className="flex flex-col gap-4 rounded-lg bg-semantic-bg-ui px-6 py-10"
+          style={{ width: "1091px" }}
+        >
+          <h2 className="m-0 text-lg font-semibold text-semantic-text-primary">
+            Power-ups and charges
+          </h2>
+          <div className="flex gap-6">
+            <PowerUpCard
+              className="flex-1"
+              icon={
+                <Shield className="size-6 text-semantic-text-secondary" />
+              }
+              title="Truecaller business"
+              price="Starts @ ₹30,000/month"
+              description="Leverage the power of Truecaller Business to grow your reach and reputation."
+              onCtaClick={() => setOpen(true)}
+            />
+            <PowerUpCard
+              className="flex-1"
+              icon={<Hash className="size-6 text-semantic-text-secondary" />}
+              title="1800 Toll-free"
+              price="Starts @ ₹500/month"
+              description="Strengthen your brand accessibility with a professional 1800 line."
+              onCtaClick={() => setOpen(true)}
+            />
+            <PowerUpCard
+              className="flex-1"
+              icon={
+                <PhoneCall className="size-6 text-semantic-text-secondary" />
+              }
+              title="Auto-Dialer"
+              price="Starts @ ₹700/user/month"
+              description="Available for SUV & Enterprise plans as an add-on per user."
+              onCtaClick={() => setOpen(true)}
+            />
+          </div>
+          <TalkToUsModal
+            open={open}
+            onOpenChange={setOpen}
+            onPrimaryAction={() => alert("Contacting support...")}
+          />
+        </div>
+      );
+    };
+    return <Demo />;
+  },
 };
