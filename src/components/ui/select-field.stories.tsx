@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { SelectField, type SelectOption } from "./select-field";
+import { FormModal } from "./form-modal";
+import { Input } from "./input";
 
 const authOptions: SelectOption[] = [
   { value: "none", label: "None" },
@@ -501,12 +503,24 @@ export const OnSelect: Story = {
 const InterceptValueExample = () => {
   const [value, setValue] = useState("7d");
   const [modalOpen, setModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [customLabel, setCustomLabel] = useState("");
 
-  const dateOptions: SelectOption[] = [
+  const baseOptions: SelectOption[] = [
     { value: "7d", label: "Last 7 days" },
     { value: "30d", label: "Last 30 days" },
     { value: "90d", label: "Last 90 days" },
-    { value: "custom", label: "Add custom date…" },
+  ];
+
+  // When a custom range is confirmed, add it as a real option so the
+  // select can display it. The "Select custom date" action item is always last.
+  const options: SelectOption[] = [
+    ...baseOptions,
+    ...(customLabel
+      ? [{ value: "custom-range", label: customLabel }]
+      : []),
+    { value: "custom", label: "Select custom date" },
   ];
 
   return (
@@ -521,35 +535,175 @@ const InterceptValueExample = () => {
           }
         }}
         interceptValue={(val) => val !== "custom"}
-        options={dateOptions}
+        options={options}
       />
-      <p className="text-sm text-semantic-text-secondary">
-        Committed value: <strong>{value}</strong>
-      </p>
-      {modalOpen && (
-        <div className="rounded border border-semantic-border-layout bg-semantic-bg-ui p-3 text-xs">
-          <p className="font-semibold text-semantic-text-primary mb-2">
-            Custom date modal would open here
-          </p>
-          <button
-            type="button"
-            className="text-semantic-text-link underline"
-            onClick={() => {
-              setValue("custom-2025-01-01");
-              setModalOpen(false);
-            }}
-          >
-            Confirm custom range
-          </button>
+
+      <FormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        title="Select custom date"
+        saveButtonText="Select custom date range for invoices"
+        disableSave={!startDate || !endDate}
+        onSave={() => {
+          setCustomLabel(`${startDate} – ${endDate}`);
+          setValue("custom-range");
+          setModalOpen(false);
+          setStartDate("");
+          setEndDate("");
+        }}
+        onCancel={() => {
+          setStartDate("");
+          setEndDate("");
+        }}
+      >
+        <div className="grid gap-1.5">
+          <label className="text-xs font-normal text-semantic-text-muted">
+            Start
+          </label>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
         </div>
-      )}
+        <div className="grid gap-1.5">
+          <label className="text-xs font-normal text-semantic-text-muted">
+            End
+          </label>
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+      </FormModal>
+    </div>
+  );
+};
+
+// interceptValue — single field example
+const InterceptValueSingleExample = () => {
+  const [value, setValue] = useState("500");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [customAmount, setCustomAmount] = useState("");
+  const [customLabel, setCustomLabel] = useState("");
+
+  const options: SelectOption[] = [
+    { value: "500", label: "500" },
+    { value: "1000", label: "1,000" },
+    { value: "5000", label: "5,000" },
+    ...(customLabel
+      ? [{ value: "custom-amount", label: customLabel }]
+      : []),
+    { value: "custom", label: "Enter custom amount" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4 w-80">
+      <SelectField
+        label="Recharge amount"
+        value={value}
+        onValueChange={setValue}
+        onSelect={(option) => {
+          if (option.value === "custom") {
+            setModalOpen(true);
+          }
+        }}
+        interceptValue={(val) => val !== "custom"}
+        options={options}
+      />
+
+      <FormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        title="Enter custom amount"
+        saveButtonText="Confirm"
+        disableSave={!customAmount}
+        onSave={() => {
+          setCustomLabel(`₹${customAmount}`);
+          setValue("custom-amount");
+          setModalOpen(false);
+          setCustomAmount("");
+        }}
+        onCancel={() => setCustomAmount("")}
+      >
+        <div className="grid gap-1.5">
+          <label className="text-xs font-normal text-semantic-text-muted">
+            Amount
+          </label>
+          <Input
+            type="number"
+            placeholder="e.g. 2500"
+            value={customAmount}
+            onChange={(e) => setCustomAmount(e.target.value)}
+          />
+        </div>
+      </FormModal>
     </div>
   );
 };
 
 export const InterceptValue: Story = {
   name: "interceptValue (action items)",
-  render: () => <InterceptValueExample />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Return `false` from `interceptValue` to prevent `onValueChange` — useful for action items that open a modal instead of selecting a value. Requires controlled mode (`value` prop). Works with both multi-field and single-field modals.",
+      },
+      source: {
+        code: `const [value, setValue] = useState("7d");
+const [modalOpen, setModalOpen] = useState(false);
+const [startDate, setStartDate] = useState("");
+const [endDate, setEndDate] = useState("");
+const [customLabel, setCustomLabel] = useState("");
+
+const options = [
+  { value: "7d", label: "Last 7 days" },
+  { value: "30d", label: "Last 30 days" },
+  { value: "90d", label: "Last 90 days" },
+  // Show the confirmed custom range as a real selectable option
+  ...(customLabel ? [{ value: "custom-range", label: customLabel }] : []),
+  // Action item — interceptValue blocks this from committing
+  { value: "custom", label: "Select custom date" },
+];
+
+<SelectField
+  label="Date range"
+  value={value}
+  onValueChange={setValue}
+  onSelect={(option) => {
+    if (option.value === "custom") setModalOpen(true);
+  }}
+  interceptValue={(val) => val !== "custom"}
+  options={options}
+/>
+
+<FormModal
+  open={modalOpen}
+  onOpenChange={setModalOpen}
+  title="Select custom date"
+  saveButtonText="Select custom date range for invoices"
+  disableSave={!startDate || !endDate}
+  onSave={() => {
+    setCustomLabel(\`\${startDate} – \${endDate}\`);
+    setValue("custom-range");
+    setModalOpen(false);
+  }}
+>
+  <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+  <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+</FormModal>`,
+        language: "tsx",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex gap-8">
+      <InterceptValueExample />
+      <InterceptValueSingleExample />
+    </div>
+  ),
 };
 
 // Loading State
