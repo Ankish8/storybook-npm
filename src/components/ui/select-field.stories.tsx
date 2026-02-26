@@ -284,6 +284,14 @@ import { SelectField } from "@/components/ui/select-field"
         defaultValue: { summary: "Search..." },
       },
     },
+    interceptValue: {
+      control: false,
+      description:
+        "Intercept a value change before it commits. Return false to prevent onValueChange from firing (only onSelect fires). Useful for action items like 'Add custom…' that open a modal.",
+      table: {
+        type: { summary: "(value: string) => boolean" },
+      },
+    },
   },
 };
 
@@ -487,6 +495,61 @@ const OnSelectExample = () => {
 export const OnSelect: Story = {
   name: "onSelect callback",
   render: () => <OnSelectExample />,
+};
+
+// interceptValue Example
+const InterceptValueExample = () => {
+  const [value, setValue] = useState("7d");
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const dateOptions: SelectOption[] = [
+    { value: "7d", label: "Last 7 days" },
+    { value: "30d", label: "Last 30 days" },
+    { value: "90d", label: "Last 90 days" },
+    { value: "custom", label: "Add custom date…" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4 w-80">
+      <SelectField
+        label="Date range"
+        value={value}
+        onValueChange={setValue}
+        onSelect={(option) => {
+          if (option.value === "custom") {
+            setModalOpen(true);
+          }
+        }}
+        interceptValue={(val) => val !== "custom"}
+        options={dateOptions}
+      />
+      <p className="text-sm text-semantic-text-secondary">
+        Committed value: <strong>{value}</strong>
+      </p>
+      {modalOpen && (
+        <div className="rounded border border-semantic-border-layout bg-semantic-bg-ui p-3 text-xs">
+          <p className="font-semibold text-semantic-text-primary mb-2">
+            Custom date modal would open here
+          </p>
+          <button
+            type="button"
+            className="text-semantic-text-link underline"
+            onClick={() => {
+              setValue("custom-2025-01-01");
+              setModalOpen(false);
+            }}
+          >
+            Confirm custom range
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const InterceptValue: Story = {
+  name: "interceptValue (action items)",
+  render: () => <InterceptValueExample />,
 };
 
 // Loading State

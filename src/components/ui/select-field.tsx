@@ -46,6 +46,14 @@ export interface SelectFieldProps {
   onValueChange?: (value: string) => void;
   /** Callback when an option is selected, provides the full option object */
   onSelect?: (option: SelectOption) => void;
+  /**
+   * Intercept a value change before it commits. Return `false` to prevent
+   * `onValueChange` from firing (only `onSelect` will fire). Useful for
+   * "action" items like "Add custom date" that should open a modal instead
+   * of committing a value. Requires controlled mode (`value` prop) to
+   * visually revert the selection.
+   */
+  interceptValue?: (value: string) => boolean;
   /** Options to display */
   options: SelectOption[];
   /** Enable search/filter functionality */
@@ -95,6 +103,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       defaultValue,
       onValueChange,
       onSelect,
+      interceptValue,
       options,
       searchable,
       searchPlaceholder = "Search...",
@@ -109,10 +118,16 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
 
-    // Combined value change handler that also fires onSelect with full option object
+    // Combined value change handler that also fires onSelect with full option object.
+    // When interceptValue returns false, onValueChange is skipped (only onSelect fires).
     const handleValueChange = React.useCallback(
       (newValue: string) => {
-        onValueChange?.(newValue);
+        const intercepted = interceptValue?.(newValue) === false;
+
+        if (!intercepted) {
+          onValueChange?.(newValue);
+        }
+
         if (onSelect) {
           const option = options.find((o) => o.value === newValue);
           if (option) {
@@ -120,7 +135,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           }
         }
       },
-      [onValueChange, onSelect, options]
+      [onValueChange, onSelect, interceptValue, options]
     );
 
     // Derive state from props

@@ -216,6 +216,57 @@ describe("SelectField", () => {
     });
   });
 
+  // interceptValue
+  it("skips onValueChange when interceptValue returns false", async () => {
+    const handleValueChange = vi.fn();
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        value="option1"
+        onValueChange={handleValueChange}
+        onSelect={handleSelect}
+        interceptValue={(val) => val !== "option2"}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(handleValueChange).not.toHaveBeenCalled();
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option2",
+      label: "Option 2",
+    });
+  });
+
+  it("allows onValueChange when interceptValue returns true", async () => {
+    const handleValueChange = vi.fn();
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        value="option1"
+        onValueChange={handleValueChange}
+        onSelect={handleSelect}
+        interceptValue={() => true}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 3"));
+
+    expect(handleValueChange).toHaveBeenCalledWith("option3");
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option3",
+      label: "Option 3",
+    });
+  });
+
   // Uncontrolled mode
   it("works in uncontrolled mode with defaultValue", () => {
     render(<SelectField options={defaultOptions} defaultValue="option2" />);
