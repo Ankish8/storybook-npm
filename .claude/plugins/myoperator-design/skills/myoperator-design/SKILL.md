@@ -356,7 +356,7 @@ For detailed token values and component examples, see `references/design-tokens.
 
 ## Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 43 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 44 components across 7 categories.
 
 ### Quick Reference
 
@@ -404,6 +404,7 @@ For detailed token values and component examples, see `references/design-tokens.
 | PricingCard | custom | `npx myoperator-ui add pricing-card` |
 | PricingPage | custom | `npx myoperator-ui add pricing-page` |
 | PricingToggle | custom | `npx myoperator-ui add pricing-toggle` |
+| TalkToUsModal | custom | `npx myoperator-ui add talk-to-us-modal` |
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
 
 ### Core — Essential UI primitives
@@ -1022,6 +1023,15 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add pricing-toggle`
 **Requires**: `switch` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+#### TalkToUsModal
+> A modal dialog with icon, heading, description, and two action buttons prompting users to contact support. Triggered by PowerUpCard's Talk to us button.
+
+**Install**: `npx myoperator-ui add talk-to-us-modal`
+**Requires**: `button`, `dialog` (auto-installed)
 **Type**: Multi-file component
 
 ---
