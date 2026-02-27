@@ -25,6 +25,10 @@ export interface DateRangeModalProps {
   loading?: boolean;
   minDate?: Date;
   maxDate?: Date;
+  /** Preselected start date when modal opens (e.g. from URL when reopening custom date) */
+  defaultStartDate?: Date;
+  /** Preselected end date when modal opens (e.g. from URL when reopening custom date) */
+  defaultEndDate?: Date;
 }
 
 function DateRangeModal({
@@ -38,9 +42,11 @@ function DateRangeModal({
   loading = false,
   minDate,
   maxDate,
+  defaultStartDate,
+  defaultEndDate,
 }: DateRangeModalProps) {
-  const [startDate, setStartDate] = React.useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = React.useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = React.useState<Date | undefined>(defaultStartDate);
+  const [endDate, setEndDate] = React.useState<Date | undefined>(defaultEndDate);
 
   const canConfirm = !!startDate && !!endDate;
 

@@ -166,6 +166,30 @@ export const Loading: Story = {
   },
 };
 
+export const WithDefaultDates: Story = {
+  name: "With Default Dates",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass `defaultStartDate` and `defaultEndDate` to pre-populate the inputs when the modal opens. Useful when restoring a previously selected range (e.g. from URL params).",
+      },
+    },
+  },
+  render: () => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+
+    return (
+      <ModalDemo
+        defaultStartDate={thirtyDaysAgo}
+        defaultEndDate={today}
+      />
+    );
+  },
+};
+
 export const CustomTitle: Story = {
   name: "Custom Title & Button Text",
   render: () => (
