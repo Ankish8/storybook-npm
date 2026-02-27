@@ -499,28 +499,23 @@ export const OnSelect: Story = {
   render: () => <OnSelectExample />,
 };
 
-// interceptValue Example
+// Action items example — "Add custom date" opens a modal without adding
+// dynamic options.  The trigger shows the action item's own label and
+// re-clicking the same item re-opens the modal.
 const InterceptValueExample = () => {
-  const [value, setValue] = useState("7d");
+  const [value, setValue] = useState("this-month");
   const [modalOpen, setModalOpen] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [customLabel, setCustomLabel] = useState("");
+  const [appliedRange, setAppliedRange] = useState("");
 
-  const baseOptions: SelectOption[] = [
-    { value: "7d", label: "Last 7 days" },
-    { value: "30d", label: "Last 30 days" },
-    { value: "90d", label: "Last 90 days" },
-  ];
-
-  // When a custom range is confirmed, add it as a real option so the
-  // select can display it. The "Select custom date" action item is always last.
   const options: SelectOption[] = [
-    ...baseOptions,
-    ...(customLabel
-      ? [{ value: "custom-range", label: customLabel }]
-      : []),
-    { value: "custom", label: "Select custom date" },
+    { value: "last-week", label: "Last Week" },
+    { value: "7d", label: "Last 7 days" },
+    { value: "this-month", label: "This month" },
+    { value: "last-month", label: "Last month" },
+    { value: "this-quarter", label: "This quarter" },
+    { value: "custom", label: "Add custom date" },
   ];
 
   return (
@@ -534,19 +529,23 @@ const InterceptValueExample = () => {
             setModalOpen(true);
           }
         }}
-        interceptValue={(val) => val !== "custom"}
         options={options}
       />
+
+      {appliedRange && (
+        <p className="text-xs text-semantic-text-muted">
+          Applied range: {appliedRange}
+        </p>
+      )}
 
       <FormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         title="Select custom date"
-        saveButtonText="Select custom date range for invoices"
+        saveButtonText="Apply"
         disableSave={!startDate || !endDate}
         onSave={() => {
-          setCustomLabel(`${startDate} – ${endDate}`);
-          setValue("custom-range");
+          setAppliedRange(`${startDate} – ${endDate}`);
           setModalOpen(false);
           setStartDate("");
           setEndDate("");
@@ -581,20 +580,17 @@ const InterceptValueExample = () => {
   );
 };
 
-// interceptValue — single field example
+// Action items — single field modal example
 const InterceptValueSingleExample = () => {
   const [value, setValue] = useState("500");
   const [modalOpen, setModalOpen] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
-  const [customLabel, setCustomLabel] = useState("");
+  const [appliedAmount, setAppliedAmount] = useState("");
 
   const options: SelectOption[] = [
     { value: "500", label: "500" },
     { value: "1000", label: "1,000" },
     { value: "5000", label: "5,000" },
-    ...(customLabel
-      ? [{ value: "custom-amount", label: customLabel }]
-      : []),
     { value: "custom", label: "Enter custom amount" },
   ];
 
@@ -609,9 +605,14 @@ const InterceptValueSingleExample = () => {
             setModalOpen(true);
           }
         }}
-        interceptValue={(val) => val !== "custom"}
         options={options}
       />
+
+      {appliedAmount && (
+        <p className="text-xs text-semantic-text-muted">
+          Custom amount: ₹{appliedAmount}
+        </p>
+      )}
 
       <FormModal
         open={modalOpen}
@@ -620,8 +621,7 @@ const InterceptValueSingleExample = () => {
         saveButtonText="Confirm"
         disableSave={!customAmount}
         onSave={() => {
-          setCustomLabel(`₹${customAmount}`);
-          setValue("custom-amount");
+          setAppliedAmount(customAmount);
           setModalOpen(false);
           setCustomAmount("");
         }}
@@ -644,28 +644,25 @@ const InterceptValueSingleExample = () => {
 };
 
 export const InterceptValue: Story = {
-  name: "interceptValue (action items)",
+  name: "Action items",
   parameters: {
     docs: {
       description: {
         story:
-          "Return `false` from `interceptValue` to prevent `onValueChange` — useful for action items that open a modal instead of selecting a value. Requires controlled mode (`value` prop). Works with both multi-field and single-field modals.",
+          "Options like **Add custom date** act as action items — selecting them opens a modal instead of changing a static filter. The trigger updates to show the action item's label, and re-clicking the same action item re-triggers `onSelect` so the modal can re-open.\n\nUse `interceptValue` to **prevent** the value from committing (trigger keeps showing the previous selection while the modal is open).",
       },
       source: {
-        code: `const [value, setValue] = useState("7d");
+        code: `const [value, setValue] = useState("this-month");
 const [modalOpen, setModalOpen] = useState(false);
-const [startDate, setStartDate] = useState("");
-const [endDate, setEndDate] = useState("");
-const [customLabel, setCustomLabel] = useState("");
 
 const options = [
+  { value: "last-week", label: "Last Week" },
   { value: "7d", label: "Last 7 days" },
-  { value: "30d", label: "Last 30 days" },
-  { value: "90d", label: "Last 90 days" },
-  // Show the confirmed custom range as a real selectable option
-  ...(customLabel ? [{ value: "custom-range", label: customLabel }] : []),
-  // Action item — interceptValue blocks this from committing
-  { value: "custom", label: "Select custom date" },
+  { value: "this-month", label: "This month" },
+  { value: "last-month", label: "Last month" },
+  { value: "this-quarter", label: "This quarter" },
+  // Action item — triggers modal, trigger shows its label
+  { value: "custom", label: "Add custom date" },
 ];
 
 <SelectField
@@ -675,7 +672,6 @@ const options = [
   onSelect={(option) => {
     if (option.value === "custom") setModalOpen(true);
   }}
-  interceptValue={(val) => val !== "custom"}
   options={options}
 />
 
@@ -683,16 +679,15 @@ const options = [
   open={modalOpen}
   onOpenChange={setModalOpen}
   title="Select custom date"
-  saveButtonText="Select custom date range for invoices"
-  disableSave={!startDate || !endDate}
+  saveButtonText="Apply"
   onSave={() => {
-    setCustomLabel(\`\${startDate} – \${endDate}\`);
-    setValue("custom-range");
+    // Value stays "custom" — trigger keeps showing "Add custom date"
+    // Use the dates via API call, URL params, etc.
     setModalOpen(false);
   }}
 >
-  <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-  <Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+  <Input type="date" ... />
+  <Input type="date" ... />
 </FormModal>`,
         language: "tsx",
       },

@@ -138,6 +138,19 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       [onValueChange, onSelect, interceptValue, options]
     );
 
+    // Support re-selection: fire onSelect when clicking the already-selected
+    // item. Radix only fires onValueChange for *new* values, so without this
+    // clicking an action item like "Add custom date" a second time would be a
+    // no-op.
+    const handleItemClick = React.useCallback(
+      (option: SelectOption) => {
+        if (option.value === value && onSelect) {
+          onSelect(option);
+        }
+      },
+      [value, onSelect]
+    );
+
     // Derive state from props
     const derivedState = error ? "error" : "default";
 
@@ -253,6 +266,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
+                onClick={() => handleItemClick(option)}
               >
                 {option.label}
               </SelectItem>
@@ -269,7 +283,8 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                         key={option.value}
                         value={option.value}
                         disabled={option.disabled}
-                              >
+                        onClick={() => handleItemClick(option)}
+                      >
                         {option.label}
                       </SelectItem>
                     ))}
