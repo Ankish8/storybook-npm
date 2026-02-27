@@ -144,11 +144,11 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
     // no-op.
     const handleItemClick = React.useCallback(
       (option: SelectOption) => {
-        if (option.value === value && onSelect) {
-          onSelect(option);
+        if (option.value === value) {
+          handleValueChange(option.value);
         }
       },
-      [value, onSelect]
+      [value, handleValueChange]
     );
 
     // Derive state from props
