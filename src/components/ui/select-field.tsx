@@ -266,7 +266,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                 key={option.value}
                 value={option.value}
                 disabled={option.disabled}
-                onClick={() => handleItemClick(option)}
+                onPointerUp={() => handleItemClick(option)}
               >
                 {option.label}
               </SelectItem>
@@ -283,7 +283,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
                         key={option.value}
                         value={option.value}
                         disabled={option.disabled}
-                        onClick={() => handleItemClick(option)}
+                        onPointerUp={() => handleItemClick(option)}
                       >
                         {option.label}
                       </SelectItem>
