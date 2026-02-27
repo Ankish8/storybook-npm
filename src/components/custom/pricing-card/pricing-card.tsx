@@ -51,6 +51,11 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
     const buttonText =
       ctaText || (isCurrentPlan ? "Current plan" : "Select plan");
 
+    // Strip trailing decimal zeros: "500000000.000" → "500000000", "5,000.50" → "5,000.5"
+    const cleanPrice = price.includes(".")
+      ? price.replace(/0+$/, "").replace(/\.$/, "")
+      : price;
+
     return (
       <div
         ref={ref}
@@ -86,7 +91,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           <div className="flex flex-col gap-2.5">
             <div className="flex items-end gap-1">
               <span className="text-4xl leading-[44px] text-semantic-text-primary">
-                ₹{price}
+                ₹{cleanPrice}
               </span>
               <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
                 {period}
