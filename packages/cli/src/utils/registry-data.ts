@@ -615,16 +615,31 @@ const TableHeader = React.forwardRef<
 ));
 TableHeader.displayName = "TableHeader";
 
-const TableBody = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tbody
-    ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
-    {...props}
-  />
-));
+export interface TableBodyProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {
+  /** Show skeleton loading state instead of children */
+  isLoading?: boolean;
+  /** Number of skeleton rows to display when loading (default: 5) */
+  loadingRows?: number;
+  /** Number of skeleton columns to display when loading (default: 5) */
+  loadingColumns?: number;
+}
+
+const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
+  ({ className, isLoading, loadingRows = 5, loadingColumns = 5, children, ...props }, ref) => (
+    <tbody
+      ref={ref}
+      className={cn("[&_tr:last-child]:border-0", className)}
+      {...props}
+    >
+      {isLoading ? (
+        <TableSkeleton rows={loadingRows} columns={loadingColumns} />
+      ) : (
+        children
+      )}
+    </tbody>
+  )
+);
 TableBody.displayName = "TableBody";
 
 const TableFooter = React.forwardRef<

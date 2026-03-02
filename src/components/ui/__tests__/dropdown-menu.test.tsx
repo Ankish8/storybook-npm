@@ -403,7 +403,7 @@ describe("DropdownMenuContent styling", () => {
 
     await user.click(screen.getByText("Open"));
     const content = screen.getByTestId("content");
-    expect(content).toHaveClass("z-50");
+    expect(content).toHaveClass("z-[9999]");
     expect(content).toHaveClass("rounded-md");
     expect(content).toHaveClass("border");
     expect(content).toHaveClass("bg-semantic-bg-primary");

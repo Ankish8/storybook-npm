@@ -33,7 +33,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -113,6 +113,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       value,
       defaultValue,
       onChange,
+      onWheel,
       disabled,
       id,
       type,
@@ -173,6 +174,14 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         value={isControlled ? value : undefined}
         defaultValue={!isControlled ? defaultValue : undefined}
         onChange={handleChange}
+        onWheel={
+          type === "number"
+            ? (e) => {
+                e.currentTarget.blur();
+                onWheel?.(e);
+              }
+            : onWheel
+        }
         aria-invalid={!!error}
         aria-describedby={ariaDescribedBy}
         {...props}

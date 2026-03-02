@@ -277,3 +277,7 @@ export type { PricingPageProps } from "./components/custom/pricing-page";
 // DateRangeModal (Custom)
 export { DateRangeModal } from "./components/custom/date-range-modal/index";
 export type { DateRangeModalProps } from "./components/custom/date-range-modal/index";
+
+// ChatListItem (Custom)
+export { ChatListItem } from "./components/custom/chat-list-item";
+export type { ChatListItemProps, MessageStatus, MessageType } from "./components/custom/chat-list-item";

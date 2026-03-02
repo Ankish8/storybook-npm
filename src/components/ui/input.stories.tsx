@@ -160,6 +160,14 @@ import { Input } from "@/components/ui/input"
       control: "boolean",
       description: "Read-only state",
     },
+    showCheckIcon: {
+      control: "boolean",
+      description: "Shows a check icon on the right when the input is focused",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
   },
 };
 
@@ -256,6 +264,26 @@ export const WithValue: Story = {
     <div className="flex flex-col gap-4 w-80">
       <Input defaultValue="Default value" />
       <Input defaultValue="Error value" state="error" />
+    </div>
+  ),
+};
+
+// With Check Icon
+export const WithCheckIcon: Story = {
+  name: "With check icon",
+  render: () => (
+    <div className="flex flex-col gap-4 w-80">
+      <div>
+        <p className="text-sm text-[#6B7280] mb-1.5">Click to focus — check appears</p>
+        <Input showCheckIcon placeholder="Enter amount" />
+      </div>
+      <div>
+        <p className="text-sm text-[#6B7280] mb-1.5">Side-by-side (wallet top-up pattern)</p>
+        <div className="flex gap-2">
+          <Input showCheckIcon defaultValue="₹1,000" className="text-center" />
+          <Input showCheckIcon defaultValue="₹5,000" className="text-center" />
+        </div>
+      </div>
     </div>
   ),
 };

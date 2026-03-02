@@ -1,0 +1,248 @@
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import {
+  Check,
+  CheckCheck,
+  Clock,
+  FileText,
+  Image as ImageIcon,
+  Sparkles,
+} from "lucide-react";
+
+/* ── Types ── */
+
+export type MessageStatus = "sent" | "delivered" | "read";
+
+export type MessageType = "text" | "document" | "image";
+
+export interface ChatListItemProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
+  /** Contact or customer name */
+  name: string;
+  /** Last message preview text */
+  message: string;
+  /** Timestamp display string (e.g. "2:30 PM", "Yesterday") */
+  timestamp: string;
+  /**
+   * Delivery status of the last outbound message.
+   * Mutually exclusive with `unreadCount` — when set, no unread badge is shown.
+   * - `sent`: single gray checkmark (message left the server)
+   * - `delivered`: double gray checkmarks (reached the customer's device)
+   * - `read`: double blue checkmarks (customer opened the message)
+   */
+  messageStatus?: MessageStatus;
+  /**
+   * Number of unread messages from the customer.
+   * Only shown when `messageStatus` is not set (i.e., last message was inbound).
+   */
+  unreadCount?: number;
+  /**
+   * SLA timer label showing how long the customer has been waiting (e.g. "2h", "50m").
+   * Displayed as a warning-colored tag next to the name.
+   * Typically appears on unread/inbound conversations.
+   */
+  slaTimer?: string;
+  /**
+   * Type of the last message — controls the icon prefix before the message text.
+   * - `text`: no icon (default)
+   * - `document`: file icon
+   * - `image`: image icon
+   */
+  messageType?: MessageType;
+  /** Channel identifier (e.g. "MY01") */
+  channel: string;
+  /** Name of the assigned agent */
+  agentName?: string;
+  /** Whether the assigned agent's account has been deleted — renders in error color */
+  isAgentDeleted?: boolean;
+  /** Whether the conversation is handled by an AI/IVR bot — shows sparkle icon */
+  isBot?: boolean;
+  /** Whether this item is currently selected/active in the inbox */
+  isSelected?: boolean;
+  /** Callback when the chat item is clicked */
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+/* ── Sub-components ── */
+
+function StatusIndicator({ status }: { status: MessageStatus }) {
+  if (status === "sent") {
+    return <Check className="size-4 text-[#a2a6b1] shrink-0" />;
+  }
+  if (status === "delivered") {
+    return <CheckCheck className="size-4 text-[#a2a6b1] shrink-0" />;
+  }
+  // read
+  return <CheckCheck className="size-4 text-[#47b5bc] shrink-0" />;
+}
+
+function UnreadBadge({ count }: { count: number }) {
+  return (
+    <span
+      className="shrink-0 inline-flex items-center justify-center rounded-full bg-[#9de0e7] font-semibold text-[#343e55]"
+      style={{ width: 18, height: 18, fontSize: 10, lineHeight: 1 }}
+    >
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
+function SlaTag({ timer }: { timer: string }) {
+  return (
+    <span className="flex items-center gap-2 h-5 px-[6px] py-[2px] rounded bg-[#fffaeb] shrink-0">
+      <Clock className="size-3 text-[#b54708]" />
+      <span className="text-[12px] text-[#b54708]">{timer}</span>
+    </span>
+  );
+}
+
+function MessageTypeIcon({ type }: { type: MessageType }) {
+  if (type === "document") {
+    return <FileText className="size-[14px] text-[#a2a6b1] shrink-0" />;
+  }
+  if (type === "image") {
+    return <ImageIcon className="size-[14px] text-[#a2a6b1] shrink-0" />;
+  }
+  return null;
+}
+
+function ChannelPill({
+  channel,
+  agentName,
+  isAgentDeleted,
+  isBot,
+}: {
+  channel: string;
+  agentName?: string;
+  isAgentDeleted?: boolean;
+  isBot?: boolean;
+}) {
+  const textColor = isAgentDeleted ? "text-[#b42318]" : "text-[#181d27]";
+
+  return (
+    <div className="flex items-center gap-3">
+      <span
+        className={cn(
+          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-[#e9eaeb] text-[12px]",
+          textColor
+        )}
+      >
+        {channel}
+        {agentName && (
+          <>
+            <span>-</span>
+            <span className="truncate">{agentName}</span>
+          </>
+        )}
+      </span>
+      {isBot && <Sparkles className="size-[14px] text-[#47b5bc]" />}
+    </div>
+  );
+}
+
+/* ── Main Component ── */
+
+/**
+ * ChatListItem displays a conversation preview in an inbox-style list.
+ *
+ * Each item shows the contact name, last message preview, timestamp,
+ * delivery status or unread count, optional SLA timer, and channel/agent info.
+ *
+ * @example
+ * ```tsx
+ * <ChatListItem
+ *   name="Aditi Kumar"
+ *   message="Have a look at this document"
+ *   timestamp="2:30 PM"
+ *   messageStatus="sent"
+ *   messageType="document"
+ *   channel="MY01"
+ *   agentName="Alex Smith"
+ *   onClick={() => setSelectedChat("1")}
+ * />
+ * ```
+ */
+const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
+  (
+    {
+      name,
+      message,
+      timestamp,
+      messageStatus,
+      unreadCount,
+      slaTimer,
+      messageType = "text",
+      channel,
+      agentName,
+      isAgentDeleted = false,
+      isBot = false,
+      isSelected = false,
+      onClick,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>);
+          }
+        }}
+        className={cn(
+          "flex items-start px-4 py-5 w-full transition-colors cursor-pointer",
+          isSelected
+            ? "bg-[#f5f5f5] border-l-[3px] border-l-[#27abb8]"
+            : "bg-white hover:bg-[#fafafa] border-b border-[#e9eaeb]",
+          className
+        )}
+        {...props}
+      >
+        <div className="flex flex-col gap-2 flex-1 min-w-0">
+          {/* Row 1: Name + SLA Timer + Status/Unread Badge */}
+          <div className="flex items-center gap-[6px]">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <span className="text-[14px] text-[#181d27] truncate shrink-0">
+                {name}
+              </span>
+              {slaTimer && <SlaTag timer={slaTimer} />}
+            </div>
+            {messageStatus ? (
+              <StatusIndicator status={messageStatus} />
+            ) : unreadCount ? (
+              <UnreadBadge count={unreadCount} />
+            ) : null}
+          </div>
+
+          {/* Row 2: Message Type Icon + Message Preview + Timestamp */}
+          <div className="flex items-center gap-[6px]">
+            <MessageTypeIcon type={messageType} />
+            <p className="flex-1 text-[14px] text-[#717680] truncate min-w-0 m-0">
+              {message}
+            </p>
+            <span className="text-[12px] text-[#a2a6b1] tracking-[0.06px] shrink-0">
+              {timestamp}
+            </span>
+          </div>
+
+          {/* Row 3: Channel + Agent Pill */}
+          <ChannelPill
+            channel={channel}
+            agentName={agentName}
+            isAgentDeleted={isAgentDeleted}
+            isBot={isBot}
+          />
+        </div>
+      </div>
+    );
+  }
+);
+ChatListItem.displayName = "ChatListItem";
+
+export { ChatListItem };

@@ -8,7 +8,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableSkeleton,
   TableEmpty,
   TableAvatar,
   TableToggle,
@@ -594,7 +593,8 @@ export const Loading: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Using skeleton to show loading state.",
+        story:
+          "Use the `isLoading` prop on `TableBody` to automatically show skeleton rows. Set `loadingRows` and `loadingColumns` to match your table structure. This is the recommended approach — it replaces manual conditional rendering with `<TableSkeleton />`.",
       },
     },
   },
@@ -609,11 +609,113 @@ export const Loading: Story = {
           <TableHead>Emails sent</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        <TableSkeleton rows={5} columns={5} />
+      <TableBody isLoading loadingRows={5} loadingColumns={5}>
+        {/* Children are hidden while loading */}
+        <TableRow>
+          <TableCell>This won't render</TableCell>
+        </TableRow>
       </TableBody>
     </Table>
   ),
+};
+
+// Interactive pagination loading demo
+const PaginationLoadingTable = () => {
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const allData = [
+    [
+      { date: "2020-01-01", subject: "Lorem ipsum dolor", sentBy: "JD", status: "active", emails: 100 },
+      { date: "2023-03-03", subject: "This is the subject", sentBy: "SP", status: "active", emails: 999 },
+      { date: "2022-02-02", subject: "Consectetur adipiscing", sentBy: "ON", status: "disabled", emails: 99 },
+    ],
+    [
+      { date: "2024-05-10", subject: "Sed do eiusmod tempor", sentBy: "AB", status: "active", emails: 250 },
+      { date: "2024-06-15", subject: "Ut enim ad minim veniam", sentBy: "CD", status: "disabled", emails: 50 },
+    ],
+  ];
+
+  const handlePageChange = (newPage: number) => {
+    setIsLoading(true);
+    setPage(newPage);
+    // Simulate API delay
+    setTimeout(() => setIsLoading(false), 1500);
+  };
+
+  const data = allData[page];
+  const totalItems = allData.reduce((sum, p) => sum + p.length, 0);
+  const startItem = page === 0 ? 1 : allData[0].length + 1;
+  const endItem = startItem + data.length - 1;
+
+  return (
+    <div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Sent on</TableHead>
+            <TableHead>Subject</TableHead>
+            <TableHead>Sent by</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Emails sent</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody isLoading={isLoading} loadingRows={3} loadingColumns={5}>
+          {data.map((row, i) => (
+            <TableRow key={i}>
+              <TableCell className="text-semantic-text-secondary">{row.date}</TableCell>
+              <TableCell className="font-medium">{row.subject}</TableCell>
+              <TableCell>
+                <TableAvatar initials={row.sentBy} />
+              </TableCell>
+              <TableCell>
+                <Badge variant={statusVariants[row.status] || "default"}>
+                  {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-semantic-text-secondary">{row.emails}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <div className="flex items-center justify-between mt-3 px-2">
+        <span className="text-sm text-semantic-text-muted">
+          Showing {startItem} to {endItem} of {totalItems} items
+        </span>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 0 || isLoading}
+            onClick={() => handlePageChange(0)}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === allData.length - 1 || isLoading}
+            onClick={() => handlePageChange(1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const PaginationLoading: Story = {
+  name: "Pagination Loading",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates how `isLoading` on `TableBody` provides instant feedback during pagination. Click **Next** to see skeleton rows appear while data loads. This prevents the UX gap where the pagination counter updates but stale data still shows.",
+      },
+    },
+  },
+  render: () => <PaginationLoadingTable />,
 };
 
 export const EmptyState: Story = {

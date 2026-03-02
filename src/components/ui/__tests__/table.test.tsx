@@ -412,6 +412,59 @@ describe("TableSkeleton", () => {
   });
 });
 
+describe("TableBody isLoading", () => {
+  it("renders skeleton instead of children when isLoading is true", () => {
+    render(
+      <Table>
+        <TableBody isLoading loadingRows={3} loadingColumns={4}>
+          <TableRow>
+            <TableCell>This should not render</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    expect(screen.queryByText("This should not render")).not.toBeInTheDocument();
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(3);
+    const cells = screen.getAllByRole("cell");
+    expect(cells).toHaveLength(12); // 3 rows * 4 columns
+  });
+
+  it("renders children when isLoading is false", () => {
+    render(
+      <Table>
+        <TableBody isLoading={false} loadingRows={3} loadingColumns={4}>
+          <TableRow>
+            <TableCell>Visible content</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    expect(screen.getByText("Visible content")).toBeInTheDocument();
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(1);
+  });
+
+  it("uses default 5 rows and 5 columns when loading props are not specified", () => {
+    render(
+      <Table>
+        <TableBody isLoading>
+          <TableRow>
+            <TableCell>Hidden</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(5);
+    const cells = screen.getAllByRole("cell");
+    expect(cells).toHaveLength(25); // 5 rows * 5 columns
+  });
+});
+
 describe("TableEmpty", () => {
   it("renders default empty message", () => {
     render(
