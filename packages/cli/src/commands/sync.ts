@@ -379,63 +379,40 @@ export async function sync(options: SyncOptions) {
     if (options.yes) {
       console.log(chalk.gray('  Run sync without --yes to interactively choose which to remove.\n'))
     } else {
-      const { toDelete } = await prompts({
-        type: 'multiselect',
-        name: 'toDelete',
-        message: 'Select items to delete (space to select, enter to confirm — leave all unselected to keep everything)',
-        choices: visibleOrphans.map((o) => ({
-          title: o.displayPath,
-          value: o,
-          selected: false,
-        })),
-      })
+      const kept: OrphanEntry[] = []
 
-      const selected = (toDelete ?? []) as OrphanEntry[]
-
-      let kept: OrphanEntry[] = []
-
-      if (selected.length > 0) {
-        const { confirmed } = await prompts({
-          type: 'confirm',
-          name: 'confirmed',
-          message: `Permanently delete ${selected.length} item(s)? This cannot be undone.`,
-          initial: false,
+      for (const item of visibleOrphans) {
+        const icon = item.isDir ? '📁' : '📄'
+        const { action } = await prompts({
+          type: 'select',
+          name: 'action',
+          message: `${icon}  ${item.displayPath}`,
+          choices: [
+            { title: 'Keep  — leave it alone', value: 'keep' },
+            { title: 'Delete — permanently remove it', value: 'delete' },
+            { title: 'Ignore — keep and never ask again', value: 'ignore' },
+          ],
         })
 
-        if (confirmed) {
-          for (const item of selected) {
-            await fs.remove(item.fullPath)
-            console.log(chalk.red(`  ✕ Deleted ${item.displayPath}`))
-          }
-          console.log('')
-          kept = visibleOrphans.filter((o) => !selected.includes(o))
-        } else {
-          console.log(chalk.gray('\n  Nothing deleted.\n'))
-          kept = visibleOrphans
-        }
-      } else {
-        console.log(chalk.gray('  No items selected — all kept.\n'))
-        kept = visibleOrphans
-      }
-
-      // Offer to silence future warnings for kept items
-      if (kept.length > 0) {
-        const { addToIgnore } = await prompts({
-          type: 'confirm',
-          name: 'addToIgnore',
-          message: `Add ${kept.length} kept item(s) to .myoperator-ui-ignore to skip future warnings?`,
-          initial: true,
-        })
-
-        if (addToIgnore) {
+        if (action === 'delete') {
+          await fs.remove(item.fullPath)
+          console.log(chalk.red(`  ✕ Deleted ${item.displayPath}`))
+        } else if (action === 'ignore') {
+          kept.push(item)
           const header = ignoredPaths.length === 0
             ? '# myOperator UI — paths to skip in orphan detection (one per line)\n'
             : ''
-          const lines = kept.map((o) => o.displayPath).join('\n')
-          await fs.appendFile(ignorePath, header + lines + '\n')
-          console.log(chalk.green(`  ✓ Added to .myoperator-ui-ignore — won't prompt again.\n`))
+          await fs.appendFile(ignorePath, header + item.displayPath + '\n')
+          ignoredPaths.push(item.displayPath)
+          console.log(chalk.green(`  ✓ ${item.displayPath} added to .myoperator-ui-ignore`))
+        } else {
+          // 'keep' or prompt dismissed
+          kept.push(item)
+          console.log(chalk.gray(`  · Kept ${item.displayPath}`))
         }
       }
+
+      console.log('')
     }
   }
 }
