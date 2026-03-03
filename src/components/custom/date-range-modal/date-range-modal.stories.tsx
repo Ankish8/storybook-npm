@@ -4,7 +4,7 @@ import { DateRangeModal } from "./index";
 import { Button } from "../../ui/button";
 
 const meta: Meta<typeof DateRangeModal> = {
-  title: "Custom/DateRangeModal",
+  title: "Components/DateRangeModal",
   component: DateRangeModal,
   parameters: {
     layout: "centered",

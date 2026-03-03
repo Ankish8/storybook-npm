@@ -97,11 +97,55 @@ export async function sync(options: SyncOptions) {
     }
   }
 
+  // Orphan detection: find files/dirs in the components dir not owned by the current registry
+  const knownFileNames = new Set<string>() // single-file filenames, e.g. "button.tsx"
+  const knownDirNames = new Set<string>()  // multi-file directory names, e.g. "bank-details"
+  for (const name of availableComponents) {
+    const comp = registry[name]
+    if (comp.isMultiFile && comp.directory) {
+      knownDirNames.add(comp.directory)
+    } else {
+      const fn = comp.files[0]?.name
+      if (fn) knownFileNames.add(fn)
+    }
+  }
+
+  type OrphanEntry = {
+    displayPath: string
+    fullPath: string
+    isDir: boolean
+  }
+
+  const orphaned: OrphanEntry[] = []
+  const orphanScanDir = path.join(cwd, options.path)
+
+  if (await fs.pathExists(orphanScanDir)) {
+    const entries = await fs.readdir(orphanScanDir, { withFileTypes: true })
+    for (const entry of entries) {
+      if (entry.isDirectory() && !knownDirNames.has(entry.name)) {
+        orphaned.push({
+          displayPath: `${options.path}/${entry.name}/`,
+          fullPath: path.join(orphanScanDir, entry.name),
+          isDir: true,
+        })
+      } else if (entry.isFile() && entry.name.endsWith('.tsx') && !knownFileNames.has(entry.name)) {
+        orphaned.push({
+          displayPath: `${options.path}/${entry.name}`,
+          fullPath: path.join(orphanScanDir, entry.name),
+          isDir: false,
+        })
+      }
+    }
+  }
+
   // Summary
   console.log(chalk.cyan('  Summary:'))
   console.log(chalk.green(`    New components to add: ${toAdd.length}`))
   console.log(chalk.yellow(`    Components to update: ${toUpdate.length}`))
   console.log(chalk.gray(`    Already up to date: ${upToDate.length}`))
+  if (orphaned.length > 0) {
+    console.log(chalk.red(`    Not in current registry: ${orphaned.length}`))
+  }
   console.log('')
 
   // Check utils.ts prefix configuration (before early return so it always runs)
@@ -180,7 +224,7 @@ export async function sync(options: SyncOptions) {
     }
   }
 
-  if (toAdd.length === 0 && toUpdate.length === 0) {
+  if (toAdd.length === 0 && toUpdate.length === 0 && orphaned.length === 0) {
     console.log(chalk.green('  ✓ All components are up to date!\n'))
     return
   }
@@ -198,8 +242,8 @@ export async function sync(options: SyncOptions) {
     console.log('')
   }
 
-  // Confirm
-  if (!options.yes) {
+  // Confirm (only when there are components to add or update)
+  if (!options.yes && (toAdd.length > 0 || toUpdate.length > 0)) {
     const { confirm } = await prompts({
       type: 'confirm',
       name: 'confirm',
@@ -213,104 +257,152 @@ export async function sync(options: SyncOptions) {
     }
   }
 
-  const spinner = ora('Syncing components...').start()
+  if (toAdd.length > 0 || toUpdate.length > 0) {
+    const spinner = ora('Syncing components...').start()
 
-  try {
-    const installed: { path: string; basePath: string; action: 'added' | 'updated' }[] = []
-    const dependencies: Set<string> = new Set()
-    const processedComponents: Set<string> = new Set()
-    const componentsDir = path.join(cwd, options.path)
+    try {
+      const installed: { path: string; basePath: string; action: 'added' | 'updated' }[] = []
+      const dependencies: Set<string> = new Set()
+      const processedComponents: Set<string> = new Set()
+      const componentsDir = path.join(cwd, options.path)
 
-    // Helper function to install a single component
-    const installComponent = async (componentName: string, action: 'added' | 'updated') => {
-      if (processedComponents.has(componentName)) return
+      // Helper function to install a single component
+      const installComponent = async (componentName: string, action: 'added' | 'updated') => {
+        if (processedComponents.has(componentName)) return
 
-      const component = registry[componentName]
-      if (!component) return
+        const component = registry[componentName]
+        if (!component) return
 
-      // First, install internal dependencies
-      if (component.internalDependencies && component.internalDependencies.length > 0) {
-        for (const depName of component.internalDependencies) {
-          // Only install dependency if it doesn't exist
-          const depComponent = registry[depName]
-          if (depComponent) {
-            const depTargetDir = depComponent.isMultiFile
-              ? path.join(componentsDir, depComponent.directory!)
-              : componentsDir
-            const depMainFile = depComponent.isMultiFile ? depComponent.mainFile : depComponent.files[0]?.name
-            if (depMainFile) {
-              const depExists = await fs.pathExists(path.join(depTargetDir, depMainFile))
-              if (!depExists) {
-                await installComponent(depName, 'added')
+        // First, install internal dependencies
+        if (component.internalDependencies && component.internalDependencies.length > 0) {
+          for (const depName of component.internalDependencies) {
+            // Only install dependency if it doesn't exist
+            const depComponent = registry[depName]
+            if (depComponent) {
+              const depTargetDir = depComponent.isMultiFile
+                ? path.join(componentsDir, depComponent.directory!)
+                : componentsDir
+              const depMainFile = depComponent.isMultiFile ? depComponent.mainFile : depComponent.files[0]?.name
+              if (depMainFile) {
+                const depExists = await fs.pathExists(path.join(depTargetDir, depMainFile))
+                if (!depExists) {
+                  await installComponent(depName, 'added')
+                }
               }
             }
           }
         }
+
+        spinner.text = `${action === 'added' ? 'Adding' : 'Updating'} ${componentName}...`
+
+        const targetDir = component.isMultiFile
+          ? path.join(componentsDir, component.directory!)
+          : componentsDir
+
+        for (const file of component.files) {
+          const filePath = path.join(targetDir, file.name)
+          await fs.ensureDir(path.dirname(filePath))
+          await fs.writeFile(filePath, file.content)
+
+          const relativePath = component.isMultiFile
+            ? `${component.directory}/${file.name}`
+            : file.name
+          installed.push({ path: relativePath, basePath: options.path, action })
+        }
+
+        if (component.dependencies) {
+          component.dependencies.forEach((dep) => dependencies.add(dep))
+        }
+
+        processedComponents.add(componentName)
       }
 
-      spinner.text = `${action === 'added' ? 'Adding' : 'Updating'} ${componentName}...`
-
-      const targetDir = component.isMultiFile
-        ? path.join(componentsDir, component.directory!)
-        : componentsDir
-
-      for (const file of component.files) {
-        const filePath = path.join(targetDir, file.name)
-        await fs.ensureDir(path.dirname(filePath))
-        await fs.writeFile(filePath, file.content)
-
-        const relativePath = component.isMultiFile
-          ? `${component.directory}/${file.name}`
-          : file.name
-        installed.push({ path: relativePath, basePath: options.path, action })
+      // Install new components
+      for (const componentName of toAdd) {
+        await installComponent(componentName, 'added')
       }
 
-      if (component.dependencies) {
-        component.dependencies.forEach((dep) => dependencies.add(dep))
+      // Update existing components
+      for (const componentName of toUpdate) {
+        await installComponent(componentName, 'updated')
       }
 
-      processedComponents.add(componentName)
+      spinner.succeed('Sync complete!')
+
+      // Show results
+      const added = installed.filter((f) => f.action === 'added')
+      const updated = installed.filter((f) => f.action === 'updated')
+
+      if (added.length > 0) {
+        console.log(chalk.green('\n  Added:'))
+        added.forEach((file) => {
+          console.log(chalk.green(`    + ${file.basePath}/${file.path}`))
+        })
+      }
+
+      if (updated.length > 0) {
+        console.log(chalk.yellow('\n  Updated:'))
+        updated.forEach((file) => {
+          console.log(chalk.yellow(`    ~ ${file.basePath}/${file.path}`))
+        })
+      }
+
+      if (dependencies.size > 0) {
+        console.log(chalk.yellow('\n  Required dependencies:'))
+        console.log(chalk.cyan(`    npm install ${Array.from(dependencies).join(' ')}`))
+      }
+
+      console.log('')
+    } catch (error) {
+      spinner.fail('Sync failed')
+      console.error(error)
+      process.exit(1)
     }
+  }
 
-    // Install new components
-    for (const componentName of toAdd) {
-      await installComponent(componentName, 'added')
-    }
-
-    // Update existing components
-    for (const componentName of toUpdate) {
-      await installComponent(componentName, 'updated')
-    }
-
-    spinner.succeed('Sync complete!')
-
-    // Show results
-    const added = installed.filter((f) => f.action === 'added')
-    const updated = installed.filter((f) => f.action === 'updated')
-
-    if (added.length > 0) {
-      console.log(chalk.green('\n  Added:'))
-      added.forEach((file) => {
-        console.log(chalk.green(`    + ${file.basePath}/${file.path}`))
-      })
-    }
-
-    if (updated.length > 0) {
-      console.log(chalk.yellow('\n  Updated:'))
-      updated.forEach((file) => {
-        console.log(chalk.yellow(`    ~ ${file.basePath}/${file.path}`))
-      })
-    }
-
-    if (dependencies.size > 0) {
-      console.log(chalk.yellow('\n  Required dependencies:'))
-      console.log(chalk.cyan(`    npm install ${Array.from(dependencies).join(' ')}`))
-    }
-
+  // Orphan handling: warn about unrecognized files and offer to remove them
+  if (orphaned.length > 0) {
+    console.log(chalk.yellow('\n  ⚠  The following were not found in the current myOperator UI registry.'))
+    console.log(chalk.gray('     They may be outdated components or your own custom files — review before deleting.\n'))
+    orphaned.forEach((o) => console.log(chalk.gray(`       ${o.isDir ? '📁' : '📄'} ${o.displayPath}`)))
     console.log('')
-  } catch (error) {
-    spinner.fail('Sync failed')
-    console.error(error)
-    process.exit(1)
+
+    if (options.yes) {
+      console.log(chalk.gray('  Run sync without --yes to interactively choose which to remove.\n'))
+    } else {
+      const { toDelete } = await prompts({
+        type: 'multiselect',
+        name: 'toDelete',
+        message: 'Select items to delete (space to select, enter to confirm — leave all unselected to keep everything)',
+        choices: orphaned.map((o) => ({
+          title: o.displayPath,
+          value: o,
+          selected: false,
+        })),
+      })
+
+      const selected = (toDelete ?? []) as OrphanEntry[]
+
+      if (selected.length > 0) {
+        const { confirmed } = await prompts({
+          type: 'confirm',
+          name: 'confirmed',
+          message: `Permanently delete ${selected.length} item(s)? This cannot be undone.`,
+          initial: false,
+        })
+
+        if (confirmed) {
+          for (const item of selected) {
+            await fs.remove(item.fullPath)
+            console.log(chalk.red(`  ✕ Deleted ${item.displayPath}`))
+          }
+          console.log('')
+        } else {
+          console.log(chalk.gray('\n  Nothing deleted.\n'))
+        }
+      } else {
+        console.log(chalk.gray('  No items selected — all kept.\n'))
+      }
+    }
   }
 }
