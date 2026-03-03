@@ -361,10 +361,19 @@ export async function sync(options: SyncOptions) {
   }
 
   // Orphan handling: warn about unrecognized files and offer to remove them
-  if (orphaned.length > 0) {
+  const ignorePath = path.join(cwd, '.myoperator-ui-ignore')
+  let ignoredPaths: string[] = []
+  if (await fs.pathExists(ignorePath)) {
+    const raw = await fs.readFile(ignorePath, 'utf-8')
+    ignoredPaths = raw.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#'))
+  }
+
+  const visibleOrphans = orphaned.filter((o) => !ignoredPaths.includes(o.displayPath))
+
+  if (visibleOrphans.length > 0) {
     console.log(chalk.yellow('\n  ⚠  The following were not found in the current myOperator UI registry.'))
     console.log(chalk.gray('     They may be outdated components or your own custom files — review before deleting.\n'))
-    orphaned.forEach((o) => console.log(chalk.gray(`       ${o.isDir ? '📁' : '📄'} ${o.displayPath}`)))
+    visibleOrphans.forEach((o) => console.log(chalk.gray(`       ${o.isDir ? '📁' : '📄'} ${o.displayPath}`)))
     console.log('')
 
     if (options.yes) {
@@ -374,7 +383,7 @@ export async function sync(options: SyncOptions) {
         type: 'multiselect',
         name: 'toDelete',
         message: 'Select items to delete (space to select, enter to confirm — leave all unselected to keep everything)',
-        choices: orphaned.map((o) => ({
+        choices: visibleOrphans.map((o) => ({
           title: o.displayPath,
           value: o,
           selected: false,
@@ -382,6 +391,8 @@ export async function sync(options: SyncOptions) {
       })
 
       const selected = (toDelete ?? []) as OrphanEntry[]
+
+      let kept: OrphanEntry[] = []
 
       if (selected.length > 0) {
         const { confirmed } = await prompts({
@@ -397,11 +408,33 @@ export async function sync(options: SyncOptions) {
             console.log(chalk.red(`  ✕ Deleted ${item.displayPath}`))
           }
           console.log('')
+          kept = visibleOrphans.filter((o) => !selected.includes(o))
         } else {
           console.log(chalk.gray('\n  Nothing deleted.\n'))
+          kept = visibleOrphans
         }
       } else {
         console.log(chalk.gray('  No items selected — all kept.\n'))
+        kept = visibleOrphans
+      }
+
+      // Offer to silence future warnings for kept items
+      if (kept.length > 0) {
+        const { addToIgnore } = await prompts({
+          type: 'confirm',
+          name: 'addToIgnore',
+          message: `Add ${kept.length} kept item(s) to .myoperator-ui-ignore to skip future warnings?`,
+          initial: true,
+        })
+
+        if (addToIgnore) {
+          const header = ignoredPaths.length === 0
+            ? '# myOperator UI — paths to skip in orphan detection (one per line)\n'
+            : ''
+          const lines = kept.map((o) => o.displayPath).join('\n')
+          await fs.appendFile(ignorePath, header + lines + '\n')
+          console.log(chalk.green(`  ✓ Added to .myoperator-ui-ignore — won't prompt again.\n`))
+        }
       }
     }
   }
