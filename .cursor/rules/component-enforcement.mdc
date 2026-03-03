@@ -1,0 +1,65 @@
+---
+description: Enforce component workflow rules when creating or modifying UI components — integrity snapshot, 3-file requirement, and generator usage
+globs: src/components/ui/*.tsx, src/components/custom/**/*.tsx
+alwaysApply: false
+---
+
+# Component Workflow Enforcement
+
+## 1. Always Use the Generator for New Components
+
+Never create component files manually. Use the generator:
+
+```bash
+node scripts/create-component.js <name> "<description>"
+```
+
+This creates `component.tsx`, `component.test.tsx`, `component.stories.tsx`, and updates `components.yaml` in one step.
+
+## 2. Every Component Requires 3 Files
+
+When a component file is created or modified, all three must exist and be kept in sync:
+
+| File | Location |
+|------|----------|
+| Component | `src/components/ui/<name>.tsx` |
+| Tests | `src/components/ui/__tests__/<name>.test.tsx` |
+| Stories | `src/components/ui/<name>.stories.tsx` |
+
+If any file is missing, create it before finishing. For custom multi-file components the same applies under `src/components/custom/<name>/`.
+
+## 3. Integrity Snapshot Workflow
+
+**Before making any component changes:**
+```bash
+cd packages/cli
+npm run integrity:snapshot
+```
+
+**After making changes:**
+```bash
+node scripts/check-integrity.js verify <component-name>
+```
+
+This confirms only the intended component was modified. Do not skip this step.
+
+## 4. One Component at a Time
+
+Only modify the component the user asked about. Do not touch unrelated component files — even for "small cleanup".
+
+## 5. Hardcoded Colors Are Forbidden
+
+Never write hardcoded color values in component files:
+
+```tsx
+// ❌ Wrong
+className="bg-[#343E55] text-white bg-gray-50"
+
+// ✅ Correct
+className="bg-semantic-primary text-semantic-text-inverted bg-semantic-bg-ui"
+```
+
+Before using any token, verify it exists:
+```bash
+grep -- "--semantic-<name>" src/index.css
+```

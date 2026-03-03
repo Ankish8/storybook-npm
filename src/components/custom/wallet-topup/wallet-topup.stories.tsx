@@ -283,3 +283,36 @@ export const WithOutstandingAndPreselected: Story = {
     taxCalculator: (amount: number) => Math.round(amount * 0.18),
   },
 };
+
+export const ControlledOpen: Story = {
+  name: "Controlled Open State",
+  render: () => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="px-3 py-1.5 text-sm bg-semantic-primary text-semantic-text-inverted rounded"
+          >
+            Open
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="px-3 py-1.5 text-sm border border-semantic-border-layout rounded"
+          >
+            Close
+          </button>
+        </div>
+        <WalletTopup
+          icon={<CreditCard className="size-5 text-semantic-primary" />}
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          amounts={[500, 1000, 5000, 10000]}
+        />
+      </div>
+    );
+  },
+};

@@ -1,0 +1,27 @@
+---
+description: Prevent direct edits to auto-generated registry files in the CLI package
+globs: packages/cli/src/registry*.ts, packages/cli/src/utils/registry*.ts
+alwaysApply: false
+---
+
+# Registry Files Are Auto-Generated — Do NOT Edit
+
+These files are produced by `generate-registry.js` reading `components.yaml` + source files. Any manual edits will be overwritten on the next build.
+
+## What to do instead
+
+| Goal | Correct action |
+|------|---------------|
+| Add / update a component | Edit `src/components/ui/<name>.tsx` |
+| Change component metadata | Edit `packages/cli/components.yaml` |
+| Regenerate registry | Run `npm run build` in `packages/cli/` |
+
+## Regeneration command
+
+```bash
+cd packages/cli
+npm run generate-registry   # regenerate only
+npm run build               # full pipeline (validate → generate → tsup → verify)
+```
+
+**Never commit changes to these files directly.**

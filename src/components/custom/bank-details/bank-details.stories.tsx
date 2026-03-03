@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import * as React from "react";
 import { Landmark } from "lucide-react";
 import { BankDetails } from "./bank-details";
 
@@ -236,5 +237,43 @@ export const MinimalItems: Story = {
     items: [
       { label: "UPI ID", value: "myoperator@axis", copyable: true },
     ],
+  },
+};
+
+export const ControlledOpen: Story = {
+  name: "Controlled Open State",
+  render: () => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="px-3 py-1.5 text-sm bg-semantic-primary text-semantic-text-inverted rounded"
+          >
+            Open
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="px-3 py-1.5 text-sm border border-semantic-border-layout rounded"
+          >
+            Close
+          </button>
+        </div>
+        <BankDetails
+          icon={<Landmark className="size-5 text-semantic-primary" />}
+          open={isOpen}
+          onOpenChange={setIsOpen}
+          items={[
+            { label: "Account holder's name", value: "MyOperator" },
+            { label: "Account Number", value: "2223330026552601", copyable: true },
+            { label: "IFSC Code", value: "UTIB000RAZP", copyable: true },
+            { label: "Bank Name", value: "AXIS BANK" },
+          ]}
+        />
+      </div>
+    );
   },
 };

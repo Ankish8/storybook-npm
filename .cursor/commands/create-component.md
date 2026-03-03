@@ -36,6 +36,19 @@ Based on the design:
 - **UI component** (`src/components/ui/`) — Simple, reusable primitive (button, badge, input)
 - **Custom component** (`src/components/custom/`) — Complex composite with multiple elements
 
+### Step 4b: Ask if the component is a Modal or a Page/Panel
+
+Use AskQuestion to ask:
+
+```
+Question: "What kind of component is this?"
+Options:
+  - Modal / Dialog — Opens as an overlay. In Storybook, show it closed by default with a trigger Button.
+  - Page / Panel / Inline — Renders inline. In Storybook, render the component directly.
+```
+
+Store this as `componentKind: "modal" | "inline"`. It controls the story render pattern in Phase 5.
+
 ### Step 5: Select Folder & Sub-folder (ONLY if Custom component)
 
 Scan existing Storybook groups and sub-groups:
@@ -162,11 +175,7 @@ Create 3 files following the project patterns:
    - Assert the EXACT classes from the component
 
 3. **Stories** (`src/components/ui/{name}.stories.tsx`):
-   - Include `tags: ["autodocs"]`
-   - Add installation command in docs description
-   - Add design tokens table with color previews
-   - Create stories: Overview, each variant, AllVariants, AllSizes
-   - Add argTypes for interactive controls
+   - Follow the story format rules in the **Story File Format** section below.
 
 ### For Custom Components
 
@@ -176,11 +185,200 @@ Create in `src/components/custom/{name}/`:
 - Internal sub-file components (if marked "internal sub-file" in Phase 3)
 - `index.ts` with exports
 - Tests in `__tests__/` subdirectory
-- Story file
+- Story file following the **Story File Format** section below
 
 Use relative imports (`../../ui/button`) not `@/components/ui/button`.
 
 **Custom components ARE distributed via CLI** (`npx myoperator-ui add <name>`). Always add to `packages/cli/components.yaml` under `custom` category with `isMultiFile: true`, `directory`, `files`, and `mainFile`. Wire `internalDependencies` for any separate sub-components.
+
+---
+
+## Story File Format (MANDATORY — read before writing any story)
+
+### Step 0: Read an existing reference story first
+
+Before writing ANY story file, read the closest existing story for structure reference:
+
+```bash
+# For custom Chat components:
+cat src/components/custom/chat-list-item/chat-list-item.stories.tsx
+
+# For overlay/modal components:
+cat src/components/ui/form-modal.stories.tsx
+
+# For UI primitives:
+cat src/components/ui/button.stories.tsx
+```
+
+Then replicate its exact structure. Never invent a new story format.
+
+### Story file structure (matches chat-list-item.stories.tsx pattern)
+
+```tsx
+import type { Meta, StoryObj } from "@storybook/react"
+import { useState } from "react"
+import { ComponentName } from "./component-name"
+
+const meta: Meta<typeof ComponentName> = {
+  title: "Custom/Group/ComponentName",   // or "Components/ComponentName" for UI
+  component: ComponentName,
+  parameters: {
+    layout: "centered",
+    docs: {
+      description: {
+        component: `
+One-line description of what the component does.
+
+### Installation
+
+\`\`\`bash
+npx myoperator-ui add component-name
+\`\`\`
+
+### Import
+
+\`\`\`tsx
+import { ComponentName } from "@/components/custom/component-name"
+\`\`\`
+
+### Design Tokens
+
+| Token | CSS Variable | Usage | Preview |
+|-------|-------------|-------|---------|
+| Primary bg | \`--semantic-primary\` | CTA button | <span style="color:#343E55">■</span> \`#343E55\` |
+| Border | \`--semantic-border-layout\` | Card border | <span style="color:#E9EAEB">■</span> \`#E9EAEB\` |
+        `,
+      },
+    },
+  },
+  tags: ["autodocs"],
+  argTypes: {
+    // EVERY prop must be documented:
+    propName: {
+      control: "text",            // text | boolean | select | number | object
+      description: "What this prop does",
+      table: {
+        defaultValue: { summary: "defaultValue" },
+        type: { summary: "string" },
+      },
+    },
+    onAction: {
+      action: "action",           // use action: instead of control for callbacks
+      description: "Callback description",
+      table: { type: { summary: "() => void" } },
+    },
+  },
+}
+
+export default meta
+type Story = StoryObj<typeof meta>
+```
+
+### Design Tokens table format
+
+Use markdown table (NOT HTML table). Preview column uses inline `<span>` color swatch:
+
+```markdown
+| Token | CSS Variable | Usage | Preview |
+|-------|-------------|-------|---------|
+| Name text | `--text/text-primary` | Contact name | <span style="color:#181d27">■</span> `#181D27` |
+| Muted text | `--text/text-muted` | Preview text | <span style="color:#717680">■</span> `#717680` |
+| Border | `--border/border-layout` | Separator | <span style="color:#e9eaeb">■</span> `#E9EAEB` |
+```
+
+The preview column format is always: `<span style="color:#hex">■</span> \`#HEX\``
+
+### argTypes — every prop required
+
+Document EVERY prop in `argTypes`. Use the appropriate control type:
+
+| Prop type | control value |
+|-----------|--------------|
+| `string` | `"text"` |
+| `boolean` | `"boolean"` |
+| `number` | `"number"` |
+| `enum / union` | `"select"` with `options: [...]` |
+| `array / object` | `"object"` |
+| `ReactNode` / complex | `{ control: false }` |
+| callback `() => void` | `action: "event-name"` (no control) |
+
+### Stories — one per visual state
+
+Each story uses `name:` for display, and `args:` with realistic values:
+
+```tsx
+export const Default: Story = {
+  args: {
+    name: "Aditi Kumar",
+    message: "Have a look at this document",
+    timestamp: "2:30 PM",
+  },
+}
+
+export const WithUnreadCount: Story = {
+  name: "Unread Messages",   // <-- overrides display name in Storybook sidebar
+  args: {
+    name: "Sushant Arya",
+    unreadCount: 3,
+  },
+}
+```
+
+### Modal components — trigger button pattern
+
+If `componentKind === "modal"`, NEVER use `open: true` in args. Instead, all stories use a `render()` with internal state and a trigger button:
+
+```tsx
+export const Default: Story = {
+  render: () => {
+    const [open, setOpen] = useState(false)
+    return (
+      <div className="flex flex-col items-center gap-4 p-8">
+        <Button variant="primary" onClick={() => setOpen(true)}>
+          Open ComponentName
+        </Button>
+        <ComponentName
+          open={open}
+          onOpenChange={setOpen}
+          // all required props with realistic values
+        />
+      </div>
+    )
+  },
+}
+```
+
+Every modal story (Default, Loading, error states, etc.) follows this same trigger pattern.
+
+### Inline / Page components
+
+Use `args:` directly. Add a decorator if the component needs a fixed width:
+
+```tsx
+decorators: [
+  (Story) => (
+    <div style={{ width: 400, background: "white" }}>
+      <Story />
+    </div>
+  ),
+],
+```
+
+### Checklist before saving the story file
+
+```
+- [ ] docs.description.component uses template string (backtick, not JSDoc /**/)
+- [ ] ### Installation section present with bash codeblock
+- [ ] ### Import section present with tsx codeblock
+- [ ] ### Design Tokens markdown table present (NOT HTML table)
+- [ ] Design token preview uses <span style="color:#hex">■</span> `#HEX` format
+- [ ] argTypes covers EVERY prop
+- [ ] Callbacks use action: not control:
+- [ ] One story per visual state / variant
+- [ ] Stories use name: for readable display names
+- [ ] Modal: all stories use render() + useState + trigger Button (no open: true in args)
+- [ ] Inline: args used directly, decorator added if fixed width needed
+```
 
 ## Phase 6: Register the Component
 

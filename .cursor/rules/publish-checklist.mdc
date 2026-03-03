@@ -1,0 +1,64 @@
+---
+description: Required steps before running npm publish or git push — tests, prefix validation, and MCP sync
+alwaysApply: true
+---
+
+# Publish & Push Checklist
+
+## Before `npm publish` (CLI package)
+
+Run ALL checks in order. Do not skip any:
+
+```bash
+# 1. All component tests must pass
+npm test
+
+# 2. CLI-specific tests must pass
+cd packages/cli && npm test
+
+# 3. Prefix validation — ensures tw- prefixing is correct
+cd packages/cli && npm run validate:prefix
+
+# 4. Full build pipeline
+cd packages/cli && npm run build
+```
+
+Only proceed with publish if every step above exits with code 0.
+
+```bash
+cd packages/cli
+npm version patch   # or minor/major
+npm publish
+```
+
+## Before `git push`
+
+```bash
+cd packages/cli && npm run validate:prefix
+```
+
+This validates the `tw-` prefix transformation is correct before the code reaches CI.
+
+## After Publishing CLI — Sync the MCP Server
+
+If you added or modified components, update the MCP package:
+
+```bash
+# 1. Sync component metadata from components.yaml
+node scripts/sync-mcp-metadata.js
+
+# 2. Build and publish MCP
+cd packages/mcp
+npm version patch
+npm run build
+npm publish
+```
+
+**Checklist before finishing any publish task:**
+- [ ] `npm test` passes (root)
+- [ ] `cd packages/cli && npm test` passes
+- [ ] `npm run validate:prefix` passes
+- [ ] `npm run build` succeeds
+- [ ] CLI version bumped and published
+- [ ] MCP metadata synced (`sync-mcp-metadata.js`)
+- [ ] MCP version bumped and published

@@ -86,10 +86,14 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       loading = false,
       disabled = false,
       defaultOpen = true,
+      open,
+      onOpenChange,
       className,
     },
     ref
   ) => {
+    const isOpenControlled = open !== undefined;
+
     // Controlled/uncontrolled amount selection
     const isControlled = controlledAmount !== undefined;
     const [internalAmount, setInternalAmount] = React.useState<number | null>(
@@ -258,7 +262,12 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
         <Accordion
           type="single"
           variant="bordered"
-          defaultValue={defaultOpen ? ["wallet-topup"] : []}
+          {...(isOpenControlled
+            ? {
+                value: open ? ["wallet-topup"] : [],
+                onValueChange: (val) => onOpenChange?.(val.length > 0),
+              }
+            : { defaultValue: defaultOpen ? ["wallet-topup"] : [] })}
         >
           <AccordionItem value="wallet-topup">
             <AccordionTrigger className="px-4 py-4">

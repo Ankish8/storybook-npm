@@ -35,17 +35,26 @@ export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
       icon,
       items,
       defaultOpen = true,
+      open,
+      onOpenChange,
       onCopy,
       className,
     },
     ref
   ) => {
+    const isControlled = open !== undefined;
+
     return (
       <div ref={ref} className={cn("w-full", className)}>
         <Accordion
           type="single"
           variant="bordered"
-          defaultValue={defaultOpen ? ["bank-details"] : []}
+          {...(isControlled
+            ? {
+                value: open ? ["bank-details"] : [],
+                onValueChange: (val) => onOpenChange?.(val.length > 0),
+              }
+            : { defaultValue: defaultOpen ? ["bank-details"] : [] })}
         >
           <AccordionItem value="bank-details">
             <AccordionTrigger className="px-4 py-4">

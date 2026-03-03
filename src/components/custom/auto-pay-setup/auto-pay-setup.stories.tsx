@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
-import { RefreshCw, CreditCard, Landmark, CreditCard as WalletIcon, Building2, ChevronDown } from "lucide-react";
+import { RefreshCw, CreditCard, Landmark, CreditCard as WalletIcon, Building2 } from "lucide-react";
 import { AutoPaySetup } from "./auto-pay-setup";
+import { WalletTopup } from "../wallet-topup/wallet-topup";
+import { BankDetails } from "../bank-details/bank-details";
 
 /**
  * ## Auto-Pay Setup
@@ -148,83 +150,21 @@ export const CustomContent: Story = {
   },
 };
 
-// Defined at module scope so React never remounts it on parent re-renders
-const CollapsiblePanel = ({
-  icon,
-  title,
-  subtitle,
-  isOpen,
-  onToggle,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  subtitle: string;
-  isOpen: boolean;
-  onToggle: () => void;
-  children?: React.ReactNode;
-}) => {
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const [height, setHeight] = React.useState<number | undefined>(undefined);
-
-  React.useEffect(() => {
-    if (contentRef.current) {
-      setHeight(isOpen ? contentRef.current.scrollHeight : 0);
-    }
-  }, [isOpen]);
-
-  return (
-    <div className="border border-semantic-border-layout rounded-lg overflow-hidden">
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-4 hover:bg-[var(--color-neutral-50)] transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center size-10 rounded-[10px] bg-[var(--semantic-info-surface)] shrink-0">
-            {icon}
-          </div>
-          <div className="flex flex-col gap-1 text-left">
-            <span className="text-sm font-semibold text-semantic-text-primary tracking-[0.01px]">
-              {title}
-            </span>
-            <span className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
-              {subtitle}
-            </span>
-          </div>
-        </div>
-        <ChevronDown
-          className={`size-4 text-semantic-text-muted transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      <div
-        className="overflow-hidden transition-all duration-300 ease-in-out"
-        style={{ height: height !== undefined ? `${height}px` : undefined }}
-      >
-        <div ref={contentRef} className="border-t border-semantic-border-layout px-4 py-4">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 /**
  * Demonstrates the exclusive accordion pattern used on the Plan & Payment page.
  *
  * Only one panel can be open at a time — clicking a collapsed panel expands it
- * and collapses the currently open one. This is achieved by lifting `openSection`
- * state to the parent and using the `open` + `onOpenChange` controlled props.
+ * and collapses the currently open one. All three components now support the
+ * same `open` + `onOpenChange` controlled props, so a single piece of state
+ * in the parent is enough to coordinate them.
  *
  * **WABA integration guide:**
  * ```tsx
  * const [openSection, setOpenSection] = useState<string>("instant-topup");
- * const toggle = (id: string) =>
- *   setOpenSection(prev => prev === id ? "" : id);
  *
- * <InstantTopUp
+ * <WalletTopup
  *   open={openSection === "instant-topup"}
- *   onToggle={() => toggle("instant-topup")}
+ *   onOpenChange={(open) => setOpenSection(open ? "instant-topup" : "")}
  * />
  * <AutoPaySetup
  *   open={openSection === "auto-pay"}
@@ -232,7 +172,8 @@ const CollapsiblePanel = ({
  * />
  * <BankDetails
  *   open={openSection === "bank-details"}
- *   onToggle={() => toggle("bank-details")}
+ *   onOpenChange={(open) => setOpenSection(open ? "bank-details" : "")}
+ *   items={[...]}
  * />
  * ```
  */
@@ -248,59 +189,33 @@ export const ExclusiveAccordion: Story = {
   ],
   render: () => {
     const [openSection, setOpenSection] = useState<string>("instant-topup");
-    const toggle = (id: string) =>
-      setOpenSection((prev) => (prev === id ? "" : id));
 
     return (
       <div className="flex flex-col gap-3">
-        {/* Panel 1: Instant wallet top-up (WABA app component, shown here as mock) */}
-        <CollapsiblePanel
+        <WalletTopup
           icon={<WalletIcon className="size-5 text-semantic-primary" />}
-          title="Instant wallet top-up"
-          subtitle="Add funds to your account balance"
-          isOpen={openSection === "instant-topup"}
-          onToggle={() => toggle("instant-topup")}
-        >
-          <div className="flex flex-col gap-3">
-            <p className="m-0 text-xs text-semantic-text-muted">Select Amount</p>
-            <div className="flex gap-2">
-              <div className="flex-1 border border-semantic-border-input-focus rounded px-3 py-2 text-sm text-center text-semantic-text-primary">₹1,000</div>
-              <div className="flex-1 border border-semantic-border-input rounded px-3 py-2 text-sm text-center text-semantic-text-muted">₹5,000</div>
-            </div>
-            <p className="m-0 text-xs text-semantic-text-muted">Custom Amount</p>
-            <div className="border border-semantic-border-input rounded px-3 py-2 text-sm text-semantic-text-placeholder">Enter amount</div>
-          </div>
-        </CollapsiblePanel>
+          open={openSection === "instant-topup"}
+          onOpenChange={(open) => setOpenSection(open ? "instant-topup" : "")}
+          amounts={[500, 1000, 5000, 10000]}
+        />
 
-        {/* Panel 2: Auto-pay setup — uses open/onOpenChange from this library */}
         <AutoPaySetup
           icon={<RefreshCw className="size-5 text-semantic-primary" />}
           open={openSection === "auto-pay"}
           onOpenChange={(open) => setOpenSection(open ? "auto-pay" : "")}
         />
 
-        {/* Panel 3: Bank details (WABA app component, shown here as mock) */}
-        <CollapsiblePanel
+        <BankDetails
           icon={<Building2 className="size-5 text-semantic-primary" />}
-          title="Bank details"
-          subtitle="Direct NEFT/RTGS transfer"
-          isOpen={openSection === "bank-details"}
-          onToggle={() => toggle("bank-details")}
-        >
-          <div className="flex flex-col gap-3">
-            {[
-              ["Account holder's name", "MyOperator Test Account"],
-              ["Account Number", "MOCK1234567890"],
-              ["IFSC Code", "MOCK0001234"],
-              ["A/C type", "Current account"],
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between">
-                <span className="text-sm text-semantic-text-muted">{label}</span>
-                <span className="text-sm text-semantic-text-primary">{value}</span>
-              </div>
-            ))}
-          </div>
-        </CollapsiblePanel>
+          open={openSection === "bank-details"}
+          onOpenChange={(open) => setOpenSection(open ? "bank-details" : "")}
+          items={[
+            { label: "Account holder's name", value: "MyOperator Test Account" },
+            { label: "Account Number", value: "MOCK1234567890", copyable: true },
+            { label: "IFSC Code", value: "MOCK0001234", copyable: true },
+            { label: "A/C type", value: "Current account" },
+          ]}
+        />
       </div>
     );
   },

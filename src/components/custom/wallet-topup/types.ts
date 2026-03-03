@@ -133,6 +133,10 @@ export interface WalletTopupProps {
   // Accordion
   /** Whether the accordion is open by default */
   defaultOpen?: boolean;
+  /** Controlled open state — use with onOpenChange for exclusive accordion behavior */
+  open?: boolean;
+  /** Callback fired when the panel is toggled — receives new open state */
+  onOpenChange?: (open: boolean) => void;
 
   // Styling
   /** Additional className for the root element */
