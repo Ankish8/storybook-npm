@@ -401,7 +401,7 @@ export const LongContent: Story = {
       <TooltipTrigger asChild>
         <Button variant="outline">Hover for details</Button>
       </TooltipTrigger>
-      <TooltipContent className="max-w-xs">
+      <TooltipContent>
         <p>
           This is a tooltip with longer content. It can contain multiple
           sentences to provide more detailed information about the element.
@@ -409,6 +409,45 @@ export const LongContent: Story = {
       </TooltipContent>
     </Tooltip>
   ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Long text wraps automatically at 320px (max-w-xs). No extra className needed.",
+      },
+    },
+  },
+};
+
+export const WrappingText: Story = {
+  name: "Use Case: Wrapping Info Text",
+  render: () => (
+    <div className="flex items-center gap-2">
+      <span className="text-sm">Credit limit</span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button className="inline-flex items-center justify-center rounded-full w-5 h-5 hover:bg-gray-100">
+            <Info className="h-3.5 w-3.5 text-gray-500" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            When your outstanding payment amount exceeds your credit limit, your
+            service will be suspended till you clear all your dues.
+          </p>
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Real-world example: long informational text wraps within the 320px max-width by default.",
+      },
+    },
+  },
 };
 
 export const RichContent: Story = {
@@ -418,7 +457,7 @@ export const RichContent: Story = {
       <TooltipTrigger asChild>
         <Button variant="outline">Rich Tooltip</Button>
       </TooltipTrigger>
-      <TooltipContent className="max-w-xs">
+      <TooltipContent>
         <div className="flex flex-col gap-1">
           <p className="font-semibold">Keyboard Shortcut</p>
           <p className="text-gray-300">Press Ctrl + S to save your work</p>
