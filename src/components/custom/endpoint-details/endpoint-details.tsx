@@ -23,6 +23,12 @@ export interface EndpointDetailsProps
   onValueCopy?: (field: string, value: string) => void;
   /** Callback when regenerate is clicked for a field */
   onRegenerate?: (field: "authToken" | "secretKey") => void;
+  /** When false, regenerate buttons are hidden entirely */
+  showRegenerate?: boolean;
+  /** When false, regenerate buttons are visible but disabled */
+  canRegenerate?: boolean;
+  /** Tooltip text shown on hover when regenerate is disabled. Only used when canRegenerate is false */
+  regenerateDisabledTooltip?: string;
   /** Callback when revoke access is clicked - only used in calling variant */
   onRevokeAccess?: () => void;
   /** Whether to show the revoke access section - only used in calling variant */
@@ -80,6 +86,9 @@ export const EndpointDetails = React.forwardRef<
       apiKey,
       onValueCopy,
       onRegenerate,
+      showRegenerate = true,
+      canRegenerate = true,
+      regenerateDisabledTooltip = "You are not allowed to regenerate this token",
       onRevokeAccess,
       showRevokeSection = true,
       revokeTitle = "Revoke API Access",
@@ -93,6 +102,16 @@ export const EndpointDetails = React.forwardRef<
 
     const handleCopy = (field: string) => (value: string) => {
       onValueCopy?.(field, value);
+    };
+
+    const buildRegenerateAction = (field: "authToken" | "secretKey") => {
+      if (!showRegenerate) return undefined;
+      return {
+        label: "Regenerate",
+        onClick: () => onRegenerate?.(field),
+        disabled: !canRegenerate,
+        disabledTooltip: !canRegenerate ? regenerateDisabledTooltip : undefined,
+      };
     };
 
     // Collect non-secret visible fields for the top rows
@@ -162,10 +181,7 @@ export const EndpointDetails = React.forwardRef<
                 value={authToken}
                 secret
                 helperText="Used for client-side integrations."
-                headerAction={{
-                  label: "Regenerate",
-                  onClick: () => onRegenerate?.("authToken"),
-                }}
+                headerAction={buildRegenerateAction("authToken")}
                 onValueCopy={handleCopy("authToken")}
               />
               {secretKey && (
@@ -174,10 +190,7 @@ export const EndpointDetails = React.forwardRef<
                   value={secretKey}
                   secret
                   helperText="Never share this key or expose it in client-side code."
-                  headerAction={{
-                    label: "Regenerate",
-                    onClick: () => onRegenerate?.("secretKey"),
-                  }}
+                  headerAction={buildRegenerateAction("secretKey")}
                   onValueCopy={handleCopy("secretKey")}
                 />
               )}
@@ -188,10 +201,7 @@ export const EndpointDetails = React.forwardRef<
               label="Authentication"
               value={authToken}
               secret
-              headerAction={{
-                label: "Regenerate",
-                onClick: () => onRegenerate?.("authToken"),
-              }}
+              headerAction={buildRegenerateAction("authToken")}
               onValueCopy={handleCopy("authToken")}
             />
           )}

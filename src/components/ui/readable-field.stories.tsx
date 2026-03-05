@@ -156,7 +156,11 @@ import { ReadableField } from "@/components/ui/readable-field"
     },
     headerAction: {
       control: false,
-      description: "Header action (e.g., Regenerate link)",
+      description: "Header action (e.g., Regenerate link). Supports `disabled` and `disabledTooltip` for permission-based states.",
+    },
+    disabled: {
+      control: false,
+      description: "When true on headerAction, button is shown but non-interactive",
     },
     onValueCopy: {
       action: "copied",
@@ -253,6 +257,25 @@ export const WithHeaderAction: Story = {
     headerAction: {
       label: "Refresh",
       onClick: () => console.log("Refresh token"),
+    },
+  },
+};
+
+/**
+ * Header action in disabled state — button is visible but non-interactive,
+ * with a tooltip explaining why. Used for permission-based access control.
+ */
+export const DisabledHeaderAction: Story = {
+  args: {
+    label: "Authentication",
+    value: "sk_live_51abc123xyz789def456ghi",
+    secret: true,
+    helperText: "Used for client-side integrations.",
+    headerAction: {
+      label: "Regenerate",
+      onClick: () => console.log("Regenerate authentication"),
+      disabled: true,
+      disabledTooltip: "You are not allowed to regenerate this token",
     },
   },
 };

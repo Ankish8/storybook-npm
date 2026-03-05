@@ -69,6 +69,61 @@ describe("EndpointDetails", () => {
       expect(regenerateButtons).toHaveLength(2);
     });
 
+    it("hides regenerate buttons when showRegenerate is false", () => {
+      render(<EndpointDetails {...callingProps} showRegenerate={false} />);
+
+      expect(screen.queryByText("Regenerate")).not.toBeInTheDocument();
+    });
+
+    it("disables regenerate buttons when canRegenerate is false", () => {
+      render(<EndpointDetails {...callingProps} canRegenerate={false} />);
+
+      const regenerateButtons = screen
+        .getAllByText("Regenerate")
+        .map((el) => el.closest("button")!);
+      expect(regenerateButtons).toHaveLength(2);
+      regenerateButtons.forEach((btn) => expect(btn).toBeDisabled());
+    });
+
+    it("does not fire onRegenerate when canRegenerate is false", () => {
+      const onRegenerate = vi.fn();
+      render(
+        <EndpointDetails
+          {...callingProps}
+          canRegenerate={false}
+          onRegenerate={onRegenerate}
+        />
+      );
+
+      const regenerateButtons = screen
+        .getAllByText("Regenerate")
+        .map((el) => el.closest("button")!);
+      regenerateButtons.forEach((btn) => fireEvent.click(btn));
+      expect(onRegenerate).not.toHaveBeenCalled();
+    });
+
+    it("shows default disabled tooltip when canRegenerate is false", () => {
+      render(<EndpointDetails {...callingProps} canRegenerate={false} />);
+
+      const tooltips = screen.getAllByText(
+        "You are not allowed to regenerate this token"
+      );
+      expect(tooltips).toHaveLength(2);
+    });
+
+    it("shows custom disabled tooltip when regenerateDisabledTooltip is set", () => {
+      render(
+        <EndpointDetails
+          {...callingProps}
+          canRegenerate={false}
+          regenerateDisabledTooltip="Contact your admin to regenerate"
+        />
+      );
+
+      const tooltips = screen.getAllByText("Contact your admin to regenerate");
+      expect(tooltips).toHaveLength(2);
+    });
+
     it("calls onRegenerate when regenerate is clicked", () => {
       const onRegenerate = vi.fn();
       render(<EndpointDetails {...callingProps} onRegenerate={onRegenerate} />);

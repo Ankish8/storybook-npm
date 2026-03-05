@@ -56,6 +56,57 @@ describe("ReadableField", () => {
     expect(onAction).toHaveBeenCalledTimes(1);
   });
 
+  it("renders disabled header action without calling onClick", () => {
+    const onAction = vi.fn();
+    render(
+      <ReadableField
+        {...defaultProps}
+        headerAction={{ label: "Regenerate", onClick: onAction, disabled: true }}
+      />
+    );
+
+    const actionButton = screen.getByText("Regenerate").closest("button")!;
+    expect(actionButton).toBeDisabled();
+
+    fireEvent.click(actionButton);
+    expect(onAction).not.toHaveBeenCalled();
+  });
+
+  it("renders disabledTooltip text when header action is disabled", () => {
+    render(
+      <ReadableField
+        {...defaultProps}
+        headerAction={{
+          label: "Regenerate",
+          onClick: vi.fn(),
+          disabled: true,
+          disabledTooltip: "You are not allowed to regenerate this token",
+        }}
+      />
+    );
+
+    expect(
+      screen.getByText("You are not allowed to regenerate this token")
+    ).toBeInTheDocument();
+  });
+
+  it("does not render tooltip when header action is not disabled", () => {
+    render(
+      <ReadableField
+        {...defaultProps}
+        headerAction={{
+          label: "Regenerate",
+          onClick: vi.fn(),
+          disabledTooltip: "You are not allowed to regenerate this token",
+        }}
+      />
+    );
+
+    expect(
+      screen.queryByText("You are not allowed to regenerate this token")
+    ).not.toBeInTheDocument();
+  });
+
   it("copies value to clipboard when copy button is clicked", async () => {
     const onValueCopy = vi.fn();
     render(<ReadableField {...defaultProps} onValueCopy={onValueCopy} />);

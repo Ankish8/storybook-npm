@@ -204,6 +204,18 @@ function WhatsAppApiSettings() {
       action: "revoke",
       description: "Callback when revoke access is clicked (calling variant only)",
     },
+    showRegenerate: {
+      control: "boolean",
+      description: "When false, regenerate buttons are hidden entirely",
+    },
+    canRegenerate: {
+      control: "boolean",
+      description: "When false, regenerate buttons are visible but disabled",
+    },
+    regenerateDisabledTooltip: {
+      control: "text",
+      description: "Tooltip text shown on hover when regenerate is disabled",
+    },
   },
 };
 
@@ -299,6 +311,38 @@ export const CustomRevokeText: Story = {
     revokeTitle: "Delete All API Keys",
     revokeDescription:
       "This action cannot be undone. All active integrations will stop working immediately.",
+  },
+};
+
+/**
+ * Regenerate buttons disabled — visible but non-interactive.
+ * Used when a user can view credentials but lacks permission to regenerate.
+ */
+export const RegenerateDisabled: Story = {
+  args: {
+    variant: "calling",
+    baseUrl: "https://api.myoperator.co/v3/voice/gateway",
+    companyId: "12",
+    authToken: "sk_live_51abc123xyz789def456ghi",
+    secretKey: "whsec_abc123xyz789def456ghi789jkl",
+    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    canRegenerate: false,
+    regenerateDisabledTooltip: "You don't have permission to regenerate credentials",
+  },
+};
+
+/**
+ * Regenerate buttons hidden entirely — for read-only users.
+ */
+export const RegenerateHidden: Story = {
+  args: {
+    variant: "calling",
+    baseUrl: "https://api.myoperator.co/v3/voice/gateway",
+    companyId: "12",
+    authToken: "sk_live_51abc123xyz789def456ghi",
+    secretKey: "whsec_abc123xyz789def456ghi789jkl",
+    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    showRegenerate: false,
   },
 };
 

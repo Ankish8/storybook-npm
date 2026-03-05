@@ -16,6 +16,10 @@ export interface ReadableFieldProps
   headerAction?: {
     label: string;
     onClick: () => void;
+    /** When true, button is shown but non-interactive */
+    disabled?: boolean;
+    /** Tooltip text shown on hover when disabled */
+    disabledTooltip?: string;
   };
   /** Callback when value is copied */
   onValueCopy?: (value: string) => void;
@@ -116,13 +120,31 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
             {label}
           </span>
           {headerAction && (
-            <button
-              type="button"
-              onClick={headerAction.onClick}
-              className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
-            >
-              {headerAction.label}
-            </button>
+            headerAction.disabled ? (
+              <span className="relative group/regen-action">
+                <button
+                  type="button"
+                  disabled
+                  className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] opacity-50 cursor-not-allowed rounded"
+                >
+                  {headerAction.label}
+                </button>
+                {headerAction.disabledTooltip && (
+                  <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-semantic-primary px-2 py-1 text-xs text-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
+                    {headerAction.disabledTooltip}
+                    <span className="absolute top-full right-2 border-4 border-transparent border-t-semantic-primary" />
+                  </span>
+                )}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={headerAction.onClick}
+                className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
+              >
+                {headerAction.label}
+              </button>
+            )
           )}
         </div>
 

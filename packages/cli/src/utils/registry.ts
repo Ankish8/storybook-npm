@@ -2042,6 +2042,10 @@ export interface ReadableFieldProps
   headerAction?: {
     label: string;
     onClick: () => void;
+    /** When true, button is shown but non-interactive */
+    disabled?: boolean;
+    /** Tooltip text shown on hover when disabled */
+    disabledTooltip?: string;
   };
   /** Callback when value is copied */
   onValueCopy?: (value: string) => void;
@@ -2142,13 +2146,31 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
             {label}
           </span>
           {headerAction && (
-            <button
-              type="button"
-              onClick={headerAction.onClick}
-              className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
-            >
-              {headerAction.label}
-            </button>
+            headerAction.disabled ? (
+              <span className="relative group/regen-action">
+                <button
+                  type="button"
+                  disabled
+                  className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] opacity-50 cursor-not-allowed rounded"
+                >
+                  {headerAction.label}
+                </button>
+                {headerAction.disabledTooltip && (
+                  <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-semantic-primary px-2 py-1 text-xs text-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
+                    {headerAction.disabledTooltip}
+                    <span className="absolute top-full right-2 border-4 border-transparent border-t-semantic-primary" />
+                  </span>
+                )}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={headerAction.onClick}
+                className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
+              >
+                {headerAction.label}
+              </button>
+            )
           )}
         </div>
 
@@ -7708,6 +7730,12 @@ export interface EndpointDetailsProps
   onValueCopy?: (field: string, value: string) => void;
   /** Callback when regenerate is clicked for a field */
   onRegenerate?: (field: "authToken" | "secretKey") => void;
+  /** When false, regenerate buttons are hidden entirely */
+  showRegenerate?: boolean;
+  /** When false, regenerate buttons are visible but disabled */
+  canRegenerate?: boolean;
+  /** Tooltip text shown on hover when regenerate is disabled. Only used when canRegenerate is false */
+  regenerateDisabledTooltip?: string;
   /** Callback when revoke access is clicked - only used in calling variant */
   onRevokeAccess?: () => void;
   /** Whether to show the revoke access section - only used in calling variant */
@@ -7765,6 +7793,9 @@ export const EndpointDetails = React.forwardRef<
       apiKey,
       onValueCopy,
       onRegenerate,
+      showRegenerate = true,
+      canRegenerate = true,
+      regenerateDisabledTooltip = "You are not allowed to regenerate this token",
       onRevokeAccess,
       showRevokeSection = true,
       revokeTitle = "Revoke API Access",
@@ -7778,6 +7809,16 @@ export const EndpointDetails = React.forwardRef<
 
     const handleCopy = (field: string) => (value: string) => {
       onValueCopy?.(field, value);
+    };
+
+    const buildRegenerateAction = (field: "authToken" | "secretKey") => {
+      if (!showRegenerate) return undefined;
+      return {
+        label: "Regenerate",
+        onClick: () => onRegenerate?.(field),
+        disabled: !canRegenerate,
+        disabledTooltip: !canRegenerate ? regenerateDisabledTooltip : undefined,
+      };
     };
 
     // Collect non-secret visible fields for the top rows
@@ -7847,10 +7888,7 @@ export const EndpointDetails = React.forwardRef<
                 value={authToken}
                 secret
                 helperText="Used for client-side integrations."
-                headerAction={{
-                  label: "Regenerate",
-                  onClick: () => onRegenerate?.("authToken"),
-                }}
+                headerAction={buildRegenerateAction("authToken")}
                 onValueCopy={handleCopy("authToken")}
               />
               {secretKey && (
@@ -7859,10 +7897,7 @@ export const EndpointDetails = React.forwardRef<
                   value={secretKey}
                   secret
                   helperText="Never share this key or expose it in client-side code."
-                  headerAction={{
-                    label: "Regenerate",
-                    onClick: () => onRegenerate?.("secretKey"),
-                  }}
+                  headerAction={buildRegenerateAction("secretKey")}
                   onValueCopy={handleCopy("secretKey")}
                 />
               )}
@@ -7873,10 +7908,7 @@ export const EndpointDetails = React.forwardRef<
               label="Authentication"
               value={authToken}
               secret
-              headerAction={{
-                label: "Regenerate",
-                onClick: () => onRegenerate?.("authToken"),
-              }}
+              headerAction={buildRegenerateAction("authToken")}
               onValueCopy={handleCopy("authToken")}
             />
           )}
