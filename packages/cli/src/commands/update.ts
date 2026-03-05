@@ -121,7 +121,7 @@ export async function update(components: string[], options: UpdateOptions) {
   const componentsDir = path.join(cwd, options.path)
 
   // Helper to get the file path for checking if component is installed
-  const getComponentFilePath = (component: any) => {
+  const getComponentFilePath = (component: { isMultiFile?: boolean; directory?: string; files: Array<{ name: string }> }) => {
     if (component.isMultiFile && component.directory) {
       return path.join(componentsDir, component.directory, component.files[0].name)
     }

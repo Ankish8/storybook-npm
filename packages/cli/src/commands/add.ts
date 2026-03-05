@@ -142,7 +142,8 @@ export async function add(components: string[], options: AddOptions) {
     const installedComponents: Set<string> = new Set()
 
     // Helper function to install a single component
-    const installComponent = async (componentName: string) => {
+    // forceOverwrite: when true, overwrites existing files (used for internal deps)
+    const installComponent = async (componentName: string, forceOverwrite = false) => {
       // Skip if already installed in this session
       if (installedComponents.has(componentName)) {
         return
@@ -155,10 +156,11 @@ export async function add(components: string[], options: AddOptions) {
       }
 
       // First, install internal dependencies (for multi-file components)
+      // Internal deps are always written with the latest registry content to prevent version drift.
       if (component.internalDependencies && component.internalDependencies.length > 0) {
         spinner.text = `Installing dependencies for ${componentName}...`
         for (const depName of component.internalDependencies) {
-          await installComponent(depName)
+          await installComponent(depName, true)
         }
       }
 
@@ -175,7 +177,7 @@ export async function add(components: string[], options: AddOptions) {
         const filePath = path.join(targetDir, file.name)
 
         if (await fs.pathExists(filePath)) {
-          if (!options.overwrite) {
+          if (!options.overwrite && !forceOverwrite) {
             spinner.warn(`${file.name} already exists. Use --overwrite to replace.`)
             continue
           }

@@ -287,6 +287,8 @@ export async function sync(options: SyncOptions) {
                 const depExists = await fs.pathExists(path.join(depTargetDir, depMainFile))
                 if (!depExists) {
                   await installComponent(depName, 'added')
+                } else if (toUpdate.includes(depName) && !processedComponents.has(depName)) {
+                  await installComponent(depName, 'updated')
                 }
               }
             }

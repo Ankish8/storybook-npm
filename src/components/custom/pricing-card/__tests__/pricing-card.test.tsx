@@ -250,7 +250,7 @@ describe("PricingCard", () => {
   });
 
   it("renders bold features with font-semibold", () => {
-    const { container } = render(
+    render(
       <PricingCard
         {...defaultProps}
         features={[

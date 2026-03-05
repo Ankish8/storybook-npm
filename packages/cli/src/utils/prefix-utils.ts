@@ -126,7 +126,7 @@ export function transformSemanticClasses(classString: string): string {
       if (!cls) return cls
 
       // Handle variant prefixes (hover:, focus:, etc.)
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria)-\[[^\]]+\]:))+/)
+      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
         const utility = cls.slice(variants.length)
@@ -310,7 +310,7 @@ export function prefixClassString(classString: string, prefix: string): string {
       if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return cls
 
       // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*:)|((data|aria)-\[[^\]]+\]:))+/)
+      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
         let utility = cls.slice(variants.length)

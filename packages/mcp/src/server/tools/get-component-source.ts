@@ -4,7 +4,6 @@ import {
   componentSourceCode,
   utilsSourceCode,
   cssStyles,
-  getComponentNames,
 } from "../../data/metadata.js";
 
 export function registerGetComponentSource(server: McpServer) {

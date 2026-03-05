@@ -217,7 +217,7 @@ Runs: npx myoperator-ui add <component>`,
           const command = `npx myoperator-ui add ${component}`;
           const options = cwd ? { cwd } : {};
 
-          const { stdout, stderr } = await execAsync(command, options);
+          const { stdout } = await execAsync(command, options);
 
           results.push({
             component,

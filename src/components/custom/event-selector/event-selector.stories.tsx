@@ -82,19 +82,8 @@ const sampleGroups: EventGroup[] = [
   },
 ];
 
-// Categories without icons (default)
-const sampleCategories: EventCategory[] = [
-  {
-    id: "call-events",
-    name: "Call Events (Voice)",
-    groups: ["in-call-events", "after-call-event", "call-disposition-event"],
-  },
-  {
-    id: "whatsapp-category",
-    name: "WhatsApp Events",
-    groups: ["whatsapp-events"],
-  },
-];
+// Categories without icons (default) — kept for reference
+// const sampleCategories: EventCategory[] = [ ... ]
 
 // Categories with icons (optional)
 const sampleCategoriesWithIcons: EventCategory[] = [
