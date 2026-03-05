@@ -4,8 +4,9 @@
   "description": "Create UIs matching the myOperator design system aesthetic. Generates standalone React/HTML/CSS code with consistent visual language.",
   "author": {
     "name": "myOperator",
-    "url": "https://github.com/myoperator"
+    "email": "ankish@myoperator.co"
   },
+  "category": "development",
   "keywords": ["design-system", "ui", "react", "tailwind", "myoperator"],
   "license": "MIT"
 }

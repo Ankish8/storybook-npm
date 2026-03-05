@@ -218,6 +218,9 @@ export { PaymentSummary } from "./components/custom/payment-summary";
 export type {
   PaymentSummaryProps,
   PaymentSummaryItem,
+  PaymentSummaryHeaderInfo,
+  BreakdownCardItem,
+  PaymentSummaryBreakdownCard,
 } from "./components/custom/payment-summary";
 
 // AutoPaySetup (Custom - NOT available via CLI)

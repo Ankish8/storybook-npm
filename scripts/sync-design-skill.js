@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * Sync component catalog into the myoperator-design skill's SKILL.md.
+ * Sync component catalog into the myoperator-design skill's references/component-catalog.md.
  *
  * Reads components.yaml (categories, descriptions, dependencies) and
- * COMPONENT_META (props, variants, examples) to generate a rich
- * "Component Catalog" section appended to SKILL.md.
+ * COMPONENT_META (props, variants, examples) to generate a rich standalone
+ * "Component Catalog" reference file used by the myoperator-design skill.
  *
  * Usage:
  *   node scripts/sync-design-skill.js          # Dry run — preview catalog
- *   node scripts/sync-design-skill.js --write  # Update SKILL.md files
+ *   node scripts/sync-design-skill.js --write  # Update component-catalog.md files
  */
 
 import fs from 'fs'
@@ -22,9 +22,9 @@ const __dirname = path.dirname(__filename)
 
 // Paths
 const COMPONENTS_YAML = path.resolve(__dirname, '../packages/cli/components.yaml')
-const SKILL_MD_SOURCE = path.resolve(
+const CATALOG_MD_SOURCE = path.resolve(
   __dirname,
-  '../.claude/plugins/myoperator-design/skills/myoperator-design/SKILL.md'
+  '../.claude/plugins/myoperator-design/skills/myoperator-design/references/component-catalog.md'
 )
 
 // Local cache path — resolved at runtime from ~/.claude
@@ -35,12 +35,10 @@ const SKILL_MD_CACHE = path.resolve(
 )
 
 // GitHub distribution repo (if present alongside the main repo)
-const SKILL_MD_DIST = path.resolve(
+const CATALOG_MD_DIST = path.resolve(
   __dirname,
-  '../myoperator-plugins/plugins/myoperator-design/skills/myoperator-design/SKILL.md'
+  '../myoperator-plugins/plugins/myoperator-design/skills/myoperator-design/references/component-catalog.md'
 )
-
-const MARKER = '<!-- AUTO-GENERATED: Component Catalog -->'
 
 const shouldWrite = process.argv.includes('--write')
 
@@ -159,13 +157,13 @@ function toPascalCase(str) {
 function generateCatalog(categories, components) {
   const lines = []
 
-  lines.push('## Component Catalog')
+  lines.push('# myOperator Component Catalog')
   lines.push('')
   lines.push(`> Auto-generated from \`components.yaml\` and component metadata. ${Object.keys(components).length} components across ${Object.keys(categories).length} categories.`)
   lines.push('')
 
   // Summary table
-  lines.push('### Quick Reference')
+  lines.push('## Quick Reference')
   lines.push('')
   lines.push('| Component | Category | Install |')
   lines.push('|-----------|----------|---------|')
@@ -181,7 +179,7 @@ function generateCatalog(categories, components) {
 
   // Per-category sections
   for (const [catName, catData] of Object.entries(categories)) {
-    lines.push(`### ${catName.charAt(0).toUpperCase() + catName.slice(1)} — ${catData.description}`)
+    lines.push(`## ${catName.charAt(0).toUpperCase() + catName.slice(1)} — ${catData.description}`)
     lines.push('')
 
     for (const compName of catData.components) {
@@ -192,7 +190,7 @@ function generateCatalog(categories, components) {
       const displayName = meta?.name || toPascalCase(compName)
       const description = meta?.description || comp.description
 
-      lines.push(`#### ${displayName}`)
+      lines.push(`### ${displayName}`)
       lines.push(`> ${description}`)
       lines.push('')
       lines.push(`**Install**: \`npx myoperator-ui add ${compName}\``)
@@ -251,28 +249,17 @@ function generateCatalog(categories, components) {
 }
 
 // ============================================================================
-// SKILL.MD UPDATE
+// CATALOG FILE UPDATE
 // ============================================================================
 
-function updateSkillMd(filePath, catalog) {
-  if (!fs.existsSync(filePath)) {
-    console.log(`  Skipped (file not found): ${filePath}`)
+function updateCatalogMd(filePath, catalog) {
+  const dir = path.dirname(filePath)
+  if (!fs.existsSync(dir)) {
+    console.log(`  Skipped (directory not found): ${dir}`)
     return false
   }
 
-  const content = fs.readFileSync(filePath, 'utf-8')
-  const markerIndex = content.indexOf(MARKER)
-
-  let newContent
-  if (markerIndex !== -1) {
-    // Replace everything after the marker
-    newContent = content.slice(0, markerIndex) + MARKER + '\n\n' + catalog
-  } else {
-    // Append marker + catalog at the end
-    newContent = content.trimEnd() + '\n\n' + MARKER + '\n\n' + catalog
-  }
-
-  fs.writeFileSync(filePath, newContent, 'utf-8')
+  fs.writeFileSync(filePath, catalog, 'utf-8')
   return true
 }
 
@@ -281,9 +268,9 @@ function updateSkillMd(filePath, catalog) {
 // ============================================================================
 
 function main() {
-  console.log('Syncing component catalog to myoperator-design SKILL.md...\n')
+  console.log('Syncing component catalog to myoperator-design references/component-catalog.md...\n')
   console.log(`YAML source: ${COMPONENTS_YAML}`)
-  console.log(`SKILL.md source: ${SKILL_MD_SOURCE}`)
+  console.log(`Catalog target: ${CATALOG_MD_SOURCE}`)
   console.log(`Mode: ${shouldWrite ? 'WRITE' : 'DRY RUN (use --write to update)'}\n`)
 
   // Read and parse components.yaml
@@ -315,27 +302,27 @@ function main() {
       console.log(`\n... (${catalog.split('\n').length - 80} more lines)\n`)
     }
     console.log('--- END PREVIEW ---\n')
-    console.log('Run with --write to update SKILL.md files:')
+    console.log('Run with --write to update component-catalog.md files:')
     console.log('  node scripts/sync-design-skill.js --write')
     return
   }
 
-  // Write to source SKILL.md
-  console.log('Updating SKILL.md files...')
-  const sourceUpdated = updateSkillMd(SKILL_MD_SOURCE, catalog)
+  // Write to source references/component-catalog.md
+  console.log('Updating component-catalog.md files...')
+  const sourceUpdated = updateCatalogMd(CATALOG_MD_SOURCE, catalog)
   if (sourceUpdated) {
-    console.log(`  Updated: ${SKILL_MD_SOURCE}`)
+    console.log(`  Updated: ${CATALOG_MD_SOURCE}`)
   }
 
-  // Write to GitHub distribution repo SKILL.md (if present)
-  const distUpdated = updateSkillMd(SKILL_MD_DIST, catalog)
+  // Write to GitHub distribution repo (if present)
+  const distUpdated = updateCatalogMd(CATALOG_MD_DIST, catalog)
   if (distUpdated) {
-    console.log(`  Updated dist: ${SKILL_MD_DIST}`)
-  } else if (!fs.existsSync(SKILL_MD_DIST)) {
-    console.log(`  Dist repo not found (OK): ${path.dirname(SKILL_MD_DIST)}`)
+    console.log(`  Updated dist: ${CATALOG_MD_DIST}`)
+  } else if (!fs.existsSync(path.dirname(CATALOG_MD_DIST))) {
+    console.log(`  Dist repo not found (OK): ${path.dirname(CATALOG_MD_DIST)}`)
   }
 
-  // Write to cache SKILL.md (find the version directory)
+  // Write to cache references/component-catalog.md (find the version directory)
   if (fs.existsSync(SKILL_MD_CACHE)) {
     const versions = fs.readdirSync(SKILL_MD_CACHE).filter(d =>
       fs.statSync(path.join(SKILL_MD_CACHE, d)).isDirectory()
@@ -344,9 +331,9 @@ function main() {
       const cachePath = path.join(
         SKILL_MD_CACHE,
         version,
-        'skills/myoperator-design/SKILL.md'
+        'skills/myoperator-design/references/component-catalog.md'
       )
-      const cacheUpdated = updateSkillMd(cachePath, catalog)
+      const cacheUpdated = updateCatalogMd(cachePath, catalog)
       if (cacheUpdated) {
         console.log(`  Updated cache: ${cachePath}`)
       }
