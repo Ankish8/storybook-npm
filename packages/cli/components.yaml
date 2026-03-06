@@ -533,6 +533,24 @@ components:
       - "index.ts"
     mainFile: "payment-option-card.tsx"
 
+  plan-detail-modal:
+    description: "A read-only modal displaying plan feature breakdown with free allowances and per-unit rates"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "@radix-ui/react-dialog"
+    internalDependencies:
+      - dialog
+    isMultiFile: true
+    directory: "plan-detail-modal"
+    files:
+      - "plan-detail-modal.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "plan-detail-modal.tsx"
+
   plan-upgrade-modal:
     description: "A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle"
     category: custom

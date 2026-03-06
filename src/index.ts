@@ -265,6 +265,10 @@ export type { PowerUpCardProps } from "./components/custom/power-up-card";
 export { TalkToUsModal } from "./components/custom/talk-to-us-modal";
 export type { TalkToUsModalProps } from "./components/custom/talk-to-us-modal";
 
+// PlanDetailModal (Custom)
+export { PlanDetailModal } from "./components/custom/plan-detail-modal";
+export type { PlanDetailModalProps, PlanFeature } from "./components/custom/plan-detail-modal";
+
 // PlanUpgradeModal (Custom)
 export { PlanUpgradeModal, billingCycleOptionVariants } from "./components/custom/plan-upgrade-modal";
 export type {

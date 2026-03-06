@@ -155,20 +155,12 @@ AskQuestion({
 
 ### Step 1: Ask for Figma Link
 
-```
-AskQuestion({
-  questions: [{
-    id: "figma_link",
-    prompt: "Please provide the Figma link for this component. Required for accurate design tokens and spacing.",
-    options: [
-      { id: "paste",  label: "I'll paste the Figma URL in my next message" },
-      { id: "help",   label: "Show me how to get a Figma link" }
-    ]
-  }]
-})
-```
+Send a plain conversational message:
 
-If "help" → explain: open the component in Figma → right-click → "Copy link to selection".
+> "Please paste the Figma link for this component — it's required for accurate design tokens and spacing.
+> To get the link: open the component in Figma → right-click the frame → **Copy link to selection**."
+
+Wait for the user's reply before continuing.
 
 ### Step 2: Fetch Figma Design
 
@@ -252,20 +244,11 @@ AskQuestion({
 
 ### Step 4: Collect Figma Links for Sub-Components
 
-For each new sub-component:
+For each new sub-component, send a plain conversational message:
 
-```
-AskQuestion({
-  questions: [{
-    id: "subcomponent_figma_<name>",
-    prompt: "Please provide the Figma link for the [sub-component name] sub-component.",
-    options: [
-      { id: "paste",     label: "I'll paste the Figma URL" },
-      { id: "same",      label: "Same as parent — it's visible in the parent's frame" }
-    ]
-  }]
-})
-```
+> "Please paste the Figma link for the **[sub-component name]** sub-component, or let me know if it's already visible inside the parent's frame."
+
+Wait for the user's reply before continuing.
 
 ### Step 5: Sub-Component Variant Analysis
 

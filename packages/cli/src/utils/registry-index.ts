@@ -312,6 +312,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["button","dialog"],
   },
+  "plan-detail-modal": {
+    name: "plan-detail-modal",
+    description: "A read-only modal displaying plan feature breakdown with free allowances and per-unit rates",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react","@radix-ui/react-dialog"],
+    category: "custom",
+    internalDependencies: ["dialog"],
+  },
   "plan-upgrade-modal": {
     name: "plan-upgrade-modal",
     description: "A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle",
