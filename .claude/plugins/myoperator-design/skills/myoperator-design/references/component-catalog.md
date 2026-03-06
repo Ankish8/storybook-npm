@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 44 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 46 components across 7 categories.
 
 ## Quick Reference
 
@@ -42,6 +42,8 @@
 | BankDetails | custom | `npx myoperator-ui add bank-details` |
 | DateRangeModal | custom | `npx myoperator-ui add date-range-modal` |
 | PaymentOptionCard | custom | `npx myoperator-ui add payment-option-card` |
+| PlanUpgradeModal | custom | `npx myoperator-ui add plan-upgrade-modal` |
+| PlanUpgradeSummaryModal | custom | `npx myoperator-ui add plan-upgrade-summary-modal` |
 | PaymentSummary | custom | `npx myoperator-ui add payment-summary` |
 | LetUsDriveCard | custom | `npx myoperator-ui add let-us-drive-card` |
 | PowerUpCard | custom | `npx myoperator-ui add power-up-card` |
@@ -612,6 +614,24 @@ import { Mail } from "lucide-react"
 > A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage.
 
 **Install**: `npx myoperator-ui add payment-option-card`
+**Requires**: `button`, `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### PlanUpgradeModal
+> A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle
+
+**Install**: `npx myoperator-ui add plan-upgrade-modal`
+**Requires**: `button`, `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### PlanUpgradeSummaryModal
+> A billing summary modal for confirming plan upgrades and downgrades
+
+**Install**: `npx myoperator-ui add plan-upgrade-summary-modal`
 **Requires**: `button`, `dialog` (auto-installed)
 **Type**: Multi-file component
 
