@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React from "react";
 import { Bot } from "lucide-react";
 import { PricingCard } from "./pricing-card";
@@ -254,6 +255,10 @@ import { Bot } from "lucide-react";
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
+  },
 };
 
 export default meta;
@@ -278,8 +283,8 @@ export const Default: Story = {
     headerBgColor: "#d7eae9",
     planIcon: <CompactCarIcon className="size-[30px] text-semantic-text-primary" />,
     features: compactFeatures,
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 };
@@ -299,7 +304,7 @@ export const CurrentPlan: Story = {
     planIcon: <CompactCarIcon className="size-[30px] text-semantic-text-primary" />,
     features: compactFeatures,
     isCurrentPlan: true,
-    onFeatureDetails: () => {},
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 };
@@ -319,8 +324,8 @@ export const Sedan: Story = {
     planIcon: <SedanCarIcon className="size-[30px] text-semantic-text-primary" />,
     features: sedanFeatures,
     ctaText: "Upgrade plan",
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 };
@@ -341,8 +346,8 @@ export const MostPopular: Story = {
     features: suvFeatures,
     showPopularBadge: true,
     ctaText: "Upgrade plan",
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 };
@@ -360,8 +365,8 @@ export const AIO: Story = {
       "For teams that want a self-learning AI system to run WhatsApp, Calls, and workflows end-to-end.",
     headerBgColor: "#dbe8fe",
     features: aioFeatures,
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     usageDetails: aioUsageDetails,
   },
 };
@@ -379,8 +384,8 @@ export const EnterpriseAI: Story = {
       "For large organisations that need AI at scale with custom deployment and governance.",
     headerBgColor: "#e0dffe",
     features: enterpriseFeatures,
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
   },
 };
 
@@ -401,7 +406,7 @@ export const TraditionalPlans: Story = {
         planIcon={<CompactCarIcon className="size-[30px] text-semantic-text-primary" />}
         features={compactFeatures}
         isCurrentPlan
-        onFeatureDetails={() => {}}
+        onFeatureDetails={fn()}
         addon={defaultAddon}
       />
       <PricingCard
@@ -414,8 +419,8 @@ export const TraditionalPlans: Story = {
         planIcon={<SedanCarIcon className="size-[30px] text-semantic-text-primary" />}
         features={sedanFeatures}
         ctaText="Upgrade plan"
-        onCtaClick={() => {}}
-        onFeatureDetails={() => {}}
+        onCtaClick={fn()}
+        onFeatureDetails={fn()}
         addon={defaultAddon}
       />
       <PricingCard
@@ -429,8 +434,8 @@ export const TraditionalPlans: Story = {
         features={suvFeatures}
         showPopularBadge
         ctaText="Upgrade plan"
-        onCtaClick={() => {}}
-        onFeatureDetails={() => {}}
+        onCtaClick={fn()}
+        onFeatureDetails={fn()}
         addon={defaultAddon}
       />
     </div>
@@ -452,8 +457,8 @@ export const AIPlans: Story = {
         description="For teams that want a self-learning AI system to run WhatsApp, Calls, and workflows end-to-end."
         headerBgColor="#dbe8fe"
         features={aioFeatures}
-        onCtaClick={() => {}}
-        onFeatureDetails={() => {}}
+        onCtaClick={fn()}
+        onFeatureDetails={fn()}
         usageDetails={aioUsageDetails}
       />
       <PricingCard
@@ -464,8 +469,8 @@ export const AIPlans: Story = {
         description="For large organisations that need AI at scale with custom deployment and governance."
         headerBgColor="#e0dffe"
         features={enterpriseFeatures}
-        onCtaClick={() => {}}
-        onFeatureDetails={() => {}}
+        onCtaClick={fn()}
+        onFeatureDetails={fn()}
       />
     </div>
   ),
@@ -484,8 +489,8 @@ export const WithoutFeatures: Story = {
       "For small teams that need a WhatsApp-first plan with missed call automation",
     headerBgColor: "#d7eae9",
     features: [],
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 };
@@ -504,8 +509,8 @@ export const WithoutAddon: Story = {
     headerBgColor: "#f4f0ec",
     features: sedanFeatures,
     ctaText: "Upgrade plan",
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
   },
 };
 
@@ -517,6 +522,6 @@ export const Minimal: Story = {
   args: {
     planName: "Basic",
     price: "999",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };

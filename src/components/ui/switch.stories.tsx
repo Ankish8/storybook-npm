@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { Switch } from "./switch";
 
@@ -59,6 +60,9 @@ import { Switch } from "@/components/ui/switch"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCheckedChange: fn(),
+  },
   argTypes: {
     size: {
       control: "select",

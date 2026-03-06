@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { FormModal } from "./form-modal";
 import { Input } from "./input";
@@ -49,6 +50,11 @@ npx myoperator-ui add form-modal
     },
   },
   tags: ["autodocs"],
+  args: {
+    onOpenChange: fn(),
+    onSave: fn(),
+    onCancel: fn(),
+  },
   argTypes: {
     open: {
       control: "boolean",

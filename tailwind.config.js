@@ -128,6 +128,22 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      lineHeight: {
+        none: "var(--line-height-none)",
+        tight: "var(--line-height-tight)",
+        snug: "var(--line-height-snug)",
+        normal: "var(--line-height-normal)",
+        relaxed: "var(--line-height-relaxed)",
+        loose: "var(--line-height-loose)",
+      },
+      boxShadow: {
+        xs: "var(--shadow-xs)",
+        sm: "var(--shadow-sm)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
+        xl: "var(--shadow-xl)",
+        "2xl": "var(--shadow-2xl)",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

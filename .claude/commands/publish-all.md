@@ -1,5 +1,7 @@
 # Full Publish Workflow
 
+> **Cursor users:** Use `/publish-all-cursor` for the Cursor-native version of this workflow.
+
 Complete publishing workflow for myOperator UI:
 1. Ask for release type (Beta or Latest)
 2. Run pre-flight checks
@@ -47,7 +49,14 @@ npm run api:check
 
 If `api:check` reports intentional breaking changes, run `npm run api:snapshot` to update the baseline, then continue.
 
-**IMPORTANT: Both test suites (2.1 and 2.2) MUST pass. Do NOT skip or proceed if tests fail.**
+### 2.5 Bootstrap compat check
+```bash
+node scripts/check-bootstrap-compat.js
+```
+
+Ensures all `<p>` elements in component files have `m-0` (or `mb-0`/`my-0`). Bootstrap sets `p { margin-bottom: 1rem }` globally — missing the reset causes 16px layout gaps in the host app. Fix any violations before publishing.
+
+**IMPORTANT: All checks (2.1–2.5) MUST pass. Do NOT skip or proceed if any fail.**
 
 ---
 

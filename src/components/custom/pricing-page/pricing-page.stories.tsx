@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React from "react";
 import { Bot, Phone, Hash, PhoneCall } from "lucide-react";
 import { PricingPage } from "./pricing-page";
@@ -70,7 +71,7 @@ const teamMonthlyCards: PricingCardProps[] = [
       "1 virtual number + channel line",
     ],
     isCurrentPlan: true,
-    onFeatureDetails: () => {},
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
   {
@@ -94,8 +95,8 @@ const teamMonthlyCards: PricingCardProps[] = [
       "Shopify integration",
     ],
     ctaText: "Upgrade plan",
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
   {
@@ -122,8 +123,8 @@ const teamMonthlyCards: PricingCardProps[] = [
     ],
     showPopularBadge: true,
     ctaText: "Upgrade plan",
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 ];
@@ -132,7 +133,7 @@ const teamYearlyCards: PricingCardProps[] = teamMonthlyCards.map((card) => ({
   ...card,
   isCurrentPlan: false,
   ctaText: "Select plan",
-  onCtaClick: () => {},
+  onCtaClick: fn(),
 }));
 
 // ─── Go-AI First Plan Cards ───────────────────────────────────────────────────
@@ -154,8 +155,8 @@ const aiCards: PricingCardProps[] = [
       "Real-time analytics on AI performance",
       "API integrations & webhooks",
     ],
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
     usageDetails: [
       { label: "Usage", value: "Includes 2,000 AI conversations/month" },
       { label: "Extra usage", value: "\u20B98 per additional conversation" },
@@ -179,8 +180,8 @@ const aiCards: PricingCardProps[] = [
       "Custom pricing & usage models",
       "API integrations & webhooks",
     ],
-    onCtaClick: () => {},
-    onFeatureDetails: () => {},
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
   },
 ];
 
@@ -193,7 +194,7 @@ const powerUpCards: PowerUpCardProps[] = [
     price: "Starts @ \u20B930,000/month",
     description:
       "Leverage the power of Truecaller Business to grow your reach and reputation.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
   {
     icon: <Hash className="size-6 text-semantic-text-muted" />,
@@ -201,7 +202,7 @@ const powerUpCards: PowerUpCardProps[] = [
     price: "Starts @ \u20B9500/month",
     description:
       "Strengthen your brand accessibility with a professional 1800 line.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
   {
     icon: <PhoneCall className="size-6 text-semantic-text-muted" />,
@@ -209,7 +210,7 @@ const powerUpCards: PowerUpCardProps[] = [
     price: "Starts @ \u20B9700/user/month",
     description:
       "Available for SUV & Enterprise plans as an add-on per user.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 ];
 
@@ -221,8 +222,8 @@ const letUsDriveMonthly: LetUsDriveCardProps[] = [
     price: "20,000",
     period: "/one-time fee",
     description: "Cut adoption time. Start seeing ROI faster.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
   {
     title: "Account Manager",
@@ -231,8 +232,8 @@ const letUsDriveMonthly: LetUsDriveCardProps[] = [
     billingBadge: "Annually",
     description:
       "One expert who knows your business. And moves it forward.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
   {
     title: "Managed Services",
@@ -242,8 +243,8 @@ const letUsDriveMonthly: LetUsDriveCardProps[] = [
     billingBadge: "Quarterly",
     description:
       "End-to-end execution \u2014 built and run by experts.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
 ];
 
@@ -254,8 +255,8 @@ const letUsDriveYearly: LetUsDriveCardProps[] = [
     period: "/one-time fee",
     freeLabel: "FREE",
     description: "Cut adoption time. Start seeing ROI faster.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
   letUsDriveMonthly[1],
   letUsDriveMonthly[2],
@@ -383,6 +384,12 @@ const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCtaClick: fn(),
+    onFeatureComparisonClick: fn(),
+    onFeatureDetails: fn(),
+    onShowDetails: fn(),
+  },
 };
 
 export default meta;
@@ -418,7 +425,7 @@ const InteractiveDemo = () => {
       headerActions={<NumberTypeSelect />}
       planCards={planCards}
       powerUpCards={powerUpCards}
-      onFeatureComparisonClick={() => {}}
+      onFeatureComparisonClick={fn()}
       letUsDriveCards={driveCards}
     />
   );
@@ -440,7 +447,7 @@ export const TeamLedMonthly: Story = {
     headerActions: <NumberTypeSelect />,
     planCards: teamMonthlyCards,
     powerUpCards,
-    onFeatureComparisonClick: () => {},
+    onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveMonthly,
   },
 };
@@ -457,7 +464,7 @@ export const TeamLedYearly: Story = {
     headerActions: <NumberTypeSelect />,
     planCards: teamYearlyCards,
     powerUpCards,
-    onFeatureComparisonClick: () => {},
+    onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveYearly,
   },
 };
@@ -473,7 +480,7 @@ export const GoAIFirst: Story = {
     headerActions: <NumberTypeSelect />,
     planCards: aiCards,
     powerUpCards,
-    onFeatureComparisonClick: () => {},
+    onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveMonthly,
   },
 };

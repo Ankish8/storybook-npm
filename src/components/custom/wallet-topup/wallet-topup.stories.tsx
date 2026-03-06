@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { CreditCard, Gift } from "lucide-react";
 import { WalletTopup } from "./wallet-topup";
 
@@ -57,6 +58,10 @@ const meta: Meta<typeof WalletTopup> = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  args: {
+    onOpenChange: fn(),
+    onValueChange: fn(),
+  },
   decorators: [
     (Story) => (
       <div style={{ width: "440px" }}>

@@ -2,7 +2,6 @@
 description: Create a new React component with intelligent analysis, design system validation, and auto-generated tests
 argument-hint: Optional screenshot path
 allowed-tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "AskUserQuestion", "Task", "Skill"]
-context: fork
 ---
 
 # Create Component Workflow
@@ -13,13 +12,15 @@ You are creating a new React component for the myOperator UI component library. 
 
 ### Step 1: Ask for Screenshot (REQUIRED - DO THIS FIRST)
 
-Your FIRST action must be to call AskUserQuestion with this exact format:
-- question: "Please provide a screenshot of the component you want to create."
-- header: "Screenshot"
-- options:
-  - label: "I'll paste/drag the screenshot", description: "I will paste or drag-drop the screenshot in the next message"
-  - label: "I have a file path", description: "I will provide the path to the screenshot file"
-- multiSelect: false
+**FIRST: Check if a screenshot or image was already provided in the current message.**
+- If an image is attached to this message → skip the AskUserQuestion and go directly to Step 2.
+- If no image is present → call AskUserQuestion with this exact format:
+  - question: "Please provide a screenshot of the component you want to create."
+  - header: "Screenshot"
+  - options:
+    - label: "I'll paste/drag the screenshot", description: "I will paste or drag-drop the screenshot in the next message"
+    - label: "I have a file path", description: "I will provide the path to the screenshot file"
+  - multiSelect: false
 
 **IMPORTANT:** Do NOT suggest component names like "avatar", "skeleton", "progress". Do NOT ask about component type yet. Just ask for the screenshot and wait.
 

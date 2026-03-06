@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React from "react";
 import { PricingToggle } from "./pricing-toggle";
 
@@ -130,6 +131,10 @@ const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthl
     },
   },
   tags: ["autodocs"],
+  args: {
+    onTabChange: fn(),
+    onBillingPeriodChange: fn(),
+  },
 };
 
 export default meta;

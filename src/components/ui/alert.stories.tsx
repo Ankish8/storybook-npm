@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { Alert, AlertTitle, AlertDescription } from "./alert";
 import { Button } from "./button";
@@ -11,6 +12,9 @@ const meta: Meta<typeof Alert> = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  args: {
+    onClose: fn(),
+  },
   argTypes: {
     variant: {
       control: "select",

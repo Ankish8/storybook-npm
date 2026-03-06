@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { ChatListItem } from "./chat-list-item";
 
@@ -42,6 +43,9 @@ import { ChatListItem } from "@/components/custom/chat-list-item"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onClick: fn(),
+  },
   decorators: [
     (Story) => (
       <div style={{ width: 356, background: "white" }}>

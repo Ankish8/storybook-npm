@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { MultiSelect, type MultiSelectOption } from "./multi-select";
 
@@ -68,7 +69,7 @@ import { MultiSelect } from "@/components/ui/multi-select"
     { value: 'vue', label: 'Vue' },
     { value: 'angular', label: 'Angular' },
   ]}
-  onValueChange={(values) => console.log(values)}
+  onValueChange={fn()}
 />
 
 {/* With max selections */}
@@ -199,6 +200,9 @@ import { MultiSelect } from "@/components/ui/multi-select"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onValueChange: fn(),
+  },
   argTypes: {
     label: {
       control: "text",

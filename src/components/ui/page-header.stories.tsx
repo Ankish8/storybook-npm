@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { PageHeader } from "./page-header";
 import { Button } from "./button";
 import {
@@ -119,6 +120,9 @@ import { PageHeader } from "@/components/ui/page-header"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onBackClick: fn(),
+  },
   argTypes: {
     title: {
       control: "text",
@@ -201,7 +205,7 @@ export const HeaderWithBackButton: Story = {
   name: "Header with Back Button",
   args: {
     showBackButton: true,
-    onBackClick: () => alert("Back clicked!"),
+    onBackClick: fn(),
     title: "Add New Webhook",
     description:
       "Configure your webhook endpoint and authentication. All webhooks use POST method with HTTPS protocol only.",
@@ -626,7 +630,7 @@ export const Accessibility: Story = {
         <div className="bg-white rounded-lg shadow">
           <PageHeader
             showBackButton
-            onBackClick={() => alert("Back")}
+            onBackClick={fn()}
             title="Accessible Header"
             description="Try tabbing through this header"
             actions={

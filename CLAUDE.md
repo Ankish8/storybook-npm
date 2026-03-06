@@ -194,6 +194,27 @@ Avoid template literals or complex string concatenation for class strings — th
 
 Validation: `npm run validate:prefix` (false prefixing) and `npm run validate:coverage` (missed classes).
 
+## Bootstrap Compatibility — `<p>` Margin Reset Rule
+
+**Every `<p>` element in component files MUST have `m-0` (or `mb-0`/`my-0`).**
+
+Bootstrap sets `p { margin-bottom: 1rem }` globally. The host app (MyOperator web panel) uses Bootstrap. Our `tw-m-0` compiles to `margin: 0 !important` in the consumer's build and wins. Without it, every `<p>` gets 16px of unwanted bottom space.
+
+```tsx
+// CORRECT
+<p className="m-0 text-sm text-semantic-text-muted">...</p>
+
+// CORRECT via CVA — include m-0 in the base class string
+const fooVariants = cva("m-0 text-sm font-semibold", { variants: { ... } })
+<p className={fooVariants({ tone })}>...</p>
+
+// WRONG — missing m-0
+<p className="text-sm text-semantic-text-muted">...</p>
+```
+
+A pre-commit check (`scripts/check-bootstrap-compat.js`) blocks commits that violate this.
+For tests, use `assertNoBootstrapMarginBleed(container)` from `__tests__/utils/bootstrap-compat.ts`.
+
 ## Test Requirements
 
 Every component needs a test file in `src/components/ui/__tests__/`. Required coverage:

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import * as React from "react";
 import { useState } from "react";
 import {
@@ -67,6 +68,9 @@ npx myoperator-ui add dialog
     },
   },
   tags: ["autodocs"],
+  args: {
+    onOpenChange: fn(),
+  },
   argTypes: {
     // Dialog (Root) props
     open: {
@@ -86,7 +90,6 @@ npx myoperator-ui add dialog
       table: { category: "Dialog", defaultValue: { summary: "true" } },
     },
     onOpenChange: {
-      action: "openChanged",
       description: "Callback when open state changes",
       table: { category: "Dialog" },
     },

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import * as React from "react";
 import { Landmark } from "lucide-react";
 import { BankDetails } from "./bank-details";
@@ -145,6 +146,11 @@ const bankItems = [
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCopy: fn(),
+    onOpenChange: fn(),
+    onValueChange: fn(),
+  },
 };
 
 export default meta;

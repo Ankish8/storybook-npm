@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React from "react";
 import {
   Globe,
@@ -206,6 +207,10 @@ const [open, setOpen] = useState(false);
     },
   },
   tags: ["autodocs"],
+  args: {
+    onClose: fn(),
+    onOpenChange: fn(),
+  },
   decorators: [
     (Story) => (
       <div style={{ width: "460px" }}>
@@ -222,7 +227,7 @@ export const Default: Story = {
   args: {
     options: defaultOptions,
     defaultSelectedOptionId: "net-banking",
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -230,7 +235,7 @@ export const NoSelection: Story = {
   name: "No Pre-selection",
   args: {
     options: defaultOptions,
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -249,7 +254,7 @@ export const CustomTitle: Story = {
     subtitle: "All transactions are encrypted",
     options: defaultOptions,
     defaultSelectedOptionId: "credit-card",
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -271,7 +276,7 @@ export const FewOptions: Story = {
       },
     ],
     ctaText: "Pay Now",
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -280,7 +285,7 @@ export const Loading: Story = {
     options: defaultOptions,
     defaultSelectedOptionId: "net-banking",
     loading: true,
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -289,7 +294,7 @@ export const Disabled: Story = {
     options: defaultOptions,
     defaultSelectedOptionId: "net-banking",
     disabled: true,
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -299,7 +304,7 @@ export const CustomCTA: Story = {
     options: defaultOptions,
     defaultSelectedOptionId: "wallet",
     ctaText: "Complete Payment",
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 
@@ -324,7 +329,7 @@ export const AutoPaySetupVariant: Story = {
     ],
     defaultSelectedOptionId: "net-banking",
     ctaText: "Continue",
-    onClose: () => {},
+    onClose: fn(),
   },
 };
 

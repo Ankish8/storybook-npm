@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { KeyValueInput } from "./key-value-input";
 import type { KeyValuePair } from "./types";
@@ -100,6 +101,9 @@ const [headers, setHeaders] = useState<KeyValuePair[]>([])
       control: "boolean",
       description: "Whether value field is required (default: true)",
     },
+  },
+  args: {
+    onChange: fn(),
   },
   decorators: [
     (Story) => (

@@ -1,8 +1,26 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Typeset } from '@storybook/addon-docs/blocks';
 
 <Meta title="Foundations/Typography" />
 
 # Typography
+
+## Type Scale
+
+<Typeset
+  fontSizes={[10, 12, 14, 16, 18, 24, 28, 32, 36, 45, 57]}
+  fontFamily="'Source Sans Pro', sans-serif"
+  sampleText="The quick brown fox jumps over the lazy dog"
+  fontWeight={400}
+/>
+
+<Typeset
+  fontSizes={[10, 12, 14, 16, 18, 24, 28, 32]}
+  fontFamily="'Source Sans Pro', sans-serif"
+  sampleText="The quick brown fox jumps over the lazy dog"
+  fontWeight={600}
+/>
+
+---
 
 Like in other UI systems, typography works by the principle of accessibility before aesthetics. Therefore, the text should be readable and help the user understand what's important by well-contrasted size and color hierarchy.
 

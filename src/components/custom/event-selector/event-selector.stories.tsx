@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { Phone, MessageCircle } from "lucide-react";
 import { EventSelector } from "./event-selector";
@@ -195,6 +196,9 @@ const [selected, setSelected] = useState<string[]>([])
       control: "text",
       description: "Message shown when a group has no events",
     },
+  },
+  args: {
+    onSelectionChange: fn(),
   },
   decorators: [
     (Story) => (

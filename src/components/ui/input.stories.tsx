@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { Input } from "./input";
 
 const meta: Meta<typeof Input> = {
@@ -129,6 +130,9 @@ import { Input } from "@/components/ui/input"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onChange: fn(),
+  },
   argTypes: {
     state: {
       control: "select",

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { DeleteConfirmationModal } from "./delete-confirmation-modal";
 import { Button } from "./button";
@@ -98,6 +99,11 @@ import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-mod
     },
   },
   tags: ["autodocs"],
+  args: {
+    onOpenChange: fn(),
+    onConfirm: fn(),
+    onCancel: fn(),
+  },
   argTypes: {
     open: {
       control: "boolean",
@@ -143,7 +149,7 @@ export const Playground: Story = {
       cancelButtonText={args.cancelButtonText as string}
       loading={args.loading as boolean}
       description={args.description as string}
-      onConfirm={() => console.log("Deleted!")}
+      onConfirm={fn()}
     />
   ),
   args: {
@@ -170,7 +176,7 @@ export const Default: Story = {
           onOpenChange={setOpen}
           itemName="webhook"
           onConfirm={() => {
-            console.log("Deleted!");
+            
             setOpen(false);
           }}
         />
@@ -194,7 +200,7 @@ export const WithDescription: Story = {
           itemName="user account"
           description="This action cannot be undone. All associated data including files, settings, and history will be permanently removed."
           onConfirm={() => {
-            console.log("User deleted!");
+            
             setOpen(false);
           }}
         />
@@ -219,7 +225,7 @@ export const CustomConfirmText: Story = {
           confirmText="REMOVE PROJECT"
           deleteButtonText="Remove Project"
           onConfirm={() => {
-            console.log("Project removed!");
+            
             setOpen(false);
           }}
         />
@@ -239,7 +245,7 @@ export const LoadingState: Story = {
       setTimeout(() => {
         setLoading(false);
         setOpen(false);
-        console.log("Deleted successfully!");
+        
       }, 2000);
     };
 
@@ -269,7 +275,7 @@ export const WithTrigger: Story = {
         </Button>
       }
       itemName="item"
-      onConfirm={() => console.log("Deleted!")}
+      onConfirm={fn()}
     />
   ),
 };
@@ -290,7 +296,7 @@ export const CustomTitle: Story = {
           description="This will disconnect your workspace from Slack and remove all notification settings."
           deleteButtonText="Remove Integration"
           onConfirm={() => {
-            console.log("Integration removed!");
+            
             setOpen(false);
           }}
         />
@@ -306,7 +312,7 @@ export const AllVariations: Story = {
         <DeleteConfirmationModal
           trigger={<Button variant="destructive">Default</Button>}
           itemName="item"
-          onConfirm={() => console.log("Deleted!")}
+          onConfirm={fn()}
         />
         <DeleteConfirmationModal
           trigger={<Button variant="outline">Custom Text</Button>}
@@ -314,13 +320,13 @@ export const AllVariations: Story = {
           confirmText="CONFIRM"
           deleteButtonText="Confirm Delete"
           cancelButtonText="Go Back"
-          onConfirm={() => console.log("Deleted!")}
+          onConfirm={fn()}
         />
         <DeleteConfirmationModal
           trigger={<Button variant="ghost">With Description</Button>}
           itemName="file"
           description="This file will be permanently deleted from your storage."
-          onConfirm={() => console.log("Deleted!")}
+          onConfirm={fn()}
         />
       </div>
     </div>
@@ -344,7 +350,7 @@ export const Usage: Story = {
             trigger={<Button variant="destructive">Delete Account</Button>}
             itemName="account"
             description="This action is permanent."
-            onConfirm={() => console.log("Deleted!")}
+            onConfirm={fn()}
           />
         </div>
         <div>
@@ -360,7 +366,7 @@ export const Usage: Story = {
           <DeleteConfirmationModal
             trigger={<Button variant="destructive">Delete File</Button>}
             itemName="file"
-            onConfirm={() => console.log("Deleted!")}
+            onConfirm={fn()}
           />
         </div>
         <div>
@@ -395,7 +401,7 @@ export const DosAndDonts: Story = {
               trigger={<Button variant="destructive">Delete User</Button>}
               itemName="user account"
               description="All associated data, files, and settings will be permanently removed. This cannot be undone."
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -412,7 +418,7 @@ export const DosAndDonts: Story = {
             <DeleteConfirmationModal
               trigger={<Button variant="destructive">Delete</Button>}
               itemName="item"
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -436,7 +442,7 @@ export const DosAndDonts: Story = {
               title="Remove Slack Integration?"
               confirmText="REMOVE INTEGRATION"
               deleteButtonText="Remove Integration"
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -452,7 +458,7 @@ export const DosAndDonts: Story = {
             <DeleteConfirmationModal
               trigger={<Button variant="destructive">Delete</Button>}
               itemName="anything"
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -476,7 +482,7 @@ export const DosAndDonts: Story = {
               }
               itemName="data"
               description="This permanent deletion cannot be recovered from backups."
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -493,7 +499,7 @@ export const DosAndDonts: Story = {
               trigger={<Button variant="destructive">Remove</Button>}
               itemName="item"
               description="You can restore this from trash later."
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">

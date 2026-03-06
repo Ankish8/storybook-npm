@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { DateRangeModal } from "./index";
 import { Button } from "../../ui/button";
 
@@ -77,6 +78,12 @@ const [open, setOpen] = React.useState(false);
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCancel: fn(),
+    onChange: fn(),
+    onConfirm: fn(),
+    onOpenChange: fn(),
+  },
 };
 
 export default meta;
@@ -130,7 +137,6 @@ export const WithDates: Story = {
           open={open}
           onOpenChange={setOpen}
           onConfirm={(start, end) => {
-            console.log("Confirmed:", start, end);
             setOpen(false);
           }}
           onCancel={() => setOpen(false)}

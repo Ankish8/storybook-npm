@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import {
   Pagination,
   PaginationContent,
@@ -200,6 +201,9 @@ import {
     },
   },
   tags: ["autodocs"],
+  args: {
+    onPageChange: fn(),
+  },
   argTypes: {
     className: {
       control: "text",

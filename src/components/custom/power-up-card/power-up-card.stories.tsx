@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React, { useState } from "react";
 import { Shield, Hash, PhoneCall, ExternalLink } from "lucide-react";
 import { PowerUpCard } from "./power-up-card";
@@ -130,6 +131,9 @@ import { Shield, Hash, PhoneCall } from "lucide-react";
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCtaClick: fn(),
+  },
 };
 
 export default meta;
@@ -151,7 +155,7 @@ export const Default: Story = {
     price: "Starts @ \u20B930,000/month",
     description:
       "Leverage the power of Truecaller Business to grow your reach and reputation.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };
 
@@ -166,7 +170,7 @@ export const TollFree: Story = {
     price: "Starts @ \u20B9500/month",
     description:
       "Strengthen your brand accessibility with a professional 1800 line.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };
 
@@ -181,7 +185,7 @@ export const AutoDialer: Story = {
     price: "Starts @ \u20B9700/user/month",
     description:
       "Available for SUV & Enterprise plans as an add-on per user.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };
 
@@ -194,7 +198,7 @@ export const WithoutIcon: Story = {
     title: "Custom Integration",
     price: "Starts @ \u20B95,000/month",
     description: "Build a custom integration tailored to your business needs.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };
 
@@ -210,7 +214,7 @@ export const CustomCTA: Story = {
     description:
       "Leverage the power of Truecaller Business to grow your reach and reputation.",
     ctaLabel: "Contact sales",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };
 

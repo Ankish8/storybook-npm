@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/react-vite'
 import '../src/index.css'
 import '../src/storybook/typography.css'
+import '../src/storybook/design-tokens.css'
 
 const preview: Preview = {
   parameters: {
@@ -14,6 +15,9 @@ const preview: Preview = {
       story: {
         inline: true,
       },
+    },
+    designToken: {
+      files: ['src/storybook/design-tokens.css'],
     },
     options: {
       storySort: {

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { TextField } from "./text-field";
 import {
@@ -172,6 +173,9 @@ import { TextField } from "@/components/ui/text-field"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onChange: fn(),
+  },
   argTypes: {
     label: {
       control: "text",

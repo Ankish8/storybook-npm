@@ -148,7 +148,7 @@ import type {
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Hint text</td>
-      <td style="padding: 12px 16px;">12px (text-xs)</td>
+      <td style="padding: 12px 16px;">14px (text-sm)</td>
       <td style="padding: 12px 16px;">Regular (400)</td>
       <td style="padding: 12px 16px;">0.06px</td>
     </tr>

@@ -28,5 +28,8 @@ node scripts/check-component-tests.js || exit 1
 # Validate CVA props alignment (prevents TypeScript consumer errors)
 node scripts/validate-cva-props.js || exit 1
 
+# Ensure all <p> elements have m-0 (Bootstrap compat — prevents margin-bottom: 1rem bleed)
+node scripts/check-bootstrap-compat.js || exit 1
+
 # Run lint-staged
 npx lint-staged

@@ -312,6 +312,22 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["button","dialog"],
   },
+  "plan-upgrade-modal": {
+    name: "plan-upgrade-modal",
+    description: "A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react","@radix-ui/react-dialog"],
+    category: "custom",
+    internalDependencies: ["button","dialog"],
+  },
+  "plan-upgrade-summary-modal": {
+    name: "plan-upgrade-summary-modal",
+    description: "A billing summary modal for confirming plan upgrades and downgrades",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react","@radix-ui/react-dialog"],
+    category: "custom",
+    internalDependencies: ["button","dialog"],
+  },
   "let-us-drive-card": {
     name: "let-us-drive-card",
     description: "A managed service card with pricing, billing badge, 'Show details' link, and CTA for the full-service management section",

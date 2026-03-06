@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import {
   Accordion,
@@ -113,6 +114,9 @@ import {
     },
   },
   tags: ["autodocs"],
+  args: {
+    onValueChange: fn(),
+  },
   argTypes: {
     type: {
       control: "select",

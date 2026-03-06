@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React, { useState } from "react";
 import { TalkToUsModal } from "./talk-to-us-modal";
 import { Headphones, Shield, Hash, PhoneCall } from "lucide-react";
@@ -98,6 +99,10 @@ function PricingPage() {
     },
   },
   tags: ["autodocs"],
+  args: {
+    onPrimaryAction: fn(),
+    onSecondaryAction: fn(),
+  },
 };
 
 export default meta;
@@ -108,8 +113,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     open: true,
-    onPrimaryAction: () => {},
-    onSecondaryAction: () => {},
+    onPrimaryAction: fn(),
+    onSecondaryAction: fn(),
   },
 };
 
@@ -124,8 +129,8 @@ export const CustomContent: Story = {
       "Our sales team can walk you through the plans and find the best fit for your team.",
     primaryActionLabel: "Chat with sales",
     secondaryActionLabel: "Go back",
-    onPrimaryAction: () => {},
-    onSecondaryAction: () => {},
+    onPrimaryAction: fn(),
+    onSecondaryAction: fn(),
   },
 };
 
@@ -143,8 +148,8 @@ export const CustomIcon: Story = {
     title: "Talk to Support",
     description: "Our support team is available 24/7 to help you.",
     primaryActionLabel: "Open support",
-    onPrimaryAction: () => {},
-    onSecondaryAction: () => {},
+    onPrimaryAction: fn(),
+    onSecondaryAction: fn(),
   },
 };
 

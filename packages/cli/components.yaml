@@ -72,6 +72,8 @@ categories:
       - bank-details
       - date-range-modal
       - payment-option-card
+      - plan-upgrade-modal
+      - plan-upgrade-summary-modal
       - payment-summary
       - let-us-drive-card
       - power-up-card
@@ -530,6 +532,44 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "payment-option-card.tsx"
+
+  plan-upgrade-modal:
+    description: "A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "@radix-ui/react-dialog"
+    internalDependencies:
+      - button
+      - dialog
+    isMultiFile: true
+    directory: "plan-upgrade-modal"
+    files:
+      - "plan-upgrade-modal.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "plan-upgrade-modal.tsx"
+
+  plan-upgrade-summary-modal:
+    description: "A billing summary modal for confirming plan upgrades and downgrades"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "@radix-ui/react-dialog"
+    internalDependencies:
+      - button
+      - dialog
+    isMultiFile: true
+    directory: "plan-upgrade-summary-modal"
+    files:
+      - "plan-upgrade-summary-modal.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "plan-upgrade-summary-modal.tsx"
 
   let-us-drive-card:
     description: "A managed service card with pricing, billing badge, 'Show details' link, and CTA for the full-service management section"

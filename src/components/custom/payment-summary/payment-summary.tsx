@@ -93,25 +93,25 @@ const SummaryRow = ({ item }: { item: PaymentSummaryItem }) => (
         <div className="flex flex-col gap-0.5">
           <span
             className={cn(
-              "text-sm tracking-[0.035px]",
+              "tracking-[0.035px]",
               item.bold
-                ? "font-semibold text-semantic-text-primary"
-                : "text-semantic-text-muted"
+                ? "text-base font-semibold text-semantic-text-primary"
+                : "text-sm text-semantic-text-muted"
             )}
           >
             {item.label}
           </span>
-          <span className="text-xs text-semantic-text-link tracking-[0.06px]">
+          <span className="text-sm text-semantic-text-link tracking-[0.06px]">
             {item.hint}
           </span>
         </div>
       ) : (
         <span
           className={cn(
-            "text-sm tracking-[0.035px]",
+            "tracking-[0.035px]",
             item.bold
-              ? "font-semibold text-semantic-text-primary"
-              : "text-semantic-text-muted"
+              ? "text-base font-semibold text-semantic-text-primary"
+              : "text-sm text-semantic-text-muted"
           )}
         >
           {item.label}

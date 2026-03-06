@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React from "react";
 import { LetUsDriveCard } from "./let-us-drive-card";
 
@@ -191,6 +192,10 @@ import { LetUsDriveCard } from "@/components/custom/let-us-drive-card";
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCtaClick: fn(),
+    onShowDetails: fn(),
+  },
 };
 
 export default meta;
@@ -213,8 +218,8 @@ export const Default: Story = {
     billingBadge: "Annually",
     description:
       "One expert who knows your business. And moves it forward.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
 };
 
@@ -228,8 +233,8 @@ export const DedicatedOnboarding: Story = {
     price: "20,000",
     period: "/one-time fee",
     description: "Cut adoption time. Start seeing ROI faster.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
 };
 
@@ -245,8 +250,8 @@ export const ManagedServices: Story = {
     billingBadge: "Quarterly",
     startsAt: true,
     description: "End-to-end execution \u2014 built and run by experts.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
 };
 
@@ -261,8 +266,8 @@ export const FreeState: Story = {
     period: "/one-time fee",
     freeLabel: "FREE",
     description: "Cut adoption time. Start seeing ROI faster.",
-    onShowDetails: () => {},
-    onCtaClick: () => {},
+    onShowDetails: fn(),
+    onCtaClick: fn(),
   },
 };
 
@@ -278,7 +283,7 @@ export const WithoutShowDetails: Story = {
     billingBadge: "Annually",
     description:
       "One expert who knows your business. And moves it forward.",
-    onCtaClick: () => {},
+    onCtaClick: fn(),
   },
 };
 
@@ -299,8 +304,8 @@ export const AllCards: Story = {
           price="20,000"
           period="/one-time fee"
           description="Cut adoption time. Start seeing ROI faster."
-          onShowDetails={() => {}}
-          onCtaClick={() => {}}
+          onShowDetails={fn()}
+          onCtaClick={fn()}
         />
         <LetUsDriveCard
           className="flex-1"
@@ -309,8 +314,8 @@ export const AllCards: Story = {
           period="/per month"
           billingBadge="Annually"
           description="One expert who knows your business. And moves it forward."
-          onShowDetails={() => {}}
-          onCtaClick={() => {}}
+          onShowDetails={fn()}
+          onCtaClick={fn()}
         />
         <LetUsDriveCard
           className="flex-1"
@@ -320,8 +325,8 @@ export const AllCards: Story = {
           billingBadge="Quarterly"
           startsAt
           description="End-to-end execution — built and run by experts."
-          onShowDetails={() => {}}
-          onCtaClick={() => {}}
+          onShowDetails={fn()}
+          onCtaClick={fn()}
         />
       </div>
     </div>
@@ -346,8 +351,8 @@ export const AllCardsFreeState: Story = {
           period="/one-time fee"
           freeLabel="FREE"
           description="Cut adoption time. Start seeing ROI faster."
-          onShowDetails={() => {}}
-          onCtaClick={() => {}}
+          onShowDetails={fn()}
+          onCtaClick={fn()}
         />
         <LetUsDriveCard
           className="flex-1"
@@ -356,8 +361,8 @@ export const AllCardsFreeState: Story = {
           period="/per month"
           billingBadge="Annually"
           description="One expert who knows your business. And moves it forward."
-          onShowDetails={() => {}}
-          onCtaClick={() => {}}
+          onShowDetails={fn()}
+          onCtaClick={fn()}
         />
         <LetUsDriveCard
           className="flex-1"
@@ -367,8 +372,8 @@ export const AllCardsFreeState: Story = {
           billingBadge="Quarterly"
           startsAt
           description="End-to-end execution — built and run by experts."
-          onShowDetails={() => {}}
-          onCtaClick={() => {}}
+          onShowDetails={fn()}
+          onCtaClick={fn()}
         />
       </div>
     </div>

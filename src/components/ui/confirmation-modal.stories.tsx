@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { ConfirmationModal } from "./confirmation-modal";
 import { Button } from "./button";
@@ -86,6 +87,11 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onOpenChange: fn(),
+    onConfirm: fn(),
+    onCancel: fn(),
+  },
   argTypes: {
     open: {
       control: { type: "boolean" },
@@ -116,9 +122,6 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal"
       control: { type: "text" },
       description: "Custom text for cancel button",
     },
-    onConfirm: { action: "confirmed" },
-    onCancel: { action: "cancelled" },
-    onOpenChange: { action: "openChanged" },
     trigger: { control: false },
     className: { control: false },
   },
@@ -141,7 +144,7 @@ export const Playground: Story = {
       confirmButtonText={args.confirmButtonText as string}
       cancelButtonText={args.cancelButtonText as string}
       loading={args.loading as boolean}
-      onConfirm={() => console.log("Confirmed!")}
+      onConfirm={fn()}
     />
   ),
   args: {
@@ -166,10 +169,7 @@ export const Default: Story = {
           onOpenChange={setOpen}
           title="Disable Webhook"
           description="Are you sure you want to Disable Webhook?"
-          onConfirm={() => {
-            console.log("Confirmed!");
-            setOpen(false);
-          }}
+          onConfirm={() => setOpen(false)}
         />
       </>
     );
@@ -192,10 +192,7 @@ export const Destructive: Story = {
           description="This project will be archived and moved to the archive folder."
           variant="destructive"
           confirmButtonText="Archive"
-          onConfirm={() => {
-            console.log("Archived!");
-            setOpen(false);
-          }}
+          onConfirm={() => setOpen(false)}
         />
       </>
     );
@@ -218,10 +215,7 @@ export const WithCustomButtonText: Story = {
           description="Do you want to save your changes before leaving?"
           confirmButtonText="Save"
           cancelButtonText="Don't Save"
-          onConfirm={() => {
-            console.log("Saved!");
-            setOpen(false);
-          }}
+          onConfirm={() => setOpen(false)}
         />
       </>
     );
@@ -239,7 +233,6 @@ export const LoadingState: Story = {
       setTimeout(() => {
         setLoading(false);
         setOpen(false);
-        console.log("Action completed!");
       }, 2000);
     };
 
@@ -270,7 +263,7 @@ export const WithTrigger: Story = {
       title="Enable Feature"
       description="This will enable the experimental feature for your account."
       confirmButtonText="Enable"
-      onConfirm={() => console.log("Feature enabled!")}
+      onConfirm={fn()}
     />
   ),
 };
@@ -288,10 +281,7 @@ export const SimpleConfirmation: Story = {
           title="Logout"
           description="Are you sure you want to logout?"
           confirmButtonText="Logout"
-          onConfirm={() => {
-            console.log("Logged out!");
-            setOpen(false);
-          }}
+          onConfirm={() => setOpen(false)}
         />
       </>
     );
@@ -306,7 +296,7 @@ export const AllVariations: Story = {
           trigger={<Button>Default</Button>}
           title="Default Confirmation"
           description="This uses the default (primary) button style."
-          onConfirm={() => console.log("Confirmed!")}
+          onConfirm={fn()}
         />
         <ConfirmationModal
           trigger={<Button variant="destructive">Destructive</Button>}
@@ -314,7 +304,7 @@ export const AllVariations: Story = {
           description="This uses the destructive button style."
           variant="destructive"
           confirmButtonText="Delete"
-          onConfirm={() => console.log("Deleted!")}
+          onConfirm={fn()}
         />
         <ConfirmationModal
           trigger={<Button variant="outline">Custom Text</Button>}
@@ -322,7 +312,7 @@ export const AllVariations: Story = {
           description="This has custom button labels."
           confirmButtonText="Proceed"
           cancelButtonText="Go Back"
-          onConfirm={() => console.log("Proceeded!")}
+          onConfirm={fn()}
         />
       </div>
     </div>
@@ -340,10 +330,7 @@ export const TitleOnly: Story = {
           open={open}
           onOpenChange={setOpen}
           title="Continue with action?"
-          onConfirm={() => {
-            console.log("Confirmed!");
-            setOpen(false);
-          }}
+          onConfirm={() => setOpen(false)}
         />
       </>
     );
@@ -367,7 +354,7 @@ export const Usage: Story = {
             trigger={<Button>Default</Button>}
             title="Disable Webhook?"
             description="Are you sure?"
-            onConfirm={() => console.log("Confirmed!")}
+            onConfirm={fn()}
           />
         </div>
         <div>
@@ -384,7 +371,7 @@ export const Usage: Story = {
             title="Delete Project?"
             variant="destructive"
             confirmButtonText="Delete"
-            onConfirm={() => console.log("Deleted!")}
+            onConfirm={fn()}
           />
         </div>
         <div>
@@ -421,7 +408,7 @@ export const DosAndDonts: Story = {
               description="This action is permanent and cannot be undone."
               variant="destructive"
               confirmButtonText="Delete Account"
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -439,7 +426,7 @@ export const DosAndDonts: Story = {
               title="Are you sure?"
               description="Do you want to continue?"
               confirmButtonText="Yes"
-              onConfirm={() => console.log("Confirmed!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -461,7 +448,7 @@ export const DosAndDonts: Story = {
               title="Archive project?"
               variant="destructive"
               confirmButtonText="Archive"
-              onConfirm={() => console.log("Archived!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -479,7 +466,7 @@ export const DosAndDonts: Story = {
               title="Delete this item?"
               variant="default"
               confirmButtonText="Delete"
-              onConfirm={() => console.log("Deleted!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -500,7 +487,7 @@ export const DosAndDonts: Story = {
               trigger={<Button>Publish</Button>}
               title="Publish changes?"
               description="Your changes will be live to all users."
-              onConfirm={() => console.log("Published!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">
@@ -518,7 +505,7 @@ export const DosAndDonts: Story = {
               title="Delete with confirmation?"
               description="For deletions, require typing DELETE instead."
               confirmButtonText="I understand"
-              onConfirm={() => console.log("Confirmed!")}
+              onConfirm={fn()}
             />
           </div>
           <div className="flex items-center gap-2 mt-3">

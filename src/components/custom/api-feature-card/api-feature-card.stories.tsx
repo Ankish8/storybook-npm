@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { ApiFeatureCard } from "./api-feature-card";
 import { Phone, MessageCircle, Webhook, Settings } from "lucide-react";
 
@@ -196,9 +197,11 @@ import { MessageCircle } from "lucide-react"
       description: "Label for the capabilities section",
     },
     onAction: {
-      action: "action clicked",
       description: "Callback when action button is clicked",
     },
+  },
+  args: {
+    onAction: fn(),
   },
 };
 
@@ -324,7 +327,7 @@ export const BothApiCards: Story = {
           { id: "2", label: "Live Call Events (Webhooks)" },
           { id: "3", label: "IVR & Smart Routing" },
         ]}
-        onAction={() => console.log("Calling API clicked")}
+        onAction={fn()}
       />
       <ApiFeatureCard
         icon={<MessageCircle />}
@@ -335,7 +338,7 @@ export const BothApiCards: Story = {
           { id: "2", label: "Message Templates" },
           { id: "3", label: "Automated Replies" },
         ]}
-        onAction={() => console.log("WhatsApp API clicked")}
+        onAction={fn()}
       />
     </div>
   ),

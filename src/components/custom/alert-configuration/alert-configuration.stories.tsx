@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { AlertConfiguration } from "./alert-configuration";
 import { AlertValuesModal } from "./alert-values-modal";
@@ -209,9 +210,13 @@ function PaymentPage() {
       description: "Currency symbol to display",
     },
     onEdit: {
-      action: "edit clicked",
       description: "Callback when edit button is clicked",
     },
+  },
+  args: {
+    onEdit: fn(),
+    onSave: fn(),
+    onOpenChange: fn(),
   },
 };
 
@@ -404,7 +409,6 @@ export const ModalOnly: Story = {
       minimumTopup: number;
     }) => {
       setLoading(true);
-      console.log("Saved values:", values);
       // Simulate API call
       setTimeout(() => {
         setLoading(false);

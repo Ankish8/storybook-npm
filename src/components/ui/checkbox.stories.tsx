@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { Checkbox, type CheckedState } from "./checkbox";
 
@@ -135,6 +136,9 @@ import { Checkbox } from "@myoperator/ui"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onCheckedChange: fn(),
+  },
   argTypes: {
     size: {
       control: "select",
@@ -254,7 +258,6 @@ import { Checkbox } from "@myoperator/ui"
       },
     },
     onCheckedChange: {
-      action: "checkedChange",
       description: "Callback fired when the checkbox value changes",
       table: {
         type: { summary: "(checked: CheckedState) => void" },

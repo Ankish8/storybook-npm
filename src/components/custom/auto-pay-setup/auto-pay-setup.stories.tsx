@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import React, { useState } from "react";
 import { RefreshCw, CreditCard, Landmark, CreditCard as WalletIcon, Building2 } from "lucide-react";
 import { AutoPaySetup } from "./auto-pay-setup";
@@ -55,6 +56,10 @@ const meta: Meta<typeof AutoPaySetup> = {
     layout: "centered",
   },
   tags: ["autodocs"],
+  args: {
+    onOpenChange: fn(),
+    onValueChange: fn(),
+  },
   decorators: [
     (Story) => (
       <div style={{ width: "440px" }}>

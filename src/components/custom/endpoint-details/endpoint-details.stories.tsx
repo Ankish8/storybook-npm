@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { EndpointDetails } from "./endpoint-details";
 
 const meta: Meta<typeof EndpointDetails> = {
@@ -193,15 +194,12 @@ function WhatsAppApiSettings() {
       description: "Custom revoke section description",
     },
     onValueCopy: {
-      action: "copied",
       description: "Callback when a field value is copied",
     },
     onRegenerate: {
-      action: "regenerate",
       description: "Callback when regenerate is clicked for a secret field",
     },
     onRevokeAccess: {
-      action: "revoke",
       description: "Callback when revoke access is clicked (calling variant only)",
     },
     showRegenerate: {
@@ -216,6 +214,11 @@ function WhatsAppApiSettings() {
       control: "text",
       description: "Tooltip text shown on hover when regenerate is disabled",
     },
+  },
+  args: {
+    onRegenerate: fn(),
+    onRevokeAccess: fn(),
+    onValueCopy: fn(),
   },
 };
 
@@ -388,15 +391,9 @@ export const Interactive: Story = {
   render: (args) => (
     <EndpointDetails
       {...args}
-      onValueCopy={(field, value) => {
-        console.log(`Copied ${field}: ${value}`);
-      }}
-      onRegenerate={(field) => {
-        console.log(`Regenerate ${field}`);
-      }}
-      onRevokeAccess={() => {
-        console.log("Revoke access clicked");
-      }}
+      onValueCopy={fn()}
+      onRegenerate={fn()}
+      onRevokeAccess={fn()}
     />
   ),
 };

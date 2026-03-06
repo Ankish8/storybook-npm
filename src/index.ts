@@ -265,6 +265,28 @@ export type { PowerUpCardProps } from "./components/custom/power-up-card";
 export { TalkToUsModal } from "./components/custom/talk-to-us-modal";
 export type { TalkToUsModalProps } from "./components/custom/talk-to-us-modal";
 
+// PlanUpgradeModal (Custom)
+export { PlanUpgradeModal, billingCycleOptionVariants } from "./components/custom/plan-upgrade-modal";
+export type {
+  PlanUpgradeModalProps,
+  BillingCycleOption,
+  BillingCycleOptionIcon,
+} from "./components/custom/plan-upgrade-modal";
+
+// PlanUpgradeSummaryModal (Custom)
+export {
+  PlanUpgradeSummaryModal,
+  modalRootVariants as planUpgradeSummaryModalRootVariants,
+  summaryPanelVariants as planUpgradeSummaryPanelVariants,
+} from "./components/custom/plan-upgrade-summary-modal";
+export type {
+  PlanUpgradeSummaryModalProps,
+  PlanUpgradeSummaryMode,
+  PlanUpgradeSummaryRow,
+  PlanUpgradeSummaryStatus,
+  PlanUpgradeSummaryTone,
+} from "./components/custom/plan-upgrade-summary-modal";
+
 // LetUsDriveCard (Custom)
 export { LetUsDriveCard } from "./components/custom/let-us-drive-card";
 export type { LetUsDriveCardProps } from "./components/custom/let-us-drive-card";

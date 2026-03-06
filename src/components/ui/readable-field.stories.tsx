@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { ReadableField } from "./readable-field";
 
 const meta: Meta<typeof ReadableField> = {
@@ -137,6 +138,9 @@ import { ReadableField } from "@/components/ui/readable-field"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onValueCopy: fn(),
+  },
   argTypes: {
     label: {
       control: "text",
@@ -163,7 +167,6 @@ import { ReadableField } from "@/components/ui/readable-field"
       description: "When true on headerAction, button is shown but non-interactive",
     },
     onValueCopy: {
-      action: "copied",
       description: "Callback when value is copied",
     },
   },
@@ -205,7 +208,7 @@ export const Authentication: Story = {
     helperText: "Used for client-side integrations.",
     headerAction: {
       label: "Regenerate",
-      onClick: () => console.log("Regenerate authentication"),
+      onClick: fn(),
     },
   },
 };
@@ -221,7 +224,7 @@ export const SecretKey: Story = {
     helperText: "Never share this key or expose it in client-side code.",
     headerAction: {
       label: "Regenerate",
-      onClick: () => console.log("Regenerate secret key"),
+      onClick: fn(),
     },
   },
 };
@@ -256,7 +259,7 @@ export const WithHeaderAction: Story = {
     value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
     headerAction: {
       label: "Refresh",
-      onClick: () => console.log("Refresh token"),
+      onClick: fn(),
     },
   },
 };
@@ -273,7 +276,7 @@ export const DisabledHeaderAction: Story = {
     helperText: "Used for client-side integrations.",
     headerAction: {
       label: "Regenerate",
-      onClick: () => console.log("Regenerate authentication"),
+      onClick: fn(),
       disabled: true,
       disabledTooltip: "You are not allowed to regenerate this token",
     },
@@ -299,7 +302,7 @@ export const EndpointDetailsLayout: Story = {
         helperText="Used for client-side integrations."
         headerAction={{
           label: "Regenerate",
-          onClick: () => console.log("Regenerate"),
+          onClick: fn(),
         }}
       />
       <ReadableField
@@ -309,7 +312,7 @@ export const EndpointDetailsLayout: Story = {
         helperText="Never share this key or expose it in client-side code."
         headerAction={{
           label: "Regenerate",
-          onClick: () => console.log("Regenerate"),
+          onClick: fn(),
         }}
       />
       <ReadableField
@@ -338,7 +341,7 @@ export const TwoColumnLayout: Story = {
         helperText="Used for client-side integrations."
         headerAction={{
           label: "Regenerate",
-          onClick: () => console.log("Regenerate"),
+          onClick: fn(),
         }}
       />
       <ReadableField
@@ -348,7 +351,7 @@ export const TwoColumnLayout: Story = {
         helperText="Never share this key or expose it in client-side code."
         headerAction={{
           label: "Regenerate",
-          onClick: () => console.log("Regenerate"),
+          onClick: fn(),
         }}
       />
     </div>

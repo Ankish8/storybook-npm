@@ -1,0 +1,348 @@
+/**
+ * myOperator UI — Design Tokens
+ * Annotated for storybook-design-token addon
+ */
+
+/**
+ * @tokens Palette / Neutral
+ * @presenter Color
+ */
+:root {
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-neutral-25: #FDFDFD;
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #E9EAEB;
+  --color-neutral-300: #D5D7DA;
+  --color-neutral-400: #A4A7AE;
+  --color-neutral-500: #717680;
+  --color-neutral-600: #535862;
+  --color-neutral-700: #414651;
+  --color-neutral-800: #252B37;
+  --color-neutral-900: #181D27;
+  --color-neutral-950: #0A0D12;
+}
+
+/**
+ * @tokens Palette / Primary
+ * @presenter Color
+ */
+:root {
+  --color-primary-25: #F9FAFB;
+  --color-primary-50: #EBECEE;
+  --color-primary-100: #C0C3CA;
+  --color-primary-200: #A2A6B1;
+  --color-primary-300: #777E8D;
+  --color-primary-400: #5D6577;
+  --color-primary-500: #343E55;
+  --color-primary-600: #2F384D;
+  --color-primary-700: #252C3C;
+  --color-primary-800: #1D222F;
+  --color-primary-900: #161A24;
+  --color-primary-950: #0C0F12;
+}
+
+/**
+ * @tokens Palette / Brand
+ * @presenter Color
+ */
+:root {
+  --color-secondary-25: #F6FCFD;
+  --color-secondary-50: #EAF8FA;
+  --color-secondary-100: #BDEAEF;
+  --color-secondary-200: #9DE0E7;
+  --color-secondary-300: #71D2DB;
+  --color-secondary-400: #55C9D5;
+  --color-secondary-500: #2BBCCA;
+  --color-secondary-600: #27ABB8;
+  --color-secondary-700: #1F858F;
+  --color-secondary-800: #18676F;
+  --color-secondary-900: #124F55;
+  --color-secondary-950: #0F3D3D;
+}
+
+/**
+ * @tokens Palette / Error
+ * @presenter Color
+ */
+:root {
+  --color-error-25: #FFFBFA;
+  --color-error-50: #FEF3F2;
+  --color-error-100: #FEE4E2;
+  --color-error-200: #FECDCA;
+  --color-error-300: #FDA29B;
+  --color-error-400: #F97066;
+  --color-error-500: #F04438;
+  --color-error-600: #D92D20;
+  --color-error-700: #B42318;
+  --color-error-800: #912018;
+  --color-error-900: #7A271A;
+  --color-error-950: #55160C;
+}
+
+/**
+ * @tokens Palette / Warning
+ * @presenter Color
+ */
+:root {
+  --color-warning-25: #FFFCF5;
+  --color-warning-50: #FFFAEB;
+  --color-warning-100: #FEF0C7;
+  --color-warning-200: #FEDF89;
+  --color-warning-300: #FEC84B;
+  --color-warning-400: #FDB022;
+  --color-warning-500: #F79009;
+  --color-warning-600: #DC6803;
+  --color-warning-700: #B54708;
+  --color-warning-800: #93370D;
+  --color-warning-900: #7A2E0E;
+  --color-warning-950: #4E1D09;
+}
+
+/**
+ * @tokens Palette / Success
+ * @presenter Color
+ */
+:root {
+  --color-success-25: #F6FEF9;
+  --color-success-50: #ECFDF3;
+  --color-success-100: #DCFAE6;
+  --color-success-200: #ABEFC6;
+  --color-success-300: #75E0A7;
+  --color-success-400: #47CD89;
+  --color-success-500: #17B26A;
+  --color-success-600: #079455;
+  --color-success-700: #067647;
+  --color-success-800: #085D3A;
+  --color-success-900: #074D31;
+  --color-success-950: #053321;
+}
+
+/**
+ * @tokens Palette / Info
+ * @presenter Color
+ */
+:root {
+  --color-info-25: #F6F8FD;
+  --color-info-50: #ECF1FB;
+  --color-info-100: #C4D4F2;
+  --color-info-200: #A8C0EC;
+  --color-info-300: #80A3E4;
+  --color-info-400: #6891DE;
+  --color-info-500: #4275D6;
+  --color-info-600: #3C6AC3;
+  --color-info-700: #2F5398;
+  --color-info-800: #244076;
+  --color-info-900: #1C315A;
+  --color-info-950: #182A44;
+}
+
+/**
+ * @tokens Primary
+ * @presenter Color
+ */
+:root {
+  --semantic-primary: #343E55;
+  --semantic-primary-hover: #2F384D;
+  --semantic-primary-selected: #777E8D;
+  --semantic-primary-surface: #EBECEE;
+  --semantic-brand: #2BBCCA;
+  --semantic-brand-hover: #1F858F;
+  --semantic-brand-surface: #EAF8FA;
+}
+
+/**
+ * @tokens Backgrounds
+ * @presenter Color
+ */
+:root {
+  --semantic-bg-primary: #FFFFFF;
+  --semantic-bg-secondary: #0C0F12;
+  --semantic-bg-ui: #F5F5F5;
+  --semantic-bg-grey: #E9EAEB;
+  --semantic-bg-hover: #D5D7DA;
+  --semantic-bg-inverted: #000000;
+}
+
+/**
+ * @tokens Text
+ * @presenter Color
+ */
+:root {
+  --semantic-text-primary: #181D27;
+  --semantic-text-secondary: #343E55;
+  --semantic-text-muted: #717680;
+  --semantic-text-placeholder: #A2A6B1;
+  --semantic-text-link: #4275D6;
+  --semantic-text-inverted: #FFFFFF;
+}
+
+/**
+ * @tokens Borders
+ * @presenter Color
+ */
+:root {
+  --semantic-border-primary: #343E55;
+  --semantic-border-layout: #E9EAEB;
+  --semantic-border-input: #E9EAEB;
+  --semantic-border-input-focus: #2BBCCA;
+  --semantic-border-accent: #27ABB8;
+}
+
+/**
+ * @tokens Status / Error
+ * @presenter Color
+ */
+:root {
+  --semantic-error-primary: #F04438;
+  --semantic-error-hover: #D92D20;
+  --semantic-error-surface: #FEF3F2;
+  --semantic-error-surface-subtle: #FFFBFA;
+  --semantic-error-text: #B42318;
+  --semantic-error-border: #FDA29B;
+}
+
+/**
+ * @tokens Status / Warning
+ * @presenter Color
+ */
+:root {
+  --semantic-warning-primary: #F79009;
+  --semantic-warning-hover: #DC6803;
+  --semantic-warning-surface: #FFFAEB;
+  --semantic-warning-surface-subtle: #FFFCF5;
+  --semantic-warning-text: #B54708;
+  --semantic-warning-border: #FEC84B;
+}
+
+/**
+ * @tokens Status / Success
+ * @presenter Color
+ */
+:root {
+  --semantic-success-primary: #17B26A;
+  --semantic-success-hover: #079455;
+  --semantic-success-surface: #ECFDF3;
+  --semantic-success-surface-subtle: #F6FEF9;
+  --semantic-success-text: #067647;
+  --semantic-success-border: #75E0A7;
+}
+
+/**
+ * @tokens Status / Info
+ * @presenter Color
+ */
+:root {
+  --semantic-info-primary: #4275D6;
+  --semantic-info-hover: #3C6AC3;
+  --semantic-info-surface: #ECF1FB;
+  --semantic-info-surface-subtle: #F6F8FD;
+  --semantic-info-text: #3C6AC3;
+  --semantic-info-border: #A8C0EC;
+}
+
+/**
+ * @tokens Disabled
+ * @presenter Color
+ */
+:root {
+  --semantic-disabled-primary: #A2A6B1;
+  --semantic-disabled-secondary: #EBECEE;
+  --semantic-disabled-text: #717680;
+  --semantic-disabled-border: #D5D7DA;
+}
+
+/**
+ * @tokens Typography / Font Family
+ * @presenter FontFamily
+ */
+:root {
+  --font-family-base: 'Source Sans Pro', sans-serif;
+}
+
+/**
+ * @tokens Typography / Font Size
+ * @presenter FontSize
+ */
+:root {
+  --font-size-label-small: 10px;
+  --font-size-label-medium: 12px;
+  --font-size-body-small: 12px;
+  --font-size-label-large: 14px;
+  --font-size-body-medium: 14px;
+  --font-size-title-small: 14px;
+  --font-size-body-large: 16px;
+  --font-size-title-medium: 16px;
+  --font-size-title-large: 18px;
+  --font-size-headline-small: 24px;
+  --font-size-headline-medium: 28px;
+  --font-size-headline-large: 32px;
+  --font-size-display-small: 36px;
+  --font-size-display-medium: 45px;
+  --font-size-display-large: 57px;
+}
+
+/**
+ * @tokens Typography / Font Weight
+ * @presenter FontWeight
+ */
+:root {
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+}
+
+/**
+ * @tokens Spacing
+ * @presenter Spacing
+ */
+:root {
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+}
+
+/**
+ * @tokens Border Radius
+ * @presenter BorderRadius
+ */
+:root {
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+}
+
+/**
+ * @tokens Typography / Line Height
+ * @presenter LineHeight
+ */
+:root {
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+}
+
+/**
+ * @tokens Shadow
+ * @presenter Shadow
+ */
+:root {
+  --shadow-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.10), 0px 1px 2px 0px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.10), 0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-xl: 0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+  --shadow-2xl: 0px 24px 48px -12px rgba(16, 24, 40, 0.18);
+}

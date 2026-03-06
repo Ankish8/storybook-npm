@@ -4726,7 +4726,7 @@ const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("mt-1 text-sm", className)} {...props} />
+  <p ref={ref} className={cn("m-0 mt-1 text-sm", className)} {...props} />
 ));
 AlertDescription.displayName = "AlertDescription";
 
@@ -9236,25 +9236,25 @@ const SummaryRow = ({ item }: { item: PaymentSummaryItem }) => (
         <div className="flex flex-col gap-0.5">
           <span
             className={cn(
-              "text-sm tracking-[0.035px]",
+              "tracking-[0.035px]",
               item.bold
-                ? "font-semibold text-semantic-text-primary"
-                : "text-semantic-text-muted"
+                ? "text-base font-semibold text-semantic-text-primary"
+                : "text-sm text-semantic-text-muted"
             )}
           >
             {item.label}
           </span>
-          <span className="text-xs text-semantic-text-link tracking-[0.06px]">
+          <span className="text-sm text-semantic-text-link tracking-[0.06px]">
             {item.hint}
           </span>
         </div>
       ) : (
         <span
           className={cn(
-            "text-sm tracking-[0.035px]",
+            "tracking-[0.035px]",
             item.bold
-              ? "font-semibold text-semantic-text-primary"
-              : "text-semantic-text-muted"
+              ? "text-base font-semibold text-semantic-text-primary"
+              : "text-sm text-semantic-text-muted"
           )}
         >
           {item.label}
@@ -9774,6 +9774,573 @@ export interface PaymentOptionCardProps {
           content: prefixTailwindClasses(`export { PaymentOptionCard } from "./payment-option-card";
 export { PaymentOptionCardModal } from "./payment-option-card-modal";
 export type { PaymentOptionCardProps, PaymentOption } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "plan-upgrade-modal": {
+      name: "plan-upgrade-modal",
+      description: "A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "@radix-ui/react-dialog"
+      ],
+      internalDependencies: [
+            "button",
+            "dialog"
+      ],
+      isMultiFile: true,
+      directory: "plan-upgrade-modal",
+      mainFile: "plan-upgrade-modal.tsx",
+      files: [
+        {
+          name: "plan-upgrade-modal.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva } from "class-variance-authority";
+import { CalendarDays, Clock3, X } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../dialog";
+import type { BillingCycleOption, PlanUpgradeModalProps } from "./types";
+
+const modalRootVariants = cva(
+  "flex flex-col gap-6 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-9"
+);
+
+const billingCycleOptionVariants = cva(
+  "flex w-full items-center gap-2.5 rounded-lg border bg-semantic-bg-primary p-3 text-left transition-colors",
+  {
+    variants: {
+      selected: {
+        true: "border-semantic-border-input-focus",
+        false: "border-semantic-border-layout hover:border-semantic-border-input",
+      },
+    },
+    defaultVariants: {
+      selected: false,
+    },
+  }
+);
+
+const iconContainerVariants = cva(
+  "flex size-[34px] shrink-0 items-center justify-center rounded-lg bg-semantic-info-surface"
+);
+
+const defaultOptions: BillingCycleOption[] = [
+  { id: "current-billing-cycle", label: "Current billing cycle", icon: "clock" },
+  { id: "upcoming-billing-cycle", label: "Upcoming billing cycle", icon: "calendar" },
+];
+
+const renderOptionIcon = (icon: BillingCycleOption["icon"]) => {
+  if (icon === "calendar") {
+    return <CalendarDays className="size-5 text-semantic-text-secondary" aria-hidden="true" />;
+  }
+  if (icon === "clock" || icon === undefined) {
+    return <Clock3 className="size-5 text-semantic-text-secondary" aria-hidden="true" />;
+  }
+  return icon;
+};
+
+const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>(
+  (
+    {
+      open,
+      onOpenChange,
+      title = "Plan upgrade, SUV ₹ 15,000.00/month",
+      description = "Select how you want to apply your new plan.",
+      options = defaultOptions,
+      selectedOptionId,
+      defaultSelectedOptionId,
+      onOptionChange,
+      nextLabel = "Next",
+      onNext,
+      onClose,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const initialOptionId = defaultSelectedOptionId ?? options[0]?.id;
+    const [internalSelectedOptionId, setInternalSelectedOptionId] = React.useState<
+      string | undefined
+    >(initialOptionId);
+    const isControlled = selectedOptionId !== undefined;
+    const activeOptionId = isControlled ? selectedOptionId : internalSelectedOptionId;
+
+    React.useEffect(() => {
+      if (!isControlled) {
+        setInternalSelectedOptionId(initialOptionId);
+      }
+    }, [initialOptionId, isControlled]);
+
+    const handleOptionSelect = (optionId: string) => {
+      if (!isControlled) {
+        setInternalSelectedOptionId(optionId);
+      }
+      onOptionChange?.(optionId);
+    };
+
+    const handleNext = () => {
+      if (!activeOptionId) {
+        return;
+      }
+      onNext?.(activeOptionId);
+    };
+
+    const handleClose = () => {
+      onClose?.();
+      onOpenChange(false);
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          size="default"
+          hideCloseButton
+          className="w-full max-w-[480px] border-none bg-transparent p-0 shadow-none"
+        >
+          <div ref={ref} className={cn(modalRootVariants(), className)} {...props}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-2">
+                <DialogTitle className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary">
+                  {title}
+                </DialogTitle>
+                <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
+                  {description}
+                </DialogDescription>
+              </div>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary"
+                aria-label="Close plan upgrade modal"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2.5">
+              {options.map((option) => {
+                const isSelected = activeOptionId === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => handleOptionSelect(option.id)}
+                    className={cn(billingCycleOptionVariants({ selected: isSelected }))}
+                    aria-pressed={isSelected}
+                  >
+                    <span className={iconContainerVariants()}>{renderOptionIcon(option.icon)}</span>
+                    <span className="text-sm leading-normal tracking-[0.035px] text-semantic-text-primary">
+                      {option.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                variant="default"
+                onClick={handleNext}
+                disabled={!activeOptionId}
+                className="min-w-[95px]"
+              >
+                {nextLabel}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+
+PlanUpgradeModal.displayName = "PlanUpgradeModal";
+
+export { PlanUpgradeModal, billingCycleOptionVariants };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export type BillingCycleOptionIcon = "clock" | "calendar" | React.ReactNode;
+
+/**
+ * A selectable billing cycle option shown inside PlanUpgradeModal.
+ */
+export interface BillingCycleOption {
+  /** Unique identifier for the option */
+  id: string;
+  /** Option label text */
+  label: string;
+  /** Optional icon key or custom icon node */
+  icon?: BillingCycleOptionIcon;
+}
+
+export interface PlanUpgradeModalProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Whether the modal is open */
+  open: boolean;
+  /** Called when modal open state changes */
+  onOpenChange: (open: boolean) => void;
+  /** Title shown at the top of the modal */
+  title?: string;
+  /** Description shown below the title */
+  description?: string;
+  /** Options to select from */
+  options?: BillingCycleOption[];
+  /** Controlled selected option id */
+  selectedOptionId?: string;
+  /** Uncontrolled selected option id */
+  defaultSelectedOptionId?: string;
+  /** Called when an option is selected */
+  onOptionChange?: (optionId: string) => void;
+  /** Next button label */
+  nextLabel?: string;
+  /** Called when Next is clicked */
+  onNext?: (selectedOptionId: string) => void;
+  /** Called when close button is clicked */
+  onClose?: () => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { PlanUpgradeModal, billingCycleOptionVariants } from "./plan-upgrade-modal";
+export type { BillingCycleOption, BillingCycleOptionIcon, PlanUpgradeModalProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "plan-upgrade-summary-modal": {
+      name: "plan-upgrade-summary-modal",
+      description: "A billing summary modal for confirming plan upgrades and downgrades",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "@radix-ui/react-dialog"
+      ],
+      internalDependencies: [
+            "button",
+            "dialog"
+      ],
+      isMultiFile: true,
+      directory: "plan-upgrade-summary-modal",
+      mainFile: "plan-upgrade-summary-modal.tsx",
+      files: [
+        {
+          name: "plan-upgrade-summary-modal.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva } from "class-variance-authority";
+import { AlertCircle, CircleCheck, X } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../dialog";
+import type {
+  PlanUpgradeSummaryModalProps,
+  PlanUpgradeSummaryMode,
+  PlanUpgradeSummaryRow,
+  PlanUpgradeSummaryStatus,
+  PlanUpgradeSummaryTone,
+} from "./types";
+
+const modalRootVariants = cva(
+  "flex flex-col gap-8 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-9"
+);
+
+const summaryPanelVariants = cva(
+  "flex flex-col gap-5 rounded border border-semantic-border-layout bg-semantic-bg-ui p-4"
+);
+
+const statusTitleVariants = cva("m-0 text-sm font-semibold leading-5 tracking-[0.014px]", {
+  variants: {
+    tone: {
+      warning: "text-semantic-warning-text",
+      success: "text-semantic-success-text",
+    },
+  },
+  defaultVariants: {
+    tone: "warning",
+  },
+});
+
+const statusMessageVariants = cva("m-0 text-xs leading-normal", {
+  variants: {
+    tone: {
+      warning: "text-semantic-warning-text",
+      success: "text-semantic-success-text",
+    },
+  },
+  defaultVariants: {
+    tone: "warning",
+  },
+});
+
+const defaultRowsByMode: Record<PlanUpgradeSummaryMode, PlanUpgradeSummaryRow[]> = {
+  upgrade: [
+    { label: "Prepaid amount", value: "(₹ 47,229.20)" },
+    { label: "Difference in rental", value: "₹ 150,000.00" },
+    { label: "Total", value: "₹ 102,770.80" },
+    { label: "Taxes", value: "₹ 18,498.74" },
+  ],
+  downgrade: [
+    { label: "Prepaid amount", value: "(₹ 581.48)" },
+    { label: "Difference in rental", value: "₹ -120,000.00" },
+    { label: "Total", value: "₹ -120,581.48" },
+    { label: "Taxes", value: "₹ 0.00" },
+  ],
+};
+
+const defaultStatusByMode: Record<PlanUpgradeSummaryMode, PlanUpgradeSummaryStatus> = {
+  upgrade: {
+    title: "Payable Amount",
+    message: "A payment of ₹ 59,437.44 is required to upgrade.",
+    tone: "warning",
+  },
+  downgrade: {
+    title: "Adjustable Credit",
+    tone: "success",
+  },
+};
+
+const defaultTitleByMode: Record<PlanUpgradeSummaryMode, string> = {
+  upgrade: "Plan upgrade, SUV ₹ 15,000.00/month",
+  downgrade: "Plan downgrade, SUV ₹ 15,000.00/month",
+};
+
+const defaultPrimaryActionLabelByMode: Record<PlanUpgradeSummaryMode, string> = {
+  upgrade: "Pay & Upgrade Plan",
+  downgrade: "Downgrade Plan",
+};
+
+const defaultTotalValueByMode: Record<PlanUpgradeSummaryMode, string> = {
+  upgrade: "₹ 59,437.44",
+  downgrade: "₹ -120,581.48",
+};
+
+const defaultDescription =
+  "Your request will be processed from the current billing cycle.";
+
+const getStatusIcon = (tone: PlanUpgradeSummaryTone) => {
+  if (tone === "success") {
+    return <CircleCheck className="size-6 text-semantic-success-text" aria-hidden="true" />;
+  }
+
+  return <AlertCircle className="size-6 text-semantic-warning-text" aria-hidden="true" />;
+};
+
+const PlanUpgradeSummaryModal = React.forwardRef<
+  HTMLDivElement,
+  PlanUpgradeSummaryModalProps
+>(
+  (
+    {
+      open,
+      onOpenChange,
+      mode = "upgrade",
+      title,
+      description = defaultDescription,
+      status,
+      rows,
+      totalLabel = "Total amount due",
+      totalValue,
+      cancelLabel = "Cancel",
+      primaryActionLabel,
+      onPrimaryAction,
+      onCancel,
+      onClose,
+      closeAriaLabel = "Close plan summary modal",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const resolvedStatus = status ?? defaultStatusByMode[mode];
+    const resolvedTone = resolvedStatus.tone ?? defaultStatusByMode[mode].tone ?? "warning";
+    const resolvedRows = rows ?? defaultRowsByMode[mode];
+    const resolvedTitle = title ?? defaultTitleByMode[mode];
+    const resolvedTotalValue = totalValue ?? defaultTotalValueByMode[mode];
+    const resolvedPrimaryActionLabel =
+      primaryActionLabel ?? defaultPrimaryActionLabelByMode[mode];
+
+    const handleClose = () => {
+      onClose?.();
+      onOpenChange(false);
+    };
+
+    const handleCancel = () => {
+      onCancel?.();
+      onOpenChange(false);
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          size="default"
+          hideCloseButton
+          className="w-full max-w-[660px] border-none bg-transparent p-0 shadow-none"
+        >
+          <div ref={ref} className={cn(modalRootVariants(), className)} {...props}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col gap-2">
+                <DialogTitle className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary">
+                  {resolvedTitle}
+                </DialogTitle>
+                <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
+                  {description}
+                </DialogDescription>
+              </div>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary"
+                aria-label={closeAriaLabel}
+              >
+                <X className="size-6" />
+              </button>
+            </div>
+
+            <div className={summaryPanelVariants()}>
+              <div className="flex items-start gap-4">
+                <span className="shrink-0">{getStatusIcon(resolvedTone)}</span>
+                <div className="flex flex-col gap-1">
+                  <p className={statusTitleVariants({ tone: resolvedTone })}>
+                    {resolvedStatus.title}
+                  </p>
+                  {resolvedStatus.message ? (
+                    <p className={statusMessageVariants({ tone: resolvedTone })}>
+                      {resolvedStatus.message}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                {resolvedRows.map((row) => (
+                  <div
+                    key={\`\${row.label}-\${row.value}\`}
+                    className="flex items-center justify-between gap-6"
+                  >
+                    <span className="text-sm tracking-[0.035px] text-semantic-text-secondary">
+                      {row.label}
+                    </span>
+                    <span className="text-sm tracking-[0.035px] text-semantic-text-primary">
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between gap-6 border-t border-semantic-border-layout pt-3">
+                <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-secondary">
+                  {totalLabel}
+                </span>
+                <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-primary">
+                  {resolvedTotalValue}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2.5">
+              <Button variant="outline" onClick={handleCancel}>
+                {cancelLabel}
+              </Button>
+              <Button variant="primary" onClick={onPrimaryAction}>
+                {resolvedPrimaryActionLabel}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+
+PlanUpgradeSummaryModal.displayName = "PlanUpgradeSummaryModal";
+
+export { PlanUpgradeSummaryModal, modalRootVariants, summaryPanelVariants };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export type PlanUpgradeSummaryMode = "upgrade" | "downgrade";
+
+export type PlanUpgradeSummaryTone = "warning" | "success";
+
+export interface PlanUpgradeSummaryRow {
+  /** Label shown on the left side of the summary row */
+  label: string;
+  /** Value shown on the right side of the summary row */
+  value: string;
+}
+
+export interface PlanUpgradeSummaryStatus {
+  /** Highlighted title shown at the top of the summary panel */
+  title: string;
+  /** Optional supporting message shown below the status title */
+  message?: string;
+  /** Visual tone used for the status title and icon */
+  tone?: PlanUpgradeSummaryTone;
+}
+
+export interface PlanUpgradeSummaryModalProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Whether the modal is open */
+  open: boolean;
+  /** Called when modal open state changes */
+  onOpenChange: (open: boolean) => void;
+  /** Preset content mode for upgrade or downgrade flows */
+  mode?: PlanUpgradeSummaryMode;
+  /** Title shown at the top of the modal */
+  title?: string;
+  /** Supporting description below the title */
+  description?: string;
+  /** Status content shown inside the summary panel */
+  status?: PlanUpgradeSummaryStatus;
+  /** Summary rows shown above the total row */
+  rows?: PlanUpgradeSummaryRow[];
+  /** Label for the total row */
+  totalLabel?: string;
+  /** Value for the total row */
+  totalValue?: string;
+  /** Text for the cancel button */
+  cancelLabel?: string;
+  /** Text for the primary CTA button */
+  primaryActionLabel?: string;
+  /** Called when the primary CTA is clicked */
+  onPrimaryAction?: () => void;
+  /** Called when the cancel button is clicked */
+  onCancel?: () => void;
+  /** Called when the close icon is clicked */
+  onClose?: () => void;
+  /** Accessible label for the close button */
+  closeAriaLabel?: string;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export {
+  PlanUpgradeSummaryModal,
+  modalRootVariants,
+  summaryPanelVariants,
+} from "./plan-upgrade-summary-modal";
+export type {
+  PlanUpgradeSummaryModalProps,
+  PlanUpgradeSummaryMode,
+  PlanUpgradeSummaryRow,
+  PlanUpgradeSummaryStatus,
+  PlanUpgradeSummaryTone,
+} from "./types";
 `, prefix),
         }
       ],

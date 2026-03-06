@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
 import { useState } from "react";
 import { SelectField, type SelectOption } from "./select-field";
 import { FormModal } from "./form-modal";
@@ -220,6 +221,10 @@ import { SelectField } from "@/components/ui/select-field"
     },
   },
   tags: ["autodocs"],
+  args: {
+    onValueChange: fn(),
+    onSelect: fn(),
+  },
   argTypes: {
     label: {
       control: "text",

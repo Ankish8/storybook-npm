@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Alert, AlertTitle, AlertDescription } from "../alert";
 import { Bell } from "lucide-react";
+import { assertNoBootstrapMarginBleed } from "./utils/bootstrap-compat";
 
 describe("Alert", () => {
   // Basic rendering
@@ -330,6 +331,13 @@ describe("AlertDescription", () => {
     const ref = { current: null };
     render(<AlertDescription ref={ref}>Description</AlertDescription>);
     expect(ref.current).toBeInstanceOf(HTMLParagraphElement);
+  });
+
+  it("has Bootstrap margin reset (m-0) to prevent 16px gap in Bootstrap host apps", () => {
+    const { container } = render(
+      <AlertDescription>Description text</AlertDescription>
+    );
+    assertNoBootstrapMarginBleed(container);
   });
 });
 
