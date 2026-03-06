@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 46 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 47 components across 7 categories.
 
 ## Quick Reference
 
