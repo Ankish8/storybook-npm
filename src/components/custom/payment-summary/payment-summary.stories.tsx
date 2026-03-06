@@ -265,6 +265,7 @@ export const Default: Story = {
         valueColor: "error",
       },
     ],
+    creditLimit: { value: "₹1,000.00", tooltip: "Maximum credit extended to this account" },
   },
 };
 
@@ -312,6 +313,7 @@ export const ZeroBalance: Story = {
         valueColor: "success",
       },
     ],
+    creditLimit: { value: "₹1,000.00", tooltip: "Maximum credit extended to this account" },
   },
 };
 
@@ -360,5 +362,6 @@ export const CreditRemaining: Story = {
         hint: "+Remaining prepaid amount: ₹4,592.25",
       },
     ],
+    creditLimit: { value: "₹1,000.00", tooltip: "Maximum credit extended to this account" },
   },
 };

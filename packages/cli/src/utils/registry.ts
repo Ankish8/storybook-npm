@@ -9215,6 +9215,8 @@ export interface PaymentSummaryProps {
   subtotal?: { label: string; value: string };
   /** Light-blue bordered breakdown card shown below the subtotal */
   breakdownCard?: PaymentSummaryBreakdownCard;
+  /** Credit limit row shown at the bottom, separated by a top border */
+  creditLimit?: { value: string; tooltip?: string };
 }
 
 const valueColorMap: Record<string, string> = {
@@ -9344,7 +9346,7 @@ const BreakdownCardRow = ({ item }: { item: BreakdownCardItem }) => (
  * \`\`\`
  */
 export const PaymentSummary = React.forwardRef<HTMLDivElement, PaymentSummaryProps>(
-  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard }, ref) => {
+  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }, ref) => {
     const hasItemsBorder =
       items.length > 0 &&
       (!!subtotal || !!breakdownCard || (summaryItems && summaryItems.length > 0));
@@ -9443,6 +9445,37 @@ export const PaymentSummary = React.forwardRef<HTMLDivElement, PaymentSummaryPro
                 {summaryItems.map((item, index) => (
                   <SummaryRow key={index} item={item} />
                 ))}
+              </div>
+            )}
+
+            {/* Credit limit row */}
+            {creditLimit && (
+              <div className="flex items-center justify-between border-t border-semantic-border-layout pt-3">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                    Credit limit
+                  </span>
+                  {creditLimit.tooltip && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center rounded-full w-5 h-5 text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
+                          aria-label="Info about Credit limit"
+                        >
+                          <Info className="h-3.5 w-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <TooltipArrow />
+                        {creditLimit.tooltip}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+                <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                  {creditLimit.value}
+                </span>
               </div>
             )}
           </div>
