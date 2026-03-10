@@ -1,0 +1,33 @@
+---
+description: "Protect Bootstrap compatibility by requiring paragraph margin resets in component source."
+alwaysApply: true
+globs: ["src/components/ui/**/*.tsx", "src/components/custom/**/*.tsx"]
+---
+
+# Bootstrap Paragraph Guard
+
+Bootstrap applies `p { margin-bottom: 1rem }` globally.
+
+To prevent layout gaps in Bootstrap-based host apps:
+- every `<p>` in component source must include one of:
+  - `m-0`
+  - `mb-0`
+  - `my-0`
+
+This applies to:
+- inline `className` strings on `<p>`
+- CVA base class strings used by `<p>` elements
+
+Before shipping or publishing:
+
+```bash
+node scripts/check-bootstrap-compat.js
+```
+
+The Cursor dev workflow plugin also installs a hook that blocks matching:
+- `git commit`
+- `git push`
+- `npm publish`
+- `npm version`
+
+when the Bootstrap compatibility scan fails.

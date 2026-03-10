@@ -311,3 +311,24 @@ export type { DateRangeModalProps } from "./components/custom/date-range-modal/i
 export { ChatListItem } from "./components/custom/chat-list-item";
 export type { ChatListItemProps, MessageStatus, MessageType } from "./components/custom/chat-list-item";
 
+// Bots (Custom)
+export { BotCard, CreateBotModal, BotList } from "./components/custom/bots";
+export type { BotCardProps, CreateBotModalProps, BotListProps, Bot, BotType } from "./components/custom/bots";
+
+// IvrBot (Custom)
+export { IvrBotConfig, CreateFunctionModal } from "./components/custom/ivr-bot";
+export type {
+  IvrBotConfigProps,
+  IvrBotConfigData,
+  CreateFunctionModalProps,
+  CreateFunctionData,
+  CreateFunctionStep1Data,
+  CreateFunctionStep2Data,
+  FunctionItem,
+  KnowledgeBaseFile,
+  KnowledgeFileStatus,
+  KeyValuePair as IvrBotKeyValuePair,
+  HttpMethod,
+  FunctionTabType,
+} from "./components/custom/ivr-bot";
+

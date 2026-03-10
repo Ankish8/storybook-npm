@@ -699,6 +699,48 @@ components:
       - "index.ts"
     mainFile: "talk-to-us-modal.tsx"
 
+  bots:
+    description: "AI Bot management components — BotList page, BotCard, and CreateBotModal"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - dialog
+    isMultiFile: true
+    directory: "bots"
+    files:
+      - "bot-card.tsx"
+      - "create-bot-modal.tsx"
+      - "bot-list.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "bot-list.tsx"
+
+  ivr-bot:
+    description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - badge
+      - switch
+      - accordion
+      - dialog
+    isMultiFile: true
+    directory: "ivr-bot"
+    files:
+      - "ivr-bot-config.tsx"
+      - "create-function-modal.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "ivr-bot-config.tsx"
+
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"
     category: custom

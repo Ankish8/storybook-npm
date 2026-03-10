@@ -384,6 +384,22 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["button","dialog"],
   },
+  "bots": {
+    name: "bots",
+    description: "AI Bot management components — BotList page, BotCard, and CreateBotModal",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: "custom",
+    internalDependencies: ["button","dialog"],
+  },
+  "ivr-bot": {
+    name: "ivr-bot",
+    description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: "custom",
+    internalDependencies: ["button","badge","switch","accordion","dialog"],
+  },
   "wallet-topup": {
     name: "wallet-topup",
     description: "A component for wallet top-up with amount selection and coupon support",

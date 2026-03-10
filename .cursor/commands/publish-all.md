@@ -47,7 +47,14 @@ npm run api:check
 
 If `api:check` reports intentional breaking changes, run `npm run api:snapshot` to update the baseline, then continue.
 
-**IMPORTANT: Both test suites (2.1 and 2.2) MUST pass. Do NOT skip or proceed if tests fail.**
+### 2.5 Bootstrap compatibility check
+```bash
+node scripts/check-bootstrap-compat.js
+```
+
+Every `<p>` element in component source must include `m-0`, `mb-0`, or `my-0`. Fix any violations before proceeding.
+
+**IMPORTANT: All checks (2.1–2.5) MUST pass. Do NOT skip or proceed if any fail.**
 
 ---
 

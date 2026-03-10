@@ -23,19 +23,19 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-lg border p-4 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-[5px] border p-3 shadow-md transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
         default:
           "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
         success:
-          "border-semantic-success-border bg-semantic-success-surface text-semantic-success-hover",
+          "border-transparent bg-semantic-success-surface text-semantic-text-primary",
         error:
-          "border-semantic-error-border bg-semantic-error-surface text-semantic-error-hover",
+          "border-transparent bg-semantic-error-surface text-semantic-text-primary",
         warning:
-          "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-hover",
-        info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-hover",
+          "border-transparent bg-semantic-warning-surface text-semantic-text-primary",
+        info: "border-transparent bg-semantic-info-surface text-semantic-text-primary",
       },
     },
     defaultVariants: {
@@ -85,17 +85,13 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-semantic-text-muted opacity-0 transition-opacity hover:text-semantic-text-primary focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
-      "group-[.success]:text-semantic-success-hover group-[.success]:hover:text-semantic-success-hover",
-      "group-[.error]:text-semantic-error-hover group-[.error]:hover:text-semantic-error-hover",
-      "group-[.warning]:text-semantic-warning-hover group-[.warning]:hover:text-semantic-warning-hover",
-      "group-[.info]:text-semantic-info-hover group-[.info]:hover:text-semantic-info-hover",
+      "shrink-0 rounded p-0.5 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus:outline-none focus:ring-2 focus:ring-semantic-border-focus",
       className
     )}
     toast-close=""
     {...props}
   >
-    <X className="h-4 w-4" />
+    <X className="h-3 w-3" />
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
@@ -106,7 +102,7 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn("text-sm font-semibold", className)}
+    className={cn("text-sm font-semibold tracking-[0.014px]", className)}
     {...props}
   />
 ));
@@ -118,7 +114,7 @@ const ToastDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Description
     ref={ref}
-    className={cn("text-sm opacity-90", className)}
+    className={cn("text-xs tracking-[0.048px]", className)}
     {...props}
   />
 ));
@@ -397,11 +393,11 @@ function Toaster() {
             className={variant ?? undefined}
             {...props}
           >
-            <div className="flex gap-3">
+            <div className="flex items-center gap-4">
               {Icon && (
                 <Icon
                   className={cn(
-                    "h-5 w-5 shrink-0",
+                    "size-6 shrink-0",
                     variant === "success" && "text-semantic-success-primary",
                     variant === "error" && "text-semantic-error-primary",
                     variant === "warning" && "text-semantic-warning-primary",
@@ -409,7 +405,7 @@ function Toaster() {
                   )}
                 />
               )}
-              <div className="grid gap-1">
+              <div className="flex flex-col gap-0.5">
                 {title && <ToastTitle>{title}</ToastTitle>}
                 {description && (
                   <ToastDescription>{description}</ToastDescription>
