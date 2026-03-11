@@ -3647,6 +3647,22 @@ const CreatableMultiSelect = React.forwardRef<
               </div>
             )}
 
+            {/* Clickable "Create X" button for custom values */}
+            {canAddCustom && (
+              <div className="px-2.5 py-2 border-t border-semantic-border-layout">
+                <button
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    addValue(inputValue.trim())
+                  }}
+                  className="text-base text-semantic-text-link hover:opacity-80 transition-opacity"
+                >
+                  Create &ldquo;{inputValue.trim()}&rdquo;
+                </button>
+              </div>
+            )}
+
           </div>
         )}
 
@@ -7715,6 +7731,17 @@ export interface EventItemComponentProps {
   onSelectionChange: (selected: boolean) => void;
 }
 `, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { EventSelector } from "./event-selector";
+export type {
+  EventSelectorProps,
+  EventItem,
+  EventGroup,
+  EventCategory,
+} from "./types";
+`, prefix),
         }
       ],
     },
@@ -8148,6 +8175,12 @@ export interface KeyValueRowProps {
   /** Callback when row is deleted */
   onDelete: (id: string) => void;
 }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { KeyValueInput } from "./key-value-input";
+export type { KeyValueInputProps, KeyValuePair } from "./types";
 `, prefix),
         }
       ],
@@ -13703,7 +13736,7 @@ export const CreateFunctionModal = React.forwardRef<
                     Function Name{" "}
                     <span className="text-semantic-error-primary">*</span>
                   </label>
-                  <div className="relative">
+                  <div className={cn("relative")}>
                     <input
                       id="fn-name"
                       type="text"
@@ -13834,7 +13867,7 @@ export const CreateFunctionModal = React.forwardRef<
                       <span className="text-xs text-semantic-text-muted">
                         Body
                       </span>
-                      <div className="relative">
+                      <div className={cn("relative")}>
                         <textarea
                           value={body}
                           maxLength={BODY_MAX}

@@ -296,7 +296,7 @@ export const CreateFunctionModal = React.forwardRef<
                     Function Name{" "}
                     <span className="text-semantic-error-primary">*</span>
                   </label>
-                  <div className="relative">
+                  <div className={cn("relative")}>
                     <input
                       id="fn-name"
                       type="text"
@@ -427,7 +427,7 @@ export const CreateFunctionModal = React.forwardRef<
                       <span className="text-xs text-semantic-text-muted">
                         Body
                       </span>
-                      <div className="relative">
+                      <div className={cn("relative")}>
                         <textarea
                           value={body}
                           maxLength={BODY_MAX}
