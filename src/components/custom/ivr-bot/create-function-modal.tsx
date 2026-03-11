@@ -26,7 +26,7 @@ function generateId() {
 
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
-  "w-full h-10 px-4 text-sm rounded border",
+  "w-full h-[42px] px-4 text-base rounded border",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
@@ -34,7 +34,7 @@ const inputCls = cn(
 );
 
 const textareaCls = cn(
-  "w-full px-4 py-2.5 text-sm rounded border resize-none",
+  "w-full px-4 py-2.5 text-base rounded border resize-none",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
@@ -91,7 +91,7 @@ function KeyValueTable({
                   value={row.key}
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
-                  className="w-full text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                  className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
                 />
               </div>
               <div className="h-px bg-semantic-border-layout mx-3" />
@@ -105,7 +105,7 @@ function KeyValueTable({
                     value={row.value}
                     onChange={(e) => update(row.id, { value: e.target.value })}
                     placeholder="Type {{ to add variables"
-                    className="w-full text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                    className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
                   />
                 </div>
                 <button
@@ -126,14 +126,14 @@ function KeyValueTable({
                 value={row.key}
                 onChange={(e) => update(row.id, { key: e.target.value })}
                 placeholder="Key"
-                className="flex-1 px-3 py-2.5 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary border-r border-semantic-border-layout outline-none focus:bg-semantic-bg-hover"
+                className="flex-1 px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary border-r border-semantic-border-layout outline-none focus:bg-semantic-bg-hover"
               />
               <input
                 type="text"
                 value={row.value}
                 onChange={(e) => update(row.id, { value: e.target.value })}
                 placeholder="Type {{ to add variables"
-                className="flex-[2] px-3 py-2.5 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover"
+                className="flex-[2] px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover"
               />
               <button
                 type="button"
@@ -263,7 +263,7 @@ export const CreateFunctionModal = React.forwardRef<
           size="lg"
           hideCloseButton
           className={cn(
-            "mx-4 sm:mx-auto flex flex-col gap-0 p-0",
+            "flex flex-col gap-0 p-0 w-[calc(100vw-2rem)] sm:w-full",
             "max-h-[calc(100svh-2rem)] overflow-hidden",
             className
           )}
@@ -342,7 +342,7 @@ export const CreateFunctionModal = React.forwardRef<
                   </span>
                   <div
                     className={cn(
-                      "flex h-10 rounded border border-semantic-border-input overflow-hidden bg-semantic-bg-primary",
+                      "flex h-[42px] rounded border border-semantic-border-input overflow-hidden bg-semantic-bg-primary",
                       "hover:border-semantic-border-input-focus",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
@@ -355,7 +355,7 @@ export const CreateFunctionModal = React.forwardRef<
                         onChange={(e) =>
                           setMethod(e.target.value as HttpMethod)
                         }
-                        className="h-full w-[80px] pl-3 pr-7 text-sm text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]"
+                        className="h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]"
                         aria-label="HTTP method"
                       >
                         {HTTP_METHODS.map((m) => (
@@ -375,7 +375,7 @@ export const CreateFunctionModal = React.forwardRef<
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       placeholder="Enter URL or Type {{ to add variables"
-                      className="flex-1 min-w-0 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                      className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
                     />
                   </div>
                 </div>
@@ -457,7 +457,7 @@ export const CreateFunctionModal = React.forwardRef<
                     type="button"
                     onClick={handleTestApi}
                     disabled={isTesting || !url.trim()}
-                    className="w-full h-10 rounded text-sm font-semibold text-semantic-text-secondary bg-semantic-primary-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-semantic-primary-surface/80 sm:w-auto sm:px-6 sm:self-end sm:ml-auto flex items-center justify-center"
+                    className="w-full h-[42px] rounded text-sm font-semibold text-semantic-text-secondary bg-semantic-primary-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-semantic-primary-surface/80 sm:w-auto sm:px-6 sm:self-end sm:ml-auto flex items-center justify-center"
                   >
                     {isTesting ? "Testing..." : "Test API"}
                   </button>
@@ -470,7 +470,7 @@ export const CreateFunctionModal = React.forwardRef<
                       readOnly
                       value={apiResponse}
                       rows={4}
-                      className="w-full px-3 py-2.5 text-sm rounded border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary resize-none outline-none"
+                      className="w-full px-3 py-2.5 text-base rounded border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary resize-none outline-none"
                       placeholder=""
                     />
                   </div>

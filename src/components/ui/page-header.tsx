@@ -60,6 +60,8 @@ export interface PageHeaderProps
   showBackButton?: boolean;
   /** Callback when back button is clicked */
   onBackClick?: () => void;
+  /** Optional badge/tag displayed next to the title (e.g., status or type indicator) */
+  badge?: React.ReactNode;
   /** Optional info icon displayed next to the title (e.g., tooltip trigger) */
   infoIcon?: React.ReactNode;
   /** Action buttons/elements rendered on the right side */
@@ -81,6 +83,7 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       icon,
       showBackButton = false,
       onBackClick,
+      badge,
       infoIcon,
       actions,
       showBorder = true,
@@ -270,6 +273,9 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
               <h1 className="m-0 text-lg font-semibold text-semantic-text-primary truncate">
                 {title}
               </h1>
+              {badge && (
+                <span className="flex-shrink-0">{badge}</span>
+              )}
               {infoIcon && (
                 <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-semantic-text-muted">
                   {infoIcon}

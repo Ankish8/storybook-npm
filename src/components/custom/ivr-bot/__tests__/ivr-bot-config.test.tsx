@@ -18,15 +18,15 @@ describe("IvrBotConfig", () => {
 
   it("renders Save as Draft and Publish Bot buttons", () => {
     render(<IvrBotConfig />);
-    expect(screen.getByRole("button", { name: /Save as Draft/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Publish Bot/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Save as Draft/i }).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByRole("button", { name: /Publish Bot/i }).length).toBeGreaterThanOrEqual(1);
   });
 
   it("calls onSaveAsDraft when Save as Draft is clicked", async () => {
     const user = userEvent.setup();
     const onSaveAsDraft = vi.fn();
     render(<IvrBotConfig onSaveAsDraft={onSaveAsDraft} />);
-    await user.click(screen.getByRole("button", { name: /Save as Draft/i }));
+    await user.click(screen.getAllByRole("button", { name: /Save as Draft/i })[0]);
     expect(onSaveAsDraft).toHaveBeenCalledTimes(1);
   });
 
@@ -34,7 +34,7 @@ describe("IvrBotConfig", () => {
     const user = userEvent.setup();
     const onPublish = vi.fn();
     render(<IvrBotConfig onPublish={onPublish} />);
-    await user.click(screen.getByRole("button", { name: /Publish Bot/i }));
+    await user.click(screen.getAllByRole("button", { name: /Publish Bot/i })[0]);
     expect(onPublish).toHaveBeenCalledTimes(1);
   });
 

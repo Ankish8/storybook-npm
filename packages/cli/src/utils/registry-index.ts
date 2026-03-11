@@ -104,6 +104,22 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "form",
     internalDependencies: [],
   },
+  "creatable-select": {
+    name: "creatable-select",
+    description: "A single-value select with type-to-search and type-to-create custom options",
+      category: "form",
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react","tailwindcss-animate"],
+    category: "form",
+    internalDependencies: [],
+  },
+  "creatable-multi-select": {
+    name: "creatable-multi-select",
+    description: "A multi-value select with chips, type-to-search, and type-to-create custom options",
+      category: "form",
+    dependencies: ["class-variance-authority","clsx","tailwind-merge","lucide-react","tailwindcss-animate"],
+    category: "form",
+    internalDependencies: [],
+  },
   "table": {
     name: "table",
     description: "A composable table component with size variants, loading/empty states, sticky columns, and sorting support",

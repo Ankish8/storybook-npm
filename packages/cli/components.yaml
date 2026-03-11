@@ -194,6 +194,26 @@ components:
       - "tailwind-merge"
       - "lucide-react"
 
+  creatable-select:
+    description: "A single-value select with type-to-search and type-to-create custom options"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+
+  creatable-multi-select:
+    description: "A multi-value select with chips, type-to-search, and type-to-create custom options"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+
   # ---------------------------------------------------------------------------
   # DATA COMPONENTS
   # ---------------------------------------------------------------------------

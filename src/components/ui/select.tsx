@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
+  "flex h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
   {
     variants: {
       state: {
@@ -157,7 +157,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
       "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className

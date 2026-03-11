@@ -33,7 +33,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "h-[42px] w-full rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-base file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -164,7 +164,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         type={type}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className }),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -214,7 +214,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
                 state: derivedState,
                 disabled: disabled || loading,
               }),
-              "h-10 px-4",
+              "h-[42px] px-4",
               inputContainerClassName
             )}
           >
