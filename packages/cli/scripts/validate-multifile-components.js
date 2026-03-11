@@ -8,6 +8,7 @@
  * 2. All files listed exist in the source directory
  * 3. mainFile is included in the files array
  * 4. No isMultiFile component is missing required properties
+ * 5. No source files in the directory are unlisted (excludes stories, tests, __tests__)
  */
 
 import fs from 'fs'
@@ -83,6 +84,25 @@ for (const [name, meta] of Object.entries(config.components)) {
             issues.push(`File does not exist: ${meta.directory}/${file}`)
             hasErrors = true
           }
+        }
+
+        // Check for unlisted source files in the directory
+        // Excludes: stories, tests, __tests__ dirs, and non-source files
+        const actualFiles = fs.readdirSync(dirPath).filter(f => {
+          if (f.startsWith('.')) return false
+          if (f.includes('.stories.')) return false
+          if (f.includes('.test.')) return false
+          if (f === '__tests__') return false
+          // Only check .ts/.tsx files (source files)
+          return f.endsWith('.ts') || f.endsWith('.tsx')
+        })
+        const listedSet = new Set(meta.files)
+        const unlisted = actualFiles.filter(f => !listedSet.has(f))
+        if (unlisted.length > 0) {
+          for (const f of unlisted) {
+            issues.push(`Unlisted source file: ${meta.directory}/${f} — add it to files[] in components.yaml`)
+          }
+          hasErrors = true
         }
       }
     }

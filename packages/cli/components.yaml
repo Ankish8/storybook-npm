@@ -393,6 +393,7 @@ components:
       - "event-group.tsx"
       - "event-item.tsx"
       - "types.ts"
+      - "index.ts"
     mainFile: "event-selector.tsx"
 
   key-value-input:
@@ -411,6 +412,7 @@ components:
       - "key-value-input.tsx"
       - "key-value-row.tsx"
       - "types.ts"
+      - "index.ts"
     mainFile: "key-value-input.tsx"
 
   api-feature-card:
