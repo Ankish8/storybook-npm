@@ -10734,6 +10734,7 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
       onOptionChange,
       nextLabel = "Next",
       onNext,
+      loading = false,
       onClose,
       className,
       ...props
@@ -10824,6 +10825,7 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
                 variant="default"
                 onClick={handleNext}
                 disabled={!activeOptionId}
+                loading={loading}
                 className="min-w-[95px]"
               >
                 {nextLabel}
@@ -10881,6 +10883,8 @@ export interface PlanUpgradeModalProps
   nextLabel?: string;
   /** Called when Next is clicked */
   onNext?: (selectedOptionId: string) => void;
+  /** Shows loading spinner on the Next button and disables it */
+  loading?: boolean;
   /** Called when close button is clicked */
   onClose?: () => void;
 }

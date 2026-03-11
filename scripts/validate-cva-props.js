@@ -82,19 +82,18 @@ function extractCvaVariantKeys(content, fileName) {
 }
 
 /**
- * Extract destructured props from forwardRef component
+ * Extract destructured props from ALL forwardRef components in the file
  * Looks for patterns like: ({ className, variant, size, ...props }, ref)
+ * Uses matchAll to handle files with multiple forwardRef components (e.g., dialog.tsx)
  */
 function extractDestructuredProps(content) {
   const destructuredProps = new Set()
 
-  // Match forwardRef destructuring pattern
-  // Pattern: forwardRef<...>(({ prop1, prop2, ...props }, ref) =>
-  const forwardRefMatch = content.match(
-    /forwardRef[^(]*\(\s*\(\s*\{\s*([^}]+)\s*\}\s*,\s*ref\s*\)/s
-  )
+  // Match ALL forwardRef destructuring patterns in the file
+  const forwardRefRegex = /forwardRef[^(]*\(\s*\(\s*\{\s*([^}]+)\s*\}\s*,\s*ref\s*\)/gs
+  const matches = [...content.matchAll(forwardRefRegex)]
 
-  if (!forwardRefMatch) {
+  if (matches.length === 0) {
     // Try alternative pattern without forwardRef (regular function component)
     const funcMatch = content.match(
       /function\s+\w+\s*\(\s*\{\s*([^}]+)\s*\}/s
@@ -106,8 +105,15 @@ function extractDestructuredProps(content) {
     return parsePropsString(propsString)
   }
 
-  const propsString = forwardRefMatch[1]
-  return parsePropsString(propsString)
+  // Merge props from ALL forwardRef components in the file
+  for (const match of matches) {
+    const props = parsePropsString(match[1])
+    for (const p of props) {
+      destructuredProps.add(p)
+    }
+  }
+
+  return destructuredProps
 }
 
 /**

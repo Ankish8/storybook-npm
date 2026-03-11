@@ -57,6 +57,7 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
       onOptionChange,
       nextLabel = "Next",
       onNext,
+      loading = false,
       onClose,
       className,
       ...props
@@ -147,6 +148,7 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
                 variant="default"
                 onClick={handleNext}
                 disabled={!activeOptionId}
+                loading={loading}
                 className="min-w-[95px]"
               >
                 {nextLabel}

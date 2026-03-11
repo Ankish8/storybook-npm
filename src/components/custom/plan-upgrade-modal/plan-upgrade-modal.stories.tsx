@@ -76,6 +76,10 @@ import type { PlanUpgradeModalProps } from "@/components/custom/plan-upgrade-mod
       control: "text",
       description: "Next button label",
     },
+    loading: {
+      control: "boolean",
+      description: "Shows loading spinner on the Next button",
+    },
     onNext: {
       description: "Called when Next is clicked",
     },
@@ -107,12 +111,13 @@ function ModalPreview(args: Partial<React.ComponentProps<typeof PlanUpgradeModal
         Open Plan Upgrade Modal
       </Button>
       <PlanUpgradeModal
+        {...args}
         open={open}
         onOpenChange={setOpen}
-        onOptionChange={fn()}
-        onNext={fn()}
-        onClose={fn()}
-        {...args}
+        onClose={() => {
+          args.onClose?.();
+          setOpen(false);
+        }}
       />
     </div>
   );
@@ -128,6 +133,38 @@ export const UpcomingBillingSelected: Story = {
     defaultSelectedOptionId: "upcoming-billing-cycle",
   },
   render: (args) => <ModalPreview {...args} />,
+};
+
+export const Loading: Story = {
+  name: "Loading",
+  args: {
+    defaultSelectedOptionId: "current-billing-cycle",
+  },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    return (
+      <div className="flex flex-col items-center gap-4 p-8">
+        <Button variant="primary" onClick={() => setOpen(true)}>
+          Open Plan Upgrade Modal
+        </Button>
+        <PlanUpgradeModal
+          {...args}
+          open={open}
+          onOpenChange={setOpen}
+          loading={loading}
+          onNext={() => {
+            setLoading(true);
+            setTimeout(() => {
+              setLoading(false);
+              setOpen(false);
+            }, 2000);
+          }}
+          onClose={() => setOpen(false)}
+        />
+      </div>
+    );
+  },
 };
 
 export const CustomCopy: Story = {

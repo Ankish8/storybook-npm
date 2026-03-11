@@ -36,6 +36,8 @@ export interface PlanUpgradeModalProps
   nextLabel?: string;
   /** Called when Next is clicked */
   onNext?: (selectedOptionId: string) => void;
+  /** Shows loading spinner on the Next button and disables it */
+  loading?: boolean;
   /** Called when close button is clicked */
   onClose?: () => void;
 }
