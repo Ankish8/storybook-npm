@@ -1,13 +1,16 @@
 #!/bin/sh
 
-# Block direct pushes - only allow via /publish-all command
-if [ "$MYOPERATOR_GIT_ALLOWED" != "1" ]; then
+# Get the current branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Only block direct pushes to main - other branches are free
+if [ "$BRANCH" = "main" ] && [ "$MYOPERATOR_GIT_ALLOWED" != "1" ]; then
   echo ""
   echo "╔══════════════════════════════════════════════════════════════════╗"
-  echo "║                    ⛔ PUSH BLOCKED ⛔                            ║"
+  echo "║                    ⛔ PUSH TO MAIN BLOCKED ⛔                    ║"
   echo "╠══════════════════════════════════════════════════════════════════╣"
   echo "║                                                                  ║"
-  echo "║  Direct 'git push' is not allowed in this repository.           ║"
+  echo "║  Direct push to 'main' is not allowed.                          ║"
   echo "║                                                                  ║"
   echo "║  Use the /publish-all command instead, which ensures:           ║"
   echo "║    ✓ Proper version management                                  ║"
@@ -15,9 +18,15 @@ if [ "$MYOPERATOR_GIT_ALLOWED" != "1" ]; then
   echo "║    ✓ Correct commit messages                                    ║"
   echo "║    ✓ Synchronized package versions                              ║"
   echo "║                                                                  ║"
+  echo "║  Pushing to other branches (beta/cli, feature/*) is allowed.   ║"
+  echo "║                                                                  ║"
   echo "╚══════════════════════════════════════════════════════════════════╝"
   echo ""
   exit 1
 fi
 
-echo "✓ Push authorized via /publish-all"
+if [ "$BRANCH" = "main" ]; then
+  echo "✓ Push to main authorized via /publish-all"
+else
+  echo "✓ Push to $BRANCH allowed"
+fi
