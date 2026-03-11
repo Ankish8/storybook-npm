@@ -73,9 +73,9 @@ export const BuiltInOnly: Story = {
   ),
 };
 
-/** Shows delete button on custom functions. Built-in functions cannot be deleted. */
-export const WithDelete: Story = {
-  name: "With Delete",
+/** Shows edit and delete buttons on custom functions. Built-in functions have neither. */
+export const WithEditAndDelete: Story = {
+  name: "With Edit & Delete",
   render: function Render() {
     const [fns, setFns] = useState<FunctionItem[]>(SAMPLE_FUNCTIONS);
     return (
@@ -83,6 +83,7 @@ export const WithDelete: Story = {
         <FunctionsCard
           functions={fns}
           onAddFunction={fn()}
+          onEditFunction={fn()}
           onDeleteFunction={(id) => setFns((prev) => prev.filter((f) => f.id !== id))}
         />
       </div>

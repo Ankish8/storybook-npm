@@ -5,7 +5,7 @@ import { Button } from "../../ui/button";
 import { FileUploadModal } from "./file-upload-modal";
 
 const meta: Meta<typeof FileUploadModal> = {
-  title: "Custom/IVR Bot/FileUploadModal",
+  title: "Custom/AI Bot/FileUploadModal",
   component: FileUploadModal,
   parameters: {
     layout: "centered",

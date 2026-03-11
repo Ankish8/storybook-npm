@@ -89,6 +89,8 @@ export interface IvrBotConfigProps {
   onDownloadKnowledgeFile?: (fileId: string) => void;
   onDeleteKnowledgeFile?: (fileId: string) => void;
   onCreateFunction?: (data: CreateFunctionData) => void;
+  /** Called when user edits a custom function */
+  onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;

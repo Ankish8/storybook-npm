@@ -240,13 +240,21 @@ export async function sync(options: SyncOptions) {
   // Show what will change
   if (toAdd.length > 0) {
     console.log(chalk.green('  Will add:'))
-    toAdd.forEach((c) => console.log(chalk.green(`    + ${c}`)))
+    toAdd.forEach((c) => {
+      const comp = registry[c]
+      const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
+      console.log(chalk.green(`    + ${c}${fileCount}`))
+    })
     console.log('')
   }
 
   if (toUpdate.length > 0) {
     console.log(chalk.yellow('  Will update:'))
-    toUpdate.forEach((c) => console.log(chalk.yellow(`    ~ ${c}`)))
+    toUpdate.forEach((c) => {
+      const comp = registry[c]
+      const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
+      console.log(chalk.yellow(`    ~ ${c}${fileCount}`))
+    })
     console.log('')
   }
 

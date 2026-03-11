@@ -6675,6 +6675,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onDownloadKnowledgeFile,
       onDeleteKnowledgeFile,
       onCreateFunction,
+      onEditFunction,
       onDeleteFunction,
       onTestApi,
       onBack,
@@ -6788,6 +6789,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
+              onEditFunction={onEditFunction}
               onDeleteFunction={(id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),
@@ -8396,7 +8398,7 @@ export { KnowledgeBaseCard };
         {
           name: "functions-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Info, Plus, Trash2 } from "lucide-react";
+import { Info, Pencil, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
 import type { FunctionItem } from "./types";
@@ -8408,6 +8410,8 @@ export interface FunctionsCardProps {
   functions: FunctionItem[];
   /** Called when user clicks the add function button */
   onAddFunction?: () => void;
+  /** Called when user edits a custom (non-built-in) function */
+  onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom (non-built-in) function */
   onDeleteFunction?: (id: string) => void;
   /** Additional className */
@@ -8417,7 +8421,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onDeleteFunction, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -8468,14 +8472,24 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                         Built-in
                       </Badge>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => onDeleteFunction?.(fn.id)}
-                        className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
-                        aria-label={\`Delete \${fn.name}\`}
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => onEditFunction?.(fn.id)}
+                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                          aria-label={\`Edit \${fn.name}\`}
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDeleteFunction?.(fn.id)}
+                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                          aria-label={\`Delete \${fn.name}\`}
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -8908,6 +8922,8 @@ export interface IvrBotConfigProps {
   onDownloadKnowledgeFile?: (fileId: string) => void;
   onDeleteKnowledgeFile?: (fileId: string) => void;
   onCreateFunction?: (data: CreateFunctionData) => void;
+  /** Called when user edits a custom function */
+  onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;

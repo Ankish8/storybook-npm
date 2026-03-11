@@ -153,6 +153,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onDownloadKnowledgeFile,
       onDeleteKnowledgeFile,
       onCreateFunction,
+      onEditFunction,
       onDeleteFunction,
       onTestApi,
       onBack,
@@ -266,6 +267,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
+              onEditFunction={onEditFunction}
               onDeleteFunction={(id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),

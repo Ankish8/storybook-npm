@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Info, Plus, Trash2 } from "lucide-react";
+import { Info, Pencil, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
 import type { FunctionItem } from "./types";
@@ -11,6 +11,8 @@ export interface FunctionsCardProps {
   functions: FunctionItem[];
   /** Called when user clicks the add function button */
   onAddFunction?: () => void;
+  /** Called when user edits a custom (non-built-in) function */
+  onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom (non-built-in) function */
   onDeleteFunction?: (id: string) => void;
   /** Additional className */
@@ -20,7 +22,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onDeleteFunction, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -71,14 +73,24 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                         Built-in
                       </Badge>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => onDeleteFunction?.(fn.id)}
-                        className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
-                        aria-label={`Delete ${fn.name}`}
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => onEditFunction?.(fn.id)}
+                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                          aria-label={`Edit ${fn.name}`}
+                        >
+                          <Pencil className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDeleteFunction?.(fn.id)}
+                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                          aria-label={`Delete ${fn.name}`}
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
