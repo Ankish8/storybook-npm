@@ -237,11 +237,11 @@ describe("Select", () => {
   it("applies base styling classes to trigger", () => {
     renderSelect();
     const trigger = screen.getByTestId("trigger");
-    expect(trigger).toHaveClass("h-10");
+    expect(trigger).toHaveClass("h-[42px]");
     expect(trigger).toHaveClass("w-full");
     expect(trigger).toHaveClass("rounded");
     expect(trigger).toHaveClass("px-4");
-    expect(trigger).toHaveClass("py-2.5");
+    expect(trigger).toHaveClass("py-2");
   });
 
   // Keyboard navigation

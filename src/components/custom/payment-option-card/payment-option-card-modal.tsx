@@ -7,7 +7,7 @@ import {
 import { PaymentOptionCard } from "./payment-option-card";
 import type { PaymentOptionCardProps } from "./types";
 
-interface PaymentOptionCardModalProps
+export interface PaymentOptionCardModalProps
   extends Omit<PaymentOptionCardProps, "onClose"> {
   open: boolean;
   onOpenChange: (open: boolean) => void;

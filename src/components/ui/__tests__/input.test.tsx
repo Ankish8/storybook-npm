@@ -31,11 +31,11 @@ describe("Input", () => {
   it("applies base styling classes", () => {
     render(<Input data-testid="input" />);
     const input = screen.getByTestId("input");
-    expect(input).toHaveClass("h-10");
+    expect(input).toHaveClass("h-[42px]");
     expect(input).toHaveClass("w-full");
     expect(input).toHaveClass("rounded");
     expect(input).toHaveClass("px-4");
-    expect(input).toHaveClass("py-2.5");
+    expect(input).toHaveClass("py-2");
   });
 
   it("is disabled when disabled prop is set", () => {

@@ -1,0 +1,157 @@
+import * as React from "react";
+import { Plus } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { tagVariants } from "../../ui/tag";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface BotBehaviorData {
+  systemPrompt: string;
+}
+
+export interface BotBehaviorCardProps {
+  /** Current form data */
+  data: Partial<BotBehaviorData>;
+  /** Callback when any field changes */
+  onChange: (patch: Partial<BotBehaviorData>) => void;
+  /** Session variables shown as insertable chips */
+  sessionVariables?: string[];
+  /** Additional className for the card */
+  className?: string;
+}
+
+// ─── Default session variables ──────────────────────────────────────────────
+
+const DEFAULT_SESSION_VARIABLES = [
+  "{{Caller number}}",
+  "{{Time}}",
+  "{{Contact Details}}",
+];
+
+// ─── Internal helpers ───────────────────────────────────────────────────────
+
+function SectionCard({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg",
+        className
+      )}
+    >
+      <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+        <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
+          {title}
+        </h2>
+      </div>
+      <div className="px-4 py-4 sm:px-6 sm:py-5">{children}</div>
+    </div>
+  );
+}
+
+function StyledTextarea({
+  placeholder,
+  value,
+  rows = 3,
+  onChange,
+  className,
+}: {
+  placeholder?: string;
+  value?: string;
+  rows?: number;
+  onChange?: (v: string) => void;
+  className?: string;
+}) {
+  return (
+    <textarea
+      value={value ?? ""}
+      rows={rows}
+      onChange={(e) => onChange?.(e.target.value)}
+      placeholder={placeholder}
+      className={cn(
+        "w-full px-4 py-2.5 text-base rounded border resize-none",
+        "border-semantic-border-input bg-semantic-bg-primary",
+        "text-semantic-text-primary placeholder:text-semantic-text-muted",
+        "outline-none hover:border-semantic-border-input-focus",
+        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        className
+      )}
+    />
+  );
+}
+
+// ─── Component ──────────────────────────────────────────────────────────────
+
+const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
+  (
+    {
+      data,
+      onChange,
+      sessionVariables = DEFAULT_SESSION_VARIABLES,
+      className,
+    },
+    ref
+  ) => {
+    const prompt = data.systemPrompt ?? "";
+    const MAX = 25000;
+
+    const insertVariable = (variable: string) => {
+      onChange({ systemPrompt: prompt + variable });
+    };
+
+    return (
+      <div ref={ref} className={className}>
+        <SectionCard title="How It Behaves">
+          <div className="flex flex-col gap-3">
+            <p className="m-0 text-sm text-semantic-text-muted">
+              Define workflows, conditions and handover logic (System prompt)
+            </p>
+            <div className="relative">
+              <StyledTextarea
+                value={prompt}
+                rows={6}
+                onChange={(v) => {
+                  if (v.length <= MAX) onChange({ systemPrompt: v });
+                }}
+                placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
+                className="pb-8"
+              />
+              <span className="absolute bottom-2.5 right-3 text-sm text-semantic-text-muted">
+                {prompt.length}/{MAX}
+              </span>
+            </div>
+            <p className="m-0 text-sm text-semantic-text-muted">
+              Type [[ to enable dropdown or use the below chips to input variables.
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-semantic-text-secondary">
+                Session variables:
+              </span>
+              {sessionVariables.map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => insertVariable(v)}
+                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity")}
+                >
+                  <Plus className="size-3 shrink-0" />
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+    );
+  }
+);
+BotBehaviorCard.displayName = "BotBehaviorCard";
+
+export { BotBehaviorCard };

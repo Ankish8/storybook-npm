@@ -537,7 +537,7 @@ import { cn } from "../../lib/utils";
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "h-[42px] w-full rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-base file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -650,7 +650,7 @@ import { cn } from "../../lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
+  "flex h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
   {
     variants: {
       state: {
@@ -670,7 +670,17 @@ const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = SelectPrimitive.Value;
+const SelectValue = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Value>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Value
+    ref={ref}
+    className={cn("[&[data-placeholder]]:text-semantic-text-muted", className)}
+    {...props}
+  />
+));
+SelectValue.displayName = SelectPrimitive.Value.displayName;
 
 export interface SelectTriggerProps
   extends
@@ -788,7 +798,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
       "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
@@ -1272,7 +1282,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-10 w-full rounded bg-semantic-bg-primary px-4 py-2.5 text-sm text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "h-[42px] w-full rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-base file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -1403,7 +1413,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
         type={type}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-sm text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
+            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
             : textFieldInputVariants({ state: derivedState, className }),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -1453,7 +1463,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
                 state: derivedState,
                 disabled: disabled || loading,
               }),
-              "h-10 px-4",
+              "h-[42px] px-4",
               inputContainerClassName
             )}
           >
@@ -2127,7 +2137,7 @@ import { cn } from "../../lib/utils";
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "flex min-h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -2497,7 +2507,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       disabled={isDisabled}
                       onClick={() => !isDisabled && toggleOption(option.value)}
                       className={cn(
-                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
                         "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
                         isSelected && "bg-semantic-bg-ui",
                         isDisabled && "pointer-events-none opacity-50"
@@ -2554,6 +2564,624 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
 MultiSelect.displayName = "MultiSelect";
 
 export { MultiSelect, multiSelectTriggerVariants };
+`, prefix),
+        },
+      ],
+    },
+    "creatable-select": {
+      name: "creatable-select",
+      description: "A single-value select with type-to-search and type-to-create custom options",
+      category: "form",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      files: [
+        {
+          name: "creatable-select.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { ChevronDown, Check } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+const creatableSelectTriggerVariants = cva(
+  "flex h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  {
+    variants: {
+      state: {
+        default:
+          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+)
+
+export interface CreatableSelectOption {
+  value: string
+  label: string
+  disabled?: boolean
+}
+
+export interface CreatableSelectProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+    VariantProps<typeof creatableSelectTriggerVariants> {
+  /** Currently selected value */
+  value?: string
+  /** Callback when value changes (selection or creation) */
+  onValueChange?: (value: string) => void
+  /** Available options */
+  options?: CreatableSelectOption[]
+  /** Placeholder when no value selected */
+  placeholder?: string
+  /** Hint text shown above options when dropdown is open */
+  creatableHint?: string
+  /** Whether the select is disabled */
+  disabled?: boolean
+}
+
+const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
+  (
+    {
+      className,
+      state,
+      value,
+      onValueChange,
+      options = [],
+      placeholder = "Select an option",
+      creatableHint = "Type to create a custom option",
+      disabled = false,
+      ...props
+    },
+    ref
+  ) => {
+    const [open, setOpen] = React.useState(false)
+    const [search, setSearch] = React.useState("")
+    const [highlightIndex, setHighlightIndex] = React.useState(-1)
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const inputRef = React.useRef<HTMLInputElement>(null)
+    const listRef = React.useRef<HTMLDivElement>(null)
+
+    // Merge forwarded ref with internal ref
+    React.useImperativeHandle(ref, () => containerRef.current!)
+
+    const selectedLabel = React.useMemo(() => {
+      const found = options.find((o) => o.value === value)
+      return found ? found.label : value || ""
+    }, [options, value])
+
+    const filtered = React.useMemo(() => {
+      if (!search.trim()) return options
+      const q = search.toLowerCase()
+      return options.filter((o) => o.label.toLowerCase().includes(q))
+    }, [options, search])
+
+    const isCustom =
+      search.trim().length > 0 &&
+      !options.some((o) => o.label.toLowerCase() === search.trim().toLowerCase())
+
+    const handleOpen = () => {
+      if (disabled) return
+      setOpen(true)
+      setSearch("")
+      setHighlightIndex(-1)
+      requestAnimationFrame(() => inputRef.current?.focus())
+    }
+
+    const handleSelect = React.useCallback(
+      (val: string) => {
+        onValueChange?.(val)
+        setOpen(false)
+        setSearch("")
+      },
+      [onValueChange]
+    )
+
+    const handleCreate = React.useCallback(() => {
+      const trimmed = search.trim()
+      if (trimmed) {
+        onValueChange?.(trimmed)
+        setOpen(false)
+        setSearch("")
+      }
+    }, [search, onValueChange])
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault()
+        setOpen(false)
+        return
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault()
+        if (highlightIndex >= 0 && highlightIndex < filtered.length) {
+          const opt = filtered[highlightIndex]
+          if (!opt.disabled) handleSelect(opt.value)
+        } else if (isCustom) {
+          handleCreate()
+        } else if (filtered.length === 1 && !filtered[0].disabled) {
+          handleSelect(filtered[0].value)
+        }
+        return
+      }
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault()
+        setHighlightIndex((prev) => {
+          const next = prev + 1
+          return next >= filtered.length ? 0 : next
+        })
+        return
+      }
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault()
+        setHighlightIndex((prev) => {
+          const next = prev - 1
+          return next < 0 ? filtered.length - 1 : next
+        })
+        return
+      }
+    }
+
+    // Scroll highlighted item into view
+    React.useEffect(() => {
+      if (highlightIndex >= 0 && listRef.current) {
+        const item = listRef.current.children[highlightIndex] as HTMLElement
+        item?.scrollIntoView({ block: "nearest" })
+      }
+    }, [highlightIndex])
+
+    // Close on outside click
+    React.useEffect(() => {
+      if (!open) return
+      const handler = (e: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(e.target as Node)
+        ) {
+          setOpen(false)
+        }
+      }
+      document.addEventListener("mousedown", handler)
+      return () => document.removeEventListener("mousedown", handler)
+    }, [open])
+
+    // Reset highlight when filter changes
+    React.useEffect(() => {
+      setHighlightIndex(-1)
+    }, [search])
+
+    return (
+      <div
+        ref={containerRef}
+        className={cn("relative w-full", className)}
+        {...props}
+      >
+        {/* Trigger / Input */}
+        {open ? (
+          <div
+            className={cn(
+              creatableSelectTriggerVariants({ state }),
+              "cursor-text"
+            )}
+            onClick={() => inputRef.current?.focus()}
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-muted"
+              placeholder={selectedLabel || placeholder}
+              aria-expanded="true"
+              aria-haspopup="listbox"
+              role="combobox"
+              aria-autocomplete="list"
+            />
+            <ChevronDown className="size-4 text-semantic-text-muted opacity-70 shrink-0 rotate-180 transition-transform" />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={handleOpen}
+            disabled={disabled}
+            className={cn(
+              creatableSelectTriggerVariants({ state }),
+              "cursor-pointer text-left"
+            )}
+            aria-haspopup="listbox"
+            aria-expanded="false"
+          >
+            <span
+              className={cn(
+                "line-clamp-1",
+                !selectedLabel && "text-semantic-text-muted"
+              )}
+            >
+              {selectedLabel || placeholder}
+            </span>
+            <ChevronDown className="size-4 text-semantic-text-muted opacity-70 shrink-0" />
+          </button>
+        )}
+
+        {/* Dropdown */}
+        {open && (
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+            {/* Creatable hint */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+              <span className="text-sm text-semantic-text-muted">
+                {creatableHint}
+              </span>
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+                Enter ↵
+              </kbd>
+            </div>
+
+            {/* Options list */}
+            <div
+              ref={listRef}
+              role="listbox"
+              className="max-h-60 overflow-y-auto p-1"
+            >
+              {filtered.length === 0 && !isCustom && (
+                <div className="px-4 py-2 text-sm text-semantic-text-muted">
+                  No options found
+                </div>
+              )}
+              {filtered.map((opt, i) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  role="option"
+                  aria-selected={opt.value === value}
+                  disabled={opt.disabled}
+                  onClick={() => !opt.disabled && handleSelect(opt.value)}
+                  onMouseEnter={() => setHighlightIndex(i)}
+                  className={cn(
+                    "relative flex w-full items-center rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none cursor-pointer select-none",
+                    "hover:bg-semantic-bg-ui",
+                    highlightIndex === i && "bg-semantic-bg-ui",
+                    opt.disabled &&
+                      "pointer-events-none opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {opt.label}
+                  {opt.value === value && (
+                    <span className="absolute right-2 flex size-4 items-center justify-center">
+                      <Check className="size-4 text-semantic-brand" />
+                    </span>
+                  )}
+                </button>
+              ))}
+
+              {/* Show custom creation option */}
+              {isCustom && (
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={false}
+                  onClick={handleCreate}
+                  onMouseEnter={() => setHighlightIndex(filtered.length)}
+                  className={cn(
+                    "flex w-full items-center gap-2 rounded-sm py-2 pl-4 pr-8 text-base outline-none cursor-pointer select-none",
+                    "text-semantic-text-link hover:bg-semantic-bg-ui",
+                    highlightIndex === filtered.length && "bg-semantic-bg-ui"
+                  )}
+                >
+                  Create &ldquo;{search.trim()}&rdquo;
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+CreatableSelect.displayName = "CreatableSelect"
+
+export { CreatableSelect, creatableSelectTriggerVariants }
+`, prefix),
+        },
+      ],
+    },
+    "creatable-multi-select": {
+      name: "creatable-multi-select",
+      description: "A multi-value select with chips, type-to-search, and type-to-create custom options",
+      category: "form",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      files: [
+        {
+          name: "creatable-multi-select.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cva } from "class-variance-authority"
+import { ChevronDown, ChevronRight, Plus, X, Info } from "lucide-react"
+
+import { cn } from "../../lib/utils"
+
+const creatableMultiSelectTriggerVariants = cva(
+  "flex items-center gap-2 flex-wrap min-h-[42px] w-full px-4 py-2 rounded bg-semantic-bg-primary cursor-text transition-shadow",
+  {
+    variants: {
+      state: {
+        default:
+          "border border-semantic-border-input hover:border-semantic-border-input-focus",
+        error:
+          "border border-semantic-error-primary/40 hover:border-semantic-error-primary",
+        focused:
+          "border border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        "focused-error":
+          "border border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+)
+
+export interface CreatableMultiSelectOption {
+  value: string
+  label: string
+  disabled?: boolean
+}
+
+export interface CreatableMultiSelectProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+  /** Currently selected values */
+  value?: string[]
+  /** Callback when values change */
+  onValueChange?: (values: string[]) => void
+  /** Available preset options */
+  options?: CreatableMultiSelectOption[]
+  /** Placeholder when no values selected */
+  placeholder?: string
+  /** Whether the component is disabled */
+  disabled?: boolean
+  /** Error state */
+  state?: "default" | "error"
+  /** Hint text shown at top of dropdown when open */
+  creatableHint?: string
+  /** Helper text shown below the trigger */
+  helperText?: string
+}
+
+const CreatableMultiSelect = React.forwardRef<
+  HTMLDivElement,
+  CreatableMultiSelectProps
+>(
+  (
+    {
+      className,
+      value = [],
+      onValueChange,
+      options = [],
+      placeholder = "Enter or select",
+      disabled = false,
+      state = "default",
+      creatableHint = "Type to create a custom option",
+      helperText,
+      ...props
+    },
+    ref
+  ) => {
+    const [isOpen, setIsOpen] = React.useState(false)
+    const [inputValue, setInputValue] = React.useState("")
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const inputRef = React.useRef<HTMLInputElement>(null)
+
+    React.useImperativeHandle(ref, () => containerRef.current!)
+
+    const addValue = React.useCallback(
+      (val: string) => {
+        const trimmed = val.trim()
+        if (trimmed && !value.includes(trimmed)) {
+          onValueChange?.([...value, trimmed])
+          setInputValue("")
+        }
+      },
+      [value, onValueChange]
+    )
+
+    const removeValue = React.useCallback(
+      (val: string) => {
+        onValueChange?.(value.filter((v) => v !== val))
+      },
+      [value, onValueChange]
+    )
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        if (inputValue.trim()) addValue(inputValue)
+      } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
+        removeValue(value[value.length - 1])
+      } else if (e.key === "Escape") {
+        setIsOpen(false)
+        setInputValue("")
+      }
+    }
+
+    // Close on outside click
+    React.useEffect(() => {
+      const handler = (e: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(e.target as Node)
+        ) {
+          setIsOpen(false)
+          setInputValue("")
+        }
+      }
+      document.addEventListener("mousedown", handler)
+      return () => document.removeEventListener("mousedown", handler)
+    }, [])
+
+    const availablePresets = options.filter(
+      (o) => !value.includes(o.value) && !o.disabled
+    )
+    const filteredPresets = inputValue.trim()
+      ? availablePresets.filter((o) =>
+          o.label.toLowerCase().includes(inputValue.trim().toLowerCase())
+        )
+      : availablePresets
+    const canAddCustom =
+      Boolean(inputValue.trim()) && !value.includes(inputValue.trim())
+
+    const triggerState = isOpen
+      ? state === "error"
+        ? "focused-error"
+        : "focused"
+      : state
+
+    return (
+      <div
+        ref={containerRef}
+        className={cn("relative w-full", className)}
+        {...props}
+      >
+        {/* Trigger */}
+        <div
+          className={cn(
+            creatableMultiSelectTriggerVariants({ state: triggerState }),
+            disabled && "cursor-not-allowed opacity-50"
+          )}
+          onClick={() => {
+            if (disabled) return
+            setIsOpen(true)
+            inputRef.current?.focus()
+          }}
+        >
+          {/* Selected chips */}
+          {value.map((val) => {
+            const optLabel =
+              options.find((o) => o.value === val)?.label || val
+            return (
+              <span
+                key={val}
+                className="inline-flex items-center gap-2 bg-semantic-info-surface px-2 py-1 rounded text-sm text-semantic-text-primary whitespace-nowrap"
+              >
+                {optLabel}
+                <button
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    removeValue(val)
+                  }}
+                  className="shrink-0 flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                  aria-label={\`Remove \${optLabel}\`}
+                >
+                  <X className="size-2.5" />
+                </button>
+              </span>
+            )
+          })}
+
+          {/* Text input */}
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value)
+              if (!isOpen) setIsOpen(true)
+            }}
+            onFocus={() => {
+              if (!disabled) setIsOpen(true)
+            }}
+            onKeyDown={handleKeyDown}
+            disabled={disabled}
+            placeholder={value.length === 0 ? placeholder : ""}
+            className="flex-1 min-w-[100px] text-base bg-transparent outline-none text-semantic-text-primary placeholder:text-semantic-text-muted"
+            role="combobox"
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+          />
+
+          {/* Chevron */}
+          {isOpen ? (
+            <ChevronRight className="size-5 text-semantic-text-muted shrink-0 ml-auto" />
+          ) : (
+            <ChevronDown className="size-5 text-semantic-text-muted shrink-0 ml-auto" />
+          )}
+        </div>
+
+        {/* Dropdown panel */}
+        {isOpen && (
+          <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+            {/* Creatable hint — contextual */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+              {canAddCustom ? (
+                <span className="text-sm font-medium text-semantic-text-primary">
+                  Press enter to add &ldquo;{inputValue.trim()}&rdquo;
+                </span>
+              ) : (
+                <span className="text-sm text-semantic-text-muted">
+                  {creatableHint}
+                </span>
+              )}
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+                Enter ↵
+              </kbd>
+            </div>
+
+            {/* Preset option chips */}
+            {filteredPresets.length > 0 && (
+              <div className="px-2.5 py-2 flex flex-wrap gap-1.5">
+                {filteredPresets.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      addValue(option.value)
+                    }}
+                    className="inline-flex items-center gap-1.5 bg-semantic-bg-ui px-2.5 py-1.5 rounded text-sm text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors whitespace-nowrap"
+                  >
+                    <Plus className="size-3 shrink-0 text-semantic-text-muted" />
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* Helper text below trigger */}
+        {helperText && !isOpen && (
+          <div className="flex items-center gap-1.5 mt-1.5">
+            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
+            <p className="m-0 text-sm text-semantic-text-muted">
+              {helperText}
+            </p>
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+CreatableMultiSelect.displayName = "CreatableMultiSelect"
+
+export { CreatableMultiSelect, creatableMultiSelectTriggerVariants }
 `, prefix),
         },
       ],

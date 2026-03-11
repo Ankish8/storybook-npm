@@ -2,7 +2,7 @@
   "src/components/ui/*.tsx": [
     "eslint --fix",
     "npm run api:check",
-    "cd packages/cli && npm run generate-registry"
+    "npm --prefix packages/cli run generate-registry"
   ],
   "packages/cli/src/**/*.ts": [
     "eslint --fix"

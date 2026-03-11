@@ -194,6 +194,26 @@ components:
       - "tailwind-merge"
       - "lucide-react"
 
+  creatable-select:
+    description: "A single-value select with type-to-search and type-to-create custom options"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+
+  creatable-multi-select:
+    description: "A multi-value select with chips, type-to-search, and type-to-create custom options"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+
   # ---------------------------------------------------------------------------
   # DATA COMPONENTS
   # ---------------------------------------------------------------------------
@@ -373,6 +393,7 @@ components:
       - "event-group.tsx"
       - "event-item.tsx"
       - "types.ts"
+      - "index.ts"
     mainFile: "event-selector.tsx"
 
   key-value-input:
@@ -391,6 +412,7 @@ components:
       - "key-value-input.tsx"
       - "key-value-row.tsx"
       - "types.ts"
+      - "index.ts"
     mainFile: "key-value-input.tsx"
 
   api-feature-card:
@@ -698,6 +720,59 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "talk-to-us-modal.tsx"
+
+  bots:
+    description: "AI Bot management components — BotList page, BotCard, and CreateBotModal"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - dialog
+    isMultiFile: true
+    directory: "bots"
+    files:
+      - "bot-card.tsx"
+      - "create-bot-modal.tsx"
+      - "bot-list.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "bot-list.tsx"
+
+  ivr-bot:
+    description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - badge
+      - switch
+      - accordion
+      - dialog
+      - select
+      - creatable-select
+      - creatable-multi-select
+      - page-header
+      - tag
+    isMultiFile: true
+    directory: "ivr-bot"
+    files:
+      - "ivr-bot-config.tsx"
+      - "create-function-modal.tsx"
+      - "bot-identity-card.tsx"
+      - "bot-behavior-card.tsx"
+      - "knowledge-base-card.tsx"
+      - "functions-card.tsx"
+      - "frustration-handover-card.tsx"
+      - "advanced-settings-card.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "ivr-bot-config.tsx"
 
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"

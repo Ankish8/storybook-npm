@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-sm text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "flex min-h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -378,7 +378,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       disabled={isDisabled}
                       onClick={() => !isDisabled && toggleOption(option.value)}
                       className={cn(
-                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-sm text-semantic-text-primary outline-none",
+                        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
                         "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
                         isSelected && "bg-semantic-bg-ui",
                         isDisabled && "pointer-events-none opacity-50"
