@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { IvrBotConfig } from "./ivr-bot-config";
 
 // ─── IvrBotConfig stories ────────────────────────────────────────────────────
@@ -60,11 +61,13 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
     botType: { control: "text", description: "Bot type badge label" },
     onSaveAsDraft: { action: "saveAsDraft" },
     onPublish: { action: "publish" },
-    onAddKnowledgeFile: { action: "addKnowledgeFile" },
     onDownloadKnowledgeFile: { action: "downloadKnowledgeFile" },
     onDeleteKnowledgeFile: { action: "deleteKnowledgeFile" },
     onCreateFunction: { action: "createFunction" },
+    onDeleteFunction: { action: "deleteFunction" },
     onBack: { action: "back" },
+    onPlayVoice: { action: "playVoice" },
+    onPauseVoice: { action: "pauseVoice" },
   },
 };
 
@@ -72,36 +75,44 @@ export default ivrBotMeta;
 type Story = StoryObj<typeof IvrBotConfig>;
 
 export const Overview: Story = {
-  args: {
-    botTitle: "IVR bot",
-    botType: "Voicebot",
-    initialData: {
-      botName: "Rhea",
-      primaryRole: "customer-support",
-      tone: ["Conversational"],
-      voice: "rhea-female",
-      language: "en-in",
-      systemPrompt:
-        "You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome to CaratLane. How can I assist you today?'\n\nIf the caller mentions order tracking, ask for their order ID and look it up via the get_order_status function.",
-      knowledgeBaseFiles: [
-        { id: "kb-1", name: "Lead validation bot", status: "training" },
-        { id: "kb-2", name: "FAQ_2025.pdf", status: "trained" },
-      ],
-      functions: [
-        {
-          id: "fn-1",
-          name: "transfer_to_extension (extension_number)",
-          isBuiltIn: true,
-        },
-        { id: "fn-2", name: "end_call()", isBuiltIn: true },
-        { id: "fn-3", name: "get_order_status (order_id)" },
-      ],
-      frustrationHandoverEnabled: false,
-      escalationDepartment: "",
-      silenceTimeout: 15,
-      callEndThreshold: 3,
-      interruptionHandling: true,
-    },
+  render: function Render() {
+    const [playingVoice, setPlayingVoice] = useState<string | undefined>();
+    return (
+      <IvrBotConfig
+        botTitle="IVR bot"
+        botType="Voicebot"
+        playingVoice={playingVoice}
+        onPlayVoice={(v) => setPlayingVoice(v)}
+        onPauseVoice={() => setPlayingVoice(undefined)}
+        initialData={{
+          botName: "Rhea",
+          primaryRole: "customer-support",
+          tone: ["Conversational"],
+          voice: "rhea-female",
+          language: "en-in",
+          systemPrompt:
+            "You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome to CaratLane. How can I assist you today?'\n\nIf the caller mentions order tracking, ask for their order ID and look it up via the get_order_status function.",
+          knowledgeBaseFiles: [
+            { id: "kb-1", name: "Lead validation bot", status: "training" },
+            { id: "kb-2", name: "FAQ_2025.pdf", status: "trained" },
+          ],
+          functions: [
+            {
+              id: "fn-1",
+              name: "transfer_to_extension (extension_number)",
+              isBuiltIn: true,
+            },
+            { id: "fn-2", name: "end_call()", isBuiltIn: true },
+            { id: "fn-3", name: "get_order_status (order_id)" },
+          ],
+          frustrationHandoverEnabled: false,
+          escalationDepartment: "",
+          silenceTimeout: 15,
+          callEndThreshold: 3,
+          interruptionHandling: true,
+        }}
+      />
+    );
   },
 };
 
@@ -145,4 +156,61 @@ export const WithErrorFile: Story = {
   },
 };
 
-
+/** Demonstrates overriding all dropdown options — voices, languages, departments, session variables. */
+export const CustomDropdownOptions: Story = {
+  name: "Custom Dropdown Options",
+  render: function Render() {
+    const [playingVoice, setPlayingVoice] = useState<string | undefined>();
+    return (
+      <IvrBotConfig
+        botTitle="US Region Bot"
+        botType="Voicebot"
+        playingVoice={playingVoice}
+        onPlayVoice={(v) => setPlayingVoice(v)}
+        onPauseVoice={() => setPlayingVoice(undefined)}
+        voiceOptions={[
+          { value: "emma-us", label: "Emma - US Female" },
+          { value: "james-us", label: "James - US Male" },
+          { value: "sophia-uk", label: "Sophia - UK Female" },
+        ]}
+        languageOptions={[
+          { value: "en-us", label: "English (US)" },
+          { value: "en-gb", label: "English (UK)" },
+          { value: "es-us", label: "Spanish (US)" },
+        ]}
+        roleOptions={[
+          { value: "helpdesk", label: "Help Desk Agent" },
+          { value: "onboarding", label: "Onboarding Assistant" },
+        ]}
+        toneOptions={[
+          { value: "Warm and approachable", label: "Warm and approachable" },
+          { value: "Strictly professional", label: "Strictly professional" },
+        ]}
+        sessionVariables={[
+          "{{Caller number}}",
+          "{{Account ID}}",
+          "{{Region}}",
+          "{{Plan Type}}",
+        ]}
+        escalationDepartmentOptions={[
+          { value: "tier-2", label: "Tier 2 Support" },
+          { value: "engineering", label: "Engineering" },
+          { value: "account-mgmt", label: "Account Management" },
+        ]}
+        silenceTimeoutMax={120}
+        callEndThresholdMax={20}
+        initialData={{
+          botName: "Emma",
+          primaryRole: "helpdesk",
+          voice: "emma-us",
+          language: "en-us",
+          functions: [
+            { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true },
+            { id: "fn-2", name: "end_call()", isBuiltIn: true },
+            { id: "fn-3", name: "lookup_account (account_id)" },
+          ],
+        }}
+      />
+    );
+  },
+};

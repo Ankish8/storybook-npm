@@ -22,6 +22,14 @@ export interface AdvancedSettingsCardProps {
   data: Partial<AdvancedSettingsData>;
   /** Callback when any field changes */
   onChange: (patch: Partial<AdvancedSettingsData>) => void;
+  /** Min value for silence timeout spinner (default: 1) */
+  silenceTimeoutMin?: number;
+  /** Max value for silence timeout spinner (default: 60) */
+  silenceTimeoutMax?: number;
+  /** Min value for call end threshold spinner (default: 1) */
+  callEndThresholdMin?: number;
+  /** Max value for call end threshold spinner (default: 10) */
+  callEndThresholdMax?: number;
   /** Additional className */
   className?: string;
 }
@@ -91,7 +99,18 @@ function NumberSpinner({
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCardProps>(
-  ({ data, onChange, className }, ref) => {
+  (
+    {
+      data,
+      onChange,
+      silenceTimeoutMin = 1,
+      silenceTimeoutMax = 60,
+      callEndThresholdMin = 1,
+      callEndThresholdMax = 10,
+      className,
+    },
+    ref
+  ) => {
     return (
       <div
         ref={ref}
@@ -115,8 +134,8 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                     <NumberSpinner
                       value={data.silenceTimeout ?? 15}
                       onChange={(v) => onChange({ silenceTimeout: v })}
-                      min={1}
-                      max={60}
+                      min={silenceTimeoutMin}
+                      max={silenceTimeoutMax}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
                       Default: 15 seconds
@@ -127,8 +146,8 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                     <NumberSpinner
                       value={data.callEndThreshold ?? 3}
                       onChange={(v) => onChange({ callEndThreshold: v })}
-                      min={1}
-                      max={10}
+                      min={callEndThresholdMin}
+                      max={callEndThresholdMax}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
                       Drop call after n consecutive silences. Default: 3

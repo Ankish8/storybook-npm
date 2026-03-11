@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Info, Plus } from "lucide-react";
+import { Info, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
 import type { FunctionItem } from "./types";
@@ -11,6 +11,8 @@ export interface FunctionsCardProps {
   functions: FunctionItem[];
   /** Called when user clicks the add function button */
   onAddFunction?: () => void;
+  /** Called when user deletes a custom (non-built-in) function */
+  onDeleteFunction?: (id: string) => void;
   /** Additional className */
   className?: string;
 }
@@ -18,7 +20,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, className }, ref) => {
+  ({ functions, onAddFunction, onDeleteFunction, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -63,11 +65,22 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                       {fn.name}
                     </span>
                   </div>
-                  {fn.isBuiltIn && (
-                    <Badge size="sm" className="font-normal shrink-0 ml-3">
-                      Built-in
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-1 shrink-0 ml-3">
+                    {fn.isBuiltIn ? (
+                      <Badge size="sm" className="font-normal">
+                        Built-in
+                      </Badge>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onDeleteFunction?.(fn.id)}
+                        className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                        aria-label={`Delete ${fn.name}`}
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

@@ -23,11 +23,24 @@ export interface FrustrationHandoverData {
   escalationDepartment: string;
 }
 
+export interface DepartmentOption {
+  value: string;
+  label: string;
+}
+
+const DEFAULT_DEPARTMENT_OPTIONS: DepartmentOption[] = [
+  { value: "support", label: "Support" },
+  { value: "sales", label: "Sales" },
+  { value: "billing", label: "Billing" },
+];
+
 export interface FrustrationHandoverCardProps {
   /** Current form data */
   data: Partial<FrustrationHandoverData>;
   /** Callback when any field changes */
   onChange: (patch: Partial<FrustrationHandoverData>) => void;
+  /** Available escalation department options */
+  departmentOptions?: DepartmentOption[];
   /** Additional className */
   className?: string;
 }
@@ -54,7 +67,7 @@ function Field({
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, className }, ref) => {
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -95,9 +108,11 @@ const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHand
                         <SelectValue placeholder="Select a department" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="support">Support</SelectItem>
-                        <SelectItem value="sales">Sales</SelectItem>
-                        <SelectItem value="billing">Billing</SelectItem>
+                        {departmentOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </Field>

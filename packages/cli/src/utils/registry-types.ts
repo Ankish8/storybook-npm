@@ -15,6 +15,7 @@ export interface ComponentDefinition {
   internalDependencies?: string[]
   isMultiFile?: boolean
   directory?: string
+  group?: string
   mainFile?: string
 }
 
@@ -26,4 +27,5 @@ export interface ComponentMeta {
   dependencies: string[]
   category: string
   internalDependencies?: string[]
+  group?: string
 }

@@ -109,28 +109,30 @@ async function readMultiFileComponent(componentName, meta) {
     let content = fs.readFileSync(filePath, 'utf-8')
 
     // Transform @/lib/utils import for multi-file components
-    // Multi-file components are installed to src/components/ui/{component}/
-    // So from ui/component-name/ to src/lib/ is ../../../lib/
+    // Without group: installed to src/components/ui/{component}/ → ../../../lib/
+    // With group:    installed to src/components/ui/{group}/{component}/ → ../../../../lib/
+    const utilsDepth = meta.group ? '../../../../lib/utils' : '../../../lib/utils'
     content = content.replace(
       /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
-      'import { cn } from "../../../lib/utils"'
+      `import { cn } from "${utilsDepth}"`
     )
 
     // Transform @/components/ui/... imports to relative paths
-    // Multi-file components are installed to src/components/ui/{component}/
-    // Other UI components are in src/components/ui/
-    // So from ui/component-name/ to ui/ is ../
+    // Without group: from ui/component-name/ to ui/ is ../
+    // With group:    from ui/group/component-name/ to ui/ is ../../
+    const uiSiblingPrefix = meta.group ? '../..' : '..'
     content = content.replace(
       /from\s*["']@\/components\/ui\/([^"']+)["']/g,
-      'from "../$1"'
+      `from "${uiSiblingPrefix}/$1"`
     )
 
-    // Transform relative imports from source location (../../ui/) to target location (../)
+    // Transform relative imports from source location (../../ui/) to target location
     // Source: src/components/custom/component-name/ uses ../../ui/X
-    // Target: src/components/ui/component-name/ uses ../X
+    // Without group: target src/components/ui/component-name/ uses ../X
+    // With group:    target src/components/ui/group/component-name/ uses ../../X
     content = content.replace(
       /from\s*["']\.\.\/\.\.\/ui\/([^"']+)["']/g,
-      'from "../$1"'
+      `from "${uiSiblingPrefix}/$1"`
     )
 
     componentFiles.push({
@@ -139,7 +141,7 @@ async function readMultiFileComponent(componentName, meta) {
     })
   }
 
-  return {
+  const result = {
     name: componentName,
     description: meta.description,
     dependencies: meta.dependencies || [],
@@ -150,6 +152,10 @@ async function readMultiFileComponent(componentName, meta) {
     files: componentFiles,
     category: meta.category,
   }
+  if (meta.group) {
+    result.group = meta.group
+  }
+  return result
 }
 
 /**
@@ -731,6 +737,7 @@ function generateCategoryFile(category, components) {
         }`
       }).join(',\n')
 
+      const groupLine = comp.group ? `\n      group: ${JSON.stringify(comp.group)},` : ''
       return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
@@ -738,7 +745,7 @@ function generateCategoryFile(category, components) {
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
-      directory: ${JSON.stringify(comp.directory)},
+      directory: ${JSON.stringify(comp.directory)},${groupLine}
       mainFile: ${JSON.stringify(comp.mainFile)},
       files: [
 ${filesArray}
@@ -803,6 +810,7 @@ export interface ComponentDefinition {
   internalDependencies?: string[]
   isMultiFile?: boolean
   directory?: string
+  group?: string
   mainFile?: string
 }
 
@@ -814,6 +822,7 @@ export interface ComponentMeta {
   dependencies: string[]
   category: string
   internalDependencies?: string[]
+  group?: string
 }
 `
 }
@@ -942,6 +951,7 @@ function generateLegacyRegistryFile(components) {
         }`
       }).join(',\n')
 
+      const groupLine = comp.group ? `\n      group: ${JSON.stringify(comp.group)},` : ''
       return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
@@ -949,7 +959,7 @@ function generateLegacyRegistryFile(components) {
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
-      directory: ${JSON.stringify(comp.directory)},
+      directory: ${JSON.stringify(comp.directory)},${groupLine}
       mainFile: ${JSON.stringify(comp.mainFile)},
       files: [
 ${filesArray}
@@ -994,6 +1004,7 @@ export interface ComponentDefinition {
   internalDependencies?: string[]
   isMultiFile?: boolean
   directory?: string
+  group?: string
   mainFile?: string
 }
 

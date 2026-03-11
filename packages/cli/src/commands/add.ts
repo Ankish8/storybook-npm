@@ -168,9 +168,11 @@ export async function add(components: string[], options: AddOptions) {
 
       // Determine target directory
       // Multi-file components go into a subdirectory, single-file components go directly
+      // When group is set, components are nested under a group subdirectory
+      const groupPrefix = component.group || ''
       const targetDir = component.isMultiFile
-        ? path.join(componentsDir, component.directory!)
-        : componentsDir
+        ? path.join(componentsDir, groupPrefix, component.directory!)
+        : path.join(componentsDir, groupPrefix)
 
       // Check for existing files
       for (const file of component.files) {
@@ -190,9 +192,10 @@ export async function add(components: string[], options: AddOptions) {
         await fs.writeFile(filePath, file.content)
 
         // Track installed file path relative to components dir
+        const groupPart = component.group ? `${component.group}/` : ''
         const relativePath = component.isMultiFile
-          ? `${component.directory}/${file.name}`
-          : file.name
+          ? `${groupPart}${component.directory}/${file.name}`
+          : `${groupPart}${file.name}`
         installed.push({ path: relativePath, basePath: options.path })
       }
 

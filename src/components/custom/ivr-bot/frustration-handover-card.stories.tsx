@@ -64,3 +64,28 @@ export const Disabled: Story = {
     );
   },
 };
+
+/** Custom department options from API or config. */
+export const CustomDepartments: Story = {
+  name: "Custom Departments",
+  render: function Render() {
+    const [data, setData] = useState<Partial<FrustrationHandoverData>>({
+      frustrationHandoverEnabled: true,
+      escalationDepartment: "tier-2",
+    });
+    return (
+      <div className="max-w-[500px]">
+        <FrustrationHandoverCard
+          data={data}
+          onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          departmentOptions={[
+            { value: "tier-2", label: "Tier 2 Support" },
+            { value: "engineering", label: "Engineering" },
+            { value: "account-mgmt", label: "Account Management" },
+            { value: "escalation", label: "Escalation Team" },
+          ]}
+        />
+      </div>
+    );
+  },
+};

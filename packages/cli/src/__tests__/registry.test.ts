@@ -509,7 +509,7 @@ describe('Registry', () => {
       expect(eventSelector.isMultiFile).toBe(true)
       expect(eventSelector.directory).toBe('event-selector')
       expect(eventSelector.mainFile).toBe('event-selector.tsx')
-      expect(eventSelector.files.length).toBe(4)  // main, group, item, types
+      expect(eventSelector.files.length).toBe(5)  // main, group, item, types, index
       expect(eventSelector.internalDependencies).toContain('checkbox')
       expect(eventSelector.internalDependencies).toContain('accordion')
     })
@@ -522,7 +522,7 @@ describe('Registry', () => {
       expect(keyValueInput.isMultiFile).toBe(true)
       expect(keyValueInput.directory).toBe('key-value-input')
       expect(keyValueInput.mainFile).toBe('key-value-input.tsx')
-      expect(keyValueInput.files.length).toBe(3)  // main, row, types
+      expect(keyValueInput.files.length).toBe(4)  // main, row, types, index
       expect(keyValueInput.internalDependencies).toContain('button')
       expect(keyValueInput.internalDependencies).toContain('input')
     })

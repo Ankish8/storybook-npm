@@ -31,6 +31,16 @@ import { BotIdentityCard } from "@/components/custom/ivr-bot/bot-identity-card"
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Helper that simulates play/pause toggling for stories. */
+function useVoicePlayback() {
+  const [playing, setPlaying] = useState<string | undefined>();
+  return {
+    playingVoice: playing,
+    onPlayVoice: (v: string) => setPlaying(v),
+    onPauseVoice: () => setPlaying(undefined),
+  };
+}
+
 export const Overview: Story = {
   render: function Render() {
     const [data, setData] = useState<Partial<BotIdentityData>>({
@@ -40,11 +50,13 @@ export const Overview: Story = {
       voice: "rhea-female",
       language: "en-in",
     });
+    const voice = useVoicePlayback();
     return (
       <div className="max-w-[800px]">
         <BotIdentityCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          {...voice}
         />
       </div>
     );
@@ -54,11 +66,13 @@ export const Overview: Story = {
 export const Empty: Story = {
   render: function Render() {
     const [data, setData] = useState<Partial<BotIdentityData>>({});
+    const voice = useVoicePlayback();
     return (
       <div className="max-w-[800px]">
         <BotIdentityCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          {...voice}
         />
       </div>
     );
@@ -74,11 +88,13 @@ export const CustomOptions: Story = {
       voice: "vikram-male",
       language: "hi-in",
     });
+    const voice = useVoicePlayback();
     return (
       <div className="max-w-[800px]">
         <BotIdentityCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          {...voice}
           voiceOptions={[
             { value: "rhea-female", label: "Rhea - Female" },
             { value: "vikram-male", label: "Vikram - Male" },

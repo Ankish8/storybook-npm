@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Info, PlayCircle } from "lucide-react";
+import { Info, PlayCircle, PauseCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Select,
@@ -54,6 +54,12 @@ export interface BotIdentityCardProps {
   voiceOptions?: VoiceOption[];
   /** Available language options */
   languageOptions?: LanguageOption[];
+  /** Called when the play icon is clicked on a voice option. Receives the voice value. */
+  onPlayVoice?: (voiceValue: string) => void;
+  /** Called when the pause icon is clicked on a playing voice. */
+  onPauseVoice?: (voiceValue: string) => void;
+  /** The voice value currently being played. Controls play/pause icon state. */
+  playingVoice?: string;
   /** Additional className for the card */
   className?: string;
 }
@@ -172,6 +178,9 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       toneOptions = DEFAULT_TONE_OPTIONS,
       voiceOptions = DEFAULT_VOICE_OPTIONS,
       languageOptions = DEFAULT_LANGUAGE_OPTIONS,
+      onPlayVoice,
+      onPauseVoice,
+      playingVoice,
       className,
     },
     ref
@@ -229,16 +238,52 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
               <Field label="How It Sounds">
                 <Select
                   value={data.voice || undefined}
-                  onValueChange={(v) => onChange({ voice: v })}
+                  onValueChange={(v) => {
+                    onChange({ voice: v });
+                    onPauseVoice?.(v);
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select voice" />
+                    <SelectValue placeholder="Select voice">
+                      {data.voice && (
+                        <span className="inline-flex items-center gap-2">
+                          <PlayCircle className="size-5 shrink-0 text-semantic-text-muted" />
+                          {voiceOptions.find((o) => o.value === data.voice)?.label ?? data.voice}
+                        </span>
+                      )}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {voiceOptions.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
                         <span className="inline-flex items-center gap-2">
-                          <PlayCircle className="size-5 shrink-0 text-semantic-text-muted" />
+                          <button
+                            type="button"
+                            aria-label={
+                              playingVoice === opt.value
+                                ? `Pause ${opt.label}`
+                                : `Play ${opt.label}`
+                            }
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (playingVoice === opt.value) {
+                                onPauseVoice?.(opt.value);
+                              } else {
+                                onPlayVoice?.(opt.value);
+                              }
+                            }}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onPointerUp={(e) => e.stopPropagation()}
+                            className="inline-flex items-center justify-center rounded-full hover:bg-semantic-bg-hover transition-colors"
+                          >
+                            {playingVoice === opt.value ? (
+                              <PauseCircle className="size-5 shrink-0 text-semantic-primary" />
+                            ) : (
+                              <PlayCircle className="size-5 shrink-0 text-semantic-text-muted" />
+                            )}
+                          </button>
+                          <span className="h-4 w-px bg-semantic-border-layout shrink-0" />
                           {opt.label}
                         </span>
                       </SelectItem>

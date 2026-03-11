@@ -44,9 +44,10 @@ export async function sync(options: SyncOptions) {
     const component = registry[componentName]
     const componentsDir = path.join(cwd, options.path)
 
+    const groupPrefix = component.group || ''
     const targetDir = component.isMultiFile
-      ? path.join(componentsDir, component.directory!)
-      : componentsDir
+      ? path.join(componentsDir, groupPrefix, component.directory!)
+      : path.join(componentsDir, groupPrefix)
 
     // Check if main file exists
     const mainFileName = component.isMultiFile ? component.mainFile : component.files[0]?.name
@@ -100,10 +101,17 @@ export async function sync(options: SyncOptions) {
   // Orphan detection: find files/dirs in the components dir not owned by the current registry
   const knownFileNames = new Set<string>() // single-file filenames, e.g. "button.tsx"
   const knownDirNames = new Set<string>()  // multi-file directory names, e.g. "bank-details"
+  const knownGroupDirs = new Set<string>() // group directory names, e.g. "ai-bot"
   for (const name of availableComponents) {
     const comp = registry[name]
+    if (comp.group) {
+      knownGroupDirs.add(comp.group)
+    }
     if (comp.isMultiFile && comp.directory) {
-      knownDirNames.add(comp.directory)
+      // If grouped, the top-level dir is the group, not the component dir
+      if (!comp.group) {
+        knownDirNames.add(comp.directory)
+      }
     } else {
       const fn = comp.files[0]?.name
       if (fn) knownFileNames.add(fn)
@@ -122,7 +130,7 @@ export async function sync(options: SyncOptions) {
   if (await fs.pathExists(orphanScanDir)) {
     const entries = await fs.readdir(orphanScanDir, { withFileTypes: true })
     for (const entry of entries) {
-      if (entry.isDirectory() && !knownDirNames.has(entry.name)) {
+      if (entry.isDirectory() && !knownDirNames.has(entry.name) && !knownGroupDirs.has(entry.name)) {
         orphaned.push({
           displayPath: `${options.path}/${entry.name}/`,
           fullPath: path.join(orphanScanDir, entry.name),
@@ -279,9 +287,10 @@ export async function sync(options: SyncOptions) {
             // Only install dependency if it doesn't exist
             const depComponent = registry[depName]
             if (depComponent) {
+              const depGroupPrefix = depComponent.group || ''
               const depTargetDir = depComponent.isMultiFile
-                ? path.join(componentsDir, depComponent.directory!)
-                : componentsDir
+                ? path.join(componentsDir, depGroupPrefix, depComponent.directory!)
+                : path.join(componentsDir, depGroupPrefix)
               const depMainFile = depComponent.isMultiFile ? depComponent.mainFile : depComponent.files[0]?.name
               if (depMainFile) {
                 const depExists = await fs.pathExists(path.join(depTargetDir, depMainFile))
@@ -297,18 +306,20 @@ export async function sync(options: SyncOptions) {
 
         spinner.text = `${action === 'added' ? 'Adding' : 'Updating'} ${componentName}...`
 
+        const compGroupPrefix = component.group || ''
         const targetDir = component.isMultiFile
-          ? path.join(componentsDir, component.directory!)
-          : componentsDir
+          ? path.join(componentsDir, compGroupPrefix, component.directory!)
+          : path.join(componentsDir, compGroupPrefix)
 
         for (const file of component.files) {
           const filePath = path.join(targetDir, file.name)
           await fs.ensureDir(path.dirname(filePath))
           await fs.writeFile(filePath, file.content)
 
+          const groupPart = component.group ? `${component.group}/` : ''
           const relativePath = component.isMultiFile
-            ? `${component.directory}/${file.name}`
-            : file.name
+            ? `${groupPart}${component.directory}/${file.name}`
+            : `${groupPart}${file.name}`
           installed.push({ path: relativePath, basePath: options.path, action })
         }
 

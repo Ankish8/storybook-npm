@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
+import { useState } from "react";
 import { FunctionsCard } from "./functions-card";
 import type { FunctionItem } from "./types";
 
@@ -69,4 +71,21 @@ export const BuiltInOnly: Story = {
       <FunctionsCard {...args} />
     </div>
   ),
+};
+
+/** Shows delete button on custom functions. Built-in functions cannot be deleted. */
+export const WithDelete: Story = {
+  name: "With Delete",
+  render: function Render() {
+    const [fns, setFns] = useState<FunctionItem[]>(SAMPLE_FUNCTIONS);
+    return (
+      <div className="max-w-[500px]">
+        <FunctionsCard
+          functions={fns}
+          onAddFunction={fn()}
+          onDeleteFunction={(id) => setFns((prev) => prev.filter((f) => f.id !== id))}
+        />
+      </div>
+    );
+  },
 };

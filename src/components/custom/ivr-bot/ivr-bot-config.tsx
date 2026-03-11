@@ -148,12 +148,27 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onSaveAsDraft,
       onPublish,
       onSaveKnowledgeFiles,
+      onUploadKnowledgeFile,
       onSampleFileDownload,
       onDownloadKnowledgeFile,
       onDeleteKnowledgeFile,
       onCreateFunction,
+      onDeleteFunction,
       onTestApi,
       onBack,
+      onPlayVoice,
+      onPauseVoice,
+      playingVoice,
+      roleOptions,
+      toneOptions,
+      voiceOptions,
+      languageOptions,
+      sessionVariables,
+      escalationDepartmentOptions,
+      silenceTimeoutMin,
+      silenceTimeoutMax,
+      callEndThresholdMin,
+      callEndThresholdMax,
       className,
     },
     ref
@@ -212,8 +227,22 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
         <div className="flex flex-col lg:flex-row lg:flex-1 min-h-0">
           {/* Left column — white background */}
           <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[3] min-w-0 lg:max-w-[720px]">
-            <BotIdentityCard data={data} onChange={update} />
-            <BotBehaviorCard data={data} onChange={update} />
+            <BotIdentityCard
+              data={data}
+              onChange={update}
+              onPlayVoice={onPlayVoice}
+              onPauseVoice={onPauseVoice}
+              playingVoice={playingVoice}
+              roleOptions={roleOptions}
+              toneOptions={toneOptions}
+              voiceOptions={voiceOptions}
+              languageOptions={languageOptions}
+            />
+            <BotBehaviorCard
+              data={data}
+              onChange={update}
+              sessionVariables={sessionVariables}
+            />
             <FallbackPromptsAccordion data={data} onChange={update} />
           </div>
 
@@ -222,6 +251,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <KnowledgeBaseCard
               files={data.knowledgeBaseFiles}
               onSaveFiles={onSaveKnowledgeFiles}
+              onUploadFile={onUploadKnowledgeFile}
               onSampleDownload={onSampleFileDownload}
               onDownload={onDownloadKnowledgeFile}
               onDelete={(id) => {
@@ -236,9 +266,26 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
+              onDeleteFunction={(id) => {
+                update({
+                  functions: data.functions.filter((f) => f.id !== id),
+                });
+                onDeleteFunction?.(id);
+              }}
             />
-            <FrustrationHandoverCard data={data} onChange={update} />
-            <AdvancedSettingsCard data={data} onChange={update} />
+            <FrustrationHandoverCard
+              data={data}
+              onChange={update}
+              departmentOptions={escalationDepartmentOptions}
+            />
+            <AdvancedSettingsCard
+              data={data}
+              onChange={update}
+              silenceTimeoutMin={silenceTimeoutMin}
+              silenceTimeoutMax={silenceTimeoutMax}
+              callEndThresholdMin={callEndThresholdMin}
+              callEndThresholdMax={callEndThresholdMax}
+            />
           </div>
         </div>
 

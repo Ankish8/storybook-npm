@@ -764,6 +764,7 @@ components:
     files:
       - "ivr-bot-config.tsx"
       - "create-function-modal.tsx"
+      - "file-upload-modal.tsx"
       - "bot-identity-card.tsx"
       - "bot-behavior-card.tsx"
       - "knowledge-base-card.tsx"

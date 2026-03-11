@@ -69,6 +69,11 @@ export interface IvrBotConfigData {
   interruptionHandling: boolean;
 }
 
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
 export interface IvrBotConfigProps {
   botTitle?: string;
   botType?: string;
@@ -77,13 +82,80 @@ export interface IvrBotConfigProps {
   initialData?: Partial<IvrBotConfigData>;
   onSaveAsDraft?: (data: IvrBotConfigData) => void;
   onPublish?: (data: IvrBotConfigData) => void;
-  onAddKnowledgeFile?: () => void;
   onSaveKnowledgeFiles?: (files: File[]) => void;
+  /** Called for each file during upload with progress/error handlers. If omitted, uses fake progress. */
+  onUploadKnowledgeFile?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
   onSampleFileDownload?: () => void;
   onDownloadKnowledgeFile?: (fileId: string) => void;
   onDeleteKnowledgeFile?: (fileId: string) => void;
   onCreateFunction?: (data: CreateFunctionData) => void;
+  /** Called when user deletes a custom function */
+  onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   onBack?: () => void;
+  /** Called when the play icon is clicked on a voice option */
+  onPlayVoice?: (voiceValue: string) => void;
+  /** Called when the pause icon is clicked on a playing voice */
+  onPauseVoice?: (voiceValue: string) => void;
+  /** The voice value currently being played */
+  playingVoice?: string;
+  /** Override available role options for BotIdentityCard */
+  roleOptions?: SelectOption[];
+  /** Override available tone options for BotIdentityCard */
+  toneOptions?: SelectOption[];
+  /** Override available voice options for BotIdentityCard */
+  voiceOptions?: SelectOption[];
+  /** Override available language options for BotIdentityCard */
+  languageOptions?: SelectOption[];
+  /** Override session variable chips for BotBehaviorCard */
+  sessionVariables?: string[];
+  /** Override escalation department options for FrustrationHandoverCard */
+  escalationDepartmentOptions?: SelectOption[];
+  /** Override silence timeout bounds */
+  silenceTimeoutMin?: number;
+  silenceTimeoutMax?: number;
+  /** Override call end threshold bounds */
+  callEndThresholdMin?: number;
+  callEndThresholdMax?: number;
   className?: string;
+}
+
+// ─── File Upload Modal ──────────────────────────────────────────────────────
+
+export type UploadStatus = "pending" | "uploading" | "done" | "error";
+
+export interface UploadItem {
+  id: string;
+  file: File;
+  progress: number;
+  status: UploadStatus;
+  errorMessage?: string;
+}
+
+export interface UploadProgressHandlers {
+  onProgress: (progress: number) => void;
+  onError: (message: string) => void;
+}
+
+export interface FileUploadModalProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onSave"> {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** Called for each file to handle the actual upload. If not provided, uses fake progress (demo mode). */
+  onUpload?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
+  onSave?: (files: File[]) => void;
+  onCancel?: () => void;
+  onSampleDownload?: () => void;
+  sampleDownloadLabel?: string;
+  showSampleDownload?: boolean;
+  acceptedFormats?: string;
+  formatDescription?: string;
+  maxFileSizeMB?: number;
+  multiple?: boolean;
+  title?: string;
+  uploadButtonLabel?: string;
+  dropDescription?: string;
+  saveLabel?: string;
+  cancelLabel?: string;
+  saving?: boolean;
 }
