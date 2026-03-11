@@ -1,5 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 import type { StorybookConfig } from '@storybook/react-vite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -28,6 +30,15 @@ const config: StorybookConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname, "../src"),
+    };
+    config.css = {
+      ...config.css,
+      postcss: {
+        plugins: [
+          tailwindcss(path.resolve(__dirname, "tailwind.config.storybook.js")),
+          autoprefixer(),
+        ],
+      },
     };
     return config;
   },

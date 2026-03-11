@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react-vite'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import '../src/index.css'
 import '../src/storybook/typography.css'
 import '../src/storybook/design-tokens.css'

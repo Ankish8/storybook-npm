@@ -37,26 +37,33 @@ npm test
 cd packages/cli && npm test
 ```
 
-### 2.3 Linting
+### 2.3 CLI E2E tests
+```bash
+cd packages/cli && npm run test:e2e
+```
+
+Runs full end-to-end verification: installs components into a temp project, checks `tw-` prefixing, import paths, Bootstrap compat, and runs a Vite build. If this fails, there's a real bug that would break consumers.
+
+### 2.4 Linting
 ```bash
 cd /Users/ankish/Downloads/Code/storybook-npm && npm run lint
 ```
 
-### 2.4 API breaking change check
+### 2.5 API breaking change check
 ```bash
 npm run api:check
 ```
 
 If `api:check` reports intentional breaking changes, run `npm run api:snapshot` to update the baseline, then continue.
 
-### 2.5 Bootstrap compat check
+### 2.6 Bootstrap compat check
 ```bash
 node scripts/check-bootstrap-compat.js
 ```
 
 Ensures all `<p>` elements in component files have `m-0` (or `mb-0`/`my-0`). Bootstrap sets `p { margin-bottom: 1rem }` globally — missing the reset causes 16px layout gaps in the host app. Fix any violations before publishing.
 
-**IMPORTANT: All checks (2.1–2.5) MUST pass. Do NOT skip or proceed if any fail.**
+**IMPORTANT: All checks (2.1–2.6) MUST pass. Do NOT skip or proceed if any fail.**
 
 ---
 
