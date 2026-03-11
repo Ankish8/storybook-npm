@@ -3163,22 +3163,6 @@ const CreatableMultiSelect = React.forwardRef<
               </div>
             )}
 
-            {/* Clickable "Create X" button for custom values */}
-            {canAddCustom && (
-              <div className="px-2.5 py-2 border-t border-semantic-border-layout">
-                <button
-                  type="button"
-                  onMouseDown={(e) => {
-                    e.preventDefault()
-                    addValue(inputValue.trim())
-                  }}
-                  className="text-base text-semantic-text-link hover:opacity-80 transition-opacity"
-                >
-                  Create &ldquo;{inputValue.trim()}&rdquo;
-                </button>
-              </div>
-            )}
-
           </div>
         )}
 

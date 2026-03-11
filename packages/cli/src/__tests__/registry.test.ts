@@ -384,8 +384,8 @@ describe('Registry', () => {
       const content = textField.files[0].content
 
       // Classes inside cn() with nested function calls should be prefixed
-      expect(content).toContain('"tw-h-10 tw-px-4"')
-      expect(content).not.toContain('"h-10 px-4"')
+      expect(content).toContain('"tw-h-[42px] tw-px-4"')
+      expect(content).not.toContain('"h-[42px] px-4"')
       expect(content).toContain('"tw-text-xs"')
       expect(content).not.toContain('"text-xs"')
     })

@@ -112,8 +112,9 @@ git checkout -B beta/cli
 git add .
 MYOPERATOR_GIT_ALLOWED=1 git commit -m "chore: publish myoperator-ui v${BETA_VERSION} (beta)"
 MYOPERATOR_GIT_ALLOWED=1 git push -u origin beta/cli --force
-git checkout main
 ```
+
+**NOTE: You will stay on the `beta/cli` branch after this.** This is intentional — other developers can pull this branch to get the full code. When you're ready to go to production, run `/publish-all` and choose 'Latest'.
 
 #### 4c. Report and STOP
 
