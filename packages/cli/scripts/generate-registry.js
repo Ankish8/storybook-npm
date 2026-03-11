@@ -418,6 +418,10 @@ function looksLikeTailwindClasses(str: string): boolean {
     }
   }
 
+  // Single word utilities — check BEFORE npm regex so "relative", "flex", etc. aren't misidentified
+  const singleWordUtilities = ${SINGLE_WORD_UTILITIES_LITERAL}
+  if (!str.includes(' ') && singleWordUtilities.test(str)) return true
+
   // Skip npm package names (but we already caught Tailwind utilities above)
   if (/^(@[a-z0-9-]+\\/)?[a-z][a-z0-9-]*$/.test(str) && !str.includes(' ')) return false
 
@@ -430,8 +434,7 @@ function looksLikeTailwindClasses(str: string): boolean {
     // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
     if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return false
 
-    // Single word utilities that are valid Tailwind classes
-    const singleWordUtilities = ${SINGLE_WORD_UTILITIES_LITERAL}
+    // Single word utilities (reuse same regex for multi-word strings)
     if (singleWordUtilities.test(cls)) return true
 
     // Classes with hyphens are likely Tailwind (bg-*, text-*, p-*, m-*, etc.)
