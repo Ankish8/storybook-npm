@@ -414,7 +414,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: "custom",
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",
-    internalDependencies: ["button","badge","switch","accordion","dialog"],
+    internalDependencies: ["button","badge","switch","accordion","dialog","select","creatable-select","creatable-multi-select","page-header","tag"],
   },
   "wallet-topup": {
     name: "wallet-topup",

@@ -752,11 +752,22 @@ components:
       - switch
       - accordion
       - dialog
+      - select
+      - creatable-select
+      - creatable-multi-select
+      - page-header
+      - tag
     isMultiFile: true
     directory: "ivr-bot"
     files:
       - "ivr-bot-config.tsx"
       - "create-function-modal.tsx"
+      - "bot-identity-card.tsx"
+      - "bot-behavior-card.tsx"
+      - "knowledge-base-card.tsx"
+      - "functions-card.tsx"
+      - "frustration-handover-card.tsx"
+      - "advanced-settings-card.tsx"
       - "types.ts"
       - "index.ts"
     mainFile: "ivr-bot-config.tsx"
