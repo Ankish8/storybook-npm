@@ -15,7 +15,7 @@ describe("CreateFunctionModal", () => {
   it("renders step 1 when open", () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     expect(screen.getByText("Create Function")).toBeInTheDocument();
-    expect(screen.getByLabelText(/Functions Name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Prompt/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Next/i })).toBeInTheDocument();
   });
@@ -30,7 +30,7 @@ describe("CreateFunctionModal", () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(
-      screen.getByLabelText(/Functions Name/i),
+      screen.getByLabelText(/Function Name/i),
       "TestFunc"
     );
     await user.type(screen.getByLabelText(/Prompt/i), "Some prompt");
@@ -40,14 +40,14 @@ describe("CreateFunctionModal", () => {
   it("shows character counter for function name", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
-    await user.type(screen.getByLabelText(/Functions Name/i), "Hello");
+    await user.type(screen.getByLabelText(/Function Name/i), "Hello");
     expect(screen.getByText(/5\/30/)).toBeInTheDocument();
   });
 
   it("advances to step 2 on Next click", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
-    await user.type(screen.getByLabelText(/Functions Name/i), "TestFunc");
+    await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
     await user.click(screen.getByRole("button", { name: /Next/i }));
     expect(screen.getByText(/API url/i)).toBeInTheDocument();
@@ -58,28 +58,28 @@ describe("CreateFunctionModal", () => {
   it("goes back to step 1 from step 2", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
-    await user.type(screen.getByLabelText(/Functions Name/i), "TestFunc");
+    await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Back/i }));
-    expect(screen.getByLabelText(/Functions Name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
   });
 
   it("renders tab navigation in step 2", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
-    await user.type(screen.getByLabelText(/Functions Name/i), "TestFunc");
+    await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
     await user.click(screen.getByRole("button", { name: /Next/i }));
-    expect(screen.getByText(/Header\(0\)/)).toBeInTheDocument();
-    expect(screen.getByText(/Query parameter\(0\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Header \(0\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Query params \(0\)/)).toBeInTheDocument();
     expect(screen.getByText("Body")).toBeInTheDocument();
   });
 
   it("shows Body textarea when Body tab is clicked", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
-    await user.type(screen.getByLabelText(/Functions Name/i), "TestFunc");
+    await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByText("Body"));
@@ -93,7 +93,7 @@ describe("CreateFunctionModal", () => {
     render(
       <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
     );
-    await user.type(screen.getByLabelText(/Functions Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
     await user.type(screen.getByLabelText(/Prompt/i), "My prompt");
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));
@@ -109,7 +109,7 @@ describe("CreateFunctionModal", () => {
       <CreateFunctionModal open onOpenChange={onOpenChange} />
     );
     // Advance to step 2 first
-    await user.type(screen.getByLabelText(/Functions Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
     await user.type(screen.getByLabelText(/Prompt/i), "My prompt");
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));

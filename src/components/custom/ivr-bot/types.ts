@@ -54,7 +54,7 @@ export interface CreateFunctionModalProps {
 export interface IvrBotConfigData {
   botName: string;
   primaryRole: string;
-  tone: string;
+  tone: string[];
   voice: string;
   language: string;
   systemPrompt: string;

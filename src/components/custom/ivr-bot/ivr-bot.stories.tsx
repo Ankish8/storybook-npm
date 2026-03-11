@@ -77,8 +77,8 @@ export const Overview: Story = {
     botType: "Voicebot",
     initialData: {
       botName: "Rhea",
-      primaryRole: "Customer support agent",
-      tone: "conversational",
+      primaryRole: "customer-support",
+      tone: ["Conversational"],
       voice: "rhea-female",
       language: "en-in",
       systemPrompt:

@@ -32,7 +32,7 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
     return (
       <div ref={ref} className={cn("flex flex-col w-full", className)}>
         {/* Page header */}
-        <div className="flex items-center justify-between pb-5 mb-6 border-b border-semantic-border-layout">
+        <div className="flex flex-col gap-4 pb-5 mb-6 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1.5">
             <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px]">
               {title}
@@ -43,20 +43,20 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
           </div>
 
           {/* Search bar */}
-          <div className="flex items-center gap-2 h-10 px-2.5 border border-semantic-border-input rounded bg-semantic-bg-primary hover:border-semantic-border-input-focus focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]">
+          <div className="flex items-center gap-2 h-10 px-2.5 border border-semantic-border-input rounded bg-semantic-bg-primary hover:border-semantic-border-input-focus focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] w-full sm:w-auto">
             <Search className="size-[14px] text-semantic-text-muted shrink-0" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search bot..."
-              className="text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none w-[180px]"
+              className="text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none w-full sm:w-[180px]"
             />
           </div>
         </div>
 
         {/* Bot grid */}
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {/* Create new bot card */}
           <button
             type="button"

@@ -51,7 +51,7 @@ export const CreateBotModal = React.forwardRef<
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent ref={ref} size="sm" className={cn(className)}>
+      <DialogContent ref={ref} size="sm" className={cn("mx-4 sm:mx-auto", className)}>
         <DialogHeader>
           <DialogTitle>Create AI bot</DialogTitle>
         </DialogHeader>
@@ -87,7 +87,7 @@ export const CreateBotModal = React.forwardRef<
             <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
               Select Bot Type
             </span>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               {BOT_TYPE_OPTIONS.map(({ id, label, description }) => {
                 const isSelected = selectedType === id;
                 return (
@@ -96,7 +96,7 @@ export const CreateBotModal = React.forwardRef<
                     type="button"
                     onClick={() => setSelectedType(id)}
                     className={cn(
-                      "flex flex-col gap-2.5 p-3 rounded-lg border text-left flex-1 h-[134px] justify-center",
+                      "flex flex-row items-center gap-3 p-3 rounded-lg border text-left sm:flex-col sm:gap-2.5 sm:flex-1 sm:h-[134px] sm:justify-center",
                       "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
                       isSelected
                         ? "bg-semantic-info-surface border-semantic-border-focus shadow-sm"
@@ -142,12 +142,13 @@ export const CreateBotModal = React.forwardRef<
         </div>
 
         {/* Footer actions */}
-        <div className="flex justify-end gap-4 mt-2">
-          <Button variant="outline" onClick={handleClose}>
+        <div className="flex flex-col-reverse gap-3 mt-2 sm:flex-row sm:justify-end sm:gap-4">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={handleClose}>
             Cancel
           </Button>
           <Button
             variant="default"
+            className="w-full sm:w-auto"
             onClick={handleSubmit}
             disabled={!name.trim()}
           >
