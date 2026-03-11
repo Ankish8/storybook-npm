@@ -237,33 +237,75 @@ export async function sync(options: SyncOptions) {
     return
   }
 
-  // Show what will change
-  if (toAdd.length > 0) {
-    console.log(chalk.green('  Will add:'))
-    toAdd.forEach((c) => {
-      const comp = registry[c]
-      const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
-      console.log(chalk.green(`    + ${c}${fileCount}`))
+  // Let user pick which components to add/update
+  let selectedToAdd = toAdd
+  let selectedToUpdate = toUpdate
+
+  if (!options.yes && toAdd.length > 0) {
+    const { selected } = await prompts({
+      type: 'multiselect',
+      name: 'selected',
+      message: 'Select new components to add',
+      choices: toAdd.map((c) => {
+        const comp = registry[c]
+        const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
+        return { title: `${c}${fileCount}`, value: c, selected: true }
+      }),
     })
-    console.log('')
+    if (!selected) {
+      console.log(chalk.yellow('\n  Sync cancelled.\n'))
+      process.exit(0)
+    }
+    selectedToAdd = selected
   }
 
-  if (toUpdate.length > 0) {
-    console.log(chalk.yellow('  Will update:'))
-    toUpdate.forEach((c) => {
-      const comp = registry[c]
-      const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
-      console.log(chalk.yellow(`    ~ ${c}${fileCount}`))
+  if (!options.yes && toUpdate.length > 0) {
+    const { selected } = await prompts({
+      type: 'multiselect',
+      name: 'selected',
+      message: 'Select components to update',
+      choices: toUpdate.map((c) => {
+        const comp = registry[c]
+        const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
+        return { title: `${c}${fileCount}`, value: c, selected: true }
+      }),
     })
-    console.log('')
+    if (!selected) {
+      console.log(chalk.yellow('\n  Sync cancelled.\n'))
+      process.exit(0)
+    }
+    selectedToUpdate = selected
   }
 
-  // Confirm (only when there are components to add or update)
-  if (!options.yes && (toAdd.length > 0 || toUpdate.length > 0)) {
+  if (selectedToAdd.length === 0 && selectedToUpdate.length === 0 && orphaned.length === 0) {
+    console.log(chalk.green('\n  ✓ Nothing selected to sync.\n'))
+    return
+  }
+
+  // Confirm final selection
+  if (!options.yes && (selectedToAdd.length > 0 || selectedToUpdate.length > 0)) {
+    if (selectedToAdd.length > 0) {
+      console.log(chalk.green('\n  Will add:'))
+      selectedToAdd.forEach((c: string) => {
+        const comp = registry[c]
+        const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
+        console.log(chalk.green(`    + ${c}${fileCount}`))
+      })
+    }
+    if (selectedToUpdate.length > 0) {
+      console.log(chalk.yellow('\n  Will update:'))
+      selectedToUpdate.forEach((c: string) => {
+        const comp = registry[c]
+        const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
+        console.log(chalk.yellow(`    ~ ${c}${fileCount}`))
+      })
+    }
+    console.log('')
+
     const { confirm } = await prompts({
       type: 'confirm',
       name: 'confirm',
-      message: `Proceed with ${toAdd.length} additions and ${toUpdate.length} updates?`,
+      message: `Proceed with ${selectedToAdd.length} additions and ${selectedToUpdate.length} updates?`,
       initial: true,
     })
 
@@ -273,7 +315,7 @@ export async function sync(options: SyncOptions) {
     }
   }
 
-  if (toAdd.length > 0 || toUpdate.length > 0) {
+  if (selectedToAdd.length > 0 || selectedToUpdate.length > 0) {
     const spinner = ora('Syncing components...').start()
 
     try {
@@ -339,12 +381,12 @@ export async function sync(options: SyncOptions) {
       }
 
       // Install new components
-      for (const componentName of toAdd) {
+      for (const componentName of selectedToAdd) {
         await installComponent(componentName, 'added')
       }
 
       // Update existing components
-      for (const componentName of toUpdate) {
+      for (const componentName of selectedToUpdate) {
         await installComponent(componentName, 'updated')
       }
 
