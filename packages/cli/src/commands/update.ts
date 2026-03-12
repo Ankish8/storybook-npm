@@ -228,14 +228,24 @@ export async function update(components: string[], options: UpdateOptions) {
     for (const file of component.files) {
       const relativePath = subDir ? path.join(subDir, file.name) : file.name
       const filePath = path.join(componentsDir, relativePath)
-      const oldContent = await fs.readFile(filePath, 'utf-8')
       const newContent = file.content
+      let oldContent: string
+
+      if (await fs.pathExists(filePath)) {
+        oldContent = await fs.readFile(filePath, 'utf-8')
+      } else {
+        // New file added in this version — treat as addition
+        oldContent = ''
+        console.log(chalk.green(`  + ${relativePath} (new file)`))
+      }
 
       const hasChanges = hasRealChanges(oldContent, newContent)
       changesInfo.push({ name: componentName, file: file.name, relativePath, oldContent, newContent, hasChanges })
 
-      const diff = generateDiff(oldContent, newContent, relativePath)
-      console.log(diff)
+      if (oldContent !== '') {
+        const diff = generateDiff(oldContent, newContent, relativePath)
+        console.log(diff)
+      }
     }
   }
 
@@ -285,6 +295,8 @@ export async function update(components: string[], options: UpdateOptions) {
         backedUp.push(change.relativePath)
       }
 
+      // Ensure directory exists (for new files in multi-file components)
+      await fs.ensureDir(path.dirname(filePath))
       // Write new content
       await fs.writeFile(filePath, change.newContent)
       updated.push(change.relativePath)
