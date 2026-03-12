@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 51 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 52 components across 7 categories.
 
 ## Quick Reference
 
@@ -52,6 +52,7 @@
 | PricingToggle | custom | `npx myoperator-ui add pricing-toggle` |
 | TalkToUsModal | custom | `npx myoperator-ui add talk-to-us-modal` |
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
+| FileUploadModal | custom | `npx myoperator-ui add file-upload-modal` |
 
 ## Core — Essential UI primitives
 
@@ -705,6 +706,15 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add wallet-topup`
 **Requires**: `accordion`, `button`, `input` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### FileUploadModal
+> A reusable file upload modal with drag-and-drop, progress tracking, and error handling
+
+**Install**: `npx myoperator-ui add file-upload-modal`
+**Requires**: `dialog`, `button` (auto-installed)
 **Type**: Multi-file component
 
 ---
