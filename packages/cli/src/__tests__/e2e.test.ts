@@ -4,23 +4,30 @@ import path from 'path'
 import os from 'os'
 import { execSync } from 'child_process'
 import { getRegistry } from '../utils/registry.js'
+import type { Registry } from '../utils/registry-types.js'
 
 // ============================================================================
 // E2E Tests: Verify CLI-installed components are correct and buildable
+//
+// Two modes:
+//   npm run test:e2e         → Full suite including Vite build (~15s)
+//   npm run test:e2e:smoke   → Fast checks only, no npm install/build (~3s)
 // ============================================================================
 
 const PREFIX = 'tw-'
+const IS_SMOKE = process.env.E2E_SMOKE === '1'
+
 let tempDir: string
 let componentsDir: string
+let registry: Registry
 
-/**
- * Creates a minimal React + Tailwind v3 + Bootstrap project in a temp directory.
- * This simulates a consumer project that runs `npx myoperator-ui init && npx myoperator-ui add`.
- */
+// ============================================================================
+// Project Scaffolding
+// ============================================================================
+
 async function createTempProject(): Promise<string> {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'myop-e2e-'))
 
-  // package.json — minimal React project with Tailwind v3
   await fs.writeJson(path.join(dir, 'package.json'), {
     name: 'e2e-test-project',
     private: true,
@@ -41,7 +48,6 @@ async function createTempProject(): Promise<string> {
     },
   })
 
-  // tsconfig.json
   await fs.writeJson(path.join(dir, 'tsconfig.json'), {
     compilerOptions: {
       target: 'ES2020',
@@ -57,14 +63,11 @@ async function createTempProject(): Promise<string> {
       jsx: 'react-jsx',
       strict: true,
       baseUrl: '.',
-      paths: {
-        '@/*': ['./src/*'],
-      },
+      paths: { '@/*': ['./src/*'] },
     },
     include: ['src'],
   })
 
-  // vite.config.ts
   await fs.writeFile(
     path.join(dir, 'vite.config.ts'),
     `import { defineConfig } from 'vite'
@@ -74,15 +77,12 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: { '@': path.resolve(__dirname, './src') },
   },
 })
 `
   )
 
-  // tailwind.config.js
   await fs.writeFile(
     path.join(dir, 'tailwind.config.js'),
     `/** @type {import('tailwindcss').Config} */
@@ -95,19 +95,14 @@ export default {
 `
   )
 
-  // postcss.config.js
   await fs.writeFile(
     path.join(dir, 'postcss.config.js'),
     `export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
+  plugins: { tailwindcss: {}, autoprefixer: {} },
 }
 `
   )
 
-  // index.html
   await fs.writeFile(
     path.join(dir, 'index.html'),
     `<!DOCTYPE html>
@@ -118,17 +113,12 @@ export default {
 `
   )
 
-  // src/index.css
   await fs.ensureDir(path.join(dir, 'src'))
   await fs.writeFile(
     path.join(dir, 'src', 'index.css'),
-    `@tailwind base;
-@tailwind components;
-@tailwind utilities;
-`
+    '@tailwind base;\n@tailwind components;\n@tailwind utilities;\n'
   )
 
-  // src/lib/utils.ts — prefix-aware cn()
   await fs.ensureDir(path.join(dir, 'src', 'lib'))
   await fs.writeFile(
     path.join(dir, 'src', 'lib', 'utils.ts'),
@@ -143,7 +133,6 @@ export function cn(...inputs: ClassValue[]) {
 `
   )
 
-  // src/main.tsx — minimal entry
   await fs.writeFile(
     path.join(dir, 'src', 'main.tsx'),
     `import React from 'react'
@@ -154,7 +143,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><
 `
   )
 
-  // components.json (what `init` creates)
   await fs.writeJson(path.join(dir, 'components.json'), {
     $schema: 'https://myoperator.com/schema.json',
     style: 'default',
@@ -172,33 +160,31 @@ ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><
     },
   })
 
-  // Create components/ui directory
   await fs.ensureDir(path.join(dir, 'src', 'components', 'ui'))
-
   return dir
 }
 
-/**
- * Simulate the CLI `add` command: get prefixed registry content and write files.
- */
+// ============================================================================
+// Component Installer (simulates CLI `add`)
+// ============================================================================
+
 async function installComponent(
   componentName: string,
-  registry: Awaited<ReturnType<typeof getRegistry>>,
+  reg: Registry,
   targetDir: string,
   installed: Set<string> = new Set()
 ): Promise<void> {
   if (installed.has(componentName)) return
-  const component = registry[componentName]
-  if (!component) throw new Error(`Component ${componentName} not in registry`)
+  const component = reg[componentName]
+  if (!component) throw new Error(`Component "${componentName}" not in registry`)
 
-  // Install internal dependencies first
   if (component.internalDependencies) {
     for (const dep of component.internalDependencies) {
-      await installComponent(dep, registry, targetDir, installed)
+      await installComponent(dep, reg, targetDir, installed)
     }
   }
 
-  const groupPrefix = (component as Record<string, unknown>).group as string || ''
+  const groupPrefix = component.group || ''
   const dir = component.isMultiFile
     ? path.join(targetDir, groupPrefix, component.directory!)
     : path.join(targetDir, groupPrefix)
@@ -213,17 +199,33 @@ async function installComponent(
 }
 
 // ============================================================================
-// Known Tailwind utility prefixes — a class is "bare" if it matches one of
-// these patterns WITHOUT a tw- prefix.
+// Assertion Helpers — each returns structured violations for actionable errors
 // ============================================================================
+
+interface Violation {
+  file: string
+  line?: number
+  message: string
+  suggestion?: string
+}
+
+function formatViolations(violations: Violation[]): string {
+  if (violations.length === 0) return ''
+  const lines = violations.map((v) => {
+    let msg = `\n  ✗ ${v.file}`
+    if (v.line) msg += `:${v.line}`
+    msg += `\n    ${v.message}`
+    if (v.suggestion) msg += `\n    → Fix: ${v.suggestion}`
+    return msg
+  })
+  return `\n${violations.length} violation(s) found:${lines.join('')}\n`
+}
 
 /** Returns true if the string looks like an unprefixed Tailwind utility class */
 function isBareUtility(cls: string): boolean {
-  // Strip variant prefixes like hover:, focus:, data-[...]:, [&_svg]:, etc.
   const utilityPart = cls.replace(/^(?:(?:[a-z]+[-a-z]*|data-\[[^\]]*\]|\[[^\]]*\]):)*/, '')
   if (!utilityPart || utilityPart.startsWith('tw-')) return false
 
-  // Common Tailwind utility prefixes
   const prefixes = [
     'bg-', 'text-', 'border-', 'rounded', 'flex', 'grid', 'inline-flex',
     'items-', 'justify-', 'gap-', 'p-', 'px-', 'py-', 'pt-', 'pb-', 'pl-', 'pr-',
@@ -244,40 +246,148 @@ function isBareUtility(cls: string): boolean {
   return prefixes.some((p) => utilityPart.startsWith(p) || utilityPart === p.replace(/-$/, ''))
 }
 
-/**
- * Scan file content for bare (unprefixed) Tailwind classes inside className/cn/cva contexts.
- * Returns array of found bare classes (empty = all prefixed correctly).
- */
-function findBareClasses(content: string): string[] {
-  const bare: string[] = []
-
-  // Extract class strings from className="...", cn("..."), cva("..."), and key: "..." patterns
+/** Find bare (unprefixed) Tailwind classes in className/cn/cva contexts */
+function findBareClasses(content: string, fileName: string): Violation[] {
+  const violations: Violation[] = []
   const classStringRegex = /(?:className\s*=\s*"|cn\("|cva\(\s*"|(?:default|primary|secondary|destructive|outline|ghost|link|dashed|sm|md|lg|xl|icon|error|warning|success|info):\s*")((?:[^"\\]|\\.)*)"/g
 
   let match
   while ((match = classStringRegex.exec(content)) !== null) {
     const classes = match[1].split(/\s+/).filter(Boolean)
+    const lineNum = content.substring(0, match.index).split('\n').length
     for (const cls of classes) {
       if (isBareUtility(cls)) {
-        bare.push(cls)
+        violations.push({
+          file: fileName,
+          line: lineNum,
+          message: `Bare utility "${cls}" missing "${PREFIX}" prefix`,
+          suggestion: `Change "${cls}" to "${PREFIX}${cls}"`,
+        })
       }
     }
   }
 
-  return bare
+  return violations
 }
 
-/**
- * Verify no @/ import aliases remain (CLI should transform them to relative paths).
- */
-function findAliasImports(content: string): string[] {
-  const matches: string[] = []
+/** Find @/ import aliases that should have been transformed to relative paths */
+function findAliasImports(content: string, fileName: string): Violation[] {
+  const violations: Violation[] = []
   const regex = /from\s+["'](@\/[^"']+)["']/g
   let m
   while ((m = regex.exec(content)) !== null) {
-    matches.push(m[1])
+    const lineNum = content.substring(0, m.index).split('\n').length
+    violations.push({
+      file: fileName,
+      line: lineNum,
+      message: `Import alias "${m[1]}" not transformed to relative path`,
+      suggestion: `Should be a relative import like "../../lib/utils"`,
+    })
   }
-  return matches
+  return violations
+}
+
+/** Find <p> elements missing margin reset (Bootstrap compat) */
+function findBootstrapViolations(content: string, fileName: string): Violation[] {
+  const violations: Violation[] = []
+  const pTagRegex = /<p\b([^>]*)>/g
+  let m
+  while ((m = pTagRegex.exec(content)) !== null) {
+    const attrs = m[1]
+    const lineNum = content.substring(0, m.index).split('\n').length
+
+    // Direct check on attributes
+    if (attrs.includes('tw-m-0') || attrs.includes('tw-mb-0') || attrs.includes('tw-my-0')) {
+      continue
+    }
+
+    // Check inside cn("...") calls
+    const cnMatch = attrs.match(/className=\{cn\(\s*"([^"]*)"/)
+    if (cnMatch) {
+      const cnClasses = cnMatch[1]
+      if (cnClasses.includes('tw-m-0') || cnClasses.includes('tw-mb-0') || cnClasses.includes('tw-my-0')) {
+        continue
+      }
+      // cn() found but missing margin reset — violation
+    } else if (attrs.includes('className=') && !attrs.includes('className="') && !attrs.includes("className='")) {
+      // Dynamic className via variable/function we can't parse
+      // Check if the variable is a CVA variant call — look for the <p>'s CVA definition
+      const variantMatch = attrs.match(/className=\{([a-zA-Z]+)\(/)
+      if (variantMatch) {
+        const fnName = variantMatch[1]
+        // Search for the CVA definition to see if it includes m-0
+        const cvaRegex = new RegExp(`const\\s+${fnName}\\s*=\\s*cva\\(\\s*"([^"]*)"`)
+        const cvaMatch = content.match(cvaRegex)
+        if (cvaMatch && (cvaMatch[1].includes('tw-m-0') || cvaMatch[1].includes('tw-mb-0') || cvaMatch[1].includes('tw-my-0'))) {
+          continue
+        }
+      }
+      // Can't determine — skip to avoid false positives
+      continue
+    }
+
+    violations.push({
+      file: fileName,
+      line: lineNum,
+      message: `<p> element missing margin reset (tw-m-0 / tw-mb-0 / tw-my-0)`,
+      suggestion: `Add "tw-m-0" to className to prevent Bootstrap's 16px margin bleed`,
+    })
+  }
+  return violations
+}
+
+/** Find JS syntax corruption from overzealous prefixer */
+function findCorruption(content: string, fileName: string): Violation[] {
+  const violations: Violation[] = []
+  const patterns: [RegExp, string][] = [
+    [/tw-interface\b/, 'Prefixed TypeScript keyword "interface"'],
+    [/tw-const\b/, 'Prefixed JS keyword "const"'],
+    [/tw-function\b/, 'Prefixed JS keyword "function"'],
+    [/tw-export\b/, 'Prefixed JS keyword "export"'],
+    [/tw-import\b/, 'Prefixed JS keyword "import"'],
+    [/tw-=>/, 'Prefixed arrow function "=>"'],
+    [/tw-React\b/, 'Prefixed React namespace'],
+    [/tw-true\b/, 'Prefixed boolean "true"'],
+    [/tw-false\b/, 'Prefixed boolean "false"'],
+    [/tw-null\b/, 'Prefixed "null"'],
+    [/tw-undefined\b/, 'Prefixed "undefined"'],
+    [/tw-return\b/, 'Prefixed "return"'],
+    [/tw-\{/, 'Prefixed opening brace'],
+    [/tw-\}/, 'Prefixed closing brace'],
+    [/tw-\(/, 'Prefixed opening paren'],
+    [/tw-typeof\b/, 'Prefixed "typeof"'],
+    [/tw-extends\b/, 'Prefixed "extends"'],
+  ]
+
+  for (const [pattern, desc] of patterns) {
+    let m
+    const globalPattern = new RegExp(pattern.source, 'g')
+    while ((m = globalPattern.exec(content)) !== null) {
+      const lineNum = content.substring(0, m.index).split('\n').length
+      violations.push({
+        file: fileName,
+        line: lineNum,
+        message: desc,
+        suggestion: 'The tw- prefixer corrupted JavaScript syntax. Check prefix-utils.ts.',
+      })
+    }
+  }
+  return violations
+}
+
+/** Collect all .tsx/.ts files recursively from a directory */
+async function collectFiles(dir: string): Promise<{ name: string; path: string }[]> {
+  const results: { name: string; path: string }[] = []
+  const entries = await fs.readdir(dir, { withFileTypes: true })
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      results.push(...(await collectFiles(fullPath)))
+    } else if (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts')) {
+      results.push({ name: path.relative(dir, fullPath), path: fullPath })
+    }
+  }
+  return results
 }
 
 // ============================================================================
@@ -285,8 +395,6 @@ function findAliasImports(content: string): string[] {
 // ============================================================================
 
 describe('CLI E2E: component installation', () => {
-  let registry: Awaited<ReturnType<typeof getRegistry>>
-
   beforeAll(async () => {
     tempDir = await createTempProject()
     componentsDir = path.join(tempDir, 'src', 'components', 'ui')
@@ -294,9 +402,7 @@ describe('CLI E2E: component installation', () => {
   }, 30_000)
 
   afterAll(async () => {
-    if (tempDir) {
-      await fs.remove(tempDir)
-    }
+    if (tempDir) await fs.remove(tempDir)
   })
 
   // --------------------------------------------------------------------------
@@ -315,9 +421,9 @@ describe('CLI E2E: component installation', () => {
     expect(content).toContain('tw-items-center')
     expect(content).toContain('tw-rounded')
 
-    // Must NOT contain bare utility classes in class contexts
-    const bare = findBareClasses(content)
-    expect(bare).toEqual([])
+    // Must NOT contain bare utility classes
+    const violations = findBareClasses(content, 'button.tsx')
+    expect(violations, formatViolations(violations)).toEqual([])
   }, 15_000)
 
   // --------------------------------------------------------------------------
@@ -364,68 +470,40 @@ describe('CLI E2E: component installation', () => {
   // --------------------------------------------------------------------------
   // Test 4: Bootstrap compat — all <p> elements have tw-m-0
   // --------------------------------------------------------------------------
-  it('bootstrap compat: all <p> have tw-m-0', async () => {
-    // Install a few components that are likely to have <p> elements
+  it('bootstrap compat: all <p> have margin reset', async () => {
+    // Install components known to have <p> elements
     await installComponent('alert', registry, componentsDir)
-    await installComponent('badge', registry, componentsDir)
+    await installComponent('empty-state', registry, componentsDir)
 
-    // Scan all installed .tsx files
-    const files = await fs.readdir(componentsDir)
-    const tsxFiles = files.filter((f) => f.endsWith('.tsx'))
-
-    const violations: string[] = []
-    for (const file of tsxFiles) {
-      const filePath = path.join(componentsDir, file)
-      const content = await fs.readFile(filePath, 'utf-8')
-
-      // Find <p elements that don't have tw-m-0 or tw-mb-0 or tw-my-0
-      // Match <p followed by className or > (simple JSX <p> tags)
-      const pTagRegex = /<p\b([^>]*)>/g
-      let m
-      while ((m = pTagRegex.exec(content)) !== null) {
-        const attrs = m[1]
-        if (
-          !attrs.includes('tw-m-0') &&
-          !attrs.includes('tw-mb-0') &&
-          !attrs.includes('tw-my-0')
-        ) {
-          // Check if m-0 is applied through a CVA variant (className={...variants(...)})
-          // If className uses a variable/function, we can't easily check — skip
-          if (attrs.includes('className=') && !attrs.includes('className="') && !attrs.includes("className='")) {
-            continue // dynamic className, skip
-          }
-          violations.push(`${file}: <p${attrs}>`)
-        }
-      }
+    const files = await collectFiles(componentsDir)
+    const allViolations: Violation[] = []
+    for (const file of files) {
+      const content = await fs.readFile(file.path, 'utf-8')
+      allViolations.push(...findBootstrapViolations(content, file.name))
     }
 
-    expect(violations).toEqual([])
+    expect(allViolations, formatViolations(allViolations)).toEqual([])
   }, 15_000)
 
   // --------------------------------------------------------------------------
-  // Test 5: No @/ import aliases remain in installed files
+  // Test 5: No @/ import aliases remain
   // --------------------------------------------------------------------------
   it('import paths have no @/ aliases', async () => {
     await installComponent('button', registry, componentsDir)
     await installComponent('dialog', registry, componentsDir)
 
-    const files = await fs.readdir(componentsDir)
-    const tsxFiles = files.filter((f) => f.endsWith('.tsx') || f.endsWith('.ts'))
-
-    const violations: { file: string; imports: string[] }[] = []
-    for (const file of tsxFiles) {
-      const content = await fs.readFile(path.join(componentsDir, file), 'utf-8')
-      const aliased = findAliasImports(content)
-      if (aliased.length > 0) {
-        violations.push({ file, imports: aliased })
-      }
+    const files = await collectFiles(componentsDir)
+    const allViolations: Violation[] = []
+    for (const file of files) {
+      const content = await fs.readFile(file.path, 'utf-8')
+      allViolations.push(...findAliasImports(content, file.name))
     }
 
-    expect(violations).toEqual([])
+    expect(allViolations, formatViolations(allViolations)).toEqual([])
   }, 15_000)
 
   // --------------------------------------------------------------------------
-  // Test 6: Installed component content matches registry output exactly
+  // Test 6: Installed file content matches registry output
   // --------------------------------------------------------------------------
   it('installed file content matches registry', async () => {
     await installComponent('input', registry, componentsDir)
@@ -438,51 +516,156 @@ describe('CLI E2E: component installation', () => {
   }, 15_000)
 
   // --------------------------------------------------------------------------
-  // Test 7: No JavaScript syntax corruption from prefixer
+  // Test 7: No JavaScript syntax corruption
   // --------------------------------------------------------------------------
   it('no JavaScript syntax corruption in installed files', async () => {
-    // Install several components to check breadth
     const toInstall = ['button', 'input', 'badge', 'tag', 'switch', 'checkbox']
     for (const name of toInstall) {
       await installComponent(name, registry, componentsDir)
     }
 
-    const files = await fs.readdir(componentsDir)
-    const tsxFiles = files.filter((f) => f.endsWith('.tsx'))
-
-    const corruptionPatterns = [
-      /tw-interface\b/,
-      /tw-const\b/,
-      /tw-function\b/,
-      /tw-export\b/,
-      /tw-import\b/,
-      /tw-=>/,
-      /tw-React\b/,
-      /tw-true\b/,
-      /tw-false\b/,
-      /tw-\{/,
-      /tw-\}/,
-    ]
-
-    for (const file of tsxFiles) {
-      const content = await fs.readFile(path.join(componentsDir, file), 'utf-8')
-      for (const pattern of corruptionPatterns) {
-        expect(content).not.toMatch(pattern)
-      }
+    const files = await collectFiles(componentsDir)
+    const allViolations: Violation[] = []
+    for (const file of files) {
+      const content = await fs.readFile(file.path, 'utf-8')
+      allViolations.push(...findCorruption(content, file.name))
     }
+
+    expect(allViolations, formatViolations(allViolations)).toEqual([])
   }, 15_000)
 
   // --------------------------------------------------------------------------
-  // Test 8: Project builds successfully with Vite
+  // Test 8: Animation classes require tailwindcss-animate dependency
   // --------------------------------------------------------------------------
-  it('project builds successfully with Vite', async () => {
-    // Install a handful of components
+  it('components with animations declare tailwindcss-animate dependency', async () => {
+    const animationPatterns = [
+      /tw-animate-in\b/, /tw-animate-out\b/,
+      /tw-fade-in/, /tw-fade-out/,
+      /tw-zoom-in/, /tw-zoom-out/,
+      /tw-slide-in/, /tw-slide-out/,
+      /tw-spin\b/, /tw-pulse\b/, /tw-bounce\b/,
+    ]
+
+    const violations: Violation[] = []
+
+    for (const [name, component] of Object.entries(registry)) {
+      const content = component.files.map((f) => f.content).join('\n')
+      const hasAnimation = animationPatterns.some((p) => p.test(content))
+
+      if (hasAnimation && !component.dependencies.includes('tailwindcss-animate')) {
+        violations.push({
+          file: name,
+          message: `Uses animation classes but missing "tailwindcss-animate" in dependencies`,
+          suggestion: `Add "tailwindcss-animate" to dependencies in components.yaml`,
+        })
+      }
+    }
+
+    expect(violations, formatViolations(violations)).toEqual([])
+  }, 15_000)
+
+  // --------------------------------------------------------------------------
+  // Test 9: Prefix coverage across ALL registry components (broad scan)
+  // --------------------------------------------------------------------------
+  it('all registry components have prefixed classes', async () => {
+    const violations: Violation[] = []
+
+    for (const [name, component] of Object.entries(registry)) {
+      for (const file of component.files) {
+        const fileViolations = findBareClasses(file.content, `${name}/${file.name}`)
+        violations.push(...fileViolations)
+      }
+    }
+
+    expect(
+      violations,
+      `Found ${violations.length} bare classes across registry.${formatViolations(violations.slice(0, 20))}` +
+        (violations.length > 20 ? `\n  ... and ${violations.length - 20} more` : '')
+    ).toEqual([])
+  }, 30_000)
+
+  // --------------------------------------------------------------------------
+  // Test 10: No corruption across ALL registry components (broad scan)
+  // --------------------------------------------------------------------------
+  it('no syntax corruption across entire registry', async () => {
+    const violations: Violation[] = []
+
+    for (const [name, component] of Object.entries(registry)) {
+      for (const file of component.files) {
+        violations.push(...findCorruption(file.content, `${name}/${file.name}`))
+      }
+    }
+
+    expect(violations, formatViolations(violations)).toEqual([])
+  }, 30_000)
+
+  // --------------------------------------------------------------------------
+  // Test 11: z-index on overlay components uses z-[9999]
+  // --------------------------------------------------------------------------
+  it('overlay components use z-[9999] not z-50', async () => {
+    const overlayComponents = ['dialog', 'dropdown-menu', 'tooltip', 'sheet']
+    const violations: Violation[] = []
+
+    for (const name of overlayComponents) {
+      if (!registry[name]) continue
+      const content = registry[name].files.map((f) => f.content).join('\n')
+
+      // Check for z-50 which is too low (z-index: 50 is below host app's nav at 1000+)
+      if (content.includes('tw-z-50')) {
+        violations.push({
+          file: name,
+          message: `Uses "tw-z-50" (z-index: 50) — too low for MyOperator host app (nav is z-index: 1000+)`,
+          suggestion: `Use "tw-z-[9999]" instead of "tw-z-50"`,
+        })
+      }
+    }
+
+    expect(violations, formatViolations(violations)).toEqual([])
+  }, 15_000)
+
+  // --------------------------------------------------------------------------
+  // Test 12: Text content not corrupted by prefixer
+  // --------------------------------------------------------------------------
+  it('text content and string literals not prefixed', async () => {
+    const violations: Violation[] = []
+
+    // Patterns that indicate text content was incorrectly prefixed
+    const textCorruptionPatterns = [
+      /tw-[A-Z][a-z]+/, // tw- followed by capitalized word (e.g., "tw-Text-based")
+      /tw-for\b/, /tw-and\b/, /tw-the\b/, /tw-with\b/, /tw-over\b/,
+      /tw-from\b/, /tw-into\b/, /tw-that\b/, /tw-this\b/,
+    ]
+
+    for (const [name, component] of Object.entries(registry)) {
+      for (const file of component.files) {
+        for (const [pattern, ] of textCorruptionPatterns.entries()) {
+          const match = file.content.match(textCorruptionPatterns[pattern])
+          if (match) {
+            const lineNum = file.content.substring(0, file.content.indexOf(match[0])).split('\n').length
+            violations.push({
+              file: `${name}/${file.name}`,
+              line: lineNum,
+              message: `Text content corrupted by prefixer: "${match[0]}"`,
+              suggestion: 'The prefixer is modifying text/string content, not just Tailwind classes',
+            })
+          }
+        }
+      }
+    }
+
+    expect(violations, formatViolations(violations)).toEqual([])
+  }, 30_000)
+
+  // --------------------------------------------------------------------------
+  // Test 13: Project builds successfully with Vite (SLOW — skipped in smoke)
+  // --------------------------------------------------------------------------
+  it.skipIf(IS_SMOKE)('project builds successfully with Vite', async () => {
     const toInstall = ['button', 'input', 'badge']
     for (const name of toInstall) {
       await installComponent(name, registry, componentsDir)
     }
 
-    // Update main.tsx to import a component (to verify imports resolve)
+    // Update main.tsx to import components
     await fs.writeFile(
       path.join(tempDir, 'src', 'main.tsx'),
       `import React from 'react'
@@ -503,20 +686,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       timeout: 90_000,
     })
 
-    // Install component peer dependencies
     execSync(
       'npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react --legacy-peer-deps',
       { cwd: tempDir, stdio: 'pipe', timeout: 60_000 }
     )
 
-    // Vite build (TypeScript check is done by Vite)
+    // Vite build
     const result = execSync('npx vite build', {
       cwd: tempDir,
       stdio: 'pipe',
       timeout: 60_000,
     })
 
-    // Build should succeed (no throw = exit code 0)
     expect(result).toBeTruthy()
     expect(await fs.pathExists(path.join(tempDir, 'dist'))).toBe(true)
   }, 120_000)

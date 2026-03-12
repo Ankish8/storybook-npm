@@ -238,7 +238,7 @@ export function looksLikeTailwindClasses(str: string): boolean {
   // Skip obvious non-class values (common prop values)
   const nonClassValues = [
     'button', 'submit', 'reset', 'text', 'email', 'password', 'number', 'tel', 'url', 'search',
-    'checkbox', 'radio', 'file', 'hidden', 'image', 'color', 'date', 'time', 'datetime-local',
+    'checkbox', 'radio', 'file', 'image', 'color', 'date', 'time', 'datetime-local',
     'default', 'error', 'warning', 'success', 'info', 'primary', 'secondary', 'tertiary',
     'destructive', 'outline', 'ghost', 'link', 'dashed', 'solid', 'none',
     'open', 'closed', 'true', 'false', 'null', 'undefined',
@@ -249,6 +249,16 @@ export function looksLikeTailwindClasses(str: string): boolean {
     'asc', 'desc', 'ascending', 'descending',
   ]
   if (nonClassValues.includes(str.toLowerCase())) return false
+
+  // Skip natural language sentences — strings with uppercase words, periods, or common sentence patterns
+  // Tailwind classes are always lowercase (except arbitrary values in brackets)
+  if (/[A-Z][a-z]{2,}/.test(str) && !str.includes('[')) return false
+  // Skip strings ending with punctuation (sentences)
+  if (/[.!?]$/.test(str.trim())) return false
+  // Skip strings with common English words that aren't Tailwind utilities
+  const sentenceWords = ['for', 'and', 'the', 'with', 'over', 'from', 'into', 'that', 'this', 'your', 'our']
+  const tokens = str.split(/\s+/)
+  if (tokens.length >= 3 && tokens.some(w => sentenceWords.includes(w.toLowerCase()))) return false
 
   // Skip displayName values (PascalCase component names)
   if (/^[A-Z][a-zA-Z]*$/.test(str)) return false

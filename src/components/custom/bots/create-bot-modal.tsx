@@ -87,7 +87,7 @@ export const CreateBotModal = React.forwardRef<
             <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
               Select Bot Type
             </span>
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex gap-3">
               {BOT_TYPE_OPTIONS.map(({ id, label, description }) => {
                 const isSelected = selectedType === id;
                 return (
@@ -96,10 +96,10 @@ export const CreateBotModal = React.forwardRef<
                     type="button"
                     onClick={() => setSelectedType(id)}
                     className={cn(
-                      "flex flex-row items-center gap-3 p-3 rounded-lg border text-left sm:flex-col sm:gap-2.5 sm:flex-1 sm:h-[134px] sm:justify-center",
+                      "flex flex-col items-start gap-2.5 p-3 rounded-lg border text-left flex-1 h-[134px] justify-center",
                       "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
                       isSelected
-                        ? "bg-semantic-info-surface border-semantic-border-focus shadow-sm"
+                        ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"
                         : "bg-semantic-bg-primary border-semantic-border-layout hover:bg-semantic-bg-hover"
                     )}
                     aria-pressed={isSelected}
@@ -109,7 +109,7 @@ export const CreateBotModal = React.forwardRef<
                         "flex items-center justify-center size-[34px] rounded-lg",
                         isSelected
                           ? "bg-semantic-bg-primary"
-                          : "bg-semantic-info-surface"
+                          : "bg-semantic-info-surface-subtle"
                       )}
                     >
                       {id === "chatbot" ? (
@@ -142,13 +142,12 @@ export const CreateBotModal = React.forwardRef<
         </div>
 
         {/* Footer actions */}
-        <div className="flex flex-col-reverse gap-3 mt-2 sm:flex-row sm:justify-end sm:gap-4">
-          <Button variant="outline" className="w-full sm:w-auto" onClick={handleClose}>
+        <div className="flex gap-4 justify-end mt-2">
+          <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
           <Button
             variant="default"
-            className="w-full sm:w-auto"
             onClick={handleSubmit}
             disabled={!name.trim()}
           >
