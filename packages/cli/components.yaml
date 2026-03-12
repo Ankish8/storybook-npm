@@ -82,6 +82,7 @@ categories:
       - pricing-toggle
       - talk-to-us-modal
       - wallet-topup
+      - file-upload-modal
 
 # =============================================================================
 # COMPONENT DEFINITIONS
@@ -741,6 +742,24 @@ components:
       - "index.ts"
     mainFile: "bot-list.tsx"
 
+  file-upload-modal:
+    description: "A reusable file upload modal with drag-and-drop, progress tracking, and error handling"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - dialog
+      - button
+    isMultiFile: true
+    directory: "file-upload-modal"
+    files:
+      - "file-upload-modal.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "file-upload-modal.tsx"
+
   ivr-bot:
     description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)"
     category: custom
@@ -759,12 +778,12 @@ components:
       - creatable-multi-select
       - page-header
       - tag
+      - file-upload-modal
     isMultiFile: true
     directory: "ivr-bot"
     files:
       - "ivr-bot-config.tsx"
       - "create-function-modal.tsx"
-      - "file-upload-modal.tsx"
       - "bot-identity-card.tsx"
       - "bot-behavior-card.tsx"
       - "knowledge-base-card.tsx"

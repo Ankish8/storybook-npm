@@ -2,8 +2,6 @@ import * as React from "react";
 import { Download, Trash2, Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
-import { FileUploadModal } from "./file-upload-modal";
-import type { UploadProgressHandlers } from "./types";
 import type { KnowledgeBaseFile } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -11,12 +9,8 @@ import type { KnowledgeBaseFile } from "./types";
 export interface KnowledgeBaseCardProps {
   /** List of knowledge base files */
   files: KnowledgeBaseFile[];
-  /** Called when files are uploaded and saved */
-  onSaveFiles?: (uploadedFiles: File[]) => void;
-  /** Called for each file to handle the actual upload. If not provided, uses fake progress. */
-  onUploadFile?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
-  /** Called when user clicks "Download sample file" */
-  onSampleDownload?: () => void;
+  /** Called when user clicks the "+ Files" button */
+  onAdd?: () => void;
   /** Called when user clicks the download button on a file */
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
@@ -41,26 +35,21 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
   (
     {
       files,
-      onSaveFiles,
-      onUploadFile,
-      onSampleDownload,
+      onAdd,
       onDownload,
       onDelete,
       className,
     },
     ref
   ) => {
-    const [uploadOpen, setUploadOpen] = React.useState(false);
-
     return (
-      <>
-        <div
-          ref={ref}
-          className={cn(
-            "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
-            className
-          )}
-        >
+      <div
+        ref={ref}
+        className={cn(
+          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          className
+        )}
+      >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
             <div className="flex items-center gap-1.5">
@@ -71,7 +60,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             </div>
             <button
               type="button"
-              onClick={() => setUploadOpen(true)}
+              onClick={() => onAdd?.()}
               className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors"
             >
               <Plus className="size-3.5" />
@@ -129,15 +118,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
               </div>
             )}
           </div>
-        </div>
-        <FileUploadModal
-          open={uploadOpen}
-          onOpenChange={setUploadOpen}
-          onUpload={onUploadFile}
-          onSampleDownload={onSampleDownload}
-          onSave={onSaveFiles}
-        />
-      </>
+      </div>
     );
   }
 );

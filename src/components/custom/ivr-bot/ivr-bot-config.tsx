@@ -17,6 +17,7 @@ import { FunctionsCard } from "./functions-card";
 import { FrustrationHandoverCard } from "./frustration-handover-card";
 import { AdvancedSettingsCard } from "./advanced-settings-card";
 import { CreateFunctionModal } from "./create-function-modal";
+import { FileUploadModal } from "../file-upload-modal";
 import type {
   IvrBotConfigProps,
   IvrBotConfigData,
@@ -179,6 +180,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       ...initialData,
     });
     const [createFnOpen, setCreateFnOpen] = React.useState(false);
+    const [uploadOpen, setUploadOpen] = React.useState(false);
 
     const update = (patch: Partial<IvrBotConfigData>) =>
       setData((prev) => ({ ...prev, ...patch }));
@@ -251,9 +253,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[2] min-w-0 bg-semantic-bg-ui border-l border-semantic-border-layout">
             <KnowledgeBaseCard
               files={data.knowledgeBaseFiles}
-              onSaveFiles={onSaveKnowledgeFiles}
-              onUploadFile={onUploadKnowledgeFile}
-              onSampleDownload={onSampleFileDownload}
+              onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
               onDelete={(id) => {
                 update({
@@ -297,6 +297,15 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+        />
+
+        {/* File Upload Modal */}
+        <FileUploadModal
+          open={uploadOpen}
+          onOpenChange={setUploadOpen}
+          onUpload={onUploadKnowledgeFile}
+          onSampleDownload={onSampleFileDownload}
+          onSave={onSaveKnowledgeFiles}
         />
       </div>
     );

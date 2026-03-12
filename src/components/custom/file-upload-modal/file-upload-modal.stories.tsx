@@ -5,7 +5,7 @@ import { Button } from "../../ui/button";
 import { FileUploadModal } from "./file-upload-modal";
 
 const meta: Meta<typeof FileUploadModal> = {
-  title: "Custom/AI Bot/FileUploadModal",
+  title: "Components/FileUploadModal",
   component: FileUploadModal,
   parameters: {
     layout: "centered",
@@ -18,11 +18,17 @@ Supports two modes:
 - **Real upload**: Provide \`onUpload\` callback with progress/error handlers
 - **Demo mode**: Omit \`onUpload\` for fake progress simulation
 
+### Install
+
+\`\`\`bash
+npx myoperator-ui add file-upload-modal
+\`\`\`
+
 ### Import
 
 \`\`\`tsx
-import { FileUploadModal } from "@/components/custom/ivr-bot"
-import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/custom/ivr-bot"
+import { FileUploadModal } from "@/components/custom/file-upload-modal"
+import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/custom/file-upload-modal"
 \`\`\`
 
 ### Design Tokens

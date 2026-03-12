@@ -408,13 +408,21 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["button","dialog"],
   },
+  "file-upload-modal": {
+    name: "file-upload-modal",
+    description: "A reusable file upload modal with drag-and-drop, progress tracking, and error handling",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: "custom",
+    internalDependencies: ["dialog","button"],
+  },
   "ivr-bot": {
     name: "ivr-bot",
     description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)",
       category: "custom",
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",
-    internalDependencies: ["button","badge","switch","accordion","dialog","select","creatable-select","creatable-multi-select","page-header","tag"],
+    internalDependencies: ["button","badge","switch","accordion","dialog","select","creatable-select","creatable-multi-select","page-header","tag","file-upload-modal"],
   },
   "wallet-topup": {
     name: "wallet-topup",

@@ -6502,6 +6502,477 @@ export type { BotListProps, Bot, BotType } from "./types";
         }
       ],
     },
+    "file-upload-modal": {
+      name: "file-upload-modal",
+      description: "A reusable file upload modal with drag-and-drop, progress tracking, and error handling",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "dialog",
+            "button"
+      ],
+      isMultiFile: true,
+      directory: "file-upload-modal",
+      mainFile: "file-upload-modal.tsx",
+      files: [
+        {
+          name: "file-upload-modal.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Download, Trash2, X, XCircle } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../dialog";
+import type {
+  FileUploadModalProps,
+  UploadItem,
+  UploadStatus,
+} from "./types";
+
+const DEFAULT_ACCEPTED = ".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt";
+const DEFAULT_FORMAT_DESC =
+  "Max file size 100 MB (Supported Format: .docs, .pdf, .csv, .xls, .xlxs, .txt)";
+
+function generateId() {
+  return Math.random().toString(36).slice(2, 9);
+}
+
+function useFakeProgress() {
+  const intervalsRef = React.useRef<
+    Record<string, ReturnType<typeof setInterval>>
+  >({});
+
+  const start = React.useCallback(
+    (
+      id: string,
+      setItems: React.Dispatch<React.SetStateAction<UploadItem[]>>
+    ) => {
+      const interval = setInterval(() => {
+        setItems((prev) => {
+          let done = false;
+          const updated = prev.map((item) => {
+            if (item.id !== id || item.status !== "uploading") return item;
+            const next = Math.min(item.progress + 15, 100);
+            if (next === 100) done = true;
+            return {
+              ...item,
+              progress: next,
+              status: (next === 100 ? "done" : "uploading") as UploadStatus,
+            };
+          });
+          if (done) {
+            clearInterval(interval);
+            delete intervalsRef.current[id];
+          }
+          return updated;
+        });
+      }, 500);
+      intervalsRef.current[id] = interval;
+    },
+    []
+  );
+
+  const cancel = React.useCallback((id: string) => {
+    clearInterval(intervalsRef.current[id]);
+    delete intervalsRef.current[id];
+  }, []);
+
+  const cancelAll = React.useCallback(() => {
+    Object.values(intervalsRef.current).forEach(clearInterval);
+    intervalsRef.current = {};
+  }, []);
+
+  return { start, cancel, cancelAll };
+}
+
+function getTimeRemaining(progress: number) {
+  const steps = Math.ceil((100 - progress) / 15);
+  const secs = steps * 3;
+  return secs > 60
+    ? \`\${Math.ceil(secs / 60)} minutes remaining\`
+    : \`\${secs} seconds remaining\`;
+}
+
+const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
+  (
+    {
+      open,
+      onOpenChange,
+      onUpload,
+      onSave,
+      onCancel,
+      onSampleDownload,
+      sampleDownloadLabel = "Download sample file",
+      showSampleDownload,
+      acceptedFormats = DEFAULT_ACCEPTED,
+      formatDescription = DEFAULT_FORMAT_DESC,
+      maxFileSizeMB = 100,
+      multiple = true,
+      title = "File Upload",
+      uploadButtonLabel = "Upload from device",
+      dropDescription = "or drag and drop file here",
+      saveLabel = "Save",
+      cancelLabel = "Cancel",
+      saving = false,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const [items, setItems] = React.useState<UploadItem[]>([]);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const fakeProgress = useFakeProgress();
+
+    const shouldShowSampleDownload =
+      showSampleDownload ?? !!onSampleDownload;
+
+    const addFiles = React.useCallback(
+      (fileList: FileList | null) => {
+        if (!fileList) return;
+
+        Array.from(fileList).forEach((file) => {
+          if (file.size > maxFileSizeMB * 1024 * 1024) {
+            const id = generateId();
+            setItems((prev) => [
+              ...prev,
+              {
+                id,
+                file,
+                progress: 0,
+                status: "error",
+                errorMessage: \`File exceeds \${maxFileSizeMB} MB limit\`,
+              },
+            ]);
+            return;
+          }
+
+          const id = generateId();
+          setItems((prev) => [
+            ...prev,
+            { id, file, progress: 0, status: "uploading" },
+          ]);
+
+          if (onUpload) {
+            onUpload(file, {
+              onProgress: (progress) => {
+                setItems((prev) =>
+                  prev.map((item) =>
+                    item.id === id
+                      ? {
+                          ...item,
+                          progress: Math.min(progress, 100),
+                          status:
+                            progress >= 100
+                              ? ("done" as UploadStatus)
+                              : ("uploading" as UploadStatus),
+                        }
+                      : item
+                  )
+                );
+              },
+              onError: (message) => {
+                setItems((prev) =>
+                  prev.map((item) =>
+                    item.id === id
+                      ? { ...item, status: "error" as UploadStatus, errorMessage: message }
+                      : item
+                  )
+                );
+              },
+            }).then(() => {
+              setItems((prev) =>
+                prev.map((item) =>
+                  item.id === id && item.status === "uploading"
+                    ? { ...item, progress: 100, status: "done" as UploadStatus }
+                    : item
+                )
+              );
+            }).catch((err) => {
+              setItems((prev) =>
+                prev.map((item) =>
+                  item.id === id && item.status !== "error"
+                    ? {
+                        ...item,
+                        status: "error" as UploadStatus,
+                        errorMessage:
+                          err instanceof Error
+                            ? err.message
+                            : "Upload failed",
+                      }
+                    : item
+                )
+              );
+            });
+          } else {
+            fakeProgress.start(id, setItems);
+          }
+        });
+      },
+      [onUpload, maxFileSizeMB, fakeProgress]
+    );
+
+    const removeItem = (id: string) => {
+      fakeProgress.cancel(id);
+      setItems((prev) => prev.filter((i) => i.id !== id));
+    };
+
+    const handleClose = () => {
+      fakeProgress.cancelAll();
+      setItems([]);
+      onCancel?.();
+      onOpenChange(false);
+    };
+
+    const handleSave = () => {
+      const completedFiles = items
+        .filter((i) => i.status === "done")
+        .map((i) => i.file);
+      onSave?.(completedFiles);
+      fakeProgress.cancelAll();
+      setItems([]);
+      onOpenChange(false);
+    };
+
+    const hasCompleted = items.some((i) => i.status === "done");
+    const hasUploading = items.some((i) => i.status === "uploading");
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          ref={ref}
+          size="default"
+          hideCloseButton
+          className={cn(
+            "max-w-[min(660px,calc(100vw-2rem))] rounded-xl p-4 gap-0 sm:p-6",
+            className
+          )}
+          {...props}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <DialogTitle className="m-0 text-base font-semibold text-semantic-text-primary">
+              {title}
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Upload files by clicking the button or dragging and dropping.
+            </DialogDescription>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-semantic-text-primary"
+              aria-label="Close dialog"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className="flex flex-col gap-4 items-end w-full">
+            {shouldShowSampleDownload && (
+              <button
+                type="button"
+                onClick={onSampleDownload}
+                className="flex items-center gap-1.5 text-sm font-semibold text-semantic-text-link hover:opacity-80 transition-opacity"
+              >
+                <Download className="size-3.5" />
+                {sampleDownloadLabel}
+              </button>
+            )}
+
+            {/* Drop zone */}
+            <div
+              className="w-full border border-dashed border-semantic-border-layout bg-semantic-bg-ui rounded p-4"
+              onDrop={(e) => {
+                e.preventDefault();
+                addFiles(e.dataTransfer.files);
+              }}
+              onDragOver={(e) => e.preventDefault()}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-[42px] px-4 rounded border border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
+                >
+                  {uploadButtonLabel}
+                </button>
+                <div className="flex flex-col gap-1">
+                  <p className="m-0 text-sm text-semantic-text-secondary tracking-[0.035px]">
+                    {dropDescription}
+                  </p>
+                  <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
+                    {formatDescription}
+                  </p>
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple={multiple}
+                accept={acceptedFormats}
+                className="hidden"
+                onChange={(e) => {
+                  addFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
+            {/* Upload item list */}
+            {items.length > 0 && (
+              <div className="flex flex-col gap-2.5 w-full">
+                {items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-semantic-bg-primary border border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                        <p className="m-0 text-sm text-semantic-text-primary tracking-[0.035px] truncate">
+                          {item.status === "uploading"
+                            ? "Uploading..."
+                            : item.file.name}
+                        </p>
+                        {item.status === "uploading" && (
+                          <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
+                            {item.progress}%&nbsp;&bull;&nbsp;
+                            {getTimeRemaining(item.progress)}
+                          </p>
+                        )}
+                        {item.status === "error" && (
+                          <p className="m-0 text-xs text-semantic-error-primary tracking-[0.048px]">
+                            {item.errorMessage ??
+                              "Something went wrong, Upload Failed."}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeItem(item.id)}
+                        aria-label={
+                          item.status === "uploading"
+                            ? "Cancel upload"
+                            : "Remove file"
+                        }
+                        className={cn(
+                          "shrink-0 mt-0.5 transition-colors",
+                          item.status === "uploading"
+                            ? "text-semantic-error-primary"
+                            : "text-semantic-text-muted hover:text-semantic-error-primary"
+                        )}
+                      >
+                        {item.status === "uploading" ? (
+                          <XCircle className="size-5" />
+                        ) : (
+                          <Trash2 className="size-5" />
+                        )}
+                      </button>
+                    </div>
+                    {item.status === "uploading" && (
+                      <div className="h-2 bg-semantic-bg-ui rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-semantic-success-primary rounded-full transition-all duration-300"
+                          style={{ width: \`\${item.progress}%\` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="flex flex-col-reverse gap-3 mt-4 sm:mt-6 sm:flex-row sm:justify-end sm:gap-2">
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={handleClose}
+            >
+              {cancelLabel}
+            </Button>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={handleSave}
+              disabled={!hasCompleted || hasUploading}
+              loading={saving}
+            >
+              {saveLabel}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
+
+FileUploadModal.displayName = "FileUploadModal";
+
+export { FileUploadModal };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`export type UploadStatus = "pending" | "uploading" | "done" | "error";
+
+export interface UploadItem {
+  id: string;
+  file: File;
+  progress: number;
+  status: UploadStatus;
+  errorMessage?: string;
+}
+
+export interface UploadProgressHandlers {
+  onProgress: (progress: number) => void;
+  onError: (message: string) => void;
+}
+
+export interface FileUploadModalProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onSave"> {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  /** Called for each file to handle the actual upload. If not provided, uses fake progress (demo mode). */
+  onUpload?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
+  onSave?: (files: File[]) => void;
+  onCancel?: () => void;
+  onSampleDownload?: () => void;
+  sampleDownloadLabel?: string;
+  showSampleDownload?: boolean;
+  acceptedFormats?: string;
+  formatDescription?: string;
+  maxFileSizeMB?: number;
+  multiple?: boolean;
+  title?: string;
+  uploadButtonLabel?: string;
+  dropDescription?: string;
+  saveLabel?: string;
+  cancelLabel?: string;
+  saving?: boolean;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { FileUploadModal } from "./file-upload-modal";
+export type {
+  FileUploadModalProps,
+  UploadProgressHandlers,
+  UploadItem,
+  UploadStatus,
+} from "./types";
+`, prefix),
+        }
+      ],
+    },
     "ivr-bot": {
       name: "ivr-bot",
       description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)",
@@ -6521,7 +6992,8 @@ export type { BotListProps, Bot, BotType } from "./types";
             "creatable-select",
             "creatable-multi-select",
             "page-header",
-            "tag"
+            "tag",
+            "file-upload-modal"
       ],
       isMultiFile: true,
       directory: "ivr-bot",
@@ -6548,6 +7020,7 @@ import { FunctionsCard } from "./functions-card";
 import { FrustrationHandoverCard } from "./frustration-handover-card";
 import { AdvancedSettingsCard } from "./advanced-settings-card";
 import { CreateFunctionModal } from "./create-function-modal";
+import { FileUploadModal } from "../file-upload-modal";
 import type {
   IvrBotConfigProps,
   IvrBotConfigData,
@@ -6710,6 +7183,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       ...initialData,
     });
     const [createFnOpen, setCreateFnOpen] = React.useState(false);
+    const [uploadOpen, setUploadOpen] = React.useState(false);
 
     const update = (patch: Partial<IvrBotConfigData>) =>
       setData((prev) => ({ ...prev, ...patch }));
@@ -6782,9 +7256,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[2] min-w-0 bg-semantic-bg-ui border-l border-semantic-border-layout">
             <KnowledgeBaseCard
               files={data.knowledgeBaseFiles}
-              onSaveFiles={onSaveKnowledgeFiles}
-              onUploadFile={onUploadKnowledgeFile}
-              onSampleDownload={onSampleFileDownload}
+              onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
               onDelete={(id) => {
                 update({
@@ -6828,6 +7300,15 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+        />
+
+        {/* File Upload Modal */}
+        <FileUploadModal
+          open={uploadOpen}
+          onOpenChange={setUploadOpen}
+          onUpload={onUploadKnowledgeFile}
+          onSampleDownload={onSampleFileDownload}
+          onSave={onSaveKnowledgeFiles}
         />
       </div>
     );
@@ -7369,406 +7850,6 @@ CreateFunctionModal.displayName = "CreateFunctionModal";
 `, prefix),
         },
         {
-          name: "file-upload-modal.tsx",
-          content: prefixTailwindClasses(`import * as React from "react";
-import { Download, Trash2, X, XCircle } from "lucide-react";
-import { cn } from "../../../lib/utils";
-import { Button } from "../button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "../dialog";
-import type {
-  FileUploadModalProps,
-  UploadItem,
-  UploadStatus,
-} from "./types";
-
-const DEFAULT_ACCEPTED = ".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt";
-const DEFAULT_FORMAT_DESC =
-  "Max file size 100 MB (Supported Format: .docs, .pdf, .csv, .xls, .xlxs, .txt)";
-
-function generateId() {
-  return Math.random().toString(36).slice(2, 9);
-}
-
-function useFakeProgress() {
-  const intervalsRef = React.useRef<
-    Record<string, ReturnType<typeof setInterval>>
-  >({});
-
-  const start = React.useCallback(
-    (
-      id: string,
-      setItems: React.Dispatch<React.SetStateAction<UploadItem[]>>
-    ) => {
-      const interval = setInterval(() => {
-        setItems((prev) => {
-          let done = false;
-          const updated = prev.map((item) => {
-            if (item.id !== id || item.status !== "uploading") return item;
-            const next = Math.min(item.progress + 15, 100);
-            if (next === 100) done = true;
-            return {
-              ...item,
-              progress: next,
-              status: (next === 100 ? "done" : "uploading") as UploadStatus,
-            };
-          });
-          if (done) {
-            clearInterval(interval);
-            delete intervalsRef.current[id];
-          }
-          return updated;
-        });
-      }, 500);
-      intervalsRef.current[id] = interval;
-    },
-    []
-  );
-
-  const cancel = React.useCallback((id: string) => {
-    clearInterval(intervalsRef.current[id]);
-    delete intervalsRef.current[id];
-  }, []);
-
-  const cancelAll = React.useCallback(() => {
-    Object.values(intervalsRef.current).forEach(clearInterval);
-    intervalsRef.current = {};
-  }, []);
-
-  return { start, cancel, cancelAll };
-}
-
-function getTimeRemaining(progress: number) {
-  const steps = Math.ceil((100 - progress) / 15);
-  const secs = steps * 3;
-  return secs > 60
-    ? \`\${Math.ceil(secs / 60)} minutes remaining\`
-    : \`\${secs} seconds remaining\`;
-}
-
-const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
-  (
-    {
-      open,
-      onOpenChange,
-      onUpload,
-      onSave,
-      onCancel,
-      onSampleDownload,
-      sampleDownloadLabel = "Download sample file",
-      showSampleDownload,
-      acceptedFormats = DEFAULT_ACCEPTED,
-      formatDescription = DEFAULT_FORMAT_DESC,
-      maxFileSizeMB = 100,
-      multiple = true,
-      title = "File Upload",
-      uploadButtonLabel = "Upload from device",
-      dropDescription = "or drag and drop file here",
-      saveLabel = "Save",
-      cancelLabel = "Cancel",
-      saving = false,
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    const [items, setItems] = React.useState<UploadItem[]>([]);
-    const fileInputRef = React.useRef<HTMLInputElement>(null);
-    const fakeProgress = useFakeProgress();
-
-    const shouldShowSampleDownload =
-      showSampleDownload ?? !!onSampleDownload;
-
-    const addFiles = React.useCallback(
-      (fileList: FileList | null) => {
-        if (!fileList) return;
-
-        Array.from(fileList).forEach((file) => {
-          if (file.size > maxFileSizeMB * 1024 * 1024) {
-            const id = generateId();
-            setItems((prev) => [
-              ...prev,
-              {
-                id,
-                file,
-                progress: 0,
-                status: "error",
-                errorMessage: \`File exceeds \${maxFileSizeMB} MB limit\`,
-              },
-            ]);
-            return;
-          }
-
-          const id = generateId();
-          setItems((prev) => [
-            ...prev,
-            { id, file, progress: 0, status: "uploading" },
-          ]);
-
-          if (onUpload) {
-            onUpload(file, {
-              onProgress: (progress) => {
-                setItems((prev) =>
-                  prev.map((item) =>
-                    item.id === id
-                      ? {
-                          ...item,
-                          progress: Math.min(progress, 100),
-                          status:
-                            progress >= 100
-                              ? ("done" as UploadStatus)
-                              : ("uploading" as UploadStatus),
-                        }
-                      : item
-                  )
-                );
-              },
-              onError: (message) => {
-                setItems((prev) =>
-                  prev.map((item) =>
-                    item.id === id
-                      ? { ...item, status: "error" as UploadStatus, errorMessage: message }
-                      : item
-                  )
-                );
-              },
-            }).then(() => {
-              setItems((prev) =>
-                prev.map((item) =>
-                  item.id === id && item.status === "uploading"
-                    ? { ...item, progress: 100, status: "done" as UploadStatus }
-                    : item
-                )
-              );
-            }).catch((err) => {
-              setItems((prev) =>
-                prev.map((item) =>
-                  item.id === id && item.status !== "error"
-                    ? {
-                        ...item,
-                        status: "error" as UploadStatus,
-                        errorMessage:
-                          err instanceof Error
-                            ? err.message
-                            : "Upload failed",
-                      }
-                    : item
-                )
-              );
-            });
-          } else {
-            fakeProgress.start(id, setItems);
-          }
-        });
-      },
-      [onUpload, maxFileSizeMB, fakeProgress]
-    );
-
-    const removeItem = (id: string) => {
-      fakeProgress.cancel(id);
-      setItems((prev) => prev.filter((i) => i.id !== id));
-    };
-
-    const handleClose = () => {
-      fakeProgress.cancelAll();
-      setItems([]);
-      onCancel?.();
-      onOpenChange(false);
-    };
-
-    const handleSave = () => {
-      const completedFiles = items
-        .filter((i) => i.status === "done")
-        .map((i) => i.file);
-      onSave?.(completedFiles);
-      fakeProgress.cancelAll();
-      setItems([]);
-      onOpenChange(false);
-    };
-
-    const hasCompleted = items.some((i) => i.status === "done");
-    const hasUploading = items.some((i) => i.status === "uploading");
-
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent
-          ref={ref}
-          size="default"
-          hideCloseButton
-          className={cn(
-            "max-w-[min(660px,calc(100vw-2rem))] rounded-xl p-4 gap-0 sm:p-6",
-            className
-          )}
-          {...props}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <DialogTitle className="m-0 text-base font-semibold text-semantic-text-primary">
-              {title}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Upload files by clicking the button or dragging and dropping.
-            </DialogDescription>
-            <button
-              type="button"
-              onClick={handleClose}
-              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-semantic-text-primary"
-              aria-label="Close dialog"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          {/* Body */}
-          <div className="flex flex-col gap-4 items-end w-full">
-            {shouldShowSampleDownload && (
-              <button
-                type="button"
-                onClick={onSampleDownload}
-                className="flex items-center gap-1.5 text-sm font-semibold text-semantic-text-link hover:opacity-80 transition-opacity"
-              >
-                <Download className="size-3.5" />
-                {sampleDownloadLabel}
-              </button>
-            )}
-
-            {/* Drop zone */}
-            <div
-              className="w-full border border-dashed border-semantic-border-layout bg-semantic-bg-ui rounded p-4"
-              onDrop={(e) => {
-                e.preventDefault();
-                addFiles(e.dataTransfer.files);
-              }}
-              onDragOver={(e) => e.preventDefault()}
-            >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-[42px] px-4 rounded border border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
-                >
-                  {uploadButtonLabel}
-                </button>
-                <div className="flex flex-col gap-1">
-                  <p className="m-0 text-sm text-semantic-text-secondary tracking-[0.035px]">
-                    {dropDescription}
-                  </p>
-                  <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
-                    {formatDescription}
-                  </p>
-                </div>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple={multiple}
-                accept={acceptedFormats}
-                className="hidden"
-                onChange={(e) => {
-                  addFiles(e.target.files);
-                  e.target.value = "";
-                }}
-              />
-            </div>
-
-            {/* Upload item list */}
-            {items.length > 0 && (
-              <div className="flex flex-col gap-2.5 w-full">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-semantic-bg-primary border border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                        <p className="m-0 text-sm text-semantic-text-primary tracking-[0.035px] truncate">
-                          {item.status === "uploading"
-                            ? "Uploading..."
-                            : item.file.name}
-                        </p>
-                        {item.status === "uploading" && (
-                          <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
-                            {item.progress}%&nbsp;&bull;&nbsp;
-                            {getTimeRemaining(item.progress)}
-                          </p>
-                        )}
-                        {item.status === "error" && (
-                          <p className="m-0 text-xs text-semantic-error-primary tracking-[0.048px]">
-                            {item.errorMessage ??
-                              "Something went wrong, Upload Failed."}
-                          </p>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeItem(item.id)}
-                        aria-label={
-                          item.status === "uploading"
-                            ? "Cancel upload"
-                            : "Remove file"
-                        }
-                        className={cn(
-                          "shrink-0 mt-0.5 transition-colors",
-                          item.status === "uploading"
-                            ? "text-semantic-error-primary"
-                            : "text-semantic-text-muted hover:text-semantic-error-primary"
-                        )}
-                      >
-                        {item.status === "uploading" ? (
-                          <XCircle className="size-5" />
-                        ) : (
-                          <Trash2 className="size-5" />
-                        )}
-                      </button>
-                    </div>
-                    {item.status === "uploading" && (
-                      <div className="h-2 bg-semantic-bg-ui rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-semantic-success-primary rounded-full transition-all duration-300"
-                          style={{ width: \`\${item.progress}%\` }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="flex flex-col-reverse gap-3 mt-4 sm:mt-6 sm:flex-row sm:justify-end sm:gap-2">
-            <Button
-              variant="outline"
-              className="w-full sm:w-auto"
-              onClick={handleClose}
-            >
-              {cancelLabel}
-            </Button>
-            <Button
-              className="w-full sm:w-auto"
-              onClick={handleSave}
-              disabled={!hasCompleted || hasUploading}
-              loading={saving}
-            >
-              {saveLabel}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-);
-
-FileUploadModal.displayName = "FileUploadModal";
-
-export { FileUploadModal };
-`, prefix),
-        },
-        {
           name: "bot-identity-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Info, PlayCircle, PauseCircle } from "lucide-react";
@@ -8260,8 +8341,6 @@ export { BotBehaviorCard };
 import { Download, Trash2, Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
-import { FileUploadModal } from "./file-upload-modal";
-import type { UploadProgressHandlers } from "./types";
 import type { KnowledgeBaseFile } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -8269,12 +8348,8 @@ import type { KnowledgeBaseFile } from "./types";
 export interface KnowledgeBaseCardProps {
   /** List of knowledge base files */
   files: KnowledgeBaseFile[];
-  /** Called when files are uploaded and saved */
-  onSaveFiles?: (uploadedFiles: File[]) => void;
-  /** Called for each file to handle the actual upload. If not provided, uses fake progress. */
-  onUploadFile?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
-  /** Called when user clicks "Download sample file" */
-  onSampleDownload?: () => void;
+  /** Called when user clicks the "+ Files" button */
+  onAdd?: () => void;
   /** Called when user clicks the download button on a file */
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
@@ -8299,26 +8374,21 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
   (
     {
       files,
-      onSaveFiles,
-      onUploadFile,
-      onSampleDownload,
+      onAdd,
       onDownload,
       onDelete,
       className,
     },
     ref
   ) => {
-    const [uploadOpen, setUploadOpen] = React.useState(false);
-
     return (
-      <>
-        <div
-          ref={ref}
-          className={cn(
-            "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
-            className
-          )}
-        >
+      <div
+        ref={ref}
+        className={cn(
+          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          className
+        )}
+      >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
             <div className="flex items-center gap-1.5">
@@ -8329,7 +8399,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             </div>
             <button
               type="button"
-              onClick={() => setUploadOpen(true)}
+              onClick={() => onAdd?.()}
               className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors"
             >
               <Plus className="size-3.5" />
@@ -8387,15 +8457,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
               </div>
             )}
           </div>
-        </div>
-        <FileUploadModal
-          open={uploadOpen}
-          onOpenChange={setUploadOpen}
-          onUpload={onUploadFile}
-          onSampleDownload={onSampleDownload}
-          onSave={onSaveFiles}
-        />
-      </>
+      </div>
     );
   }
 );
@@ -8840,7 +8902,9 @@ export { AdvancedSettingsCard };
         },
         {
           name: "types.ts",
-          content: prefixTailwindClasses(`export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+          content: prefixTailwindClasses(`import type { UploadProgressHandlers } from "../file-upload-modal";
+
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export type FunctionTabType = "header" | "queryParams" | "body";
 
@@ -8964,45 +9028,14 @@ export interface IvrBotConfigProps {
   className?: string;
 }
 
-// ─── File Upload Modal ──────────────────────────────────────────────────────
+// ─── File Upload Modal (re-exported from shared module) ─────────────────────
 
-export type UploadStatus = "pending" | "uploading" | "done" | "error";
-
-export interface UploadItem {
-  id: string;
-  file: File;
-  progress: number;
-  status: UploadStatus;
-  errorMessage?: string;
-}
-
-export interface UploadProgressHandlers {
-  onProgress: (progress: number) => void;
-  onError: (message: string) => void;
-}
-
-export interface FileUploadModalProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onSave"> {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  /** Called for each file to handle the actual upload. If not provided, uses fake progress (demo mode). */
-  onUpload?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
-  onSave?: (files: File[]) => void;
-  onCancel?: () => void;
-  onSampleDownload?: () => void;
-  sampleDownloadLabel?: string;
-  showSampleDownload?: boolean;
-  acceptedFormats?: string;
-  formatDescription?: string;
-  maxFileSizeMB?: number;
-  multiple?: boolean;
-  title?: string;
-  uploadButtonLabel?: string;
-  dropDescription?: string;
-  saveLabel?: string;
-  cancelLabel?: string;
-  saving?: boolean;
-}
+export type {
+  UploadStatus,
+  UploadItem,
+  UploadProgressHandlers,
+  FileUploadModalProps,
+} from "../file-upload-modal";
 `, prefix),
         },
         {
@@ -9014,7 +9047,7 @@ export { FunctionsCard } from "./functions-card";
 export { FrustrationHandoverCard } from "./frustration-handover-card";
 export { AdvancedSettingsCard } from "./advanced-settings-card";
 export { CreateFunctionModal } from "./create-function-modal";
-export { FileUploadModal } from "./file-upload-modal";
+export { FileUploadModal } from "../file-upload-modal";
 export { IvrBotConfig } from "./ivr-bot-config";
 
 export type {
