@@ -46,6 +46,10 @@ export interface PlanUpgradeSummaryModalProps
   primaryActionLabel?: string;
   /** Called when the primary CTA is clicked */
   onPrimaryAction?: () => void;
+  /** Shows loading spinner on the primary CTA button */
+  loading?: boolean;
+  /** Disables the primary CTA button */
+  disabled?: boolean;
   /** Called when the cancel button is clicked */
   onCancel?: () => void;
   /** Called when the close icon is clicked */

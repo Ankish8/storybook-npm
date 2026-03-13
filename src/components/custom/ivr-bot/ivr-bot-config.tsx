@@ -30,12 +30,14 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  disabled,
   className,
 }: {
   placeholder?: string;
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -44,12 +46,14 @@ function StyledTextarea({
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={cn(
         "w-full px-4 py-2.5 text-base rounded border resize-none",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
         "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     />
@@ -78,9 +82,11 @@ function Field({
 function FallbackPromptsAccordion({
   data,
   onChange,
+  disabled,
 }: {
   data: Partial<IvrBotConfigData>;
   onChange: (patch: Partial<IvrBotConfigData>) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden">
@@ -99,6 +105,7 @@ function FallbackPromptsAccordion({
                   value={data.agentBusyPrompt ?? ""}
                   onChange={(v) => onChange({ agentBusyPrompt: v })}
                   placeholder="Executives are busy at the moment, we will connect you soon."
+                  disabled={disabled}
                 />
               </Field>
               <Field label="No Extension Found">
@@ -106,6 +113,7 @@ function FallbackPromptsAccordion({
                   value={data.noExtensionPrompt ?? ""}
                   onChange={(v) => onChange({ noExtensionPrompt: v })}
                   placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
+                  disabled={disabled}
                 />
               </Field>
             </div>
@@ -157,10 +165,14 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onEditFunction,
       onDeleteFunction,
       onTestApi,
+      functionsInfoTooltip,
+      functionPromptMinLength,
+      functionPromptMaxLength,
       onBack,
       onPlayVoice,
       onPauseVoice,
       playingVoice,
+      disabled,
       roleOptions,
       toneOptions,
       voiceOptions,
@@ -213,12 +225,14 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               <Button
                 variant="outline"
                 onClick={() => onSaveAsDraft?.(data)}
+                disabled={disabled}
               >
                 Save as Draft
               </Button>
               <Button
                 variant="default"
                 onClick={() => onPublish?.(data)}
+                disabled={disabled}
               >
                 Publish Bot
               </Button>
@@ -240,13 +254,15 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               toneOptions={toneOptions}
               voiceOptions={voiceOptions}
               languageOptions={languageOptions}
+              disabled={disabled}
             />
             <BotBehaviorCard
               data={data}
               onChange={update}
               sessionVariables={sessionVariables}
+              disabled={disabled}
             />
-            <FallbackPromptsAccordion data={data} onChange={update} />
+            <FallbackPromptsAccordion data={data} onChange={update} disabled={disabled} />
           </div>
 
           {/* Right column — gray panel extending full height */}
@@ -255,6 +271,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
+              disabled={disabled}
               onDelete={(id) => {
                 update({
                   knowledgeBaseFiles: data.knowledgeBaseFiles.filter(
@@ -268,6 +285,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
               onEditFunction={onEditFunction}
+              infoTooltip={functionsInfoTooltip}
+              disabled={disabled}
               onDeleteFunction={(id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),
@@ -279,6 +298,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               data={data}
               onChange={update}
               departmentOptions={escalationDepartmentOptions}
+              disabled={disabled}
             />
             <AdvancedSettingsCard
               data={data}
@@ -287,6 +307,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               silenceTimeoutMax={silenceTimeoutMax}
               callEndThresholdMin={callEndThresholdMin}
               callEndThresholdMax={callEndThresholdMax}
+              disabled={disabled}
             />
           </div>
         </div>
@@ -297,6 +318,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+          promptMinLength={functionPromptMinLength}
+          promptMaxLength={functionPromptMaxLength}
         />
 
         {/* File Upload Modal */}

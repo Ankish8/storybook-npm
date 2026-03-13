@@ -98,7 +98,7 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
       dropDescription = "or drag and drop file here",
       saveLabel = "Save",
       cancelLabel = "Cancel",
-      saving = false,
+      loading = false,
       className,
       ...props
     },
@@ -380,7 +380,7 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
               className="w-full sm:w-auto"
               onClick={handleSave}
               disabled={!hasCompleted || hasUploading}
-              loading={saving}
+              loading={loading}
             >
               {saveLabel}
             </Button>

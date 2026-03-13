@@ -110,3 +110,25 @@ export const CustomOptions: Story = {
     );
   },
 };
+
+/** All fields disabled — view mode. */
+export const Disabled: Story = {
+  render: function Render() {
+    const data: Partial<BotIdentityData> = {
+      botName: "Rhea from CaratLane",
+      primaryRole: "customer-support",
+      tone: ["Professional and highly concise", "Friendly and conversational"],
+      voice: "rhea-female",
+      language: "en-in",
+    };
+    return (
+      <div className="max-w-[800px]">
+        <BotIdentityCard
+          data={data}
+          onChange={() => {}}
+          disabled
+        />
+      </div>
+    );
+  },
+};

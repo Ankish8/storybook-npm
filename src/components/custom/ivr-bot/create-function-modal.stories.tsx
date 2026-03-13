@@ -17,16 +17,25 @@ A **2-step wizard modal** for creating a new bot function.
 
 ### Step 1 — Name & Prompt
 - **Functions Name** (required, max 30 chars with live counter)
-- **Prompt** (required textarea)
-- **Next** button — disabled until both fields are filled
+- **Prompt** (required, min 100 chars, max 5000 chars with live counter)
+- **Next** button — disabled until name is filled and prompt meets min length
 
 ### Step 2 — API Configuration
 - **API URL** — HTTP method selector (GET / POST / PUT / DELETE / PATCH) + URL input
-- **Tabs** — Header · Query parameter · Body  
-  - *Header / Query parameter* — editable key-value rows with delete action; click the empty row to add a new entry  
-  - *Body* — textarea with 4 000 char counter
+- **Tabs** — Header · Query parameter · Body (Body tab only visible for POST / PUT / PATCH)
+  - *Header / Query parameter* — editable key-value rows with delete action; click the empty row to add a new entry
+  - *Body* — textarea with 4 000 char counter (hidden for GET / DELETE)
 - **Test Your API** — "Test API" button + read-only response area
 - **Back** (returns to Step 1) / **Submit** (calls \`onSubmit\` and closes)
+
+### Prop Defaults
+
+| Prop | Default |
+|------|---------|
+| \`promptMinLength\` | \`100\` |
+| \`promptMaxLength\` | \`5000\` |
+| \`initialStep\` | \`1\` |
+| \`initialTab\` | \`"header"\` |
 
 ---
 
@@ -75,6 +84,14 @@ const [open, setOpen] = React.useState(false);
   },
   argTypes: {
     open: { control: "boolean", description: "Controls modal visibility" },
+    promptMinLength: {
+      control: { type: "number" },
+      description: "Minimum character length for the prompt field (default: 100)",
+    },
+    promptMaxLength: {
+      control: { type: "number" },
+      description: "Maximum character length for the prompt field (default: 5000)",
+    },
     initialStep: {
       control: { type: "radio" },
       options: [1, 2],
@@ -196,7 +213,7 @@ export const Step2BodyTab: Story = {
     docs: {
       description: {
         story:
-          "Step 2 with the **Body** tab active. A textarea accepts JSON, XML or any text payload. Character counter shows usage against the 4 000-char limit.",
+          "Step 2 with the **Body** tab active. The Body tab is only visible when the HTTP method is **POST**, **PUT**, or **PATCH**. A textarea accepts JSON, XML or any text payload. Character counter shows usage against the 4 000-char limit.",
       },
     },
   },

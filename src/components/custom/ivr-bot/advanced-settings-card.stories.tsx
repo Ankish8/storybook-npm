@@ -67,3 +67,20 @@ export const CustomValues: Story = {
     );
   },
 };
+
+/** All fields are disabled in view mode. */
+export const Disabled: Story = {
+  render: () => (
+    <div className="max-w-[500px]">
+      <AdvancedSettingsCard
+        data={{
+          silenceTimeout: 15,
+          callEndThreshold: 3,
+          interruptionHandling: true,
+        }}
+        onChange={() => {}}
+        disabled
+      />
+    </div>
+  ),
+};

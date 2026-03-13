@@ -15,6 +15,8 @@ export interface KnowledgeBaseCardProps {
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
   onDelete?: (id: string) => void;
+  /** Disables all interactive elements in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -38,6 +40,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onAdd,
       onDownload,
       onDelete,
+      disabled,
       className,
     },
     ref
@@ -61,7 +64,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             <button
               type="button"
               onClick={() => onAdd?.()}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors"
+              disabled={disabled}
+              className={cn("inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
             >
               <Plus className="size-3.5" />
               Files
@@ -98,7 +102,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                         <button
                           type="button"
                           onClick={() => onDownload?.(file.id)}
-                          className="p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                          disabled={disabled}
+                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label="Download file"
                         >
                           <Download className="size-4" />
@@ -106,7 +111,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                         <button
                           type="button"
                           onClick={() => onDelete?.(file.id)}
-                          className="p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                          disabled={disabled}
+                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label="Delete file"
                         >
                           <Trash2 className="size-4" />

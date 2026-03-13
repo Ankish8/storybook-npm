@@ -16,6 +16,8 @@ export interface FunctionItem {
   id: string;
   name: string;
   isBuiltIn?: boolean;
+  /** Hover text shown on the info icon for this function */
+  tooltip?: string;
 }
 
 export interface KnowledgeBaseFile {
@@ -46,6 +48,10 @@ export interface CreateFunctionModalProps {
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Minimum character length for the prompt field (default: 100) */
+  promptMinLength?: number;
+  /** Maximum character length for the prompt field (default: 5000) */
+  promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
@@ -79,6 +85,8 @@ export interface SelectOption {
 export interface IvrBotConfigProps {
   botTitle?: string;
   botType?: string;
+  /** When true, disables all fields in all card components (view mode) */
+  disabled?: boolean;
   /** Optional "Last updated at HH:MM AM/PM" text shown in the page header */
   lastUpdatedAt?: string;
   initialData?: Partial<IvrBotConfigData>;
@@ -96,6 +104,12 @@ export interface IvrBotConfigProps {
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Hover text for the info icon in the Functions card header */
+  functionsInfoTooltip?: string;
+  /** Minimum character length for the function prompt (default: 100) */
+  functionPromptMinLength?: number;
+  /** Maximum character length for the function prompt (default: 5000) */
+  functionPromptMaxLength?: number;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;

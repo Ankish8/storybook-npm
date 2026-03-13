@@ -259,6 +259,13 @@ import { Bot } from "lucide-react";
     onCtaClick: fn(),
     onFeatureDetails: fn(),
   },
+  argTypes: {
+    infoText: {
+      control: "text",
+      description:
+        "Informational text shown below the CTA button (e.g., package change effective date).",
+    },
+  },
 };
 
 export default meta;
@@ -306,6 +313,27 @@ export const CurrentPlan: Story = {
     isCurrentPlan: true,
     onFeatureDetails: fn(),
     addon: defaultAddon,
+  },
+};
+
+// ─── With Info Text ─────────────────────────────────────────────────────
+
+export const WithInfoText: Story = {
+  name: "With Info Text",
+  decorators: [singleCardDecorator],
+  args: {
+    planName: "Compact",
+    price: "2,5000",
+    planDetails: "3 Users | 12 Month plan",
+    description:
+      "For small teams that need a WhatsApp-first plan with missed call automation",
+    headerBgColor: "#d7eae9",
+    planIcon: <CompactCarIcon className="size-[30px] text-semantic-text-primary" />,
+    features: compactFeatures,
+    isCurrentPlan: true,
+    onFeatureDetails: fn(),
+    addon: defaultAddon,
+    infoText: "Your package change will be effective from 23-03-2026",
   },
 };
 

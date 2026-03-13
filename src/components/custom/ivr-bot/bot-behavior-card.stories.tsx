@@ -81,3 +81,19 @@ export const CustomVariables: Story = {
     );
   },
 };
+
+/** All fields are disabled in view mode. */
+export const Disabled: Story = {
+  render: () => (
+    <div className="max-w-[800px]">
+      <BotBehaviorCard
+        data={{
+          systemPrompt:
+            "You are a helpful assistant. Always start by greeting the user politely.",
+        }}
+        onChange={() => {}}
+        disabled
+      />
+    </div>
+  ),
+};

@@ -3,6 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { CreateFunctionModal } from "../create-function-modal";
 
 const noop = () => {};
+// A prompt string ≥ 100 chars for meeting the default promptMinLength
+const VALID_PROMPT =
+  "This is a valid prompt that meets the minimum character length requirement for the create function modal test cases here.";
 
 describe("CreateFunctionModal", () => {
   it("does not render content when closed", () => {
@@ -26,14 +29,14 @@ describe("CreateFunctionModal", () => {
     expect(nextBtn).toBeDisabled();
   });
 
-  it("enables Next button when both fields are filled", async () => {
+  it("enables Next button when both fields are filled and prompt meets min length", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(
       screen.getByLabelText(/Function Name/i),
       "TestFunc"
     );
-    await user.type(screen.getByLabelText(/Prompt/i), "Some prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     expect(screen.getByRole("button", { name: /Next/i })).not.toBeDisabled();
   });
 
@@ -48,7 +51,7 @@ describe("CreateFunctionModal", () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     expect(screen.getByText(/API url/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Submit/i })).toBeInTheDocument();
@@ -59,29 +62,35 @@ describe("CreateFunctionModal", () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Back/i }));
     expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
   });
 
-  it("renders tab navigation in step 2", async () => {
+  it("renders tab navigation in step 2 (Body tab only for POST/PUT/PATCH)", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     expect(screen.getByText(/Header \(0\)/)).toBeInTheDocument();
     expect(screen.getByText(/Query params \(0\)/)).toBeInTheDocument();
+    // Body tab is hidden for GET (default method)
+    expect(screen.queryByText("Body")).not.toBeInTheDocument();
+    // Switch to POST — Body tab appears
+    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
     expect(screen.getByText("Body")).toBeInTheDocument();
   });
 
-  it("shows Body textarea when Body tab is clicked", async () => {
+  it("shows Body textarea when Body tab is clicked (POST method)", async () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), "Test prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
+    // Switch to POST to reveal Body tab
+    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
     await user.click(screen.getByText("Body"));
     expect(screen.getByPlaceholderText(/Enter request body/i)).toBeInTheDocument();
     expect(screen.getByText(/0\/4000/)).toBeInTheDocument();
@@ -94,11 +103,11 @@ describe("CreateFunctionModal", () => {
       <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
     );
     await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), "My prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "MyFunc", prompt: "My prompt" })
+      expect.objectContaining({ name: "MyFunc", prompt: VALID_PROMPT })
     );
   });
 
@@ -110,7 +119,7 @@ describe("CreateFunctionModal", () => {
     );
     // Advance to step 2 first
     await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), "My prompt");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onOpenChange).toHaveBeenCalledWith(false);

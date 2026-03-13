@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Info } from "lucide-react";
 import type { PricingCardProps } from "./types";
 
 /**
@@ -43,6 +43,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       onFeatureDetails,
       addon,
       usageDetails,
+      infoText,
       className,
       ...props
     },
@@ -135,6 +136,16 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
               {buttonText}
             </Button>
           </div>
+
+          {/* Info text */}
+          {infoText && (
+            <div className="flex items-start gap-1.5">
+              <Info className="size-3.5 text-semantic-info-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-semantic-info-primary tracking-[0.035px] m-0">
+                {infoText}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Features */}

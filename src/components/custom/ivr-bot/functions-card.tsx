@@ -2,6 +2,12 @@ import * as React from "react";
 import { Info, Pencil, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 import type { FunctionItem } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -15,6 +21,10 @@ export interface FunctionsCardProps {
   onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom (non-built-in) function */
   onDeleteFunction?: (id: string) => void;
+  /** Hover text shown on the info icon next to the "Functions" title */
+  infoTooltip?: string;
+  /** Disables all interactive elements in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -22,7 +32,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -37,12 +47,24 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
             <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
               Functions
             </h2>
-            <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+            {infoTooltip ? (
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>{infoTooltip}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+            )}
           </div>
           <button
             type="button"
             onClick={onAddFunction}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors"
+            disabled={disabled}
+            className={cn("inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
           >
             <Plus className="size-3.5" />
             Functions
@@ -62,7 +84,18 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                   className="flex items-center justify-between px-4 py-3 rounded border border-semantic-border-layout bg-semantic-bg-primary"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <Info className="size-4 text-semantic-text-muted shrink-0" />
+                    {fn.tooltip ? (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="size-4 text-semantic-text-muted shrink-0 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>{fn.tooltip}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <Info className="size-4 text-semantic-text-muted shrink-0" />
+                    )}
                     <span className="text-sm text-semantic-text-primary truncate">
                       {fn.name}
                     </span>
@@ -77,7 +110,8 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                         <button
                           type="button"
                           onClick={() => onEditFunction?.(fn.id)}
-                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                          disabled={disabled}
+                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label={`Edit ${fn.name}`}
                         >
                           <Pencil className="size-4" />
@@ -85,7 +119,8 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                         <button
                           type="button"
                           onClick={() => onDeleteFunction?.(fn.id)}
-                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                          disabled={disabled}
+                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label={`Delete ${fn.name}`}
                         >
                           <Trash2 className="size-4" />

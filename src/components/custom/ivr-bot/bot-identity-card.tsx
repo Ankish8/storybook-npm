@@ -60,6 +60,8 @@ export interface BotIdentityCardProps {
   onPauseVoice?: (voiceValue: string) => void;
   /** The voice value currently being played. Controls play/pause icon state. */
   playingVoice?: string;
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className for the card */
   className?: string;
 }
@@ -100,11 +102,13 @@ function StyledInput({
   placeholder,
   value,
   onChange,
+  disabled,
   className,
 }: {
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -113,12 +117,14 @@ function StyledInput({
       value={value ?? ""}
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={cn(
         "w-full h-[42px] px-4 text-base rounded border",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
         "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     />
@@ -181,6 +187,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       onPlayVoice,
       onPauseVoice,
       playingVoice,
+      disabled,
       className,
     },
     ref
@@ -211,6 +218,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 placeholder="e.g., Rhea from CaratLane"
                 value={data.botName}
                 onChange={(v) => onChange({ botName: v })}
+                disabled={disabled}
               />
             </Field>
 
@@ -221,6 +229,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
+                disabled={disabled}
               />
             </Field>
 
@@ -231,6 +240,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 options={toneOptions}
                 placeholder="Enter or select tone"
                 creatableHint="Type to create a custom tone"
+                disabled={disabled}
               />
             </Field>
 
@@ -242,6 +252,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                     onChange({ voice: v });
                     onPauseVoice?.(v);
                   }}
+                  disabled={disabled}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select voice">
@@ -296,6 +307,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 <Select
                   value={data.language || undefined}
                   onValueChange={(v) => onChange({ language: v })}
+                  disabled={disabled}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select language" />

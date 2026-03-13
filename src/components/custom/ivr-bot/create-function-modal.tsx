@@ -17,6 +17,7 @@ import type {
 } from "./types";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
 const FUNCTION_NAME_MAX = 30;
 const BODY_MAX = 4000;
 
@@ -172,6 +173,8 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange,
       onSubmit,
       onTestApi,
+      promptMinLength = 100,
+      promptMaxLength = 5000,
       initialStep = 1,
       initialTab = "header",
       className,
@@ -211,8 +214,17 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange(false);
     }, [reset, onOpenChange]);
 
+    const supportsBody = METHODS_WITH_BODY.includes(method);
+
+    // When switching to a method without body, reset to header tab if body was active
+    React.useEffect(() => {
+      if (!supportsBody && activeTab === "body") {
+        setActiveTab("header");
+      }
+    }, [supportsBody, activeTab]);
+
     const handleNext = () => {
-      if (name.trim() && prompt.trim()) setStep(2);
+      if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
     };
 
     const handleSubmit = () => {
@@ -248,13 +260,17 @@ export const CreateFunctionModal = React.forwardRef<
     };
 
     const isStep1Valid =
-      name.trim().length > 0 && prompt.trim().length > 0;
+      name.trim().length > 0 && prompt.trim().length >= promptMinLength;
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: `Header (${headers.length})`,
       queryParams: `Query params (${queryParams.length})`,
       body: "Body",
     };
+
+    const visibleTabs: FunctionTabType[] = supportsBody
+      ? ["header", "queryParams", "body"]
+      : ["header", "queryParams"];
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -320,14 +336,25 @@ export const CreateFunctionModal = React.forwardRef<
                     Prompt{" "}
                     <span className="text-semantic-error-primary">*</span>
                   </label>
-                  <textarea
-                    id="fn-prompt"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Enter the description of the function"
-                    rows={5}
-                    className={textareaCls}
-                  />
+                  <div className="relative">
+                    <textarea
+                      id="fn-prompt"
+                      value={prompt}
+                      maxLength={promptMaxLength}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="Enter the description of the function"
+                      rows={5}
+                      className={cn(textareaCls, "pb-7")}
+                    />
+                    <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
+                      {prompt.length}/{promptMaxLength}
+                    </span>
+                  </div>
+                  {prompt.length > 0 && prompt.trim().length < promptMinLength && (
+                    <p className="m-0 text-xs text-semantic-error-primary">
+                      Minimum {promptMinLength} characters required
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -389,9 +416,7 @@ export const CreateFunctionModal = React.forwardRef<
                       "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     )}
                   >
-                    {(
-                      ["header", "queryParams", "body"] as FunctionTabType[]
-                    ).map((tab) => (
+                    {visibleTabs.map((tab) => (
                       <button
                         key={tab}
                         type="button"

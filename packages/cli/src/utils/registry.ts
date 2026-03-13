@@ -1237,41 +1237,84 @@ const SelectScrollDownButton = React.forwardRef<
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName;
 
+/**
+ * Radix Select v2 wraps content in RemoveScroll which locks body scroll
+ * via both CSS (overflow:hidden) and JS (preventDefault on wheel/touchmove).
+ *
+ * CSS fix: react-remove-scroll-bar uses \`body[data-scroll-locked]\` with
+ * \`!important\`. We use a doubled attribute selector for higher specificity
+ * so our override always wins regardless of style injection order.
+ *
+ * JS fix: react-remove-scroll checks \`event.cancelable\` before calling
+ * \`preventDefault()\`. We override this property in a capture-phase listener
+ * so the library skips the preventDefault call.
+ */
+function useUnlockBodyScroll() {
+  React.useEffect(() => {
+    const style = document.createElement("style");
+    style.setAttribute("data-select-scroll-fix", "");
+    style.textContent =
+      "body[data-scroll-locked][data-scroll-locked] { overflow: auto !important; margin-right: 0 !important; overscroll-behavior: auto !important; }";
+    document.head.appendChild(style);
+
+    const preventScrollLock = (e: Event) => {
+      if (!document.body.hasAttribute("data-scroll-locked")) return;
+      Object.defineProperty(e, "cancelable", {
+        value: false,
+        configurable: true,
+      });
+    };
+
+    document.addEventListener("wheel", preventScrollLock, true);
+    document.addEventListener("touchmove", preventScrollLock, true);
+
+    return () => {
+      document.head.removeChild(style);
+      document.removeEventListener("wheel", preventScrollLock, true);
+      document.removeEventListener("touchmove", preventScrollLock, true);
+    };
+  }, []);
+}
+
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        position === "popper" &&
-          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-        className
-      )}
-      position={position}
-      {...props}
-    >
-      <SelectScrollUpButton />
-      <SelectPrimitive.Viewport
+>(({ className, children, position = "popper", ...props }, ref) => {
+  useUnlockBodyScroll();
+
+  return (
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        ref={ref}
         className={cn(
-          "p-1",
+          "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+          "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+          className
         )}
+        position={position}
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-      <SelectScrollDownButton />
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-));
+        <SelectScrollUpButton />
+        <SelectPrimitive.Viewport
+          className={cn(
+            "p-1",
+            position === "popper" &&
+              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+          )}
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+        <SelectScrollDownButton />
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  );
+});
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef<
@@ -11049,6 +11092,8 @@ const PlanUpgradeSummaryModal = React.forwardRef<
       cancelLabel = "Cancel",
       primaryActionLabel,
       onPrimaryAction,
+      loading = false,
+      disabled = false,
       onCancel,
       onClose,
       closeAriaLabel = "Close plan summary modal",
@@ -11147,7 +11192,7 @@ const PlanUpgradeSummaryModal = React.forwardRef<
               <Button variant="outline" onClick={handleCancel}>
                 {cancelLabel}
               </Button>
-              <Button variant="primary" onClick={onPrimaryAction}>
+              <Button variant="primary" onClick={onPrimaryAction} loading={loading} disabled={disabled}>
                 {resolvedPrimaryActionLabel}
               </Button>
             </div>
@@ -11213,6 +11258,10 @@ export interface PlanUpgradeSummaryModalProps
   primaryActionLabel?: string;
   /** Called when the primary CTA is clicked */
   onPrimaryAction?: () => void;
+  /** Shows loading spinner on the primary CTA button */
+  loading?: boolean;
+  /** Disables the primary CTA button */
+  disabled?: boolean;
   /** Called when the cancel button is clicked */
   onCancel?: () => void;
   /** Called when the close icon is clicked */
@@ -11585,7 +11634,7 @@ export type { PowerUpCardProps } from "./types";
 import { cn } from "../../../lib/utils";
 import { Button } from "../button";
 import { Badge } from "../badge";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Info } from "lucide-react";
 import type { PricingCardProps } from "./types";
 
 /**
@@ -11626,6 +11675,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       onFeatureDetails,
       addon,
       usageDetails,
+      infoText,
       className,
       ...props
     },
@@ -11718,6 +11768,16 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
               {buttonText}
             </Button>
           </div>
+
+          {/* Info text */}
+          {infoText && (
+            <div className="flex items-start gap-1.5">
+              <Info className="size-3.5 text-semantic-info-primary shrink-0 mt-0.5" />
+              <p className="text-xs text-semantic-info-primary tracking-[0.035px] m-0">
+                {infoText}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Features */}
@@ -12009,6 +12069,8 @@ export interface PricingCardProps
   addon?: PricingCardAddon;
   /** Usage details displayed in a bulleted list at the bottom (e.g., AIO plan) */
   usageDetails?: UsageDetail[];
+  /** Informational text shown below the CTA button (e.g., "Your package change will be effective from 23-03-2026") */
+  infoText?: string;
 }
 `, prefix),
         },
@@ -13270,7 +13332,7 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
       dropDescription = "or drag and drop file here",
       saveLabel = "Save",
       cancelLabel = "Cancel",
-      saving = false,
+      loading = false,
       className,
       ...props
     },
@@ -13552,7 +13614,7 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
               className="w-full sm:w-auto"
               onClick={handleSave}
               disabled={!hasCompleted || hasUploading}
-              loading={saving}
+              loading={loading}
             >
               {saveLabel}
             </Button>
@@ -13605,7 +13667,8 @@ export interface FileUploadModalProps
   dropDescription?: string;
   saveLabel?: string;
   cancelLabel?: string;
-  saving?: boolean;
+  /** Shows a loading spinner on the save button (e.g. while processing files server-side) */
+  loading?: boolean;
 }
 `, prefix),
         },
@@ -13682,12 +13745,14 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  disabled,
   className,
 }: {
   placeholder?: string;
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -13696,12 +13761,14 @@ function StyledTextarea({
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={cn(
         "w-full px-4 py-2.5 text-base rounded border resize-none",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
         "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     />
@@ -13730,9 +13797,11 @@ function Field({
 function FallbackPromptsAccordion({
   data,
   onChange,
+  disabled,
 }: {
   data: Partial<IvrBotConfigData>;
   onChange: (patch: Partial<IvrBotConfigData>) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden">
@@ -13751,6 +13820,7 @@ function FallbackPromptsAccordion({
                   value={data.agentBusyPrompt ?? ""}
                   onChange={(v) => onChange({ agentBusyPrompt: v })}
                   placeholder="Executives are busy at the moment, we will connect you soon."
+                  disabled={disabled}
                 />
               </Field>
               <Field label="No Extension Found">
@@ -13758,6 +13828,7 @@ function FallbackPromptsAccordion({
                   value={data.noExtensionPrompt ?? ""}
                   onChange={(v) => onChange({ noExtensionPrompt: v })}
                   placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
+                  disabled={disabled}
                 />
               </Field>
             </div>
@@ -13809,10 +13880,14 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onEditFunction,
       onDeleteFunction,
       onTestApi,
+      functionsInfoTooltip,
+      functionPromptMinLength,
+      functionPromptMaxLength,
       onBack,
       onPlayVoice,
       onPauseVoice,
       playingVoice,
+      disabled,
       roleOptions,
       toneOptions,
       voiceOptions,
@@ -13865,12 +13940,14 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               <Button
                 variant="outline"
                 onClick={() => onSaveAsDraft?.(data)}
+                disabled={disabled}
               >
                 Save as Draft
               </Button>
               <Button
                 variant="default"
                 onClick={() => onPublish?.(data)}
+                disabled={disabled}
               >
                 Publish Bot
               </Button>
@@ -13892,13 +13969,15 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               toneOptions={toneOptions}
               voiceOptions={voiceOptions}
               languageOptions={languageOptions}
+              disabled={disabled}
             />
             <BotBehaviorCard
               data={data}
               onChange={update}
               sessionVariables={sessionVariables}
+              disabled={disabled}
             />
-            <FallbackPromptsAccordion data={data} onChange={update} />
+            <FallbackPromptsAccordion data={data} onChange={update} disabled={disabled} />
           </div>
 
           {/* Right column — gray panel extending full height */}
@@ -13907,6 +13986,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
+              disabled={disabled}
               onDelete={(id) => {
                 update({
                   knowledgeBaseFiles: data.knowledgeBaseFiles.filter(
@@ -13920,6 +14000,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
               onEditFunction={onEditFunction}
+              infoTooltip={functionsInfoTooltip}
+              disabled={disabled}
               onDeleteFunction={(id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),
@@ -13931,6 +14013,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               data={data}
               onChange={update}
               departmentOptions={escalationDepartmentOptions}
+              disabled={disabled}
             />
             <AdvancedSettingsCard
               data={data}
@@ -13939,6 +14022,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               silenceTimeoutMax={silenceTimeoutMax}
               callEndThresholdMin={callEndThresholdMin}
               callEndThresholdMax={callEndThresholdMax}
+              disabled={disabled}
             />
           </div>
         </div>
@@ -13949,6 +14033,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+          promptMinLength={functionPromptMinLength}
+          promptMaxLength={functionPromptMaxLength}
         />
 
         {/* File Upload Modal */}
@@ -13988,6 +14074,7 @@ import type {
 } from "./types";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
 const FUNCTION_NAME_MAX = 30;
 const BODY_MAX = 4000;
 
@@ -14143,6 +14230,8 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange,
       onSubmit,
       onTestApi,
+      promptMinLength = 100,
+      promptMaxLength = 5000,
       initialStep = 1,
       initialTab = "header",
       className,
@@ -14182,8 +14271,17 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange(false);
     }, [reset, onOpenChange]);
 
+    const supportsBody = METHODS_WITH_BODY.includes(method);
+
+    // When switching to a method without body, reset to header tab if body was active
+    React.useEffect(() => {
+      if (!supportsBody && activeTab === "body") {
+        setActiveTab("header");
+      }
+    }, [supportsBody, activeTab]);
+
     const handleNext = () => {
-      if (name.trim() && prompt.trim()) setStep(2);
+      if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
     };
 
     const handleSubmit = () => {
@@ -14219,13 +14317,17 @@ export const CreateFunctionModal = React.forwardRef<
     };
 
     const isStep1Valid =
-      name.trim().length > 0 && prompt.trim().length > 0;
+      name.trim().length > 0 && prompt.trim().length >= promptMinLength;
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: \`Header (\${headers.length})\`,
       queryParams: \`Query params (\${queryParams.length})\`,
       body: "Body",
     };
+
+    const visibleTabs: FunctionTabType[] = supportsBody
+      ? ["header", "queryParams", "body"]
+      : ["header", "queryParams"];
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -14291,14 +14393,25 @@ export const CreateFunctionModal = React.forwardRef<
                     Prompt{" "}
                     <span className="text-semantic-error-primary">*</span>
                   </label>
-                  <textarea
-                    id="fn-prompt"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Enter the description of the function"
-                    rows={5}
-                    className={textareaCls}
-                  />
+                  <div className="relative">
+                    <textarea
+                      id="fn-prompt"
+                      value={prompt}
+                      maxLength={promptMaxLength}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="Enter the description of the function"
+                      rows={5}
+                      className={cn(textareaCls, "pb-7")}
+                    />
+                    <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
+                      {prompt.length}/{promptMaxLength}
+                    </span>
+                  </div>
+                  {prompt.length > 0 && prompt.trim().length < promptMinLength && (
+                    <p className="m-0 text-xs text-semantic-error-primary">
+                      Minimum {promptMinLength} characters required
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -14360,9 +14473,7 @@ export const CreateFunctionModal = React.forwardRef<
                       "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     )}
                   >
-                    {(
-                      ["header", "queryParams", "body"] as FunctionTabType[]
-                    ).map((tab) => (
+                    {visibleTabs.map((tab) => (
                       <button
                         key={tab}
                         type="button"
@@ -14562,6 +14673,8 @@ export interface BotIdentityCardProps {
   onPauseVoice?: (voiceValue: string) => void;
   /** The voice value currently being played. Controls play/pause icon state. */
   playingVoice?: string;
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className for the card */
   className?: string;
 }
@@ -14602,11 +14715,13 @@ function StyledInput({
   placeholder,
   value,
   onChange,
+  disabled,
   className,
 }: {
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -14615,12 +14730,14 @@ function StyledInput({
       value={value ?? ""}
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={cn(
         "w-full h-[42px] px-4 text-base rounded border",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
         "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     />
@@ -14683,6 +14800,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       onPlayVoice,
       onPauseVoice,
       playingVoice,
+      disabled,
       className,
     },
     ref
@@ -14713,6 +14831,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 placeholder="e.g., Rhea from CaratLane"
                 value={data.botName}
                 onChange={(v) => onChange({ botName: v })}
+                disabled={disabled}
               />
             </Field>
 
@@ -14723,6 +14842,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
+                disabled={disabled}
               />
             </Field>
 
@@ -14733,6 +14853,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 options={toneOptions}
                 placeholder="Enter or select tone"
                 creatableHint="Type to create a custom tone"
+                disabled={disabled}
               />
             </Field>
 
@@ -14744,6 +14865,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                     onChange({ voice: v });
                     onPauseVoice?.(v);
                   }}
+                  disabled={disabled}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select voice">
@@ -14798,6 +14920,7 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
                 <Select
                   value={data.language || undefined}
                   onValueChange={(v) => onChange({ language: v })}
+                  disabled={disabled}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select language" />
@@ -14843,6 +14966,8 @@ export interface BotBehaviorCardProps {
   onChange: (patch: Partial<BotBehaviorData>) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className for the card */
   className?: string;
 }
@@ -14888,12 +15013,14 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  disabled,
   className,
 }: {
   placeholder?: string;
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -14902,12 +15029,14 @@ function StyledTextarea({
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={cn(
         "w-full px-4 py-2.5 text-base rounded border resize-none",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
         "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     />
@@ -14922,6 +15051,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       data,
       onChange,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      disabled,
       className,
     },
     ref
@@ -14948,6 +15078,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                   if (v.length <= MAX) onChange({ systemPrompt: v });
                 }}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
+                disabled={disabled}
                 className="pb-8"
               />
               <span className="absolute bottom-2.5 right-3 text-sm text-semantic-text-muted">
@@ -14966,7 +15097,8 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                   key={v}
                   type="button"
                   onClick={() => insertVariable(v)}
-                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity")}
+                  disabled={disabled}
+                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
                 >
                   <Plus className="size-3 shrink-0" />
                   {v}
@@ -15003,6 +15135,8 @@ export interface KnowledgeBaseCardProps {
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
   onDelete?: (id: string) => void;
+  /** Disables all interactive elements in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -15026,6 +15160,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onAdd,
       onDownload,
       onDelete,
+      disabled,
       className,
     },
     ref
@@ -15049,7 +15184,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             <button
               type="button"
               onClick={() => onAdd?.()}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors"
+              disabled={disabled}
+              className={cn("inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
             >
               <Plus className="size-3.5" />
               Files
@@ -15086,7 +15222,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                         <button
                           type="button"
                           onClick={() => onDownload?.(file.id)}
-                          className="p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                          disabled={disabled}
+                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label="Download file"
                         >
                           <Download className="size-4" />
@@ -15094,7 +15231,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                         <button
                           type="button"
                           onClick={() => onDelete?.(file.id)}
-                          className="p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                          disabled={disabled}
+                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label="Delete file"
                         >
                           <Trash2 className="size-4" />
@@ -15121,6 +15259,12 @@ export { KnowledgeBaseCard };
 import { Info, Pencil, Plus, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../tooltip";
 import type { FunctionItem } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -15134,6 +15278,10 @@ export interface FunctionsCardProps {
   onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom (non-built-in) function */
   onDeleteFunction?: (id: string) => void;
+  /** Hover text shown on the info icon next to the "Functions" title */
+  infoTooltip?: string;
+  /** Disables all interactive elements in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -15141,7 +15289,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -15156,12 +15304,24 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
             <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
               Functions
             </h2>
-            <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+            {infoTooltip ? (
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>{infoTooltip}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+            )}
           </div>
           <button
             type="button"
             onClick={onAddFunction}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors"
+            disabled={disabled}
+            className={cn("inline-flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-semibold text-semantic-text-secondary bg-semantic-primary-surface hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
           >
             <Plus className="size-3.5" />
             Functions
@@ -15181,7 +15341,18 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                   className="flex items-center justify-between px-4 py-3 rounded border border-semantic-border-layout bg-semantic-bg-primary"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <Info className="size-4 text-semantic-text-muted shrink-0" />
+                    {fn.tooltip ? (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="size-4 text-semantic-text-muted shrink-0 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>{fn.tooltip}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <Info className="size-4 text-semantic-text-muted shrink-0" />
+                    )}
                     <span className="text-sm text-semantic-text-primary truncate">
                       {fn.name}
                     </span>
@@ -15196,7 +15367,8 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                         <button
                           type="button"
                           onClick={() => onEditFunction?.(fn.id)}
-                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                          disabled={disabled}
+                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label={\`Edit \${fn.name}\`}
                         >
                           <Pencil className="size-4" />
@@ -15204,7 +15376,8 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                         <button
                           type="button"
                           onClick={() => onDeleteFunction?.(fn.id)}
-                          className="p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors"
+                          disabled={disabled}
+                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
                           aria-label={\`Delete \${fn.name}\`}
                         >
                           <Trash2 className="size-4" />
@@ -15271,6 +15444,8 @@ export interface FrustrationHandoverCardProps {
   onChange: (patch: Partial<FrustrationHandoverData>) => void;
   /** Available escalation department options */
   departmentOptions?: DepartmentOption[];
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -15297,7 +15472,7 @@ function Field({
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, className }, ref) => {
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -15325,6 +15500,7 @@ const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHand
                     onCheckedChange={(v) =>
                       onChange({ frustrationHandoverEnabled: v })
                     }
+                    disabled={disabled}
                   />
                 </div>
                 <div className="px-4 pb-2 sm:px-6">
@@ -15332,7 +15508,7 @@ const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHand
                     <Select
                       value={data.escalationDepartment || undefined}
                       onValueChange={(v) => onChange({ escalationDepartment: v })}
-                      disabled={!data.frustrationHandoverEnabled}
+                      disabled={disabled || !data.frustrationHandoverEnabled}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a department" />
@@ -15394,6 +15570,8 @@ export interface AdvancedSettingsCardProps {
   callEndThresholdMin?: number;
   /** Max value for call end threshold spinner (default: 10) */
   callEndThresholdMax?: number;
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -15422,27 +15600,31 @@ function NumberSpinner({
   onChange,
   min = 0,
   max = 999,
+  disabled,
 }: {
   value: number;
   onChange: (v: number) => void;
   min?: number;
   max?: number;
+  disabled?: boolean;
 }) {
   return (
-    <div className="flex w-full items-center gap-2.5 px-4 py-2.5 border border-semantic-border-layout bg-semantic-bg-primary rounded">
+    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
       <input
         type="number"
         value={value}
         min={min}
         max={max}
+        disabled={disabled}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed"
       />
       <div className="flex flex-col items-center shrink-0 gap-0.5">
         <button
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+          disabled={disabled}
+          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
           aria-label="Increase"
         >
           <ChevronUp className="size-3" />
@@ -15450,7 +15632,8 @@ function NumberSpinner({
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+          disabled={disabled}
+          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
           aria-label="Decrease"
         >
           <ChevronDown className="size-3" />
@@ -15471,6 +15654,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
       silenceTimeoutMax = 60,
       callEndThresholdMin = 1,
       callEndThresholdMax = 10,
+      disabled,
       className,
     },
     ref
@@ -15500,6 +15684,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                       onChange={(v) => onChange({ silenceTimeout: v })}
                       min={silenceTimeoutMin}
                       max={silenceTimeoutMax}
+                      disabled={disabled}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
                       Default: 15 seconds
@@ -15512,6 +15697,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                       onChange={(v) => onChange({ callEndThreshold: v })}
                       min={callEndThresholdMin}
                       max={callEndThresholdMax}
+                      disabled={disabled}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
                       Drop call after n consecutive silences. Default: 3
@@ -15534,6 +15720,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                     onCheckedChange={(v) =>
                       onChange({ interruptionHandling: v })
                     }
+                    disabled={disabled}
                   />
                 </div>
               </div>
@@ -15569,6 +15756,8 @@ export interface FunctionItem {
   id: string;
   name: string;
   isBuiltIn?: boolean;
+  /** Hover text shown on the info icon for this function */
+  tooltip?: string;
 }
 
 export interface KnowledgeBaseFile {
@@ -15599,6 +15788,10 @@ export interface CreateFunctionModalProps {
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Minimum character length for the prompt field (default: 100) */
+  promptMinLength?: number;
+  /** Maximum character length for the prompt field (default: 5000) */
+  promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
@@ -15632,6 +15825,8 @@ export interface SelectOption {
 export interface IvrBotConfigProps {
   botTitle?: string;
   botType?: string;
+  /** When true, disables all fields in all card components (view mode) */
+  disabled?: boolean;
   /** Optional "Last updated at HH:MM AM/PM" text shown in the page header */
   lastUpdatedAt?: string;
   initialData?: Partial<IvrBotConfigData>;
@@ -15649,6 +15844,12 @@ export interface IvrBotConfigProps {
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Hover text for the info icon in the Functions card header */
+  functionsInfoTooltip?: string;
+  /** Minimum character length for the function prompt (default: 100) */
+  functionPromptMinLength?: number;
+  /** Maximum character length for the function prompt (default: 5000) */
+  functionPromptMaxLength?: number;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;

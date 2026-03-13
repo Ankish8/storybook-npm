@@ -31,6 +31,23 @@ import { FileUploadModal } from "@/components/custom/file-upload-modal"
 import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/custom/file-upload-modal"
 \`\`\`
 
+### Prop Defaults
+
+| Prop | Default Value |
+|---|---|
+| \`acceptedFormats\` | \`".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt"\` |
+| \`formatDescription\` | \`"Max file size 100 MB (Supported Format: .docs, .pdf, .csv, .xls, .xlxs, .txt)"\` |
+| \`maxFileSizeMB\` | \`100\` |
+| \`multiple\` | \`true\` |
+| \`title\` | \`"File Upload"\` |
+| \`uploadButtonLabel\` | \`"Upload from device"\` |
+| \`dropDescription\` | \`"or drag and drop file here"\` |
+| \`saveLabel\` | \`"Save"\` |
+| \`cancelLabel\` | \`"Cancel"\` |
+| \`loading\` | \`false\` |
+
+If no value is provided for \`acceptedFormats\`, all supported document types are accepted. If no \`maxFileSizeMB\` is provided, files up to 100 MB are allowed.
+
 ### Design Tokens
 
 | Token | CSS Variable | Usage | Preview |
@@ -50,7 +67,7 @@ import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/
     title: { control: "text" },
     maxFileSizeMB: { control: "number" },
     multiple: { control: "boolean" },
-    saving: { control: "boolean" },
+    loading: { control: "boolean" },
   },
   args: {
     onSave: fn(),

@@ -41,6 +41,8 @@ export interface FrustrationHandoverCardProps {
   onChange: (patch: Partial<FrustrationHandoverData>) => void;
   /** Available escalation department options */
   departmentOptions?: DepartmentOption[];
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -67,7 +69,7 @@ function Field({
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, className }, ref) => {
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -95,6 +97,7 @@ const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHand
                     onCheckedChange={(v) =>
                       onChange({ frustrationHandoverEnabled: v })
                     }
+                    disabled={disabled}
                   />
                 </div>
                 <div className="px-4 pb-2 sm:px-6">
@@ -102,7 +105,7 @@ const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHand
                     <Select
                       value={data.escalationDepartment || undefined}
                       onValueChange={(v) => onChange({ escalationDepartment: v })}
-                      disabled={!data.frustrationHandoverEnabled}
+                      disabled={disabled || !data.frustrationHandoverEnabled}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a department" />

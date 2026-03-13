@@ -33,5 +33,6 @@ export interface FileUploadModalProps
   dropDescription?: string;
   saveLabel?: string;
   cancelLabel?: string;
-  saving?: boolean;
+  /** Shows a loading spinner on the save button (e.g. while processing files server-side) */
+  loading?: boolean;
 }

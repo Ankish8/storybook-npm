@@ -78,3 +78,15 @@ export const Empty: Story = {
     );
   },
 };
+
+/** All interactive elements are disabled in view mode. */
+export const Disabled: Story = {
+  render: () => (
+    <div className="max-w-[500px]">
+      <KnowledgeBaseCard
+        files={SAMPLE_FILES}
+        disabled
+      />
+    </div>
+  ),
+};

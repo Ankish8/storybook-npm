@@ -30,6 +30,8 @@ export interface AdvancedSettingsCardProps {
   callEndThresholdMin?: number;
   /** Max value for call end threshold spinner (default: 10) */
   callEndThresholdMax?: number;
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -58,27 +60,31 @@ function NumberSpinner({
   onChange,
   min = 0,
   max = 999,
+  disabled,
 }: {
   value: number;
   onChange: (v: number) => void;
   min?: number;
   max?: number;
+  disabled?: boolean;
 }) {
   return (
-    <div className="flex w-full items-center gap-2.5 px-4 py-2.5 border border-semantic-border-layout bg-semantic-bg-primary rounded">
+    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
       <input
         type="number"
         value={value}
         min={min}
         max={max}
+        disabled={disabled}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed"
       />
       <div className="flex flex-col items-center shrink-0 gap-0.5">
         <button
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+          disabled={disabled}
+          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
           aria-label="Increase"
         >
           <ChevronUp className="size-3" />
@@ -86,7 +92,8 @@ function NumberSpinner({
         <button
           type="button"
           onClick={() => onChange(Math.max(min, value - 1))}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+          disabled={disabled}
+          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
           aria-label="Decrease"
         >
           <ChevronDown className="size-3" />
@@ -107,6 +114,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
       silenceTimeoutMax = 60,
       callEndThresholdMin = 1,
       callEndThresholdMax = 10,
+      disabled,
       className,
     },
     ref
@@ -136,6 +144,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                       onChange={(v) => onChange({ silenceTimeout: v })}
                       min={silenceTimeoutMin}
                       max={silenceTimeoutMax}
+                      disabled={disabled}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
                       Default: 15 seconds
@@ -148,6 +157,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                       onChange={(v) => onChange({ callEndThreshold: v })}
                       min={callEndThresholdMin}
                       max={callEndThresholdMax}
+                      disabled={disabled}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
                       Drop call after n consecutive silences. Default: 3
@@ -170,6 +180,7 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
                     onCheckedChange={(v) =>
                       onChange({ interruptionHandling: v })
                     }
+                    disabled={disabled}
                   />
                 </div>
               </div>

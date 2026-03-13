@@ -105,6 +105,14 @@ import type { PlanUpgradeSummaryModalProps } from "@/components/custom/plan-upgr
     onClose: {
       description: "Called when the close icon is clicked.",
     },
+    loading: {
+      control: "boolean",
+      description: "Shows loading spinner on the primary CTA button.",
+    },
+    disabled: {
+      control: "boolean",
+      description: "Disables the primary CTA button.",
+    },
     className: {
       control: "text",
       description: "Additional classes for the modal root element.",
@@ -170,4 +178,14 @@ export const CustomAmounts: Story = {
     primaryActionLabel: "Pay & Confirm Upgrade",
   },
   render: (args) => <ModalPreview {...args} />,
+};
+
+export const Loading: Story = {
+  name: "Loading",
+  render: (args) => <ModalPreview loading {...args} />,
+};
+
+export const Disabled: Story = {
+  name: "Disabled",
+  render: (args) => <ModalPreview disabled {...args} />,
 };

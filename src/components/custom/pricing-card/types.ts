@@ -62,4 +62,6 @@ export interface PricingCardProps
   addon?: PricingCardAddon;
   /** Usage details displayed in a bulleted list at the bottom (e.g., AIO plan) */
   usageDetails?: UsageDetail[];
+  /** Informational text shown below the CTA button (e.g., "Your package change will be effective from 23-03-2026") */
+  infoText?: string;
 }

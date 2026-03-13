@@ -16,6 +16,8 @@ export interface BotBehaviorCardProps {
   onChange: (patch: Partial<BotBehaviorData>) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
   /** Additional className for the card */
   className?: string;
 }
@@ -61,12 +63,14 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  disabled,
   className,
 }: {
   placeholder?: string;
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  disabled?: boolean;
   className?: string;
 }) {
   return (
@@ -75,12 +79,14 @@ function StyledTextarea({
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
       placeholder={placeholder}
+      disabled={disabled}
       className={cn(
         "w-full px-4 py-2.5 text-base rounded border resize-none",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
         "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
     />
@@ -95,6 +101,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       data,
       onChange,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      disabled,
       className,
     },
     ref
@@ -121,6 +128,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                   if (v.length <= MAX) onChange({ systemPrompt: v });
                 }}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
+                disabled={disabled}
                 className="pb-8"
               />
               <span className="absolute bottom-2.5 right-3 text-sm text-semantic-text-muted">
@@ -139,7 +147,8 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                   key={v}
                   type="button"
                   onClick={() => insertVariable(v)}
-                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity")}
+                  disabled={disabled}
+                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
                 >
                   <Plus className="size-3 shrink-0" />
                   {v}

@@ -115,6 +115,8 @@ const PlanUpgradeSummaryModal = React.forwardRef<
       cancelLabel = "Cancel",
       primaryActionLabel,
       onPrimaryAction,
+      loading = false,
+      disabled = false,
       onCancel,
       onClose,
       closeAriaLabel = "Close plan summary modal",
@@ -213,7 +215,7 @@ const PlanUpgradeSummaryModal = React.forwardRef<
               <Button variant="outline" onClick={handleCancel}>
                 {cancelLabel}
               </Button>
-              <Button variant="primary" onClick={onPrimaryAction}>
+              <Button variant="primary" onClick={onPrimaryAction} loading={loading} disabled={disabled}>
                 {resolvedPrimaryActionLabel}
               </Button>
             </div>
