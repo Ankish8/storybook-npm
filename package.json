@@ -35,6 +35,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest run",
+    "test:smart": "node scripts/smart-test.js",
     "test:watch": "vitest",
     "check:bootstrap-compat": "node scripts/check-bootstrap-compat.js",
     "create-component": "node scripts/create-component.js",
