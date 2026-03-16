@@ -37,7 +37,7 @@ cd packages/cli && npm test
 
 ### 2.3 Linting
 ```bash
-cd /Users/ankish/Downloads/Code/storybook-npm && npm run lint
+npm run lint
 ```
 
 ### 2.4 API breaking change check

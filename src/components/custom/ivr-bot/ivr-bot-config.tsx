@@ -66,6 +66,9 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       functionPromptMaxLength,
       functionEditData,
       systemPromptMaxLength,
+      onSystemPromptBlur,
+      onAgentBusyPromptBlur,
+      onNoExtensionFoundPromptBlur,
       onBack,
       onPlayVoice,
       onPauseVoice,
@@ -168,6 +171,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <BotBehaviorCard
               data={data}
               onChange={update}
+              onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
               maxLength={systemPromptMaxLength}
               disabled={disabled}
@@ -183,6 +187,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
                   ...(patch.noExtensionFoundPrompt !== undefined && { noExtensionPrompt: patch.noExtensionFoundPrompt }),
                 })
               }
+              onAgentBusyPromptBlur={onAgentBusyPromptBlur}
+              onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur}
               disabled={disabled}
             />
           </div>

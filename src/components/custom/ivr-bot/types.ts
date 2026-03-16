@@ -132,6 +132,12 @@ export interface IvrBotConfigProps {
   functionEditData?: Partial<CreateFunctionData>;
   /** Max character length for the "How It Behaves" system prompt (default: 25000) */
   systemPromptMaxLength?: number;
+  /** Called when the system prompt textarea loses focus */
+  onSystemPromptBlur?: (value: string) => void;
+  /** Called when the Agent Busy Prompt textarea loses focus */
+  onAgentBusyPromptBlur?: (value: string) => void;
+  /** Called when the No Extension Found textarea loses focus */
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;

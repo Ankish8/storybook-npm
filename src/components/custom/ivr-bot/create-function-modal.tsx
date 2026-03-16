@@ -21,6 +21,24 @@ const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
 const FUNCTION_NAME_MAX = 30;
 const BODY_MAX = 4000;
 
+// Query parameter validation (aligned with apiIntegrationSchema.queryParams)
+const QUERY_PARAM_KEY_MAX = 512;
+const QUERY_PARAM_VALUE_MAX = 2048;
+const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\-~]+$/;
+
+function validateQueryParamKey(key: string): string | undefined {
+  if (!key.trim()) return "Query param key is required";
+  if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
+  if (!QUERY_PARAM_KEY_PATTERN.test(key)) return "Invalid query parameter key.";
+  return undefined;
+}
+
+function validateQueryParamValue(value: string): string | undefined {
+  if (!value.trim()) return "Query param value is required";
+  if (value.length > QUERY_PARAM_VALUE_MAX) return "value cannot exceed 2048 characters.";
+  return undefined;
+}
+
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
@@ -43,14 +61,18 @@ const textareaCls = cn(
 );
 
 // ── KeyValueTable ─────────────────────────────────────────────────────────────
+type RowErrors = { key?: string; value?: string };
+
 function KeyValueTable({
   rows,
   onChange,
   label,
+  getRowErrors,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
   label: string;
+  getRowErrors?: (row: KeyValuePair) => RowErrors;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) =>
     onChange(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
@@ -60,31 +82,39 @@ function KeyValueTable({
   const add = () =>
     onChange([...rows, { id: generateId(), key: "", value: "" }]);
 
+  const getErrors = (row: KeyValuePair): RowErrors =>
+    getRowErrors?.(row) ?? {};
+
+  // Reusable delete row action — same placement and styling as KeyValueRow / knowledge-base-card
+  const deleteRowButtonClass =
+    "text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0";
+
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-xs text-semantic-text-muted">{label}</span>
       <div className="border border-semantic-border-layout rounded overflow-hidden">
-        {/* Column headers — desktop only */}
+        {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
         <div className="hidden sm:flex bg-semantic-bg-ui border-b border-semantic-border-layout">
-          <div className="flex-1 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+          <div className="flex-1 min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
             Key
           </div>
-          <div className="flex-[2] px-3 py-2 text-xs font-semibold text-semantic-text-muted">
+          <div className="flex-[2] min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted">
             Value
           </div>
-          <div className="w-10 shrink-0" />
+          <div className="w-10 shrink-0" aria-hidden="true" />
         </div>
 
-        {/* Filled rows */}
-        {rows.map((row) => (
-          <div
-            key={row.id}
-            className="border-b border-semantic-border-layout last:border-b-0"
-          >
-            {/* Mobile: label + input pairs stacked */}
-            <div className="flex sm:hidden flex-col">
-              <div className="flex flex-col px-3 pt-2.5 pb-1 gap-0.5">
-                <span className="text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+        {/* Filled rows — same flex ratio (flex-1 / flex-2 / w-10) so middle border aligns with header */}
+        {rows.map((row) => {
+          const errors = getErrors(row);
+          return (
+            <div
+              key={row.id}
+              className="border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+            >
+              {/* Key column — border-r on column (not input) so it aligns with header */}
+              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
                 <input
@@ -92,61 +122,62 @@ function KeyValueTable({
                   value={row.key}
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
-                  className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                  maxLength={getRowErrors ? QUERY_PARAM_KEY_MAX : undefined}
+                  className={cn(
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    errors.key && "border-semantic-error-primary"
+                  )}
+                  aria-invalid={Boolean(errors.key)}
+                  aria-describedby={errors.key ? `err-key-${row.id}` : undefined}
                 />
+                {errors.key && (
+                  <p id={`err-key-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
+                    {errors.key}
+                  </p>
+                )}
               </div>
-              <div className="h-px bg-semantic-border-layout mx-3" />
-              <div className="flex items-start gap-2 px-3 py-2.5">
-                <div className="flex flex-col flex-1 gap-0.5">
-                  <span className="text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
-                    Value
-                  </span>
-                  <input
-                    type="text"
-                    value={row.value}
-                    onChange={(e) => update(row.id, { value: e.target.value })}
-                    placeholder="Type {{ to add variables"
-                    className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
-                  />
-                </div>
-                <button
+
+              {/* Value column */}
+              <div className="flex-[2] flex flex-col min-w-0">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                  Value
+                </span>
+                <input
+                  type="text"
+                  value={row.value}
+                  onChange={(e) => update(row.id, { value: e.target.value })}
+                  placeholder="Type {{ to add variables"
+                  maxLength={getRowErrors ? QUERY_PARAM_VALUE_MAX : undefined}
+                  className={cn(
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    errors.value && "border-semantic-error-primary"
+                  )}
+                  aria-invalid={Boolean(errors.value)}
+                  aria-describedby={errors.value ? `err-value-${row.id}` : undefined}
+                />
+                {errors.value && (
+                  <p id={`err-value-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
+                    {errors.value}
+                  </p>
+                )}
+              </div>
+
+              {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
+              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-semantic-border-layout sm:border-l-0">
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => remove(row.id)}
-                  className="mt-4 size-8 flex items-center justify-center text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface rounded transition-colors shrink-0"
+                  className={cn("rounded-md", deleteRowButtonClass)}
                   aria-label="Delete row"
                 >
-                  <Trash2 className="size-3.5" />
-                </button>
+                  <Trash2 className="size-4" />
+                </Button>
               </div>
             </div>
-
-            {/* Desktop: side-by-side */}
-            <div className="hidden sm:flex">
-              <input
-                type="text"
-                value={row.key}
-                onChange={(e) => update(row.id, { key: e.target.value })}
-                placeholder="Key"
-                className="flex-1 px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary border-r border-semantic-border-layout outline-none focus:bg-semantic-bg-hover"
-              />
-              <input
-                type="text"
-                value={row.value}
-                onChange={(e) => update(row.id, { value: e.target.value })}
-                placeholder="Type {{ to add variables"
-                className="flex-[2] px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover"
-              />
-              <button
-                type="button"
-                onClick={() => remove(row.id)}
-                className="w-10 flex items-center justify-center text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0"
-                aria-label="Delete row"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Add row — always visible */}
         <button
@@ -197,6 +228,7 @@ export const CreateFunctionModal = React.forwardRef<
     const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
+    const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
 
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
@@ -211,6 +243,7 @@ export const CreateFunctionModal = React.forwardRef<
         setQueryParams(initialData?.queryParams ?? []);
         setBody(initialData?.body ?? "");
         setApiResponse("");
+        setStep2SubmitAttempted(false);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -227,6 +260,7 @@ export const CreateFunctionModal = React.forwardRef<
       setQueryParams(initialData?.queryParams ?? []);
       setBody(initialData?.body ?? "");
       setApiResponse("");
+      setStep2SubmitAttempted(false);
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -247,7 +281,21 @@ export const CreateFunctionModal = React.forwardRef<
       if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
     };
 
+    const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
+      rows.some((row) => {
+        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+        if (!hasInput) return false;
+        return (
+          validateQueryParamKey(row.key) !== undefined ||
+          validateQueryParamValue(row.value) !== undefined
+        );
+      });
+
     const handleSubmit = () => {
+      if (step === 2) {
+        setStep2SubmitAttempted(true);
+        if (queryParamsHaveErrors(queryParams)) return;
+      }
       const data: CreateFunctionData = {
         name: name.trim(),
         prompt: prompt.trim(),
@@ -465,6 +513,14 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={queryParams}
                       onChange={setQueryParams}
                       label="Query parameter"
+                      getRowErrors={(row) => {
+                        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+                        if (!hasInput && !step2SubmitAttempted) return {};
+                        return {
+                          key: validateQueryParamKey(row.key),
+                          value: validateQueryParamValue(row.value),
+                        };
+                      }}
                     />
                   )}
                   {activeTab === "body" && (
