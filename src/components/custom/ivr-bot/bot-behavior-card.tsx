@@ -14,6 +14,8 @@ export interface BotBehaviorCardProps {
   data: Partial<BotBehaviorData>;
   /** Callback when any field changes */
   onChange: (patch: Partial<BotBehaviorData>) => void;
+  /** Called when the system prompt textarea loses focus */
+  onBlur?: (value: string) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
   /** Disables all fields in the card (view mode) */
@@ -63,6 +65,7 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  onBlur,
   disabled,
   className,
 }: {
@@ -70,6 +73,7 @@ function StyledTextarea({
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  onBlur?: (v: string) => void;
   disabled?: boolean;
   className?: string;
 }) {
@@ -78,6 +82,7 @@ function StyledTextarea({
       value={value ?? ""}
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
+      onBlur={(e) => onBlur?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
@@ -100,6 +105,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
     {
       data,
       onChange,
+      onBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       disabled,
       className,
@@ -127,6 +133,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                 onChange={(v) => {
                   if (v.length <= MAX) onChange({ systemPrompt: v });
                 }}
+                onBlur={onBlur}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
                 className="pb-8"

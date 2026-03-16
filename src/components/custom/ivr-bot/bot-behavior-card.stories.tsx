@@ -5,6 +5,9 @@ import { BotBehaviorCard, type BotBehaviorData } from "./bot-behavior-card";
 const meta: Meta<typeof BotBehaviorCard> = {
   title: "Custom/AI Bot/Bot Behavior Card",
   component: BotBehaviorCard,
+  argTypes: {
+    onBlur: { action: "blur" },
+  },
   parameters: {
     layout: "padded",
     docs: {

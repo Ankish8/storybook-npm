@@ -30,6 +30,7 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  onBlur,
   disabled,
   className,
 }: {
@@ -37,6 +38,7 @@ function StyledTextarea({
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  onBlur?: (v: string) => void;
   disabled?: boolean;
   className?: string;
 }) {
@@ -45,6 +47,7 @@ function StyledTextarea({
       value={value ?? ""}
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
+      onBlur={(e) => onBlur?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
@@ -82,10 +85,14 @@ function Field({
 function FallbackPromptsAccordion({
   data,
   onChange,
+  onAgentBusyPromptBlur,
+  onNoExtensionFoundPromptBlur,
   disabled,
 }: {
   data: Partial<IvrBotConfigData>;
   onChange: (patch: Partial<IvrBotConfigData>) => void;
+  onAgentBusyPromptBlur?: (value: string) => void;
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
   disabled?: boolean;
 }) {
   return (
@@ -104,6 +111,7 @@ function FallbackPromptsAccordion({
                 <StyledTextarea
                   value={data.agentBusyPrompt ?? ""}
                   onChange={(v) => onChange({ agentBusyPrompt: v })}
+                  onBlur={onAgentBusyPromptBlur}
                   placeholder="Executives are busy at the moment, we will connect you soon."
                   disabled={disabled}
                 />
@@ -112,6 +120,7 @@ function FallbackPromptsAccordion({
                 <StyledTextarea
                   value={data.noExtensionPrompt ?? ""}
                   onChange={(v) => onChange({ noExtensionPrompt: v })}
+                  onBlur={onNoExtensionFoundPromptBlur}
                   placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
                   disabled={disabled}
                 />
@@ -183,6 +192,9 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       silenceTimeoutMax,
       callEndThresholdMin,
       callEndThresholdMax,
+      onSystemPromptBlur,
+      onAgentBusyPromptBlur,
+      onNoExtensionFoundPromptBlur,
       className,
     },
     ref
@@ -259,10 +271,17 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <BotBehaviorCard
               data={data}
               onChange={update}
+              onBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
               disabled={disabled}
             />
-            <FallbackPromptsAccordion data={data} onChange={update} disabled={disabled} />
+            <FallbackPromptsAccordion
+              data={data}
+              onChange={update}
+              onAgentBusyPromptBlur={onAgentBusyPromptBlur}
+              onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur}
+              disabled={disabled}
+            />
           </div>
 
           {/* Right column — gray panel extending full height */}

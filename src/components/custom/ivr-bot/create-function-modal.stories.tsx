@@ -16,24 +16,25 @@ A **2-step wizard modal** for creating a new bot function.
 ---
 
 ### Step 1 — Name & Prompt
-- **Functions Name** (required, max 30 chars with live counter)
-- **Prompt** (required, min 100 chars, max 5000 chars with live counter)
-- **Next** button — disabled until name is filled and prompt meets min length
+- **Function Name** (required, max 100 chars with live counter, must match \`/^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/\`)
+- **Prompt** (required, min 100 chars, max 1000 chars with live counter)
+- **Next** button — disabled until name is valid and prompt meets min length
 
 ### Step 2 — API Configuration
-- **API URL** — HTTP method selector (GET / POST / PUT / DELETE / PATCH) + URL input
+- **API URL** — HTTP method selector (GET / POST / PUT / DELETE / PATCH) + URL input (max 500 chars, must start with http:// or https://)
 - **Tabs** — Header · Query parameter · Body (Body tab only visible for POST / PUT / PATCH)
-  - *Header / Query parameter* — editable key-value rows with delete action; click the empty row to add a new entry
-  - *Body* — textarea with 4 000 char counter (hidden for GET / DELETE)
+  - *Header* — key (max 512, validated) / value (max 2048) rows, spaces in keys become hyphens
+  - *Query parameter* — key (max 512, validated) / value (max 2048) rows, spaces in keys become hyphens
+  - *Body* — textarea with 4 000 char counter, validated as JSON on blur (hidden for GET / DELETE)
 - **Test Your API** — "Test API" button + read-only response area
-- **Back** (returns to Step 1) / **Submit** (calls \`onSubmit\` and closes)
+- **Back** (returns to Step 1) / **Submit** (disabled when validation errors exist, calls \`onSubmit\` and closes)
 
 ### Prop Defaults
 
 | Prop | Default |
 |------|---------|
 | \`promptMinLength\` | \`100\` |
-| \`promptMaxLength\` | \`5000\` |
+| \`promptMaxLength\` | \`1000\` |
 | \`initialStep\` | \`1\` |
 | \`initialTab\` | \`"header"\` |
 
@@ -90,7 +91,7 @@ const [open, setOpen] = React.useState(false);
     },
     promptMaxLength: {
       control: { type: "number" },
-      description: "Maximum character length for the prompt field (default: 5000)",
+      description: "Maximum character length for the prompt field (default: 1000)",
     },
     initialStep: {
       control: { type: "radio" },
@@ -161,7 +162,7 @@ export const Step1NameAndPrompt: Story = {
     docs: {
       description: {
         story:
-          "The first step collects the **function name** (max 30 chars) and a **prompt** description. The **Next** button stays disabled until both fields have content.",
+          "The first step collects the **function name** (max 100 chars, letters/numbers/underscores, must start with a letter) and a **prompt** description (max 1000 chars). The **Next** button stays disabled until both fields are valid.",
       },
     },
   },

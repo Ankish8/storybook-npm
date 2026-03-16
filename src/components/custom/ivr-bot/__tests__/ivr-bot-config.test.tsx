@@ -139,4 +139,44 @@ describe("IvrBotConfig", () => {
     render(<IvrBotConfig ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
+
+  it("calls onSystemPromptBlur when system prompt loses focus", async () => {
+    const user = userEvent.setup();
+    const onSystemPromptBlur = vi.fn();
+    render(<IvrBotConfig onSystemPromptBlur={onSystemPromptBlur} />);
+    const textarea = screen.getByPlaceholderText(/You are a helpful assistant/i);
+    await user.click(textarea);
+    await user.type(textarea, "hello");
+    await user.tab();
+    expect(onSystemPromptBlur).toHaveBeenCalledTimes(1);
+    expect(onSystemPromptBlur).toHaveBeenCalledWith(expect.stringContaining("hello"));
+  });
+
+  it("calls onAgentBusyPromptBlur when agent busy prompt loses focus", async () => {
+    const user = userEvent.setup();
+    const onAgentBusyPromptBlur = vi.fn();
+    render(<IvrBotConfig onAgentBusyPromptBlur={onAgentBusyPromptBlur} />);
+    // Open Fallback Prompts accordion
+    await user.click(screen.getByText("Fallback Prompts"));
+    const textarea = screen.getByPlaceholderText(/Executives are busy/i);
+    await user.click(textarea);
+    await user.type(textarea, "busy msg");
+    await user.tab();
+    expect(onAgentBusyPromptBlur).toHaveBeenCalledTimes(1);
+    expect(onAgentBusyPromptBlur).toHaveBeenCalledWith("busy msg");
+  });
+
+  it("calls onNoExtensionFoundPromptBlur when no extension prompt loses focus", async () => {
+    const user = userEvent.setup();
+    const onNoExtensionFoundPromptBlur = vi.fn();
+    render(<IvrBotConfig onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur} />);
+    // Open Fallback Prompts accordion
+    await user.click(screen.getByText("Fallback Prompts"));
+    const textarea = screen.getByPlaceholderText(/Sorry, the requested extension/i);
+    await user.click(textarea);
+    await user.type(textarea, "no ext");
+    await user.tab();
+    expect(onNoExtensionFoundPromptBlur).toHaveBeenCalledTimes(1);
+    expect(onNoExtensionFoundPromptBlur).toHaveBeenCalledWith("no ext");
+  });
 });

@@ -68,6 +68,9 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
     onBack: { action: "back" },
     onPlayVoice: { action: "playVoice" },
     onPauseVoice: { action: "pauseVoice" },
+    onSystemPromptBlur: { action: "systemPromptBlur" },
+    onAgentBusyPromptBlur: { action: "agentBusyPromptBlur" },
+    onNoExtensionFoundPromptBlur: { action: "noExtensionFoundPromptBlur" },
   },
 };
 

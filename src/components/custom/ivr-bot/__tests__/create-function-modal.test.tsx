@@ -44,7 +44,7 @@ describe("CreateFunctionModal", () => {
     const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "Hello");
-    expect(screen.getByText(/5\/30/)).toBeInTheDocument();
+    expect(screen.getByText(/5\/100/)).toBeInTheDocument();
   });
 
   it("advances to step 2 on Next click", async () => {
@@ -123,5 +123,66 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("shows error for invalid function name on blur", async () => {
+    const user = userEvent.setup();
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const nameInput = screen.getByLabelText(/Function Name/i);
+    await user.type(nameInput, "123invalid");
+    await user.tab();
+    expect(screen.getByText(/Must start with a letter/)).toBeInTheDocument();
+  });
+
+  it("disables Next when function name fails regex", async () => {
+    const user = userEvent.setup();
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    await user.type(screen.getByLabelText(/Function Name/i), "___");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    expect(screen.getByRole("button", { name: /Next/i })).toBeDisabled();
+  });
+
+  it("shows error when URL does not start with http", async () => {
+    const user = userEvent.setup();
+    render(<CreateFunctionModal open onOpenChange={noop} initialStep={2} />);
+    const urlInput = screen.getByPlaceholderText(/Enter URL/i);
+    await user.type(urlInput, "ftp://example.com");
+    await user.tab();
+    expect(screen.getByText(/URL must start with http/)).toBeInTheDocument();
+  });
+
+  it("shows error for invalid JSON body on blur", async () => {
+    const user = userEvent.setup();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        initialStep={2}
+        initialTab="body"
+      />
+    );
+    // Switch to POST so body tab is visible
+    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
+    await user.click(screen.getByText("Body"));
+    const bodyTextarea = screen.getByPlaceholderText(/Enter request body/i);
+    await user.type(bodyTextarea, "not valid json");
+    await user.tab();
+    expect(screen.getByText(/Body must be valid JSON/)).toBeInTheDocument();
+  });
+
+  it("replaces spaces with hyphens in header keys", async () => {
+    const user = userEvent.setup();
+    render(<CreateFunctionModal open onOpenChange={noop} initialStep={2} />);
+    // Add a header row
+    await user.click(screen.getByText("Add row"));
+    const keyInputs = screen.getAllByPlaceholderText("Key");
+    await user.type(keyInputs[0], "my key");
+    // Spaces should be replaced with hyphens
+    expect(keyInputs[0]).toHaveValue("my-key");
+  });
+
+  it("uses promptMaxLength default of 1000", () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    expect(screen.getByText(/0\/1000/)).toBeInTheDocument();
   });
 });

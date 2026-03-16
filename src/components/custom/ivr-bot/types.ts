@@ -50,7 +50,7 @@ export interface CreateFunctionModalProps {
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Minimum character length for the prompt field (default: 100) */
   promptMinLength?: number;
-  /** Maximum character length for the prompt field (default: 5000) */
+  /** Maximum character length for the prompt field (default: 1000) */
   promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
@@ -108,7 +108,7 @@ export interface IvrBotConfigProps {
   functionsInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
-  /** Maximum character length for the function prompt (default: 5000) */
+  /** Maximum character length for the function prompt (default: 1000) */
   functionPromptMaxLength?: number;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
@@ -135,6 +135,12 @@ export interface IvrBotConfigProps {
   /** Override call end threshold bounds */
   callEndThresholdMin?: number;
   callEndThresholdMax?: number;
+  /** Called when the system prompt textarea loses focus */
+  onSystemPromptBlur?: (value: string) => void;
+  /** Called when the Agent Busy Prompt textarea loses focus */
+  onAgentBusyPromptBlur?: (value: string) => void;
+  /** Called when the No Extension Found textarea loses focus */
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
   className?: string;
 }
 
