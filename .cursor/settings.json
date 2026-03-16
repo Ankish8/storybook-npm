@@ -2,6 +2,11 @@
   "plugins": {
     "figma": {
       "enabled": true
+    },
+    "myoperator-cursor-plugins/myoperator-cursor-workflows": {
+      "enabled": true,
+      "gitUrl": "https://github.com/Ankish8/myoperator-plugins",
+      "gitRef": "HEAD"
     }
   }
 }
