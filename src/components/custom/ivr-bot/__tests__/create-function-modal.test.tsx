@@ -45,7 +45,7 @@ describe("CreateFunctionModal", () => {
   it("shows character counter for function name", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "Hello");
-    expect(screen.getByText(/5\/30/)).toBeInTheDocument();
+    expect(screen.getByText(/5\/100/)).toBeInTheDocument();
   });
 
   it("advances to step 2 on Next click", async () => {

@@ -18,9 +18,15 @@ import type {
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
-const FUNCTION_NAME_MAX = 30;
+const FUNCTION_NAME_MAX = 100;
 const BODY_MAX = 4000;
+const URL_MAX = 500;
+const HEADER_KEY_MAX = 512;
+const HEADER_VALUE_MAX = 2048;
 
+const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+const URL_REGEX = /^https?:\/\//;
+const HEADER_KEY_REGEX = /^[!#$%&'*+\-.^_`|~0-9a-zA-Z]+$/;
 // Query parameter validation (aligned with apiIntegrationSchema.queryParams)
 const QUERY_PARAM_KEY_MAX = 512;
 const QUERY_PARAM_VALUE_MAX = 2048;
@@ -68,22 +74,42 @@ function KeyValueTable({
   onChange,
   label,
   getRowErrors,
+  keyMaxLength,
+  valueMaxLength,
+  keyRegex,
+  keyRegexError,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
   label: string;
   getRowErrors?: (row: KeyValuePair) => RowErrors;
+  keyMaxLength?: number;
+  valueMaxLength?: number;
+  keyRegex?: RegExp;
+  keyRegexError?: string;
 }) {
-  const update = (id: string, patch: Partial<KeyValuePair>) =>
+  const update = (id: string, patch: Partial<KeyValuePair>) => {
+    // Replace spaces with hyphens in key values
+    if (patch.key !== undefined) {
+      patch = { ...patch, key: patch.key.replace(/ /g, "-") };
+    }
     onChange(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  };
 
   const remove = (id: string) => onChange(rows.filter((r) => r.id !== id));
 
   const add = () =>
     onChange([...rows, { id: generateId(), key: "", value: "" }]);
 
-  const getErrors = (row: KeyValuePair): RowErrors =>
-    getRowErrors?.(row) ?? {};
+  const getErrors = (row: KeyValuePair): RowErrors => {
+    if (getRowErrors) return getRowErrors(row);
+    // Inline validation from keyRegex prop when no getRowErrors provided
+    const errors: RowErrors = {};
+    if (keyRegex && row.key.trim() && !keyRegex.test(row.key)) {
+      errors.key = keyRegexError ?? "Invalid key format";
+    }
+    return errors;
+  };
 
   // Reusable delete row action — same placement and styling as KeyValueRow / knowledge-base-card
   const deleteRowButtonClass =
@@ -122,7 +148,7 @@ function KeyValueTable({
                   value={row.key}
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
-                  maxLength={getRowErrors ? QUERY_PARAM_KEY_MAX : undefined}
+                  maxLength={keyMaxLength}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
                     errors.key && "border-semantic-error-primary"
@@ -147,7 +173,7 @@ function KeyValueTable({
                   value={row.value}
                   onChange={(e) => update(row.id, { value: e.target.value })}
                   placeholder="Type {{ to add variables"
-                  maxLength={getRowErrors ? QUERY_PARAM_VALUE_MAX : undefined}
+                  maxLength={valueMaxLength}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
                     errors.value && "border-semantic-error-primary"
@@ -207,7 +233,7 @@ export const CreateFunctionModal = React.forwardRef<
       initialData,
       isEditing = false,
       promptMinLength = 100,
-      promptMaxLength = 5000,
+      promptMaxLength = 1000,
       initialStep = 1,
       initialTab = "header",
       className,
@@ -229,6 +255,9 @@ export const CreateFunctionModal = React.forwardRef<
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
     const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
+    const [nameError, setNameError] = React.useState("");
+    const [urlError, setUrlError] = React.useState("");
+    const [bodyError, setBodyError] = React.useState("");
 
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
@@ -244,6 +273,9 @@ export const CreateFunctionModal = React.forwardRef<
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
+        setNameError("");
+        setUrlError("");
+        setBodyError("");
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -261,6 +293,9 @@ export const CreateFunctionModal = React.forwardRef<
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
+      setNameError("");
+      setUrlError("");
+      setBodyError("");
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -276,6 +311,35 @@ export const CreateFunctionModal = React.forwardRef<
         setActiveTab("header");
       }
     }, [supportsBody, activeTab]);
+
+    const validateName = (value: string) => {
+      if (value.trim() && !FUNCTION_NAME_REGEX.test(value.trim())) {
+        setNameError("Must start with a letter and contain only letters, numbers, and underscores");
+      } else {
+        setNameError("");
+      }
+    };
+
+    const validateUrl = (value: string) => {
+      if (value.trim() && !URL_REGEX.test(value.trim())) {
+        setUrlError("URL must start with http:// or https://");
+      } else {
+        setUrlError("");
+      }
+    };
+
+    const validateBody = (value: string) => {
+      if (value.trim()) {
+        try {
+          JSON.parse(value.trim());
+          setBodyError("");
+        } catch {
+          setBodyError("Body must be valid JSON");
+        }
+      } else {
+        setBodyError("");
+      }
+    };
 
     const handleNext = () => {
       if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
@@ -327,8 +391,17 @@ export const CreateFunctionModal = React.forwardRef<
       }
     };
 
+    const headersHaveKeyErrors = headers.some(
+      (row) => row.key.trim() && HEADER_KEY_REGEX && !HEADER_KEY_REGEX.test(row.key)
+    );
+
     const isStep1Valid =
-      name.trim().length > 0 && prompt.trim().length >= promptMinLength;
+      name.trim().length > 0 &&
+      FUNCTION_NAME_REGEX.test(name.trim()) &&
+      prompt.trim().length >= promptMinLength;
+
+    const isStep2Valid =
+      !urlError && !bodyError && !headersHaveKeyErrors && !queryParamsHaveErrors(queryParams);
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: `Header (${headers.length})`,
@@ -386,7 +459,11 @@ export const CreateFunctionModal = React.forwardRef<
                       type="text"
                       value={name}
                       maxLength={FUNCTION_NAME_MAX}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (nameError) validateName(e.target.value);
+                      }}
+                      onBlur={(e) => validateName(e.target.value)}
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
@@ -394,6 +471,9 @@ export const CreateFunctionModal = React.forwardRef<
                       {name.length}/{FUNCTION_NAME_MAX}
                     </span>
                   </div>
+                  {nameError && (
+                    <p className="m-0 text-xs text-semantic-error-primary">{nameError}</p>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -468,11 +548,19 @@ export const CreateFunctionModal = React.forwardRef<
                     <input
                       type="text"
                       value={url}
-                      onChange={(e) => setUrl(e.target.value)}
+                      maxLength={URL_MAX}
+                      onChange={(e) => {
+                        setUrl(e.target.value);
+                        if (urlError) validateUrl(e.target.value);
+                      }}
+                      onBlur={(e) => validateUrl(e.target.value)}
                       placeholder="Enter URL or Type {{ to add variables"
                       className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
                     />
                   </div>
+                  {urlError && (
+                    <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
+                  )}
                 </div>
 
                 {/* Tabs — scrollable, no visible scrollbar */}
@@ -506,6 +594,10 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={headers}
                       onChange={setHeaders}
                       label="Header"
+                      keyMaxLength={HEADER_KEY_MAX}
+                      valueMaxLength={HEADER_VALUE_MAX}
+                      keyRegex={HEADER_KEY_REGEX}
+                      keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters."
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -513,6 +605,8 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={queryParams}
                       onChange={setQueryParams}
                       label="Query parameter"
+                      keyMaxLength={QUERY_PARAM_KEY_MAX}
+                      valueMaxLength={QUERY_PARAM_VALUE_MAX}
                       getRowErrors={(row) => {
                         const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
                         if (!hasInput && !step2SubmitAttempted) return {};
@@ -532,8 +626,12 @@ export const CreateFunctionModal = React.forwardRef<
                         <textarea
                           value={body}
                           maxLength={BODY_MAX}
-                          onChange={(e) => setBody(e.target.value)}
-                          placeholder="Enter request body (JSON, XML etc). Type {{ to add variables"
+                          onChange={(e) => {
+                            setBody(e.target.value);
+                            if (bodyError) validateBody(e.target.value);
+                          }}
+                          onBlur={(e) => validateBody(e.target.value)}
+                          placeholder="Enter request body (JSON). Type {{ to add variables"
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
                         />
@@ -541,6 +639,9 @@ export const CreateFunctionModal = React.forwardRef<
                           {body.length}/{BODY_MAX}
                         </span>
                       </div>
+                      {bodyError && (
+                        <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -613,6 +714,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
+                  disabled={!isStep2Valid}
                 >
                   Submit
                 </Button>

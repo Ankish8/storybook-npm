@@ -63,7 +63,7 @@ export interface CreateFunctionModalProps {
   isEditing?: boolean;
   /** Minimum character length for the prompt field (default: 100) */
   promptMinLength?: number;
-  /** Maximum character length for the prompt field (default: 5000) */
+  /** Maximum character length for the prompt field (default: 1000) */
   promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
@@ -123,7 +123,7 @@ export interface IvrBotConfigProps {
   knowledgeBaseInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
-  /** Maximum character length for the function prompt (default: 5000) */
+  /** Maximum character length for the function prompt (default: 1000) */
   functionPromptMaxLength?: number;
   /**
    * Pre-filled data shown when the edit function modal opens.
