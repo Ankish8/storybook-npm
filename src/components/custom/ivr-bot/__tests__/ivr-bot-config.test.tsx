@@ -2,6 +2,7 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { IvrBotConfig } from "../ivr-bot-config";
+import { BOT_KNOWLEDGE_STATUS } from "../types";
 
 describe("IvrBotConfig", () => {
   it("renders page header with default title", () => {
@@ -70,13 +71,13 @@ describe("IvrBotConfig", () => {
       <IvrBotConfig
         initialData={{
           knowledgeBaseFiles: [
-            { id: "f1", name: "Lead validation bot", status: "training" },
+            { id: "f1", name: "Lead validation bot", status: BOT_KNOWLEDGE_STATUS.PROCESSING },
           ],
         }}
       />
     );
     expect(screen.getByText(/Lead validation bot/)).toBeInTheDocument();
-    expect(screen.getByText("Training")).toBeInTheDocument();
+    expect(screen.getByText("Processing")).toBeInTheDocument();
   });
 
   it("calls onDeleteKnowledgeFile when delete is clicked", async () => {
@@ -85,7 +86,7 @@ describe("IvrBotConfig", () => {
     render(
       <IvrBotConfig
         initialData={{
-          knowledgeBaseFiles: [{ id: "f1", name: "Test File", status: "trained" }],
+          knowledgeBaseFiles: [{ id: "f1", name: "Test File", status: BOT_KNOWLEDGE_STATUS.READY }],
         }}
         onDeleteKnowledgeFile={onDeleteKnowledgeFile}
       />

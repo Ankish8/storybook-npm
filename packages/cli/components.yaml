@@ -790,6 +790,7 @@ components:
       - "functions-card.tsx"
       - "frustration-handover-card.tsx"
       - "advanced-settings-card.tsx"
+      - "fallback-prompts-card.tsx"
       - "types.ts"
       - "index.ts"
     mainFile: "ivr-bot-config.tsx"

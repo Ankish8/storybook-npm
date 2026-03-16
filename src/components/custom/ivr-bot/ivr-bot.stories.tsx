@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { IvrBotConfig } from "./ivr-bot-config";
+import { BOT_KNOWLEDGE_STATUS } from "./types";
 
 // ─── IvrBotConfig stories ────────────────────────────────────────────────────
 const ivrBotMeta: Meta<typeof IvrBotConfig> = {
@@ -93,8 +94,8 @@ export const Overview: Story = {
           systemPrompt:
             "You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome to CaratLane. How can I assist you today?'\n\nIf the caller mentions order tracking, ask for their order ID and look it up via the get_order_status function.",
           knowledgeBaseFiles: [
-            { id: "kb-1", name: "Lead validation bot", status: "training" },
-            { id: "kb-2", name: "FAQ_2025.pdf", status: "trained" },
+            { id: "kb-1", name: "Lead validation bot", status: BOT_KNOWLEDGE_STATUS.PROCESSING },
+            { id: "kb-2", name: "FAQ_2025.pdf",         status: BOT_KNOWLEDGE_STATUS.READY      },
           ],
           functions: [
             {
@@ -148,9 +149,9 @@ export const WithErrorFile: Story = {
   args: {
     initialData: {
       knowledgeBaseFiles: [
-        { id: "kb-1", name: "Lead validation bot", status: "training" },
-        { id: "kb-2", name: "Corrupted_data.pdf", status: "error" },
-        { id: "kb-3", name: "FAQ_2025.pdf", status: "trained" },
+        { id: "kb-1", name: "Lead validation bot", status: BOT_KNOWLEDGE_STATUS.PROCESSING },
+        { id: "kb-2", name: "Corrupted_data.pdf",  status: BOT_KNOWLEDGE_STATUS.FAILED     },
+        { id: "kb-3", name: "FAQ_2025.pdf",         status: BOT_KNOWLEDGE_STATUS.READY      },
       ],
     },
   },

@@ -16,6 +16,8 @@ export interface BotBehaviorCardProps {
   onChange: (patch: Partial<BotBehaviorData>) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
+  /** Maximum character length for the system prompt textarea (default: 25000) */
+  maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Additional className for the card */
@@ -101,13 +103,14 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       data,
       onChange,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      maxLength = 25000,
       disabled,
       className,
     },
     ref
   ) => {
     const prompt = data.systemPrompt ?? "";
-    const MAX = 25000;
+    const MAX = maxLength;
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });

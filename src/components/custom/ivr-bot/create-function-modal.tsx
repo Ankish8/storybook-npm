@@ -173,6 +173,8 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange,
       onSubmit,
       onTestApi,
+      initialData,
+      isEditing = false,
       promptMinLength = 100,
       promptMaxLength = 5000,
       initialStep = 1,
@@ -183,31 +185,49 @@ export const CreateFunctionModal = React.forwardRef<
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
-    const [name, setName] = React.useState("");
-    const [prompt, setPrompt] = React.useState("");
+    const [name, setName] = React.useState(initialData?.name ?? "");
+    const [prompt, setPrompt] = React.useState(initialData?.prompt ?? "");
 
-    const [method, setMethod] = React.useState<HttpMethod>("GET");
-    const [url, setUrl] = React.useState("");
+    const [method, setMethod] = React.useState<HttpMethod>(initialData?.method ?? "GET");
+    const [url, setUrl] = React.useState(initialData?.url ?? "");
     const [activeTab, setActiveTab] =
       React.useState<FunctionTabType>(initialTab);
-    const [headers, setHeaders] = React.useState<KeyValuePair[]>([]);
-    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>([]);
-    const [body, setBody] = React.useState("");
+    const [headers, setHeaders] = React.useState<KeyValuePair[]>(initialData?.headers ?? []);
+    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>(initialData?.queryParams ?? []);
+    const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
 
+    // Sync form state from initialData each time the modal opens
+    React.useEffect(() => {
+      if (open) {
+        setStep(initialStep);
+        setName(initialData?.name ?? "");
+        setPrompt(initialData?.prompt ?? "");
+        setMethod(initialData?.method ?? "GET");
+        setUrl(initialData?.url ?? "");
+        setActiveTab(initialTab);
+        setHeaders(initialData?.headers ?? []);
+        setQueryParams(initialData?.queryParams ?? []);
+        setBody(initialData?.body ?? "");
+        setApiResponse("");
+      }
+    // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
     const reset = React.useCallback(() => {
       setStep(initialStep);
-      setName("");
-      setPrompt("");
-      setMethod("GET");
-      setUrl("");
+      setName(initialData?.name ?? "");
+      setPrompt(initialData?.prompt ?? "");
+      setMethod(initialData?.method ?? "GET");
+      setUrl(initialData?.url ?? "");
       setActiveTab(initialTab);
-      setHeaders([]);
-      setQueryParams([]);
-      setBody("");
+      setHeaders(initialData?.headers ?? []);
+      setQueryParams(initialData?.queryParams ?? []);
+      setBody(initialData?.body ?? "");
       setApiResponse("");
-    }, [initialStep, initialTab]);
+    }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -287,7 +307,7 @@ export const CreateFunctionModal = React.forwardRef<
           {/* ── Header ── */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout shrink-0 sm:px-6">
             <DialogTitle className="text-base font-semibold text-semantic-text-primary">
-              Create Function
+              {isEditing ? "Edit Function" : "Create Function"}
             </DialogTitle>
             <button
               type="button"

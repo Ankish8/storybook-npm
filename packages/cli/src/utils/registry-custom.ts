@@ -7022,17 +7022,10 @@ export type {
         {
           name: "ivr-bot-config.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../button";
 import { Badge } from "../badge";
 import { PageHeader } from "../page-header";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "../accordion";
 import { BotIdentityCard } from "./bot-identity-card";
 import { BotBehaviorCard } from "./bot-behavior-card";
 import { KnowledgeBaseCard } from "./knowledge-base-card";
@@ -7046,106 +7039,8 @@ import type {
   IvrBotConfigData,
   CreateFunctionData,
 } from "./types";
+import { FallbackPromptsCard } from "./fallback-prompts-card";
 
-// ─── Styled Textarea (still used by FallbackPromptsAccordion) ───────────────
-function StyledTextarea({
-  placeholder,
-  value,
-  rows = 3,
-  onChange,
-  disabled,
-  className,
-}: {
-  placeholder?: string;
-  value?: string;
-  rows?: number;
-  onChange?: (v: string) => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <textarea
-      value={value ?? ""}
-      rows={rows}
-      onChange={(e) => onChange?.(e.target.value)}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={cn(
-        "w-full px-4 py-2.5 text-base rounded border resize-none",
-        "border-semantic-border-input bg-semantic-bg-primary",
-        "text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none hover:border-semantic-border-input-focus",
-        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-    />
-  );
-}
-
-// ─── Field wrapper (still used by FallbackPromptsAccordion) ─────────────────
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
-
-// ─── Fallback Prompts (accordion) ────────────────────────────────────────────
-function FallbackPromptsAccordion({
-  data,
-  onChange,
-  disabled,
-}: {
-  data: Partial<IvrBotConfigData>;
-  onChange: (patch: Partial<IvrBotConfigData>) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden">
-      <Accordion type="single">
-        <AccordionItem value="fallback">
-          <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
-            <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
-              Fallback Prompts
-              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
-            </span>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="px-4 pt-4 pb-2 flex flex-col gap-6 sm:px-6 sm:pt-6">
-              <Field label="Agent Busy Prompt">
-                <StyledTextarea
-                  value={data.agentBusyPrompt ?? ""}
-                  onChange={(v) => onChange({ agentBusyPrompt: v })}
-                  placeholder="Executives are busy at the moment, we will connect you soon."
-                  disabled={disabled}
-                />
-              </Field>
-              <Field label="No Extension Found">
-                <StyledTextarea
-                  value={data.noExtensionPrompt ?? ""}
-                  onChange={(v) => onChange({ noExtensionPrompt: v })}
-                  placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
-                  disabled={disabled}
-                />
-              </Field>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
-  );
-}
 
 // ─── Default data ─────────────────────────────────────────────────────────────
 const DEFAULT_DATA: IvrBotConfigData = {
@@ -7189,8 +7084,11 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onDeleteFunction,
       onTestApi,
       functionsInfoTooltip,
+      knowledgeBaseInfoTooltip,
       functionPromptMinLength,
       functionPromptMaxLength,
+      functionEditData,
+      systemPromptMaxLength,
       onBack,
       onPlayVoice,
       onPauseVoice,
@@ -7215,6 +7113,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       ...initialData,
     });
     const [createFnOpen, setCreateFnOpen] = React.useState(false);
+    const [editFnOpen, setEditFnOpen] = React.useState(false);
     const [uploadOpen, setUploadOpen] = React.useState(false);
 
     const update = (patch: Partial<IvrBotConfigData>) =>
@@ -7224,6 +7123,16 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       const newFn = { id: \`fn-\${Date.now()}\`, name: fnData.name };
       update({ functions: [...data.functions, newFn] });
       onCreateFunction?.(fnData);
+    };
+
+    const handleEditFunction = (id: string) => {
+      onEditFunction?.(id);
+      setEditFnOpen(true);
+    };
+
+    const handleEditFunctionSubmit = (fnData: CreateFunctionData) => {
+      onCreateFunction?.(fnData);
+      setEditFnOpen(false);
     };
 
     return (
@@ -7283,9 +7192,22 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               data={data}
               onChange={update}
               sessionVariables={sessionVariables}
+              maxLength={systemPromptMaxLength}
               disabled={disabled}
             />
-            <FallbackPromptsAccordion data={data} onChange={update} disabled={disabled} />
+            <FallbackPromptsCard
+              data={{
+                agentBusyPrompt: data.agentBusyPrompt,
+                noExtensionFoundPrompt: data.noExtensionPrompt,
+              }}
+              onChange={(patch) =>
+                update({
+                  ...(patch.agentBusyPrompt !== undefined && { agentBusyPrompt: patch.agentBusyPrompt }),
+                  ...(patch.noExtensionFoundPrompt !== undefined && { noExtensionPrompt: patch.noExtensionFoundPrompt }),
+                })
+              }
+              disabled={disabled}
+            />
           </div>
 
           {/* Right column — gray panel extending full height */}
@@ -7294,6 +7216,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
+              infoTooltip={knowledgeBaseInfoTooltip}
               disabled={disabled}
               onDelete={(id) => {
                 update({
@@ -7307,7 +7230,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
-              onEditFunction={onEditFunction}
+              onEditFunction={handleEditFunction}
               infoTooltip={functionsInfoTooltip}
               disabled={disabled}
               onDeleteFunction={(id) => {
@@ -7341,6 +7264,18 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+          promptMinLength={functionPromptMinLength}
+          promptMaxLength={functionPromptMaxLength}
+        />
+
+        {/* Edit Function Modal */}
+        <CreateFunctionModal
+          open={editFnOpen}
+          onOpenChange={setEditFnOpen}
+          onSubmit={handleEditFunctionSubmit}
+          onTestApi={onTestApi}
+          initialData={functionEditData}
+          isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
         />
@@ -7538,6 +7473,8 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange,
       onSubmit,
       onTestApi,
+      initialData,
+      isEditing = false,
       promptMinLength = 100,
       promptMaxLength = 5000,
       initialStep = 1,
@@ -7548,31 +7485,49 @@ export const CreateFunctionModal = React.forwardRef<
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
-    const [name, setName] = React.useState("");
-    const [prompt, setPrompt] = React.useState("");
+    const [name, setName] = React.useState(initialData?.name ?? "");
+    const [prompt, setPrompt] = React.useState(initialData?.prompt ?? "");
 
-    const [method, setMethod] = React.useState<HttpMethod>("GET");
-    const [url, setUrl] = React.useState("");
+    const [method, setMethod] = React.useState<HttpMethod>(initialData?.method ?? "GET");
+    const [url, setUrl] = React.useState(initialData?.url ?? "");
     const [activeTab, setActiveTab] =
       React.useState<FunctionTabType>(initialTab);
-    const [headers, setHeaders] = React.useState<KeyValuePair[]>([]);
-    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>([]);
-    const [body, setBody] = React.useState("");
+    const [headers, setHeaders] = React.useState<KeyValuePair[]>(initialData?.headers ?? []);
+    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>(initialData?.queryParams ?? []);
+    const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
 
+    // Sync form state from initialData each time the modal opens
+    React.useEffect(() => {
+      if (open) {
+        setStep(initialStep);
+        setName(initialData?.name ?? "");
+        setPrompt(initialData?.prompt ?? "");
+        setMethod(initialData?.method ?? "GET");
+        setUrl(initialData?.url ?? "");
+        setActiveTab(initialTab);
+        setHeaders(initialData?.headers ?? []);
+        setQueryParams(initialData?.queryParams ?? []);
+        setBody(initialData?.body ?? "");
+        setApiResponse("");
+      }
+    // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
     const reset = React.useCallback(() => {
       setStep(initialStep);
-      setName("");
-      setPrompt("");
-      setMethod("GET");
-      setUrl("");
+      setName(initialData?.name ?? "");
+      setPrompt(initialData?.prompt ?? "");
+      setMethod(initialData?.method ?? "GET");
+      setUrl(initialData?.url ?? "");
       setActiveTab(initialTab);
-      setHeaders([]);
-      setQueryParams([]);
-      setBody("");
+      setHeaders(initialData?.headers ?? []);
+      setQueryParams(initialData?.queryParams ?? []);
+      setBody(initialData?.body ?? "");
       setApiResponse("");
-    }, [initialStep, initialTab]);
+    }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -7652,7 +7607,7 @@ export const CreateFunctionModal = React.forwardRef<
           {/* ── Header ── */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout shrink-0 sm:px-6">
             <DialogTitle className="text-base font-semibold text-semantic-text-primary">
-              Create Function
+              {isEditing ? "Edit Function" : "Create Function"}
             </DialogTitle>
             <button
               type="button"
@@ -8274,6 +8229,8 @@ export interface BotBehaviorCardProps {
   onChange: (patch: Partial<BotBehaviorData>) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
+  /** Maximum character length for the system prompt textarea (default: 25000) */
+  maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Additional className for the card */
@@ -8359,13 +8316,14 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       data,
       onChange,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      maxLength = 25000,
       disabled,
       className,
     },
     ref
   ) => {
     const prompt = data.systemPrompt ?? "";
-    const MAX = 25000;
+    const MAX = maxLength;
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });
@@ -8430,6 +8388,13 @@ export { BotBehaviorCard };
 import { Download, Trash2, Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../tooltip";
+import { BOT_KNOWLEDGE_STATUS } from "./types";
 import type { KnowledgeBaseFile } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -8443,6 +8408,8 @@ export interface KnowledgeBaseCardProps {
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
   onDelete?: (id: string) => void;
+  /** Hover text shown on the info icon next to the "Knowledge Base" title */
+  infoTooltip?: string;
   /** Disables all interactive elements in the card (view mode) */
   disabled?: boolean;
   /** Additional className */
@@ -8451,13 +8418,13 @@ export interface KnowledgeBaseCardProps {
 
 // ─── Status config ──────────────────────────────────────────────────────────
 
-type BadgeVariant = "active" | "destructive";
-const STATUS_CONFIG: Record<string, { label: string; variant: BadgeVariant }> =
-  {
-    training: { label: "Training", variant: "active" },
-    trained: { label: "Trained", variant: "active" },
-    error: { label: "Error", variant: "destructive" },
-  };
+type BadgeVariant = "default" | "active" | "destructive";
+const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: BadgeVariant }> = {
+  [BOT_KNOWLEDGE_STATUS.PENDING]:    { label: "Pending",    variant: "default"      },
+  [BOT_KNOWLEDGE_STATUS.READY]:      { label: "Ready",      variant: "active"       },
+  [BOT_KNOWLEDGE_STATUS.PROCESSING]: { label: "Processing", variant: "active"       },
+  [BOT_KNOWLEDGE_STATUS.FAILED]:     { label: "Failed",     variant: "destructive"  },
+};
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -8468,6 +8435,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onAdd,
       onDownload,
       onDelete,
+      infoTooltip,
       disabled,
       className,
     },
@@ -8487,7 +8455,18 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
               <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
                 Knowledge Base
               </h2>
-              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              {infoTooltip ? (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>{infoTooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              )}
             </div>
             <button
               type="button"
@@ -8508,7 +8487,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             ) : (
               <div className="flex flex-col divide-y divide-semantic-border-layout">
                 {files.map((file) => {
-                  const status = STATUS_CONFIG[file.status] ?? STATUS_CONFIG.training;
+                  const status = STATUS_CONFIG[file.status] ?? STATUS_CONFIG[BOT_KNOWLEDGE_STATUS.PENDING];
                   return (
                     <div
                       key={file.id}
@@ -9045,6 +9024,164 @@ export { AdvancedSettingsCard };
 `, prefix),
         },
         {
+          name: "fallback-prompts-card.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Info } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../accordion";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface FallbackPromptsData {
+  agentBusyPrompt: string;
+  noExtensionFoundPrompt: string;
+}
+
+export interface FallbackPromptsCardProps {
+  /** Current prompt text values */
+  data: Partial<FallbackPromptsData>;
+  /** Callback when any field changes */
+  onChange: (patch: Partial<FallbackPromptsData>) => void;
+  /** Called when the Agent Busy Prompt textarea loses focus */
+  onAgentBusyPromptBlur?: (value: string) => void;
+  /** Called when the No Extension Found textarea loses focus */
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
+  /** Maximum character length for each prompt field (default: 25000) */
+  maxLength?: number;
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
+  /** Opens the accordion by default (default: false) */
+  defaultOpen?: boolean;
+  /** Additional className */
+  className?: string;
+}
+
+// ─── Internal helpers ───────────────────────────────────────────────────────
+
+function PromptField({
+  label,
+  value,
+  placeholder,
+  maxLength,
+  disabled,
+  onChange,
+  onBlur,
+  rows = 2,
+}: {
+  label: string;
+  value: string;
+  placeholder?: string;
+  maxLength: number;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  onBlur?: (value: string) => void;
+  rows?: number;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
+        {label}
+      </label>
+      <textarea
+        value={value}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        disabled={disabled}
+        rows={rows}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={(e) => onBlur?.(e.target.value)}
+        className={cn(
+          "w-full resize-none rounded border border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
+          "focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          disabled && "cursor-not-allowed opacity-50"
+        )}
+      />
+      <p className="m-0 text-xs text-semantic-text-muted text-right">
+        {value.length}/{maxLength}
+      </p>
+    </div>
+  );
+}
+
+// ─── Component ──────────────────────────────────────────────────────────────
+
+const FallbackPromptsCard = React.forwardRef<
+  HTMLDivElement,
+  FallbackPromptsCardProps
+>(
+  (
+    {
+      data,
+      onChange,
+      onAgentBusyPromptBlur,
+      onNoExtensionFoundPromptBlur,
+      maxLength = 25000,
+      disabled,
+      defaultOpen = false,
+      className,
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          className
+        )}
+      >
+        <Accordion
+          type="single"
+          defaultValue={defaultOpen ? ["fallback"] : []}
+        >
+          <AccordionItem value="fallback">
+            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+              <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
+                Fallback Prompts
+                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-6 px-4 pt-4 sm:px-6 sm:pt-5">
+                <PromptField
+                  label="Agent Busy Prompt"
+                  value={data.agentBusyPrompt ?? ""}
+                  placeholder="Executives are busy at the moment, we will connect you soon."
+                  maxLength={maxLength}
+                  disabled={disabled}
+                  onChange={(v) => onChange({ agentBusyPrompt: v })}
+                  onBlur={onAgentBusyPromptBlur}
+                  rows={2}
+                />
+                <PromptField
+                  label="No Extension Found"
+                  value={data.noExtensionFoundPrompt ?? ""}
+                  placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
+                  maxLength={maxLength}
+                  disabled={disabled}
+                  onChange={(v) => onChange({ noExtensionFoundPrompt: v })}
+                  onBlur={onNoExtensionFoundPromptBlur}
+                  rows={4}
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  }
+);
+FallbackPromptsCard.displayName = "FallbackPromptsCard";
+
+export { FallbackPromptsCard };
+`, prefix),
+        },
+        {
           name: "types.ts",
           content: prefixTailwindClasses(`import type { UploadProgressHandlers } from "../file-upload-modal";
 
@@ -9052,7 +9189,16 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export type FunctionTabType = "header" | "queryParams" | "body";
 
-export type KnowledgeFileStatus = "training" | "trained" | "error";
+export const BOT_KNOWLEDGE_STATUS = {
+  PENDING: "pending",
+  READY: "ready",
+  PROCESSING: "processing",
+  FAILED: "failed",
+} as const;
+
+export type BOT_KNOWLEDGE_STATUS = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
+
+export type KnowledgeFileStatus = BOT_KNOWLEDGE_STATUS;
 
 export interface KeyValuePair {
   id: string;
@@ -9096,6 +9242,10 @@ export interface CreateFunctionModalProps {
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Pre-fills all fields — use when opening the modal to edit an existing function */
+  initialData?: Partial<CreateFunctionData>;
+  /** When true, changes the modal title to "Edit Function" */
+  isEditing?: boolean;
   /** Minimum character length for the prompt field (default: 100) */
   promptMinLength?: number;
   /** Maximum character length for the prompt field (default: 5000) */
@@ -9147,17 +9297,26 @@ export interface IvrBotConfigProps {
   onDownloadKnowledgeFile?: (fileId: string) => void;
   onDeleteKnowledgeFile?: (fileId: string) => void;
   onCreateFunction?: (data: CreateFunctionData) => void;
-  /** Called when user edits a custom function */
+  /** Called when user edits a custom function. Receives the function id. */
   onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
+  /** Hover text for the info icon in the Knowledge Base card header */
+  knowledgeBaseInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function prompt (default: 5000) */
   functionPromptMaxLength?: number;
+  /**
+   * Pre-filled data shown when the edit function modal opens.
+   * Pass when your app fetches full function data after onEditFunction fires.
+   */
+  functionEditData?: Partial<CreateFunctionData>;
+  /** Max character length for the "How It Behaves" system prompt (default: 25000) */
+  systemPromptMaxLength?: number;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;
@@ -9204,6 +9363,12 @@ export { KnowledgeBaseCard } from "./knowledge-base-card";
 export { FunctionsCard } from "./functions-card";
 export { FrustrationHandoverCard } from "./frustration-handover-card";
 export { AdvancedSettingsCard } from "./advanced-settings-card";
+export { FallbackPromptsCard } from "./fallback-prompts-card";
+export type {
+  FallbackPromptsData,
+  FallbackPromptsCardProps,
+} from "./fallback-prompts-card";
+export { BOT_KNOWLEDGE_STATUS } from "./types";
 export { CreateFunctionModal } from "./create-function-modal";
 export { FileUploadModal } from "../file-upload-modal";
 export { IvrBotConfig } from "./ivr-bot-config";

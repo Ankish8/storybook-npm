@@ -1,15 +1,8 @@
 import * as React from "react";
-import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../ui/button";
 import { Badge } from "../../ui/badge";
 import { PageHeader } from "../../ui/page-header";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "../../ui/accordion";
 import { BotIdentityCard } from "./bot-identity-card";
 import { BotBehaviorCard } from "./bot-behavior-card";
 import { KnowledgeBaseCard } from "./knowledge-base-card";
@@ -23,106 +16,8 @@ import type {
   IvrBotConfigData,
   CreateFunctionData,
 } from "./types";
+import { FallbackPromptsCard } from "./fallback-prompts-card";
 
-// ─── Styled Textarea (still used by FallbackPromptsAccordion) ───────────────
-function StyledTextarea({
-  placeholder,
-  value,
-  rows = 3,
-  onChange,
-  disabled,
-  className,
-}: {
-  placeholder?: string;
-  value?: string;
-  rows?: number;
-  onChange?: (v: string) => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <textarea
-      value={value ?? ""}
-      rows={rows}
-      onChange={(e) => onChange?.(e.target.value)}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={cn(
-        "w-full px-4 py-2.5 text-base rounded border resize-none",
-        "border-semantic-border-input bg-semantic-bg-primary",
-        "text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none hover:border-semantic-border-input-focus",
-        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-    />
-  );
-}
-
-// ─── Field wrapper (still used by FallbackPromptsAccordion) ─────────────────
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
-
-// ─── Fallback Prompts (accordion) ────────────────────────────────────────────
-function FallbackPromptsAccordion({
-  data,
-  onChange,
-  disabled,
-}: {
-  data: Partial<IvrBotConfigData>;
-  onChange: (patch: Partial<IvrBotConfigData>) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden">
-      <Accordion type="single">
-        <AccordionItem value="fallback">
-          <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
-            <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
-              Fallback Prompts
-              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
-            </span>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="px-4 pt-4 pb-2 flex flex-col gap-6 sm:px-6 sm:pt-6">
-              <Field label="Agent Busy Prompt">
-                <StyledTextarea
-                  value={data.agentBusyPrompt ?? ""}
-                  onChange={(v) => onChange({ agentBusyPrompt: v })}
-                  placeholder="Executives are busy at the moment, we will connect you soon."
-                  disabled={disabled}
-                />
-              </Field>
-              <Field label="No Extension Found">
-                <StyledTextarea
-                  value={data.noExtensionPrompt ?? ""}
-                  onChange={(v) => onChange({ noExtensionPrompt: v })}
-                  placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
-                  disabled={disabled}
-                />
-              </Field>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
-  );
-}
 
 // ─── Default data ─────────────────────────────────────────────────────────────
 const DEFAULT_DATA: IvrBotConfigData = {
@@ -166,8 +61,11 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onDeleteFunction,
       onTestApi,
       functionsInfoTooltip,
+      knowledgeBaseInfoTooltip,
       functionPromptMinLength,
       functionPromptMaxLength,
+      functionEditData,
+      systemPromptMaxLength,
       onBack,
       onPlayVoice,
       onPauseVoice,
@@ -192,6 +90,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       ...initialData,
     });
     const [createFnOpen, setCreateFnOpen] = React.useState(false);
+    const [editFnOpen, setEditFnOpen] = React.useState(false);
     const [uploadOpen, setUploadOpen] = React.useState(false);
 
     const update = (patch: Partial<IvrBotConfigData>) =>
@@ -201,6 +100,16 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       const newFn = { id: `fn-${Date.now()}`, name: fnData.name };
       update({ functions: [...data.functions, newFn] });
       onCreateFunction?.(fnData);
+    };
+
+    const handleEditFunction = (id: string) => {
+      onEditFunction?.(id);
+      setEditFnOpen(true);
+    };
+
+    const handleEditFunctionSubmit = (fnData: CreateFunctionData) => {
+      onCreateFunction?.(fnData);
+      setEditFnOpen(false);
     };
 
     return (
@@ -260,9 +169,22 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               data={data}
               onChange={update}
               sessionVariables={sessionVariables}
+              maxLength={systemPromptMaxLength}
               disabled={disabled}
             />
-            <FallbackPromptsAccordion data={data} onChange={update} disabled={disabled} />
+            <FallbackPromptsCard
+              data={{
+                agentBusyPrompt: data.agentBusyPrompt,
+                noExtensionFoundPrompt: data.noExtensionPrompt,
+              }}
+              onChange={(patch) =>
+                update({
+                  ...(patch.agentBusyPrompt !== undefined && { agentBusyPrompt: patch.agentBusyPrompt }),
+                  ...(patch.noExtensionFoundPrompt !== undefined && { noExtensionPrompt: patch.noExtensionFoundPrompt }),
+                })
+              }
+              disabled={disabled}
+            />
           </div>
 
           {/* Right column — gray panel extending full height */}
@@ -271,6 +193,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
+              infoTooltip={knowledgeBaseInfoTooltip}
               disabled={disabled}
               onDelete={(id) => {
                 update({
@@ -284,7 +207,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
-              onEditFunction={onEditFunction}
+              onEditFunction={handleEditFunction}
               infoTooltip={functionsInfoTooltip}
               disabled={disabled}
               onDeleteFunction={(id) => {
@@ -318,6 +241,18 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+          promptMinLength={functionPromptMinLength}
+          promptMaxLength={functionPromptMaxLength}
+        />
+
+        {/* Edit Function Modal */}
+        <CreateFunctionModal
+          open={editFnOpen}
+          onOpenChange={setEditFnOpen}
+          onSubmit={handleEditFunctionSubmit}
+          onTestApi={onTestApi}
+          initialData={functionEditData}
+          isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
         />
