@@ -2,6 +2,13 @@ import * as React from "react";
 import { Download, Trash2, Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
+import { BOT_KNOWLEDGE_STATUS } from "./types";
 import type { KnowledgeBaseFile } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -15,6 +22,8 @@ export interface KnowledgeBaseCardProps {
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
   onDelete?: (id: string) => void;
+  /** Hover text shown on the info icon next to the "Knowledge Base" title */
+  infoTooltip?: string;
   /** Disables all interactive elements in the card (view mode) */
   disabled?: boolean;
   /** Additional className */
@@ -23,13 +32,13 @@ export interface KnowledgeBaseCardProps {
 
 // ─── Status config ──────────────────────────────────────────────────────────
 
-type BadgeVariant = "active" | "destructive";
-const STATUS_CONFIG: Record<string, { label: string; variant: BadgeVariant }> =
-  {
-    training: { label: "Training", variant: "active" },
-    trained: { label: "Trained", variant: "active" },
-    error: { label: "Error", variant: "destructive" },
-  };
+type BadgeVariant = "default" | "active" | "destructive";
+const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: BadgeVariant }> = {
+  [BOT_KNOWLEDGE_STATUS.PENDING]:    { label: "Pending",    variant: "default"      },
+  [BOT_KNOWLEDGE_STATUS.READY]:      { label: "Ready",      variant: "active"       },
+  [BOT_KNOWLEDGE_STATUS.PROCESSING]: { label: "Processing", variant: "active"       },
+  [BOT_KNOWLEDGE_STATUS.FAILED]:     { label: "Failed",     variant: "destructive"  },
+};
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -40,6 +49,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onAdd,
       onDownload,
       onDelete,
+      infoTooltip,
       disabled,
       className,
     },
@@ -59,7 +69,18 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
               <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
                 Knowledge Base
               </h2>
-              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              {infoTooltip ? (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>{infoTooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              )}
             </div>
             <button
               type="button"
@@ -80,7 +101,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             ) : (
               <div className="flex flex-col divide-y divide-semantic-border-layout">
                 {files.map((file) => {
-                  const status = STATUS_CONFIG[file.status] ?? STATUS_CONFIG.training;
+                  const status = STATUS_CONFIG[file.status] ?? STATUS_CONFIG[BOT_KNOWLEDGE_STATUS.PENDING];
                   return (
                     <div
                       key={file.id}

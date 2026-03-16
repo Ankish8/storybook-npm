@@ -691,14 +691,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       { cwd: tempDir, stdio: 'pipe', timeout: 60_000 }
     )
 
-    // Vite build
+    // Vite build (can be slow on CI or constrained machines)
     const result = execSync('npx vite build', {
       cwd: tempDir,
       stdio: 'pipe',
-      timeout: 60_000,
+      timeout: 120_000,
     })
 
     expect(result).toBeTruthy()
     expect(await fs.pathExists(path.join(tempDir, 'dist'))).toBe(true)
-  }, 120_000)
-}, 180_000)
+  }, 180_000)
+}, 240_000)

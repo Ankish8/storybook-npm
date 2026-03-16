@@ -18,8 +18,32 @@ import type {
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
-const FUNCTION_NAME_MAX = 30;
+const FUNCTION_NAME_MAX = 100;
 const BODY_MAX = 4000;
+const URL_MAX = 500;
+const HEADER_KEY_MAX = 512;
+const HEADER_VALUE_MAX = 2048;
+
+const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+const URL_REGEX = /^https?:\/\//;
+const HEADER_KEY_REGEX = /^[!#$%&'*+\-.^_`|~0-9a-zA-Z]+$/;
+// Query parameter validation (aligned with apiIntegrationSchema.queryParams)
+const QUERY_PARAM_KEY_MAX = 512;
+const QUERY_PARAM_VALUE_MAX = 2048;
+const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\-~]+$/;
+
+function validateQueryParamKey(key: string): string | undefined {
+  if (!key.trim()) return "Query param key is required";
+  if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
+  if (!QUERY_PARAM_KEY_PATTERN.test(key)) return "Invalid query parameter key.";
+  return undefined;
+}
+
+function validateQueryParamValue(value: string): string | undefined {
+  if (!value.trim()) return "Query param value is required";
+  if (value.length > QUERY_PARAM_VALUE_MAX) return "value cannot exceed 2048 characters.";
+  return undefined;
+}
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -43,48 +67,80 @@ const textareaCls = cn(
 );
 
 // ── KeyValueTable ─────────────────────────────────────────────────────────────
+type RowErrors = { key?: string; value?: string };
+
 function KeyValueTable({
   rows,
   onChange,
   label,
+  getRowErrors,
+  keyMaxLength,
+  valueMaxLength,
+  keyRegex,
+  keyRegexError,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
   label: string;
+  getRowErrors?: (row: KeyValuePair) => RowErrors;
+  keyMaxLength?: number;
+  valueMaxLength?: number;
+  keyRegex?: RegExp;
+  keyRegexError?: string;
 }) {
-  const update = (id: string, patch: Partial<KeyValuePair>) =>
+  const update = (id: string, patch: Partial<KeyValuePair>) => {
+    // Replace spaces with hyphens in key values
+    if (patch.key !== undefined) {
+      patch = { ...patch, key: patch.key.replace(/ /g, "-") };
+    }
     onChange(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  };
 
   const remove = (id: string) => onChange(rows.filter((r) => r.id !== id));
 
   const add = () =>
     onChange([...rows, { id: generateId(), key: "", value: "" }]);
 
+  const getErrors = (row: KeyValuePair): RowErrors => {
+    if (getRowErrors) return getRowErrors(row);
+    // Inline validation from keyRegex prop when no getRowErrors provided
+    const errors: RowErrors = {};
+    if (keyRegex && row.key.trim() && !keyRegex.test(row.key)) {
+      errors.key = keyRegexError ?? "Invalid key format";
+    }
+    return errors;
+  };
+
+  // Reusable delete row action — same placement and styling as KeyValueRow / knowledge-base-card
+  const deleteRowButtonClass =
+    "text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0";
+
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-xs text-semantic-text-muted">{label}</span>
       <div className="border border-semantic-border-layout rounded overflow-hidden">
-        {/* Column headers — desktop only */}
+        {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
         <div className="hidden sm:flex bg-semantic-bg-ui border-b border-semantic-border-layout">
-          <div className="flex-1 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+          <div className="flex-1 min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
             Key
           </div>
-          <div className="flex-[2] px-3 py-2 text-xs font-semibold text-semantic-text-muted">
+          <div className="flex-[2] min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted">
             Value
           </div>
-          <div className="w-10 shrink-0" />
+          <div className="w-10 shrink-0" aria-hidden="true" />
         </div>
 
-        {/* Filled rows */}
-        {rows.map((row) => (
-          <div
-            key={row.id}
-            className="border-b border-semantic-border-layout last:border-b-0"
-          >
-            {/* Mobile: label + input pairs stacked */}
-            <div className="flex sm:hidden flex-col">
-              <div className="flex flex-col px-3 pt-2.5 pb-1 gap-0.5">
-                <span className="text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+        {/* Filled rows — same flex ratio (flex-1 / flex-2 / w-10) so middle border aligns with header */}
+        {rows.map((row) => {
+          const errors = getErrors(row);
+          return (
+            <div
+              key={row.id}
+              className="border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+            >
+              {/* Key column — border-r on column (not input) so it aligns with header */}
+              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
                 <input
@@ -92,61 +148,62 @@ function KeyValueTable({
                   value={row.key}
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
-                  className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                  maxLength={keyMaxLength}
+                  className={cn(
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    errors.key && "border-semantic-error-primary"
+                  )}
+                  aria-invalid={Boolean(errors.key)}
+                  aria-describedby={errors.key ? `err-key-${row.id}` : undefined}
                 />
+                {errors.key && (
+                  <p id={`err-key-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
+                    {errors.key}
+                  </p>
+                )}
               </div>
-              <div className="h-px bg-semantic-border-layout mx-3" />
-              <div className="flex items-start gap-2 px-3 py-2.5">
-                <div className="flex flex-col flex-1 gap-0.5">
-                  <span className="text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
-                    Value
-                  </span>
-                  <input
-                    type="text"
-                    value={row.value}
-                    onChange={(e) => update(row.id, { value: e.target.value })}
-                    placeholder="Type {{ to add variables"
-                    className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
-                  />
-                </div>
-                <button
+
+              {/* Value column */}
+              <div className="flex-[2] flex flex-col min-w-0">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                  Value
+                </span>
+                <input
+                  type="text"
+                  value={row.value}
+                  onChange={(e) => update(row.id, { value: e.target.value })}
+                  placeholder="Type {{ to add variables"
+                  maxLength={valueMaxLength}
+                  className={cn(
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    errors.value && "border-semantic-error-primary"
+                  )}
+                  aria-invalid={Boolean(errors.value)}
+                  aria-describedby={errors.value ? `err-value-${row.id}` : undefined}
+                />
+                {errors.value && (
+                  <p id={`err-value-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
+                    {errors.value}
+                  </p>
+                )}
+              </div>
+
+              {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
+              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-semantic-border-layout sm:border-l-0">
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => remove(row.id)}
-                  className="mt-4 size-8 flex items-center justify-center text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface rounded transition-colors shrink-0"
+                  className={cn("rounded-md", deleteRowButtonClass)}
                   aria-label="Delete row"
                 >
-                  <Trash2 className="size-3.5" />
-                </button>
+                  <Trash2 className="size-4" />
+                </Button>
               </div>
             </div>
-
-            {/* Desktop: side-by-side */}
-            <div className="hidden sm:flex">
-              <input
-                type="text"
-                value={row.key}
-                onChange={(e) => update(row.id, { key: e.target.value })}
-                placeholder="Key"
-                className="flex-1 px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary border-r border-semantic-border-layout outline-none focus:bg-semantic-bg-hover"
-              />
-              <input
-                type="text"
-                value={row.value}
-                onChange={(e) => update(row.id, { value: e.target.value })}
-                placeholder="Type {{ to add variables"
-                className="flex-[2] px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover"
-              />
-              <button
-                type="button"
-                onClick={() => remove(row.id)}
-                className="w-10 flex items-center justify-center text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0"
-                aria-label="Delete row"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Add row — always visible */}
         <button
@@ -173,8 +230,10 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange,
       onSubmit,
       onTestApi,
+      initialData,
+      isEditing = false,
       promptMinLength = 100,
-      promptMaxLength = 5000,
+      promptMaxLength = 1000,
       initialStep = 1,
       initialTab = "header",
       className,
@@ -183,31 +242,61 @@ export const CreateFunctionModal = React.forwardRef<
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
-    const [name, setName] = React.useState("");
-    const [prompt, setPrompt] = React.useState("");
+    const [name, setName] = React.useState(initialData?.name ?? "");
+    const [prompt, setPrompt] = React.useState(initialData?.prompt ?? "");
 
-    const [method, setMethod] = React.useState<HttpMethod>("GET");
-    const [url, setUrl] = React.useState("");
+    const [method, setMethod] = React.useState<HttpMethod>(initialData?.method ?? "GET");
+    const [url, setUrl] = React.useState(initialData?.url ?? "");
     const [activeTab, setActiveTab] =
       React.useState<FunctionTabType>(initialTab);
-    const [headers, setHeaders] = React.useState<KeyValuePair[]>([]);
-    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>([]);
-    const [body, setBody] = React.useState("");
+    const [headers, setHeaders] = React.useState<KeyValuePair[]>(initialData?.headers ?? []);
+    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>(initialData?.queryParams ?? []);
+    const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
+    const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
+    const [nameError, setNameError] = React.useState("");
+    const [urlError, setUrlError] = React.useState("");
+    const [bodyError, setBodyError] = React.useState("");
+
+    // Sync form state from initialData each time the modal opens
+    React.useEffect(() => {
+      if (open) {
+        setStep(initialStep);
+        setName(initialData?.name ?? "");
+        setPrompt(initialData?.prompt ?? "");
+        setMethod(initialData?.method ?? "GET");
+        setUrl(initialData?.url ?? "");
+        setActiveTab(initialTab);
+        setHeaders(initialData?.headers ?? []);
+        setQueryParams(initialData?.queryParams ?? []);
+        setBody(initialData?.body ?? "");
+        setApiResponse("");
+        setStep2SubmitAttempted(false);
+        setNameError("");
+        setUrlError("");
+        setBodyError("");
+      }
+    // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     const reset = React.useCallback(() => {
       setStep(initialStep);
-      setName("");
-      setPrompt("");
-      setMethod("GET");
-      setUrl("");
+      setName(initialData?.name ?? "");
+      setPrompt(initialData?.prompt ?? "");
+      setMethod(initialData?.method ?? "GET");
+      setUrl(initialData?.url ?? "");
       setActiveTab(initialTab);
-      setHeaders([]);
-      setQueryParams([]);
-      setBody("");
+      setHeaders(initialData?.headers ?? []);
+      setQueryParams(initialData?.queryParams ?? []);
+      setBody(initialData?.body ?? "");
       setApiResponse("");
-    }, [initialStep, initialTab]);
+      setStep2SubmitAttempted(false);
+      setNameError("");
+      setUrlError("");
+      setBodyError("");
+    }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -223,11 +312,54 @@ export const CreateFunctionModal = React.forwardRef<
       }
     }, [supportsBody, activeTab]);
 
+    const validateName = (value: string) => {
+      if (value.trim() && !FUNCTION_NAME_REGEX.test(value.trim())) {
+        setNameError("Must start with a letter and contain only letters, numbers, and underscores");
+      } else {
+        setNameError("");
+      }
+    };
+
+    const validateUrl = (value: string) => {
+      if (value.trim() && !URL_REGEX.test(value.trim())) {
+        setUrlError("URL must start with http:// or https://");
+      } else {
+        setUrlError("");
+      }
+    };
+
+    const validateBody = (value: string) => {
+      if (value.trim()) {
+        try {
+          JSON.parse(value.trim());
+          setBodyError("");
+        } catch {
+          setBodyError("Body must be valid JSON");
+        }
+      } else {
+        setBodyError("");
+      }
+    };
+
     const handleNext = () => {
       if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
     };
 
+    const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
+      rows.some((row) => {
+        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+        if (!hasInput) return false;
+        return (
+          validateQueryParamKey(row.key) !== undefined ||
+          validateQueryParamValue(row.value) !== undefined
+        );
+      });
+
     const handleSubmit = () => {
+      if (step === 2) {
+        setStep2SubmitAttempted(true);
+        if (queryParamsHaveErrors(queryParams)) return;
+      }
       const data: CreateFunctionData = {
         name: name.trim(),
         prompt: prompt.trim(),
@@ -259,8 +391,17 @@ export const CreateFunctionModal = React.forwardRef<
       }
     };
 
+    const headersHaveKeyErrors = headers.some(
+      (row) => row.key.trim() && HEADER_KEY_REGEX && !HEADER_KEY_REGEX.test(row.key)
+    );
+
     const isStep1Valid =
-      name.trim().length > 0 && prompt.trim().length >= promptMinLength;
+      name.trim().length > 0 &&
+      FUNCTION_NAME_REGEX.test(name.trim()) &&
+      prompt.trim().length >= promptMinLength;
+
+    const isStep2Valid =
+      !urlError && !bodyError && !headersHaveKeyErrors && !queryParamsHaveErrors(queryParams);
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: `Header (${headers.length})`,
@@ -287,7 +428,7 @@ export const CreateFunctionModal = React.forwardRef<
           {/* ── Header ── */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout shrink-0 sm:px-6">
             <DialogTitle className="text-base font-semibold text-semantic-text-primary">
-              Create Function
+              {isEditing ? "Edit Function" : "Create Function"}
             </DialogTitle>
             <button
               type="button"
@@ -318,7 +459,11 @@ export const CreateFunctionModal = React.forwardRef<
                       type="text"
                       value={name}
                       maxLength={FUNCTION_NAME_MAX}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (nameError) validateName(e.target.value);
+                      }}
+                      onBlur={(e) => validateName(e.target.value)}
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
@@ -326,6 +471,9 @@ export const CreateFunctionModal = React.forwardRef<
                       {name.length}/{FUNCTION_NAME_MAX}
                     </span>
                   </div>
+                  {nameError && (
+                    <p className="m-0 text-xs text-semantic-error-primary">{nameError}</p>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -400,11 +548,19 @@ export const CreateFunctionModal = React.forwardRef<
                     <input
                       type="text"
                       value={url}
-                      onChange={(e) => setUrl(e.target.value)}
+                      maxLength={URL_MAX}
+                      onChange={(e) => {
+                        setUrl(e.target.value);
+                        if (urlError) validateUrl(e.target.value);
+                      }}
+                      onBlur={(e) => validateUrl(e.target.value)}
                       placeholder="Enter URL or Type {{ to add variables"
                       className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
                     />
                   </div>
+                  {urlError && (
+                    <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
+                  )}
                 </div>
 
                 {/* Tabs — scrollable, no visible scrollbar */}
@@ -438,6 +594,10 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={headers}
                       onChange={setHeaders}
                       label="Header"
+                      keyMaxLength={HEADER_KEY_MAX}
+                      valueMaxLength={HEADER_VALUE_MAX}
+                      keyRegex={HEADER_KEY_REGEX}
+                      keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters."
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -445,6 +605,16 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={queryParams}
                       onChange={setQueryParams}
                       label="Query parameter"
+                      keyMaxLength={QUERY_PARAM_KEY_MAX}
+                      valueMaxLength={QUERY_PARAM_VALUE_MAX}
+                      getRowErrors={(row) => {
+                        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+                        if (!hasInput && !step2SubmitAttempted) return {};
+                        return {
+                          key: validateQueryParamKey(row.key),
+                          value: validateQueryParamValue(row.value),
+                        };
+                      }}
                     />
                   )}
                   {activeTab === "body" && (
@@ -456,8 +626,12 @@ export const CreateFunctionModal = React.forwardRef<
                         <textarea
                           value={body}
                           maxLength={BODY_MAX}
-                          onChange={(e) => setBody(e.target.value)}
-                          placeholder="Enter request body (JSON, XML etc). Type {{ to add variables"
+                          onChange={(e) => {
+                            setBody(e.target.value);
+                            if (bodyError) validateBody(e.target.value);
+                          }}
+                          onBlur={(e) => validateBody(e.target.value)}
+                          placeholder="Enter request body (JSON). Type {{ to add variables"
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
                         />
@@ -465,6 +639,9 @@ export const CreateFunctionModal = React.forwardRef<
                           {body.length}/{BODY_MAX}
                         </span>
                       </div>
+                      {bodyError && (
+                        <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -537,6 +714,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
+                  disabled={!isStep2Valid}
                 >
                   Submit
                 </Button>

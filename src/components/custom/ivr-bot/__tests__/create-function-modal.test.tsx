@@ -7,6 +7,9 @@ const noop = () => {};
 const VALID_PROMPT =
   "This is a valid prompt that meets the minimum character length requirement for the create function modal test cases here.";
 
+// No delay so typing long prompt doesn't timeout (userEvent default delay * 100+ chars > 5s)
+const user = userEvent.setup({ delay: null });
+
 describe("CreateFunctionModal", () => {
   it("does not render content when closed", () => {
     render(
@@ -30,7 +33,6 @@ describe("CreateFunctionModal", () => {
   });
 
   it("enables Next button when both fields are filled and prompt meets min length", async () => {
-    const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(
       screen.getByLabelText(/Function Name/i),
@@ -41,14 +43,12 @@ describe("CreateFunctionModal", () => {
   });
 
   it("shows character counter for function name", async () => {
-    const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "Hello");
-    expect(screen.getByText(/5\/30/)).toBeInTheDocument();
+    expect(screen.getByText(/5\/100/)).toBeInTheDocument();
   });
 
   it("advances to step 2 on Next click", async () => {
-    const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
@@ -59,7 +59,6 @@ describe("CreateFunctionModal", () => {
   });
 
   it("goes back to step 1 from step 2", async () => {
-    const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
@@ -69,7 +68,6 @@ describe("CreateFunctionModal", () => {
   });
 
   it("renders tab navigation in step 2 (Body tab only for POST/PUT/PATCH)", async () => {
-    const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
@@ -84,7 +82,6 @@ describe("CreateFunctionModal", () => {
   });
 
   it("shows Body textarea when Body tab is clicked (POST method)", async () => {
-    const user = userEvent.setup();
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
@@ -97,7 +94,6 @@ describe("CreateFunctionModal", () => {
   });
 
   it("calls onSubmit with complete data", async () => {
-    const user = userEvent.setup();
     const onSubmit = vi.fn();
     render(
       <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
@@ -112,7 +108,6 @@ describe("CreateFunctionModal", () => {
   });
 
   it("calls onOpenChange when closed after submit", async () => {
-    const user = userEvent.setup();
     const onOpenChange = vi.fn();
     render(
       <CreateFunctionModal open onOpenChange={onOpenChange} />

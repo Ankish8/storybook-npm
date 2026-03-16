@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { KnowledgeBaseCard } from "./knowledge-base-card";
+import { BOT_KNOWLEDGE_STATUS } from "./types";
 import type { KnowledgeBaseFile } from "./types";
 
 const meta: Meta<typeof KnowledgeBaseCard> = {
@@ -31,9 +32,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const SAMPLE_FILES: KnowledgeBaseFile[] = [
-  { id: "1", name: "FAQ.pdf", status: "trained" },
-  { id: "2", name: "Product_Catalog.csv", status: "training" },
-  { id: "3", name: "Support_Docs.docx", status: "error" },
+  { id: "1", name: "FAQ.pdf",              status: BOT_KNOWLEDGE_STATUS.READY      },
+  { id: "2", name: "Product_Catalog.csv",  status: BOT_KNOWLEDGE_STATUS.PROCESSING },
+  { id: "3", name: "Support_Docs.docx",    status: BOT_KNOWLEDGE_STATUS.FAILED     },
+  { id: "4", name: "Training_Data.xlsx",   status: BOT_KNOWLEDGE_STATUS.PENDING    },
 ];
 
 export const Overview: Story = {
@@ -43,14 +45,8 @@ export const Overview: Story = {
       <div className="max-w-[500px]">
         <KnowledgeBaseCard
           files={files}
-          onSaveFiles={(uploaded) => {
-            const newFiles = uploaded.map((f, i) => ({
-              id: `new-${Date.now()}-${i}`,
-              name: f.name,
-              status: "training" as const,
-            }));
-            setFiles((prev) => [...prev, ...newFiles]);
-          }}
+          onAdd={() => alert("Open file upload modal")}
+          onDownload={(id) => alert(`Download file: ${id}`)}
           onDelete={(id) => setFiles((prev) => prev.filter((f) => f.id !== id))}
         />
       </div>
@@ -60,19 +56,11 @@ export const Overview: Story = {
 
 export const Empty: Story = {
   render: function Render() {
-    const [files, setFiles] = useState<KnowledgeBaseFile[]>([]);
     return (
       <div className="max-w-[500px]">
         <KnowledgeBaseCard
-          files={files}
-          onSaveFiles={(uploaded) => {
-            const newFiles = uploaded.map((f, i) => ({
-              id: `new-${Date.now()}-${i}`,
-              name: f.name,
-              status: "training" as const,
-            }));
-            setFiles((prev) => [...prev, ...newFiles]);
-          }}
+          files={[]}
+          onAdd={() => alert("Open file upload modal")}
         />
       </div>
     );

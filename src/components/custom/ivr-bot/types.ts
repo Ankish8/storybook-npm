@@ -4,7 +4,16 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export type FunctionTabType = "header" | "queryParams" | "body";
 
-export type KnowledgeFileStatus = "training" | "trained" | "error";
+export const BOT_KNOWLEDGE_STATUS = {
+  PENDING: "pending",
+  READY: "ready",
+  PROCESSING: "processing",
+  FAILED: "failed",
+} as const;
+
+export type BOT_KNOWLEDGE_STATUS = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
+
+export type KnowledgeFileStatus = BOT_KNOWLEDGE_STATUS;
 
 export interface KeyValuePair {
   id: string;
@@ -48,9 +57,13 @@ export interface CreateFunctionModalProps {
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Pre-fills all fields — use when opening the modal to edit an existing function */
+  initialData?: Partial<CreateFunctionData>;
+  /** When true, changes the modal title to "Edit Function" */
+  isEditing?: boolean;
   /** Minimum character length for the prompt field (default: 100) */
   promptMinLength?: number;
-  /** Maximum character length for the prompt field (default: 5000) */
+  /** Maximum character length for the prompt field (default: 1000) */
   promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
@@ -99,17 +112,32 @@ export interface IvrBotConfigProps {
   onDownloadKnowledgeFile?: (fileId: string) => void;
   onDeleteKnowledgeFile?: (fileId: string) => void;
   onCreateFunction?: (data: CreateFunctionData) => void;
-  /** Called when user edits a custom function */
+  /** Called when user edits a custom function. Receives the function id. */
   onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
+  /** Hover text for the info icon in the Knowledge Base card header */
+  knowledgeBaseInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
-  /** Maximum character length for the function prompt (default: 5000) */
+  /** Maximum character length for the function prompt (default: 1000) */
   functionPromptMaxLength?: number;
+  /**
+   * Pre-filled data shown when the edit function modal opens.
+   * Pass when your app fetches full function data after onEditFunction fires.
+   */
+  functionEditData?: Partial<CreateFunctionData>;
+  /** Max character length for the "How It Behaves" system prompt (default: 25000) */
+  systemPromptMaxLength?: number;
+  /** Called when the system prompt textarea loses focus */
+  onSystemPromptBlur?: (value: string) => void;
+  /** Called when the Agent Busy Prompt textarea loses focus */
+  onAgentBusyPromptBlur?: (value: string) => void;
+  /** Called when the No Extension Found textarea loses focus */
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;

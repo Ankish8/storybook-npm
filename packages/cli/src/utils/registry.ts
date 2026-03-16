@@ -13714,17 +13714,10 @@ export type {
         {
           name: "ivr-bot-config.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../button";
 import { Badge } from "../badge";
 import { PageHeader } from "../page-header";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "../accordion";
 import { BotIdentityCard } from "./bot-identity-card";
 import { BotBehaviorCard } from "./bot-behavior-card";
 import { KnowledgeBaseCard } from "./knowledge-base-card";
@@ -13738,106 +13731,8 @@ import type {
   IvrBotConfigData,
   CreateFunctionData,
 } from "./types";
+import { FallbackPromptsCard } from "./fallback-prompts-card";
 
-// ─── Styled Textarea (still used by FallbackPromptsAccordion) ───────────────
-function StyledTextarea({
-  placeholder,
-  value,
-  rows = 3,
-  onChange,
-  disabled,
-  className,
-}: {
-  placeholder?: string;
-  value?: string;
-  rows?: number;
-  onChange?: (v: string) => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <textarea
-      value={value ?? ""}
-      rows={rows}
-      onChange={(e) => onChange?.(e.target.value)}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={cn(
-        "w-full px-4 py-2.5 text-base rounded border resize-none",
-        "border-semantic-border-input bg-semantic-bg-primary",
-        "text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none hover:border-semantic-border-input-focus",
-        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-    />
-  );
-}
-
-// ─── Field wrapper (still used by FallbackPromptsAccordion) ─────────────────
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
-
-// ─── Fallback Prompts (accordion) ────────────────────────────────────────────
-function FallbackPromptsAccordion({
-  data,
-  onChange,
-  disabled,
-}: {
-  data: Partial<IvrBotConfigData>;
-  onChange: (patch: Partial<IvrBotConfigData>) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden">
-      <Accordion type="single">
-        <AccordionItem value="fallback">
-          <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
-            <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
-              Fallback Prompts
-              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
-            </span>
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="px-4 pt-4 pb-2 flex flex-col gap-6 sm:px-6 sm:pt-6">
-              <Field label="Agent Busy Prompt">
-                <StyledTextarea
-                  value={data.agentBusyPrompt ?? ""}
-                  onChange={(v) => onChange({ agentBusyPrompt: v })}
-                  placeholder="Executives are busy at the moment, we will connect you soon."
-                  disabled={disabled}
-                />
-              </Field>
-              <Field label="No Extension Found">
-                <StyledTextarea
-                  value={data.noExtensionPrompt ?? ""}
-                  onChange={(v) => onChange({ noExtensionPrompt: v })}
-                  placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
-                  disabled={disabled}
-                />
-              </Field>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
-  );
-}
 
 // ─── Default data ─────────────────────────────────────────────────────────────
 const DEFAULT_DATA: IvrBotConfigData = {
@@ -13881,8 +13776,14 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onDeleteFunction,
       onTestApi,
       functionsInfoTooltip,
+      knowledgeBaseInfoTooltip,
       functionPromptMinLength,
       functionPromptMaxLength,
+      functionEditData,
+      systemPromptMaxLength,
+      onSystemPromptBlur,
+      onAgentBusyPromptBlur,
+      onNoExtensionFoundPromptBlur,
       onBack,
       onPlayVoice,
       onPauseVoice,
@@ -13907,6 +13808,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       ...initialData,
     });
     const [createFnOpen, setCreateFnOpen] = React.useState(false);
+    const [editFnOpen, setEditFnOpen] = React.useState(false);
     const [uploadOpen, setUploadOpen] = React.useState(false);
 
     const update = (patch: Partial<IvrBotConfigData>) =>
@@ -13916,6 +13818,16 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       const newFn = { id: \`fn-\${Date.now()}\`, name: fnData.name };
       update({ functions: [...data.functions, newFn] });
       onCreateFunction?.(fnData);
+    };
+
+    const handleEditFunction = (id: string) => {
+      onEditFunction?.(id);
+      setEditFnOpen(true);
+    };
+
+    const handleEditFunctionSubmit = (fnData: CreateFunctionData) => {
+      onCreateFunction?.(fnData);
+      setEditFnOpen(false);
     };
 
     return (
@@ -13974,10 +13886,26 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <BotBehaviorCard
               data={data}
               onChange={update}
+              onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
+              maxLength={systemPromptMaxLength}
               disabled={disabled}
             />
-            <FallbackPromptsAccordion data={data} onChange={update} disabled={disabled} />
+            <FallbackPromptsCard
+              data={{
+                agentBusyPrompt: data.agentBusyPrompt,
+                noExtensionFoundPrompt: data.noExtensionPrompt,
+              }}
+              onChange={(patch) =>
+                update({
+                  ...(patch.agentBusyPrompt !== undefined && { agentBusyPrompt: patch.agentBusyPrompt }),
+                  ...(patch.noExtensionFoundPrompt !== undefined && { noExtensionPrompt: patch.noExtensionFoundPrompt }),
+                })
+              }
+              onAgentBusyPromptBlur={onAgentBusyPromptBlur}
+              onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur}
+              disabled={disabled}
+            />
           </div>
 
           {/* Right column — gray panel extending full height */}
@@ -13986,6 +13914,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
+              infoTooltip={knowledgeBaseInfoTooltip}
               disabled={disabled}
               onDelete={(id) => {
                 update({
@@ -13999,7 +13928,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
-              onEditFunction={onEditFunction}
+              onEditFunction={handleEditFunction}
               infoTooltip={functionsInfoTooltip}
               disabled={disabled}
               onDeleteFunction={(id) => {
@@ -14033,6 +13962,18 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onOpenChange={setCreateFnOpen}
           onSubmit={handleCreateFunction}
           onTestApi={onTestApi}
+          promptMinLength={functionPromptMinLength}
+          promptMaxLength={functionPromptMaxLength}
+        />
+
+        {/* Edit Function Modal */}
+        <CreateFunctionModal
+          open={editFnOpen}
+          onOpenChange={setEditFnOpen}
+          onSubmit={handleEditFunctionSubmit}
+          onTestApi={onTestApi}
+          initialData={functionEditData}
+          isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
         />
@@ -14075,8 +14016,32 @@ import type {
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
-const FUNCTION_NAME_MAX = 30;
+const FUNCTION_NAME_MAX = 100;
 const BODY_MAX = 4000;
+const URL_MAX = 500;
+const HEADER_KEY_MAX = 512;
+const HEADER_VALUE_MAX = 2048;
+
+const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+const URL_REGEX = /^https?:\\/\\//;
+const HEADER_KEY_REGEX = /^[!#$%&'*+\\-.^_\`|~0-9a-zA-Z]+$/;
+// Query parameter validation (aligned with apiIntegrationSchema.queryParams)
+const QUERY_PARAM_KEY_MAX = 512;
+const QUERY_PARAM_VALUE_MAX = 2048;
+const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\\-~]+$/;
+
+function validateQueryParamKey(key: string): string | undefined {
+  if (!key.trim()) return "Query param key is required";
+  if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
+  if (!QUERY_PARAM_KEY_PATTERN.test(key)) return "Invalid query parameter key.";
+  return undefined;
+}
+
+function validateQueryParamValue(value: string): string | undefined {
+  if (!value.trim()) return "Query param value is required";
+  if (value.length > QUERY_PARAM_VALUE_MAX) return "value cannot exceed 2048 characters.";
+  return undefined;
+}
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -14100,48 +14065,80 @@ const textareaCls = cn(
 );
 
 // ── KeyValueTable ─────────────────────────────────────────────────────────────
+type RowErrors = { key?: string; value?: string };
+
 function KeyValueTable({
   rows,
   onChange,
   label,
+  getRowErrors,
+  keyMaxLength,
+  valueMaxLength,
+  keyRegex,
+  keyRegexError,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
   label: string;
+  getRowErrors?: (row: KeyValuePair) => RowErrors;
+  keyMaxLength?: number;
+  valueMaxLength?: number;
+  keyRegex?: RegExp;
+  keyRegexError?: string;
 }) {
-  const update = (id: string, patch: Partial<KeyValuePair>) =>
+  const update = (id: string, patch: Partial<KeyValuePair>) => {
+    // Replace spaces with hyphens in key values
+    if (patch.key !== undefined) {
+      patch = { ...patch, key: patch.key.replace(/ /g, "-") };
+    }
     onChange(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  };
 
   const remove = (id: string) => onChange(rows.filter((r) => r.id !== id));
 
   const add = () =>
     onChange([...rows, { id: generateId(), key: "", value: "" }]);
 
+  const getErrors = (row: KeyValuePair): RowErrors => {
+    if (getRowErrors) return getRowErrors(row);
+    // Inline validation from keyRegex prop when no getRowErrors provided
+    const errors: RowErrors = {};
+    if (keyRegex && row.key.trim() && !keyRegex.test(row.key)) {
+      errors.key = keyRegexError ?? "Invalid key format";
+    }
+    return errors;
+  };
+
+  // Reusable delete row action — same placement and styling as KeyValueRow / knowledge-base-card
+  const deleteRowButtonClass =
+    "text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0";
+
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-xs text-semantic-text-muted">{label}</span>
       <div className="border border-semantic-border-layout rounded overflow-hidden">
-        {/* Column headers — desktop only */}
+        {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
         <div className="hidden sm:flex bg-semantic-bg-ui border-b border-semantic-border-layout">
-          <div className="flex-1 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+          <div className="flex-1 min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
             Key
           </div>
-          <div className="flex-[2] px-3 py-2 text-xs font-semibold text-semantic-text-muted">
+          <div className="flex-[2] min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted">
             Value
           </div>
-          <div className="w-10 shrink-0" />
+          <div className="w-10 shrink-0" aria-hidden="true" />
         </div>
 
-        {/* Filled rows */}
-        {rows.map((row) => (
-          <div
-            key={row.id}
-            className="border-b border-semantic-border-layout last:border-b-0"
-          >
-            {/* Mobile: label + input pairs stacked */}
-            <div className="flex sm:hidden flex-col">
-              <div className="flex flex-col px-3 pt-2.5 pb-1 gap-0.5">
-                <span className="text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+        {/* Filled rows — same flex ratio (flex-1 / flex-2 / w-10) so middle border aligns with header */}
+        {rows.map((row) => {
+          const errors = getErrors(row);
+          return (
+            <div
+              key={row.id}
+              className="border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+            >
+              {/* Key column — border-r on column (not input) so it aligns with header */}
+              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
                 <input
@@ -14149,61 +14146,62 @@ function KeyValueTable({
                   value={row.key}
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
-                  className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                  maxLength={keyMaxLength}
+                  className={cn(
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    errors.key && "border-semantic-error-primary"
+                  )}
+                  aria-invalid={Boolean(errors.key)}
+                  aria-describedby={errors.key ? \`err-key-\${row.id}\` : undefined}
                 />
+                {errors.key && (
+                  <p id={\`err-key-\${row.id}\`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
+                    {errors.key}
+                  </p>
+                )}
               </div>
-              <div className="h-px bg-semantic-border-layout mx-3" />
-              <div className="flex items-start gap-2 px-3 py-2.5">
-                <div className="flex flex-col flex-1 gap-0.5">
-                  <span className="text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
-                    Value
-                  </span>
-                  <input
-                    type="text"
-                    value={row.value}
-                    onChange={(e) => update(row.id, { value: e.target.value })}
-                    placeholder="Type {{ to add variables"
-                    className="w-full text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
-                  />
-                </div>
-                <button
+
+              {/* Value column */}
+              <div className="flex-[2] flex flex-col min-w-0">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                  Value
+                </span>
+                <input
+                  type="text"
+                  value={row.value}
+                  onChange={(e) => update(row.id, { value: e.target.value })}
+                  placeholder="Type {{ to add variables"
+                  maxLength={valueMaxLength}
+                  className={cn(
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    errors.value && "border-semantic-error-primary"
+                  )}
+                  aria-invalid={Boolean(errors.value)}
+                  aria-describedby={errors.value ? \`err-value-\${row.id}\` : undefined}
+                />
+                {errors.value && (
+                  <p id={\`err-value-\${row.id}\`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
+                    {errors.value}
+                  </p>
+                )}
+              </div>
+
+              {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
+              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-semantic-border-layout sm:border-l-0">
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => remove(row.id)}
-                  className="mt-4 size-8 flex items-center justify-center text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface rounded transition-colors shrink-0"
+                  className={cn("rounded-md", deleteRowButtonClass)}
                   aria-label="Delete row"
                 >
-                  <Trash2 className="size-3.5" />
-                </button>
+                  <Trash2 className="size-4" />
+                </Button>
               </div>
             </div>
-
-            {/* Desktop: side-by-side */}
-            <div className="hidden sm:flex">
-              <input
-                type="text"
-                value={row.key}
-                onChange={(e) => update(row.id, { key: e.target.value })}
-                placeholder="Key"
-                className="flex-1 px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary border-r border-semantic-border-layout outline-none focus:bg-semantic-bg-hover"
-              />
-              <input
-                type="text"
-                value={row.value}
-                onChange={(e) => update(row.id, { value: e.target.value })}
-                placeholder="Type {{ to add variables"
-                className="flex-[2] px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover"
-              />
-              <button
-                type="button"
-                onClick={() => remove(row.id)}
-                className="w-10 flex items-center justify-center text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0"
-                aria-label="Delete row"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Add row — always visible */}
         <button
@@ -14230,8 +14228,10 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange,
       onSubmit,
       onTestApi,
+      initialData,
+      isEditing = false,
       promptMinLength = 100,
-      promptMaxLength = 5000,
+      promptMaxLength = 1000,
       initialStep = 1,
       initialTab = "header",
       className,
@@ -14240,31 +14240,61 @@ export const CreateFunctionModal = React.forwardRef<
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
-    const [name, setName] = React.useState("");
-    const [prompt, setPrompt] = React.useState("");
+    const [name, setName] = React.useState(initialData?.name ?? "");
+    const [prompt, setPrompt] = React.useState(initialData?.prompt ?? "");
 
-    const [method, setMethod] = React.useState<HttpMethod>("GET");
-    const [url, setUrl] = React.useState("");
+    const [method, setMethod] = React.useState<HttpMethod>(initialData?.method ?? "GET");
+    const [url, setUrl] = React.useState(initialData?.url ?? "");
     const [activeTab, setActiveTab] =
       React.useState<FunctionTabType>(initialTab);
-    const [headers, setHeaders] = React.useState<KeyValuePair[]>([]);
-    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>([]);
-    const [body, setBody] = React.useState("");
+    const [headers, setHeaders] = React.useState<KeyValuePair[]>(initialData?.headers ?? []);
+    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>(initialData?.queryParams ?? []);
+    const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
+    const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
+    const [nameError, setNameError] = React.useState("");
+    const [urlError, setUrlError] = React.useState("");
+    const [bodyError, setBodyError] = React.useState("");
+
+    // Sync form state from initialData each time the modal opens
+    React.useEffect(() => {
+      if (open) {
+        setStep(initialStep);
+        setName(initialData?.name ?? "");
+        setPrompt(initialData?.prompt ?? "");
+        setMethod(initialData?.method ?? "GET");
+        setUrl(initialData?.url ?? "");
+        setActiveTab(initialTab);
+        setHeaders(initialData?.headers ?? []);
+        setQueryParams(initialData?.queryParams ?? []);
+        setBody(initialData?.body ?? "");
+        setApiResponse("");
+        setStep2SubmitAttempted(false);
+        setNameError("");
+        setUrlError("");
+        setBodyError("");
+      }
+    // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     const reset = React.useCallback(() => {
       setStep(initialStep);
-      setName("");
-      setPrompt("");
-      setMethod("GET");
-      setUrl("");
+      setName(initialData?.name ?? "");
+      setPrompt(initialData?.prompt ?? "");
+      setMethod(initialData?.method ?? "GET");
+      setUrl(initialData?.url ?? "");
       setActiveTab(initialTab);
-      setHeaders([]);
-      setQueryParams([]);
-      setBody("");
+      setHeaders(initialData?.headers ?? []);
+      setQueryParams(initialData?.queryParams ?? []);
+      setBody(initialData?.body ?? "");
       setApiResponse("");
-    }, [initialStep, initialTab]);
+      setStep2SubmitAttempted(false);
+      setNameError("");
+      setUrlError("");
+      setBodyError("");
+    }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -14280,11 +14310,54 @@ export const CreateFunctionModal = React.forwardRef<
       }
     }, [supportsBody, activeTab]);
 
+    const validateName = (value: string) => {
+      if (value.trim() && !FUNCTION_NAME_REGEX.test(value.trim())) {
+        setNameError("Must start with a letter and contain only letters, numbers, and underscores");
+      } else {
+        setNameError("");
+      }
+    };
+
+    const validateUrl = (value: string) => {
+      if (value.trim() && !URL_REGEX.test(value.trim())) {
+        setUrlError("URL must start with http:// or https://");
+      } else {
+        setUrlError("");
+      }
+    };
+
+    const validateBody = (value: string) => {
+      if (value.trim()) {
+        try {
+          JSON.parse(value.trim());
+          setBodyError("");
+        } catch {
+          setBodyError("Body must be valid JSON");
+        }
+      } else {
+        setBodyError("");
+      }
+    };
+
     const handleNext = () => {
       if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
     };
 
+    const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
+      rows.some((row) => {
+        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+        if (!hasInput) return false;
+        return (
+          validateQueryParamKey(row.key) !== undefined ||
+          validateQueryParamValue(row.value) !== undefined
+        );
+      });
+
     const handleSubmit = () => {
+      if (step === 2) {
+        setStep2SubmitAttempted(true);
+        if (queryParamsHaveErrors(queryParams)) return;
+      }
       const data: CreateFunctionData = {
         name: name.trim(),
         prompt: prompt.trim(),
@@ -14316,8 +14389,17 @@ export const CreateFunctionModal = React.forwardRef<
       }
     };
 
+    const headersHaveKeyErrors = headers.some(
+      (row) => row.key.trim() && HEADER_KEY_REGEX && !HEADER_KEY_REGEX.test(row.key)
+    );
+
     const isStep1Valid =
-      name.trim().length > 0 && prompt.trim().length >= promptMinLength;
+      name.trim().length > 0 &&
+      FUNCTION_NAME_REGEX.test(name.trim()) &&
+      prompt.trim().length >= promptMinLength;
+
+    const isStep2Valid =
+      !urlError && !bodyError && !headersHaveKeyErrors && !queryParamsHaveErrors(queryParams);
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: \`Header (\${headers.length})\`,
@@ -14344,7 +14426,7 @@ export const CreateFunctionModal = React.forwardRef<
           {/* ── Header ── */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout shrink-0 sm:px-6">
             <DialogTitle className="text-base font-semibold text-semantic-text-primary">
-              Create Function
+              {isEditing ? "Edit Function" : "Create Function"}
             </DialogTitle>
             <button
               type="button"
@@ -14375,7 +14457,11 @@ export const CreateFunctionModal = React.forwardRef<
                       type="text"
                       value={name}
                       maxLength={FUNCTION_NAME_MAX}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (nameError) validateName(e.target.value);
+                      }}
+                      onBlur={(e) => validateName(e.target.value)}
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
@@ -14383,6 +14469,9 @@ export const CreateFunctionModal = React.forwardRef<
                       {name.length}/{FUNCTION_NAME_MAX}
                     </span>
                   </div>
+                  {nameError && (
+                    <p className="m-0 text-xs text-semantic-error-primary">{nameError}</p>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -14457,11 +14546,19 @@ export const CreateFunctionModal = React.forwardRef<
                     <input
                       type="text"
                       value={url}
-                      onChange={(e) => setUrl(e.target.value)}
+                      maxLength={URL_MAX}
+                      onChange={(e) => {
+                        setUrl(e.target.value);
+                        if (urlError) validateUrl(e.target.value);
+                      }}
+                      onBlur={(e) => validateUrl(e.target.value)}
                       placeholder="Enter URL or Type {{ to add variables"
                       className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
                     />
                   </div>
+                  {urlError && (
+                    <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
+                  )}
                 </div>
 
                 {/* Tabs — scrollable, no visible scrollbar */}
@@ -14495,6 +14592,10 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={headers}
                       onChange={setHeaders}
                       label="Header"
+                      keyMaxLength={HEADER_KEY_MAX}
+                      valueMaxLength={HEADER_VALUE_MAX}
+                      keyRegex={HEADER_KEY_REGEX}
+                      keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters."
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -14502,6 +14603,16 @@ export const CreateFunctionModal = React.forwardRef<
                       rows={queryParams}
                       onChange={setQueryParams}
                       label="Query parameter"
+                      keyMaxLength={QUERY_PARAM_KEY_MAX}
+                      valueMaxLength={QUERY_PARAM_VALUE_MAX}
+                      getRowErrors={(row) => {
+                        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+                        if (!hasInput && !step2SubmitAttempted) return {};
+                        return {
+                          key: validateQueryParamKey(row.key),
+                          value: validateQueryParamValue(row.value),
+                        };
+                      }}
                     />
                   )}
                   {activeTab === "body" && (
@@ -14513,8 +14624,12 @@ export const CreateFunctionModal = React.forwardRef<
                         <textarea
                           value={body}
                           maxLength={BODY_MAX}
-                          onChange={(e) => setBody(e.target.value)}
-                          placeholder="Enter request body (JSON, XML etc). Type {{ to add variables"
+                          onChange={(e) => {
+                            setBody(e.target.value);
+                            if (bodyError) validateBody(e.target.value);
+                          }}
+                          onBlur={(e) => validateBody(e.target.value)}
+                          placeholder="Enter request body (JSON). Type {{ to add variables"
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
                         />
@@ -14522,6 +14637,9 @@ export const CreateFunctionModal = React.forwardRef<
                           {body.length}/{BODY_MAX}
                         </span>
                       </div>
+                      {bodyError && (
+                        <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -14594,6 +14712,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
+                  disabled={!isStep2Valid}
                 >
                   Submit
                 </Button>
@@ -14964,8 +15083,12 @@ export interface BotBehaviorCardProps {
   data: Partial<BotBehaviorData>;
   /** Callback when any field changes */
   onChange: (patch: Partial<BotBehaviorData>) => void;
+  /** Called when the system prompt textarea loses focus */
+  onSystemPromptBlur?: (value: string) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
+  /** Maximum character length for the system prompt textarea (default: 25000) */
+  maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Additional className for the card */
@@ -15013,6 +15136,7 @@ function StyledTextarea({
   value,
   rows = 3,
   onChange,
+  onBlur,
   disabled,
   className,
 }: {
@@ -15020,6 +15144,7 @@ function StyledTextarea({
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
+  onBlur?: (v: string) => void;
   disabled?: boolean;
   className?: string;
 }) {
@@ -15028,6 +15153,7 @@ function StyledTextarea({
       value={value ?? ""}
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
+      onBlur={(e) => onBlur?.(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
@@ -15050,14 +15176,16 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
     {
       data,
       onChange,
+      onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      maxLength = 25000,
       disabled,
       className,
     },
     ref
   ) => {
     const prompt = data.systemPrompt ?? "";
-    const MAX = 25000;
+    const MAX = maxLength;
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });
@@ -15077,6 +15205,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                 onChange={(v) => {
                   if (v.length <= MAX) onChange({ systemPrompt: v });
                 }}
+                onBlur={onSystemPromptBlur}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
                 className="pb-8"
@@ -15122,6 +15251,13 @@ export { BotBehaviorCard };
 import { Download, Trash2, Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../tooltip";
+import { BOT_KNOWLEDGE_STATUS } from "./types";
 import type { KnowledgeBaseFile } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -15135,6 +15271,8 @@ export interface KnowledgeBaseCardProps {
   onDownload?: (id: string) => void;
   /** Called when user clicks the delete button on a file */
   onDelete?: (id: string) => void;
+  /** Hover text shown on the info icon next to the "Knowledge Base" title */
+  infoTooltip?: string;
   /** Disables all interactive elements in the card (view mode) */
   disabled?: boolean;
   /** Additional className */
@@ -15143,13 +15281,13 @@ export interface KnowledgeBaseCardProps {
 
 // ─── Status config ──────────────────────────────────────────────────────────
 
-type BadgeVariant = "active" | "destructive";
-const STATUS_CONFIG: Record<string, { label: string; variant: BadgeVariant }> =
-  {
-    training: { label: "Training", variant: "active" },
-    trained: { label: "Trained", variant: "active" },
-    error: { label: "Error", variant: "destructive" },
-  };
+type BadgeVariant = "default" | "active" | "destructive";
+const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: BadgeVariant }> = {
+  [BOT_KNOWLEDGE_STATUS.PENDING]:    { label: "Pending",    variant: "default"      },
+  [BOT_KNOWLEDGE_STATUS.READY]:      { label: "Ready",      variant: "active"       },
+  [BOT_KNOWLEDGE_STATUS.PROCESSING]: { label: "Processing", variant: "active"       },
+  [BOT_KNOWLEDGE_STATUS.FAILED]:     { label: "Failed",     variant: "destructive"  },
+};
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -15160,6 +15298,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onAdd,
       onDownload,
       onDelete,
+      infoTooltip,
       disabled,
       className,
     },
@@ -15179,7 +15318,18 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
               <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
                 Knowledge Base
               </h2>
-              <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              {infoTooltip ? (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>{infoTooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              )}
             </div>
             <button
               type="button"
@@ -15200,7 +15350,7 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
             ) : (
               <div className="flex flex-col divide-y divide-semantic-border-layout">
                 {files.map((file) => {
-                  const status = STATUS_CONFIG[file.status] ?? STATUS_CONFIG.training;
+                  const status = STATUS_CONFIG[file.status] ?? STATUS_CONFIG[BOT_KNOWLEDGE_STATUS.PENDING];
                   return (
                     <div
                       key={file.id}
@@ -15737,6 +15887,164 @@ export { AdvancedSettingsCard };
 `, prefix),
         },
         {
+          name: "fallback-prompts-card.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Info } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../accordion";
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface FallbackPromptsData {
+  agentBusyPrompt: string;
+  noExtensionFoundPrompt: string;
+}
+
+export interface FallbackPromptsCardProps {
+  /** Current prompt text values */
+  data: Partial<FallbackPromptsData>;
+  /** Callback when any field changes */
+  onChange: (patch: Partial<FallbackPromptsData>) => void;
+  /** Called when the Agent Busy Prompt textarea loses focus */
+  onAgentBusyPromptBlur?: (value: string) => void;
+  /** Called when the No Extension Found textarea loses focus */
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
+  /** Maximum character length for each prompt field (default: 25000) */
+  maxLength?: number;
+  /** Disables all fields in the card (view mode) */
+  disabled?: boolean;
+  /** Opens the accordion by default (default: false) */
+  defaultOpen?: boolean;
+  /** Additional className */
+  className?: string;
+}
+
+// ─── Internal helpers ───────────────────────────────────────────────────────
+
+function PromptField({
+  label,
+  value,
+  placeholder,
+  maxLength,
+  disabled,
+  onChange,
+  onBlur,
+  rows = 2,
+}: {
+  label: string;
+  value: string;
+  placeholder?: string;
+  maxLength: number;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  onBlur?: (value: string) => void;
+  rows?: number;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
+        {label}
+      </label>
+      <textarea
+        value={value}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        disabled={disabled}
+        rows={rows}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={(e) => onBlur?.(e.target.value)}
+        className={cn(
+          "w-full resize-none rounded border border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
+          "focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          disabled && "cursor-not-allowed opacity-50"
+        )}
+      />
+      <p className="m-0 text-xs text-semantic-text-muted text-right">
+        {value.length}/{maxLength}
+      </p>
+    </div>
+  );
+}
+
+// ─── Component ──────────────────────────────────────────────────────────────
+
+const FallbackPromptsCard = React.forwardRef<
+  HTMLDivElement,
+  FallbackPromptsCardProps
+>(
+  (
+    {
+      data,
+      onChange,
+      onAgentBusyPromptBlur,
+      onNoExtensionFoundPromptBlur,
+      maxLength = 25000,
+      disabled,
+      defaultOpen = false,
+      className,
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          className
+        )}
+      >
+        <Accordion
+          type="single"
+          defaultValue={defaultOpen ? ["fallback"] : []}
+        >
+          <AccordionItem value="fallback">
+            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+              <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
+                Fallback Prompts
+                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-6 px-4 pt-4 sm:px-6 sm:pt-5">
+                <PromptField
+                  label="Agent Busy Prompt"
+                  value={data.agentBusyPrompt ?? ""}
+                  placeholder="Executives are busy at the moment, we will connect you soon."
+                  maxLength={maxLength}
+                  disabled={disabled}
+                  onChange={(v) => onChange({ agentBusyPrompt: v })}
+                  onBlur={onAgentBusyPromptBlur}
+                  rows={2}
+                />
+                <PromptField
+                  label="No Extension Found"
+                  value={data.noExtensionFoundPrompt ?? ""}
+                  placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
+                  maxLength={maxLength}
+                  disabled={disabled}
+                  onChange={(v) => onChange({ noExtensionFoundPrompt: v })}
+                  onBlur={onNoExtensionFoundPromptBlur}
+                  rows={4}
+                />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    );
+  }
+);
+FallbackPromptsCard.displayName = "FallbackPromptsCard";
+
+export { FallbackPromptsCard };
+`, prefix),
+        },
+        {
           name: "types.ts",
           content: prefixTailwindClasses(`import type { UploadProgressHandlers } from "../file-upload-modal";
 
@@ -15744,7 +16052,16 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export type FunctionTabType = "header" | "queryParams" | "body";
 
-export type KnowledgeFileStatus = "training" | "trained" | "error";
+export const BOT_KNOWLEDGE_STATUS = {
+  PENDING: "pending",
+  READY: "ready",
+  PROCESSING: "processing",
+  FAILED: "failed",
+} as const;
+
+export type BOT_KNOWLEDGE_STATUS = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
+
+export type KnowledgeFileStatus = BOT_KNOWLEDGE_STATUS;
 
 export interface KeyValuePair {
   id: string;
@@ -15788,9 +16105,13 @@ export interface CreateFunctionModalProps {
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  /** Pre-fills all fields — use when opening the modal to edit an existing function */
+  initialData?: Partial<CreateFunctionData>;
+  /** When true, changes the modal title to "Edit Function" */
+  isEditing?: boolean;
   /** Minimum character length for the prompt field (default: 100) */
   promptMinLength?: number;
-  /** Maximum character length for the prompt field (default: 5000) */
+  /** Maximum character length for the prompt field (default: 1000) */
   promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
@@ -15839,17 +16160,32 @@ export interface IvrBotConfigProps {
   onDownloadKnowledgeFile?: (fileId: string) => void;
   onDeleteKnowledgeFile?: (fileId: string) => void;
   onCreateFunction?: (data: CreateFunctionData) => void;
-  /** Called when user edits a custom function */
+  /** Called when user edits a custom function. Receives the function id. */
   onEditFunction?: (id: string) => void;
   /** Called when user deletes a custom function */
   onDeleteFunction?: (id: string) => void;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
+  /** Hover text for the info icon in the Knowledge Base card header */
+  knowledgeBaseInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
-  /** Maximum character length for the function prompt (default: 5000) */
+  /** Maximum character length for the function prompt (default: 1000) */
   functionPromptMaxLength?: number;
+  /**
+   * Pre-filled data shown when the edit function modal opens.
+   * Pass when your app fetches full function data after onEditFunction fires.
+   */
+  functionEditData?: Partial<CreateFunctionData>;
+  /** Max character length for the "How It Behaves" system prompt (default: 25000) */
+  systemPromptMaxLength?: number;
+  /** Called when the system prompt textarea loses focus */
+  onSystemPromptBlur?: (value: string) => void;
+  /** Called when the Agent Busy Prompt textarea loses focus */
+  onAgentBusyPromptBlur?: (value: string) => void;
+  /** Called when the No Extension Found textarea loses focus */
+  onNoExtensionFoundPromptBlur?: (value: string) => void;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;
@@ -15896,6 +16232,12 @@ export { KnowledgeBaseCard } from "./knowledge-base-card";
 export { FunctionsCard } from "./functions-card";
 export { FrustrationHandoverCard } from "./frustration-handover-card";
 export { AdvancedSettingsCard } from "./advanced-settings-card";
+export { FallbackPromptsCard } from "./fallback-prompts-card";
+export type {
+  FallbackPromptsData,
+  FallbackPromptsCardProps,
+} from "./fallback-prompts-card";
+export { BOT_KNOWLEDGE_STATUS } from "./types";
 export { CreateFunctionModal } from "./create-function-modal";
 export { FileUploadModal } from "../file-upload-modal";
 export { IvrBotConfig } from "./ivr-bot-config";
