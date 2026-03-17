@@ -240,67 +240,6 @@ export const WithCreateModal: Story = {
   },
 };
 
-export const PublishNotification: Story = {
-  name: "Publish Success Notification",
-  parameters: {
-    layout: "padded",
-    docs: {
-      description: {
-        story: `When a user clicks **Publish** from the three-dot menu on any bot card, a success toast notification slides in from the bottom-right of the screen.
-
-The toast title uses the bot type (e.g. "Voicebot published successfully!") and auto-dismisses after 5 seconds. Click the **✕** to dismiss early.
-
-\`\`\`tsx
-import { toast, Toaster } from "@/components/ui/toast"
-
-// Show the notification (call from onBotPublish handler)
-toast.success({
-  title: "Voicebot published successfully!",
-  description: "Your voicebot is ready.",
-})
-
-// Place Toaster once at the root of your app
-<Toaster />
-\`\`\`
-        `,
-      },
-    },
-  },
-  render: () => {
-    const handlePublish = (botId: string) => {
-      const bot = sampleBots.find((b) => b.id === botId);
-      const botLabel = bot
-        ? bot.type === "voicebot"
-          ? "Voicebot"
-          : "Chatbot"
-        : "Bot";
-      toast.success({
-        title: `${botLabel} published successfully!`,
-        description: `Your ${botLabel.toLowerCase()} is ready.`,
-      });
-    };
-    return (
-      <>
-        <div className="flex flex-col gap-4 p-6">
-          <p className="m-0 text-sm text-semantic-text-muted">
-            Click the <strong>⋮</strong> menu on any card and select{" "}
-            <strong>Publish</strong> to see the notification.
-          </p>
-          <BotList
-            bots={sampleBots}
-            title="AI Bot"
-            subtitle="Create & manage AI bots"
-            onBotPublish={handlePublish}
-            onBotEdit={fn()}
-            onBotDelete={fn()}
-          />
-        </div>
-        <Toaster />
-      </>
-    );
-  },
-};
-
 export const EditBotFlow: Story = {
   name: "Edit Bot → Config",
   parameters: {

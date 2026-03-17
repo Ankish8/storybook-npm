@@ -56,36 +56,53 @@ describe("BotCard", () => {
     expect(screen.getByText("Voicebot")).toBeInTheDocument();
   });
 
+  it("uses typeLabels prop to override badge text", () => {
+    render(
+      <BotCard
+        bot={chatbot}
+        typeLabels={{ chatbot: "Chat", voicebot: "Voice" }}
+      />
+    );
+    expect(screen.getByText("Chat")).toBeInTheDocument();
+  });
+
+  it("uses bot.typeLabel when set (overrides typeLabels)", () => {
+    const bot: Bot = { ...chatbot, typeLabel: "Custom Bot" };
+    render(
+      <BotCard bot={bot} typeLabels={{ chatbot: "Chat" }} />
+    );
+    expect(screen.getByText("Custom Bot")).toBeInTheDocument();
+  });
+
   it("renders the three-dot menu trigger button", () => {
     render(<BotCard bot={chatbot} />);
     expect(screen.getByLabelText("More options")).toBeInTheDocument();
   });
 
-  it("opens dropdown and shows Edit, Publish, Delete actions", async () => {
+  it("opens dropdown and shows Edit and Delete actions", async () => {
     const user = userEvent.setup();
     render(<BotCard bot={chatbot} />);
     await user.click(screen.getByLabelText("More options"));
     expect(screen.getByText("Edit")).toBeInTheDocument();
-    expect(screen.getByText("Publish")).toBeInTheDocument();
     expect(screen.getByText("Delete")).toBeInTheDocument();
   });
 
-  it("calls onEdit with bot id when Edit is clicked", async () => {
+  it("calls onEdit with bot id when card is clicked", async () => {
+    const user = userEvent.setup();
+    const handleEdit = vi.fn();
+    render(<BotCard bot={chatbot} onEdit={handleEdit} />);
+    await user.click(screen.getByRole("button", { name: "Edit Lead validation bot" }));
+    expect(handleEdit).toHaveBeenCalledWith("bot-1");
+  });
+
+  it("calls onEdit with bot id when Edit menu item is clicked", async () => {
     const user = userEvent.setup();
     const handleEdit = vi.fn();
     render(<BotCard bot={chatbot} onEdit={handleEdit} />);
     await user.click(screen.getByLabelText("More options"));
     await user.click(screen.getByText("Edit"));
+    expect(handleEdit).toHaveBeenCalledTimes(1);
     expect(handleEdit).toHaveBeenCalledWith("bot-1");
-  });
-
-  it("calls onPublish with bot id when Publish is clicked", async () => {
-    const user = userEvent.setup();
-    const handlePublish = vi.fn();
-    render(<BotCard bot={chatbot} onPublish={handlePublish} />);
-    await user.click(screen.getByLabelText("More options"));
-    await user.click(screen.getByText("Publish"));
-    expect(handlePublish).toHaveBeenCalledWith("bot-1");
   });
 
   it("calls onDelete with bot id when Delete is clicked", async () => {

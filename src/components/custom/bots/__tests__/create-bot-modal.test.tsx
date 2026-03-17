@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { CreateBotModal } from "../create-bot-modal";
+import { BOT_TYPE } from "../types";
 
 describe("CreateBotModal", () => {
   it("renders nothing when closed", () => {
@@ -47,7 +48,7 @@ describe("CreateBotModal", () => {
     expect(screen.getByText("Create").closest("button")).not.toBeDisabled();
   });
 
-  it("calls onSubmit with name and default chatbot type", () => {
+  it("calls onSubmit with name and BOT_TYPE.CHAT when Chat bot is selected", () => {
     const handleSubmit = vi.fn();
     render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
     fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
@@ -56,11 +57,11 @@ describe("CreateBotModal", () => {
     fireEvent.click(screen.getByText("Create"));
     expect(handleSubmit).toHaveBeenCalledWith({
       name: "Lead Bot",
-      type: "chatbot",
+      type: BOT_TYPE.CHAT,
     });
   });
 
-  it("calls onSubmit with voicebot type when voicebot is selected", () => {
+  it("calls onSubmit with BOT_TYPE.VOICE when Voice bot is selected", () => {
     const handleSubmit = vi.fn();
     render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
     fireEvent.click(screen.getByText("Voice bot").closest("button")!);
@@ -70,7 +71,7 @@ describe("CreateBotModal", () => {
     fireEvent.click(screen.getByText("Create"));
     expect(handleSubmit).toHaveBeenCalledWith({
       name: "Voice Bot",
-      type: "voicebot",
+      type: BOT_TYPE.VOICE,
     });
   });
 
@@ -83,7 +84,7 @@ describe("CreateBotModal", () => {
     fireEvent.click(screen.getByText("Create"));
     expect(handleSubmit).toHaveBeenCalledWith({
       name: "My Bot",
-      type: "chatbot",
+      type: BOT_TYPE.CHAT,
     });
   });
 

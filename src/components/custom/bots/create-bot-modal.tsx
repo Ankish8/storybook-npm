@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
-import type { CreateBotModalProps, BotType } from "./types";
+import { BOT_TYPE, type CreateBotModalProps, type BotType } from "./types";
 
 interface BotTypeOption {
   id: BotType;
@@ -38,7 +38,8 @@ export const CreateBotModal = React.forwardRef<
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    onSubmit?.({ name: name.trim(), type: selectedType });
+    const typeValue = selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
+    onSubmit?.({ name: name.trim(), type: typeValue });
     setName("");
     setSelectedType("chatbot");
   };
@@ -51,12 +52,12 @@ export const CreateBotModal = React.forwardRef<
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent ref={ref} size="sm" className={cn("mx-4 sm:mx-auto", className)}>
+      <DialogContent ref={ref} size="sm" className={cn("mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full", className)}>
         <DialogHeader>
           <DialogTitle>Create AI bot</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
           {/* Name field */}
           <div className="flex flex-col gap-1.5">
             <label
@@ -87,7 +88,7 @@ export const CreateBotModal = React.forwardRef<
             <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
               Select Bot Type
             </span>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
               {BOT_TYPE_OPTIONS.map(({ id, label, description }) => {
                 const isSelected = selectedType === id;
                 return (
@@ -96,7 +97,7 @@ export const CreateBotModal = React.forwardRef<
                     type="button"
                     onClick={() => setSelectedType(id)}
                     className={cn(
-                      "flex flex-col items-start gap-2.5 p-3 rounded-lg border text-left flex-1 h-[134px] justify-center",
+                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
                       "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
                       isSelected
                         ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"
@@ -142,7 +143,7 @@ export const CreateBotModal = React.forwardRef<
         </div>
 
         {/* Footer actions */}
-        <div className="flex gap-4 justify-end mt-2">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4 justify-end mt-2">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>

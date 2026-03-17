@@ -723,7 +723,7 @@ components:
     mainFile: "talk-to-us-modal.tsx"
 
   bots:
-    description: "AI Bot management components — BotList page, BotCard, and CreateBotModal"
+    description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal"
     category: custom
     dependencies:
       - "clsx"
@@ -732,12 +732,18 @@ components:
     internalDependencies:
       - button
       - dialog
+      - dropdown-menu
     isMultiFile: true
     directory: "bots"
     files:
       - "bot-card.tsx"
       - "create-bot-modal.tsx"
       - "bot-list.tsx"
+      - "bot-list-header.tsx"
+      - "bot-list-search.tsx"
+      - "bot-list-create-card.tsx"
+      - "bot-list-grid.tsx"
+      - "bot-list-action.tsx"
       - "types.ts"
       - "index.ts"
     mainFile: "bot-list.tsx"

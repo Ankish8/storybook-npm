@@ -332,8 +332,26 @@ export { ChatListItem } from "./components/custom/chat-list-item";
 export type { ChatListItemProps, MessageStatus, MessageType } from "./components/custom/chat-list-item";
 
 // Bots (Custom)
-export { BotCard, CreateBotModal, BotList } from "./components/custom/bots";
-export type { BotCardProps, CreateBotModalProps, BotListProps, Bot, BotType } from "./components/custom/bots";
+export {
+  BotCard,
+  CreateBotModal,
+  BotList,
+  BotListHeader,
+  BotListSearch,
+  BotListCreateCard,
+  BotListGrid,
+} from "./components/custom/bots";
+export type {
+  BotCardProps,
+  CreateBotModalProps,
+  BotListProps,
+  BotListHeaderProps,
+  BotListSearchProps,
+  BotListCreateCardProps,
+  BotListGridProps,
+  Bot,
+  BotType,
+} from "./components/custom/bots";
 
 // IvrBot (Custom)
 export { BotIdentityCard, BotBehaviorCard, KnowledgeBaseCard, FunctionsCard, FrustrationHandoverCard, AdvancedSettingsCard, IvrBotConfig, CreateFunctionModal } from "./components/custom/ivr-bot";
