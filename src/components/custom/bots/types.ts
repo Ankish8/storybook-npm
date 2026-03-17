@@ -1,9 +1,11 @@
 import type * as React from "react";
 
-export enum BOT_TYPE {
-  CHAT = 1,
-  VOICE = 2,
-}
+export const BOT_TYPE = {
+  CHAT: 1,
+  VOICE: 2,
+} as const;
+
+export type BOT_TYPE = (typeof BOT_TYPE)[keyof typeof BOT_TYPE];
 
 export type BotType = "chatbot" | "voicebot";
 

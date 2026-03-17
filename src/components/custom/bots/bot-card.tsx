@@ -15,7 +15,8 @@ function getTypeLabel(
   typeLabels?: Partial<Record<BotType, string>>
 ): string {
   if (bot.typeLabel) return bot.typeLabel;
-  if (typeLabels?.[bot.type]) return typeLabels[bot.type];
+  const custom = typeLabels?.[bot.type];
+  if (custom) return custom;
   return DEFAULT_TYPE_LABELS[bot.type];
 }
 

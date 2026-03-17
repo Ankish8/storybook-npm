@@ -402,11 +402,11 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   "bots": {
     name: "bots",
-    description: "AI Bot management components — BotList page, BotCard, and CreateBotModal",
+    description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal",
       category: "custom",
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",
-    internalDependencies: ["button","dialog"],
+    internalDependencies: ["badge","button","dialog","dropdown-menu"],
   },
   "file-upload-modal": {
     name: "file-upload-modal",

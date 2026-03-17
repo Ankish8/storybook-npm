@@ -730,6 +730,7 @@ components:
       - "tailwind-merge"
       - "lucide-react"
     internalDependencies:
+      - badge
       - button
       - dialog
       - dropdown-menu

@@ -232,7 +232,7 @@ function looksLikeTailwindClasses(str: string): boolean {
   }
 
   // Single word utilities — check BEFORE npm regex so "relative", "flex", etc. aren't misidentified
-  const singleWordUtilities = /^(flex|grid|block|inline|contents|flow-root|hidden|invisible|visible|static|fixed|absolute|relative|sticky|isolate|isolation-auto|overflow-auto|overflow-hidden|overflow-clip|overflow-visible|overflow-scroll|overflow-x-auto|overflow-y-auto|overscroll-auto|overscroll-contain|overscroll-none|truncate|antialiased|subpixel-antialiased|italic|not-italic|underline|overline|line-through|no-underline|uppercase|lowercase|capitalize|normal-case|ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stacked-fractions|sr-only|not-sr-only|resize|resize-none|resize-x|resize-y|snap-start|snap-end|snap-center|snap-align-none|snap-normal|snap-always|touch-auto|touch-none|touch-pan-x|touch-pan-left|touch-pan-right|touch-pan-y|touch-pan-up|touch-pan-down|touch-pinch-zoom|touch-manipulation|select-none|select-text|select-all|select-auto|will-change-auto|will-change-scroll|will-change-contents|will-change-transform|grow|grow-0|shrink|shrink-0|transform|transform-cpu|transform-gpu|transform-none|transition|transition-none|transition-all|transition-colors|transition-opacity|transition-shadow|transition-transform|animate-none|animate-spin|animate-ping|animate-pulse|animate-bounce)$/
+  const singleWordUtilities = /^(flex|inline-flex|grid|inline-grid|block|inline-block|inline-table|inline|contents|flow-root|hidden|invisible|visible|static|fixed|absolute|relative|sticky|isolate|isolation-auto|overflow-auto|overflow-hidden|overflow-clip|overflow-visible|overflow-scroll|overflow-x-auto|overflow-y-auto|overscroll-auto|overscroll-contain|overscroll-none|truncate|antialiased|subpixel-antialiased|italic|not-italic|underline|overline|line-through|no-underline|uppercase|lowercase|capitalize|normal-case|ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stacked-fractions|sr-only|not-sr-only|resize|resize-none|resize-x|resize-y|snap-start|snap-end|snap-center|snap-align-none|snap-normal|snap-always|touch-auto|touch-none|touch-pan-x|touch-pan-left|touch-pan-right|touch-pan-y|touch-pan-up|touch-pan-down|touch-pinch-zoom|touch-manipulation|select-none|select-text|select-all|select-auto|will-change-auto|will-change-scroll|will-change-contents|will-change-transform|grow|grow-0|shrink|shrink-0|transform|transform-cpu|transform-gpu|transform-none|transition|transition-none|transition-all|transition-colors|transition-opacity|transition-shadow|transition-transform|animate-none|animate-spin|animate-ping|animate-pulse|animate-bounce)$/
   if (!str.includes(' ') && singleWordUtilities.test(str)) return true
 
   // Skip npm package names (but we already caught Tailwind utilities above)
@@ -6251,7 +6251,7 @@ export type { BrandIconProps } from "./icon";
     },
     "bots": {
       name: "bots",
-      description: "AI Bot management components — BotList page, BotCard, and CreateBotModal",
+      description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal",
       category: "custom",
       dependencies: [
             "clsx",
@@ -6259,8 +6259,10 @@ export type { BrandIconProps } from "./icon";
             "lucide-react"
       ],
       internalDependencies: [
+            "badge",
             "button",
-            "dialog"
+            "dialog",
+            "dropdown-menu"
       ],
       isMultiFile: true,
       directory: "bots",
@@ -6269,114 +6271,127 @@ export type { BrandIconProps } from "./icon";
         {
           name: "bot-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { MessageSquare, Phone, MoreVertical, Pencil, Play, Trash2 } from "lucide-react";
+import { MessageSquare, Phone } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "../dropdown-menu";
 import { Badge } from "../badge";
-import type { BotCardProps, BotType } from "./types";
+import { BotListAction } from "./bot-list-action";
+import type { Bot, BotCardProps, BotType } from "./types";
 
-const BOT_TYPE_LABELS: Record<BotType, string> = {
+const DEFAULT_TYPE_LABELS: Record<BotType, string> = {
   chatbot: "Chatbot",
   voicebot: "Voicebot",
 };
 
+function getTypeLabel(
+  bot: Bot,
+  typeLabels?: Partial<Record<BotType, string>>
+): string {
+  if (bot.typeLabel) return bot.typeLabel;
+  const custom = typeLabels?.[bot.type];
+  if (custom) return custom;
+  return DEFAULT_TYPE_LABELS[bot.type];
+}
+
+/**
+ * Single card component for both Chatbot and Voicebot.
+ * All displayed data (icon, badge, name, count, last published) comes from the \`bot\` prop.
+ * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
+ */
 export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, onEdit, onPublish, onDelete, className }, ref) => {
+  ({ bot, typeLabels, onEdit, onPublish, onDelete, className, ...props }, ref) => {
+    const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
+
+    const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (onEdit && !(e.target as HTMLElement).closest("[data-bot-card-action]")) {
+        onEdit(bot.id);
+      }
+    };
+
+    const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (onEdit && !(e.target as HTMLElement).closest("[data-bot-card-action]")) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEdit(bot.id);
+        }
+      }
+    };
 
     return (
       <div
         ref={ref}
+        role={onEdit ? "button" : undefined}
+        tabIndex={onEdit ? 0 : undefined}
+        aria-label={onEdit ? \`Edit \${bot.name}\` : undefined}
+        onClick={onEdit ? handleCardClick : undefined}
+        onKeyDown={onEdit ? handleCardKeyDown : undefined}
         className={cn(
-          "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px]",
-          "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-5 flex flex-col",
+          "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
+          "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
+          onEdit && "cursor-pointer",
           className
         )}
+        {...props}
       >
         {/* Top row: icon + badge + menu */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center justify-center size-[38px] rounded-full bg-semantic-info-surface shrink-0">
+        <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4 min-w-0">
+          <div className="flex items-center justify-center size-8 sm:size-[38px] rounded-full bg-semantic-info-surface shrink-0">
             {isChatbot ? (
-              <MessageSquare className="size-5 text-semantic-text-secondary" />
+              <MessageSquare className="size-4 sm:size-5 text-semantic-text-secondary" />
             ) : (
-              <Phone className="size-5 text-semantic-text-secondary" />
+              <Phone className="size-4 sm:size-5 text-semantic-text-secondary" />
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs font-normal">
-              {BOT_TYPE_LABELS[bot.type]}
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
+            <Badge variant="outline" className="text-xs font-normal shrink-0">
+              {typeLabel}
             </Badge>
 
-            {/* Three-dot dropdown menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
-                  aria-label="More options"
-                >
-                  <MoreVertical className="size-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[160px]">
-                <DropdownMenuItem
-                  className="flex items-center gap-3 px-4 py-3 text-sm cursor-pointer"
-                  onClick={() => onEdit?.(bot.id)}
-                >
-                  <Pencil className="size-4 text-semantic-text-muted shrink-0" />
-                  <span>Edit</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex items-center gap-3 px-4 py-3 text-sm cursor-pointer"
-                  onClick={() => onPublish?.(bot.id)}
-                >
-                  <Play className="size-4 text-semantic-text-muted shrink-0" />
-                  <span>Publish</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="flex items-center gap-3 px-4 py-3 text-sm cursor-pointer text-semantic-error-primary focus:text-semantic-error-primary focus:bg-semantic-error-surface"
-                  onClick={() => onDelete?.(bot.id)}
-                >
-                  <Trash2 className="size-4 shrink-0" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <span data-bot-card-action className="inline-flex" onClick={(e) => e.stopPropagation()}>
+              <BotListAction
+                align="end"
+                onEdit={() => onEdit?.(bot.id)}
+                onDelete={() => onDelete?.(bot.id)}
+              />
+            </span>
           </div>
         </div>
 
         {/* Bot name */}
-        <h3 className="m-0 text-base font-normal text-semantic-text-primary truncate mb-1">
+        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary truncate mb-1 min-w-0">
           {bot.name}
         </h3>
 
         {/* Conversations count */}
-        <p className="m-0 text-sm text-semantic-text-muted mb-4">
+        <p className="m-0 text-xs sm:text-sm text-semantic-text-muted mb-3 sm:mb-4">
           {bot.conversationCount.toLocaleString()} Conversations
         </p>
 
         {/* Divider */}
-        <div className="border-t border-semantic-border-layout mb-3 mt-auto" />
+        <div className="border-t border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />
 
         {/* Last published */}
-        <div className="flex flex-col gap-1">
-          <span className="text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px]">
-            Last Published
-          </span>
-          {bot.lastPublishedBy && bot.lastPublishedDate ? (
-            <p className="m-0 text-sm text-semantic-text-muted">
-              {bot.lastPublishedBy} | {bot.lastPublishedDate}
+        <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0">
+          {bot.status === "draft" ? (
+            <p className="m-0 text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px] flex items-center justify-start gap-5">
+              Last Published
+              <span className="text-xs font-normal text-semantic-error-primary flex items-center gap-1.5 shrink-0">
+                <span className="size-1.5 rounded-full bg-semantic-error-primary shrink-0" aria-hidden />
+                Unpublished changes
+              </span>
             </p>
           ) : (
-            <p className="m-0 text-sm text-semantic-text-muted">—</p>
+            <span className="text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px]">
+              Last Published
+            </span>
           )}
+          {bot.lastPublishedBy && bot.lastPublishedDate ? (
+            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
+              {bot.lastPublishedBy} | {bot.lastPublishedDate}
+            </p>
+          ) : bot.status !== "draft" ? (
+            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">—</p>
+          ) : null}
         </div>
       </div>
     );
@@ -6398,7 +6413,7 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Button } from "../button";
-import type { CreateBotModalProps, BotType } from "./types";
+import { BOT_TYPE, type CreateBotModalProps, type BotType } from "./types";
 
 interface BotTypeOption {
   id: BotType;
@@ -6428,7 +6443,8 @@ export const CreateBotModal = React.forwardRef<
 
   const handleSubmit = () => {
     if (!name.trim()) return;
-    onSubmit?.({ name: name.trim(), type: selectedType });
+    const typeValue = selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
+    onSubmit?.({ name: name.trim(), type: typeValue });
     setName("");
     setSelectedType("chatbot");
   };
@@ -6441,12 +6457,12 @@ export const CreateBotModal = React.forwardRef<
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent ref={ref} size="sm" className={cn("mx-4 sm:mx-auto", className)}>
+      <DialogContent ref={ref} size="sm" className={cn("mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full", className)}>
         <DialogHeader>
           <DialogTitle>Create AI bot</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 sm:gap-6">
           {/* Name field */}
           <div className="flex flex-col gap-1.5">
             <label
@@ -6477,7 +6493,7 @@ export const CreateBotModal = React.forwardRef<
             <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
               Select Bot Type
             </span>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
               {BOT_TYPE_OPTIONS.map(({ id, label, description }) => {
                 const isSelected = selectedType === id;
                 return (
@@ -6486,7 +6502,7 @@ export const CreateBotModal = React.forwardRef<
                     type="button"
                     onClick={() => setSelectedType(id)}
                     className={cn(
-                      "flex flex-col items-start gap-2.5 p-3 rounded-lg border text-left flex-1 h-[134px] justify-center",
+                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
                       "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
                       isSelected
                         ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"
@@ -6532,7 +6548,7 @@ export const CreateBotModal = React.forwardRef<
         </div>
 
         {/* Footer actions */}
-        <div className="flex gap-4 justify-end mt-2">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4 justify-end mt-2">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
@@ -6555,9 +6571,12 @@ CreateBotModal.displayName = "CreateBotModal";
         {
           name: "bot-list.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Plus, Search } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { BotCard } from "./bot-card";
+import { BotListHeader } from "./bot-list-header";
+import { BotListSearch } from "./bot-list-search";
+import { BotListCreateCard } from "./bot-list-create-card";
+import { BotListGrid } from "./bot-list-grid";
 import { CreateBotModal } from "./create-bot-modal";
 import type { BotListProps } from "./types";
 
@@ -6565,6 +6584,7 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
   (
     {
       bots = [],
+      typeLabels,
       onCreateBot,
       onCreateBotSubmit,
       onBotEdit,
@@ -6573,7 +6593,10 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onSearch,
       title = "AI Bot",
       subtitle = "Create & manage AI bots",
+      searchPlaceholder = "Search bot...",
+      createCardLabel = "Create new bot",
       className,
+      ...props
     },
     ref
   ) => {
@@ -6586,64 +6609,41 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
     };
 
     return (
-      <div ref={ref} className={cn("flex flex-col w-full", className)}>
-        {/* Page header */}
-        <div className="flex flex-col gap-4 pb-5 mb-6 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-1.5">
-            <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px]">
-              {title}
-            </h1>
-            <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px]">
-              {subtitle}
-            </p>
-          </div>
-
-          {/* Search bar */}
-          <div className="flex items-center gap-2 h-10 px-2.5 border border-semantic-border-input rounded bg-semantic-bg-primary hover:border-semantic-border-input-focus focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] w-full sm:w-auto">
-            <Search className="size-[14px] text-semantic-text-muted shrink-0" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search bot..."
-              className="text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none w-full sm:w-[180px]"
-            />
-          </div>
+      <div
+        ref={ref}
+        className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
+        {...props}
+      >
+        {/* Page header: title, subtitle, and search */}
+        <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
+          <BotListHeader title={title} subtitle={subtitle} />
+          <BotListSearch
+            value={searchQuery}
+            onSearch={handleSearch}
+            placeholder={searchPlaceholder}
+          />
         </div>
 
-        {/* Bot grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-          {/* Create new bot card */}
-          <button
-            type="button"
+        {/* Bot grid: create card + bot cards */}
+        <BotListGrid>
+          <BotListCreateCard
+            label={createCardLabel}
             onClick={() => {
               setCreateModalOpen(true);
               onCreateBot?.();
             }}
-            className={cn(
-              "flex flex-col items-center justify-center gap-3 p-2.5 rounded-[5px]",
-              "bg-semantic-info-surface-subtle border border-dashed border-[var(--color-primary-100)]",
-              "cursor-pointer hover:bg-semantic-bg-hover transition-colors min-h-[207px]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
-            )}
-          >
-            <Plus className="size-4 text-semantic-text-secondary" />
-            <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-              Create new bot
-            </span>
-          </button>
-
-          {/* Bot cards */}
+          />
           {bots.map((bot) => (
             <BotCard
               key={bot.id}
               bot={bot}
+              typeLabels={typeLabels}
               onEdit={onBotEdit}
               onPublish={onBotPublish}
               onDelete={onBotDelete}
             />
           ))}
-        </div>
+        </BotListGrid>
 
         <CreateBotModal
           open={createModalOpen}
@@ -6662,49 +6662,362 @@ BotList.displayName = "BotList";
 `, prefix),
         },
         {
-          name: "types.ts",
-          content: prefixTailwindClasses(`export type BotType = "chatbot" | "voicebot";
+          name: "bot-list-header.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import type { BotListHeaderProps } from "./types";
 
+export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
+  ({ title, subtitle, className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex flex-col gap-1.5 min-w-0 shrink", className)}
+      {...props}
+    >
+      {title != null && (
+        <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px] break-words sm:text-lg">
+          {title}
+        </h1>
+      )}
+      {subtitle != null && (
+        <p className="m-0 text-xs sm:text-sm text-semantic-text-muted tracking-[0.035px] break-words">
+          {subtitle}
+        </p>
+      )}
+    </div>
+  )
+);
+
+BotListHeader.displayName = "BotListHeader";
+`, prefix),
+        },
+        {
+          name: "bot-list-search.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Search } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import type { BotListSearchProps } from "./types";
+
+export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps>(
+  (
+    {
+      value,
+      placeholder = "Search bot...",
+      onSearch,
+      defaultValue,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
+    const isControlled = value !== undefined;
+    const displayValue = isControlled ? value : internalValue;
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const next = e.target.value;
+      if (!isControlled) setInternalValue(next);
+      onSearch?.(next);
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 border border-semantic-border-input rounded bg-semantic-bg-primary min-w-0 shrink-0",
+          "hover:border-semantic-border-input-focus focus-within:border-semantic-border-input-focus",
+          "focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] w-full max-w-full sm:max-w-[180px] md:max-w-[220px] sm:shrink-0",
+          className
+        )}
+        {...props}
+      >
+        <Search className="size-[14px] text-semantic-text-muted shrink-0" />
+        <input
+          type="text"
+          value={displayValue}
+          onChange={handleChange}
+          placeholder={placeholder}
+          className="text-sm text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none w-full min-w-0"
+          aria-label={placeholder}
+        />
+      </div>
+    );
+  }
+);
+
+BotListSearch.displayName = "BotListSearch";
+`, prefix),
+        },
+        {
+          name: "bot-list-create-card.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { Plus } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import type { BotListCreateCardProps } from "./types";
+
+export const BotListCreateCard = React.forwardRef<
+  HTMLButtonElement,
+  BotListCreateCardProps
+>(
+  (
+    {
+      label = "Create new bot",
+      onClick,
+      className,
+      ...props
+    },
+    ref
+  ) => (
+    <button
+      ref={ref}
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-2.5 rounded-[5px] min-h-[180px] sm:min-h-[207px] w-full min-w-0 max-w-full",
+        "bg-semantic-info-surface-subtle border border-dashed border-semantic-border-layout",
+        "cursor-pointer transition-colors hover:bg-semantic-bg-hover hover:border-semantic-border-input",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
+        "self-stretch justify-self-stretch",
+        className
+      )}
+      aria-label={label}
+      {...props}
+    >
+      <Plus className="size-4 text-semantic-text-secondary shrink-0" />
+      <span className="text-sm font-semibold leading-5 text-semantic-text-secondary text-center tracking-[0.014px]">
+        {label}
+      </span>
+    </button>
+  )
+);
+
+BotListCreateCard.displayName = "BotListCreateCard";
+`, prefix),
+        },
+        {
+          name: "bot-list-grid.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import type { BotListGridProps } from "./types";
+
+export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
+  ({ children, className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "grid w-full min-w-0 max-w-full overflow-hidden gap-3 sm:gap-5 md:gap-6",
+        "grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+);
+
+BotListGrid.displayName = "BotListGrid";
+`, prefix),
+        },
+        {
+          name: "bot-list-action.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "../dropdown-menu";
+import type { BotListActionProps } from "./types";
+
+const defaultTrigger = (
+  <button
+    type="button"
+    className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
+    aria-label="More options"
+  >
+    <MoreVertical className="size-4 shrink-0" />
+  </button>
+);
+
+export const BotListAction = React.forwardRef<HTMLDivElement, BotListActionProps>(
+  (
+    {
+      onEdit,
+      onDelete,
+      trigger = defaultTrigger,
+      align = "end",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div ref={ref} className={cn("inline-flex", className)} {...props}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+          <DropdownMenuContent
+            align={align}
+            className="min-w-[160px] max-w-[min(100vw-2rem,320px)] max-h-[min(70vh,400px)] overflow-y-auto rounded-lg border border-semantic-border-layout bg-semantic-bg-ui p-1 shadow-lg"
+          >
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-hover focus:text-semantic-text-primary"
+              onSelect={(e) => {
+                e.preventDefault();
+                onEdit?.();
+              }}
+            >
+              <Pencil className="size-4 shrink-0 text-semantic-text-primary" />
+              <span>Edit</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="my-1 bg-semantic-border-layout" />
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary outline-none transition-colors focus:bg-semantic-error-surface focus:text-semantic-error-primary"
+              onSelect={(e) => {
+                e.preventDefault();
+                onDelete?.();
+              }}
+            >
+              <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
+              <span>Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
+);
+
+BotListAction.displayName = "BotListAction";
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import type * as React from "react";
+
+export const BOT_TYPE = {
+  CHAT: 1,
+  VOICE: 2,
+} as const;
+
+export type BOT_TYPE = (typeof BOT_TYPE)[keyof typeof BOT_TYPE];
+
+export type BotType = "chatbot" | "voicebot";
+
+export type BotStatus = "draft" | "published";
+
+/**
+ * Single bot shape for both Chatbot and Voicebot.
+ * Use the same BotCard for both; set type to "chatbot" or "voicebot" and pass all data via this prop.
+ */
 export interface Bot {
   id: string;
   name: string;
+  /** "chatbot" | "voicebot" — determines icon and default badge label; all other data is from this object */
   type: BotType;
   conversationCount: number;
   lastPublishedBy?: string;
   lastPublishedDate?: string;
+  /** Optional custom label for the type badge (overrides typeLabels and default "Chatbot"/"Voicebot") */
+  typeLabel?: string;
+  /** When "draft", card shows "Unpublished changes" with red indicator in the Last Published section */
+  status?: BotStatus;
 }
 
-export interface BotCardProps {
+export interface BotCardProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
+  /** Single bot object: pass chatbot or voicebot data here; card renders based on bot.type and bot fields */
   bot: Bot;
+  /** Override labels for bot types (e.g. { chatbot: "Chat", voicebot: "Voice" }). Ignored if bot.typeLabel is set. */
+  typeLabels?: Partial<Record<BotType, string>>;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
   /** Called when Publish action is selected */
   onPublish?: (botId: string) => void;
   /** Called when Delete action is selected */
   onDelete?: (botId: string) => void;
-  className?: string;
 }
 
 export interface CreateBotModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit?: (data: { name: string; type: BotType }) => void;
+  /** Called with name and BOT_TYPE (CHAT = 1, VOICE = 2) when user submits */
+  onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
   className?: string;
 }
 
-export interface BotListProps {
+export interface BotListHeaderProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
+  /** Page title */
+  title?: string;
+  /** Optional subtitle below the title */
+  subtitle?: string;
+}
+
+export interface BotListSearchProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+  /** Controlled value (use with onSearch) */
+  value?: string;
+  /** Placeholder text */
+  placeholder?: string;
+  /** Called when the search value changes */
+  onSearch?: (query: string) => void;
+  /** Uncontrolled: default value */
+  defaultValue?: string;
+}
+
+export interface BotListCreateCardProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Label for the create card (e.g. "Create new bot") */
+  label?: string;
+}
+
+export interface BotListGridProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+export interface BotListActionProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  /** Called when Edit is selected */
+  onEdit?: () => void;
+  /** Called when Delete is selected */
+  onDelete?: () => void;
+  /** Custom trigger element; defaults to three-dot icon button */
+  trigger?: React.ReactNode;
+  /** Content alignment relative to trigger */
+  align?: "start" | "center" | "end";
+}
+
+export interface BotListProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
+  /** List of bots to display */
   bots?: Bot[];
+  /** Override type badge labels for all cards (e.g. { chatbot: "Chat", voicebot: "Voice" }). Per-bot bot.typeLabel still wins. */
+  typeLabels?: Partial<Record<BotType, string>>;
   /** Called when the "Create new bot" card is clicked (modal opens) */
   onCreateBot?: () => void;
-  /** Called when the Create Bot modal is submitted with the new bot data */
-  onCreateBotSubmit?: (data: { name: string; type: BotType }) => void;
+  /** Called when the Create Bot modal is submitted with the new bot data (type is BOT_TYPE: CHAT = 1, VOICE = 2) */
+  onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Called when user selects Edit on a bot (card click or menu) */
   onBotEdit?: (botId: string) => void;
+  /** Called when user selects Publish on a bot (menu; optional) */
   onBotPublish?: (botId: string) => void;
+  /** Called when user selects Delete on a bot */
   onBotDelete?: (botId: string) => void;
+  /** Called when the search query changes */
   onSearch?: (query: string) => void;
+  /** Page title (default: "AI Bot") */
   title?: string;
+  /** Page subtitle (default: "Create & manage AI bots") */
   subtitle?: string;
-  className?: string;
+  /** Placeholder for the search input (default: "Search bot...") */
+  searchPlaceholder?: string;
+  /** Label for the create-new-bot card (default: "Create new bot") */
+  createCardLabel?: string;
 }
 `, prefix),
         },
@@ -6717,7 +7030,23 @@ export { CreateBotModal } from "./create-bot-modal";
 export type { CreateBotModalProps } from "./types";
 
 export { BotList } from "./bot-list";
-export type { BotListProps, Bot, BotType } from "./types";
+export { BotListHeader } from "./bot-list-header";
+export { BotListSearch } from "./bot-list-search";
+export { BotListCreateCard } from "./bot-list-create-card";
+export { BotListGrid } from "./bot-list-grid";
+export { BotListAction } from "./bot-list-action";
+export { BOT_TYPE } from "./types";
+export type {
+  BotListProps,
+  BotListHeaderProps,
+  BotListSearchProps,
+  BotListCreateCardProps,
+  BotListGridProps,
+  BotListActionProps,
+  Bot,
+  BotType,
+  BotStatus,
+} from "./types";
 `, prefix),
         }
       ],

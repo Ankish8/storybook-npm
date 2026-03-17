@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-02-11T10:43:58.415Z",
+  "generatedAt": "2026-03-17T11:42:31.920Z",
   "components": {
     "accordion": {
       "exports": [
@@ -264,6 +264,120 @@
       },
       "variants": {}
     },
+    "creatable-multi-select": {
+      "exports": [
+        "CreatableMultiSelect",
+        "CreatableMultiSelectOption",
+        "CreatableMultiSelectProps",
+        "creatableMultiSelectTriggerVariants"
+      ],
+      "interfaces": {
+        "CreatableMultiSelectOption": {
+          "value": {
+            "type": "string",
+            "optional": false
+          },
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "CreatableMultiSelectProps": {
+          "value": {
+            "type": "string[]",
+            "optional": true
+          },
+          "onValueChange": {
+            "type": "(values: string[]) => void",
+            "optional": true
+          },
+          "options": {
+            "type": "CreatableMultiSelectOption[]",
+            "optional": true
+          },
+          "placeholder": {
+            "type": "string",
+            "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "state": {
+            "type": "\"default\" | \"error\"",
+            "optional": true
+          },
+          "creatableHint": {
+            "type": "string",
+            "optional": true
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "creatableMultiSelectTriggerVariants": {}
+      }
+    },
+    "creatable-select": {
+      "exports": [
+        "CreatableSelect",
+        "CreatableSelectOption",
+        "CreatableSelectProps",
+        "creatableSelectTriggerVariants"
+      ],
+      "interfaces": {
+        "CreatableSelectOption": {
+          "value": {
+            "type": "string",
+            "optional": false
+          },
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "CreatableSelectProps": {
+          "value": {
+            "type": "string",
+            "optional": true
+          },
+          "onValueChange": {
+            "type": "(value: string) => void",
+            "optional": true
+          },
+          "options": {
+            "type": "CreatableSelectOption[]",
+            "optional": true
+          },
+          "placeholder": {
+            "type": "string",
+            "optional": true
+          },
+          "creatableHint": {
+            "type": "string",
+            "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "creatableSelectTriggerVariants": {}
+      }
+    },
     "delete-confirmation-modal": {
       "exports": [
         "DeleteConfirmationModal",
@@ -375,6 +489,37 @@
       "interfaces": {},
       "variants": {}
     },
+    "empty-state": {
+      "exports": [
+        "EmptyState",
+        "EmptyStateProps"
+      ],
+      "interfaces": {
+        "EmptyStateProps": {
+          "icon": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "title": {
+            "type": "React.ReactNode",
+            "optional": false
+          },
+          "description": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "actions": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
     "form-modal": {
       "exports": [
         "FormModal",
@@ -444,7 +589,14 @@
         "InputProps",
         "inputVariants"
       ],
-      "interfaces": {},
+      "interfaces": {
+        "InputProps": {
+          "showCheckIcon": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
       "variants": {
         "inputVariants": {}
       }
@@ -582,6 +734,10 @@
             "type": "() => void",
             "optional": true
           },
+          "badge": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
           "infoIcon": {
             "type": "React.ReactNode",
             "optional": true
@@ -621,7 +777,9 @@
         "PaginationNextProps",
         "PaginationPrevious",
         "PaginationPreviousProps",
-        "PaginationProps"
+        "PaginationProps",
+        "PaginationWidget",
+        "PaginationWidgetProps"
       ],
       "interfaces": {
         "PaginationProps": {
@@ -660,15 +818,45 @@
           "className": {
             "type": "string",
             "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
           }
         },
         "PaginationNextProps": {
           "className": {
             "type": "string",
             "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
           }
         },
         "PaginationEllipsisProps": {
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
+        "PaginationWidgetProps": {
+          "currentPage": {
+            "type": "number",
+            "optional": false
+          },
+          "totalPages": {
+            "type": "number",
+            "optional": false
+          },
+          "onPageChange": {
+            "type": "(page: number) => void",
+            "optional": false
+          },
+          "siblingCount": {
+            "type": "number",
+            "optional": true
+          },
           "className": {
             "type": "string",
             "optional": true
@@ -707,6 +895,14 @@
           "onClick": {
             "type": "() => void",
             "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "disabledTooltip": {
+            "type": "string",
+            "optional": true
           }
         }
       },
@@ -776,6 +972,14 @@
           },
           "onValueChange": {
             "type": "(value: string) => void",
+            "optional": true
+          },
+          "onSelect": {
+            "type": "(option: SelectOption) => void",
+            "optional": true
+          },
+          "interceptValue": {
+            "type": "(value: string) => boolean",
             "optional": true
           },
           "options": {
@@ -899,6 +1103,7 @@
         "TableAvatar",
         "TableAvatarProps",
         "TableBody",
+        "TableBodyProps",
         "TableCaption",
         "TableCell",
         "TableCellProps",
@@ -925,6 +1130,20 @@
           },
           "wrapContent": {
             "type": "boolean",
+            "optional": true
+          }
+        },
+        "TableBodyProps": {
+          "isLoading": {
+            "type": "boolean",
+            "optional": true
+          },
+          "loadingRows": {
+            "type": "number",
+            "optional": true
+          },
+          "loadingColumns": {
+            "type": "number",
             "optional": true
           }
         },

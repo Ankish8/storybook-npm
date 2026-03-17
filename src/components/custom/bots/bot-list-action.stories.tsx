@@ -40,8 +40,8 @@ export const Overview: Story = {
 
 export const WithCallbacks: Story = {
   args: {
-    onEdit: () => alert("Edit"),
-    onDelete: () => alert("Delete"),
+    onEdit: () => console.log("Edit"),
+    onDelete: () => console.log("Delete"),
   },
 };
 
