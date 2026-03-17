@@ -13,7 +13,7 @@ const meta: Meta<typeof TalkToUsModal> = {
     docs: {
       description: {
         component: `
-A modal dialog that prompts users to contact the sales/support team. Displays a centered icon, heading, description, and two action buttons. Typically triggered by the PowerUpCard's "Talk to us" button on the pricing page.
+A modal dialog that prompts users to contact the sales/support team. Displays a centered icon, heading, description, and two action buttons. Typically triggered by the PowerUpCard's "Talk to us" button on the pricing page. The primary CTA supports \`primaryActionLoading\` (spinner + disabled) and is modular and reusable across any screen.
 
 ## Installation
 
@@ -93,6 +93,21 @@ function PricingPage() {
     </>
   );
 }
+
+**Primary CTA loading** — Use \`primaryActionLoading\` to show a spinner and disable the "Contact support" button (e.g. while submitting). Same pattern as the Button component's \`loading\` prop; reusable on any screen that uses TalkToUsModal.
+\`\`\`tsx
+const [loading, setLoading] = useState(false);
+<TalkToUsModal
+  open={open}
+  onOpenChange={setOpen}
+  primaryActionLoading={loading}
+  onPrimaryAction={async () => {
+    setLoading(true);
+    await contactSupport();
+    setLoading(false);
+    onOpenChange?.(false);
+  }}
+/>
 \`\`\`
 `,
       },
@@ -102,6 +117,13 @@ function PricingPage() {
   args: {
     onPrimaryAction: fn(),
     onSecondaryAction: fn(),
+  },
+  argTypes: {
+    primaryActionLoading: {
+      control: "boolean",
+      description:
+        "Show loading spinner on the primary CTA (Contact support) and make it non-interactive. Reusable across screens.",
+    },
   },
 };
 
@@ -113,6 +135,19 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     open: true,
+    onPrimaryAction: fn(),
+    onSecondaryAction: fn(),
+  },
+};
+
+// ─── Primary CTA Loading ─────────────────────────────────────────────────────
+
+export const PrimaryCtaLoading: Story = {
+  name: "Primary CTA Loading",
+  args: {
+    open: true,
+    primaryActionLoading: true,
+    primaryActionLabel: "Contact support",
     onPrimaryAction: fn(),
     onSecondaryAction: fn(),
   },

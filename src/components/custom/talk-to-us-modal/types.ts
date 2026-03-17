@@ -1,7 +1,7 @@
 import * as React from "react";
 
 /**
- * Props for the TalkToUsModal component.
+ * Props for the TalkToUsModal component. Modular and reusable across screens (e.g. triggered from PowerUpCard, pricing CTAs, or any "contact support" flow).
  */
 export interface TalkToUsModalProps {
   /** Whether the modal is open */
@@ -16,6 +16,8 @@ export interface TalkToUsModalProps {
   icon?: React.ReactNode;
   /** Label for the primary action button (default: "Contact support") */
   primaryActionLabel?: string;
+  /** Show loading spinner on the primary CTA and make it non-interactive. Reusable across screens. */
+  primaryActionLoading?: boolean;
   /** Label for the secondary action button (default: "Cancel") */
   secondaryActionLabel?: string;
   /** Callback when primary action button is clicked */

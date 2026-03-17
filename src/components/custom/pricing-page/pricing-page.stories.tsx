@@ -262,6 +262,100 @@ const letUsDriveYearly: LetUsDriveCardProps[] = [
   letUsDriveMonthly[2],
 ];
 
+const onboardingDetailsContent = {
+  heading: "Includes:",
+  items: [
+    {
+      title: "Start Your Channels:",
+      description:
+        "Get help setting up your Call and WhatsApp channels.",
+    },
+    {
+      title: "Set Up Your Agent:",
+      description:
+        "We'll help you activate your first Chat or Voice Agent.",
+    },
+    {
+      title: "Begin Training:",
+      description:
+        "10 hours of personalised training on the dashboard, agent setup, and campaign management.",
+    },
+  ],
+};
+
+const accountManagerDetailsContent = {
+  heading: "Includes:",
+  items: [
+    {
+      title: "Your Personal Manager:",
+      description:
+        "A single point of contact for all your strategy and tech questions.",
+    },
+    {
+      title: "Proactive Monitoring:",
+      description:
+        "We monitor your system proactively to catch problems early.",
+    },
+    {
+      title: "Hands-On Support:",
+      description:
+        "Guided troubleshooting for automation logic, agent actions, and linked platforms.",
+    },
+    {
+      title: "Priority Escalation:",
+      description:
+        "Critical issues get top priority across calls, chats, and more.",
+    },
+  ],
+};
+
+const managedServicesDetailsContent = {
+  heading: "Includes:",
+  items: [
+    {
+      title: "Advanced Agents:",
+      description:
+        "Custom Chat & Voice agents for lead capture, support, and engagement.",
+    },
+    {
+      title: "Custom Workflows:",
+      description:
+        "Automated WhatsApp campaigns, sales, follow-ups, reminders, and more.",
+    },
+    {
+      title: "Seamless Integration:",
+      description:
+        "Connect easily with your existing business tools.",
+    },
+    {
+      title: "Weekly Performance Calls:",
+      description:
+        "Stay aligned and on track through regular check-ins.",
+    },
+  ],
+};
+
+const letUsDriveCardsWithDetails: LetUsDriveCardProps[] = [
+  {
+    ...letUsDriveMonthly[0],
+    detailsContent: onboardingDetailsContent,
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+  {
+    ...letUsDriveMonthly[1],
+    detailsContent: accountManagerDetailsContent,
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+  {
+    ...letUsDriveMonthly[2],
+    detailsContent: managedServicesDetailsContent,
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+];
+
 // ─── Meta ─────────────────────────────────────────────────────────────────────
 
 const meta: Meta<typeof PricingPage> = {
@@ -374,11 +468,18 @@ const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
     </Select>
   }
   planCards={activeTab === "team" ? teamCards : aiCards}
+  planCardCtaStates={[
+    { disabled: true },
+    { loading: false },
+    { disabled: false },
+  ]}
   powerUpCards={powerUps}
   letUsDriveCards={driveCards}
   onFeatureComparisonClick={() => window.open("/features")}
 />
 \`\`\`
+
+**Plan card CTA states** — Use \`planCardCtaStates\` to control loading/disabled for each of the three pricing card buttons (index 0 = first card, 1 = second, 2 = third). Overrides \`ctaLoading\`/\`ctaDisabled\` on individual card props when provided.
 `,
       },
     },
@@ -485,6 +586,23 @@ export const GoAIFirst: Story = {
   },
 };
 
+// ─── Category Toggle Hidden ─────────────────────────────────────────────────────
+
+export const CategoryToggleHidden: Story = {
+  name: "Category Toggle Hidden",
+  args: {
+    tabs,
+    activeTab: "team",
+    showCategoryToggle: false,
+    showBillingToggle: true,
+    billingPeriod: "monthly",
+    headerActions: <NumberTypeSelect />,
+    planCards: teamMonthlyCards,
+    powerUpCards,
+    onFeatureComparisonClick: fn(),
+  },
+};
+
 // ─── Plans Only (No Power-ups / Drive) ────────────────────────────────────────
 
 export const PlansOnly: Story = {
@@ -527,5 +645,93 @@ export const SingleTab: Story = {
     planCards: teamMonthlyCards,
     powerUpCards,
     letUsDriveCards: letUsDriveMonthly,
+  },
+};
+
+// ─── Plan Card CTAs: Loading & Disabled ───────────────────────────────────────
+
+export const PlanCardCtaStates: Story = {
+  name: "Plan Card CTAs: Loading & Disabled",
+  args: {
+    tabs,
+    activeTab: "team",
+    showBillingToggle: true,
+    billingPeriod: "monthly",
+    headerActions: <NumberTypeSelect />,
+    planCards: teamMonthlyCards,
+    planCardCtaStates: [
+      { disabled: true },
+      { loading: true },
+      { disabled: false },
+    ],
+    powerUpCards,
+    onFeatureComparisonClick: fn(),
+    letUsDriveCards: letUsDriveMonthly,
+  },
+};
+
+// ─── Let Us Drive: Show/Hide Details (dedicated page, single expand) ───────────
+
+export const LetUsDriveShowHideDetailsSingle: Story = {
+  name: "Let Us Drive — Show/Hide Details (Single)",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Dedicated page for the Let us drive section. Clicking \"Show details\" on one card expands only that card (accordion). Click \"Hide details\" to collapse.",
+      },
+    },
+  },
+  args: {
+    title: "Let us drive",
+    tabs: [],
+    headerActions: null,
+    planCards: [],
+    letUsDriveCards: letUsDriveCardsWithDetails,
+    letUsDriveTitle: "Let us drive — Full-service management",
+    letUsDriveExpandMode: "single",
+    onFeatureComparisonClick: fn(),
+  },
+};
+
+// ─── Let Us Drive: Show/Hide Details (dedicated page, expand all) ──────────────
+
+export const LetUsDriveShowHideDetailsAll: Story = {
+  name: "Let Us Drive — Show/Hide Details (Expand All)",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Same section with expand mode \"all\": clicking \"Show details\" on any card expands all three cards. Each \"Hide details\" collapses only that card.",
+      },
+    },
+  },
+  args: {
+    title: "Let us drive",
+    tabs: [],
+    headerActions: null,
+    planCards: [],
+    letUsDriveCards: letUsDriveCardsWithDetails,
+    letUsDriveTitle: "Let us drive — Full-service management",
+    letUsDriveExpandMode: "all",
+    onFeatureComparisonClick: fn(),
+  },
+};
+
+// ─── Full page with Let Us Drive details (single expand) ──────────────────────
+
+export const FullPageWithLetUsDriveDetails: Story = {
+  name: "Full Page With Let Us Drive Details (Single)",
+  args: {
+    tabs,
+    activeTab: "team",
+    showBillingToggle: true,
+    billingPeriod: "monthly",
+    headerActions: <NumberTypeSelect />,
+    planCards: teamMonthlyCards,
+    powerUpCards,
+    onFeatureComparisonClick: fn(),
+    letUsDriveCards: letUsDriveCardsWithDetails,
+    letUsDriveExpandMode: "single",
   },
 };

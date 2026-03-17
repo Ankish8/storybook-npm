@@ -37,6 +37,7 @@ const TalkToUsModal: React.FC<TalkToUsModalProps> = ({
   description = "Please contact our team for more details. We're here to help you choose the right plan.",
   icon,
   primaryActionLabel = "Contact support",
+  primaryActionLoading = false,
   secondaryActionLabel = "Cancel",
   onPrimaryAction,
   onSecondaryAction,
@@ -73,7 +74,12 @@ const TalkToUsModal: React.FC<TalkToUsModalProps> = ({
             <Button variant="outline" onClick={handleSecondaryAction}>
               {secondaryActionLabel}
             </Button>
-            <Button onClick={onPrimaryAction}>{primaryActionLabel}</Button>
+            <Button
+              loading={primaryActionLoading}
+              onClick={onPrimaryAction}
+            >
+              {primaryActionLabel}
+            </Button>
           </div>
         </div>
       </DialogContent>

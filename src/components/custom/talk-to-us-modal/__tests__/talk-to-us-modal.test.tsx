@@ -51,6 +51,30 @@ describe("TalkToUsModal", () => {
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
+  it("shows loading state on primary CTA when primaryActionLoading is true", () => {
+    render(<TalkToUsModal open primaryActionLoading />);
+    const primaryButton = screen.getByRole("button", {
+      name: /Contact support/i,
+    });
+    expect(primaryButton).toBeDisabled();
+    expect(primaryButton.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+
+  it("does not call onPrimaryAction when primary CTA is loading", () => {
+    const handleClick = vi.fn();
+    render(
+      <TalkToUsModal
+        open
+        primaryActionLoading
+        onPrimaryAction={handleClick}
+      />
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: /Contact support/i })
+    );
+    expect(handleClick).not.toHaveBeenCalled();
+  });
+
   it("calls onSecondaryAction and onOpenChange when secondary button is clicked", () => {
     const handleSecondary = vi.fn();
     const handleOpenChange = vi.fn();

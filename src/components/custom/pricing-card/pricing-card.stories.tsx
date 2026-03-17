@@ -265,6 +265,14 @@ import { Bot } from "lucide-react";
       description:
         "Informational text shown below the CTA button (e.g., package change effective date).",
     },
+    ctaLoading: {
+      control: "boolean",
+      description: "Show loading spinner on CTA button and make it non-interactive.",
+    },
+    ctaDisabled: {
+      control: "boolean",
+      description: "Disable the CTA button (e.g. current plan or pending action).",
+    },
   },
 };
 
@@ -311,6 +319,50 @@ export const CurrentPlan: Story = {
     planIcon: <CompactCarIcon className="size-[30px] text-semantic-text-primary" />,
     features: compactFeatures,
     isCurrentPlan: true,
+    onFeatureDetails: fn(),
+    addon: defaultAddon,
+  },
+};
+
+// ─── CTA Loading ────────────────────────────────────────────────────────
+
+export const CtaLoading: Story = {
+  name: "CTA Loading",
+  decorators: [singleCardDecorator],
+  args: {
+    planName: "Sedan",
+    price: "5,000",
+    planDetails: "3 Users | 12 Month plan",
+    description:
+      "For growing businesses that need scalable calling, WhatsApp campaigns, and smarter team routing.",
+    headerBgColor: "#f4f0ec",
+    planIcon: <SedanCarIcon className="size-[30px] text-semantic-text-primary" />,
+    features: sedanFeatures.slice(0, 4),
+    ctaText: "Upgrade plan",
+    ctaLoading: true,
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
+    addon: defaultAddon,
+  },
+};
+
+// ─── CTA Disabled ───────────────────────────────────────────────────────
+
+export const CtaDisabled: Story = {
+  name: "CTA Disabled",
+  decorators: [singleCardDecorator],
+  args: {
+    planName: "Sedan",
+    price: "5,000",
+    planDetails: "3 Users | 12 Month plan",
+    description:
+      "For growing businesses that need scalable calling, WhatsApp campaigns, and smarter team routing.",
+    headerBgColor: "#f4f0ec",
+    planIcon: <SedanCarIcon className="size-[30px] text-semantic-text-primary" />,
+    features: sedanFeatures.slice(0, 4),
+    ctaText: "Upgrade plan",
+    ctaDisabled: true,
+    onCtaClick: fn(),
     onFeatureDetails: fn(),
     addon: defaultAddon,
   },
