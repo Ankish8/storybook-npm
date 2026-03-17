@@ -7,6 +7,8 @@ export enum BOT_TYPE {
 
 export type BotType = "chatbot" | "voicebot";
 
+export type BotStatus = "draft" | "published";
+
 /**
  * Single bot shape for both Chatbot and Voicebot.
  * Use the same BotCard for both; set type to "chatbot" or "voicebot" and pass all data via this prop.
@@ -21,6 +23,8 @@ export interface Bot {
   lastPublishedDate?: string;
   /** Optional custom label for the type badge (overrides typeLabels and default "Chatbot"/"Voicebot") */
   typeLabel?: string;
+  /** When "draft", card shows "Unpublished changes" with red indicator in the Last Published section */
+  status?: BotStatus;
 }
 
 export interface BotCardProps

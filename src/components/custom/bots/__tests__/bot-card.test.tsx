@@ -46,6 +46,32 @@ describe("BotCard", () => {
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
+  it("shows Unpublished changes when status is draft", () => {
+    const bot: Bot = { ...voicebot, status: "draft", lastPublishedBy: undefined, lastPublishedDate: undefined };
+    render(<BotCard bot={bot} />);
+    expect(screen.getByText("Unpublished changes")).toBeInTheDocument();
+    expect(screen.getByText("Last Published")).toBeInTheDocument();
+  });
+
+  it("shows last published info when status is published even with draft data", () => {
+    const bot: Bot = { ...chatbot, status: "published", lastPublishedBy: "User", lastPublishedDate: "1 Jan, 2025" };
+    render(<BotCard bot={bot} />);
+    expect(screen.getByText(/User \| 1 Jan, 2025/)).toBeInTheDocument();
+    expect(screen.queryByText("Unpublished changes")).not.toBeInTheDocument();
+  });
+
+  it("shows both last published line and Unpublished changes when status is draft with last published info", () => {
+    const bot: Bot = {
+      ...voicebot,
+      status: "draft",
+      lastPublishedBy: "Nandan Raikwar",
+      lastPublishedDate: "15 Jan, 2025",
+    };
+    render(<BotCard bot={bot} />);
+    expect(screen.getByText(/Nandan Raikwar \| 15 Jan, 2025/)).toBeInTheDocument();
+    expect(screen.getByText("Unpublished changes")).toBeInTheDocument();
+  });
+
   it("shows 'Chatbot' badge for chatbot type", () => {
     render(<BotCard bot={chatbot} />);
     expect(screen.getByText("Chatbot")).toBeInTheDocument();

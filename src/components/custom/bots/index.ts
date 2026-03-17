@@ -20,4 +20,5 @@ export type {
   BotListActionProps,
   Bot,
   BotType,
+  BotStatus,
 } from "./types";

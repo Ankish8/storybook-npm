@@ -99,16 +99,26 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
 
         {/* Last published */}
         <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0">
-          <span className="text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px]">
-            Last Published
-          </span>
+          {bot.status === "draft" ? (
+            <p className="m-0 text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px] flex items-center justify-start gap-5">
+              Last Published
+              <span className="text-xs font-normal text-semantic-error-primary flex items-center gap-1.5 shrink-0">
+                <span className="size-1.5 rounded-full bg-semantic-error-primary shrink-0" aria-hidden />
+                Unpublished changes
+              </span>
+            </p>
+          ) : (
+            <span className="text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px]">
+              Last Published
+            </span>
+          )}
           {bot.lastPublishedBy && bot.lastPublishedDate ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
               {bot.lastPublishedBy} | {bot.lastPublishedDate}
             </p>
-          ) : (
+          ) : bot.status !== "draft" ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">—</p>
-          )}
+          ) : null}
         </div>
       </div>
     );

@@ -42,6 +42,15 @@ const sampleBots: Bot[] = [
     lastPublishedBy: "Nandan Raikwar",
     lastPublishedDate: "15 Jan, 2025",
   },
+  {
+    id: "bot-5",
+    name: "Draft voice bot",
+    type: "voicebot",
+    conversationCount: 0,
+    status: "draft",
+    lastPublishedBy: "Nandan Raikwar",
+    lastPublishedDate: "15 Jan, 2025",
+  },
 ];
 
 const meta: Meta<typeof BotList> = {
@@ -125,7 +134,11 @@ import type { Bot, BotType } from "@/components/custom/bots"
   argTypes: {
     title: { control: "text", description: "Page title" },
     subtitle: { control: "text", description: "Page subtitle" },
-    bots: { control: false, description: "Array of bot objects to display" },
+    bots: {
+      control: false,
+      description:
+        'Array of bot objects. Each bot may include optional `status: "draft" | "published"`. When `status === "draft"`, the card shows "Unpublished changes" in the Last Published section.',
+    },
     onCreateBot: { action: "onCreateBot", description: "Called when the Create new bot card is clicked (modal opens)" },
     onCreateBotSubmit: { action: "onCreateBotSubmit", description: "Called with { name, type } when the Create Bot modal is submitted" },
     onBotEdit: { action: "onBotEdit", description: "Called with bot id when Edit is selected" },
@@ -379,7 +392,11 @@ import type { BotCardProps, Bot } from "@/components/custom/bots"
   },
   tags: ["autodocs"],
   argTypes: {
-    bot: { control: false, description: "Bot data object" },
+    bot: {
+      control: false,
+      description:
+        'Bot data object. Optional `status: "draft" | "published"` — when "draft", shows "Unpublished changes" with red indicator in Last Published section.',
+    },
     onEdit: { action: "onEdit", description: "Called with bot id when Edit is selected" },
     onPublish: { action: "onPublish", description: "Called with bot id when Publish is selected" },
     onDelete: { action: "onDelete", description: "Called with bot id when Delete is selected" },
@@ -417,6 +434,29 @@ export const BotCardNoPublishInfo: StoryObj<typeof BotCard> = {
           name: "Draft bot",
           type: "chatbot",
           conversationCount: 0,
+        }}
+        onEdit={fn()}
+        onPublish={fn()}
+        onDelete={fn()}
+      />
+    </div>
+  ),
+};
+
+export const BotCardDraft: StoryObj<typeof BotCard> = {
+  ...({ component: BotCard, ...botCardMeta } as object),
+  name: "Draft (Unpublished changes)",
+  render: () => (
+    <div style={{ width: 375 }}>
+      <BotCard
+        bot={{
+          id: "bot-draft",
+          name: "Draft voice bot",
+          type: "voicebot",
+          conversationCount: 0,
+          status: "draft",
+          lastPublishedBy: "Nandan Raikwar",
+          lastPublishedDate: "15 Jan, 2025",
         }}
         onEdit={fn()}
         onPublish={fn()}
