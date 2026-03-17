@@ -1,7 +1,7 @@
 import * as React from "react";
 
 /**
- * Props for the PowerUpCard component.
+ * Props for the PowerUpCard component. Modular and reusable across screens (e.g. pricing page power-ups, add-ons, or any feature card with icon, price, description, and CTA).
  */
 export interface PowerUpCardProps
   extends React.HTMLAttributes<HTMLDivElement> {

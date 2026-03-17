@@ -267,7 +267,7 @@ export type { EndpointDetailsProps } from "./components/custom/endpoint-details"
 
 // PricingCard (Custom)
 export { PricingCard, CompactCarIcon, SedanCarIcon, SuvCarIcon } from "./components/custom/pricing-card";
-export type { PricingCardProps, PricingCardAddon, PricingCardFeature, UsageDetail } from "./components/custom/pricing-card";
+export type { PlanCardCtaState, PricingCardProps, PricingCardAddon, PricingCardFeature, UsageDetail } from "./components/custom/pricing-card";
 
 // PaymentOptionCard (Custom)
 export { PaymentOptionCard, PaymentOptionCardModal } from "./components/custom/payment-option-card";
@@ -313,15 +313,19 @@ export type {
 
 // LetUsDriveCard (Custom)
 export { LetUsDriveCard } from "./components/custom/let-us-drive-card";
-export type { LetUsDriveCardProps } from "./components/custom/let-us-drive-card";
+export type {
+  LetUsDriveCardProps,
+  LetUsDriveDetailsContent,
+  LetUsDriveDetailsItem,
+} from "./components/custom/let-us-drive-card";
 
 // PricingToggle (Custom)
 export { PricingToggle } from "./components/custom/pricing-toggle";
 export type { PricingToggleProps, PricingToggleTab } from "./components/custom/pricing-toggle";
 
-// PricingPage (Custom)
+// PricingPage (Custom) — also re-exports PlanCardCtaState for screens that control plan card CTAs
 export { PricingPage } from "./components/custom/pricing-page";
-export type { PricingPageProps } from "./components/custom/pricing-page";
+export type { PricingPageProps, PlanCardCtaState } from "./components/custom/pricing-page";
 
 // DateRangeModal (Custom)
 export { DateRangeModal } from "./components/custom/date-range-modal/index";

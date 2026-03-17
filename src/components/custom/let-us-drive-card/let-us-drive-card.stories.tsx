@@ -287,6 +287,59 @@ export const WithoutShowDetails: Story = {
   },
 };
 
+// ─── Show / Hide details (expandable Includes) ────────────────────────────
+
+const onboardingDetailsContent = {
+  heading: "Includes:",
+  items: [
+    {
+      title: "Start Your Channels:",
+      description:
+        "Get help setting up your Call and WhatsApp channels.",
+    },
+    {
+      title: "Set Up Your Agent:",
+      description:
+        "We'll help you activate your first Chat or Voice Agent.",
+    },
+    {
+      title: "Begin Training:",
+      description:
+        "10 hours of personalised training on the dashboard, agent setup, and campaign management.",
+    },
+  ],
+};
+
+export const ShowHideDetails: Story = {
+  name: "Show / Hide Details (Expandable)",
+  decorators: [singleCardDecorator],
+  args: {
+    title: "Dedicated Onboarding",
+    price: "20,000",
+    period: "/one-time fee",
+    description: "Cut adoption time. Start seeing ROI faster.",
+    detailsContent: onboardingDetailsContent,
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+};
+
+export const ShowHideDetailsExpanded: Story = {
+  name: "Show / Hide Details (Expanded)",
+  decorators: [singleCardDecorator],
+  args: {
+    title: "Dedicated Onboarding",
+    price: "20,000",
+    period: "/one-time fee",
+    description: "Cut adoption time. Start seeing ROI faster.",
+    detailsContent: onboardingDetailsContent,
+    expanded: true,
+    onExpandedChange: fn(),
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+};
+
 // ─── All Cards (Full Section) ────────────────────────────────────────────
 
 export const AllCards: Story = {

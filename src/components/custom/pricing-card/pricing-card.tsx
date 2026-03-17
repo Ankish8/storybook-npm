@@ -39,6 +39,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       showPopularBadge = false,
       badgeText = "MOST POPULAR",
       ctaText,
+      ctaLoading = false,
+      ctaDisabled = false,
       onCtaClick,
       onFeatureDetails,
       addon,
@@ -132,6 +134,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
               variant={isCurrentPlan ? "outline" : "default"}
               className="w-full"
               onClick={onCtaClick}
+              loading={ctaLoading}
+              disabled={ctaDisabled}
             >
               {buttonText}
             </Button>

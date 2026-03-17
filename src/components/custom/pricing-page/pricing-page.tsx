@@ -35,18 +35,21 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       title = "Select business plan",
       headerActions,
       tabs = [],
+      showCategoryToggle = true,
       activeTab: controlledTab,
       onTabChange,
       showBillingToggle = false,
       billingPeriod: controlledBilling,
       onBillingPeriodChange,
       planCards = [],
+      planCardCtaStates,
       powerUpCards = [],
       powerUpsTitle = "Power-ups and charges",
       featureComparisonText = "See full feature comparison",
       onFeatureComparisonClick,
       letUsDriveCards = [],
       letUsDriveTitle = "Let us drive — Full-service management",
+      letUsDriveExpandMode,
       className,
       ...props
     },
@@ -59,6 +62,8 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
     const [internalBilling, setInternalBilling] = React.useState<
       "monthly" | "yearly"
     >("monthly");
+    const [expandedLetUsDriveIndices, setExpandedLetUsDriveIndices] =
+      React.useState<number[]>([]);
 
     const currentTab = controlledTab ?? internalTab;
     const currentBilling = controlledBilling ?? internalBilling;
@@ -72,6 +77,29 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       if (!controlledBilling) setInternalBilling(period);
       onBillingPeriodChange?.(period);
     };
+
+    const handleLetUsDriveExpandedChange = React.useCallback(
+      (index: number, expanded: boolean) => {
+        if (letUsDriveExpandMode === "all") {
+          if (expanded) {
+            setExpandedLetUsDriveIndices(
+              letUsDriveCards.map((_, i) => i)
+            );
+          } else {
+            setExpandedLetUsDriveIndices([]);
+          }
+        } else {
+          if (expanded) {
+            setExpandedLetUsDriveIndices([index]);
+          } else {
+            setExpandedLetUsDriveIndices((prev) =>
+              prev.filter((i) => i !== index)
+            );
+          }
+        }
+      },
+      [letUsDriveExpandMode, letUsDriveCards.length]
+    );
 
     const hasPowerUps = powerUpCards.length > 0;
     const hasLetUsDrive = letUsDriveCards.length > 0;
@@ -92,7 +120,7 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
         {/* ───── Plan Selection Area ───── */}
         <div className="flex flex-col gap-6 px-6 py-6">
           {/* Tabs + billing toggle */}
-          {tabs.length > 0 && (
+          {tabs.length > 0 && showCategoryToggle && (
             <PricingToggle
               tabs={tabs}
               activeTab={currentTab}
@@ -113,9 +141,17 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
                   : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
               )}
             >
-              {planCards.map((cardProps, index) => (
-                <PricingCard key={index} {...cardProps} />
-              ))}
+              {planCards.map((cardProps, index) => {
+                const ctaState = planCardCtaStates?.[index];
+                const merged = { ...cardProps };
+                if (ctaState) {
+                  if (ctaState.loading !== undefined)
+                    merged.ctaLoading = ctaState.loading;
+                  if (ctaState.disabled !== undefined)
+                    merged.ctaDisabled = ctaState.disabled;
+                }
+                return <PricingCard key={index} {...merged} />;
+              })}
             </div>
           )}
         </div>
@@ -160,11 +196,22 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
                 {letUsDriveTitle}
               </h2>
 
-              {/* Service cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {letUsDriveCards.map((cardProps, index) => (
-                  <LetUsDriveCard key={index} {...cardProps} />
-                ))}
+              {/* Service cards — items-stretch + card h-full + mt-auto on actions align Talk to us buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                {letUsDriveCards.map((cardProps, index) => {
+                  const hasDetailsContent =
+                    cardProps.detailsContent &&
+                    cardProps.detailsContent.items.length > 0;
+                  const useControlledExpand =
+                    letUsDriveExpandMode && hasDetailsContent;
+                  const merged = { ...cardProps };
+                  if (useControlledExpand) {
+                    merged.expanded = expandedLetUsDriveIndices.includes(index);
+                    merged.onExpandedChange = (expanded: boolean) =>
+                      handleLetUsDriveExpandedChange(index, expanded);
+                  }
+                  return <LetUsDriveCard key={index} {...merged} />;
+                })}
               </div>
             </div>
           </div>

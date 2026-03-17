@@ -110,6 +110,51 @@ describe("PricingCard", () => {
     expect(onCtaClick).toHaveBeenCalledTimes(1);
   });
 
+  it("shows loading state on CTA when ctaLoading is true", () => {
+    render(
+      <PricingCard {...defaultProps} ctaText="Upgrade plan" ctaLoading />
+    );
+    const button = screen.getByRole("button", { name: /Upgrade plan/i });
+    expect(button).toBeDisabled();
+    expect(button.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+
+  it("disables CTA button when ctaDisabled is true", () => {
+    render(
+      <PricingCard {...defaultProps} ctaText="Upgrade plan" ctaDisabled />
+    );
+    const button = screen.getByRole("button", { name: "Upgrade plan" });
+    expect(button).toBeDisabled();
+  });
+
+  it("does not call onCtaClick when CTA is loading", () => {
+    const onCtaClick = vi.fn();
+    render(
+      <PricingCard
+        {...defaultProps}
+        ctaText="Upgrade plan"
+        ctaLoading
+        onCtaClick={onCtaClick}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Upgrade plan/i }));
+    expect(onCtaClick).not.toHaveBeenCalled();
+  });
+
+  it("does not call onCtaClick when CTA is disabled", () => {
+    const onCtaClick = vi.fn();
+    render(
+      <PricingCard
+        {...defaultProps}
+        ctaText="Upgrade plan"
+        ctaDisabled
+        onCtaClick={onCtaClick}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Upgrade plan" }));
+    expect(onCtaClick).not.toHaveBeenCalled();
+  });
+
   it("renders Feature details link when onFeatureDetails is provided", () => {
     const onFeatureDetails = vi.fn();
     render(

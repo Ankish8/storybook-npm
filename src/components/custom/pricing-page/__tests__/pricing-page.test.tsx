@@ -15,12 +15,22 @@ const mockPlanCards: PricingCardProps[] = [
     planName: "Compact",
     price: "2,5000",
     features: ["WhatsApp Campaigns"],
+    ctaText: "Current plan",
+    isCurrentPlan: true,
     onCtaClick: vi.fn(),
   },
   {
     planName: "Sedan",
     price: "5,000",
     features: ["Scalable calling"],
+    ctaText: "Upgrade plan",
+    onCtaClick: vi.fn(),
+  },
+  {
+    planName: "SUV",
+    price: "15,000",
+    features: ["Advanced IVR"],
+    ctaText: "Upgrade plan",
     onCtaClick: vi.fn(),
   },
 ];
@@ -68,6 +78,20 @@ describe("PricingPage", () => {
     render(<PricingPage tabs={tabs} activeTab="team" />);
     expect(screen.getByRole("tab", { name: "Team-Led Plans" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Go-AI First" })).toBeInTheDocument();
+  });
+
+  it("hides category toggle when showCategoryToggle is false", () => {
+    render(
+      <PricingPage
+        tabs={tabs}
+        activeTab="team"
+        showCategoryToggle={false}
+        planCards={mockPlanCards}
+      />
+    );
+    expect(screen.queryByRole("tab", { name: "Team-Led Plans" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Go-AI First" })).not.toBeInTheDocument();
+    expect(screen.getByText("Compact")).toBeInTheDocument();
   });
 
   it("calls onTabChange when tab is clicked", () => {
@@ -209,5 +233,143 @@ describe("PricingPage", () => {
     expect(screen.getByText("Truecaller")).toBeInTheDocument();
     // Let us drive
     expect(screen.getByText("Dedicated Onboarding")).toBeInTheDocument();
+  });
+
+  it("applies planCardCtaStates to the three plan card CTAs", () => {
+    render(
+      <PricingPage
+        planCards={mockPlanCards}
+        planCardCtaStates={[
+          { disabled: true },
+          { loading: true },
+          { disabled: false },
+        ]}
+      />
+    );
+    const currentPlanBtn = screen.getByRole("button", { name: "Current plan" });
+    const upgradeButtons = screen.getAllByRole("button", {
+      name: "Upgrade plan",
+    });
+    expect(currentPlanBtn).toBeDisabled();
+    expect(upgradeButtons[0]).toBeDisabled();
+    expect(
+      upgradeButtons[0].querySelector(".animate-spin")
+    ).toBeInTheDocument();
+    expect(upgradeButtons[1]).not.toBeDisabled();
+  });
+
+  it("expands only one Let us drive card when letUsDriveExpandMode is single", () => {
+    const driveCardsWithDetails: LetUsDriveCardProps[] = [
+      {
+        title: "Onboarding",
+        price: "20,000",
+        period: "/one-time",
+        description: "Cut adoption time.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Setup", description: "Help with setup." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+      {
+        title: "Account Manager",
+        price: "15,000",
+        period: "/month",
+        description: "One expert.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Reviews", description: "Strategic reviews." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+    ];
+    render(
+      <PricingPage
+        letUsDriveCards={driveCardsWithDetails}
+        letUsDriveExpandMode="single"
+      />
+    );
+    fireEvent.click(screen.getAllByText("Show details")[0]);
+    expect(screen.getByText("Setup")).toBeInTheDocument();
+    expect(screen.queryByText("Reviews")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("Show details"));
+    expect(screen.getByText("Reviews")).toBeInTheDocument();
+    expect(screen.queryByText("Setup")).not.toBeInTheDocument();
+  });
+
+  it("expands all Let us drive cards when letUsDriveExpandMode is all", () => {
+    const driveCardsWithDetails: LetUsDriveCardProps[] = [
+      {
+        title: "Onboarding",
+        price: "20,000",
+        period: "/one-time",
+        description: "Cut adoption time.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Setup", description: "Help with setup." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+      {
+        title: "Account Manager",
+        price: "15,000",
+        period: "/month",
+        description: "One expert.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Reviews", description: "Strategic reviews." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+    ];
+    render(
+      <PricingPage
+        letUsDriveCards={driveCardsWithDetails}
+        letUsDriveExpandMode="all"
+      />
+    );
+    fireEvent.click(screen.getAllByText("Show details")[0]);
+    expect(screen.getByText("Setup")).toBeInTheDocument();
+    expect(screen.getByText("Reviews")).toBeInTheDocument();
+  });
+
+  it("collapses all Let us drive cards when Hide details is clicked in letUsDriveExpandMode all", () => {
+    const driveCardsWithDetails: LetUsDriveCardProps[] = [
+      {
+        title: "Onboarding",
+        price: "20,000",
+        period: "/one-time",
+        description: "Cut adoption time.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Setup", description: "Help with setup." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+      {
+        title: "Account Manager",
+        price: "15,000",
+        period: "/month",
+        description: "One expert.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Reviews", description: "Strategic reviews." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+    ];
+    render(
+      <PricingPage
+        letUsDriveCards={driveCardsWithDetails}
+        letUsDriveExpandMode="all"
+      />
+    );
+    fireEvent.click(screen.getAllByText("Show details")[0]);
+    expect(screen.getByText("Setup")).toBeInTheDocument();
+    expect(screen.getByText("Reviews")).toBeInTheDocument();
+    fireEvent.click(screen.getAllByText("Hide details")[0]);
+    expect(screen.queryByText("Setup")).not.toBeInTheDocument();
+    expect(screen.queryByText("Reviews")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Show details")).toHaveLength(2);
   });
 });

@@ -1,2 +1,6 @@
 export { LetUsDriveCard } from "./let-us-drive-card";
-export type { LetUsDriveCardProps } from "./types";
+export type {
+  LetUsDriveCardProps,
+  LetUsDriveDetailsContent,
+  LetUsDriveDetailsItem,
+} from "./types";

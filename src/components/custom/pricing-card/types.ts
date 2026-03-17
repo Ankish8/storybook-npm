@@ -26,7 +26,19 @@ export interface UsageDetail {
 export type PricingCardFeature = string | { text: string; bold?: boolean };
 
 /**
- * Props for the PricingCard component.
+ * Reusable CTA state for a single plan card (loading/disabled).
+ * Use on PricingCard via ctaLoading/ctaDisabled, or in arrays for
+ * screens that render multiple plan cards (e.g. planCardCtaStates on PricingPage).
+ */
+export interface PlanCardCtaState {
+  /** Show loading spinner on the CTA and make it non-interactive */
+  loading?: boolean;
+  /** Disable the CTA button (e.g. current plan or pending action) */
+  disabled?: boolean;
+}
+
+/**
+ * Props for the PricingCard component. Modular and reusable across screens (e.g. plan selection grid, comparison view, or any plan card with features and CTA).
  */
 export interface PricingCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -54,6 +66,10 @@ export interface PricingCardProps
   badgeText?: string;
   /** Custom CTA button text (overrides default "Select plan" / "Current plan") */
   ctaText?: string;
+  /** Show loading spinner on CTA button and make it non-interactive. Reusable on any screen that renders PricingCard. */
+  ctaLoading?: boolean;
+  /** Disable the CTA button (e.g. current plan or pending action). Reusable on any screen that renders PricingCard. */
+  ctaDisabled?: boolean;
   /** Callback when CTA button is clicked */
   onCtaClick?: () => void;
   /** Callback when "Feature details" link is clicked */

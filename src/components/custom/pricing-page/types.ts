@@ -1,17 +1,20 @@
 import * as React from "react";
-import type { PricingCardProps } from "../pricing-card/types";
+import type { PlanCardCtaState, PricingCardProps } from "../pricing-card/types";
 import type { PowerUpCardProps } from "../power-up-card/types";
 import type { LetUsDriveCardProps } from "../let-us-drive-card/types";
 import type { PricingToggleTab } from "../pricing-toggle/types";
 
 export type { PricingToggleTab };
 
+
 /**
  * Props for the PricingPage component.
  *
  * PricingPage is a layout compositor that orchestrates PricingToggle,
  * PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into
- * the full plan selection page.
+ * the full plan selection page. Modular and reusable across screens:
+ * use the full page layout, or compose sections elsewhere with the same
+ * sub-components (PricingCard, PowerUpCard, LetUsDriveCard, etc.).
  */
 export interface PricingPageProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -26,6 +29,8 @@ export interface PricingPageProps
 
   /** Plan type tabs shown in the pill selector */
   tabs?: PricingToggleTab[];
+  /** When false, the category toggle (e.g. Team-Led Plans / Go-AI First) is hidden. Default true. */
+  showCategoryToggle?: boolean;
   /** Currently active tab value (controlled). Falls back to first tab when unset. */
   activeTab?: string;
   /** Callback when the active tab changes */
@@ -41,6 +46,12 @@ export interface PricingPageProps
 
   /** Array of plan card props to render in the main pricing grid */
   planCards?: PricingCardProps[];
+  /**
+   * Optional CTA state per plan card (loading/disabled). Reusable across any screen that renders plan cards.
+   * Index matches planCards: [0] = first card CTA, [1] = second, [2] = third.
+   * Overrides ctaLoading/ctaDisabled on the card when provided.
+   */
+  planCardCtaStates?: PlanCardCtaState[];
 
   /* ───── Power-ups Section ───── */
 
@@ -59,4 +70,11 @@ export interface PricingPageProps
   letUsDriveCards?: LetUsDriveCardProps[];
   /** Let-us-drive section heading (default: "Let us drive — Full-service management") */
   letUsDriveTitle?: string;
+  /**
+   * When set, controls how "Show details" expands across cards.
+   * - "single": only the clicked card expands (accordion).
+   * - "all": clicking "Show details" on any card expands all cards that have detailsContent.
+   * Ignored when cards are used without detailsContent or without controlled expanded state.
+   */
+  letUsDriveExpandMode?: "single" | "all";
 }

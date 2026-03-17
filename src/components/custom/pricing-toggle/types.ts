@@ -1,4 +1,4 @@
-/** A single tab option in the plan tab selector */
+/** A single tab option in the plan tab selector. Reusable for any tabbed plan/category selector. */
 export interface PricingToggleTab {
   /** Display label for the tab */
   label: string;
@@ -6,6 +6,7 @@ export interface PricingToggleTab {
   value: string;
 }
 
+/** Props for the PricingToggle component. Modular and reusable across screens (e.g. plan-type selector, billing toggle). */
 export interface PricingToggleProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /** Array of tab options for the plan type selector */
