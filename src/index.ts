@@ -323,9 +323,9 @@ export type {
 export { PricingToggle } from "./components/custom/pricing-toggle";
 export type { PricingToggleProps, PricingToggleTab } from "./components/custom/pricing-toggle";
 
-// PricingPage (Custom) — also re-exports PlanCardCtaState for screens that control plan card CTAs
+// PricingPage (Custom)
 export { PricingPage } from "./components/custom/pricing-page";
-export type { PricingPageProps, PlanCardCtaState } from "./components/custom/pricing-page";
+export type { PricingPageProps } from "./components/custom/pricing-page";
 
 // DateRangeModal (Custom)
 export { DateRangeModal } from "./components/custom/date-range-modal/index";

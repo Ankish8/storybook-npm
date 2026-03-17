@@ -170,7 +170,7 @@ describe("LetUsDriveCard", () => {
   });
 
   it("renders Hide details link below the bullet points when expanded", () => {
-    const { container } = render(
+    render(
       <LetUsDriveCard
         {...defaultProps}
         detailsContent={{

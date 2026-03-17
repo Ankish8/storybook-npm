@@ -333,7 +333,7 @@ describe("PricingPage", () => {
     expect(screen.getByText("Reviews")).toBeInTheDocument();
   });
 
-  it("collapses all Let us drive cards when Hide details is clicked in letUsDriveExpandMode all", () => {
+  it("collapses only the clicked card when Hide details is clicked in letUsDriveExpandMode all", () => {
     const driveCardsWithDetails: LetUsDriveCardProps[] = [
       {
         title: "Onboarding",
@@ -364,12 +364,16 @@ describe("PricingPage", () => {
         letUsDriveExpandMode="all"
       />
     );
+    // expand all by clicking any "Show details"
     fireEvent.click(screen.getAllByText("Show details")[0]);
     expect(screen.getByText("Setup")).toBeInTheDocument();
     expect(screen.getByText("Reviews")).toBeInTheDocument();
+    // collapse only the first card
     fireEvent.click(screen.getAllByText("Hide details")[0]);
     expect(screen.queryByText("Setup")).not.toBeInTheDocument();
-    expect(screen.queryByText("Reviews")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Show details")).toHaveLength(2);
+    // second card should still be expanded
+    expect(screen.getByText("Reviews")).toBeInTheDocument();
+    expect(screen.getAllByText("Show details")).toHaveLength(1);
+    expect(screen.getAllByText("Hide details")).toHaveLength(1);
   });
 });

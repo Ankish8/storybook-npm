@@ -4619,6 +4619,7 @@ export type {
 import { cn } from "../../../lib/utils";
 import { Button } from "../button";
 import { Badge } from "../badge";
+import { CircleCheck } from "lucide-react";
 import type { LetUsDriveCardProps } from "./types";
 
 /**
@@ -4626,8 +4627,9 @@ import type { LetUsDriveCardProps } from "./types";
  * frequency badge, and a CTA. Used in the "Let us drive — Full-service
  * management" section of the pricing page.
  *
- * Supports a "free/discount" state where the original price is shown with
- * strikethrough and a green label (e.g., "FREE") replaces it.
+ * Supports expandable "Show details" / "Hide details" with an "Includes:"
+ * checklist when detailsContent is provided. Supports controlled expanded
+ * state (expanded / onExpandedChange) for accordion behavior on PricingPage.
  *
  * @example
  * \`\`\`tsx
@@ -4637,6 +4639,7 @@ import type { LetUsDriveCardProps } from "./types";
  *   period="/month"
  *   billingBadge="Annually"
  *   description="One expert who knows your business. And moves it forward."
+ *   detailsContent={{ heading: "Includes:", items: [{ title: "Start Your Channels", description: "Get help setting up." }] }}
  *   onShowDetails={() => console.log("details")}
  *   onCtaClick={() => console.log("talk")}
  * />
@@ -4653,7 +4656,11 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       description,
       freeLabel,
       showDetailsLabel = "Show details",
+      hideDetailsLabel = "Hide details",
       ctaLabel = "Talk to us",
+      detailsContent,
+      expanded: controlledExpanded,
+      onExpandedChange,
       onShowDetails,
       onCtaClick,
       className,
@@ -4661,11 +4668,29 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
     },
     ref
   ) => {
+    const [internalExpanded, setInternalExpanded] = React.useState(false);
+    const isControlled = controlledExpanded !== undefined;
+    const expanded = isControlled ? controlledExpanded : internalExpanded;
+
+    const hasExpandableDetails = detailsContent && detailsContent.items.length > 0;
+    const showDetailsLink = hasExpandableDetails || onShowDetails;
+
+    const handleDetailsClick = () => {
+      if (hasExpandableDetails) {
+        const next = !expanded;
+        if (!isControlled) setInternalExpanded(next);
+        onExpandedChange?.(next);
+        if (next) onShowDetails?.();
+      } else {
+        onShowDetails?.();
+      }
+    };
+
     return (
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5",
+          "flex h-full min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
           className
         )}
         {...props}
@@ -4685,8 +4710,8 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
           )}
         </div>
 
-        {/* Price section */}
-        <div className="flex flex-col gap-2.5">
+        {/* Price section — min-height so "Includes:" starts at same vertical position across cards when details are expanded */}
+        <div className="flex min-h-[7rem] flex-col gap-2.5">
           {startsAt && (
             <span className="text-xs text-semantic-text-muted tracking-[0.048px]">
               Starts at
@@ -4720,18 +4745,61 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
           </p>
         </div>
 
-        {/* Actions: Show details link + CTA button */}
-        <div className="flex flex-col gap-3 w-full">
-          {onShowDetails && (
-            <Button
-              variant="link"
-              className="text-semantic-text-link p-0 h-auto min-w-0 justify-start"
-              onClick={onShowDetails}
-            >
-              {showDetailsLabel}
-            </Button>
+        {/* Bottom section: flex-1 fills space so "Hide details" and button align across cards; flex column, button at bottom */}
+        <div className="mt-auto flex min-h-0 flex-1 flex-col gap-3 w-full">
+          {showDetailsLink && !(hasExpandableDetails && expanded) && (
+            <>
+              <div className="min-h-0 flex-1" aria-hidden />
+              <Button
+                variant="link"
+                className="text-semantic-text-link p-0 h-auto min-w-0 justify-start shrink-0"
+                onClick={handleDetailsClick}
+              >
+                {showDetailsLabel}
+              </Button>
+            </>
           )}
-          <Button variant="outline" className="w-full" onClick={onCtaClick}>
+          {!showDetailsLink && <div className="min-h-0 flex-1" aria-hidden />}
+          {hasExpandableDetails && expanded && (
+            <>
+              <div
+                className="flex min-h-0 flex-1 flex-col gap-3 w-full border-t border-semantic-border-layout pt-4"
+                data-testid="let-us-drive-details-block"
+              >
+                <p className="text-sm font-semibold text-semantic-text-primary tracking-[0.014px] m-0">
+                  {detailsContent.heading ?? "Includes:"}
+                </p>
+                <ul className="flex flex-col gap-3 list-none m-0 p-0" aria-label="Included features">
+                  {detailsContent.items.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <span className="flex w-4 shrink-0 items-start" aria-hidden>
+                        <CircleCheck className="size-4 text-semantic-success-primary" />
+                      </span>
+                      <span className="min-w-0 flex-1 text-left text-sm text-semantic-text-secondary tracking-[0.035px] leading-[20px]">
+                        <strong className="font-semibold text-semantic-text-primary">
+                          {item.title}
+                        </strong>
+                        {" "}
+                        {item.description}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button
+                variant="link"
+                className="text-semantic-text-link p-0 h-auto min-w-0 justify-start shrink-0"
+                onClick={handleDetailsClick}
+              >
+                {hideDetailsLabel}
+              </Button>
+            </>
+          )}
+          <Button
+            variant="outline"
+            className="min-h-[44px] w-full shrink-0 rounded-[4px]"
+            onClick={onCtaClick}
+          >
             {ctaLabel}
           </Button>
         </div>
@@ -4750,7 +4818,28 @@ export { LetUsDriveCard };
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
- * Props for the LetUsDriveCard component.
+ * A single item in the expandable "Includes" details block (bold title + description).
+ */
+export interface LetUsDriveDetailsItem {
+  /** Bold title (e.g., "Start Your Channels") */
+  title: string;
+  /** Description text (e.g., "Get help setting up your Call and WhatsApp channels.") */
+  description: string;
+}
+
+/**
+ * Content for the expandable "Show details" / "Hide details" section.
+ * When provided, the card shows an "Includes:"-style block with checklist items.
+ */
+export interface LetUsDriveDetailsContent {
+  /** Heading above the list (default: "Includes:") */
+  heading?: string;
+  /** Checklist items (title in bold, description in regular weight) */
+  items: LetUsDriveDetailsItem[];
+}
+
+/**
+ * Props for the LetUsDriveCard component. Modular and reusable across screens (e.g. managed services, add-on offerings, or any service card with pricing and expandable details).
  */
 export interface LetUsDriveCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -4768,11 +4857,22 @@ export interface LetUsDriveCardProps
   description: string;
   /** When provided, price is shown with strikethrough and this label (e.g., "FREE") is displayed in green */
   freeLabel?: string;
-  /** Text for the details link (default: "Show details") */
+  /** Text for the details link when collapsed (default: "Show details") */
   showDetailsLabel?: string;
+  /** Text for the details link when expanded (default: "Hide details") */
+  hideDetailsLabel?: string;
   /** CTA button text (default: "Talk to us") */
   ctaLabel?: string;
-  /** Callback when "Show details" link is clicked */
+  /**
+   * Expandable details content. When provided, the card shows "Show details" / "Hide details"
+   * and an expandable "Includes:"-style block. Omit for link-only (onShowDetails callback only).
+   */
+  detailsContent?: LetUsDriveDetailsContent;
+  /** Controlled expanded state for the details block (use with onExpandedChange) */
+  expanded?: boolean;
+  /** Callback when expanded state changes (for controlled mode / PricingPage accordion) */
+  onExpandedChange?: (expanded: boolean) => void;
+  /** Callback when "Show details" link is clicked (still fired when using detailsContent) */
   onShowDetails?: () => void;
   /** Callback when CTA button is clicked */
   onCtaClick?: () => void;
@@ -4782,7 +4882,11 @@ export interface LetUsDriveCardProps
         {
           name: "index.ts",
           content: prefixTailwindClasses(`export { LetUsDriveCard } from "./let-us-drive-card";
-export type { LetUsDriveCardProps } from "./types";
+export type {
+  LetUsDriveCardProps,
+  LetUsDriveDetailsContent,
+  LetUsDriveDetailsItem,
+} from "./types";
 `, prefix),
         }
       ],
@@ -4892,7 +4996,7 @@ export { PowerUpCard };
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
- * Props for the PowerUpCard component.
+ * Props for the PowerUpCard component. Modular and reusable across screens (e.g. pricing page power-ups, add-ons, or any feature card with icon, price, description, and CTA).
  */
 export interface PowerUpCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -4979,6 +5083,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       showPopularBadge = false,
       badgeText = "MOST POPULAR",
       ctaText,
+      ctaLoading = false,
+      ctaDisabled = false,
       onCtaClick,
       onFeatureDetails,
       addon,
@@ -5072,6 +5178,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
               variant={isCurrentPlan ? "outline" : "default"}
               className="w-full"
               onClick={onCtaClick}
+              loading={ctaLoading}
+              disabled={ctaDisabled}
             >
               {buttonText}
             </Button>
@@ -5341,7 +5449,19 @@ export interface UsageDetail {
 export type PricingCardFeature = string | { text: string; bold?: boolean };
 
 /**
- * Props for the PricingCard component.
+ * Reusable CTA state for a single plan card (loading/disabled).
+ * Use on PricingCard via ctaLoading/ctaDisabled, or in arrays for
+ * screens that render multiple plan cards (e.g. planCardCtaStates on PricingPage).
+ */
+export interface PlanCardCtaState {
+  /** Show loading spinner on the CTA and make it non-interactive */
+  loading?: boolean;
+  /** Disable the CTA button (e.g. current plan or pending action) */
+  disabled?: boolean;
+}
+
+/**
+ * Props for the PricingCard component. Modular and reusable across screens (e.g. plan selection grid, comparison view, or any plan card with features and CTA).
  */
 export interface PricingCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -5369,6 +5489,10 @@ export interface PricingCardProps
   badgeText?: string;
   /** Custom CTA button text (overrides default "Select plan" / "Current plan") */
   ctaText?: string;
+  /** Show loading spinner on CTA button and make it non-interactive. Reusable on any screen that renders PricingCard. */
+  ctaLoading?: boolean;
+  /** Disable the CTA button (e.g. current plan or pending action). Reusable on any screen that renders PricingCard. */
+  ctaDisabled?: boolean;
   /** Callback when CTA button is clicked */
   onCtaClick?: () => void;
   /** Callback when "Feature details" link is clicked */
@@ -5387,6 +5511,7 @@ export interface PricingCardProps
           content: prefixTailwindClasses(`export { PricingCard } from "./pricing-card";
 export { CompactCarIcon, SedanCarIcon, SuvCarIcon } from "./plan-icons";
 export type {
+  PlanCardCtaState,
   PricingCardProps,
   PricingCardAddon,
   PricingCardFeature,
@@ -5456,18 +5581,21 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       title = "Select business plan",
       headerActions,
       tabs = [],
+      showCategoryToggle = true,
       activeTab: controlledTab,
       onTabChange,
       showBillingToggle = false,
       billingPeriod: controlledBilling,
       onBillingPeriodChange,
       planCards = [],
+      planCardCtaStates,
       powerUpCards = [],
       powerUpsTitle = "Power-ups and charges",
       featureComparisonText = "See full feature comparison",
       onFeatureComparisonClick,
       letUsDriveCards = [],
       letUsDriveTitle = "Let us drive — Full-service management",
+      letUsDriveExpandMode,
       className,
       ...props
     },
@@ -5480,6 +5608,8 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
     const [internalBilling, setInternalBilling] = React.useState<
       "monthly" | "yearly"
     >("monthly");
+    const [expandedLetUsDriveIndices, setExpandedLetUsDriveIndices] =
+      React.useState<number[]>([]);
 
     const currentTab = controlledTab ?? internalTab;
     const currentBilling = controlledBilling ?? internalBilling;
@@ -5492,6 +5622,30 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
     const handleBillingChange = (period: "monthly" | "yearly") => {
       if (!controlledBilling) setInternalBilling(period);
       onBillingPeriodChange?.(period);
+    };
+
+    const cardCount = letUsDriveCards.length;
+
+    const handleLetUsDriveExpandedChange = (index: number, expanded: boolean) => {
+      if (letUsDriveExpandMode === "all") {
+        if (expanded) {
+          setExpandedLetUsDriveIndices(
+            Array.from({ length: cardCount }, (_, i) => i)
+          );
+        } else {
+          setExpandedLetUsDriveIndices((prev) =>
+            prev.filter((i) => i !== index)
+          );
+        }
+      } else {
+        if (expanded) {
+          setExpandedLetUsDriveIndices([index]);
+        } else {
+          setExpandedLetUsDriveIndices((prev) =>
+            prev.filter((i) => i !== index)
+          );
+        }
+      }
     };
 
     const hasPowerUps = powerUpCards.length > 0;
@@ -5513,7 +5667,7 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
         {/* ───── Plan Selection Area ───── */}
         <div className="flex flex-col gap-6 px-6 py-6">
           {/* Tabs + billing toggle */}
-          {tabs.length > 0 && (
+          {tabs.length > 0 && showCategoryToggle && (
             <PricingToggle
               tabs={tabs}
               activeTab={currentTab}
@@ -5534,9 +5688,17 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
                   : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
               )}
             >
-              {planCards.map((cardProps, index) => (
-                <PricingCard key={index} {...cardProps} />
-              ))}
+              {planCards.map((cardProps, index) => {
+                const ctaState = planCardCtaStates?.[index];
+                const merged = { ...cardProps };
+                if (ctaState) {
+                  if (ctaState.loading !== undefined)
+                    merged.ctaLoading = ctaState.loading;
+                  if (ctaState.disabled !== undefined)
+                    merged.ctaDisabled = ctaState.disabled;
+                }
+                return <PricingCard key={index} {...merged} />;
+              })}
             </div>
           )}
         </div>
@@ -5581,11 +5743,22 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
                 {letUsDriveTitle}
               </h2>
 
-              {/* Service cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {letUsDriveCards.map((cardProps, index) => (
-                  <LetUsDriveCard key={index} {...cardProps} />
-                ))}
+              {/* Service cards — items-stretch + card h-full + mt-auto on actions align Talk to us buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                {letUsDriveCards.map((cardProps, index) => {
+                  const hasDetailsContent =
+                    cardProps.detailsContent &&
+                    cardProps.detailsContent.items.length > 0;
+                  const useControlledExpand =
+                    letUsDriveExpandMode && hasDetailsContent;
+                  const merged = { ...cardProps };
+                  if (useControlledExpand) {
+                    merged.expanded = expandedLetUsDriveIndices.includes(index);
+                    merged.onExpandedChange = (expanded: boolean) =>
+                      handleLetUsDriveExpandedChange(index, expanded);
+                  }
+                  return <LetUsDriveCard key={index} {...merged} />;
+                })}
               </div>
             </div>
           </div>
@@ -5603,19 +5776,22 @@ export { PricingPage };
         {
           name: "types.ts",
           content: prefixTailwindClasses(`import * as React from "react";
-import type { PricingCardProps } from "../pricing-card/types";
+import type { PlanCardCtaState, PricingCardProps } from "../pricing-card/types";
 import type { PowerUpCardProps } from "../power-up-card/types";
 import type { LetUsDriveCardProps } from "../let-us-drive-card/types";
 import type { PricingToggleTab } from "../pricing-toggle/types";
 
 export type { PricingToggleTab };
 
+
 /**
  * Props for the PricingPage component.
  *
  * PricingPage is a layout compositor that orchestrates PricingToggle,
  * PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into
- * the full plan selection page.
+ * the full plan selection page. Modular and reusable across screens:
+ * use the full page layout, or compose sections elsewhere with the same
+ * sub-components (PricingCard, PowerUpCard, LetUsDriveCard, etc.).
  */
 export interface PricingPageProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -5630,6 +5806,8 @@ export interface PricingPageProps
 
   /** Plan type tabs shown in the pill selector */
   tabs?: PricingToggleTab[];
+  /** When false, the category toggle (e.g. Team-Led Plans / Go-AI First) is hidden. Default true. */
+  showCategoryToggle?: boolean;
   /** Currently active tab value (controlled). Falls back to first tab when unset. */
   activeTab?: string;
   /** Callback when the active tab changes */
@@ -5645,6 +5823,12 @@ export interface PricingPageProps
 
   /** Array of plan card props to render in the main pricing grid */
   planCards?: PricingCardProps[];
+  /**
+   * Optional CTA state per plan card (loading/disabled). Reusable across any screen that renders plan cards.
+   * Index matches planCards: [0] = first card CTA, [1] = second, [2] = third.
+   * Overrides ctaLoading/ctaDisabled on the card when provided.
+   */
+  planCardCtaStates?: PlanCardCtaState[];
 
   /* ───── Power-ups Section ───── */
 
@@ -5663,6 +5847,13 @@ export interface PricingPageProps
   letUsDriveCards?: LetUsDriveCardProps[];
   /** Let-us-drive section heading (default: "Let us drive — Full-service management") */
   letUsDriveTitle?: string;
+  /**
+   * When set, controls how "Show details" expands across cards.
+   * - "single": only the clicked card expands (accordion).
+   * - "all": clicking "Show details" on any card expands all cards that have detailsContent.
+   * Ignored when cards are used without detailsContent or without controlled expanded state.
+   */
+  letUsDriveExpandMode?: "single" | "all";
 }
 `, prefix),
         },
@@ -5670,6 +5861,7 @@ export interface PricingPageProps
           name: "index.ts",
           content: prefixTailwindClasses(`export { PricingPage } from "./pricing-page";
 export type { PricingPageProps, PricingToggleTab } from "./types";
+export type { PlanCardCtaState } from "../pricing-card/types";
 `, prefix),
         }
       ],
@@ -5811,7 +6003,7 @@ export { PricingToggle };
         },
         {
           name: "types.ts",
-          content: prefixTailwindClasses(`/** A single tab option in the plan tab selector */
+          content: prefixTailwindClasses(`/** A single tab option in the plan tab selector. Reusable for any tabbed plan/category selector. */
 export interface PricingToggleTab {
   /** Display label for the tab */
   label: string;
@@ -5819,6 +6011,7 @@ export interface PricingToggleTab {
   value: string;
 }
 
+/** Props for the PricingToggle component. Modular and reusable across screens (e.g. plan-type selector, billing toggle). */
 export interface PricingToggleProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /** Array of tab options for the plan type selector */
@@ -5906,6 +6099,7 @@ const TalkToUsModal: React.FC<TalkToUsModalProps> = ({
   description = "Please contact our team for more details. We're here to help you choose the right plan.",
   icon,
   primaryActionLabel = "Contact support",
+  primaryActionLoading = false,
   secondaryActionLabel = "Cancel",
   onPrimaryAction,
   onSecondaryAction,
@@ -5942,7 +6136,12 @@ const TalkToUsModal: React.FC<TalkToUsModalProps> = ({
             <Button variant="outline" onClick={handleSecondaryAction}>
               {secondaryActionLabel}
             </Button>
-            <Button onClick={onPrimaryAction}>{primaryActionLabel}</Button>
+            <Button
+              loading={primaryActionLoading}
+              onClick={onPrimaryAction}
+            >
+              {primaryActionLabel}
+            </Button>
           </div>
         </div>
       </DialogContent>
@@ -6012,7 +6211,7 @@ export type { BrandIconProps };
           content: prefixTailwindClasses(`import * as React from "react";
 
 /**
- * Props for the TalkToUsModal component.
+ * Props for the TalkToUsModal component. Modular and reusable across screens (e.g. triggered from PowerUpCard, pricing CTAs, or any "contact support" flow).
  */
 export interface TalkToUsModalProps {
   /** Whether the modal is open */
@@ -6027,6 +6226,8 @@ export interface TalkToUsModalProps {
   icon?: React.ReactNode;
   /** Label for the primary action button (default: "Contact support") */
   primaryActionLabel?: string;
+  /** Show loading spinner on the primary CTA and make it non-interactive. Reusable across screens. */
+  primaryActionLoading?: boolean;
   /** Label for the secondary action button (default: "Cancel") */
   secondaryActionLabel?: string;
   /** Callback when primary action button is clicked */

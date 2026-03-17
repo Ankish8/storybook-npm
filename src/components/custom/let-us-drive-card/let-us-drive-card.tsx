@@ -63,8 +63,10 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
         const next = !expanded;
         if (!isControlled) setInternalExpanded(next);
         onExpandedChange?.(next);
+        if (next) onShowDetails?.();
+      } else {
+        onShowDetails?.();
       }
-      onShowDetails?.();
     };
 
     return (

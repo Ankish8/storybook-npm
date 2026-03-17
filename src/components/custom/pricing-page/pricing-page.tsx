@@ -78,28 +78,29 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       onBillingPeriodChange?.(period);
     };
 
-    const handleLetUsDriveExpandedChange = React.useCallback(
-      (index: number, expanded: boolean) => {
-        if (letUsDriveExpandMode === "all") {
-          if (expanded) {
-            setExpandedLetUsDriveIndices(
-              letUsDriveCards.map((_, i) => i)
-            );
-          } else {
-            setExpandedLetUsDriveIndices([]);
-          }
+    const cardCount = letUsDriveCards.length;
+
+    const handleLetUsDriveExpandedChange = (index: number, expanded: boolean) => {
+      if (letUsDriveExpandMode === "all") {
+        if (expanded) {
+          setExpandedLetUsDriveIndices(
+            Array.from({ length: cardCount }, (_, i) => i)
+          );
         } else {
-          if (expanded) {
-            setExpandedLetUsDriveIndices([index]);
-          } else {
-            setExpandedLetUsDriveIndices((prev) =>
-              prev.filter((i) => i !== index)
-            );
-          }
+          setExpandedLetUsDriveIndices((prev) =>
+            prev.filter((i) => i !== index)
+          );
         }
-      },
-      [letUsDriveExpandMode, letUsDriveCards.length]
-    );
+      } else {
+        if (expanded) {
+          setExpandedLetUsDriveIndices([index]);
+        } else {
+          setExpandedLetUsDriveIndices((prev) =>
+            prev.filter((i) => i !== index)
+          );
+        }
+      }
+    };
 
     const hasPowerUps = powerUpCards.length > 0;
     const hasLetUsDrive = letUsDriveCards.length > 0;
