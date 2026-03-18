@@ -26,7 +26,7 @@ function getTypeLabel(
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
 export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onPublish, onDelete, className, ...props }, ref) => {
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 

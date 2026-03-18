@@ -42,6 +42,8 @@ export interface CreatableSelectProps
   creatableHint?: string
   /** Whether the select is disabled */
   disabled?: boolean
+  /** Max character length for the value (enforced when open and when creating) */
+  maxLength?: number
 }
 
 const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
@@ -55,6 +57,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       placeholder = "Select an option",
       creatableHint = "Type to create a custom option",
       disabled = false,
+      maxLength,
       ...props
     },
     ref
@@ -104,11 +107,12 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
     const handleCreate = React.useCallback(() => {
       const trimmed = search.trim()
       if (trimmed) {
-        onValueChange?.(trimmed)
+        const value = maxLength != null ? trimmed.slice(0, maxLength) : trimmed
+        onValueChange?.(value)
         setOpen(false)
         setSearch("")
       }
-    }, [search, onValueChange])
+    }, [search, onValueChange, maxLength])
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -196,7 +200,11 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
               ref={inputRef}
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value
+                setSearch(maxLength != null ? v.slice(0, maxLength) : v)
+              }}
+              maxLength={maxLength}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-muted"
               placeholder={selectedLabel || placeholder}

@@ -72,11 +72,14 @@ function Field({
   label,
   required,
   helperText,
+  characterCount,
   children,
 }: {
   label: string;
   required?: boolean;
   helperText?: string;
+  /** e.g. { current: 0, max: 50 } to show "0/50" below right */
+  characterCount?: { current: number; max: number };
   children: React.ReactNode;
 }) {
   return (
@@ -88,36 +91,58 @@ function Field({
         )}
       </label>
       {children}
-      {helperText && (
-        <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted">
-          <Info className="size-3.5 shrink-0" />
-          <p className="m-0">{helperText}</p>
+      {(helperText || characterCount) && (
+        <div className="flex items-center justify-between gap-2">
+          {helperText ? (
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0" />
+              <p className="m-0">{helperText}</p>
+            </div>
+          ) : (
+            <span />
+          )}
+          {characterCount != null && (
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {characterCount.current}/{characterCount.max}
+            </span>
+          )}
         </div>
       )}
     </div>
   );
 }
 
+const BOT_NAME_MAX_LENGTH = 50;
+const PRIMARY_ROLE_MAX_LENGTH = 50;
+const TONE_MAX_ITEMS = 5;
+const TONE_MAX_LENGTH_PER_ITEM = 20;
+
 function StyledInput({
   placeholder,
   value,
   onChange,
   disabled,
+  maxLength,
   className,
 }: {
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
   disabled?: boolean;
+  maxLength?: number;
   className?: string;
 }) {
   return (
     <input
       type="text"
       value={value ?? ""}
-      onChange={(e) => onChange?.(e.target.value)}
+      onChange={(e) => {
+        const v = e.target.value;
+        onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
+      }}
       placeholder={placeholder}
       disabled={disabled}
+      maxLength={maxLength}
       className={cn(
         "w-full h-[42px] px-4 text-base rounded border",
         "border-semantic-border-input bg-semantic-bg-primary",
@@ -213,34 +238,52 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
             <Field
               label="Bot Name & Identity"
               helperText="This is the name the bot will use to refer to itself during conversations."
+              characterCount={{
+                current: (data.botName ?? "").length,
+                max: BOT_NAME_MAX_LENGTH,
+              }}
             >
               <StyledInput
                 placeholder="e.g., Rhea from CaratLane"
                 value={data.botName}
                 onChange={(v) => onChange({ botName: v })}
                 disabled={disabled}
+                maxLength={BOT_NAME_MAX_LENGTH}
               />
             </Field>
 
-            <Field label="Primary Role">
+            <Field
+              label="Primary Role"
+              characterCount={{
+                current: (data.primaryRole ?? "").length,
+                max: PRIMARY_ROLE_MAX_LENGTH,
+              }}
+            >
               <CreatableSelect
-                value={data.primaryRole || ""}
-                onValueChange={(v) => onChange({ primaryRole: v })}
+                value={(data.primaryRole ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH)}
+                onValueChange={(v) =>
+                  onChange({ primaryRole: (v ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH) })
+                }
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
                 disabled={disabled}
+                maxLength={PRIMARY_ROLE_MAX_LENGTH}
               />
             </Field>
 
             <Field label="Tone">
               <CreatableMultiSelect
-                value={Array.isArray(data.tone) ? data.tone : []}
-                onValueChange={(v) => onChange({ tone: v })}
+                value={(Array.isArray(data.tone) ? data.tone : []).slice(0, TONE_MAX_ITEMS)}
+                onValueChange={(v) =>
+                  onChange({ tone: (v ?? []).slice(0, TONE_MAX_ITEMS) })
+                }
                 options={toneOptions}
                 placeholder="Enter or select tone"
-                creatableHint="Type to create a custom tone"
+                creatableHint='Press Enter to add "Conversational" ↵'
                 disabled={disabled}
+                maxItems={TONE_MAX_ITEMS}
+                maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}
               />
             </Field>
 

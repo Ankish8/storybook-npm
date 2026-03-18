@@ -27,7 +27,7 @@ import { BotBehaviorCard } from "@/components/custom/ivr-bot/bot-behavior-card"
 };
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof BotBehaviorCard>;
 
 export const Overview: Story = {
   render: function Render() {

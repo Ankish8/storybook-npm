@@ -130,7 +130,7 @@ export interface IvrBotConfigProps {
    * Pass when your app fetches full function data after onEditFunction fires.
    */
   functionEditData?: Partial<CreateFunctionData>;
-  /** Max character length for the "How It Behaves" system prompt (default: 25000) */
+  /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
   /** Called when the system prompt textarea loses focus */
   onSystemPromptBlur?: (value: string) => void;

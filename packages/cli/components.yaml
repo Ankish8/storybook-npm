@@ -723,7 +723,7 @@ components:
     mainFile: "talk-to-us-modal.tsx"
 
   bots:
-    description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal"
+    description: "AI Bot management components — BotList, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, CreateBotModal"
     category: custom
     dependencies:
       - "clsx"
@@ -739,6 +739,8 @@ components:
     files:
       - "bot-card.tsx"
       - "create-bot-modal.tsx"
+      - "create-bot-flow.tsx"
+      - "edit-bot-flow.tsx"
       - "bot-list.tsx"
       - "bot-list-header.tsx"
       - "bot-list-search.tsx"

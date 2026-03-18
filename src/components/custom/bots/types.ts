@@ -37,8 +37,6 @@ export interface BotCardProps
   typeLabels?: Partial<Record<BotType, string>>;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
-  /** Called when Publish action is selected */
-  onPublish?: (botId: string) => void;
   /** Called when Delete action is selected */
   onDelete?: (botId: string) => void;
 }
@@ -57,6 +55,10 @@ export interface BotListHeaderProps
   title?: string;
   /** Optional subtitle below the title */
   subtitle?: string;
+  /** Layout variant: default (title + subtitle only) or withSearch (row with optional right slot) */
+  variant?: "default" | "withSearch";
+  /** Right-side content when variant is "withSearch" (e.g. BotListSearch) */
+  rightContent?: React.ReactNode;
 }
 
 export interface BotListSearchProps
@@ -94,6 +96,43 @@ export interface BotListActionProps
   align?: "start" | "center" | "end";
 }
 
+/** Props for CreateBotFlow: create card + Create Bot modal (no header). */
+export interface CreateBotFlowProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  /** Create new bot card label */
+  createCardLabel?: string;
+  /** Called when Create Bot modal is submitted with { name, type } */
+  onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+}
+
+/** Props for EditBotFlow: bot list + config view when Edit is clicked. */
+export interface EditBotFlowProps {
+  /** Bots to show in the list (e.g. first 2 for demo) */
+  bots: Bot[];
+  /** Page title */
+  title?: string;
+  /** Page subtitle */
+  subtitle?: string;
+  /** Search input placeholder */
+  searchPlaceholder?: string;
+  /** Create new bot card label */
+  createCardLabel?: string;
+  /** Override type badge labels */
+  typeLabels?: Partial<Record<BotType, string>>;
+  /** Called when Delete is selected on a bot */
+  onBotDelete?: (botId: string) => void;
+  /** Called when Create Bot modal is submitted */
+  onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Called when search query changes */
+  onSearch?: (query: string) => void;
+  /** Renders the config view for the given bot; call onBack() to return to list */
+  renderConfig: (bot: Bot, onBack: () => void) => React.ReactNode;
+  /** Optional instruction text above the list (e.g. "Click the ⋮ menu...") */
+  instructionText?: React.ReactNode;
+  /** Root className for the list wrapper */
+  className?: string;
+}
+
 export interface BotListProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
   /** List of bots to display */
@@ -106,8 +145,6 @@ export interface BotListProps
   onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
   /** Called when user selects Edit on a bot (card click or menu) */
   onBotEdit?: (botId: string) => void;
-  /** Called when user selects Publish on a bot (menu; optional) */
-  onBotPublish?: (botId: string) => void;
   /** Called when user selects Delete on a bot */
   onBotDelete?: (botId: string) => void;
   /** Called when the search query changes */

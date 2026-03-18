@@ -2,7 +2,9 @@ export { BotCard } from "./bot-card";
 export type { BotCardProps } from "./types";
 
 export { CreateBotModal } from "./create-bot-modal";
-export type { CreateBotModalProps } from "./types";
+export { CreateBotFlow } from "./create-bot-flow";
+export { EditBotFlow } from "./edit-bot-flow";
+export type { CreateBotModalProps, CreateBotFlowProps, EditBotFlowProps } from "./types";
 
 export { BotList } from "./bot-list";
 export { BotListHeader } from "./bot-list-header";

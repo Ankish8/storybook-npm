@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { tagVariants } from "../../ui/tag";
 
@@ -18,7 +18,7 @@ export interface BotBehaviorCardProps {
   onSystemPromptBlur?: (value: string) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
-  /** Maximum character length for the system prompt textarea (default: 25000) */
+  /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
@@ -75,7 +75,7 @@ function StyledTextarea({
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
-  onBlur?: (v: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   disabled?: boolean;
   className?: string;
 }) {
@@ -84,7 +84,7 @@ function StyledTextarea({
       value={value ?? ""}
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
-      onBlur={(e) => onBlur?.(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
@@ -109,7 +109,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       onChange,
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
-      maxLength = 25000,
+      maxLength = 5000,
       disabled,
       className,
     },
@@ -117,9 +117,30 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
+    const footerRef = React.useRef<HTMLDivElement>(null);
+    /** Set on footer mousedown so blur does not trigger API when user clicked under the input (instruction/chips). */
+    const footerClickInProgressRef = React.useRef(false);
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });
+    };
+
+    const handleSystemPromptBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      if (!onSystemPromptBlur) return;
+      const relatedTarget = e.relatedTarget as Node | null;
+      const footerEl = footerRef.current;
+      if (footerClickInProgressRef.current) {
+        footerClickInProgressRef.current = false;
+        return;
+      }
+      if (footerEl && relatedTarget && footerEl.contains(relatedTarget)) {
+        return;
+      }
+      onSystemPromptBlur(e.target.value);
+    };
+
+    const handleFooterMouseDown = () => {
+      footerClickInProgressRef.current = true;
     };
 
     return (
@@ -136,34 +157,45 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                 onChange={(v) => {
                   if (v.length <= MAX) onChange({ systemPrompt: v });
                 }}
-                onBlur={onSystemPromptBlur}
+                onBlur={handleSystemPromptBlur}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
-                className="pb-8"
+                className="pb-10 pr-[4.5rem]"
               />
-              <span className="absolute bottom-2.5 right-3 text-sm text-semantic-text-muted">
+              <span
+                className="absolute bottom-3 right-4 text-sm text-semantic-text-muted pointer-events-none"
+                aria-live="polite"
+                aria-label={`${prompt.length} of ${MAX} characters`}
+              >
                 {prompt.length}/{MAX}
               </span>
             </div>
-            <p className="m-0 text-sm text-semantic-text-muted">
-              Type [[ to enable dropdown or use the below chips to input variables.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-semantic-text-secondary">
-                Session variables:
-              </span>
-              {sessionVariables.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => insertVariable(v)}
-                  disabled={disabled}
-                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
-                >
-                  <Plus className="size-3 shrink-0" />
-                  {v}
-                </button>
-              ))}
+            <div
+              ref={footerRef}
+              className="flex flex-col gap-3"
+              onMouseDown={handleFooterMouseDown}
+            >
+              <p className="m-0 flex items-center gap-1.5 text-sm text-semantic-text-muted">
+                <Info className="size-4 shrink-0 text-semantic-text-muted" aria-hidden />
+                Type {'{{'} to enable dropdown or use the below chips to input variables.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-semantic-text-secondary">
+                  Session variables:
+                </span>
+                {sessionVariables.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => insertVariable(v)}
+                    disabled={disabled}
+                    className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
+                  >
+                    <Plus className="size-3 shrink-0" />
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </SectionCard>

@@ -16,7 +16,6 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onCreateBot,
       onCreateBotSubmit,
       onBotEdit,
-      onBotPublish,
       onBotDelete,
       onSearch,
       title = "AI Bot",
@@ -36,43 +35,69 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onSearch?.(value);
     };
 
-    return (
-      <div
-        ref={ref}
-        className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
-        {...props}
-      >
-        {/* Page header: title, subtitle, and search */}
-        <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
-          <BotListHeader title={title} subtitle={subtitle} />
-          <BotListSearch
-            value={searchQuery}
-            onSearch={handleSearch}
-            placeholder={searchPlaceholder}
-          />
-        </div>
+    const handleCreateClick = () => {
+      setCreateModalOpen(true);
+      onCreateBot?.();
+    };
 
-        {/* Bot grid: create card + bot cards */}
-        <BotListGrid>
-          <BotListCreateCard
-            label={createCardLabel}
-            onClick={() => {
-              setCreateModalOpen(true);
-              onCreateBot?.();
+    if (bots.length === 0) {
+      return (
+        <>
+          <div
+            ref={ref}
+            className={cn(
+              "flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border",
+              className
+            )}
+            {...props}
+          >
+            <BotListGrid>
+              <BotListCreateCard
+                label={createCardLabel}
+                onClick={handleCreateClick}
+              />
+            </BotListGrid>
+          </div>
+          <CreateBotModal
+            open={createModalOpen}
+            onOpenChange={setCreateModalOpen}
+            onSubmit={(data) => {
+              onCreateBotSubmit?.(data);
+              setCreateModalOpen(false);
             }}
           />
-          {bots.map((bot) => (
-            <BotCard
-              key={bot.id}
-              bot={bot}
-              typeLabels={typeLabels}
-              onEdit={onBotEdit}
-              onPublish={onBotPublish}
-              onDelete={onBotDelete}
-            />
-          ))}
-        </BotListGrid>
+        </>
+      );
+    }
 
+    return (
+      <>
+        <div
+          ref={ref}
+          className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
+          {...props}
+        >
+          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
+            <BotListHeader title={title} subtitle={subtitle} />
+            <BotListSearch
+              value={searchQuery}
+              onSearch={handleSearch}
+              placeholder={searchPlaceholder}
+            />
+          </div>
+          <BotListGrid>
+            <BotListCreateCard label={createCardLabel} onClick={handleCreateClick} />
+            {bots.map((bot) => (
+              <BotCard
+                key={bot.id}
+                bot={bot}
+                typeLabels={typeLabels}
+                onEdit={onBotEdit}
+                onDelete={onBotDelete}
+              />
+            ))}
+          </BotListGrid>
+        </div>
         <CreateBotModal
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
@@ -81,7 +106,7 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
             setCreateModalOpen(false);
           }}
         />
-      </div>
+      </>
     );
   }
 );

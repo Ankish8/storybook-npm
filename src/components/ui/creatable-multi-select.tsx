@@ -49,6 +49,10 @@ export interface CreatableMultiSelectProps
   creatableHint?: string
   /** Helper text shown below the trigger */
   helperText?: string
+  /** Max number of items that can be selected (default: unlimited) */
+  maxItems?: number
+  /** Max character length per item when typing/creating (default: unlimited) */
+  maxLengthPerItem?: number
 }
 
 const CreatableMultiSelect = React.forwardRef<
@@ -66,6 +70,8 @@ const CreatableMultiSelect = React.forwardRef<
       state = "default",
       creatableHint = "Type to create a custom option",
       helperText,
+      maxItems,
+      maxLengthPerItem,
       ...props
     },
     ref
@@ -80,12 +86,18 @@ const CreatableMultiSelect = React.forwardRef<
     const addValue = React.useCallback(
       (val: string) => {
         const trimmed = val.trim()
-        if (trimmed && !value.includes(trimmed)) {
-          onValueChange?.([...value, trimmed])
+        if (!trimmed || value.includes(trimmed)) return
+        if (maxItems != null && value.length >= maxItems) return
+        const toAdd =
+          maxLengthPerItem != null
+            ? trimmed.slice(0, maxLengthPerItem)
+            : trimmed
+        if (toAdd) {
+          onValueChange?.([...value, toAdd])
           setInputValue("")
         }
       },
-      [value, onValueChange]
+      [value, onValueChange, maxItems, maxLengthPerItem]
     )
 
     const removeValue = React.useCallback(
@@ -189,9 +201,13 @@ const CreatableMultiSelect = React.forwardRef<
             type="text"
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value)
+              const v = e.target.value
+              setInputValue(
+                maxLengthPerItem != null ? v.slice(0, maxLengthPerItem) : v
+              )
               if (!isOpen) setIsOpen(true)
             }}
+            maxLength={maxLengthPerItem}
             onFocus={() => {
               if (!disabled) setIsOpen(true)
             }}
@@ -215,18 +231,14 @@ const CreatableMultiSelect = React.forwardRef<
         {/* Dropdown panel */}
         {isOpen && (
           <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
-            {/* Creatable hint — contextual */}
+            {/* Creatable hint — Enter key */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
-              {canAddCustom ? (
-                <span className="text-sm font-medium text-semantic-text-primary">
-                  Press enter to add &ldquo;{inputValue.trim()}&rdquo;
-                </span>
-              ) : (
-                <span className="text-sm text-semantic-text-muted">
-                  {creatableHint}
-                </span>
-              )}
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <span className="text-sm text-semantic-text-muted">
+                {canAddCustom
+                  ? `Press enter to add "${inputValue.trim()}"`
+                  : creatableHint}
+              </span>
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>
@@ -254,14 +266,31 @@ const CreatableMultiSelect = React.forwardRef<
           </div>
         )}
 
-        {/* Helper text below trigger */}
-        {helperText && !isOpen && (
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
-            <p className="m-0 text-sm text-semantic-text-muted">
-              {helperText}
-            </p>
+        {/* Helper row below trigger: when maxLengthPerItem show dynamic hint + counter (Figma); else optional static helperText */}
+        {maxLengthPerItem != null ? (
+          <div className="flex items-center justify-between gap-2 mt-1.5">
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0 text-semantic-text-muted" />
+              <p className="m-0 truncate">
+                {inputValue.trim()
+                  ? `Press Enter to add "${inputValue.trim()}" ↵`
+                  : creatableHint}
+              </p>
+            </div>
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {inputValue.length}/{maxLengthPerItem}
+            </span>
           </div>
+        ) : (
+          helperText &&
+          !isOpen && (
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
+              <p className="m-0 text-sm text-semantic-text-muted">
+                {helperText}
+              </p>
+            </div>
+          )
         )}
       </div>
     )

@@ -59,4 +59,42 @@ describe("BotListHeader", () => {
     const el = screen.getByTestId("header-block");
     expect(el).toHaveAttribute("aria-label", "Page title");
   });
+
+  it("applies default variant layout classes", () => {
+    const { container } = render(
+      <BotListHeader title="Test" subtitle="Sub" variant="default" />
+    );
+    const root = container.firstChild as HTMLElement;
+    expect(root).toHaveClass("flex", "flex-col", "gap-1.5", "shrink", "min-w-0");
+  });
+
+  it("applies withSearch variant layout classes", () => {
+    const { container } = render(
+      <BotListHeader
+        title="Test"
+        variant="withSearch"
+        rightContent={<span data-testid="right">Right</span>}
+      />
+    );
+    const root = container.firstChild as HTMLElement;
+    expect(root).toHaveClass(
+      "border-b",
+      "border-semantic-border-layout",
+      "sm:flex-row",
+      "sm:justify-between"
+    );
+    expect(screen.getByTestId("right")).toHaveTextContent("Right");
+  });
+
+  it("renders rightContent when variant is withSearch", () => {
+    render(
+      <BotListHeader
+        title="Header"
+        variant="withSearch"
+        rightContent={<button type="button">Search</button>}
+      />
+    );
+    expect(screen.getByText("Header")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Search" })).toBeInTheDocument();
+  });
 });

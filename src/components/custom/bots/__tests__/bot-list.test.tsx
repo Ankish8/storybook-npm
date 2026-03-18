@@ -23,14 +23,20 @@ const sampleBots: Bot[] = [
 ];
 
 describe("BotList", () => {
-  it("renders default title and subtitle", () => {
-    render(<BotList />);
+  it("renders default title and subtitle when bots are present", () => {
+    render(<BotList bots={sampleBots} />);
     expect(screen.getByText("AI Bot")).toBeInTheDocument();
     expect(screen.getByText("Create & manage AI bots")).toBeInTheDocument();
   });
 
-  it("renders custom title and subtitle", () => {
-    render(<BotList title="My Bots" subtitle="Manage your bots" />);
+  it("renders custom title and subtitle when bots are present", () => {
+    render(
+      <BotList
+        bots={sampleBots}
+        title="My Bots"
+        subtitle="Manage your bots"
+      />
+    );
     expect(screen.getByText("My Bots")).toBeInTheDocument();
     expect(screen.getByText("Manage your bots")).toBeInTheDocument();
   });
@@ -61,9 +67,9 @@ describe("BotList", () => {
     expect(handleCreate).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onSearch when typing in search input", () => {
+  it("calls onSearch when typing in search input (when bots are present)", () => {
     const handleSearch = vi.fn();
-    render(<BotList onSearch={handleSearch} />);
+    render(<BotList bots={sampleBots} onSearch={handleSearch} />);
     fireEvent.change(screen.getByPlaceholderText("Search bot..."), {
       target: { value: "lead" },
     });

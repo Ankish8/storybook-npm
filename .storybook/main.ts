@@ -40,6 +40,16 @@ const config: StorybookConfig = {
         ],
       },
     };
+    config.optimizeDeps = config.optimizeDeps || {};
+    config.optimizeDeps.include = [
+      ...(Array.isArray(config.optimizeDeps.include) ? config.optimizeDeps.include : []),
+      "react",
+      "react-dom",
+      "lucide-react",
+      "class-variance-authority",
+      "clsx",
+      "tailwind-merge",
+    ];
     return config;
   },
 };
