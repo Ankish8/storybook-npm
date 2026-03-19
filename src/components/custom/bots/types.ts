@@ -98,7 +98,7 @@ export interface BotListActionProps
 
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
   /** Create new bot card label */
   createCardLabel?: string;
   /** Called when Create Bot modal is submitted with { name, type } */

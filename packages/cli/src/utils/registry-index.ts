@@ -402,7 +402,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   "bots": {
     name: "bots",
-    description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal",
+    description: "AI Bot management components — BotList, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, CreateBotModal",
       category: "custom",
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",

@@ -3167,6 +3167,8 @@ export interface CreatableSelectProps
   creatableHint?: string
   /** Whether the select is disabled */
   disabled?: boolean
+  /** Max character length for the value (enforced when open and when creating) */
+  maxLength?: number
 }
 
 const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
@@ -3180,6 +3182,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       placeholder = "Select an option",
       creatableHint = "Type to create a custom option",
       disabled = false,
+      maxLength,
       ...props
     },
     ref
@@ -3229,11 +3232,12 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
     const handleCreate = React.useCallback(() => {
       const trimmed = search.trim()
       if (trimmed) {
-        onValueChange?.(trimmed)
+        const value = maxLength != null ? trimmed.slice(0, maxLength) : trimmed
+        onValueChange?.(value)
         setOpen(false)
         setSearch("")
       }
-    }, [search, onValueChange])
+    }, [search, onValueChange, maxLength])
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -3321,7 +3325,11 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
               ref={inputRef}
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value
+                setSearch(maxLength != null ? v.slice(0, maxLength) : v)
+              }}
+              maxLength={maxLength}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-muted"
               placeholder={selectedLabel || placeholder}
@@ -3502,6 +3510,10 @@ export interface CreatableMultiSelectProps
   creatableHint?: string
   /** Helper text shown below the trigger */
   helperText?: string
+  /** Max number of items that can be selected (default: unlimited) */
+  maxItems?: number
+  /** Max character length per item when typing/creating (default: unlimited) */
+  maxLengthPerItem?: number
 }
 
 const CreatableMultiSelect = React.forwardRef<
@@ -3519,6 +3531,8 @@ const CreatableMultiSelect = React.forwardRef<
       state = "default",
       creatableHint = "Type to create a custom option",
       helperText,
+      maxItems,
+      maxLengthPerItem,
       ...props
     },
     ref
@@ -3533,12 +3547,18 @@ const CreatableMultiSelect = React.forwardRef<
     const addValue = React.useCallback(
       (val: string) => {
         const trimmed = val.trim()
-        if (trimmed && !value.includes(trimmed)) {
-          onValueChange?.([...value, trimmed])
+        if (!trimmed || value.includes(trimmed)) return
+        if (maxItems != null && value.length >= maxItems) return
+        const toAdd =
+          maxLengthPerItem != null
+            ? trimmed.slice(0, maxLengthPerItem)
+            : trimmed
+        if (toAdd) {
+          onValueChange?.([...value, toAdd])
           setInputValue("")
         }
       },
-      [value, onValueChange]
+      [value, onValueChange, maxItems, maxLengthPerItem]
     )
 
     const removeValue = React.useCallback(
@@ -3642,9 +3662,13 @@ const CreatableMultiSelect = React.forwardRef<
             type="text"
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value)
+              const v = e.target.value
+              setInputValue(
+                maxLengthPerItem != null ? v.slice(0, maxLengthPerItem) : v
+              )
               if (!isOpen) setIsOpen(true)
             }}
+            maxLength={maxLengthPerItem}
             onFocus={() => {
               if (!disabled) setIsOpen(true)
             }}
@@ -3668,18 +3692,14 @@ const CreatableMultiSelect = React.forwardRef<
         {/* Dropdown panel */}
         {isOpen && (
           <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
-            {/* Creatable hint — contextual */}
+            {/* Creatable hint — Enter key */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
-              {canAddCustom ? (
-                <span className="text-sm font-medium text-semantic-text-primary">
-                  Press enter to add &ldquo;{inputValue.trim()}&rdquo;
-                </span>
-              ) : (
-                <span className="text-sm text-semantic-text-muted">
-                  {creatableHint}
-                </span>
-              )}
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <span className="text-sm text-semantic-text-muted">
+                {canAddCustom
+                  ? \`Press enter to add "\${inputValue.trim()}"\`
+                  : creatableHint}
+              </span>
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>
@@ -3707,14 +3727,31 @@ const CreatableMultiSelect = React.forwardRef<
           </div>
         )}
 
-        {/* Helper text below trigger */}
-        {helperText && !isOpen && (
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
-            <p className="m-0 text-sm text-semantic-text-muted">
-              {helperText}
-            </p>
+        {/* Helper row below trigger: when maxLengthPerItem show dynamic hint + counter (Figma); else optional static helperText */}
+        {maxLengthPerItem != null ? (
+          <div className="flex items-center justify-between gap-2 mt-1.5">
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0 text-semantic-text-muted" />
+              <p className="m-0 truncate">
+                {inputValue.trim()
+                  ? \`Press Enter to add "\${inputValue.trim()}" ↵\`
+                  : creatableHint}
+              </p>
+            </div>
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {inputValue.length}/{maxLengthPerItem}
+            </span>
           </div>
+        ) : (
+          helperText &&
+          !isOpen && (
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
+              <p className="m-0 text-sm text-semantic-text-muted">
+                {helperText}
+              </p>
+            </div>
+          )
         )}
       </div>
     )
@@ -12943,7 +12980,7 @@ export type { BrandIconProps } from "./icon";
     },
     "bots": {
       name: "bots",
-      description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal",
+      description: "AI Bot management components — BotList, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, CreateBotModal",
       category: "custom",
       dependencies: [
             "clsx",
@@ -12990,7 +13027,7 @@ function getTypeLabel(
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
 export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onPublish, onDelete, className, ...props }, ref) => {
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 
@@ -13261,6 +13298,131 @@ CreateBotModal.displayName = "CreateBotModal";
 `, prefix),
         },
         {
+          name: "create-bot-flow.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { BotListCreateCard } from "./bot-list-create-card";
+import { BotListGrid } from "./bot-list-grid";
+import { CreateBotModal } from "./create-bot-modal";
+import type { CreateBotFlowProps } from "./types";
+
+/**
+ * Create bot flow: "Create new bot" card + Create Bot modal. No header (title/subtitle/search).
+ * Use when you want the create-bot experience without the list header.
+ */
+export const CreateBotFlow = React.forwardRef<HTMLDivElement, CreateBotFlowProps>(
+  (
+    {
+      createCardLabel = "Create new bot",
+      onSubmit,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const [modalOpen, setModalOpen] = React.useState(false);
+
+    return (
+      <>
+        <div
+          ref={ref}
+          className={cn(
+            "flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border",
+            className
+          )}
+          {...props}
+        >
+          <BotListGrid>
+            <BotListCreateCard
+              label={createCardLabel}
+              onClick={() => setModalOpen(true)}
+            />
+          </BotListGrid>
+        </div>
+        <CreateBotModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          onSubmit={(data) => {
+            onSubmit?.(data);
+            setModalOpen(false);
+          }}
+        />
+      </>
+    );
+  }
+);
+
+CreateBotFlow.displayName = "CreateBotFlow";
+`, prefix),
+        },
+        {
+          name: "edit-bot-flow.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { BotList } from "./bot-list";
+import type { Bot, EditBotFlowProps } from "./types";
+
+/**
+ * Edit bot flow: bot list + config view when Edit is clicked.
+ * Use when you want the "Edit Bot → Config" experience; parent supplies config via renderConfig.
+ */
+export function EditBotFlow({
+  bots,
+  title = "AI Bot",
+  subtitle = "Create & manage AI bots",
+  searchPlaceholder = "Search bot...",
+  createCardLabel = "Create new bot",
+  typeLabels,
+  onBotDelete,
+  onCreateBotSubmit,
+  onSearch,
+  renderConfig,
+  instructionText,
+  className,
+}: EditBotFlowProps) {
+  const [view, setView] = React.useState<"list" | "config">("list");
+  const [editingBot, setEditingBot] = React.useState<Bot | null>(null);
+
+  const handleEdit = (botId: string) => {
+    const bot = bots.find((b) => b.id === botId);
+    if (bot) {
+      setEditingBot(bot);
+      setView("config");
+    }
+  };
+
+  const handleBack = () => {
+    setView("list");
+    setEditingBot(null);
+  };
+
+  if (view === "config" && editingBot) {
+    return <>{renderConfig(editingBot, handleBack)}</>;
+  }
+
+  return (
+    <>
+      {instructionText != null ? (
+        <div className="flex flex-col gap-2 p-6 pb-0">{instructionText}</div>
+      ) : null}
+      <BotList
+        bots={bots}
+        title={title}
+        subtitle={subtitle}
+        searchPlaceholder={searchPlaceholder}
+        createCardLabel={createCardLabel}
+        typeLabels={typeLabels}
+        onBotEdit={handleEdit}
+        onBotDelete={onBotDelete}
+        onCreateBotSubmit={onCreateBotSubmit}
+        onSearch={onSearch}
+        className={className}
+      />
+    </>
+  );
+}
+`, prefix),
+        },
+        {
           name: "bot-list.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cn } from "../../../lib/utils";
@@ -13280,7 +13442,6 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onCreateBot,
       onCreateBotSubmit,
       onBotEdit,
-      onBotPublish,
       onBotDelete,
       onSearch,
       title = "AI Bot",
@@ -13300,43 +13461,69 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onSearch?.(value);
     };
 
-    return (
-      <div
-        ref={ref}
-        className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
-        {...props}
-      >
-        {/* Page header: title, subtitle, and search */}
-        <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
-          <BotListHeader title={title} subtitle={subtitle} />
-          <BotListSearch
-            value={searchQuery}
-            onSearch={handleSearch}
-            placeholder={searchPlaceholder}
-          />
-        </div>
+    const handleCreateClick = () => {
+      setCreateModalOpen(true);
+      onCreateBot?.();
+    };
 
-        {/* Bot grid: create card + bot cards */}
-        <BotListGrid>
-          <BotListCreateCard
-            label={createCardLabel}
-            onClick={() => {
-              setCreateModalOpen(true);
-              onCreateBot?.();
+    if (bots.length === 0) {
+      return (
+        <>
+          <div
+            ref={ref}
+            className={cn(
+              "flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border",
+              className
+            )}
+            {...props}
+          >
+            <BotListGrid>
+              <BotListCreateCard
+                label={createCardLabel}
+                onClick={handleCreateClick}
+              />
+            </BotListGrid>
+          </div>
+          <CreateBotModal
+            open={createModalOpen}
+            onOpenChange={setCreateModalOpen}
+            onSubmit={(data) => {
+              onCreateBotSubmit?.(data);
+              setCreateModalOpen(false);
             }}
           />
-          {bots.map((bot) => (
-            <BotCard
-              key={bot.id}
-              bot={bot}
-              typeLabels={typeLabels}
-              onEdit={onBotEdit}
-              onPublish={onBotPublish}
-              onDelete={onBotDelete}
-            />
-          ))}
-        </BotListGrid>
+        </>
+      );
+    }
 
+    return (
+      <>
+        <div
+          ref={ref}
+          className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
+          {...props}
+        >
+          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
+            <BotListHeader title={title} subtitle={subtitle} />
+            <BotListSearch
+              value={searchQuery}
+              onSearch={handleSearch}
+              placeholder={searchPlaceholder}
+            />
+          </div>
+          <BotListGrid>
+            <BotListCreateCard label={createCardLabel} onClick={handleCreateClick} />
+            {bots.map((bot) => (
+              <BotCard
+                key={bot.id}
+                bot={bot}
+                typeLabels={typeLabels}
+                onEdit={onBotEdit}
+                onDelete={onBotDelete}
+              />
+            ))}
+          </BotListGrid>
+        </div>
         <CreateBotModal
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
@@ -13345,7 +13532,7 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
             setCreateModalOpen(false);
           }}
         />
-      </div>
+      </>
     );
   }
 );
@@ -13356,31 +13543,65 @@ BotList.displayName = "BotList";
         {
           name: "bot-list-header.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
+import { cva } from "class-variance-authority";
 import { cn } from "../../../lib/utils";
 import type { BotListHeaderProps } from "./types";
 
+const botListHeaderVariants = cva("min-w-0", {
+  variants: {
+    variant: {
+      default:
+        "flex flex-col gap-1.5 shrink",
+      withSearch:
+        "flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 shrink",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
 export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
-  ({ title, subtitle, className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("flex flex-col gap-1.5 min-w-0 shrink", className)}
-      {...props}
-    >
-      {title != null && (
-        <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px] break-words sm:text-lg">
-          {title}
-        </h1>
-      )}
-      {subtitle != null && (
-        <p className="m-0 text-xs sm:text-sm text-semantic-text-muted tracking-[0.035px] break-words">
-          {subtitle}
-        </p>
-      )}
-    </div>
-  )
+  (
+    { title, subtitle, variant = "default", rightContent, className, ...props },
+    ref
+  ) => {
+    const rootClassName = cn(botListHeaderVariants({ variant }), className);
+    const titleBlock = (
+      <>
+        {title != null && (
+          <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px] break-words sm:text-lg">
+            {title}
+          </h1>
+        )}
+        {subtitle != null && (
+          <p className="m-0 text-xs sm:text-sm text-semantic-text-muted tracking-[0.035px] break-words">
+            {subtitle}
+          </p>
+        )}
+      </>
+    );
+
+    if (variant === "withSearch") {
+      return (
+        <div ref={ref} className={rootClassName} {...props}>
+          <div className="flex flex-col gap-1.5 min-w-0 shrink">{titleBlock}</div>
+          {rightContent}
+        </div>
+      );
+    }
+
+    return (
+      <div ref={ref} className={rootClassName} {...props}>
+        {titleBlock}
+      </div>
+    );
+  }
 );
 
 BotListHeader.displayName = "BotListHeader";
+
+export { botListHeaderVariants };
 `, prefix),
         },
         {
@@ -13627,8 +13848,6 @@ export interface BotCardProps
   typeLabels?: Partial<Record<BotType, string>>;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
-  /** Called when Publish action is selected */
-  onPublish?: (botId: string) => void;
   /** Called when Delete action is selected */
   onDelete?: (botId: string) => void;
 }
@@ -13647,6 +13866,10 @@ export interface BotListHeaderProps
   title?: string;
   /** Optional subtitle below the title */
   subtitle?: string;
+  /** Layout variant: default (title + subtitle only) or withSearch (row with optional right slot) */
+  variant?: "default" | "withSearch";
+  /** Right-side content when variant is "withSearch" (e.g. BotListSearch) */
+  rightContent?: React.ReactNode;
 }
 
 export interface BotListSearchProps
@@ -13684,6 +13907,43 @@ export interface BotListActionProps
   align?: "start" | "center" | "end";
 }
 
+/** Props for CreateBotFlow: create card + Create Bot modal (no header). */
+export interface CreateBotFlowProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
+  /** Create new bot card label */
+  createCardLabel?: string;
+  /** Called when Create Bot modal is submitted with { name, type } */
+  onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+}
+
+/** Props for EditBotFlow: bot list + config view when Edit is clicked. */
+export interface EditBotFlowProps {
+  /** Bots to show in the list (e.g. first 2 for demo) */
+  bots: Bot[];
+  /** Page title */
+  title?: string;
+  /** Page subtitle */
+  subtitle?: string;
+  /** Search input placeholder */
+  searchPlaceholder?: string;
+  /** Create new bot card label */
+  createCardLabel?: string;
+  /** Override type badge labels */
+  typeLabels?: Partial<Record<BotType, string>>;
+  /** Called when Delete is selected on a bot */
+  onBotDelete?: (botId: string) => void;
+  /** Called when Create Bot modal is submitted */
+  onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Called when search query changes */
+  onSearch?: (query: string) => void;
+  /** Renders the config view for the given bot; call onBack() to return to list */
+  renderConfig: (bot: Bot, onBack: () => void) => React.ReactNode;
+  /** Optional instruction text above the list (e.g. "Click the ⋮ menu...") */
+  instructionText?: React.ReactNode;
+  /** Root className for the list wrapper */
+  className?: string;
+}
+
 export interface BotListProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
   /** List of bots to display */
@@ -13696,8 +13956,6 @@ export interface BotListProps
   onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
   /** Called when user selects Edit on a bot (card click or menu) */
   onBotEdit?: (botId: string) => void;
-  /** Called when user selects Publish on a bot (menu; optional) */
-  onBotPublish?: (botId: string) => void;
   /** Called when user selects Delete on a bot */
   onBotDelete?: (botId: string) => void;
   /** Called when the search query changes */
@@ -13719,7 +13977,9 @@ export interface BotListProps
 export type { BotCardProps } from "./types";
 
 export { CreateBotModal } from "./create-bot-modal";
-export type { CreateBotModalProps } from "./types";
+export { CreateBotFlow } from "./create-bot-flow";
+export { EditBotFlow } from "./edit-bot-flow";
+export type { CreateBotModalProps, CreateBotFlowProps, EditBotFlowProps } from "./types";
 
 export { BotList } from "./bot-list";
 export { BotListHeader } from "./bot-list-header";
@@ -15334,11 +15594,14 @@ function Field({
   label,
   required,
   helperText,
+  characterCount,
   children,
 }: {
   label: string;
   required?: boolean;
   helperText?: string;
+  /** e.g. { current: 0, max: 50 } to show "0/50" below right */
+  characterCount?: { current: number; max: number };
   children: React.ReactNode;
 }) {
   return (
@@ -15350,36 +15613,58 @@ function Field({
         )}
       </label>
       {children}
-      {helperText && (
-        <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted">
-          <Info className="size-3.5 shrink-0" />
-          <p className="m-0">{helperText}</p>
+      {(helperText || characterCount) && (
+        <div className="flex items-center justify-between gap-2">
+          {helperText ? (
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0" />
+              <p className="m-0">{helperText}</p>
+            </div>
+          ) : (
+            <span />
+          )}
+          {characterCount != null && (
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {characterCount.current}/{characterCount.max}
+            </span>
+          )}
         </div>
       )}
     </div>
   );
 }
 
+const BOT_NAME_MAX_LENGTH = 50;
+const PRIMARY_ROLE_MAX_LENGTH = 50;
+const TONE_MAX_ITEMS = 5;
+const TONE_MAX_LENGTH_PER_ITEM = 20;
+
 function StyledInput({
   placeholder,
   value,
   onChange,
   disabled,
+  maxLength,
   className,
 }: {
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
   disabled?: boolean;
+  maxLength?: number;
   className?: string;
 }) {
   return (
     <input
       type="text"
       value={value ?? ""}
-      onChange={(e) => onChange?.(e.target.value)}
+      onChange={(e) => {
+        const v = e.target.value;
+        onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
+      }}
       placeholder={placeholder}
       disabled={disabled}
+      maxLength={maxLength}
       className={cn(
         "w-full h-[42px] px-4 text-base rounded border",
         "border-semantic-border-input bg-semantic-bg-primary",
@@ -15475,34 +15760,52 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
             <Field
               label="Bot Name & Identity"
               helperText="This is the name the bot will use to refer to itself during conversations."
+              characterCount={{
+                current: (data.botName ?? "").length,
+                max: BOT_NAME_MAX_LENGTH,
+              }}
             >
               <StyledInput
                 placeholder="e.g., Rhea from CaratLane"
                 value={data.botName}
                 onChange={(v) => onChange({ botName: v })}
                 disabled={disabled}
+                maxLength={BOT_NAME_MAX_LENGTH}
               />
             </Field>
 
-            <Field label="Primary Role">
+            <Field
+              label="Primary Role"
+              characterCount={{
+                current: (data.primaryRole ?? "").length,
+                max: PRIMARY_ROLE_MAX_LENGTH,
+              }}
+            >
               <CreatableSelect
-                value={data.primaryRole || ""}
-                onValueChange={(v) => onChange({ primaryRole: v })}
+                value={(data.primaryRole ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH)}
+                onValueChange={(v) =>
+                  onChange({ primaryRole: (v ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH) })
+                }
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
                 disabled={disabled}
+                maxLength={PRIMARY_ROLE_MAX_LENGTH}
               />
             </Field>
 
             <Field label="Tone">
               <CreatableMultiSelect
-                value={Array.isArray(data.tone) ? data.tone : []}
-                onValueChange={(v) => onChange({ tone: v })}
+                value={(Array.isArray(data.tone) ? data.tone : []).slice(0, TONE_MAX_ITEMS)}
+                onValueChange={(v) =>
+                  onChange({ tone: (v ?? []).slice(0, TONE_MAX_ITEMS) })
+                }
                 options={toneOptions}
                 placeholder="Enter or select tone"
-                creatableHint="Type to create a custom tone"
+                creatableHint='Press Enter to add "Conversational" ↵'
                 disabled={disabled}
+                maxItems={TONE_MAX_ITEMS}
+                maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}
               />
             </Field>
 
@@ -15598,7 +15901,7 @@ export { BotIdentityCard };
         {
           name: "bot-behavior-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { tagVariants } from "../tag";
 
@@ -15617,7 +15920,7 @@ export interface BotBehaviorCardProps {
   onSystemPromptBlur?: (value: string) => void;
   /** Session variables shown as insertable chips */
   sessionVariables?: string[];
-  /** Maximum character length for the system prompt textarea (default: 25000) */
+  /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
@@ -15674,7 +15977,7 @@ function StyledTextarea({
   value?: string;
   rows?: number;
   onChange?: (v: string) => void;
-  onBlur?: (v: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   disabled?: boolean;
   className?: string;
 }) {
@@ -15683,7 +15986,7 @@ function StyledTextarea({
       value={value ?? ""}
       rows={rows}
       onChange={(e) => onChange?.(e.target.value)}
-      onBlur={(e) => onBlur?.(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       disabled={disabled}
       className={cn(
@@ -15708,7 +16011,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       onChange,
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
-      maxLength = 25000,
+      maxLength = 5000,
       disabled,
       className,
     },
@@ -15716,9 +16019,30 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
+    const footerRef = React.useRef<HTMLDivElement>(null);
+    /** Set on footer mousedown so blur does not trigger API when user clicked under the input (instruction/chips). */
+    const footerClickInProgressRef = React.useRef(false);
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });
+    };
+
+    const handleSystemPromptBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      if (!onSystemPromptBlur) return;
+      const relatedTarget = e.relatedTarget as Node | null;
+      const footerEl = footerRef.current;
+      if (footerClickInProgressRef.current) {
+        footerClickInProgressRef.current = false;
+        return;
+      }
+      if (footerEl && relatedTarget && footerEl.contains(relatedTarget)) {
+        return;
+      }
+      onSystemPromptBlur(e.target.value);
+    };
+
+    const handleFooterMouseDown = () => {
+      footerClickInProgressRef.current = true;
     };
 
     return (
@@ -15735,34 +16059,45 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
                 onChange={(v) => {
                   if (v.length <= MAX) onChange({ systemPrompt: v });
                 }}
-                onBlur={onSystemPromptBlur}
+                onBlur={handleSystemPromptBlur}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
-                className="pb-8"
+                className="pb-10 pr-[4.5rem]"
               />
-              <span className="absolute bottom-2.5 right-3 text-sm text-semantic-text-muted">
+              <span
+                className="absolute bottom-3 right-4 text-sm text-semantic-text-muted pointer-events-none"
+                aria-live="polite"
+                aria-label={\`\${prompt.length} of \${MAX} characters\`}
+              >
                 {prompt.length}/{MAX}
               </span>
             </div>
-            <p className="m-0 text-sm text-semantic-text-muted">
-              Type [[ to enable dropdown or use the below chips to input variables.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-semantic-text-secondary">
-                Session variables:
-              </span>
-              {sessionVariables.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => insertVariable(v)}
-                  disabled={disabled}
-                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
-                >
-                  <Plus className="size-3 shrink-0" />
-                  {v}
-                </button>
-              ))}
+            <div
+              ref={footerRef}
+              className="flex flex-col gap-3"
+              onMouseDown={handleFooterMouseDown}
+            >
+              <p className="m-0 flex items-center gap-1.5 text-sm text-semantic-text-muted">
+                <Info className="size-4 shrink-0 text-semantic-text-muted" aria-hidden />
+                Type {'{{'} to enable dropdown or use the below chips to input variables.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-semantic-text-secondary">
+                  Session variables:
+                </span>
+                {sessionVariables.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => insertVariable(v)}
+                    disabled={disabled}
+                    className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
+                  >
+                    <Plus className="size-3 shrink-0" />
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </SectionCard>
@@ -16708,7 +17043,7 @@ export interface IvrBotConfigProps {
    * Pass when your app fetches full function data after onEditFunction fires.
    */
   functionEditData?: Partial<CreateFunctionData>;
-  /** Max character length for the "How It Behaves" system prompt (default: 25000) */
+  /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
   /** Called when the system prompt textarea loses focus */
   onSystemPromptBlur?: (value: string) => void;
