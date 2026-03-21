@@ -340,7 +340,6 @@ export {
   BotListSearch,
   BotListCreateCard,
   BotListGrid,
-  BotListAction,
   BOT_TYPE,
 } from "./components/custom/bots";
 export type {
@@ -351,7 +350,6 @@ export type {
   BotListSearchProps,
   BotListCreateCardProps,
   BotListGridProps,
-  BotListActionProps,
   Bot,
   BotType,
   BotStatus,

@@ -36,17 +36,20 @@ export const CreateBotModal = React.forwardRef<
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
 
+  React.useEffect(() => {
+    if (!open) {
+      setName("");
+      setSelectedType("chatbot");
+    }
+  }, [open]);
+
   const handleSubmit = () => {
     if (!name.trim()) return;
     const typeValue = selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
     onSubmit?.({ name: name.trim(), type: typeValue });
-    setName("");
-    setSelectedType("chatbot");
   };
 
   const handleClose = () => {
-    setName("");
-    setSelectedType("chatbot");
     onOpenChange(false);
   };
 

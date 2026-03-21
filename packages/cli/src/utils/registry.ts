@@ -13000,10 +13000,16 @@ export type { BrandIconProps } from "./icon";
         {
           name: "bot-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { MessageSquare, Phone } from "lucide-react";
+import { MessageSquare, Phone, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
-import { BotListAction } from "./bot-list-action";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "../dropdown-menu";
 import type { Bot, BotCardProps, BotType } from "./types";
 
 const DEFAULT_TYPE_LABELS: Record<BotType, string> = {
@@ -13077,11 +13083,38 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
             </Badge>
 
             <span data-bot-card-action className="inline-flex" onClick={(e) => e.stopPropagation()}>
-              <BotListAction
-                align="end"
-                onEdit={() => onEdit?.(bot.id)}
-                onDelete={() => onDelete?.(bot.id)}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
+                    aria-label="More options"
+                  >
+                    <MoreVertical className="size-4 shrink-0" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[160px]">
+                  <DropdownMenuItem
+                    className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm"
+                    onSelect={(e) => { e.preventDefault(); onEdit?.(bot.id); }}
+                  >
+                    <Pencil className="size-4 shrink-0" />
+                    <span>Edit</span>
+                  </DropdownMenuItem>
+                  {onDelete && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary focus:bg-semantic-error-surface focus:text-semantic-error-primary"
+                        onSelect={(e) => { e.preventDefault(); onDelete(bot.id); }}
+                      >
+                        <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </span>
           </div>
         </div>
@@ -13114,9 +13147,11 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
               Last Published
             </span>
           )}
-          {bot.lastPublishedBy && bot.lastPublishedDate ? (
+          {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
-              {bot.lastPublishedBy} | {bot.lastPublishedDate}
+              {bot.lastPublishedBy
+                ? \`\${bot.lastPublishedBy} | \${bot.lastPublishedDate ?? "—"}\`
+                : bot.lastPublishedDate}
             </p>
           ) : bot.status !== "draft" ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">—</p>
@@ -13170,17 +13205,20 @@ export const CreateBotModal = React.forwardRef<
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
 
+  React.useEffect(() => {
+    if (!open) {
+      setName("");
+      setSelectedType("chatbot");
+    }
+  }, [open]);
+
   const handleSubmit = () => {
     if (!name.trim()) return;
     const typeValue = selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
     onSubmit?.({ name: name.trim(), type: typeValue });
-    setName("");
-    setSelectedType("chatbot");
   };
 
   const handleClose = () => {
-    setName("");
-    setSelectedType("chatbot");
     onOpenChange(false);
   };
 
@@ -13686,9 +13724,9 @@ export const BotListCreateCard = React.forwardRef<
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-2.5 rounded-[5px] min-h-[180px] sm:min-h-[207px] w-full min-w-0 max-w-full",
-        "bg-semantic-info-surface-subtle border border-dashed border-semantic-border-layout",
-        "cursor-pointer transition-colors hover:bg-semantic-bg-hover hover:border-semantic-border-input",
+        "relative flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-2.5 rounded-[5px] min-h-[180px] sm:min-h-[207px] w-full min-w-0 max-w-full",
+        "bg-semantic-info-surface-subtle",
+        "group cursor-pointer",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
         "self-stretch justify-self-stretch",
         className
@@ -13696,6 +13734,21 @@ export const BotListCreateCard = React.forwardRef<
       aria-label={label}
       {...props}
     >
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        aria-hidden="true"
+      >
+        <rect
+          x="0.5"
+          y="0.5"
+          style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }}
+          rx="4.5"
+          fill="none"
+          strokeWidth="1"
+          strokeDasharray="6 6"
+          className="stroke-[#c0c3ca] group-hover:stroke-[#717680] transition-colors duration-150"
+        />
+      </svg>
       <Plus className="size-4 text-semantic-text-secondary shrink-0" />
       <span className="text-sm font-semibold leading-5 text-semantic-text-secondary text-center tracking-[0.014px]">
         {label}
@@ -13730,81 +13783,6 @@ export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
 );
 
 BotListGrid.displayName = "BotListGrid";
-`, prefix),
-        },
-        {
-          name: "bot-list-action.tsx",
-          content: prefixTailwindClasses(`import * as React from "react";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { cn } from "../../../lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "../dropdown-menu";
-import type { BotListActionProps } from "./types";
-
-const defaultTrigger = (
-  <button
-    type="button"
-    className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
-    aria-label="More options"
-  >
-    <MoreVertical className="size-4 shrink-0" />
-  </button>
-);
-
-export const BotListAction = React.forwardRef<HTMLDivElement, BotListActionProps>(
-  (
-    {
-      onEdit,
-      onDelete,
-      trigger = defaultTrigger,
-      align = "end",
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <div ref={ref} className={cn("inline-flex", className)} {...props}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-          <DropdownMenuContent
-            align={align}
-            className="min-w-[160px] max-w-[min(100vw-2rem,320px)] max-h-[min(70vh,400px)] overflow-y-auto rounded-lg border border-semantic-border-layout bg-semantic-bg-ui p-1 shadow-lg"
-          >
-            <DropdownMenuItem
-              className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-hover focus:text-semantic-text-primary"
-              onSelect={(e) => {
-                e.preventDefault();
-                onEdit?.();
-              }}
-            >
-              <Pencil className="size-4 shrink-0 text-semantic-text-primary" />
-              <span>Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="my-1 bg-semantic-border-layout" />
-            <DropdownMenuItem
-              className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary outline-none transition-colors focus:bg-semantic-error-surface focus:text-semantic-error-primary"
-              onSelect={(e) => {
-                e.preventDefault();
-                onDelete?.();
-              }}
-            >
-              <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
-              <span>Delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-);
-
-BotListAction.displayName = "BotListAction";
 `, prefix),
         },
         {
@@ -13895,18 +13873,6 @@ export interface BotListGridProps
   children: React.ReactNode;
 }
 
-export interface BotListActionProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  /** Called when Edit is selected */
-  onEdit?: () => void;
-  /** Called when Delete is selected */
-  onDelete?: () => void;
-  /** Custom trigger element; defaults to three-dot icon button */
-  trigger?: React.ReactNode;
-  /** Content alignment relative to trigger */
-  align?: "start" | "center" | "end";
-}
-
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
@@ -13986,7 +13952,6 @@ export { BotListHeader } from "./bot-list-header";
 export { BotListSearch } from "./bot-list-search";
 export { BotListCreateCard } from "./bot-list-create-card";
 export { BotListGrid } from "./bot-list-grid";
-export { BotListAction } from "./bot-list-action";
 export { BOT_TYPE } from "./types";
 export type {
   BotListProps,
@@ -13994,7 +13959,6 @@ export type {
   BotListSearchProps,
   BotListCreateCardProps,
   BotListGridProps,
-  BotListActionProps,
   Bot,
   BotType,
   BotStatus,
@@ -14561,9 +14525,13 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onSampleFileDownload,
       onDownloadKnowledgeFile,
       onDeleteKnowledgeFile,
+      knowledgeDownloadDisabled,
+      knowledgeDeleteDisabled,
       onCreateFunction,
       onEditFunction,
       onDeleteFunction,
+      functionEditDisabled,
+      functionDeleteDisabled,
       onTestApi,
       functionsInfoTooltip,
       knowledgeBaseInfoTooltip,
@@ -14704,29 +14672,33 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
-              infoTooltip={knowledgeBaseInfoTooltip}
-              disabled={disabled}
-              onDelete={(id) => {
+              onDelete={onDeleteKnowledgeFile ? (id) => {
                 update({
                   knowledgeBaseFiles: data.knowledgeBaseFiles.filter(
                     (f) => f.id !== id
                   ),
                 });
-                onDeleteKnowledgeFile?.(id);
-              }}
+                onDeleteKnowledgeFile(id);
+              } : undefined}
+              infoTooltip={knowledgeBaseInfoTooltip}
+              disabled={disabled}
+              downloadDisabled={knowledgeDownloadDisabled}
+              deleteDisabled={knowledgeDeleteDisabled}
             />
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
-              onEditFunction={handleEditFunction}
-              infoTooltip={functionsInfoTooltip}
-              disabled={disabled}
-              onDeleteFunction={(id) => {
+              onEditFunction={onEditFunction ? handleEditFunction : undefined}
+              onDeleteFunction={onDeleteFunction ? (id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),
                 });
-                onDeleteFunction?.(id);
-              }}
+                onDeleteFunction(id);
+              } : undefined}
+              infoTooltip={functionsInfoTooltip}
+              disabled={disabled}
+              editDisabled={functionEditDisabled}
+              deleteDisabled={functionDeleteDisabled}
             />
             <FrustrationHandoverCard
               data={data}
@@ -14754,6 +14726,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onTestApi={onTestApi}
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          sessionVariables={sessionVariables}
         />
 
         {/* Edit Function Modal */}
@@ -14766,6 +14739,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          sessionVariables={sessionVariables}
+          disabled={disabled}
         />
 
         {/* File Upload Modal */}
@@ -14820,6 +14795,12 @@ const QUERY_PARAM_KEY_MAX = 512;
 const QUERY_PARAM_VALUE_MAX = 2048;
 const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\\-~]+$/;
 
+const DEFAULT_SESSION_VARIABLES = [
+  "{{Caller number}}",
+  "{{Time}}",
+  "{{Contact Details}}",
+];
+
 function validateQueryParamKey(key: string): string | undefined {
   if (!key.trim()) return "Query param key is required";
   if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
@@ -14837,13 +14818,206 @@ function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+// ── Variable trigger helpers ───────────────────────────────────────────────────
+
+interface TriggerState {
+  query: string;
+  from: number;
+  to: number;
+}
+
+function detectVarTrigger(value: string, cursor: number): TriggerState | null {
+  const before = value.slice(0, cursor);
+  const match = /\\{\\{([^}]*)$/.exec(before);
+  if (!match) return null;
+  return { query: match[1].toLowerCase(), from: match.index, to: cursor };
+}
+
+function insertVar(value: string, variable: string, from: number, to: number): string {
+  return value.slice(0, from) + variable + value.slice(to);
+}
+
+function extractVarRefs(texts: string[]): string[] {
+  const pattern = /\\{\\{[^}]+\\}\\}/g;
+  const all = texts.flatMap((t) => t.match(pattern) ?? []);
+  return [...new Set(all)];
+}
+
+/** Mirror-div technique — returns { top, left } relative to the element's top-left corner. */
+function getCaretPixelPos(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  position: number
+): { top: number; left: number } {
+  const cs = window.getComputedStyle(el);
+  const mirror = document.createElement("div");
+
+  (
+    [
+      "boxSizing", "width", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+      "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
+      "fontFamily", "fontSize", "fontWeight", "fontStyle", "fontVariant",
+      "letterSpacing", "lineHeight", "textTransform", "wordSpacing", "tabSize",
+    ] as (keyof CSSStyleDeclaration)[]
+  ).forEach((prop) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mirror.style as any)[prop] = cs[prop];
+  });
+
+  mirror.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "pre";
+  mirror.style.wordWrap = el.tagName === "TEXTAREA" ? "break-word" : "normal";
+  mirror.style.position = "absolute";
+  mirror.style.visibility = "hidden";
+  mirror.style.overflow = "hidden";
+  mirror.style.top = "0";
+  mirror.style.left = "0";
+  mirror.style.width = el.offsetWidth + "px";
+
+  document.body.appendChild(mirror);
+  mirror.appendChild(document.createTextNode(el.value.substring(0, position)));
+
+  const marker = document.createElement("span");
+  marker.textContent = "\\u200b";
+  mirror.appendChild(marker);
+
+  const markerRect = marker.getBoundingClientRect();
+  const mirrorRect = mirror.getBoundingClientRect();
+  document.body.removeChild(mirror);
+
+  const scrollTop = el instanceof HTMLTextAreaElement ? el.scrollTop : 0;
+  return {
+    top: markerRect.top - mirrorRect.top - scrollTop,
+    left: markerRect.left - mirrorRect.left,
+  };
+}
+
+// Uses same visual classes as DropdownMenuContent + DropdownMenuItem.
+// Position is cursor-anchored via getCaretPixelPos.
+function VarPopup({
+  variables,
+  onSelect,
+  style,
+}: {
+  variables: string[];
+  onSelect: (v: string) => void;
+  style?: React.CSSProperties;
+}) {
+  if (variables.length === 0) return null;
+  return (
+    <div
+      role="listbox"
+      style={style}
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+    >
+      {variables.map((v) => (
+        <button
+          key={v}
+          type="button"
+          role="option"
+          onMouseDown={(e) => {
+            e.preventDefault(); // keep input focused so blur doesn't close popup first
+            onSelect(v);
+          }}
+          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+        >
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── VariableInput — input with {{ autocomplete ─────────────────────────────────
+
+function VariableInput({
+  value,
+  onChange,
+  sessionVariables,
+  placeholder,
+  maxLength,
+  className,
+  inputRef: externalInputRef,
+  ...inputProps
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  sessionVariables: string[];
+  placeholder?: string;
+  maxLength?: number;
+  className?: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  [k: string]: unknown;
+}) {
+  const internalRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = externalInputRef ?? internalRef;
+  const [trigger, setTrigger] = React.useState<TriggerState | null>(null);
+  const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
+
+  const filtered = trigger
+    ? sessionVariables.filter((v) => v.toLowerCase().includes(trigger.query))
+    : [];
+
+  const updatePopupPos = (el: HTMLInputElement, cursor: number) => {
+    const caret = getCaretPixelPos(el, cursor);
+    const lineHeight = parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+    const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+    setPopupStyle({ top: caret.top + lineHeight, left });
+  };
+
+  const clearTrigger = () => {
+    setTrigger(null);
+    setPopupStyle(undefined);
+  };
+
+  const handleSelect = (variable: string) => {
+    if (!trigger) return;
+    onChange(insertVar(value, variable, trigger.from, trigger.to));
+    clearTrigger();
+    requestAnimationFrame(() => {
+      const el = inputRef.current;
+      if (el) {
+        const pos = trigger.from + variable.length;
+        el.focus();
+        el.setSelectionRange(pos, pos);
+      }
+    });
+  };
+
+  return (
+    <div className="relative w-full">
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        className={className}
+        onChange={(e) => {
+          onChange(e.target.value);
+          const cursor = e.target.selectionStart ?? e.target.value.length;
+          const t = detectVarTrigger(e.target.value, cursor);
+          setTrigger(t);
+          if (t) updatePopupPos(e.target, cursor);
+          else setPopupStyle(undefined);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") clearTrigger();
+        }}
+        onBlur={() => clearTrigger()}
+        {...inputProps}
+      />
+      <VarPopup variables={filtered} onSelect={handleSelect} style={popupStyle} />
+    </div>
+  );
+}
+
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
   "w-full h-[42px] px-4 text-base rounded border",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
-  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+  "disabled:opacity-50 disabled:cursor-not-allowed"
 );
 
 const textareaCls = cn(
@@ -14851,7 +15025,8 @@ const textareaCls = cn(
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
-  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+  "disabled:opacity-50 disabled:cursor-not-allowed"
 );
 
 // ── KeyValueTable ─────────────────────────────────────────────────────────────
@@ -14866,6 +15041,8 @@ function KeyValueTable({
   valueMaxLength,
   keyRegex,
   keyRegexError,
+  sessionVariables = [],
+  disabled = false,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
@@ -14875,6 +15052,8 @@ function KeyValueTable({
   valueMaxLength?: number;
   keyRegex?: RegExp;
   keyRegexError?: string;
+  sessionVariables?: string[];
+  disabled?: boolean;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
     // Replace spaces with hyphens in key values
@@ -14937,8 +15116,10 @@ function KeyValueTable({
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
                   maxLength={keyMaxLength}
+                  disabled={disabled}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.key && "border-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.key)}
@@ -14951,19 +15132,21 @@ function KeyValueTable({
                 )}
               </div>
 
-              {/* Value column */}
+              {/* Value column — uses VariableInput for {{ autocomplete */}
               <div className="flex-[2] flex flex-col min-w-0">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Value
                 </span>
-                <input
-                  type="text"
+                <VariableInput
                   value={row.value}
-                  onChange={(e) => update(row.id, { value: e.target.value })}
+                  onChange={(v) => update(row.id, { value: v })}
+                  sessionVariables={sessionVariables}
                   placeholder="Type {{ to add variables"
                   maxLength={valueMaxLength}
+                  disabled={disabled}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.value && "border-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.value)}
@@ -14983,6 +15166,7 @@ function KeyValueTable({
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(row.id)}
+                  disabled={disabled}
                   className={cn("rounded-md", deleteRowButtonClass)}
                   aria-label="Delete row"
                 >
@@ -14997,7 +15181,11 @@ function KeyValueTable({
         <button
           type="button"
           onClick={add}
-          className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
+          disabled={disabled}
+          className={cn(
+            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
         >
           <Plus className="size-3.5 shrink-0" />
           <span>Add row</span>
@@ -15024,6 +15212,8 @@ export const CreateFunctionModal = React.forwardRef<
       promptMaxLength = 1000,
       initialStep = 1,
       initialTab = "header",
+      sessionVariables = DEFAULT_SESSION_VARIABLES,
+      disabled = false,
       className,
     },
     ref
@@ -15047,6 +15237,46 @@ export const CreateFunctionModal = React.forwardRef<
     const [urlError, setUrlError] = React.useState("");
     const [bodyError, setBodyError] = React.useState("");
 
+    // Variable trigger state for URL and body
+    const urlInputRef = React.useRef<HTMLInputElement>(null);
+    const bodyTextareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const [urlTrigger, setUrlTrigger] = React.useState<TriggerState | null>(null);
+    const [bodyTrigger, setBodyTrigger] = React.useState<TriggerState | null>(null);
+    const [urlPopupStyle, setUrlPopupStyle] = React.useState<React.CSSProperties | undefined>();
+    const [bodyPopupStyle, setBodyPopupStyle] = React.useState<React.CSSProperties | undefined>();
+
+    const filteredUrlVars = urlTrigger
+      ? sessionVariables.filter((v) => v.toLowerCase().includes(urlTrigger.query))
+      : [];
+    const filteredBodyVars = bodyTrigger
+      ? sessionVariables.filter((v) => v.toLowerCase().includes(bodyTrigger.query))
+      : [];
+
+    const computePopupStyle = (
+      el: HTMLTextAreaElement | HTMLInputElement,
+      cursor: number
+    ): React.CSSProperties => {
+      const caret = getCaretPixelPos(el, cursor);
+      const lineHeight = parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+      const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+      return { top: caret.top + lineHeight, left };
+    };
+
+    // Test variable values — filled by user before clicking Test API
+    const [testVarValues, setTestVarValues] = React.useState<Record<string, string>>({});
+
+    // Unique {{variable}} refs found across url, body, headers, queryParams
+    const testableVars = React.useMemo(
+      () =>
+        extractVarRefs([
+          url,
+          body,
+          ...headers.map((h) => h.value),
+          ...queryParams.map((q) => q.value),
+        ]),
+      [url, body, headers, queryParams]
+    );
+
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
       if (open) {
@@ -15064,6 +15294,11 @@ export const CreateFunctionModal = React.forwardRef<
         setNameError("");
         setUrlError("");
         setBodyError("");
+        setUrlTrigger(null);
+        setBodyTrigger(null);
+        setUrlPopupStyle(undefined);
+        setBodyPopupStyle(undefined);
+        setTestVarValues({});
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -15084,6 +15319,11 @@ export const CreateFunctionModal = React.forwardRef<
       setNameError("");
       setUrlError("");
       setBodyError("");
+      setUrlTrigger(null);
+      setBodyTrigger(null);
+      setUrlPopupStyle(undefined);
+      setBodyPopupStyle(undefined);
+      setTestVarValues({});
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -15130,7 +15370,7 @@ export const CreateFunctionModal = React.forwardRef<
     };
 
     const handleNext = () => {
-      if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
+      if (disabled || (name.trim() && prompt.trim().length >= promptMinLength)) setStep(2);
     };
 
     const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
@@ -15161,22 +15401,58 @@ export const CreateFunctionModal = React.forwardRef<
       handleClose();
     };
 
+    // Substitute {{variable}} references with user-provided test values before calling onTestApi
+    const substituteVars = (text: string) =>
+      text.replace(/\\{\\{[^}]+\\}\\}/g, (match) => testVarValues[match] ?? match);
+
     const handleTestApi = async () => {
       if (!onTestApi) return;
       setIsTesting(true);
       try {
         const step2: CreateFunctionStep2Data = {
           method,
-          url,
-          headers,
-          queryParams,
-          body,
+          url: substituteVars(url),
+          headers: headers.map((h) => ({ ...h, value: substituteVars(h.value) })),
+          queryParams: queryParams.map((q) => ({ ...q, value: substituteVars(q.value) })),
+          body: substituteVars(body),
         };
         const response = await onTestApi(step2);
         setApiResponse(response);
       } finally {
         setIsTesting(false);
       }
+    };
+
+    // URL variable insertion
+    const handleUrlVarSelect = (variable: string) => {
+      if (!urlTrigger) return;
+      setUrl(insertVar(url, variable, urlTrigger.from, urlTrigger.to));
+      setUrlTrigger(null);
+      setUrlPopupStyle(undefined);
+      requestAnimationFrame(() => {
+        const el = urlInputRef.current;
+        if (el) {
+          const pos = urlTrigger.from + variable.length;
+          el.focus();
+          el.setSelectionRange(pos, pos);
+        }
+      });
+    };
+
+    // Body variable insertion
+    const handleBodyVarSelect = (variable: string) => {
+      if (!bodyTrigger) return;
+      setBody(insertVar(body, variable, bodyTrigger.from, bodyTrigger.to));
+      setBodyTrigger(null);
+      setBodyPopupStyle(undefined);
+      requestAnimationFrame(() => {
+        const el = bodyTextareaRef.current;
+        if (el) {
+          const pos = bodyTrigger.from + variable.length;
+          el.focus();
+          el.setSelectionRange(pos, pos);
+        }
+      });
     };
 
     const headersHaveKeyErrors = headers.some(
@@ -15247,6 +15523,7 @@ export const CreateFunctionModal = React.forwardRef<
                       type="text"
                       value={name}
                       maxLength={FUNCTION_NAME_MAX}
+                      disabled={disabled}
                       onChange={(e) => {
                         setName(e.target.value);
                         if (nameError) validateName(e.target.value);
@@ -15277,6 +15554,7 @@ export const CreateFunctionModal = React.forwardRef<
                       id="fn-prompt"
                       value={prompt}
                       maxLength={promptMaxLength}
+                      disabled={disabled}
                       onChange={(e) => setPrompt(e.target.value)}
                       placeholder="Enter the description of the function"
                       rows={5}
@@ -15305,7 +15583,7 @@ export const CreateFunctionModal = React.forwardRef<
                   </span>
                   <div
                     className={cn(
-                      "flex h-[42px] rounded border border-semantic-border-input overflow-hidden bg-semantic-bg-primary",
+                      "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
                       "hover:border-semantic-border-input-focus",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
@@ -15315,10 +15593,14 @@ export const CreateFunctionModal = React.forwardRef<
                     <div className="relative shrink-0 border-r border-semantic-border-layout">
                       <select
                         value={method}
+                        disabled={disabled}
                         onChange={(e) =>
                           setMethod(e.target.value as HttpMethod)
                         }
-                        className="h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]"
+                        className={cn(
+                          "h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]",
+                          disabled && "opacity-50 cursor-not-allowed"
+                        )}
                         aria-label="HTTP method"
                       >
                         {HTTP_METHODS.map((m) => (
@@ -15332,19 +15614,39 @@ export const CreateFunctionModal = React.forwardRef<
                         aria-hidden="true"
                       />
                     </div>
-                    {/* URL input */}
-                    <input
-                      type="text"
-                      value={url}
-                      maxLength={URL_MAX}
-                      onChange={(e) => {
-                        setUrl(e.target.value);
-                        if (urlError) validateUrl(e.target.value);
-                      }}
-                      onBlur={(e) => validateUrl(e.target.value)}
-                      placeholder="Enter URL or Type {{ to add variables"
-                      className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
-                    />
+                    {/* URL input with {{ trigger */}
+                    <div className="relative flex-1 min-w-0">
+                      <input
+                        ref={urlInputRef}
+                        type="text"
+                        value={url}
+                        maxLength={URL_MAX}
+                        disabled={disabled}
+                        onChange={(e) => {
+                          setUrl(e.target.value);
+                          if (urlError) validateUrl(e.target.value);
+                          const cursor = e.target.selectionStart ?? e.target.value.length;
+                          const t = detectVarTrigger(e.target.value, cursor);
+                          setUrlTrigger(t);
+                          if (t) setUrlPopupStyle(computePopupStyle(e.target, cursor));
+                          else setUrlPopupStyle(undefined);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") { setUrlTrigger(null); setUrlPopupStyle(undefined); }
+                        }}
+                        onBlur={(e) => {
+                          validateUrl(e.target.value);
+                          setUrlTrigger(null);
+                          setUrlPopupStyle(undefined);
+                        }}
+                        placeholder="Enter URL or Type {{ to add variables"
+                        className={cn(
+                          "h-full w-full px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none",
+                          disabled && "opacity-50 cursor-not-allowed"
+                        )}
+                      />
+                      <VarPopup variables={filteredUrlVars} onSelect={handleUrlVarSelect} style={urlPopupStyle} />
+                    </div>
                   </div>
                   {urlError && (
                     <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
@@ -15386,6 +15688,8 @@ export const CreateFunctionModal = React.forwardRef<
                       valueMaxLength={HEADER_VALUE_MAX}
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters."
+                      sessionVariables={sessionVariables}
+                      disabled={disabled}
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -15403,6 +15707,8 @@ export const CreateFunctionModal = React.forwardRef<
                           value: validateQueryParamValue(row.value),
                         };
                       }}
+                      sessionVariables={sessionVariables}
+                      disabled={disabled}
                     />
                   )}
                   {activeTab === "body" && (
@@ -15412,13 +15718,27 @@ export const CreateFunctionModal = React.forwardRef<
                       </span>
                       <div className={cn("relative")}>
                         <textarea
+                          ref={bodyTextareaRef}
                           value={body}
                           maxLength={BODY_MAX}
+                          disabled={disabled}
                           onChange={(e) => {
                             setBody(e.target.value);
                             if (bodyError) validateBody(e.target.value);
+                            const cursor = e.target.selectionStart ?? e.target.value.length;
+                            const t = detectVarTrigger(e.target.value, cursor);
+                            setBodyTrigger(t);
+                            if (t) setBodyPopupStyle(computePopupStyle(e.target, cursor));
+                            else setBodyPopupStyle(undefined);
                           }}
-                          onBlur={(e) => validateBody(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Escape") { setBodyTrigger(null); setBodyPopupStyle(undefined); }
+                          }}
+                          onBlur={(e) => {
+                            validateBody(e.target.value);
+                            setBodyTrigger(null);
+                            setBodyPopupStyle(undefined);
+                          }}
                           placeholder="Enter request body (JSON). Type {{ to add variables"
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
@@ -15426,6 +15746,7 @@ export const CreateFunctionModal = React.forwardRef<
                         <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
                           {body.length}/{BODY_MAX}
                         </span>
+                        <VarPopup variables={filteredBodyVars} onSelect={handleBodyVarSelect} style={bodyPopupStyle} />
                       </div>
                       {bodyError && (
                         <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
@@ -15442,6 +15763,34 @@ export const CreateFunctionModal = React.forwardRef<
                     </span>
                     <div className="border-t border-semantic-border-layout" />
                   </div>
+
+                  {/* Variable test values — shown when URL/body/params contain {{variables}} */}
+                  {testableVars.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs text-semantic-text-muted">
+                        Variable values for testing
+                      </span>
+                      {testableVars.map((variable) => (
+                        <div key={variable} className="flex items-center gap-3">
+                          <span className="text-xs text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
+                            {variable}
+                          </span>
+                          <input
+                            type="text"
+                            value={testVarValues[variable] ?? ""}
+                            onChange={(e) =>
+                              setTestVarValues((prev) => ({
+                                ...prev,
+                                [variable]: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter test value"
+                            className={cn(inputCls, "flex-1 h-9 text-sm")}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   <button
                     type="button"
@@ -15484,7 +15833,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleNext}
-                  disabled={!isStep1Valid}
+                  disabled={!disabled && !isStep1Valid}
                 >
                   Next
                 </Button>
@@ -15502,7 +15851,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
-                  disabled={!isStep2Valid}
+                  disabled={!isStep2Valid || disabled}
                 >
                   Submit
                 </Button>
@@ -15916,9 +16265,16 @@ export interface BotBehaviorCardProps {
   data: Partial<BotBehaviorData>;
   /** Callback when any field changes */
   onChange: (patch: Partial<BotBehaviorData>) => void;
-  /** Called when the system prompt textarea loses focus */
+  /**
+   * Called when focus leaves the **entire** prompt section (textarea + session
+   * variable chips). Clicking a chip or the instruction text does NOT trigger
+   * this — only clicking outside the whole section does.
+   *
+   * Use this to persist the system prompt (e.g. fire an API call) once the
+   * user is done editing, including any variables they just inserted.
+   */
   onSystemPromptBlur?: (value: string) => void;
-  /** Session variables shown as insertable chips */
+  /** Session variables shown as insertable chips and in the {{ autocomplete dropdown */
   sessionVariables?: string[];
   /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
@@ -15935,6 +16291,115 @@ const DEFAULT_SESSION_VARIABLES = [
   "{{Time}}",
   "{{Contact Details}}",
 ];
+
+// ─── Variable trigger helpers ─────────────────────────────────────────────────
+
+interface TriggerState {
+  query: string;
+  from: number;
+  to: number;
+}
+
+function detectVarTrigger(value: string, cursor: number): TriggerState | null {
+  const before = value.slice(0, cursor);
+  const match = /\\{\\{([^}]*)$/.exec(before);
+  if (!match) return null;
+  return { query: match[1].toLowerCase(), from: match.index, to: cursor };
+}
+
+function insertVar(value: string, variable: string, from: number, to: number): string {
+  return value.slice(0, from) + variable + value.slice(to);
+}
+
+/**
+ * Mirror-div technique: create an invisible clone of the element with identical
+ * styles, fill it with text up to the cursor, place a zero-width marker span at
+ * the end, and read the marker's position to get pixel-exact cursor coordinates.
+ * Returns { top, left } relative to the element's own top-left corner.
+ */
+function getCaretPixelPos(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  position: number
+): { top: number; left: number } {
+  const cs = window.getComputedStyle(el);
+  const mirror = document.createElement("div");
+
+  // Copy every style property that affects text layout
+  (
+    [
+      "boxSizing", "width", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+      "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
+      "fontFamily", "fontSize", "fontWeight", "fontStyle", "fontVariant",
+      "letterSpacing", "lineHeight", "textTransform", "wordSpacing", "tabSize",
+    ] as (keyof CSSStyleDeclaration)[]
+  ).forEach((prop) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mirror.style as any)[prop] = cs[prop];
+  });
+
+  // textarea wraps; input does not
+  mirror.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "pre";
+  mirror.style.wordWrap = el.tagName === "TEXTAREA" ? "break-word" : "normal";
+  mirror.style.position = "absolute";
+  mirror.style.visibility = "hidden";
+  mirror.style.overflow = "hidden";
+  mirror.style.top = "0";
+  mirror.style.left = "0";
+  mirror.style.width = el.offsetWidth + "px";
+
+  document.body.appendChild(mirror);
+  mirror.appendChild(document.createTextNode(el.value.substring(0, position)));
+
+  const marker = document.createElement("span");
+  marker.textContent = "\\u200b"; // zero-width space
+  mirror.appendChild(marker);
+
+  const markerRect = marker.getBoundingClientRect();
+  const mirrorRect = mirror.getBoundingClientRect();
+  document.body.removeChild(mirror);
+
+  const scrollTop = el instanceof HTMLTextAreaElement ? el.scrollTop : 0;
+  return {
+    top: markerRect.top - mirrorRect.top - scrollTop,
+    left: markerRect.left - mirrorRect.left,
+  };
+}
+
+// Uses the same visual classes as DropdownMenuContent + DropdownMenuItem.
+// Position is driven by cursor coordinates from getCaretPixelPos.
+function VarPopup({
+  variables,
+  onSelect,
+  style,
+}: {
+  variables: string[];
+  onSelect: (v: string) => void;
+  style?: React.CSSProperties;
+}) {
+  if (variables.length === 0) return null;
+  return (
+    <div
+      role="listbox"
+      style={style}
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+    >
+      {variables.map((v) => (
+        <button
+          key={v}
+          type="button"
+          role="option"
+          onMouseDown={(e) => {
+            e.preventDefault(); // keep textarea focused so blur doesn't close popup first
+            onSelect(v);
+          }}
+          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+        >
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 // ─── Internal helpers ───────────────────────────────────────────────────────
 
@@ -15964,44 +16429,6 @@ function SectionCard({
   );
 }
 
-function StyledTextarea({
-  placeholder,
-  value,
-  rows = 3,
-  onChange,
-  onBlur,
-  disabled,
-  className,
-}: {
-  placeholder?: string;
-  value?: string;
-  rows?: number;
-  onChange?: (v: string) => void;
-  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <textarea
-      value={value ?? ""}
-      rows={rows}
-      onChange={(e) => onChange?.(e.target.value)}
-      onBlur={onBlur}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={cn(
-        "w-full px-4 py-2.5 text-base rounded border resize-none",
-        "border-semantic-border-input bg-semantic-bg-primary",
-        "text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none hover:border-semantic-border-input-focus",
-        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-    />
-  );
-}
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
@@ -16019,50 +16446,129 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
-    const footerRef = React.useRef<HTMLDivElement>(null);
-    /** Set on footer mousedown so blur does not trigger API when user clicked under the input (instruction/chips). */
-    const footerClickInProgressRef = React.useRef(false);
+    const sectionRef = React.useRef<HTMLDivElement>(null);
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    /** Tracks whether the section has been focused at least once (prevents firing blur on initial render). */
+    const hasFocusedRef = React.useRef(false);
+
+    const [varTrigger, setVarTrigger] = React.useState<TriggerState | null>(null);
+    const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
+
+    const filteredVars = varTrigger
+      ? sessionVariables.filter((v) =>
+          v.toLowerCase().includes(varTrigger.query)
+        )
+      : [];
+
+    /** Compute popup pixel position anchored to the cursor, clamped within the textarea. */
+    const updatePopupPos = (el: HTMLTextAreaElement, cursor: number) => {
+      const caret = getCaretPixelPos(el, cursor);
+      const lineHeight = parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+      const top = caret.top + lineHeight;
+      // Clamp left so popup (max-w-xs = 320px) doesn't overflow the textarea width
+      const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+      setPopupStyle({ top, left });
+    };
+
+    const clearTrigger = () => {
+      setVarTrigger(null);
+      setPopupStyle(undefined);
+    };
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });
     };
 
-    const handleSystemPromptBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
-      if (!onSystemPromptBlur) return;
-      const relatedTarget = e.relatedTarget as Node | null;
-      const footerEl = footerRef.current;
-      if (footerClickInProgressRef.current) {
-        footerClickInProgressRef.current = false;
-        return;
-      }
-      if (footerEl && relatedTarget && footerEl.contains(relatedTarget)) {
-        return;
-      }
-      onSystemPromptBlur(e.target.value);
+    const handleVarSelect = (variable: string) => {
+      if (!varTrigger) return;
+      const newVal = insertVar(prompt, variable, varTrigger.from, varTrigger.to);
+      if (newVal.length <= MAX) onChange({ systemPrompt: newVal });
+      clearTrigger();
+      // Restore focus and place cursor after inserted variable
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        if (el) {
+          const pos = varTrigger.from + variable.length;
+          el.focus();
+          el.setSelectionRange(pos, pos);
+        }
+      });
     };
 
-    const handleFooterMouseDown = () => {
-      footerClickInProgressRef.current = true;
+    const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const v = e.target.value;
+      if (v.length <= MAX) {
+        onChange({ systemPrompt: v });
+        const trigger = detectVarTrigger(v, e.target.selectionStart);
+        setVarTrigger(trigger);
+        if (trigger) updatePopupPos(e.target, e.target.selectionStart);
+        else setPopupStyle(undefined);
+      }
+    };
+
+    const handlePromptKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Escape" && varTrigger) {
+        e.preventDefault();
+        clearTrigger();
+      }
+    };
+
+    /**
+     * Fires when focus enters the prompt section (textarea or any chip button).
+     * We track this so the section-level blur only fires after the user has
+     * actually interacted with the section.
+     */
+    const handleSectionFocus = () => {
+      hasFocusedRef.current = true;
+    };
+
+    /**
+     * Fires when focus leaves any element inside the prompt section.
+     * We check \`relatedTarget\` — if the new focus target is still inside
+     * this section, we do nothing. Only when focus moves fully outside
+     * do we fire \`onSystemPromptBlur\` with the current prompt value.
+     */
+    const handleSectionBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+      clearTrigger();
+      if (!onSystemPromptBlur || !hasFocusedRef.current) return;
+      const section = sectionRef.current;
+      const next = e.relatedTarget as Node | null;
+      // Focus moved to another element inside this section — ignore
+      if (section && next && section.contains(next)) return;
+      onSystemPromptBlur(prompt);
     };
 
     return (
       <div ref={ref} className={className}>
         <SectionCard title="How It Behaves">
-          <div className="flex flex-col gap-3">
+          {/* onBlur is on this wrapper so clicking chips / instruction text
+              does NOT fire the callback — only clicking outside fires it. */}
+          <div
+            ref={sectionRef}
+            className="flex flex-col gap-3"
+            onFocus={handleSectionFocus}
+            onBlur={handleSectionBlur}
+          >
             <p className="m-0 text-sm text-semantic-text-muted">
               Define workflows, conditions and handover logic (System prompt)
             </p>
             <div className="relative">
-              <StyledTextarea
+              <textarea
+                ref={textareaRef}
                 value={prompt}
                 rows={6}
-                onChange={(v) => {
-                  if (v.length <= MAX) onChange({ systemPrompt: v });
-                }}
-                onBlur={handleSystemPromptBlur}
+                onChange={handlePromptChange}
+                onKeyDown={handlePromptKeyDown}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
-                className="pb-10 pr-[4.5rem]"
+                className={cn(
+                  "w-full px-4 py-2.5 text-base rounded border resize-none pb-10 pr-[4.5rem]",
+                  "border-semantic-border-input bg-semantic-bg-primary",
+                  "text-semantic-text-primary placeholder:text-semantic-text-muted",
+                  "outline-none hover:border-semantic-border-input-focus",
+                  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+                  disabled && "opacity-50 cursor-not-allowed"
+                )}
               />
               <span
                 className="absolute bottom-3 right-4 text-sm text-semantic-text-muted pointer-events-none"
@@ -16071,12 +16577,9 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
               >
                 {prompt.length}/{MAX}
               </span>
+              <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
             </div>
-            <div
-              ref={footerRef}
-              className="flex flex-col gap-3"
-              onMouseDown={handleFooterMouseDown}
-            >
+            <div className="flex flex-col gap-3">
               <p className="m-0 flex items-center gap-1.5 text-sm text-semantic-text-muted">
                 <Info className="size-4 shrink-0 text-semantic-text-muted" aria-hidden />
                 Type {'{{'} to enable dropdown or use the below chips to input variables.
@@ -16132,14 +16635,24 @@ export interface KnowledgeBaseCardProps {
   files: KnowledgeBaseFile[];
   /** Called when user clicks the "+ Files" button */
   onAdd?: () => void;
-  /** Called when user clicks the download button on a file */
+  /**
+   * Called when user clicks the download button on a file.
+   * When omitted, the download button is **not rendered**.
+   */
   onDownload?: (id: string) => void;
-  /** Called when user clicks the delete button on a file */
+  /**
+   * Called when user clicks the delete button on a file.
+   * When omitted, the delete button is **not rendered**.
+   */
   onDelete?: (id: string) => void;
   /** Hover text shown on the info icon next to the "Knowledge Base" title */
   infoTooltip?: string;
-  /** Disables all interactive elements in the card (view mode) */
+  /** Disables the "+ Files" button and other form-level interactions (view mode) */
   disabled?: boolean;
+  /** Independently disables the download button (e.g. user lacks download permission) */
+  downloadDisabled?: boolean;
+  /** Independently disables the delete button (e.g. user lacks delete permission) */
+  deleteDisabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -16165,6 +16678,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onDelete,
       infoTooltip,
       disabled,
+      downloadDisabled,
+      deleteDisabled,
       className,
     },
     ref
@@ -16233,26 +16748,32 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                           {status.label}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0 ml-2">
-                        <button
-                          type="button"
-                          onClick={() => onDownload?.(file.id)}
-                          disabled={disabled}
-                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label="Download file"
-                        >
-                          <Download className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDelete?.(file.id)}
-                          disabled={disabled}
-                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label="Delete file"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
+                      {(onDownload || onDelete) && (
+                        <div className="flex items-center gap-1 shrink-0 ml-2">
+                          {onDownload && (
+                            <button
+                              type="button"
+                              onClick={() => onDownload(file.id)}
+                              disabled={downloadDisabled}
+                              className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", downloadDisabled && "opacity-50 cursor-not-allowed")}
+                              aria-label="Download file"
+                            >
+                              <Download className="size-4" />
+                            </button>
+                          )}
+                          {onDelete && (
+                            <button
+                              type="button"
+                              onClick={() => onDelete(file.id)}
+                              disabled={deleteDisabled}
+                              className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", deleteDisabled && "opacity-50 cursor-not-allowed")}
+                              aria-label="Delete file"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -16289,14 +16810,24 @@ export interface FunctionsCardProps {
   functions: FunctionItem[];
   /** Called when user clicks the add function button */
   onAddFunction?: () => void;
-  /** Called when user edits a custom (non-built-in) function */
+  /**
+   * Called when user clicks the edit button on a custom function.
+   * When omitted, the edit button is **not rendered**.
+   */
   onEditFunction?: (id: string) => void;
-  /** Called when user deletes a custom (non-built-in) function */
+  /**
+   * Called when user clicks the delete button on a custom function.
+   * When omitted, the delete button is **not rendered**.
+   */
   onDeleteFunction?: (id: string) => void;
   /** Hover text shown on the info icon next to the "Functions" title */
   infoTooltip?: string;
-  /** Disables all interactive elements in the card (view mode) */
+  /** Disables the "Add Functions" button and other form-level interactions (view mode) */
   disabled?: boolean;
+  /** Independently disables the edit button (e.g. user lacks edit permission) */
+  editDisabled?: boolean;
+  /** Independently disables the delete button (e.g. user lacks delete permission) */
+  deleteDisabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -16304,7 +16835,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -16379,24 +16910,28 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                       </Badge>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          onClick={() => onEditFunction?.(fn.id)}
-                          disabled={disabled}
-                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label={\`Edit \${fn.name}\`}
-                        >
-                          <Pencil className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDeleteFunction?.(fn.id)}
-                          disabled={disabled}
-                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label={\`Delete \${fn.name}\`}
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
+                        {onEditFunction && (
+                          <button
+                            type="button"
+                            onClick={() => onEditFunction(fn.id)}
+                            disabled={editDisabled}
+                            className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", editDisabled && "opacity-50 cursor-not-allowed")}
+                            aria-label={\`Edit \${fn.name}\`}
+                          >
+                            <Pencil className="size-4" />
+                          </button>
+                        )}
+                        {onDeleteFunction && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteFunction(fn.id)}
+                            disabled={deleteDisabled}
+                            className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", deleteDisabled && "opacity-50 cursor-not-allowed")}
+                            aria-label={\`Delete \${fn.name}\`}
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        )}
                       </>
                     )}
                   </div>
@@ -16982,6 +17517,10 @@ export interface CreateFunctionModalProps {
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
   initialTab?: FunctionTabType;
+  /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
+  sessionVariables?: string[];
+  /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
+  disabled?: boolean;
   className?: string;
 }
 
@@ -17022,13 +17561,23 @@ export interface IvrBotConfigProps {
   /** Called for each file during upload with progress/error handlers. If omitted, uses fake progress. */
   onUploadKnowledgeFile?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
   onSampleFileDownload?: () => void;
+  /** Called when user downloads a knowledge file. When omitted, download button is hidden. */
   onDownloadKnowledgeFile?: (fileId: string) => void;
+  /** Called when user deletes a knowledge file. When omitted, delete button is hidden. */
   onDeleteKnowledgeFile?: (fileId: string) => void;
+  /** Independently disables the knowledge file download button */
+  knowledgeDownloadDisabled?: boolean;
+  /** Independently disables the knowledge file delete button */
+  knowledgeDeleteDisabled?: boolean;
   onCreateFunction?: (data: CreateFunctionData) => void;
-  /** Called when user edits a custom function. Receives the function id. */
+  /** Called when user edits a custom function. When omitted, edit button is hidden. */
   onEditFunction?: (id: string) => void;
-  /** Called when user deletes a custom function */
+  /** Called when user deletes a custom function. When omitted, delete button is hidden. */
   onDeleteFunction?: (id: string) => void;
+  /** Independently disables the function edit button */
+  functionEditDisabled?: boolean;
+  /** Independently disables the function delete button */
+  functionDeleteDisabled?: boolean;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
@@ -17045,7 +17594,12 @@ export interface IvrBotConfigProps {
   functionEditData?: Partial<CreateFunctionData>;
   /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
-  /** Called when the system prompt textarea loses focus */
+  /**
+   * Called when focus leaves the **entire** "How It Behaves" section
+   * (textarea + session variable chips). Clicking a chip does NOT trigger
+   * this — only clicking outside the whole section does.
+   * Use this to persist the system prompt via an API call.
+   */
   onSystemPromptBlur?: (value: string) => void;
   /** Called when the Agent Busy Prompt textarea loses focus */
   onAgentBusyPromptBlur?: (value: string) => void;

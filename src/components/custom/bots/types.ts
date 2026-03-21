@@ -84,18 +84,6 @@ export interface BotListGridProps
   children: React.ReactNode;
 }
 
-export interface BotListActionProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  /** Called when Edit is selected */
-  onEdit?: () => void;
-  /** Called when Delete is selected */
-  onDelete?: () => void;
-  /** Custom trigger element; defaults to three-dot icon button */
-  trigger?: React.ReactNode;
-  /** Content alignment relative to trigger */
-  align?: "start" | "center" | "end";
-}
-
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {

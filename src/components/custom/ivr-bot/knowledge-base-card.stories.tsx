@@ -67,13 +67,61 @@ export const Empty: Story = {
   },
 };
 
-/** All interactive elements are disabled in view mode. */
-export const Disabled: Story = {
+/** View mode — Add button disabled, download enabled, delete disabled. */
+export const ViewMode: Story = {
+  name: "View Mode (disabled)",
   render: () => (
     <div className="max-w-[500px]">
       <KnowledgeBaseCard
         files={SAMPLE_FILES}
+        onDownload={(id) => alert(`Download: ${id}`)}
+        onDelete={() => {}}
         disabled
+        deleteDisabled
+      />
+    </div>
+  ),
+};
+
+/** Download only — user can download files but has no delete permission. */
+export const DownloadOnly: Story = {
+  name: "Download Only (no delete)",
+  render: () => (
+    <div className="max-w-[500px]">
+      <KnowledgeBaseCard
+        files={SAMPLE_FILES}
+        onDownload={(id) => alert(`Download: ${id}`)}
+        // onDelete omitted → delete button hidden
+      />
+    </div>
+  ),
+};
+
+/** Delete only — user can delete files but has no download permission. */
+export const DeleteOnly: Story = {
+  name: "Delete Only (no download)",
+  render: function Render() {
+    const [files, setFiles] = useState<KnowledgeBaseFile[]>(SAMPLE_FILES);
+    return (
+      <div className="max-w-[500px]">
+        <KnowledgeBaseCard
+          files={files}
+          // onDownload omitted → download button hidden
+          onDelete={(id) => setFiles((prev) => prev.filter((f) => f.id !== id))}
+        />
+      </div>
+    );
+  },
+};
+
+/** No actions — read-only list with no download or delete buttons. */
+export const NoActions: Story = {
+  name: "No Actions (read-only list)",
+  render: () => (
+    <div className="max-w-[500px]">
+      <KnowledgeBaseCard
+        files={SAMPLE_FILES}
+        // both onDownload and onDelete omitted → no action buttons
       />
     </div>
   ),

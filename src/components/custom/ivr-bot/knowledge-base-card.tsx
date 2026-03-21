@@ -18,14 +18,24 @@ export interface KnowledgeBaseCardProps {
   files: KnowledgeBaseFile[];
   /** Called when user clicks the "+ Files" button */
   onAdd?: () => void;
-  /** Called when user clicks the download button on a file */
+  /**
+   * Called when user clicks the download button on a file.
+   * When omitted, the download button is **not rendered**.
+   */
   onDownload?: (id: string) => void;
-  /** Called when user clicks the delete button on a file */
+  /**
+   * Called when user clicks the delete button on a file.
+   * When omitted, the delete button is **not rendered**.
+   */
   onDelete?: (id: string) => void;
   /** Hover text shown on the info icon next to the "Knowledge Base" title */
   infoTooltip?: string;
-  /** Disables all interactive elements in the card (view mode) */
+  /** Disables the "+ Files" button and other form-level interactions (view mode) */
   disabled?: boolean;
+  /** Independently disables the download button (e.g. user lacks download permission) */
+  downloadDisabled?: boolean;
+  /** Independently disables the delete button (e.g. user lacks delete permission) */
+  deleteDisabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -51,6 +61,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onDelete,
       infoTooltip,
       disabled,
+      downloadDisabled,
+      deleteDisabled,
       className,
     },
     ref
@@ -119,26 +131,32 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                           {status.label}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0 ml-2">
-                        <button
-                          type="button"
-                          onClick={() => onDownload?.(file.id)}
-                          disabled={disabled}
-                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label="Download file"
-                        >
-                          <Download className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDelete?.(file.id)}
-                          disabled={disabled}
-                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label="Delete file"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
+                      {(onDownload || onDelete) && (
+                        <div className="flex items-center gap-1 shrink-0 ml-2">
+                          {onDownload && (
+                            <button
+                              type="button"
+                              onClick={() => onDownload(file.id)}
+                              disabled={downloadDisabled}
+                              className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", downloadDisabled && "opacity-50 cursor-not-allowed")}
+                              aria-label="Download file"
+                            >
+                              <Download className="size-4" />
+                            </button>
+                          )}
+                          {onDelete && (
+                            <button
+                              type="button"
+                              onClick={() => onDelete(file.id)}
+                              disabled={deleteDisabled}
+                              className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", deleteDisabled && "opacity-50 cursor-not-allowed")}
+                              aria-label="Delete file"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

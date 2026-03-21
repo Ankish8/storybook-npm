@@ -17,14 +17,24 @@ export interface FunctionsCardProps {
   functions: FunctionItem[];
   /** Called when user clicks the add function button */
   onAddFunction?: () => void;
-  /** Called when user edits a custom (non-built-in) function */
+  /**
+   * Called when user clicks the edit button on a custom function.
+   * When omitted, the edit button is **not rendered**.
+   */
   onEditFunction?: (id: string) => void;
-  /** Called when user deletes a custom (non-built-in) function */
+  /**
+   * Called when user clicks the delete button on a custom function.
+   * When omitted, the delete button is **not rendered**.
+   */
   onDeleteFunction?: (id: string) => void;
   /** Hover text shown on the info icon next to the "Functions" title */
   infoTooltip?: string;
-  /** Disables all interactive elements in the card (view mode) */
+  /** Disables the "Add Functions" button and other form-level interactions (view mode) */
   disabled?: boolean;
+  /** Independently disables the edit button (e.g. user lacks edit permission) */
+  editDisabled?: boolean;
+  /** Independently disables the delete button (e.g. user lacks delete permission) */
+  deleteDisabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -32,7 +42,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -107,24 +117,28 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                       </Badge>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          onClick={() => onEditFunction?.(fn.id)}
-                          disabled={disabled}
-                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label={`Edit ${fn.name}`}
-                        >
-                          <Pencil className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDeleteFunction?.(fn.id)}
-                          disabled={disabled}
-                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label={`Delete ${fn.name}`}
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
+                        {onEditFunction && (
+                          <button
+                            type="button"
+                            onClick={() => onEditFunction(fn.id)}
+                            disabled={editDisabled}
+                            className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", editDisabled && "opacity-50 cursor-not-allowed")}
+                            aria-label={`Edit ${fn.name}`}
+                          >
+                            <Pencil className="size-4" />
+                          </button>
+                        )}
+                        {onDeleteFunction && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteFunction(fn.id)}
+                            disabled={deleteDisabled}
+                            className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", deleteDisabled && "opacity-50 cursor-not-allowed")}
+                            aria-label={`Delete ${fn.name}`}
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        )}
                       </>
                     )}
                   </div>

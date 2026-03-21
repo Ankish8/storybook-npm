@@ -36,11 +36,6 @@ export {
   propsTable as botListGridPropsTable,
   events as botListGridEvents,
 } from "./bot-list-grid";
-export {
-  description as botListActionDescription,
-  propsTable as botListActionPropsTable,
-  events as botListActionEvents,
-} from "./bot-list-action";
 export { propsTable as botTypePropsTable } from "./bot-type";
 export {
   description as createBotFlowDescription,

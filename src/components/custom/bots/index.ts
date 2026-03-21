@@ -11,7 +11,6 @@ export { BotListHeader } from "./bot-list-header";
 export { BotListSearch } from "./bot-list-search";
 export { BotListCreateCard } from "./bot-list-create-card";
 export { BotListGrid } from "./bot-list-grid";
-export { BotListAction } from "./bot-list-action";
 export { BOT_TYPE } from "./types";
 export type {
   BotListProps,
@@ -19,7 +18,6 @@ export type {
   BotListSearchProps,
   BotListCreateCardProps,
   BotListGridProps,
-  BotListActionProps,
   Bot,
   BotType,
   BotStatus,

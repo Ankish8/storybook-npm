@@ -105,9 +105,17 @@ describe("BotCard", () => {
     expect(screen.getByLabelText("More options")).toBeInTheDocument();
   });
 
-  it("opens dropdown and shows Edit and Delete actions", async () => {
+  it("opens dropdown and shows only Edit when onDelete is not provided", async () => {
     const user = userEvent.setup();
     render(<BotCard bot={chatbot} />);
+    await user.click(screen.getByLabelText("More options"));
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.queryByText("Delete")).not.toBeInTheDocument();
+  });
+
+  it("shows Delete when onDelete is provided", async () => {
+    const user = userEvent.setup();
+    render(<BotCard bot={chatbot} onDelete={vi.fn()} />);
     await user.click(screen.getByLabelText("More options"));
     expect(screen.getByText("Edit")).toBeInTheDocument();
     expect(screen.getByText("Delete")).toBeInTheDocument();

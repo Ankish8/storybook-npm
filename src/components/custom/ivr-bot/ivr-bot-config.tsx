@@ -56,9 +56,13 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onSampleFileDownload,
       onDownloadKnowledgeFile,
       onDeleteKnowledgeFile,
+      knowledgeDownloadDisabled,
+      knowledgeDeleteDisabled,
       onCreateFunction,
       onEditFunction,
       onDeleteFunction,
+      functionEditDisabled,
+      functionDeleteDisabled,
       onTestApi,
       functionsInfoTooltip,
       knowledgeBaseInfoTooltip,
@@ -199,29 +203,33 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
-              infoTooltip={knowledgeBaseInfoTooltip}
-              disabled={disabled}
-              onDelete={(id) => {
+              onDelete={onDeleteKnowledgeFile ? (id) => {
                 update({
                   knowledgeBaseFiles: data.knowledgeBaseFiles.filter(
                     (f) => f.id !== id
                   ),
                 });
-                onDeleteKnowledgeFile?.(id);
-              }}
+                onDeleteKnowledgeFile(id);
+              } : undefined}
+              infoTooltip={knowledgeBaseInfoTooltip}
+              disabled={disabled}
+              downloadDisabled={knowledgeDownloadDisabled}
+              deleteDisabled={knowledgeDeleteDisabled}
             />
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
-              onEditFunction={handleEditFunction}
-              infoTooltip={functionsInfoTooltip}
-              disabled={disabled}
-              onDeleteFunction={(id) => {
+              onEditFunction={onEditFunction ? handleEditFunction : undefined}
+              onDeleteFunction={onDeleteFunction ? (id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),
                 });
-                onDeleteFunction?.(id);
-              }}
+                onDeleteFunction(id);
+              } : undefined}
+              infoTooltip={functionsInfoTooltip}
+              disabled={disabled}
+              editDisabled={functionEditDisabled}
+              deleteDisabled={functionDeleteDisabled}
             />
             <FrustrationHandoverCard
               data={data}
@@ -249,6 +257,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onTestApi={onTestApi}
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          sessionVariables={sessionVariables}
         />
 
         {/* Edit Function Modal */}
@@ -261,6 +270,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          sessionVariables={sessionVariables}
+          disabled={disabled}
         />
 
         {/* File Upload Modal */}

@@ -746,7 +746,6 @@ components:
       - "bot-list-search.tsx"
       - "bot-list-create-card.tsx"
       - "bot-list-grid.tsx"
-      - "bot-list-action.tsx"
       - "types.ts"
       - "index.ts"
     mainFile: "bot-list.tsx"

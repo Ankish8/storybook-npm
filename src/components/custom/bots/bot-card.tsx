@@ -1,8 +1,14 @@
 import * as React from "react";
-import { MessageSquare, Phone } from "lucide-react";
+import { MessageSquare, Phone, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
-import { BotListAction } from "./bot-list-action";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "../../ui/dropdown-menu";
 import type { Bot, BotCardProps, BotType } from "./types";
 
 const DEFAULT_TYPE_LABELS: Record<BotType, string> = {
@@ -76,11 +82,38 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
             </Badge>
 
             <span data-bot-card-action className="inline-flex" onClick={(e) => e.stopPropagation()}>
-              <BotListAction
-                align="end"
-                onEdit={() => onEdit?.(bot.id)}
-                onDelete={() => onDelete?.(bot.id)}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
+                    aria-label="More options"
+                  >
+                    <MoreVertical className="size-4 shrink-0" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[160px]">
+                  <DropdownMenuItem
+                    className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm"
+                    onSelect={(e) => { e.preventDefault(); onEdit?.(bot.id); }}
+                  >
+                    <Pencil className="size-4 shrink-0" />
+                    <span>Edit</span>
+                  </DropdownMenuItem>
+                  {onDelete && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary focus:bg-semantic-error-surface focus:text-semantic-error-primary"
+                        onSelect={(e) => { e.preventDefault(); onDelete(bot.id); }}
+                      >
+                        <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </span>
           </div>
         </div>
@@ -113,9 +146,11 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
               Last Published
             </span>
           )}
-          {bot.lastPublishedBy && bot.lastPublishedDate ? (
+          {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
-              {bot.lastPublishedBy} | {bot.lastPublishedDate}
+              {bot.lastPublishedBy
+                ? `${bot.lastPublishedBy} | ${bot.lastPublishedDate ?? "—"}`
+                : bot.lastPublishedDate}
             </p>
           ) : bot.status !== "draft" ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">—</p>

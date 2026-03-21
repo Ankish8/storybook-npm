@@ -95,13 +95,14 @@ describe("CreateBotModal", () => {
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it("resets form after submitting", () => {
+  it("keeps form values after submitting while modal stays open", () => {
     const handleOpenChange = vi.fn();
     render(<CreateBotModal open onOpenChange={handleOpenChange} onSubmit={vi.fn()} />);
     const input = screen.getByPlaceholderText("Enter bot name");
     fireEvent.change(input, { target: { value: "Test Bot" } });
     fireEvent.click(screen.getByText("Create"));
-    expect((input as HTMLInputElement).value).toBe("");
+    expect((input as HTMLInputElement).value).toBe("Test Bot");
+    expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
   it("shows required asterisk on Name label", () => {
