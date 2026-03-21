@@ -109,4 +109,26 @@ describe("CreateBotModal", () => {
     render(<CreateBotModal open onOpenChange={vi.fn()} />);
     expect(screen.getByText("*")).toBeInTheDocument();
   });
+
+  it("disables Create button when isLoading is true even with a name", () => {
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} isLoading />
+    );
+    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+      target: { value: "My Bot" },
+    });
+    expect(screen.getByText("Create").closest("button")).toBeDisabled();
+  });
+
+  it("does not call onSubmit when isLoading is true", () => {
+    const handleSubmit = vi.fn();
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} isLoading />
+    );
+    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+      target: { value: "My Bot" },
+    });
+    fireEvent.click(screen.getByText("Create"));
+    expect(handleSubmit).not.toHaveBeenCalled();
+  });
 });

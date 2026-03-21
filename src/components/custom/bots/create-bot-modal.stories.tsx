@@ -53,6 +53,26 @@ export const Default: Story = {
   },
 };
 
+export const Loading: Story = {
+  name: "Create Bot Modal — Loading",
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div className="flex flex-col items-center gap-4 p-8">
+        <Button variant="default" onClick={() => setOpen(true)}>
+          Open (Loading State)
+        </Button>
+        <CreateBotModal
+          open={open}
+          onOpenChange={setOpen}
+          onSubmit={fn()}
+          isLoading
+        />
+      </div>
+    );
+  },
+};
+
 export const ChatbotPreselected: Story = {
   name: "Create Bot Modal — Chatbot Pre-selected",
   render: () => {

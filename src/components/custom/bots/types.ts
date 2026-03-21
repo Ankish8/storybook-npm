@@ -46,6 +46,8 @@ export interface CreateBotModalProps {
   onOpenChange: (open: boolean) => void;
   /** Called with name and BOT_TYPE (CHAT = 1, VOICE = 2) when user submits */
   onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Shows loading spinner on Create button and disables it (e.g. while API call is in flight) */
+  isLoading?: boolean;
   className?: string;
 }
 
