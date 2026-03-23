@@ -1,15 +1,14 @@
 import * as React from "react";
 import { Trash2, ChevronDown, X, Plus, AlertCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogFooter,
-} from "../../ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { VariableValueInput } from "../variable-selector/variable-value-input";
+import {
+  EditVariableDialog,
+  type EditVariableFormValues,
+} from "../variable-selector/edit-variable-dialog";
 import {
   parseValueToSegments,
   type VariableSelectorItem,
@@ -57,6 +56,12 @@ function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+const DEFAULT_SESSION_VARIABLES = [
+  "{{Caller number}}",
+  "{{Time}}",
+  "{{Contact Details}}",
+];
+
 /** Default catalog aligned with Figma variable picker (Create Function → Header value `{{`). */
 const DEFAULT_FUNCTION_VARIABLE_CATALOG: VariableSelectorSection[] = [
   {
@@ -94,6 +99,17 @@ function findVariableItemByName(
   return null;
 }
 
+function findVariableItemById(
+  sections: VariableSelectorSection[],
+  id: string
+): VariableSelectorItem | null {
+  for (const s of sections) {
+    const v = s.variables.find((x) => x.id === id);
+    if (v) return v;
+  }
+  return null;
+}
+
 function cloneVariableCatalog(
   catalog: VariableSelectorSection[]
 ): VariableSelectorSection[] {
@@ -125,13 +141,161 @@ function collectApiVariableNames(
   return Array.from(names).sort((a, b) => a.localeCompare(b));
 }
 
+/** Replace `{{fromName}}` tokens with `{{toName}}` in a string (trimmed names). */
+function replaceVariableTokenInText(
+  text: string,
+  fromName: string,
+  toName: string
+): string {
+  if (!fromName || fromName === toName) return text;
+  const escaped = fromName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`\\{\\{\\s*${escaped}\\s*\\}\\}`, "g");
+  return text.replace(re, `{{${toName}}}`);
+}
+
+// ── Body field: `{{` autocomplete (same token shape as catalog) ───────────────
+
+interface TriggerState {
+  query: string;
+  from: number;
+  to: number;
+}
+
+function detectVarTrigger(value: string, cursor: number): TriggerState | null {
+  const before = value.slice(0, cursor);
+  const match = /\{\{([^}]*)$/.exec(before);
+  if (!match) return null;
+  return { query: match[1].toLowerCase(), from: match.index, to: cursor };
+}
+
+function insertVar(
+  value: string,
+  variable: string,
+  from: number,
+  to: number
+): string {
+  return value.slice(0, from) + variable + value.slice(to);
+}
+
+function getCaretPixelPos(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  position: number
+): { top: number; left: number } {
+  const cs = window.getComputedStyle(el);
+  const mirror = document.createElement("div");
+
+  (
+    [
+      "boxSizing",
+      "width",
+      "paddingTop",
+      "paddingRight",
+      "paddingBottom",
+      "paddingLeft",
+      "borderTopWidth",
+      "borderRightWidth",
+      "borderBottomWidth",
+      "borderLeftWidth",
+      "fontFamily",
+      "fontSize",
+      "fontWeight",
+      "fontStyle",
+      "fontVariant",
+      "letterSpacing",
+      "lineHeight",
+      "textTransform",
+      "wordSpacing",
+      "tabSize",
+    ] as (keyof CSSStyleDeclaration)[]
+  ).forEach((prop) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mirror.style as any)[prop] = cs[prop];
+  });
+
+  mirror.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "pre";
+  mirror.style.wordWrap = el.tagName === "TEXTAREA" ? "break-word" : "normal";
+  mirror.style.position = "absolute";
+  mirror.style.visibility = "hidden";
+  mirror.style.overflow = "hidden";
+  mirror.style.top = "0";
+  mirror.style.left = "0";
+  mirror.style.width = el.offsetWidth + "px";
+
+  document.body.appendChild(mirror);
+  mirror.appendChild(document.createTextNode(el.value.substring(0, position)));
+
+  const marker = document.createElement("span");
+  marker.textContent = "\u200b";
+  mirror.appendChild(marker);
+
+  const markerRect = marker.getBoundingClientRect();
+  const mirrorRect = mirror.getBoundingClientRect();
+  document.body.removeChild(mirror);
+
+  const scrollTop = el instanceof HTMLTextAreaElement ? el.scrollTop : 0;
+  return {
+    top: markerRect.top - mirrorRect.top - scrollTop,
+    left: markerRect.left - mirrorRect.left,
+  };
+}
+
+function VarPopup({
+  variables,
+  onSelect,
+  style,
+}: {
+  variables: string[];
+  onSelect: (v: string) => void;
+  style?: React.CSSProperties;
+}) {
+  if (variables.length === 0) return null;
+  return (
+    <div
+      role="listbox"
+      style={style}
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+    >
+      {variables.map((v) => (
+        <button
+          key={v}
+          type="button"
+          role="option"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            onSelect(v);
+          }}
+          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+        >
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** `{{name}}` strings for body autocomplete: catalog + optional session strings. */
+function bodyVarPopupStrings(
+  catalog: VariableSelectorSection[],
+  extra: string[]
+): string[] {
+  const set = new Set<string>();
+  for (const s of catalog) {
+    for (const v of s.variables) {
+      set.add(`{{${v.name}}}`);
+    }
+  }
+  extra.forEach((x) => set.add(x));
+  return Array.from(set);
+}
+
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
   "w-full h-[42px] px-4 text-base rounded border",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
-  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+  "disabled:opacity-50 disabled:cursor-not-allowed"
 );
 
 const textareaCls = cn(
@@ -139,7 +303,8 @@ const textareaCls = cn(
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
-  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+  "disabled:opacity-50 disabled:cursor-not-allowed"
 );
 
 // ── KeyValueTable ─────────────────────────────────────────────────────────────
@@ -158,6 +323,7 @@ function KeyValueTable({
   onAddCatalogVariable,
   onEditCatalogVariable,
   onEditVariableChipByName,
+  disabled = false,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
@@ -171,6 +337,7 @@ function KeyValueTable({
   onAddCatalogVariable: () => void;
   onEditCatalogVariable: (item: VariableSelectorItem) => void;
   onEditVariableChipByName: (name: string) => void;
+  disabled?: boolean;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
     // Replace spaces with hyphens in key values
@@ -234,8 +401,10 @@ function KeyValueTable({
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
                   maxLength={keyMaxLength}
+                  disabled={disabled}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.key && "border-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.key)}
@@ -256,7 +425,8 @@ function KeyValueTable({
                 <div
                   className={cn(
                     "min-h-[40px] w-full bg-semantic-bg-primary",
-                    errors.value && "ring-1 ring-semantic-error-primary ring-inset"
+                    errors.value && "ring-1 ring-semantic-error-primary ring-inset",
+                    disabled && "pointer-events-none opacity-50"
                   )}
                 >
                   <VariableValueInput
@@ -287,6 +457,7 @@ function KeyValueTable({
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(row.id)}
+                  disabled={disabled}
                   className={cn("rounded-md", deleteRowButtonClass)}
                   aria-label="Delete row"
                 >
@@ -302,7 +473,11 @@ function KeyValueTable({
         <button
           type="button"
           onClick={add}
-          className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
+          disabled={disabled}
+          className={cn(
+            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
         >
           <Plus className="size-3.5 shrink-0" />
           <span>Add row</span>
@@ -331,6 +506,8 @@ export const CreateFunctionModal = React.forwardRef<
       initialTab = "header",
       initialVariableCatalog,
       onApiTestVariableValuesChange,
+      sessionVariables = DEFAULT_SESSION_VARIABLES,
+      disabled = false,
       className,
     },
     ref
@@ -371,23 +548,27 @@ export const CreateFunctionModal = React.forwardRef<
     const [varCatalogEditingId, setVarCatalogEditingId] = React.useState<
       string | null
     >(null);
-    const [varCatalogNameDraft, setVarCatalogNameDraft] = React.useState("");
-    const [varCatalogNameError, setVarCatalogNameError] = React.useState("");
+    const [varCatalogSubmitError, setVarCatalogSubmitError] =
+      React.useState("");
+    /** Chip / token name not yet in catalog — open Edit variable to add or rename. */
+    const [varCatalogOrphanName, setVarCatalogOrphanName] = React.useState<
+      string | null
+    >(null);
 
     const openAddCatalogVariable = React.useCallback(() => {
+      setVarCatalogOrphanName(null);
       setVarCatalogMode("add");
       setVarCatalogEditingId(null);
-      setVarCatalogNameDraft("");
-      setVarCatalogNameError("");
+      setVarCatalogSubmitError("");
       setVarCatalogDialogOpen(true);
     }, []);
 
     const openEditCatalogVariable = React.useCallback(
       (item: VariableSelectorItem) => {
+        setVarCatalogOrphanName(null);
         setVarCatalogMode("edit");
         setVarCatalogEditingId(item.id);
-        setVarCatalogNameDraft(item.name);
-        setVarCatalogNameError("");
+        setVarCatalogSubmitError("");
         setVarCatalogDialogOpen(true);
       },
       []
@@ -396,57 +577,192 @@ export const CreateFunctionModal = React.forwardRef<
     const handleEditChipByName = React.useCallback(
       (name: string) => {
         const item = findVariableItemByName(variableCatalog, name);
-        if (item) openEditCatalogVariable(item);
+        if (item) {
+          openEditCatalogVariable(item);
+          return;
+        }
+        setVarCatalogOrphanName(name);
+        setVarCatalogMode("edit");
+        setVarCatalogEditingId(null);
+        setVarCatalogSubmitError("");
+        setVarCatalogDialogOpen(true);
       },
       [variableCatalog, openEditCatalogVariable]
     );
 
-    const handleSaveCatalogVariable = React.useCallback(() => {
-      const name = varCatalogNameDraft.trim();
-      if (!name) {
-        setVarCatalogNameError("Variable name is required");
-        return;
-      }
-      const nameTaken = variableCatalog.some((s) =>
-        s.variables.some(
-          (v) =>
-            v.name.toLowerCase() === name.toLowerCase() &&
-            v.id !== varCatalogEditingId
-        )
-      );
-      if (nameTaken) {
-        setVarCatalogNameError("A variable with this name already exists");
-        return;
-      }
-      setVarCatalogNameError("");
-      if (varCatalogMode === "edit" && varCatalogEditingId) {
-        setVariableCatalog((prev) =>
-          prev.map((section) => ({
-            ...section,
-            variables: section.variables.map((v) =>
-              v.id === varCatalogEditingId ? { ...v, name } : v
-            ),
-          }))
+    const handleSaveCatalogVariable = React.useCallback(
+      (values: EditVariableFormValues) => {
+        const trimmedName = values.name.trim();
+        const editingId = varCatalogEditingId;
+        const orphan = varCatalogOrphanName;
+
+        const nameTaken = variableCatalog.some((s) =>
+          s.variables.some(
+            (v) =>
+              v.name.toLowerCase() === trimmedName.toLowerCase() &&
+              v.id !== editingId
+          )
         );
-      } else {
-        setVariableCatalog((prev) => {
-          const next = cloneVariableCatalog(prev);
-          const target =
-            next.find((s) => s.label === "Function variables") ?? next[0];
-          if (!target) return prev;
-          target.variables.push({ id: generateId(), name });
-          return next;
-        });
+        if (nameTaken) {
+          setVarCatalogSubmitError(
+            "A variable with this name already exists"
+          );
+          return;
+        }
+        setVarCatalogSubmitError("");
+        const meta = {
+          description: values.description.trim(),
+          required: values.required,
+        };
+
+        const applyRenameAcrossStep2 = (from: string, to: string) => {
+          if (!from || from === to) return;
+          setUrl((u) => replaceVariableTokenInText(u, from, to));
+          setHeaders((rows) =>
+            rows.map((r) => ({
+              ...r,
+              value: replaceVariableTokenInText(r.value, from, to),
+            }))
+          );
+          setQueryParams((rows) =>
+            rows.map((r) => ({
+              ...r,
+              value: replaceVariableTokenInText(r.value, from, to),
+            }))
+          );
+          setBody((b) => replaceVariableTokenInText(b, from, to));
+        };
+
+        if (varCatalogMode === "edit" && editingId) {
+          const oldItem = findVariableItemById(variableCatalog, editingId);
+          const oldName = oldItem?.name ?? "";
+          if (oldName && oldName !== trimmedName) {
+            applyRenameAcrossStep2(oldName, trimmedName);
+          }
+          setVariableCatalog((prev) =>
+            prev.map((section) => ({
+              ...section,
+              variables: section.variables.map((v) =>
+                v.id === editingId
+                  ? { ...v, name: trimmedName, ...meta }
+                  : v
+              ),
+            }))
+          );
+        } else if (orphan) {
+          if (orphan !== trimmedName) {
+            applyRenameAcrossStep2(orphan, trimmedName);
+          }
+          setVariableCatalog((prev) => {
+            const next = cloneVariableCatalog(prev);
+            const target =
+              next.find((s) => s.label === "Function variables") ?? next[0];
+            if (!target) return prev;
+            target.variables.push({
+              id: generateId(),
+              name: trimmedName,
+              ...meta,
+            });
+            return next;
+          });
+          setVarCatalogOrphanName(null);
+        } else {
+          setVariableCatalog((prev) => {
+            const next = cloneVariableCatalog(prev);
+            const target =
+              next.find((s) => s.label === "Function variables") ?? next[0];
+            if (!target) return prev;
+            target.variables.push({
+              id: generateId(),
+              name: trimmedName,
+              ...meta,
+            });
+            return next;
+          });
+        }
+        setVarCatalogDialogOpen(false);
+        setVarCatalogEditingId(null);
+      },
+      [
+        varCatalogMode,
+        varCatalogEditingId,
+        varCatalogOrphanName,
+        variableCatalog,
+      ]
+    );
+
+    const catalogDialogInitialValues = React.useMemo(() => {
+      if (varCatalogOrphanName) {
+        return {
+          name: varCatalogOrphanName,
+          description: "",
+          required: false,
+        };
       }
-      setVarCatalogDialogOpen(false);
-      setVarCatalogNameDraft("");
-      setVarCatalogEditingId(null);
-    }, [
-      varCatalogNameDraft,
-      varCatalogMode,
-      varCatalogEditingId,
-      variableCatalog,
-    ]);
+      if (!varCatalogEditingId) {
+        return { name: "", description: "", required: false };
+      }
+      const item = findVariableItemById(
+        variableCatalog,
+        varCatalogEditingId
+      );
+      if (!item) return { name: "", description: "", required: false };
+      return {
+        name: item.name,
+        description: item.description ?? "",
+        required: item.required ?? false,
+      };
+    }, [variableCatalog, varCatalogEditingId, varCatalogOrphanName]);
+
+    const bodyTextareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const [bodyTrigger, setBodyTrigger] = React.useState<TriggerState | null>(
+      null
+    );
+    const [bodyPopupStyle, setBodyPopupStyle] = React.useState<
+      React.CSSProperties | undefined
+    >();
+
+    const bodyPopupOptionStrings = React.useMemo(
+      () => bodyVarPopupStrings(variableCatalog, sessionVariables),
+      [variableCatalog, sessionVariables]
+    );
+
+    const filteredBodyVars = React.useMemo(() => {
+      if (!bodyTrigger) return [];
+      return bodyPopupOptionStrings.filter((v) =>
+        v.toLowerCase().includes(bodyTrigger.query)
+      );
+    }, [bodyTrigger, bodyPopupOptionStrings]);
+
+    const computeBodyPopupStyle = React.useCallback(
+      (el: HTMLTextAreaElement, cursor: number): React.CSSProperties => {
+        const caret = getCaretPixelPos(el, cursor);
+        const lineHeight =
+          parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+        const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+        return { top: caret.top + lineHeight, left };
+      },
+      []
+    );
+
+    const handleBodyVarSelect = React.useCallback(
+      (variable: string) => {
+        if (!bodyTrigger) return;
+        const t = bodyTrigger;
+        setBody(insertVar(body, variable, t.from, t.to));
+        setBodyTrigger(null);
+        setBodyPopupStyle(undefined);
+        requestAnimationFrame(() => {
+          const el = bodyTextareaRef.current;
+          if (el) {
+            const pos = t.from + variable.length;
+            el.focus();
+            el.setSelectionRange(pos, pos);
+          }
+        });
+      },
+      [body, bodyTrigger]
+    );
 
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
@@ -471,6 +787,10 @@ export const CreateFunctionModal = React.forwardRef<
           )
         );
         setApiTestValidationAttempted(false);
+        setVarCatalogSubmitError("");
+        setVarCatalogOrphanName(null);
+        setBodyTrigger(null);
+        setBodyPopupStyle(undefined);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -523,6 +843,10 @@ export const CreateFunctionModal = React.forwardRef<
       setBodyError("");
       setApiTestValues({});
       setApiTestValidationAttempted(false);
+      setVarCatalogSubmitError("");
+      setVarCatalogOrphanName(null);
+      setBodyTrigger(null);
+      setBodyPopupStyle(undefined);
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -569,6 +893,10 @@ export const CreateFunctionModal = React.forwardRef<
     };
 
     const handleNext = () => {
+      if (disabled) {
+        setStep(2);
+        return;
+      }
       if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
     };
 
@@ -696,6 +1024,7 @@ export const CreateFunctionModal = React.forwardRef<
                       type="text"
                       value={name}
                       maxLength={FUNCTION_NAME_MAX}
+                      disabled={disabled}
                       onChange={(e) => {
                         setName(e.target.value);
                         if (nameError) validateName(e.target.value);
@@ -726,6 +1055,7 @@ export const CreateFunctionModal = React.forwardRef<
                       id="fn-prompt"
                       value={prompt}
                       maxLength={promptMaxLength}
+                      disabled={disabled}
                       onChange={(e) => setPrompt(e.target.value)}
                       placeholder="Enter the description of the function"
                       rows={5}
@@ -754,7 +1084,7 @@ export const CreateFunctionModal = React.forwardRef<
                   </span>
                   <div
                     className={cn(
-                      "flex h-[42px] rounded border border-semantic-border-input overflow-hidden bg-semantic-bg-primary",
+                      "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
                       "hover:border-semantic-border-input-focus",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
@@ -764,10 +1094,14 @@ export const CreateFunctionModal = React.forwardRef<
                     <div className="relative shrink-0 border-r border-semantic-border-layout">
                       <select
                         value={method}
+                        disabled={disabled}
                         onChange={(e) =>
                           setMethod(e.target.value as HttpMethod)
                         }
-                        className="h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]"
+                        className={cn(
+                          "h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]",
+                          disabled && "opacity-50 cursor-not-allowed"
+                        )}
                         aria-label="HTTP method"
                       >
                         {HTTP_METHODS.map((m) => (
@@ -782,22 +1116,29 @@ export const CreateFunctionModal = React.forwardRef<
                       />
                     </div>
                     {/* URL input — same variable picker as header/query (Figma) */}
-                    <VariableValueInput
-                      value={url}
-                      onChange={(v) => {
-                        setUrl(v);
-                        if (urlError) validateUrl(v);
-                      }}
-                      maxLength={URL_MAX}
-                      placeholder="Enter URL or Type {{ to add variables"
-                      variableSections={variableCatalog}
-                      maxVisibleChips={1}
-                      showEditIcon
-                      onAddNewVariable={openAddCatalogVariable}
-                      onEditVariable={openEditCatalogVariable}
-                      onEditVariableChip={handleEditChipByName}
-                      className="h-full min-h-[42px] flex-1 rounded-none border-0 bg-transparent px-3 py-0 text-base focus-within:ring-0 focus-within:ring-offset-0"
-                    />
+                    <div
+                      className={cn(
+                        "min-h-[42px] min-w-0 flex-1",
+                        disabled && "pointer-events-none opacity-50"
+                      )}
+                    >
+                      <VariableValueInput
+                        value={url}
+                        onChange={(v) => {
+                          setUrl(v);
+                          if (urlError) validateUrl(v);
+                        }}
+                        maxLength={URL_MAX}
+                        placeholder="Enter URL or Type {{ to add variables"
+                        variableSections={variableCatalog}
+                        maxVisibleChips={1}
+                        showEditIcon
+                        onAddNewVariable={openAddCatalogVariable}
+                        onEditVariable={openEditCatalogVariable}
+                        onEditVariableChip={handleEditChipByName}
+                        className="h-full min-h-[42px] w-full rounded-none border-0 bg-transparent px-3 py-0 text-base focus-within:ring-0 focus-within:ring-offset-0"
+                      />
+                    </div>
                   </div>
                   {urlError && (
                     <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
@@ -817,12 +1158,14 @@ export const CreateFunctionModal = React.forwardRef<
                       <button
                         key={tab}
                         type="button"
+                        disabled={disabled}
                         onClick={() => setActiveTab(tab)}
                         className={cn(
                           "px-3 py-2 text-sm font-semibold transition-colors whitespace-nowrap shrink-0",
                           activeTab === tab
                             ? "text-semantic-text-secondary border-b-2 border-semantic-text-secondary -mb-px"
-                            : "text-semantic-text-muted hover:text-semantic-text-primary"
+                            : "text-semantic-text-muted hover:text-semantic-text-primary",
+                          disabled && "opacity-50 cursor-not-allowed"
                         )}
                       >
                         {tabLabels[tab]}
@@ -843,6 +1186,7 @@ export const CreateFunctionModal = React.forwardRef<
                       onAddCatalogVariable={openAddCatalogVariable}
                       onEditCatalogVariable={openEditCatalogVariable}
                       onEditVariableChipByName={handleEditChipByName}
+                      disabled={disabled}
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -864,6 +1208,7 @@ export const CreateFunctionModal = React.forwardRef<
                       onAddCatalogVariable={openAddCatalogVariable}
                       onEditCatalogVariable={openEditCatalogVariable}
                       onEditVariableChipByName={handleEditChipByName}
+                      disabled={disabled}
                     />
                   )}
                   {activeTab === "body" && (
@@ -871,15 +1216,36 @@ export const CreateFunctionModal = React.forwardRef<
                       <span className="text-xs text-semantic-text-muted">
                         Body
                       </span>
-                      <div className={cn("relative")}>
+                      <div className={cn("relative overflow-visible")}>
                         <textarea
+                          ref={bodyTextareaRef}
                           value={body}
                           maxLength={BODY_MAX}
+                          disabled={disabled}
                           onChange={(e) => {
                             setBody(e.target.value);
                             if (bodyError) validateBody(e.target.value);
+                            const cursor =
+                              e.target.selectionStart ?? e.target.value.length;
+                            const t = detectVarTrigger(e.target.value, cursor);
+                            setBodyTrigger(t);
+                            if (t)
+                              setBodyPopupStyle(
+                                computeBodyPopupStyle(e.target, cursor)
+                              );
+                            else setBodyPopupStyle(undefined);
                           }}
-                          onBlur={(e) => validateBody(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Escape") {
+                              setBodyTrigger(null);
+                              setBodyPopupStyle(undefined);
+                            }
+                          }}
+                          onBlur={(e) => {
+                            validateBody(e.target.value);
+                            setBodyTrigger(null);
+                            setBodyPopupStyle(undefined);
+                          }}
                           placeholder="Enter request body (JSON). Type {{ to add variables"
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
@@ -887,6 +1253,11 @@ export const CreateFunctionModal = React.forwardRef<
                         <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
                           {body.length}/{BODY_MAX}
                         </span>
+                        <VarPopup
+                          variables={filteredBodyVars}
+                          onSelect={handleBodyVarSelect}
+                          style={bodyPopupStyle}
+                        />
                       </div>
                       {bodyError && (
                         <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
@@ -957,6 +1328,7 @@ export const CreateFunctionModal = React.forwardRef<
                                         ? `api-test-err-${varName.replace(/[^a-zA-Z0-9_-]/g, "_")}`
                                         : undefined
                                     }
+                                    disabled={disabled}
                                     className="h-10 min-h-10 text-sm"
                                   />
                                   {showError && (
@@ -984,7 +1356,9 @@ export const CreateFunctionModal = React.forwardRef<
                           variant="secondary"
                           size="sm"
                           onClick={handleTestApi}
-                          disabled={isTesting || !url.trim() || !onTestApi}
+                          disabled={
+                            disabled || isTesting || !url.trim() || !onTestApi
+                          }
                           className="h-10 min-w-[80px] px-6 text-xs font-semibold"
                         >
                           {isTesting ? "Testing..." : "Test"}
@@ -1025,7 +1399,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleNext}
-                  disabled={!isStep1Valid}
+                  disabled={!disabled && !isStep1Valid}
                 >
                   Next
                 </Button>
@@ -1043,7 +1417,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
-                  disabled={!isStep2Valid}
+                  disabled={!isStep2Valid || disabled}
                 >
                   Submit
                 </Button>
@@ -1053,68 +1427,22 @@ export const CreateFunctionModal = React.forwardRef<
         </DialogContent>
       </Dialog>
 
-      <Dialog
+      <EditVariableDialog
         open={varCatalogDialogOpen}
         onOpenChange={(next) => {
           setVarCatalogDialogOpen(next);
           if (!next) {
-            setVarCatalogNameError("");
-            setVarCatalogNameDraft("");
+            setVarCatalogSubmitError("");
             setVarCatalogEditingId(null);
+            setVarCatalogOrphanName(null);
           }
         }}
-      >
-        <DialogContent
-          size="sm"
-          className="border-semantic-border-layout bg-semantic-bg-primary"
-        >
-          <DialogTitle className="text-base font-semibold text-semantic-text-primary">
-            {varCatalogMode === "edit" ? "Edit variable" : "Add new variable"}
-          </DialogTitle>
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="catalog-var-name"
-              className="text-sm font-semibold text-semantic-text-primary"
-            >
-              Variable name
-            </label>
-            <Input
-              id="catalog-var-name"
-              value={varCatalogNameDraft}
-              onChange={(e) => {
-                setVarCatalogNameDraft(e.target.value);
-                if (varCatalogNameError) setVarCatalogNameError("");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleSaveCatalogVariable();
-                }
-              }}
-              placeholder="e.g. order_id"
-              className="border-semantic-border-input"
-              autoFocus
-            />
-            {varCatalogNameError && (
-              <p className="m-0 text-xs text-semantic-error-primary">
-                {varCatalogNameError}
-              </p>
-            )}
-          </div>
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setVarCatalogDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="button" onClick={handleSaveCatalogVariable}>
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        mode={varCatalogMode}
+        initialValues={catalogDialogInitialValues}
+        onSave={handleSaveCatalogVariable}
+        submitError={varCatalogSubmitError}
+        onClearSubmitError={() => setVarCatalogSubmitError("")}
+      />
       </>
     );
   }

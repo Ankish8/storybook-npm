@@ -208,6 +208,7 @@ export const ButtonKinds: Story = {
       <Button variant="ghost">Ghost</Button>
       <Button variant="link">Link</Button>
       <Button variant="destructive">Destructive</Button>
+      <Button variant="success">Success</Button>
       <Button variant="dashed">Dashed</Button>
     </div>
   ),
@@ -300,7 +301,7 @@ export const SuccessState: Story = {
   name: "Success state",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
-      <Button leftIcon={<Check />} className="bg-green-600 hover:bg-green-700">
+      <Button variant="success" leftIcon={<Check />}>
         Success
       </Button>
       <Button leftIcon={<Save />}>Save Changes</Button>

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -210,7 +210,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -246,13 +246,14 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="px-2 pb-2">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+                <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}

@@ -67,20 +67,33 @@ export interface ChatListItemProps
 
 function StatusIndicator({ status }: { status: MessageStatus }) {
   if (status === "sent") {
-    return <Check className="size-4 text-[#a2a6b1] shrink-0" />;
+    return (
+      <span aria-label="Sent">
+        <Check className="size-4 text-semantic-text-placeholder shrink-0" aria-hidden="true" />
+      </span>
+    );
   }
   if (status === "delivered") {
-    return <CheckCheck className="size-4 text-[#a2a6b1] shrink-0" />;
+    return (
+      <span aria-label="Delivered">
+        <CheckCheck className="size-4 text-semantic-text-placeholder shrink-0" aria-hidden="true" />
+      </span>
+    );
   }
   // read
-  return <CheckCheck className="size-4 text-[#47b5bc] shrink-0" />;
+  return (
+    <span aria-label="Read">
+      <CheckCheck className="size-4 text-[#47b5bc] shrink-0" aria-hidden="true" />
+    </span>
+  );
 }
 
 function UnreadBadge({ count }: { count: number }) {
   return (
     <span
-      className="shrink-0 inline-flex items-center justify-center rounded-full bg-[#9de0e7] font-semibold text-[#343e55]"
+      className="shrink-0 inline-flex items-center justify-center rounded-full bg-semantic-brand-selected font-semibold text-semantic-primary"
       style={{ width: 18, height: 18, fontSize: 10, lineHeight: 1 }}
+      aria-label={`${count > 99 ? "99+" : count} unread messages`}
     >
       {count > 99 ? "99+" : count}
     </span>
@@ -89,19 +102,22 @@ function UnreadBadge({ count }: { count: number }) {
 
 function SlaTag({ timer }: { timer: string }) {
   return (
-    <span className="flex items-center gap-2 h-5 px-[6px] py-[2px] rounded bg-[#fffaeb] shrink-0">
-      <Clock className="size-3 text-[#b54708]" />
-      <span className="text-[12px] text-[#b54708]">{timer}</span>
+    <span
+      className="flex items-center gap-2 h-5 px-[6px] py-[2px] rounded bg-semantic-warning-surface shrink-0"
+      aria-label={`SLA timer: ${timer}`}
+    >
+      <Clock className="size-3 text-semantic-warning-text" aria-hidden="true" />
+      <span className="text-[12px] text-semantic-warning-text">{timer}</span>
     </span>
   );
 }
 
 function MessageTypeIcon({ type }: { type: MessageType }) {
   if (type === "document") {
-    return <FileText className="size-[14px] text-[#a2a6b1] shrink-0" />;
+    return <FileText className="size-[14px] text-semantic-text-placeholder shrink-0" />;
   }
   if (type === "image") {
-    return <ImageIcon className="size-[14px] text-[#a2a6b1] shrink-0" />;
+    return <ImageIcon className="size-[14px] text-semantic-text-placeholder shrink-0" />;
   }
   return null;
 }
@@ -117,13 +133,13 @@ function ChannelPill({
   isAgentDeleted?: boolean;
   isBot?: boolean;
 }) {
-  const textColor = isAgentDeleted ? "text-[#b42318]" : "text-[#181d27]";
+  const textColor = isAgentDeleted ? "text-semantic-error-text" : "text-semantic-text-primary";
 
   return (
     <div className="flex items-center gap-3">
       <span
         className={cn(
-          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-[#e9eaeb] text-[12px]",
+          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-semantic-border-layout text-[12px]",
           textColor
         )}
       >
@@ -135,7 +151,7 @@ function ChannelPill({
           </>
         )}
       </span>
-      {isBot && <Sparkles className="size-[14px] text-[#47b5bc]" />}
+      {isBot && <Sparkles className="size-[14px] text-[#47b5bc]" aria-hidden="true" />}
     </div>
   );
 }
@@ -183,11 +199,15 @@ const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
     },
     ref
   ) => {
+    const defaultAriaLabel = `${name}. ${message}. ${timestamp}${unreadCount ? `. ${unreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
+
     return (
       <div
         ref={ref}
         role="button"
         tabIndex={0}
+        aria-selected={isSelected}
+        aria-label={defaultAriaLabel}
         onClick={onClick}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -198,8 +218,8 @@ const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
         className={cn(
           "flex items-start px-4 py-5 w-full transition-colors cursor-pointer",
           isSelected
-            ? "bg-[#f5f5f5] border-l-[3px] border-l-[#27abb8]"
-            : "bg-white hover:bg-[#fafafa] border-b border-[#e9eaeb]",
+            ? "bg-[var(--color-neutral-50)] border-l-4 border-l-semantic-border-accent border-b border-b-semantic-border-layout"
+            : "bg-white hover:bg-[var(--color-neutral-50)] border-b border-semantic-border-layout",
           className
         )}
         {...props}
@@ -208,7 +228,7 @@ const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
           {/* Row 1: Name + SLA Timer + Status/Unread Badge */}
           <div className="flex items-center gap-[6px]">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <span className="text-[14px] text-[#181d27] truncate shrink-0">
+              <span className="text-[14px] text-semantic-text-primary truncate shrink-0">
                 {name}
               </span>
               {slaTimer && <SlaTag timer={slaTimer} />}
@@ -223,10 +243,10 @@ const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
           {/* Row 2: Message Type Icon + Message Preview + Timestamp */}
           <div className="flex items-center gap-[6px]">
             <MessageTypeIcon type={messageType} />
-            <p className="flex-1 text-[14px] text-[#717680] truncate min-w-0 m-0">
+            <p className="flex-1 text-[14px] text-semantic-text-muted truncate min-w-0 m-0">
               {message}
             </p>
-            <span className="text-[12px] text-[#a2a6b1] tracking-[0.06px] shrink-0">
+            <span className="text-[12px] text-semantic-text-placeholder tracking-[0.06px] shrink-0">
               {timestamp}
             </span>
           </div>

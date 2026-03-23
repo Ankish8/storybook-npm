@@ -1303,9 +1303,18 @@ export { Switch, switchVariants };
       files: [
         {
           name: "text-field.tsx",
-          content: prefixTailwindClasses(`import * as React from "react";
+          content: prefixTailwindClasses(`import {
+  forwardRef,
+  useRef,
+  useCallback,
+  useState,
+  useId,
+  type ChangeEvent,
+  type ReactNode,
+  type ComponentProps,
+} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 
@@ -1338,7 +1347,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-[42px] w-full rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-base file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "w-full rounded bg-semantic-bg-primary text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -1347,9 +1356,14 @@ const textFieldInputVariants = cva(
         error:
           "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
+      size: {
+        default: "h-[42px] px-4 py-2 text-base file:text-base",
+        sm: "h-9 px-3 py-1.5 text-sm file:text-sm",
+      },
     },
     defaultVariants: {
       state: "default",
+      size: "default",
     },
   }
 );
@@ -1366,8 +1380,10 @@ const textFieldInputVariants = cva(
  */
 export interface TextFieldProps
   extends
-    Omit<React.ComponentProps<"input">, "size">,
+    Omit<ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
+  /** Size of the text field — \`default\` (42px) or \`sm\` (36px, compact) */
+  size?: "default" | "sm";
   /** Label text displayed above the input */
   label?: string;
   /** Shows red asterisk next to label when true */
@@ -1377,9 +1393,9 @@ export interface TextFieldProps
   /** Error message - shows error state with red styling */
   error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
   /** Text prefix inside input (e.g., "https://") */
   prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
@@ -1388,6 +1404,10 @@ export interface TextFieldProps
   showCount?: boolean;
   /** Shows loading spinner inside input */
   loading?: boolean;
+  /** Shows a clear (X) button when input has a value */
+  clearable?: boolean;
+  /** Callback fired when the clear button is clicked */
+  onClear?: () => void;
   /** Additional class for the wrapper container */
   wrapperClassName?: string;
   /** Additional class for the label */
@@ -1396,7 +1416,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       className,
@@ -1404,6 +1424,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       labelClassName,
       inputContainerClassName,
       state,
+      size,
       label,
       required,
       helperText,
@@ -1414,6 +1435,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       suffix,
       showCount,
       loading,
+      clearable,
+      onClear,
       maxLength,
       value,
       defaultValue,
@@ -1426,8 +1449,19 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     },
     ref
   ) => {
+    // Internal ref for programmatic control (e.g., clearable)
+    const internalRef = useRef<HTMLInputElement>(null);
+    const mergedRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        internalRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(
+    const [internalValue, setInternalValue] = useState(
       defaultValue ?? ""
     );
 
@@ -1439,7 +1473,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
@@ -1447,13 +1481,26 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading;
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading || clearable;
+
+    // Handle clear
+    const handleClear = () => {
+      if (!isControlled) {
+        setInternalValue("");
+        if (internalRef.current) {
+          internalRef.current.value = "";
+        }
+      }
+      onClear?.();
+    };
+
+    const showClearButton = clearable && String(currentValue).length > 0 && !disabled && !loading;
 
     // Character count
     const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId();
+    const generatedId = useId();
     const inputId = id || generatedId;
     const helperId = \`\${inputId}-helper\`;
     const errorId = \`\${inputId}-error\`;
@@ -1464,13 +1511,16 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     // Render the input element
     const inputElement = (
       <input
-        ref={ref}
+        ref={mergedRef}
         id={inputId}
         type={type}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
-            : textFieldInputVariants({ state: derivedState, className }),
+            ? cn(
+                "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed",
+                size === "sm" ? "text-sm" : "text-base"
+              )
+            : textFieldInputVariants({ state: derivedState, size, className }),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
@@ -1500,7 +1550,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           <label
             htmlFor={inputId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -1519,7 +1569,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
                 state: derivedState,
                 disabled: disabled || loading,
               }),
-              "h-[42px] px-4",
+              size === "sm" ? "h-9 px-3" : "h-[42px] px-4",
               inputContainerClassName
             )}
           >
@@ -1541,6 +1591,17 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
+            )}
+            {showClearButton && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="ml-2 text-semantic-text-muted hover:text-semantic-text-primary flex-shrink-0 cursor-pointer"
+                aria-label="Clear input"
+                tabIndex={-1}
+              >
+                <X className="size-4" />
+              </button>
             )}
             {suffix && (
               <span className="text-sm text-semantic-text-muted ml-2 select-none">
@@ -1837,7 +1898,7 @@ ReadableField.displayName = "ReadableField";
         {
           name: "select-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 import {
@@ -2048,7 +2109,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -2084,13 +2145,14 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="px-2 pb-2">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+                <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
@@ -2682,6 +2744,8 @@ export interface CreatableSelectProps
   creatableHint?: string
   /** Whether the select is disabled */
   disabled?: boolean
+  /** Max character length for the value (enforced when open and when creating) */
+  maxLength?: number
 }
 
 const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
@@ -2695,6 +2759,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       placeholder = "Select an option",
       creatableHint = "Type to create a custom option",
       disabled = false,
+      maxLength,
       ...props
     },
     ref
@@ -2744,11 +2809,12 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
     const handleCreate = React.useCallback(() => {
       const trimmed = search.trim()
       if (trimmed) {
-        onValueChange?.(trimmed)
+        const value = maxLength != null ? trimmed.slice(0, maxLength) : trimmed
+        onValueChange?.(value)
         setOpen(false)
         setSearch("")
       }
-    }, [search, onValueChange])
+    }, [search, onValueChange, maxLength])
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -2836,7 +2902,11 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
               ref={inputRef}
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value
+                setSearch(maxLength != null ? v.slice(0, maxLength) : v)
+              }}
+              maxLength={maxLength}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-muted"
               placeholder={selectedLabel || placeholder}
@@ -3017,6 +3087,10 @@ export interface CreatableMultiSelectProps
   creatableHint?: string
   /** Helper text shown below the trigger */
   helperText?: string
+  /** Max number of items that can be selected (default: unlimited) */
+  maxItems?: number
+  /** Max character length per item when typing/creating (default: unlimited) */
+  maxLengthPerItem?: number
 }
 
 const CreatableMultiSelect = React.forwardRef<
@@ -3034,6 +3108,8 @@ const CreatableMultiSelect = React.forwardRef<
       state = "default",
       creatableHint = "Type to create a custom option",
       helperText,
+      maxItems,
+      maxLengthPerItem,
       ...props
     },
     ref
@@ -3048,12 +3124,18 @@ const CreatableMultiSelect = React.forwardRef<
     const addValue = React.useCallback(
       (val: string) => {
         const trimmed = val.trim()
-        if (trimmed && !value.includes(trimmed)) {
-          onValueChange?.([...value, trimmed])
+        if (!trimmed || value.includes(trimmed)) return
+        if (maxItems != null && value.length >= maxItems) return
+        const toAdd =
+          maxLengthPerItem != null
+            ? trimmed.slice(0, maxLengthPerItem)
+            : trimmed
+        if (toAdd) {
+          onValueChange?.([...value, toAdd])
           setInputValue("")
         }
       },
-      [value, onValueChange]
+      [value, onValueChange, maxItems, maxLengthPerItem]
     )
 
     const removeValue = React.useCallback(
@@ -3157,9 +3239,13 @@ const CreatableMultiSelect = React.forwardRef<
             type="text"
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value)
+              const v = e.target.value
+              setInputValue(
+                maxLengthPerItem != null ? v.slice(0, maxLengthPerItem) : v
+              )
               if (!isOpen) setIsOpen(true)
             }}
+            maxLength={maxLengthPerItem}
             onFocus={() => {
               if (!disabled) setIsOpen(true)
             }}
@@ -3183,18 +3269,14 @@ const CreatableMultiSelect = React.forwardRef<
         {/* Dropdown panel */}
         {isOpen && (
           <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
-            {/* Creatable hint — contextual */}
+            {/* Creatable hint — Enter key */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
-              {canAddCustom ? (
-                <span className="text-sm font-medium text-semantic-text-primary">
-                  Press enter to add &ldquo;{inputValue.trim()}&rdquo;
-                </span>
-              ) : (
-                <span className="text-sm text-semantic-text-muted">
-                  {creatableHint}
-                </span>
-              )}
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <span className="text-sm text-semantic-text-muted">
+                {canAddCustom
+                  ? \`Press enter to add "\${inputValue.trim()}"\`
+                  : creatableHint}
+              </span>
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>
@@ -3222,14 +3304,31 @@ const CreatableMultiSelect = React.forwardRef<
           </div>
         )}
 
-        {/* Helper text below trigger */}
-        {helperText && !isOpen && (
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
-            <p className="m-0 text-sm text-semantic-text-muted">
-              {helperText}
-            </p>
+        {/* Helper row below trigger: when maxLengthPerItem show dynamic hint + counter (Figma); else optional static helperText */}
+        {maxLengthPerItem != null ? (
+          <div className="flex items-center justify-between gap-2 mt-1.5">
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0 text-semantic-text-muted" />
+              <p className="m-0 truncate">
+                {inputValue.trim()
+                  ? \`Press Enter to add "\${inputValue.trim()}" ↵\`
+                  : creatableHint}
+              </p>
+            </div>
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {inputValue.length}/{maxLengthPerItem}
+            </span>
           </div>
+        ) : (
+          helperText &&
+          !isOpen && (
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
+              <p className="m-0 text-sm text-semantic-text-muted">
+                {helperText}
+              </p>
+            </div>
+          )
         )}
       </div>
     )

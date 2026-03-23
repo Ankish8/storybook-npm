@@ -19,6 +19,7 @@ describe("Button", () => {
     ["default", "bg-semantic-primary"],
     ["primary", "bg-semantic-primary"],
     ["destructive", "bg-semantic-error-primary"],
+    ["success", "bg-semantic-success-primary"],
     ["outline", "border-semantic-border-layout"],
     ["secondary", "bg-semantic-primary-surface"],
     ["ghost", "hover:bg-semantic-bg-ui"],

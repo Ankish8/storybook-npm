@@ -51,7 +51,7 @@ describe("ChatListItem", () => {
       />
     );
     const pill = screen.getByText("Deleted User").closest("span");
-    expect(pill?.parentElement).toHaveClass("text-[#b42318]");
+    expect(pill?.parentElement).toHaveClass("text-semantic-error-text");
   });
 
   it("does not show unread badge when messageStatus is set", () => {
@@ -69,8 +69,8 @@ describe("ChatListItem", () => {
   it("applies selected styles when isSelected is true", () => {
     render(<ChatListItem {...defaultProps} isSelected />);
     const item = screen.getByRole("button");
-    expect(item).toHaveClass("bg-[#f5f5f5]");
-    expect(item).toHaveClass("border-l-[#27abb8]");
+    expect(item).toHaveClass("bg-[var(--color-neutral-50)]");
+    expect(item).toHaveClass("border-l-semantic-border-accent");
   });
 
   it("applies hover styles when not selected", () => {
@@ -108,5 +108,58 @@ describe("ChatListItem", () => {
   it("passes additional HTML attributes", () => {
     render(<ChatListItem {...defaultProps} data-testid="chat-item" />);
     expect(screen.getByTestId("chat-item")).toBeInTheDocument();
+  });
+
+  /* ── Accessibility ── */
+
+  it("has aria-selected when isSelected is true", () => {
+    render(<ChatListItem {...defaultProps} isSelected />);
+    const item = screen.getByRole("button");
+    expect(item).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("does not have aria-selected when isSelected is false", () => {
+    render(<ChatListItem {...defaultProps} />);
+    const item = screen.getByRole("button");
+    expect(item).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("has descriptive aria-label", () => {
+    render(<ChatListItem {...defaultProps} />);
+    const item = screen.getByRole("button");
+    const label = item.getAttribute("aria-label");
+    expect(label).toContain("Aditi Kumar");
+    expect(label).toContain("Have a look at this document");
+    expect(label).toContain("2:30 PM");
+  });
+
+  it("includes unread count and SLA in aria-label when present", () => {
+    render(
+      <ChatListItem {...defaultProps} unreadCount={5} slaTimer="2h" />
+    );
+    const item = screen.getByRole("button");
+    const label = item.getAttribute("aria-label");
+    expect(label).toContain("5 unread");
+    expect(label).toContain("SLA: 2h");
+  });
+
+  it("unread badge has accessible label", () => {
+    render(<ChatListItem {...defaultProps} unreadCount={3} />);
+    const badge = screen.getByLabelText("3 unread messages");
+    expect(badge).toBeInTheDocument();
+  });
+
+  it("SLA tag has accessible label", () => {
+    render(<ChatListItem {...defaultProps} slaTimer="2h" />);
+    const slaTag = screen.getByLabelText("SLA timer: 2h");
+    expect(slaTag).toBeInTheDocument();
+  });
+
+  it("allows aria-label override via props", () => {
+    render(
+      <ChatListItem {...defaultProps} aria-label="Custom label" />
+    );
+    const item = screen.getByRole("button");
+    expect(item).toHaveAttribute("aria-label", "Custom label");
   });
 });

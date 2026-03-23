@@ -46,6 +46,8 @@ export interface CreateBotModalProps {
   onOpenChange: (open: boolean) => void;
   /** Called with name and BOT_TYPE (CHAT = 1, VOICE = 2) when user submits */
   onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Shows loading spinner on Create button and disables it (e.g. while API call is in flight) */
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -84,21 +86,9 @@ export interface BotListGridProps
   children: React.ReactNode;
 }
 
-export interface BotListActionProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  /** Called when Edit is selected */
-  onEdit?: () => void;
-  /** Called when Delete is selected */
-  onDelete?: () => void;
-  /** Custom trigger element; defaults to three-dot icon button */
-  trigger?: React.ReactNode;
-  /** Content alignment relative to trigger */
-  align?: "start" | "center" | "end";
-}
-
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
   /** Create new bot card label */
   createCardLabel?: string;
   /** Called when Create Bot modal is submitted with { name, type } */

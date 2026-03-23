@@ -96,6 +96,7 @@ import {
 - **Radio Groups** - Single-select with DropdownMenuRadioGroup
 - **Submenus** - Nested menus with DropdownMenuSub
 - **Labels & Separators** - Organize menu sections
+- **Description & Suffix** - Rich items with secondary text and right-aligned metadata
 
 ## Typography
 
@@ -327,6 +328,56 @@ export const RadioGroups: Story = {
             <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  },
+};
+
+export const WithDescriptionAndSuffix: Story = {
+  name: "With Description & Suffix",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `description` for secondary text below the item label, and `suffix` for right-aligned metadata. Works on MenuItem, RadioItem, and CheckboxItem.",
+      },
+    },
+  },
+  render: function DescriptionSuffixExample() {
+    const [channel, setChannel] = useState("my01");
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline">Select Channel</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[260px]">
+          <DropdownMenuLabel>Channels</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup value={channel} onValueChange={setChannel}>
+            <DropdownMenuRadioItem
+              value="my01"
+              description="+91 9212992129"
+              suffix="MY01"
+            >
+              MyOperator Sales
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem
+              value="my02"
+              description="+91 8069200945"
+              suffix="MY02"
+            >
+              MyOperator Support
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem
+              value="my03"
+              description="+91 9319358395"
+              suffix="MY03"
+            >
+              Partner Channel
+            </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>

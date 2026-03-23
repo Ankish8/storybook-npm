@@ -1,3 +1,6 @@
+# Local task/notes files
+TODO-test-after-publish.md
+
 # Logs
 logs
 *.log
@@ -31,3 +34,4 @@ developer-api-demo
 temp
 playground
 myoperator-plugins
+COMPONENT-POLISH-TRACKER.md

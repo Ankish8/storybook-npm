@@ -75,13 +75,14 @@ export interface CreateFunctionModalProps {
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
   initialTab?: FunctionTabType;
-  /**
-   * Variable picker sections for header/query/value fields (Figma: Function variables + Contact fields).
-   * When the modal opens, the catalog resets from this list (or the default catalog if omitted).
-   */
+  /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
+  sessionVariables?: string[];
+  /** Initial variable catalog for the picker (defaults to library sample data) */
   initialVariableCatalog?: VariableSelectorSection[];
-  /** Fires when test values for API variables change (Test Your API two-column rows). */
+  /** Called when the user edits test API variable values (optional controlled sync) */
   onApiTestVariableValuesChange?: (values: Record<string, string>) => void;
+  /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
+  disabled?: boolean;
   className?: string;
 }
 
@@ -122,13 +123,23 @@ export interface IvrBotConfigProps {
   /** Called for each file during upload with progress/error handlers. If omitted, uses fake progress. */
   onUploadKnowledgeFile?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
   onSampleFileDownload?: () => void;
+  /** Called when user downloads a knowledge file. When omitted, download button is hidden. */
   onDownloadKnowledgeFile?: (fileId: string) => void;
+  /** Called when user deletes a knowledge file. When omitted, delete button is hidden. */
   onDeleteKnowledgeFile?: (fileId: string) => void;
+  /** Independently disables the knowledge file download button */
+  knowledgeDownloadDisabled?: boolean;
+  /** Independently disables the knowledge file delete button */
+  knowledgeDeleteDisabled?: boolean;
   onCreateFunction?: (data: CreateFunctionData) => void;
-  /** Called when user edits a custom function. Receives the function id. */
+  /** Called when user edits a custom function. When omitted, edit button is hidden. */
   onEditFunction?: (id: string) => void;
-  /** Called when user deletes a custom function */
+  /** Called when user deletes a custom function. When omitted, delete button is hidden. */
   onDeleteFunction?: (id: string) => void;
+  /** Independently disables the function edit button */
+  functionEditDisabled?: boolean;
+  /** Independently disables the function delete button */
+  functionDeleteDisabled?: boolean;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
@@ -145,7 +156,12 @@ export interface IvrBotConfigProps {
   functionEditData?: Partial<CreateFunctionData>;
   /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
-  /** Called when the system prompt textarea loses focus */
+  /**
+   * Called when focus leaves the **entire** "How It Behaves" section
+   * (textarea + session variable chips). Clicking a chip does NOT trigger
+   * this — only clicking outside the whole section does.
+   * Use this to persist the system prompt via an API call.
+   */
   onSystemPromptBlur?: (value: string) => void;
   /** Called when the Agent Busy Prompt textarea loses focus */
   onAgentBusyPromptBlur?: (value: string) => void;

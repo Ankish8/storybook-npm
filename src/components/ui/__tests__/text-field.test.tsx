@@ -253,6 +253,94 @@ describe("TextField", () => {
     expect(screen.getByTestId("input")).toHaveAttribute("type", "password");
   });
 
+  // Clearable tests
+  it("does not show clear button when clearable is false", () => {
+    render(<TextField defaultValue="hello" data-testid="input" />);
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("shows clear button when clearable and has value", () => {
+    render(<TextField clearable defaultValue="hello" data-testid="input" />);
+    expect(screen.getByLabelText("Clear input")).toBeInTheDocument();
+  });
+
+  it("does not show clear button when clearable but value is empty", () => {
+    render(<TextField clearable defaultValue="" data-testid="input" />);
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("does not show clear button when disabled", () => {
+    render(<TextField clearable disabled defaultValue="hello" data-testid="input" />);
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("does not show clear button when loading", () => {
+    render(<TextField clearable loading defaultValue="hello" data-testid="input" />);
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("clears value in uncontrolled mode when clear button clicked", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    render(<TextField clearable onClear={onClear} defaultValue="hello" data-testid="input" />);
+
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(screen.getByTestId("input")).toHaveValue("");
+    expect(onClear).toHaveBeenCalledOnce();
+  });
+
+  it("calls onClear in controlled mode when clear button clicked", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    render(<TextField clearable onClear={onClear} value="hello" data-testid="input" />);
+
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(onClear).toHaveBeenCalledOnce();
+  });
+
+  it("hides clear button after clearing in uncontrolled mode", async () => {
+    const user = userEvent.setup();
+    render(<TextField clearable defaultValue="hello" data-testid="input" />);
+
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  // Size variant tests
+  it("renders with default size classes", () => {
+    render(<TextField data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass("h-[42px]");
+    expect(input).toHaveClass("px-4");
+    expect(input).toHaveClass("text-base");
+  });
+
+  it("renders with sm size classes", () => {
+    render(<TextField size="sm" data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass("h-9");
+    expect(input).toHaveClass("px-3");
+    expect(input).toHaveClass("text-sm");
+  });
+
+  it("renders sm size with addons (container path)", () => {
+    const { container } = render(
+      <TextField size="sm" leftIcon={<span>L</span>} data-testid="input" />
+    );
+    const inputContainer = container.querySelector(".h-9");
+    expect(inputContainer).toBeInTheDocument();
+    expect(screen.getByTestId("input")).toHaveClass("text-sm");
+  });
+
+  it("renders default size with addons (container path)", () => {
+    const { container } = render(
+      <TextField leftIcon={<span>L</span>} data-testid="input" />
+    );
+    const inputContainer = container.querySelector(".h-\\[42px\\]");
+    expect(inputContainer).toBeInTheDocument();
+    expect(screen.getByTestId("input")).toHaveClass("text-base");
+  });
+
   // Container styling with addons
   it("uses container with focus-within styling when has addons", () => {
     const { container } = render(<TextField leftIcon={<span>L</span>} />);

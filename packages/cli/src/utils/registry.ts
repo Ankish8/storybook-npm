@@ -547,6 +547,577 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 // For now, we'll embed the components directly
 export async function getRegistry(prefix: string = ''): Promise<Registry> {
   return {
+    "avatar": {
+      name: "avatar",
+      description: "A versatile avatar component displaying user initials or images with size variants and optional online status indicator",
+      category: "core",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "avatar.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * Extracts initials from a name string.
+ * For two+ words, takes first letter of first and last word.
+ * For single words, takes first two characters.
+ *
+ * @example
+ * getInitials("Ankish Sachdeva") // "AS"
+ * getInitials("John") // "JO"
+ */
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\\s+/);
+  return parts.length >= 2
+    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    : name.slice(0, 2).toUpperCase();
+}
+
+const avatarVariants = cva(
+  "relative inline-flex items-center justify-center rounded-full font-semibold select-none shrink-0 overflow-hidden",
+  {
+    variants: {
+      variant: {
+        soft: "bg-semantic-bg-grey text-semantic-text-muted",
+        filled: "bg-semantic-primary text-semantic-text-inverted",
+      },
+      size: {
+        xs: "size-6 text-[10px]",
+        sm: "size-8 text-xs",
+        md: "size-10 text-sm",
+        lg: "size-12 text-base",
+        xl: "size-16 text-lg",
+      },
+    },
+    defaultVariants: {
+      variant: "soft",
+      size: "md",
+    },
+  }
+);
+
+const statusDotSizeMap = {
+  xs: "size-2 border",
+  sm: "size-2.5 border-[1.5px]",
+  md: "size-3 border-2",
+  lg: "size-3.5 border-2",
+  xl: "size-4 border-2",
+} as const;
+
+const statusColorMap = {
+  online: "bg-semantic-success-primary",
+  offline: "bg-semantic-bg-grey",
+  busy: "bg-semantic-error-primary",
+  away: "bg-semantic-warning-primary",
+} as const;
+
+export interface AvatarProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof avatarVariants> {
+  /** Name used to auto-generate initials and aria-label */
+  name?: string;
+  /** Image URL — renders an <img> instead of initials */
+  src?: string;
+  /** Alt text for the image (defaults to name) */
+  alt?: string;
+  /** Override auto-generated initials (e.g., "AS") */
+  initials?: string;
+  /** Status indicator dot shown at bottom-right */
+  status?: "online" | "offline" | "busy" | "away";
+}
+
+/**
+ * Avatar component for displaying user identity via image or initials.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Avatar name="Ankish Sachdeva" />
+ * <Avatar name="John Doe" size="lg" variant="filled" />
+ * <Avatar src="/photo.jpg" alt="Profile" status="online" />
+ * <Avatar initials="AS" size="xs" />
+ * \`\`\`
+ */
+const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      name,
+      src,
+      alt,
+      initials,
+      status,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const resolvedSize = size ?? "md";
+    const displayInitials = initials ?? (name ? getInitials(name) : undefined);
+
+    return (
+      <div
+        ref={ref}
+        className={cn(avatarVariants({ variant, size, className }))}
+        aria-label={name}
+        role="img"
+        {...props}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt={alt ?? name ?? "Avatar"}
+            className="size-full object-cover"
+          />
+        ) : children ? (
+          children
+        ) : displayInitials ? (
+          <span aria-hidden="true">{displayInitials}</span>
+        ) : null}
+
+        {status && (
+          <span
+            className={cn(
+              "absolute bottom-0 right-0 rounded-full border-background",
+              statusDotSizeMap[resolvedSize],
+              statusColorMap[status]
+            )}
+            data-status={status}
+          />
+        )}
+      </div>
+    );
+  }
+);
+Avatar.displayName = "Avatar";
+
+export { Avatar, avatarVariants, getInitials };
+`, prefix),
+        },
+      ],
+    },
+    "date-divider": {
+      name: "date-divider",
+      description: "A horizontal line with centered date text for separating chat messages by date",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "date-divider.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * DateDivider component for separating chat messages by date.
+ * Renders a horizontal line with centered date text.
+ *
+ * @example
+ * \`\`\`tsx
+ * <DateDivider>Today</DateDivider>
+ * <DateDivider>March 20, 2026</DateDivider>
+ * \`\`\`
+ */
+export interface DateDividerProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** The date text to display. Can be a string like "Today", "March 20, 2026", etc. */
+  children: React.ReactNode;
+}
+
+const DateDivider = React.forwardRef<HTMLDivElement, DateDividerProps>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center gap-4 my-4", className)}
+      {...props}
+    >
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <span className="text-xs text-semantic-text-muted shrink-0">
+        {children}
+      </span>
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+    </div>
+  )
+);
+DateDivider.displayName = "DateDivider";
+
+export { DateDivider };
+`, prefix),
+        },
+      ],
+    },
+    "image-media": {
+      name: "image-media",
+      description: "An image display component for chat messages with rounded corners and configurable max height",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "image-media.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * ImageMedia component for displaying images in chat messages.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ImageMedia src="https://example.com/photo.jpg" />
+ * <ImageMedia src="https://example.com/photo.jpg" alt="A sunset" />
+ * <ImageMedia src="https://example.com/photo.jpg" maxHeight={400} />
+ * <ImageMedia src="https://example.com/photo.jpg" maxHeight="50vh" />
+ * \`\`\`
+ */
+export interface ImageMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Image source URL */
+  src: string;
+  /** Alt text for the image */
+  alt?: string;
+  /** Maximum height of the image. Defaults to 280px */
+  maxHeight?: number | string;
+}
+
+const ImageMedia = React.forwardRef<HTMLDivElement, ImageMediaProps>(
+  ({ className, src, alt = "Image", maxHeight = 280, ...props }, ref) => {
+    const maxHeightStyle =
+      typeof maxHeight === "number" ? \`\${maxHeight}px\` : maxHeight;
+
+    return (
+      <div ref={ref} className={cn("relative", className)} {...props}>
+        <img
+          src={src}
+          alt={alt}
+          className="w-full rounded-t object-cover"
+          style={{ maxHeight: maxHeightStyle }}
+        />
+      </div>
+    );
+  }
+);
+ImageMedia.displayName = "ImageMedia";
+
+export { ImageMedia };
+`, prefix),
+        },
+      ],
+    },
+    "phone-input": {
+      name: "phone-input",
+      description: "A phone number input with country code prefix, flag emoji, and optional country selector",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: "phone-input.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { ChevronDown } from "lucide-react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * A phone number input with a country code prefix area.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PhoneInput placeholder="Enter phone number" />
+ * <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
+ * <PhoneInput onCountryClick={() => openCountryPicker()} />
+ * \`\`\`
+ */
+export interface PhoneInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  /** Country flag emoji (e.g., "🇮🇳", "🇺🇸"). Defaults to "🇮🇳" */
+  countryFlag?: string;
+  /** Country dial code (e.g., "+91", "+1"). Defaults to "+91" */
+  countryCode?: string;
+  /** Whether to show the chevron dropdown indicator. Defaults to true */
+  showChevron?: boolean;
+  /** Handler called when the country code area is clicked */
+  onCountryClick?: () => void;
+  /** Additional className for the outer wrapper */
+  wrapperClassName?: string;
+}
+
+const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
+  (
+    {
+      className,
+      countryFlag = "🇮🇳",
+      countryCode = "+91",
+      showChevron = true,
+      onCountryClick,
+      wrapperClassName,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        className={cn(
+          "flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
+          disabled && "opacity-60",
+          wrapperClassName
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-1.5 pl-3 pr-2 h-10 shrink-0",
+            onCountryClick && "cursor-pointer"
+          )}
+          onClick={onCountryClick}
+          data-testid="phone-input-country"
+        >
+          <span className="text-sm">{countryFlag}</span>
+          <span className="text-sm text-semantic-text-secondary">
+            {countryCode}
+          </span>
+          {showChevron && (
+            <ChevronDown className="size-3 text-semantic-text-muted" />
+          )}
+        </div>
+        <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+        <input
+          type="tel"
+          ref={ref}
+          disabled={disabled}
+          className={cn(
+            "flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent disabled:cursor-not-allowed",
+            className
+          )}
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+PhoneInput.displayName = "PhoneInput";
+
+export { PhoneInput };
+`, prefix),
+        },
+      ],
+    },
+    "reply-quote": {
+      name: "reply-quote",
+      description: "A quoted message block with blue left border showing sender name and quoted text for reply previews",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "reply-quote.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * ReplyQuote component for displaying a quoted message with a brand-accented left border.
+ * Used in chat applications for reply-to previews.
+ *
+ * When an \`onClick\` handler is provided, the component becomes interactive:
+ * it receives \`role="button"\`, \`tabIndex={0}\`, and keyboard support (Enter/Space).
+ * A focus ring is shown when focused via keyboard.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ReplyQuote sender="John Doe" message="Hello, how are you?" />
+ * <ReplyQuote sender="Jane" message="Check this out!" onClick={() => scrollToMessage()} />
+ * \`\`\`
+ */
+export interface ReplyQuoteProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Name of the person being quoted */
+  sender: string;
+  /** The quoted message text */
+  message: string;
+}
+
+const ReplyQuote = React.forwardRef<HTMLDivElement, ReplyQuoteProps>(
+  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }, ref) => {
+    const isInteractive = !!onClick;
+
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          if (e.key === " ") {
+            e.preventDefault();
+          }
+          onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
+        }
+        onKeyDown?.(e);
+      },
+      [onClick, onKeyDown]
+    );
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "w-full bg-semantic-bg-ui border-l-[3px] border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
+          isInteractive && "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-1 focus-visible:outline-none",
+          className
+        )}
+        role={role ?? (isInteractive ? "button" : undefined)}
+        tabIndex={tabIndex ?? (isInteractive ? 0 : undefined)}
+        onClick={onClick}
+        onKeyDown={isInteractive ? handleKeyDown : onKeyDown}
+        aria-label={ariaLabel ?? \`Quoted reply from \${sender}: \${message}\`}
+        {...props}
+      >
+        <p className="text-[14px] font-semibold text-semantic-text-primary truncate leading-5 tracking-[0.014px] m-0">
+          {sender}
+        </p>
+        <p className="text-[14px] text-semantic-text-muted truncate m-0">
+          {message}
+        </p>
+      </div>
+    );
+  }
+);
+ReplyQuote.displayName = "ReplyQuote";
+
+export { ReplyQuote };
+`, prefix),
+        },
+      ],
+    },
+    "system-message": {
+      name: "system-message",
+      description: "A centered system message for chat timelines with bold markdown support",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "system-message.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * SystemMessage component for displaying centered, muted system/timeline
+ * events in a chat interface. Supports **bold** markdown-style formatting
+ * which renders as link-colored bold text.
+ *
+ * @example
+ * \`\`\`tsx
+ * <SystemMessage>Assigned to **Alex Smith** by **Admin**</SystemMessage>
+ * <SystemMessage>Chat was closed</SystemMessage>
+ * \`\`\`
+ */
+export interface SystemMessageProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** The message text. Supports **bold** markdown syntax which renders as link-colored bold text. */
+  children: string;
+}
+
+const SystemMessage = React.forwardRef<HTMLDivElement, SystemMessageProps>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex justify-center my-1", className)}
+      {...props}
+    >
+      <span className="text-[13px] text-semantic-text-muted">
+        {children.split(/(\\*\\*[^*]+\\*\\*)/).map((part, i) =>
+          part.startsWith("**") ? (
+            <span key={i} className="text-semantic-text-link font-medium">
+              {part.slice(2, -2)}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </span>
+    </div>
+  )
+);
+SystemMessage.displayName = "SystemMessage";
+
+export { SystemMessage };
+`, prefix),
+        },
+      ],
+    },
+    "unread-separator": {
+      name: "unread-separator",
+      description: "A horizontal divider with unread message count label for chat message lists",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "unread-separator.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * UnreadSeparator component for displaying a horizontal divider with an unread message count.
+ * Used in chat message lists to indicate where unread messages begin.
+ *
+ * @example
+ * \`\`\`tsx
+ * <UnreadSeparator count={3} />
+ * <UnreadSeparator count={1} />
+ * <UnreadSeparator count={5} label="5 new messages" />
+ * \`\`\`
+ */
+export interface UnreadSeparatorProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Number of unread messages */
+  count: number;
+  /** Custom label. Defaults to "{count} unread message(s)" */
+  label?: string;
+}
+
+const UnreadSeparator = React.forwardRef<HTMLDivElement, UnreadSeparatorProps>(
+  ({ className, count, label, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center gap-4 my-2", className)}
+      {...props}
+    >
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <span className="text-xs text-semantic-text-muted bg-semantic-bg-ui px-2 shrink-0">
+        {label ?? \`\${count} unread message\${count !== 1 ? "s" : ""}\`}
+      </span>
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+    </div>
+  )
+);
+UnreadSeparator.displayName = "UnreadSeparator";
+
+export { UnreadSeparator };
+`, prefix),
+        },
+      ],
+    },
     "button": {
       name: "button",
       description: "A customizable button component with variants, sizes, and icons",
@@ -579,6 +1150,8 @@ const buttonVariants = cva(
           "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
         destructive:
           "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
+        success:
+          "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
           "border border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
@@ -808,6 +1381,122 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
 Badge.displayName = "Badge";
 
 export { Badge, badgeVariants };
+`, prefix),
+        },
+      ],
+    },
+    "contact-list-item": {
+      name: "contact-list-item",
+      description: "Contact list item with avatar, name, subtitle, and trailing content",
+      category: "core",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "avatar"
+      ],
+      files: [
+        {
+          name: "contact-list-item.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+import { Avatar } from "./avatar";
+
+export interface ContactListItemProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
+  /** Contact name — displayed as primary text and used for Avatar initials */
+  name: string;
+  /** Secondary text below the name (e.g., phone number, email) */
+  subtitle?: string;
+  /** Content rendered at the right edge (e.g., channel badge, status text) */
+  trailing?: React.ReactNode;
+  /** Avatar image source — shows image instead of initials when provided */
+  avatarSrc?: string;
+  /** Whether this item is currently selected/active */
+  isSelected?: boolean;
+  /** Click handler */
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+/**
+ * ContactListItem displays a contact entry with avatar, name, optional subtitle,
+ * and trailing content — used in contact directories, user lists, and search results.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ContactListItem
+ *   name="Aditi Kumar"
+ *   subtitle="+91 98765 43210"
+ *   trailing="MY01"
+ *   onClick={() => selectContact("1")}
+ * />
+ * \`\`\`
+ */
+const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
+  (
+    {
+      name,
+      subtitle,
+      trailing,
+      avatarSrc,
+      isSelected = false,
+      onClick,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>);
+          }
+        }}
+        className={cn(
+          "flex items-center gap-3 px-3 py-3 cursor-pointer transition-colors",
+          isSelected
+            ? "bg-semantic-bg-ui"
+            : "hover:bg-semantic-bg-hover",
+          className
+        )}
+        {...props}
+      >
+        <Avatar name={name} src={avatarSrc} size="sm" />
+
+        <div className="flex-1 flex items-center justify-between min-w-0">
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-medium text-semantic-text-primary leading-5 truncate">
+              {name}
+            </span>
+            {subtitle && (
+              <span className="text-xs text-semantic-text-muted">
+                {subtitle}
+              </span>
+            )}
+          </div>
+          {trailing && (
+            <span className="text-xs font-medium text-semantic-text-muted shrink-0 ml-2">
+              {trailing}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+ContactListItem.displayName = "ContactListItem";
+
+export { ContactListItem };
 `, prefix),
         },
       ],
@@ -1788,9 +2477,18 @@ export { Switch, switchVariants };
       files: [
         {
           name: "text-field.tsx",
-          content: prefixTailwindClasses(`import * as React from "react";
+          content: prefixTailwindClasses(`import {
+  forwardRef,
+  useRef,
+  useCallback,
+  useState,
+  useId,
+  type ChangeEvent,
+  type ReactNode,
+  type ComponentProps,
+} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 
@@ -1823,7 +2521,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-[42px] w-full rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-base file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "w-full rounded bg-semantic-bg-primary text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -1832,9 +2530,14 @@ const textFieldInputVariants = cva(
         error:
           "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
+      size: {
+        default: "h-[42px] px-4 py-2 text-base file:text-base",
+        sm: "h-9 px-3 py-1.5 text-sm file:text-sm",
+      },
     },
     defaultVariants: {
       state: "default",
+      size: "default",
     },
   }
 );
@@ -1851,8 +2554,10 @@ const textFieldInputVariants = cva(
  */
 export interface TextFieldProps
   extends
-    Omit<React.ComponentProps<"input">, "size">,
+    Omit<ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
+  /** Size of the text field — \`default\` (42px) or \`sm\` (36px, compact) */
+  size?: "default" | "sm";
   /** Label text displayed above the input */
   label?: string;
   /** Shows red asterisk next to label when true */
@@ -1862,9 +2567,9 @@ export interface TextFieldProps
   /** Error message - shows error state with red styling */
   error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
   /** Text prefix inside input (e.g., "https://") */
   prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
@@ -1873,6 +2578,10 @@ export interface TextFieldProps
   showCount?: boolean;
   /** Shows loading spinner inside input */
   loading?: boolean;
+  /** Shows a clear (X) button when input has a value */
+  clearable?: boolean;
+  /** Callback fired when the clear button is clicked */
+  onClear?: () => void;
   /** Additional class for the wrapper container */
   wrapperClassName?: string;
   /** Additional class for the label */
@@ -1881,7 +2590,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       className,
@@ -1889,6 +2598,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       labelClassName,
       inputContainerClassName,
       state,
+      size,
       label,
       required,
       helperText,
@@ -1899,6 +2609,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       suffix,
       showCount,
       loading,
+      clearable,
+      onClear,
       maxLength,
       value,
       defaultValue,
@@ -1911,8 +2623,19 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     },
     ref
   ) => {
+    // Internal ref for programmatic control (e.g., clearable)
+    const internalRef = useRef<HTMLInputElement>(null);
+    const mergedRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        internalRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(
+    const [internalValue, setInternalValue] = useState(
       defaultValue ?? ""
     );
 
@@ -1924,7 +2647,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
@@ -1932,13 +2655,26 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading;
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading || clearable;
+
+    // Handle clear
+    const handleClear = () => {
+      if (!isControlled) {
+        setInternalValue("");
+        if (internalRef.current) {
+          internalRef.current.value = "";
+        }
+      }
+      onClear?.();
+    };
+
+    const showClearButton = clearable && String(currentValue).length > 0 && !disabled && !loading;
 
     // Character count
     const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId();
+    const generatedId = useId();
     const inputId = id || generatedId;
     const helperId = \`\${inputId}-helper\`;
     const errorId = \`\${inputId}-error\`;
@@ -1949,13 +2685,16 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     // Render the input element
     const inputElement = (
       <input
-        ref={ref}
+        ref={mergedRef}
         id={inputId}
         type={type}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
-            : textFieldInputVariants({ state: derivedState, className }),
+            ? cn(
+                "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed",
+                size === "sm" ? "text-sm" : "text-base"
+              )
+            : textFieldInputVariants({ state: derivedState, size, className }),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
@@ -1985,7 +2724,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           <label
             htmlFor={inputId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -2004,7 +2743,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
                 state: derivedState,
                 disabled: disabled || loading,
               }),
-              "h-[42px] px-4",
+              size === "sm" ? "h-9 px-3" : "h-[42px] px-4",
               inputContainerClassName
             )}
           >
@@ -2026,6 +2765,17 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
+            )}
+            {showClearButton && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="ml-2 text-semantic-text-muted hover:text-semantic-text-primary flex-shrink-0 cursor-pointer"
+                aria-label="Clear input"
+                tabIndex={-1}
+              >
+                <X className="size-4" />
+              </button>
             )}
             {suffix && (
               <span className="text-sm text-semantic-text-muted ml-2 select-none">
@@ -2322,7 +3072,7 @@ ReadableField.displayName = "ReadableField";
         {
           name: "select-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 import {
@@ -2533,7 +3283,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -2569,13 +3319,14 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="px-2 pb-2">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+                <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
@@ -3167,6 +3918,8 @@ export interface CreatableSelectProps
   creatableHint?: string
   /** Whether the select is disabled */
   disabled?: boolean
+  /** Max character length for the value (enforced when open and when creating) */
+  maxLength?: number
 }
 
 const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
@@ -3180,6 +3933,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       placeholder = "Select an option",
       creatableHint = "Type to create a custom option",
       disabled = false,
+      maxLength,
       ...props
     },
     ref
@@ -3229,11 +3983,12 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
     const handleCreate = React.useCallback(() => {
       const trimmed = search.trim()
       if (trimmed) {
-        onValueChange?.(trimmed)
+        const value = maxLength != null ? trimmed.slice(0, maxLength) : trimmed
+        onValueChange?.(value)
         setOpen(false)
         setSearch("")
       }
-    }, [search, onValueChange])
+    }, [search, onValueChange, maxLength])
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -3321,7 +4076,11 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
               ref={inputRef}
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value
+                setSearch(maxLength != null ? v.slice(0, maxLength) : v)
+              }}
+              maxLength={maxLength}
               onKeyDown={handleKeyDown}
               className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-muted"
               placeholder={selectedLabel || placeholder}
@@ -3502,6 +4261,10 @@ export interface CreatableMultiSelectProps
   creatableHint?: string
   /** Helper text shown below the trigger */
   helperText?: string
+  /** Max number of items that can be selected (default: unlimited) */
+  maxItems?: number
+  /** Max character length per item when typing/creating (default: unlimited) */
+  maxLengthPerItem?: number
 }
 
 const CreatableMultiSelect = React.forwardRef<
@@ -3519,6 +4282,8 @@ const CreatableMultiSelect = React.forwardRef<
       state = "default",
       creatableHint = "Type to create a custom option",
       helperText,
+      maxItems,
+      maxLengthPerItem,
       ...props
     },
     ref
@@ -3533,12 +4298,18 @@ const CreatableMultiSelect = React.forwardRef<
     const addValue = React.useCallback(
       (val: string) => {
         const trimmed = val.trim()
-        if (trimmed && !value.includes(trimmed)) {
-          onValueChange?.([...value, trimmed])
+        if (!trimmed || value.includes(trimmed)) return
+        if (maxItems != null && value.length >= maxItems) return
+        const toAdd =
+          maxLengthPerItem != null
+            ? trimmed.slice(0, maxLengthPerItem)
+            : trimmed
+        if (toAdd) {
+          onValueChange?.([...value, toAdd])
           setInputValue("")
         }
       },
-      [value, onValueChange]
+      [value, onValueChange, maxItems, maxLengthPerItem]
     )
 
     const removeValue = React.useCallback(
@@ -3642,9 +4413,13 @@ const CreatableMultiSelect = React.forwardRef<
             type="text"
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value)
+              const v = e.target.value
+              setInputValue(
+                maxLengthPerItem != null ? v.slice(0, maxLengthPerItem) : v
+              )
               if (!isOpen) setIsOpen(true)
             }}
+            maxLength={maxLengthPerItem}
             onFocus={() => {
               if (!disabled) setIsOpen(true)
             }}
@@ -3668,18 +4443,14 @@ const CreatableMultiSelect = React.forwardRef<
         {/* Dropdown panel */}
         {isOpen && (
           <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
-            {/* Creatable hint — contextual */}
+            {/* Creatable hint — Enter key */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
-              {canAddCustom ? (
-                <span className="text-sm font-medium text-semantic-text-primary">
-                  Press enter to add &ldquo;{inputValue.trim()}&rdquo;
-                </span>
-              ) : (
-                <span className="text-sm text-semantic-text-muted">
-                  {creatableHint}
-                </span>
-              )}
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <span className="text-sm text-semantic-text-muted">
+                {canAddCustom
+                  ? \`Press enter to add "\${inputValue.trim()}"\`
+                  : creatableHint}
+              </span>
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>
@@ -3707,14 +4478,31 @@ const CreatableMultiSelect = React.forwardRef<
           </div>
         )}
 
-        {/* Helper text below trigger */}
-        {helperText && !isOpen && (
-          <div className="flex items-center gap-1.5 mt-1.5">
-            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
-            <p className="m-0 text-sm text-semantic-text-muted">
-              {helperText}
-            </p>
+        {/* Helper row below trigger: when maxLengthPerItem show dynamic hint + counter (Figma); else optional static helperText */}
+        {maxLengthPerItem != null ? (
+          <div className="flex items-center justify-between gap-2 mt-1.5">
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0 text-semantic-text-muted" />
+              <p className="m-0 truncate">
+                {inputValue.trim()
+                  ? \`Press Enter to add "\${inputValue.trim()}" ↵\`
+                  : creatableHint}
+              </p>
+            </div>
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {inputValue.length}/{maxLengthPerItem}
+            </span>
           </div>
+        ) : (
+          helperText &&
+          !isOpen && (
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
+              <p className="m-0 text-sm text-semantic-text-muted">
+                {helperText}
+              </p>
+            </div>
+          )
         )}
       </div>
     )
@@ -4074,6 +4862,100 @@ export {
         },
       ],
     },
+    "tabs": {
+      name: "tabs",
+      description: "A flexible tabs component with underline-style active indicator, supporting badges/counts, equal-width and auto-width layouts",
+      category: "core",
+      dependencies: [
+            "@radix-ui/react-tabs",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "tabs.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * A flexible tabs component with underline-style active indicator.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Tabs defaultValue="tab1">
+ *   <TabsList>
+ *     <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+ *     <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+ *   </TabsList>
+ *   <TabsContent value="tab1">Content 1</TabsContent>
+ *   <TabsContent value="tab2">Content 2</TabsContent>
+ * </Tabs>
+ * \`\`\`
+ */
+const Tabs = TabsPrimitive.Root
+
+export interface TabsListProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
+  /** When true, tabs stretch to fill the full width equally */
+  fullWidth?: boolean
+}
+
+const TabsList = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.List>,
+  TabsListProps
+>(({ className, fullWidth, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn(
+      "inline-flex items-center border-b border-semantic-border-layout w-full",
+      fullWidth && "[&>*]:flex-1",
+      className
+    )}
+    {...props}
+  />
+))
+TabsList.displayName = TabsPrimitive.List.displayName
+
+const TabsTrigger = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 -mb-px cursor-pointer transition-colors",
+      "text-semantic-text-muted border-transparent hover:text-semantic-text-secondary",
+      "data-[state=active]:text-semantic-text-primary data-[state=active]:border-semantic-primary",
+      "focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+      className
+    )}
+    {...props}
+  />
+))
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+
+const TabsContent = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      "mt-2 focus-visible:outline-none",
+      className
+    )}
+    {...props}
+  />
+))
+TabsContent.displayName = TabsPrimitive.Content.displayName
+
+export { Tabs, TabsList, TabsTrigger, TabsContent }
+`, prefix),
+        },
+      ],
+    },
     "dialog": {
       name: "dialog",
       description: "A modal dialog component built on Radix UI Dialog with size variants and animations",
@@ -4286,13 +5168,23 @@ export {
           name: "dropdown-menu.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { Check, ChevronRight, Circle } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Trigger
+    ref={ref}
+    className={cn("focus-visible:outline-none focus-visible:ring-0", className)}
+    {...props}
+  />
+));
+DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
@@ -4311,7 +5203,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-semantic-bg-ui data-[state=open]:bg-semantic-bg-ui",
+      "flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[state=open]:bg-semantic-bg-ui",
       inset && "pl-8",
       className
     )}
@@ -4363,39 +5255,70 @@ const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
+    /** Secondary text displayed below children */
+    description?: string;
+    /** Content displayed at the right edge of the item */
+    suffix?: React.ReactNode;
   }
->(({ className, inset, ...props }, ref) => (
+>(({ className, inset, children, description, suffix, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className
     )}
     {...props}
-  />
+  >
+    {description ? (
+      <div className="flex flex-1 flex-col">
+        <span>{children}</span>
+        <span className="text-xs text-semantic-text-muted">{description}</span>
+      </div>
+    ) : (
+      children
+    )}
+    {suffix && (
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+    )}
+  </DropdownMenuPrimitive.Item>
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
+    /** Secondary text displayed below children */
+    description?: string;
+    /** Content displayed at the right edge of the item */
+    suffix?: React.ReactNode;
+  }
+>(({ className, children, checked, description, suffix, ...props }, ref) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-semantic-primary">
       <DropdownMenuPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
-    {children}
+    {description ? (
+      <div className="flex flex-1 flex-col">
+        <span>{children}</span>
+        <span className="text-xs text-semantic-text-muted">{description}</span>
+      </div>
+    ) : (
+      children
+    )}
+    {suffix && (
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+    )}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
 DropdownMenuCheckboxItem.displayName =
@@ -4403,22 +5326,37 @@ DropdownMenuCheckboxItem.displayName =
 
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
+    /** Secondary text displayed below children */
+    description?: string;
+    /** Content displayed at the right edge of the item */
+    suffix?: React.ReactNode;
+  }
+>(({ className, children, description, suffix, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-semantic-primary">
       <DropdownMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
+        <Check className="h-4 w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
-    {children}
+    {description ? (
+      <div className="flex flex-1 flex-col">
+        <span>{children}</span>
+        <span className="text-xs text-semantic-text-muted">{description}</span>
+      </div>
+    ) : (
+      children
+    )}
+    {suffix && (
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+    )}
   </DropdownMenuPrimitive.RadioItem>
 ));
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;
@@ -6901,6 +7839,180 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
 PageHeader.displayName = "PageHeader";
 
 export { PageHeader, pageHeaderVariants };
+`, prefix),
+        },
+      ],
+    },
+    "panel": {
+      name: "panel",
+      description: "A collapsible side panel layout with header, scrollable body, and optional footer",
+      category: "layout",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button"
+      ],
+      files: [
+        {
+          name: "panel.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
+
+import { cn } from "../../lib/utils";
+
+import { Button } from "./button";
+
+/**
+ * Panel root variants
+ */
+const panelVariants = cva(
+  "border-l border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
+  {
+    variants: {
+      size: {
+        sm: "",
+        default: "",
+        lg: "",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+);
+
+const panelWidths = {
+  sm: "w-[280px]",
+  default: "w-[320px]",
+  lg: "w-[400px]",
+} as const;
+
+export interface PanelProps
+  extends React.HTMLAttributes<HTMLElement>,
+    VariantProps<typeof panelVariants> {
+  /** Whether the panel is open */
+  open?: boolean;
+  /** Panel title displayed in the header */
+  title?: string;
+  /** Callback when close button is clicked */
+  onClose?: () => void;
+  /** Optional footer content (e.g., action buttons) */
+  footer?: React.ReactNode;
+  /** Custom header content — replaces the default title + close button */
+  header?: React.ReactNode;
+}
+
+/**
+ * Panel is a collapsible side panel layout with a header, scrollable body,
+ * and optional footer — used for detail views, settings, and edit forms.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Panel open={isOpen} title="Contact Details" onClose={() => setIsOpen(false)}>
+ *   <TextField label="Name" value="Aditi Kumar" disabled size="sm" />
+ *   <TextField label="Email" value="email@example.com" disabled size="sm" />
+ * </Panel>
+ * \`\`\`
+ */
+const Panel = React.forwardRef<HTMLElement, PanelProps>(
+  (
+    {
+      open = true,
+      title,
+      onClose,
+      footer,
+      header,
+      size,
+      className,
+      children,
+      "aria-label": ariaLabel,
+      onKeyDown,
+      ...props
+    },
+    ref
+  ) => {
+    const resolvedSize = size ?? "default";
+    const widthClass = panelWidths[resolvedSize];
+    const innerRef = React.useRef<HTMLDivElement>(null);
+
+    // Focus the inner container when the panel opens
+    React.useEffect(() => {
+      if (open) {
+        innerRef.current?.focus();
+      }
+    }, [open]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+      if (e.key === "Escape" && onClose) {
+        onClose();
+      }
+      // Forward to user-provided onKeyDown if any
+      onKeyDown?.(e);
+    };
+
+    return (
+      <aside
+        ref={ref}
+        className={cn(
+          panelVariants({ size }),
+          open ? widthClass : "w-0 border-l-0",
+          className
+        )}
+        aria-label={ariaLabel ?? title}
+        aria-hidden={!open}
+        onKeyDown={handleKeyDown}
+        {...props}
+      >
+        <div
+          ref={innerRef}
+          tabIndex={-1}
+          className={cn(widthClass, "flex flex-col h-full outline-none")}
+        >
+          {/* Header */}
+          {header ?? (
+            <div className="flex items-center gap-3 px-4 h-14 border-b border-semantic-border-layout shrink-0">
+              {title && (
+                <span className="flex-1 text-base font-semibold text-semantic-text-primary truncate">
+                  {title}
+                </span>
+              )}
+              {onClose && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onClose}
+                  aria-label="Close"
+                >
+                  <X className="size-5" />
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Body */}
+          <div className="flex-1 overflow-y-auto">
+            {children}
+          </div>
+
+          {/* Footer */}
+          {footer && (
+            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-semantic-border-layout">
+              {footer}
+            </div>
+          )}
+        </div>
+      </aside>
+    );
+  }
+);
+Panel.displayName = "Panel";
+
+export { Panel, panelVariants };
 `, prefix),
         },
       ],
@@ -12943,7 +14055,7 @@ export type { BrandIconProps } from "./icon";
     },
     "bots": {
       name: "bots",
-      description: "AI Bot management components — BotList page, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, and CreateBotModal",
+      description: "AI Bot management components — BotList, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, CreateBotModal",
       category: "custom",
       dependencies: [
             "clsx",
@@ -12963,10 +14075,16 @@ export type { BrandIconProps } from "./icon";
         {
           name: "bot-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { MessageSquare, Phone } from "lucide-react";
+import { MessageSquare, Phone, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../badge";
-import { BotListAction } from "./bot-list-action";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "../dropdown-menu";
 import type { Bot, BotCardProps, BotType } from "./types";
 
 const DEFAULT_TYPE_LABELS: Record<BotType, string> = {
@@ -12990,7 +14108,7 @@ function getTypeLabel(
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
 export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onPublish, onDelete, className, ...props }, ref) => {
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 
@@ -13040,11 +14158,38 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
             </Badge>
 
             <span data-bot-card-action className="inline-flex" onClick={(e) => e.stopPropagation()}>
-              <BotListAction
-                align="end"
-                onEdit={() => onEdit?.(bot.id)}
-                onDelete={() => onDelete?.(bot.id)}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
+                    aria-label="More options"
+                  >
+                    <MoreVertical className="size-4 shrink-0" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[160px]">
+                  <DropdownMenuItem
+                    className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm"
+                    onSelect={(e) => { e.preventDefault(); onEdit?.(bot.id); }}
+                  >
+                    <Pencil className="size-4 shrink-0" />
+                    <span>Edit</span>
+                  </DropdownMenuItem>
+                  {onDelete && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary focus:bg-semantic-error-surface focus:text-semantic-error-primary"
+                        onSelect={(e) => { e.preventDefault(); onDelete(bot.id); }}
+                      >
+                        <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </span>
           </div>
         </div>
@@ -13077,9 +14222,11 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
               Last Published
             </span>
           )}
-          {bot.lastPublishedBy && bot.lastPublishedDate ? (
+          {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
-              {bot.lastPublishedBy} | {bot.lastPublishedDate}
+              {bot.lastPublishedBy
+                ? \`\${bot.lastPublishedBy} | \${bot.lastPublishedDate ?? "—"}\`
+                : bot.lastPublishedDate}
             </p>
           ) : bot.status !== "draft" ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">—</p>
@@ -13129,21 +14276,24 @@ const BOT_TYPE_OPTIONS: BotTypeOption[] = [
 export const CreateBotModal = React.forwardRef<
   HTMLDivElement,
   CreateBotModalProps
->(({ open, onOpenChange, onSubmit, className }, ref) => {
+>(({ open, onOpenChange, onSubmit, isLoading, className }, ref) => {
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
+
+  React.useEffect(() => {
+    if (!open) {
+      setName("");
+      setSelectedType("chatbot");
+    }
+  }, [open]);
 
   const handleSubmit = () => {
     if (!name.trim()) return;
     const typeValue = selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
     onSubmit?.({ name: name.trim(), type: typeValue });
-    setName("");
-    setSelectedType("chatbot");
   };
 
   const handleClose = () => {
-    setName("");
-    setSelectedType("chatbot");
     onOpenChange(false);
   };
 
@@ -13247,7 +14397,8 @@ export const CreateBotModal = React.forwardRef<
           <Button
             variant="default"
             onClick={handleSubmit}
-            disabled={!name.trim()}
+            disabled={!name.trim() || isLoading}
+            loading={isLoading}
           >
             Create
           </Button>
@@ -13258,6 +14409,131 @@ export const CreateBotModal = React.forwardRef<
 });
 
 CreateBotModal.displayName = "CreateBotModal";
+`, prefix),
+        },
+        {
+          name: "create-bot-flow.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { BotListCreateCard } from "./bot-list-create-card";
+import { BotListGrid } from "./bot-list-grid";
+import { CreateBotModal } from "./create-bot-modal";
+import type { CreateBotFlowProps } from "./types";
+
+/**
+ * Create bot flow: "Create new bot" card + Create Bot modal. No header (title/subtitle/search).
+ * Use when you want the create-bot experience without the list header.
+ */
+export const CreateBotFlow = React.forwardRef<HTMLDivElement, CreateBotFlowProps>(
+  (
+    {
+      createCardLabel = "Create new bot",
+      onSubmit,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const [modalOpen, setModalOpen] = React.useState(false);
+
+    return (
+      <>
+        <div
+          ref={ref}
+          className={cn(
+            "flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border",
+            className
+          )}
+          {...props}
+        >
+          <BotListGrid>
+            <BotListCreateCard
+              label={createCardLabel}
+              onClick={() => setModalOpen(true)}
+            />
+          </BotListGrid>
+        </div>
+        <CreateBotModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          onSubmit={(data) => {
+            onSubmit?.(data);
+            setModalOpen(false);
+          }}
+        />
+      </>
+    );
+  }
+);
+
+CreateBotFlow.displayName = "CreateBotFlow";
+`, prefix),
+        },
+        {
+          name: "edit-bot-flow.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { BotList } from "./bot-list";
+import type { Bot, EditBotFlowProps } from "./types";
+
+/**
+ * Edit bot flow: bot list + config view when Edit is clicked.
+ * Use when you want the "Edit Bot → Config" experience; parent supplies config via renderConfig.
+ */
+export function EditBotFlow({
+  bots,
+  title = "AI Bot",
+  subtitle = "Create & manage AI bots",
+  searchPlaceholder = "Search bot...",
+  createCardLabel = "Create new bot",
+  typeLabels,
+  onBotDelete,
+  onCreateBotSubmit,
+  onSearch,
+  renderConfig,
+  instructionText,
+  className,
+}: EditBotFlowProps) {
+  const [view, setView] = React.useState<"list" | "config">("list");
+  const [editingBot, setEditingBot] = React.useState<Bot | null>(null);
+
+  const handleEdit = (botId: string) => {
+    const bot = bots.find((b) => b.id === botId);
+    if (bot) {
+      setEditingBot(bot);
+      setView("config");
+    }
+  };
+
+  const handleBack = () => {
+    setView("list");
+    setEditingBot(null);
+  };
+
+  if (view === "config" && editingBot) {
+    return <>{renderConfig(editingBot, handleBack)}</>;
+  }
+
+  return (
+    <>
+      {instructionText != null ? (
+        <div className="flex flex-col gap-2 p-6 pb-0">{instructionText}</div>
+      ) : null}
+      <BotList
+        bots={bots}
+        title={title}
+        subtitle={subtitle}
+        searchPlaceholder={searchPlaceholder}
+        createCardLabel={createCardLabel}
+        typeLabels={typeLabels}
+        onBotEdit={handleEdit}
+        onBotDelete={onBotDelete}
+        onCreateBotSubmit={onCreateBotSubmit}
+        onSearch={onSearch}
+        className={className}
+      />
+    </>
+  );
+}
 `, prefix),
         },
         {
@@ -13280,7 +14556,6 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onCreateBot,
       onCreateBotSubmit,
       onBotEdit,
-      onBotPublish,
       onBotDelete,
       onSearch,
       title = "AI Bot",
@@ -13300,43 +14575,69 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       onSearch?.(value);
     };
 
-    return (
-      <div
-        ref={ref}
-        className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
-        {...props}
-      >
-        {/* Page header: title, subtitle, and search */}
-        <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
-          <BotListHeader title={title} subtitle={subtitle} />
-          <BotListSearch
-            value={searchQuery}
-            onSearch={handleSearch}
-            placeholder={searchPlaceholder}
-          />
-        </div>
+    const handleCreateClick = () => {
+      setCreateModalOpen(true);
+      onCreateBot?.();
+    };
 
-        {/* Bot grid: create card + bot cards */}
-        <BotListGrid>
-          <BotListCreateCard
-            label={createCardLabel}
-            onClick={() => {
-              setCreateModalOpen(true);
-              onCreateBot?.();
+    if (bots.length === 0) {
+      return (
+        <>
+          <div
+            ref={ref}
+            className={cn(
+              "flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border",
+              className
+            )}
+            {...props}
+          >
+            <BotListGrid>
+              <BotListCreateCard
+                label={createCardLabel}
+                onClick={handleCreateClick}
+              />
+            </BotListGrid>
+          </div>
+          <CreateBotModal
+            open={createModalOpen}
+            onOpenChange={setCreateModalOpen}
+            onSubmit={(data) => {
+              onCreateBotSubmit?.(data);
+              setCreateModalOpen(false);
             }}
           />
-          {bots.map((bot) => (
-            <BotCard
-              key={bot.id}
-              bot={bot}
-              typeLabels={typeLabels}
-              onEdit={onBotEdit}
-              onPublish={onBotPublish}
-              onDelete={onBotDelete}
-            />
-          ))}
-        </BotListGrid>
+        </>
+      );
+    }
 
+    return (
+      <>
+        <div
+          ref={ref}
+          className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
+          {...props}
+        >
+          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
+            <BotListHeader title={title} subtitle={subtitle} />
+            <BotListSearch
+              value={searchQuery}
+              onSearch={handleSearch}
+              placeholder={searchPlaceholder}
+            />
+          </div>
+          <BotListGrid>
+            <BotListCreateCard label={createCardLabel} onClick={handleCreateClick} />
+            {bots.map((bot) => (
+              <BotCard
+                key={bot.id}
+                bot={bot}
+                typeLabels={typeLabels}
+                onEdit={onBotEdit}
+                onDelete={onBotDelete}
+              />
+            ))}
+          </BotListGrid>
+        </div>
         <CreateBotModal
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
@@ -13345,7 +14646,7 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
             setCreateModalOpen(false);
           }}
         />
-      </div>
+      </>
     );
   }
 );
@@ -13356,31 +14657,65 @@ BotList.displayName = "BotList";
         {
           name: "bot-list-header.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
+import { cva } from "class-variance-authority";
 import { cn } from "../../../lib/utils";
 import type { BotListHeaderProps } from "./types";
 
+const botListHeaderVariants = cva("min-w-0", {
+  variants: {
+    variant: {
+      default:
+        "flex flex-col gap-1.5 shrink",
+      withSearch:
+        "flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 shrink",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
 export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
-  ({ title, subtitle, className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("flex flex-col gap-1.5 min-w-0 shrink", className)}
-      {...props}
-    >
-      {title != null && (
-        <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px] break-words sm:text-lg">
-          {title}
-        </h1>
-      )}
-      {subtitle != null && (
-        <p className="m-0 text-xs sm:text-sm text-semantic-text-muted tracking-[0.035px] break-words">
-          {subtitle}
-        </p>
-      )}
-    </div>
-  )
+  (
+    { title, subtitle, variant = "default", rightContent, className, ...props },
+    ref
+  ) => {
+    const rootClassName = cn(botListHeaderVariants({ variant }), className);
+    const titleBlock = (
+      <>
+        {title != null && (
+          <h1 className="m-0 text-base font-semibold text-semantic-text-primary tracking-[0.064px] break-words sm:text-lg">
+            {title}
+          </h1>
+        )}
+        {subtitle != null && (
+          <p className="m-0 text-xs sm:text-sm text-semantic-text-muted tracking-[0.035px] break-words">
+            {subtitle}
+          </p>
+        )}
+      </>
+    );
+
+    if (variant === "withSearch") {
+      return (
+        <div ref={ref} className={rootClassName} {...props}>
+          <div className="flex flex-col gap-1.5 min-w-0 shrink">{titleBlock}</div>
+          {rightContent}
+        </div>
+      );
+    }
+
+    return (
+      <div ref={ref} className={rootClassName} {...props}>
+        {titleBlock}
+      </div>
+    );
+  }
 );
 
 BotListHeader.displayName = "BotListHeader";
+
+export { botListHeaderVariants };
 `, prefix),
         },
         {
@@ -13465,9 +14800,9 @@ export const BotListCreateCard = React.forwardRef<
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-2.5 rounded-[5px] min-h-[180px] sm:min-h-[207px] w-full min-w-0 max-w-full",
-        "bg-semantic-info-surface-subtle border border-dashed border-semantic-border-layout",
-        "cursor-pointer transition-colors hover:bg-semantic-bg-hover hover:border-semantic-border-input",
+        "relative flex flex-col items-center justify-center gap-2 sm:gap-3 p-3 sm:p-2.5 rounded-[5px] min-h-[180px] sm:min-h-[207px] w-full min-w-0 max-w-full",
+        "bg-semantic-info-surface-subtle",
+        "group cursor-pointer",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
         "self-stretch justify-self-stretch",
         className
@@ -13475,6 +14810,21 @@ export const BotListCreateCard = React.forwardRef<
       aria-label={label}
       {...props}
     >
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        aria-hidden="true"
+      >
+        <rect
+          x="0.5"
+          y="0.5"
+          style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }}
+          rx="4.5"
+          fill="none"
+          strokeWidth="1"
+          strokeDasharray="6 6"
+          className="stroke-[#c0c3ca] group-hover:stroke-[#717680] transition-colors duration-150"
+        />
+      </svg>
       <Plus className="size-4 text-semantic-text-secondary shrink-0" />
       <span className="text-sm font-semibold leading-5 text-semantic-text-secondary text-center tracking-[0.014px]">
         {label}
@@ -13509,81 +14859,6 @@ export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
 );
 
 BotListGrid.displayName = "BotListGrid";
-`, prefix),
-        },
-        {
-          name: "bot-list-action.tsx",
-          content: prefixTailwindClasses(`import * as React from "react";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { cn } from "../../../lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from "../dropdown-menu";
-import type { BotListActionProps } from "./types";
-
-const defaultTrigger = (
-  <button
-    type="button"
-    className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
-    aria-label="More options"
-  >
-    <MoreVertical className="size-4 shrink-0" />
-  </button>
-);
-
-export const BotListAction = React.forwardRef<HTMLDivElement, BotListActionProps>(
-  (
-    {
-      onEdit,
-      onDelete,
-      trigger = defaultTrigger,
-      align = "end",
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    return (
-      <div ref={ref} className={cn("inline-flex", className)} {...props}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-          <DropdownMenuContent
-            align={align}
-            className="min-w-[160px] max-w-[min(100vw-2rem,320px)] max-h-[min(70vh,400px)] overflow-y-auto rounded-lg border border-semantic-border-layout bg-semantic-bg-ui p-1 shadow-lg"
-          >
-            <DropdownMenuItem
-              className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-hover focus:text-semantic-text-primary"
-              onSelect={(e) => {
-                e.preventDefault();
-                onEdit?.();
-              }}
-            >
-              <Pencil className="size-4 shrink-0 text-semantic-text-primary" />
-              <span>Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="my-1 bg-semantic-border-layout" />
-            <DropdownMenuItem
-              className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary outline-none transition-colors focus:bg-semantic-error-surface focus:text-semantic-error-primary"
-              onSelect={(e) => {
-                e.preventDefault();
-                onDelete?.();
-              }}
-            >
-              <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
-              <span>Delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-);
-
-BotListAction.displayName = "BotListAction";
 `, prefix),
         },
         {
@@ -13627,8 +14902,6 @@ export interface BotCardProps
   typeLabels?: Partial<Record<BotType, string>>;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
-  /** Called when Publish action is selected */
-  onPublish?: (botId: string) => void;
   /** Called when Delete action is selected */
   onDelete?: (botId: string) => void;
 }
@@ -13638,6 +14911,8 @@ export interface CreateBotModalProps {
   onOpenChange: (open: boolean) => void;
   /** Called with name and BOT_TYPE (CHAT = 1, VOICE = 2) when user submits */
   onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Shows loading spinner on Create button and disables it (e.g. while API call is in flight) */
+  isLoading?: boolean;
   className?: string;
 }
 
@@ -13647,6 +14922,10 @@ export interface BotListHeaderProps
   title?: string;
   /** Optional subtitle below the title */
   subtitle?: string;
+  /** Layout variant: default (title + subtitle only) or withSearch (row with optional right slot) */
+  variant?: "default" | "withSearch";
+  /** Right-side content when variant is "withSearch" (e.g. BotListSearch) */
+  rightContent?: React.ReactNode;
 }
 
 export interface BotListSearchProps
@@ -13672,16 +14951,41 @@ export interface BotListGridProps
   children: React.ReactNode;
 }
 
-export interface BotListActionProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
-  /** Called when Edit is selected */
-  onEdit?: () => void;
-  /** Called when Delete is selected */
-  onDelete?: () => void;
-  /** Custom trigger element; defaults to three-dot icon button */
-  trigger?: React.ReactNode;
-  /** Content alignment relative to trigger */
-  align?: "start" | "center" | "end";
+/** Props for CreateBotFlow: create card + Create Bot modal (no header). */
+export interface CreateBotFlowProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
+  /** Create new bot card label */
+  createCardLabel?: string;
+  /** Called when Create Bot modal is submitted with { name, type } */
+  onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+}
+
+/** Props for EditBotFlow: bot list + config view when Edit is clicked. */
+export interface EditBotFlowProps {
+  /** Bots to show in the list (e.g. first 2 for demo) */
+  bots: Bot[];
+  /** Page title */
+  title?: string;
+  /** Page subtitle */
+  subtitle?: string;
+  /** Search input placeholder */
+  searchPlaceholder?: string;
+  /** Create new bot card label */
+  createCardLabel?: string;
+  /** Override type badge labels */
+  typeLabels?: Partial<Record<BotType, string>>;
+  /** Called when Delete is selected on a bot */
+  onBotDelete?: (botId: string) => void;
+  /** Called when Create Bot modal is submitted */
+  onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
+  /** Called when search query changes */
+  onSearch?: (query: string) => void;
+  /** Renders the config view for the given bot; call onBack() to return to list */
+  renderConfig: (bot: Bot, onBack: () => void) => React.ReactNode;
+  /** Optional instruction text above the list (e.g. "Click the ⋮ menu...") */
+  instructionText?: React.ReactNode;
+  /** Root className for the list wrapper */
+  className?: string;
 }
 
 export interface BotListProps
@@ -13696,8 +15000,6 @@ export interface BotListProps
   onCreateBotSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
   /** Called when user selects Edit on a bot (card click or menu) */
   onBotEdit?: (botId: string) => void;
-  /** Called when user selects Publish on a bot (menu; optional) */
-  onBotPublish?: (botId: string) => void;
   /** Called when user selects Delete on a bot */
   onBotDelete?: (botId: string) => void;
   /** Called when the search query changes */
@@ -13719,14 +15021,15 @@ export interface BotListProps
 export type { BotCardProps } from "./types";
 
 export { CreateBotModal } from "./create-bot-modal";
-export type { CreateBotModalProps } from "./types";
+export { CreateBotFlow } from "./create-bot-flow";
+export { EditBotFlow } from "./edit-bot-flow";
+export type { CreateBotModalProps, CreateBotFlowProps, EditBotFlowProps } from "./types";
 
 export { BotList } from "./bot-list";
 export { BotListHeader } from "./bot-list-header";
 export { BotListSearch } from "./bot-list-search";
 export { BotListCreateCard } from "./bot-list-create-card";
 export { BotListGrid } from "./bot-list-grid";
-export { BotListAction } from "./bot-list-action";
 export { BOT_TYPE } from "./types";
 export type {
   BotListProps,
@@ -13734,7 +15037,6 @@ export type {
   BotListSearchProps,
   BotListCreateCardProps,
   BotListGridProps,
-  BotListActionProps,
   Bot,
   BotType,
   BotStatus,
@@ -14215,6 +15517,1514 @@ export type {
         }
       ],
     },
+    "attachment-preview": {
+      name: "attachment-preview",
+      description: "A file attachment preview for chat composers with image, video, audio, and document previews",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [],
+      isMultiFile: true,
+      directory: "attachment-preview",
+      mainFile: "attachment-preview.tsx",
+      files: [
+        {
+          name: "attachment-preview.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { X, Play, File } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import type { AttachmentPreviewProps } from "./types";
+
+const AttachmentPreview = React.forwardRef<HTMLDivElement, AttachmentPreviewProps>(
+  ({ className, file, onRemove, ...props }, ref) => {
+    const url = React.useMemo(() => URL.createObjectURL(file), [file]);
+
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    const isAudio = file.type.startsWith("audio/");
+
+    React.useEffect(() => {
+      return () => URL.revokeObjectURL(url);
+    }, [url]);
+
+    return (
+      <div
+        ref={ref}
+        className={cn("relative border-b border-semantic-border-layout", className)}
+        {...props}
+      >
+        {/* Remove button */}
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label="Remove attachment"
+          className="absolute top-2 right-2 z-10 size-7 rounded-full bg-[#0a0d12]/60 flex items-center justify-center hover:bg-[#0a0d12]/80 transition-colors"
+        >
+          <X className="size-4 text-white" />
+        </button>
+
+        {isImage ? (
+          <img
+            src={url}
+            alt={file.name}
+            className="w-full object-cover max-h-[300px]"
+          />
+        ) : isVideo ? (
+          <div
+            className="relative bg-[#0a0d12]"
+            style={{ aspectRatio: "16/10" }}
+          >
+            <video src={url} className="w-full h-full object-cover" />
+            {/* Center play overlay */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                <Play className="size-7 text-white fill-white ml-0.5" />
+              </div>
+            </div>
+            {/* Bottom timeline gradient */}
+            <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6 bg-gradient-to-t from-[#0a0d12]/70 to-transparent">
+              <div className="flex items-center gap-2">
+                <Play className="size-4 text-white" />
+                <span className="text-[12px] text-white/60" aria-hidden="true">
+                  &#9679;
+                </span>
+                <div className="flex-1 h-[3px] rounded-full bg-white/30" />
+                <span className="text-[12px] text-white tabular-nums">
+                  0:00
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : isAudio ? (
+          <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3">
+            <div className="size-10 rounded-full bg-semantic-primary flex items-center justify-center shrink-0">
+              <Play className="size-5 text-white fill-white ml-0.5" />
+            </div>
+            <div className="flex-1 h-1 bg-semantic-border-layout rounded-full">
+              <div className="w-0 h-full bg-semantic-primary rounded-full" />
+            </div>
+            <span className="text-[12px] text-semantic-text-muted tabular-nums shrink-0">
+              0:00
+            </span>
+          </div>
+        ) : (
+          <div
+            className="bg-semantic-bg-ui flex flex-col items-center justify-center"
+            style={{ aspectRatio: "16/10" }}
+          >
+            <div className="size-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-3">
+              <File className="size-8 text-semantic-text-muted" />
+            </div>
+            <p className="m-0 text-[14px] font-semibold text-semantic-text-primary truncate max-w-[80%] px-4">
+              {file.name}
+            </p>
+            <p className="m-0 text-[12px] text-semantic-text-muted mt-1">
+              {(file.size / (1024 * 1024)).toFixed(1)} MB
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+AttachmentPreview.displayName = "AttachmentPreview";
+
+export { AttachmentPreview };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export interface AttachmentPreviewProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** The file to preview */
+  file: File;
+  /** Called when the remove/close button is clicked */
+  onRemove: () => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { AttachmentPreview } from "./attachment-preview";
+export type { AttachmentPreviewProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "audio-media": {
+      name: "audio-media",
+      description: "A waveform-based audio player with play/pause, speed control, and SVG waveform visualization",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "dropdown-menu"
+      ],
+      isMultiFile: true,
+      directory: "audio-media",
+      mainFile: "audio-media.tsx",
+      files: [
+        {
+          name: "audio-media.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "../dropdown-menu";
+import type { AudioMediaProps } from "./types";
+
+const DEFAULT_WAVEFORM = [
+  4, 8, 14, 6, 20, 10, 4, 16, 7, 24, 5, 12, 18, 6, 10, 4, 14, 22, 7, 5, 16,
+  10, 6, 19, 8, 4, 14, 7, 12, 5, 18, 9, 4, 14, 6, 10, 22, 5, 13, 7, 4, 16, 9,
+  6, 19, 5, 12, 7, 6, 14, 10, 4, 17, 7, 12,
+];
+
+const DEFAULT_SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+const BAR_WIDTH = 2;
+const BAR_GAP = 1.5;
+const SVG_HEIGHT = 32;
+
+const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
+  (
+    {
+      className,
+      duration,
+      waveform = DEFAULT_WAVEFORM,
+      playedBars = 0,
+      barCount = 55,
+      playedColor = "#27ABB8",
+      unplayedColor = "#C0C3CA",
+      speedOptions = DEFAULT_SPEED_OPTIONS,
+      onPlayChange,
+      onSpeedChange,
+      ...props
+    },
+    ref
+  ) => {
+    const [playing, setPlaying] = React.useState(false);
+    const [speed, setSpeed] = React.useState(1);
+
+    const svgWidth = barCount * (BAR_WIDTH + BAR_GAP) - BAR_GAP;
+
+    const handlePlayPause = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      const next = !playing;
+      setPlaying(next);
+      onPlayChange?.(next);
+    };
+
+    const handleSpeedChange = (value: string) => {
+      const newSpeed = Number(value);
+      setSpeed(newSpeed);
+      onSpeedChange?.(newSpeed);
+    };
+
+    return (
+      <div
+        ref={ref}
+        className={cn("w-full", className)}
+        style={{ padding: "10px 14px 0 14px" }}
+        {...props}
+      >
+        <div className="flex items-center gap-3">
+          {/* Play / Pause button */}
+          <button
+            type="button"
+            onClick={handlePlayPause}
+            aria-label={playing ? "Pause" : "Play"}
+            className="shrink-0 size-10 rounded-full bg-semantic-primary flex items-center justify-center hover:opacity-90 transition-opacity"
+          >
+            {playing ? (
+              <svg
+                width="12"
+                height="14"
+                viewBox="0 0 12 14"
+                fill="none"
+                aria-hidden="true"
+              >
+                <rect
+                  x="0"
+                  y="0"
+                  width="4"
+                  height="14"
+                  rx="1.2"
+                  fill="white"
+                />
+                <rect
+                  x="8"
+                  y="0"
+                  width="4"
+                  height="14"
+                  rx="1.2"
+                  fill="white"
+                />
+              </svg>
+            ) : (
+              <svg
+                width="14"
+                height="16"
+                viewBox="0 0 14 16"
+                fill="none"
+                style={{ marginLeft: 2 }}
+                aria-hidden="true"
+              >
+                <path
+                  d="M1 1.87v12.26a1 1 0 001.5.86l10.5-6.13a1 1 0 000-1.72L2.5 1.01A1 1 0 001 1.87z"
+                  fill="white"
+                />
+              </svg>
+            )}
+          </button>
+
+          {/* Waveform */}
+          <div className="flex-1 min-w-0" style={{ height: SVG_HEIGHT }}>
+            <svg
+              viewBox={\`0 0 \${svgWidth} \${SVG_HEIGHT}\`}
+              preserveAspectRatio="none"
+              width="100%"
+              height="100%"
+              style={{ overflow: "visible" }}
+              aria-hidden="true"
+              data-testid="waveform-svg"
+            >
+              {waveform.slice(0, barCount).map((h, i) => (
+                <rect
+                  key={i}
+                  x={i * (BAR_WIDTH + BAR_GAP)}
+                  y={(SVG_HEIGHT - h) / 2}
+                  width={BAR_WIDTH}
+                  height={h}
+                  rx={1.5}
+                  fill={i < playedBars ? playedColor : unplayedColor}
+                />
+              ))}
+            </svg>
+            {duration && (
+              <p className="m-0 text-[10px] text-semantic-text-muted leading-none mt-1">
+                {duration}
+              </p>
+            )}
+          </div>
+
+          {/* Speed dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 min-w-[34px] h-[22px] px-2 flex items-center justify-center rounded-full bg-black/40 hover:opacity-80 transition-opacity"
+              >
+                <span className="text-[11px] font-semibold text-white leading-none">
+                  {speed}x
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+              <DropdownMenuRadioGroup
+                value={String(speed)}
+                onValueChange={handleSpeedChange}
+              >
+                {speedOptions.map((s) => (
+                  <DropdownMenuRadioItem key={s} value={String(s)}>
+                    {s === 1 ? "1x (Normal)" : \`\${s}x\`}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    );
+  }
+);
+AudioMedia.displayName = "AudioMedia";
+
+export { AudioMedia };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export interface AudioMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Audio duration text (e.g., "0:30", "2:15") */
+  duration?: string;
+  /** Array of bar heights for the waveform visualization. Defaults to a built-in pattern */
+  waveform?: number[];
+  /** Number of bars that are "played" (colored). Defaults to 0 */
+  playedBars?: number;
+  /** Total number of bars to render. Defaults to 55 */
+  barCount?: number;
+  /** Color for played bars. Defaults to "#27ABB8" (teal) */
+  playedColor?: string;
+  /** Color for unplayed bars. Defaults to "#C0C3CA" (gray) */
+  unplayedColor?: string;
+  /** Available speed options. Defaults to [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] */
+  speedOptions?: number[];
+  /** Callback when play state changes */
+  onPlayChange?: (playing: boolean) => void;
+  /** Callback when speed changes */
+  onSpeedChange?: (speed: number) => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { AudioMedia } from "./audio-media";
+export type { AudioMediaProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "carousel-media": {
+      name: "carousel-media",
+      description: "A horizontally scrollable card carousel with images, titles, and action buttons",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [],
+      isMultiFile: true,
+      directory: "carousel-media",
+      mainFile: "carousel-media.tsx",
+      files: [
+        {
+          name: "carousel-media.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { useState, useRef, useCallback } from "react";
+import { Reply, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import type { CarouselMediaProps } from "./types";
+
+const CarouselMedia = React.forwardRef<HTMLDivElement, CarouselMediaProps>(
+  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }, ref) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(
+      (cards?.length || 0) > 1
+    );
+
+    const updateScrollState = useCallback(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      setCanScrollLeft(el.scrollLeft > 5);
+      setCanScrollRight(
+        el.scrollLeft < el.scrollWidth - el.clientWidth - 5
+      );
+    }, []);
+
+    const scroll =
+      (dir: "left" | "right") => (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const scrollAmount = cardWidth + 12;
+        scrollRef.current?.scrollBy({
+          left: dir === "right" ? scrollAmount : -scrollAmount,
+          behavior: "smooth",
+        });
+        setTimeout(updateScrollState, 350);
+      };
+
+    return (
+      <div ref={ref} className={cn("relative", className)} {...props}>
+        <div
+          ref={scrollRef}
+          onScroll={updateScrollState}
+          className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {cards?.map((card, i) => (
+            <div
+              key={i}
+              className="shrink-0 bg-white rounded border border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
+              style={{ width: cardWidth }}
+            >
+              <img
+                src={card.url}
+                alt={card.title}
+                className="w-full object-cover"
+                style={{ height: imageHeight }}
+              />
+              <div className="px-3 pt-2.5 pb-2">
+                <p className="m-0 text-[14px] font-semibold text-semantic-text-primary line-clamp-2">
+                  {card.title}
+                </p>
+              </div>
+              {card.buttons?.map((btn, j) => (
+                <button
+                  key={j}
+                  onClick={btn.onClick}
+                  className="flex items-center justify-center gap-2 w-full border-t border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                  style={{ height: 40 }}
+                >
+                  {btn.icon === "reply" && <Reply className="size-4" />}
+                  {btn.icon === "link" && <ExternalLink className="size-4" />}
+                  {btn.label}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {canScrollLeft && (
+          <button
+            onClick={scroll("left")}
+            aria-label="Scroll left"
+            className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors"
+          >
+            <ChevronLeft className="size-4 text-semantic-text-primary" />
+          </button>
+        )}
+
+        {canScrollRight && (
+          <button
+            onClick={scroll("right")}
+            aria-label="Scroll right"
+            className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors"
+          >
+            <ChevronRight className="size-4 text-semantic-text-primary" />
+          </button>
+        )}
+      </div>
+    );
+  }
+);
+
+CarouselMedia.displayName = "CarouselMedia";
+
+export { CarouselMedia };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export interface CarouselCardButton {
+  /** Icon type to display before the label */
+  icon?: "reply" | "link";
+  /** Button text */
+  label: string;
+  /** Click handler */
+  onClick?: () => void;
+}
+
+export interface CarouselCard {
+  /** Image URL for the card */
+  url: string;
+  /** Card title text */
+  title: string;
+  /** Action buttons displayed below the title */
+  buttons?: CarouselCardButton[];
+}
+
+export interface CarouselMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Array of cards to display */
+  cards: CarouselCard[];
+  /** Width of each card in pixels. Defaults to 260 */
+  cardWidth?: number;
+  /** Height of card images in pixels. Defaults to 200 */
+  imageHeight?: number;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { CarouselMedia } from "./carousel-media";
+export type {
+  CarouselMediaProps,
+  CarouselCard,
+  CarouselCardButton,
+} from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "chat-bubble": {
+      name: "chat-bubble",
+      description: "A chat message bubble with sender/receiver variants, delivery status, reply quote, and media slot",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "reply-quote"
+      ],
+      isMultiFile: true,
+      directory: "chat-bubble",
+      mainFile: "chat-bubble.tsx",
+      files: [
+        {
+          name: "chat-bubble.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { ReplyQuote } from "../reply-quote";
+import { Check, CheckCheck, CircleAlert } from "lucide-react";
+import type { ChatBubbleProps, DeliveryStatus } from "./types";
+
+const maxWidthMap = {
+  text: "max-w-[65%]",
+  media: "max-w-[380px] w-full",
+  audio: "max-w-[340px] w-[340px]",
+  carousel: "max-w-[466px] w-full",
+};
+
+function DeliveryFooter({
+  status,
+  timestamp,
+  variant,
+}: {
+  status?: DeliveryStatus;
+  timestamp: string;
+  variant: "sender" | "receiver";
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center mt-1.5",
+        variant === "sender" ? "justify-end gap-1.5" : "justify-start gap-1.5"
+      )}
+    >
+      {variant === "sender" && status && (
+        <>
+          {status === "failed" ? (
+            <>
+              <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
+              <span className="text-[12px] text-semantic-error-primary font-medium">
+                Failed to send
+              </span>
+            </>
+          ) : (
+            <>
+              {status === "sent" ? (
+                <Check className="size-4 text-semantic-text-muted shrink-0" />
+              ) : (
+                <CheckCheck
+                  className={cn(
+                    "size-4 shrink-0",
+                    status === "read"
+                      ? "text-semantic-text-link"
+                      : "text-semantic-text-muted"
+                  )}
+                />
+              )}
+              <span className="text-[12px] text-semantic-text-muted">
+                {status === "sent"
+                  ? "Sent"
+                  : status === "delivered"
+                    ? "Delivered"
+                    : "Read"}
+              </span>
+            </>
+          )}
+          <span
+            className="font-semibold text-semantic-text-muted"
+            style={{ fontSize: 10 }}
+          >
+            &bull;
+          </span>
+        </>
+      )}
+      <span className="text-[12px] text-semantic-text-muted">{timestamp}</span>
+    </div>
+  );
+}
+
+/**
+ * ChatBubble displays a single chat message with sender/receiver alignment,
+ * optional sender name, reply quote, media slot, text content, delivery status,
+ * and timestamp.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ChatBubble variant="sender" timestamp="2:15 PM" status="sent">
+ *   Hello, how can I help you?
+ * </ChatBubble>
+ *
+ * <ChatBubble
+ *   variant="sender"
+ *   timestamp="2:15 PM"
+ *   status="delivered"
+ *   senderIndicator={<span className="text-[10px] font-medium">AS</span>}
+ * >
+ *   Message with agent initials indicator
+ * </ChatBubble>
+ * \`\`\`
+ */
+const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+  (
+    {
+      variant,
+      timestamp,
+      status,
+      senderName,
+      reply,
+      onReplyClick,
+      media,
+      maxWidth = "text",
+      senderIndicator,
+      children,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const hasMedia = !!media;
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex items-start gap-1.5",
+          variant === "sender" ? "justify-end" : "justify-start",
+          className
+        )}
+        {...props}
+      >
+        <div
+          className={cn(
+            "flex flex-col",
+            maxWidthMap[maxWidth],
+            variant === "sender" ? "items-end" : "items-start"
+          )}
+        >
+          {senderName && (
+            <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
+              {senderName}
+            </span>
+          )}
+          <div
+            className={cn(
+              "rounded overflow-hidden",
+              !hasMedia && "px-3 pt-3 pb-1.5",
+              variant === "sender"
+                ? "bg-semantic-info-surface border-[0.2px] border-semantic-border-layout text-semantic-text-primary"
+                : "bg-white border-[0.2px] border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+            )}
+          >
+            {/* Media area (full-bleed) */}
+            {media}
+
+            {/* Text + footer area */}
+            <div className={hasMedia ? "px-3 pb-1.5 pt-2" : ""}>
+              {reply && (
+                <ReplyQuote
+                  sender={reply.sender}
+                  message={reply.message}
+                  className="bg-white"
+                  onClick={() => {
+                    if (reply.messageId && onReplyClick) {
+                      onReplyClick(reply.messageId);
+                    }
+                  }}
+                />
+              )}
+              {children && (
+                <p className="text-[14px] leading-5 m-0">{children}</p>
+              )}
+              <DeliveryFooter
+                status={status}
+                timestamp={timestamp}
+                variant={variant}
+              />
+            </div>
+          </div>
+        </div>
+        {variant === "sender" && senderIndicator && (
+          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center">
+            {senderIndicator}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+ChatBubble.displayName = "ChatBubble";
+
+export { ChatBubble };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export type DeliveryStatus = "sent" | "delivered" | "read" | "failed";
+
+export interface ChatBubbleReply {
+  /** Name of the person being replied to */
+  sender: string;
+  /** The quoted message text */
+  message: string;
+  /** ID of the original message for scroll-to behavior */
+  messageId?: string;
+}
+
+export interface ChatBubbleProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Whether this is a sent (agent) or received (customer) message */
+  variant: "sender" | "receiver";
+  /** Message timestamp text (e.g., "2:15 PM") */
+  timestamp: string;
+  /** Delivery status — only shown for sender variant */
+  status?: DeliveryStatus;
+  /** Sender name displayed above the bubble */
+  senderName?: string;
+  /** Reply quote data */
+  reply?: ChatBubbleReply;
+  /** Callback when reply quote is clicked */
+  onReplyClick?: (messageId: string) => void;
+  /** Slot for media content (rendered full-bleed, no padding) */
+  media?: React.ReactNode;
+  /** Controls max-width of the bubble: "text" = 65%, "media" = 380px, "audio" = 340px, "carousel" = 466px */
+  maxWidth?: "text" | "media" | "audio" | "carousel";
+  /** Sender indicator rendered outside the bubble at bottom-right (e.g., agent avatar, bot icon) */
+  senderIndicator?: React.ReactNode;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatBubble } from "./chat-bubble";
+export type { ChatBubbleProps, ChatBubbleReply, DeliveryStatus } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "chat-composer": {
+      name: "chat-composer",
+      description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "button",
+            "reply-quote"
+      ],
+      isMultiFile: true,
+      directory: "chat-composer",
+      mainFile: "chat-composer.tsx",
+      files: [
+        {
+          name: "chat-composer.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Button } from "../button";
+import { ReplyQuote } from "../reply-quote";
+import { X, ChevronDown } from "lucide-react";
+import type { ChatComposerProps } from "./types";
+
+/**
+ * ChatComposer provides a message composition area with textarea, action buttons,
+ * reply-to preview, attachment slot, and send button. Also supports an "expired"
+ * state showing a template prompt instead of the full composer.
+ *
+ * The textarea auto-resizes as the user types, up to a maximum height.
+ * Use the \`onKeyDown\` prop to handle keyboard events like Enter-to-send
+ * or arrow-key navigation in autocomplete/canned-message menus.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ChatComposer
+ *   value={text}
+ *   onChange={setText}
+ *   onSend={handleSend}
+ *   onKeyDown={(e) => {
+ *     if (e.key === "Enter" && !e.shiftKey) {
+ *       e.preventDefault();
+ *       handleSend();
+ *     }
+ *   }}
+ *   placeholder="Type a message"
+ * />
+ * \`\`\`
+ */
+const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
+  (
+    {
+      className,
+      value,
+      onChange,
+      onSend,
+      placeholder = "Type a message",
+      textareaId,
+      textareaAriaLabel,
+      disabled = false,
+      onKeyDown,
+      reply,
+      onDismissReply,
+      onReplyClick,
+      attachment,
+      leftActions,
+      rightActions,
+      sendLabel = "Send",
+      showSendDropdown = false,
+      expired = false,
+      expiredMessage = "This chat has expired. Send a template to continue.",
+      onTemplateClick,
+      ...props
+    },
+    ref
+  ) => {
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+    // Focus textarea after reply dismiss
+    const handleDismissReply = () => {
+      onDismissReply?.();
+      requestAnimationFrame(() => {
+        textareaRef.current?.focus();
+      });
+    };
+
+    // Auto-resize textarea to fit content, capped by max-height CSS
+    React.useEffect(() => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      textarea.style.height = "auto";
+      textarea.style.height = \`\${textarea.scrollHeight}px\`;
+    }, [value]);
+    if (expired) {
+      return (
+        <div
+          ref={ref}
+          role="region"
+          aria-label="Message composer"
+          className={cn("shrink-0 bg-semantic-bg-ui p-4", className)}
+          {...props}
+        >
+          <div
+            role="status"
+            className="bg-white rounded-lg shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.06)] px-4 py-4 flex items-center justify-center gap-4"
+          >
+            <span className="text-sm text-semantic-text-muted">
+              {expiredMessage}
+            </span>
+            <Button onClick={onTemplateClick}>
+              Select Template
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        ref={ref}
+        role="region"
+        aria-label="Message composer"
+        className={cn("shrink-0 bg-semantic-bg-ui p-4", className)}
+        {...props}
+      >
+        <div className="bg-white rounded-lg shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.06)] px-4 py-3">
+          {/* Reply preview */}
+          {reply && (
+            <div className="flex items-center gap-2 mb-2">
+              <ReplyQuote
+                sender={reply.sender}
+                message={reply.message}
+                onClick={onReplyClick}
+                className="flex-1"
+              />
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={handleDismissReply}
+                aria-label="Dismiss reply"
+                className="shrink-0"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            {/* Left actions slot */}
+            {leftActions && (
+              <div className="flex items-center gap-0.5 shrink-0">
+                {leftActions}
+              </div>
+            )}
+
+            {/* Input area */}
+            <div className="flex-1 flex flex-col border border-semantic-border-layout rounded-lg bg-white overflow-hidden focus-within:border-semantic-border-focus transition-all">
+              {attachment}
+              <div className="flex items-end">
+                <textarea
+                  ref={textareaRef}
+                  id={textareaId}
+                  aria-label={textareaAriaLabel || placeholder}
+                  placeholder={placeholder}
+                  rows={1}
+                  value={value}
+                  onChange={(e) => onChange?.(e.target.value)}
+                  onKeyDown={onKeyDown}
+                  disabled={disabled}
+                  className="flex-1 resize-none px-3 py-2.5 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent min-h-[40px] max-h-[120px]"
+                />
+                {rightActions && (
+                  <div className="flex items-center px-2 py-2">
+                    {rightActions}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Send button */}
+            <Button
+              className="shrink-0"
+              onClick={onSend}
+              disabled={disabled}
+              aria-haspopup={showSendDropdown ? "true" : undefined}
+              rightIcon={
+                showSendDropdown ? (
+                  <ChevronDown className="size-3.5" />
+                ) : undefined
+              }
+            >
+              {sendLabel}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+ChatComposer.displayName = "ChatComposer";
+
+export { ChatComposer };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export interface ChatComposerReply {
+  /** Name of the person being replied to */
+  sender: string;
+  /** The quoted message text */
+  message: string;
+  /** ID of the original message */
+  messageId?: string;
+}
+
+export interface ChatComposerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "onKeyDown"> {
+  /** Current message text value */
+  value?: string;
+  /** Called when message text changes */
+  onChange?: (value: string) => void;
+  /** Called when send button is clicked */
+  onSend?: () => void;
+  /** Textarea placeholder text. Defaults to "Type a message" */
+  placeholder?: string;
+  /** HTML id for the textarea — allows external label linking via htmlFor */
+  textareaId?: string;
+  /** aria-label for the textarea. Defaults to the placeholder value */
+  textareaAriaLabel?: string;
+  /** Whether the composer is disabled */
+  disabled?: boolean;
+  /**
+   * Called on textarea keydown. Use for Enter-to-send, Escape to dismiss,
+   * or arrow-key navigation in autocomplete/canned-message menus.
+   */
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  /** Reply quote data — shows dismissible reply preview above textarea */
+  reply?: ChatComposerReply;
+  /** Called when the reply dismiss (X) button is clicked */
+  onDismissReply?: () => void;
+  /** Called when the reply quote is clicked (e.g., to scroll to original message) */
+  onReplyClick?: () => void;
+  /** Slot for attachment preview content (rendered above textarea) */
+  attachment?: React.ReactNode;
+  /** Slot for left action buttons (rendered to the left of textarea) */
+  leftActions?: React.ReactNode;
+  /** Slot for right action buttons (rendered inside textarea container, bottom-right) */
+  rightActions?: React.ReactNode;
+  /** Send button label. Defaults to "Send" */
+  sendLabel?: string;
+  /** Whether to show the send dropdown chevron. Defaults to false */
+  showSendDropdown?: boolean;
+  /** Whether the chat is expired (shows template prompt instead of composer) */
+  expired?: boolean;
+  /** Message shown in expired state. Defaults to "This chat has expired. Send a template to continue." */
+  expiredMessage?: string;
+  /** Called when "Select Template" button is clicked in expired state */
+  onTemplateClick?: () => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatComposer } from "./chat-composer";
+export type { ChatComposerProps, ChatComposerReply } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "doc-media": {
+      name: "doc-media",
+      description: "A document media component with preview, download, and file variants for chat messages",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [],
+      isMultiFile: true,
+      directory: "doc-media",
+      mainFile: "doc-media.tsx",
+      files: [
+        {
+          name: "doc-media.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
+import type { DocMediaProps } from "./types";
+
+const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
+  (
+    {
+      className,
+      variant = "preview",
+      thumbnailUrl,
+      filename,
+      fileType,
+      pageCount,
+      fileSize,
+      caption,
+      onDownload,
+      ...props
+    },
+    ref
+  ) => {
+    if (variant === "preview") {
+      return (
+        <div
+          ref={ref}
+          className={cn("relative rounded-t overflow-hidden", className)}
+          {...props}
+        >
+          <img
+            src={thumbnailUrl}
+            alt={filename || "Document preview"}
+            className="w-full object-cover"
+            style={{ aspectRatio: "442/308" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#1d222f]/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+            <p className="m-0 text-[14px] font-semibold text-white truncate">
+              {filename || "Document"}
+            </p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <File className="size-3.5 text-white/80" />
+              <span className="text-[12px] text-white/80">
+                {[
+                  fileType,
+                  pageCount && \`\${pageCount} pages\`,
+                  fileSize,
+                ]
+                  .filter(Boolean)
+                  .join("  \\u00B7  ")}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (variant === "download") {
+      return (
+        <div ref={ref} className={cn("relative", className)} {...props}>
+          <img
+            src={thumbnailUrl}
+            alt={caption || filename || "Document"}
+            className="w-full rounded-t object-cover max-h-[280px]"
+          />
+        </div>
+      );
+    }
+
+    // variant === "file"
+    const isSpreadsheet = fileType === "XLS" || fileType === "XLSX";
+    const accent = isSpreadsheet ? "#217346" : "#535862";
+    const accentLight = isSpreadsheet ? "#dcfae6" : "#e9eaeb";
+    const label = fileType || "FILE";
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "mx-2.5 mt-2.5 rounded overflow-hidden border border-semantic-border-layout",
+          className
+        )}
+        {...props}
+      >
+        <div
+          className="bg-semantic-bg-ui flex items-center justify-center w-full"
+          style={{ padding: "36px 0" }}
+        >
+          <div className="flex flex-col items-center">
+            <div
+              className="rounded-2xl flex items-center justify-center"
+              style={{ width: 72, height: 72, backgroundColor: accentLight }}
+            >
+              <FileSpreadsheet
+                style={{ width: 32, height: 32, color: accent }}
+              />
+            </div>
+            <div
+              className="mt-2.5 rounded-full px-3 py-0.5"
+              style={{ backgroundColor: accent }}
+            >
+              <span className="text-[11px] font-bold text-white tracking-wide">
+                {label}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div
+          className="bg-muted flex items-center gap-2"
+          style={{ padding: "12px 16px" }}
+        >
+          <span className="text-[14px] font-semibold text-semantic-text-primary truncate flex-1 tracking-[0.1px]">
+            {filename || "File"}
+          </span>
+          <button
+            type="button"
+            onClick={onDownload}
+            className="shrink-0 size-8 rounded-full flex items-center justify-center hover:bg-semantic-bg-hover transition-colors"
+            aria-label="Download"
+          >
+            <ArrowDownToLine className="size-[18px] text-semantic-text-secondary" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+);
+DocMedia.displayName = "DocMedia";
+
+export { DocMedia };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export type DocMediaVariant = "preview" | "download" | "file";
+
+export interface DocMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Display variant */
+  variant?: DocMediaVariant;
+  /** Thumbnail or preview image URL */
+  thumbnailUrl?: string;
+  /** Document filename */
+  filename?: string;
+  /** File type label (e.g., "PDF", "XLS", "XLSX", "DOC") */
+  fileType?: string;
+  /** Number of pages (for PDFs) */
+  pageCount?: number;
+  /** File size text (e.g., "2.4 MB") */
+  fileSize?: string;
+  /** Caption text */
+  caption?: string;
+  /** Handler for download button click (variant="file" only) */
+  onDownload?: () => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { DocMedia } from "./doc-media";
+export type { DocMediaProps, DocMediaVariant } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "video-media": {
+      name: "video-media",
+      description: "A video player with thumbnail overlay, play/pause, seek bar, speed dropdown, volume, and fullscreen",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "dropdown-menu"
+      ],
+      isMultiFile: true,
+      directory: "video-media",
+      mainFile: "video-media.tsx",
+      files: [
+        {
+          name: "video-media.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { useState } from "react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+  Minimize,
+} from "lucide-react";
+import { cn } from "../../../lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "../dropdown-menu";
+import type { VideoMediaProps } from "./types";
+
+const DEFAULT_SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+
+const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
+  (
+    {
+      className,
+      thumbnailUrl,
+      duration,
+      speedOptions = DEFAULT_SPEED_OPTIONS,
+      progress = 0,
+      onPlayChange,
+      onSpeedChange,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
+    const [playing, setPlaying] = useState(false);
+    const [muted, setMuted] = useState(false);
+    const [fullscreen, setFullscreen] = useState(false);
+    const [speed, setSpeed] = useState(1);
+    const [volume, setVolume] = useState(75);
+
+    const handleRootClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      const nextPlaying = !playing;
+      setPlaying(nextPlaying);
+      onPlayChange?.(nextPlaying);
+      onClick?.(e);
+    };
+
+    const handleSpeedChange = (value: string) => {
+      const newSpeed = Number(value);
+      setSpeed(newSpeed);
+      onSpeedChange?.(newSpeed);
+    };
+
+    const handleVolumeClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const pct = Math.round(Math.min(100, Math.max(0, (x / rect.width) * 100)));
+      setVolume(pct);
+      if (muted && pct > 0) setMuted(false);
+    };
+
+    const effectiveVolume = muted ? 0 : volume;
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "relative rounded-t overflow-hidden cursor-pointer group",
+          className
+        )}
+        onClick={handleRootClick}
+        {...props}
+      >
+        {/* Thumbnail */}
+        <img
+          src={thumbnailUrl}
+          alt="Video thumbnail"
+          className="w-full object-cover"
+          style={{ aspectRatio: "16/10" }}
+        />
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d12]/70 via-[#0a0d12]/10 to-transparent" />
+
+        {/* Center play/pause */}
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center transition-opacity",
+            playing
+              ? "opacity-0 group-hover:opacity-100"
+              : "opacity-100"
+          )}
+        >
+          <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
+            {playing ? (
+              <Pause className="size-7 text-white fill-white" />
+            ) : (
+              <Play className="size-7 text-white fill-white ml-0.5" />
+            )}
+          </div>
+        </div>
+
+        {/* Bottom controls */}
+        <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-8">
+          {/* Seek bar */}
+          <div className="flex items-center gap-2 mb-2">
+            <div className="relative flex-1 h-[3px] rounded-full bg-white/30">
+              <div
+                className="absolute left-0 top-0 h-full rounded-full bg-white"
+                style={{ width: \`\${progress}%\` }}
+              />
+              <div
+                className="absolute top-1/2 -translate-y-1/2 size-3 rounded-full bg-white shadow-md"
+                style={{ left: \`\${progress}%\` }}
+              />
+            </div>
+          </div>
+
+          {/* Controls row */}
+          <div className="flex items-center justify-between">
+            <span className="text-[12px] text-white tabular-nums">
+              {duration || "0:00"}
+            </span>
+
+            <div className="flex items-center gap-2.5">
+              {/* Speed dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[11px] font-semibold text-white bg-white/20 hover:bg-white/30 transition-colors px-2 py-0.5 rounded-full"
+                  >
+                    {speed}x
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-[160px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={String(speed)}
+                    onValueChange={handleSpeedChange}
+                  >
+                    {speedOptions.map((s) => (
+                      <DropdownMenuRadioItem key={s} value={String(s)}>
+                        {s === 1 ? "1x (Normal)" : \`\${s}x\`}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Volume */}
+              <div
+                className="flex items-center gap-1.5"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setMuted(!muted)}
+                  className="hover:opacity-70 transition-opacity"
+                >
+                  {muted || volume === 0 ? (
+                    <VolumeX className="size-4 text-white/50" />
+                  ) : (
+                    <Volume2 className="size-4 text-white" />
+                  )}
+                </button>
+                <div
+                  className="relative w-[60px] h-4 flex items-center cursor-pointer"
+                  onClick={handleVolumeClick}
+                >
+                  <div className="w-full h-[3px] rounded-full bg-white/30">
+                    <div
+                      className="h-full rounded-full bg-white"
+                      style={{ width: \`\${effectiveVolume}%\` }}
+                    />
+                  </div>
+                  <div
+                    className="absolute top-1/2 size-2.5 rounded-full bg-white"
+                    style={{
+                      left: \`\${effectiveVolume}%\`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Fullscreen */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFullscreen(!fullscreen);
+                }}
+                className="hover:opacity-70 transition-opacity"
+              >
+                {fullscreen ? (
+                  <Minimize className="size-4 text-white" />
+                ) : (
+                  <Maximize className="size-4 text-white" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+VideoMedia.displayName = "VideoMedia";
+
+export { VideoMedia };
+`, prefix),
+        },
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+export interface VideoMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** URL for the video thumbnail image */
+  thumbnailUrl: string;
+  /** Video duration text (e.g., "2:30", "1:05:30") */
+  duration?: string;
+  /** Available speed options. Defaults to [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] */
+  speedOptions?: number[];
+  /** Initial progress percentage (0-100). Defaults to 0 */
+  progress?: number;
+  /** Callback when play state changes */
+  onPlayChange?: (playing: boolean) => void;
+  /** Callback when speed changes */
+  onSpeedChange?: (speed: number) => void;
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { VideoMedia } from "./video-media";
+export type { VideoMediaProps } from "./types";
+`, prefix),
+        }
+      ],
+    },
     "ivr-bot": {
       name: "ivr-bot",
       description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)",
@@ -14301,9 +17111,13 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       onSampleFileDownload,
       onDownloadKnowledgeFile,
       onDeleteKnowledgeFile,
+      knowledgeDownloadDisabled,
+      knowledgeDeleteDisabled,
       onCreateFunction,
       onEditFunction,
       onDeleteFunction,
+      functionEditDisabled,
+      functionDeleteDisabled,
       onTestApi,
       functionsInfoTooltip,
       knowledgeBaseInfoTooltip,
@@ -14444,29 +17258,33 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
               onDownload={onDownloadKnowledgeFile}
-              infoTooltip={knowledgeBaseInfoTooltip}
-              disabled={disabled}
-              onDelete={(id) => {
+              onDelete={onDeleteKnowledgeFile ? (id) => {
                 update({
                   knowledgeBaseFiles: data.knowledgeBaseFiles.filter(
                     (f) => f.id !== id
                   ),
                 });
-                onDeleteKnowledgeFile?.(id);
-              }}
+                onDeleteKnowledgeFile(id);
+              } : undefined}
+              infoTooltip={knowledgeBaseInfoTooltip}
+              disabled={disabled}
+              downloadDisabled={knowledgeDownloadDisabled}
+              deleteDisabled={knowledgeDeleteDisabled}
             />
             <FunctionsCard
               functions={data.functions}
               onAddFunction={() => setCreateFnOpen(true)}
-              onEditFunction={handleEditFunction}
-              infoTooltip={functionsInfoTooltip}
-              disabled={disabled}
-              onDeleteFunction={(id) => {
+              onEditFunction={onEditFunction ? handleEditFunction : undefined}
+              onDeleteFunction={onDeleteFunction ? (id) => {
                 update({
                   functions: data.functions.filter((f) => f.id !== id),
                 });
-                onDeleteFunction?.(id);
-              }}
+                onDeleteFunction(id);
+              } : undefined}
+              infoTooltip={functionsInfoTooltip}
+              disabled={disabled}
+              editDisabled={functionEditDisabled}
+              deleteDisabled={functionDeleteDisabled}
             />
             <FrustrationHandoverCard
               data={data}
@@ -14494,6 +17312,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           onTestApi={onTestApi}
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          sessionVariables={sessionVariables}
         />
 
         {/* Edit Function Modal */}
@@ -14506,6 +17325,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          sessionVariables={sessionVariables}
+          disabled={disabled}
         />
 
         {/* File Upload Modal */}
@@ -14560,6 +17381,12 @@ const QUERY_PARAM_KEY_MAX = 512;
 const QUERY_PARAM_VALUE_MAX = 2048;
 const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\\-~]+$/;
 
+const DEFAULT_SESSION_VARIABLES = [
+  "{{Caller number}}",
+  "{{Time}}",
+  "{{Contact Details}}",
+];
+
 function validateQueryParamKey(key: string): string | undefined {
   if (!key.trim()) return "Query param key is required";
   if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
@@ -14577,13 +17404,206 @@ function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+// ── Variable trigger helpers ───────────────────────────────────────────────────
+
+interface TriggerState {
+  query: string;
+  from: number;
+  to: number;
+}
+
+function detectVarTrigger(value: string, cursor: number): TriggerState | null {
+  const before = value.slice(0, cursor);
+  const match = /\\{\\{([^}]*)$/.exec(before);
+  if (!match) return null;
+  return { query: match[1].toLowerCase(), from: match.index, to: cursor };
+}
+
+function insertVar(value: string, variable: string, from: number, to: number): string {
+  return value.slice(0, from) + variable + value.slice(to);
+}
+
+function extractVarRefs(texts: string[]): string[] {
+  const pattern = /\\{\\{[^}]+\\}\\}/g;
+  const all = texts.flatMap((t) => t.match(pattern) ?? []);
+  return Array.from(new Set(all));
+}
+
+/** Mirror-div technique — returns { top, left } relative to the element's top-left corner. */
+function getCaretPixelPos(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  position: number
+): { top: number; left: number } {
+  const cs = window.getComputedStyle(el);
+  const mirror = document.createElement("div");
+
+  (
+    [
+      "boxSizing", "width", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+      "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
+      "fontFamily", "fontSize", "fontWeight", "fontStyle", "fontVariant",
+      "letterSpacing", "lineHeight", "textTransform", "wordSpacing", "tabSize",
+    ] as (keyof CSSStyleDeclaration)[]
+  ).forEach((prop) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mirror.style as any)[prop] = cs[prop];
+  });
+
+  mirror.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "pre";
+  mirror.style.wordWrap = el.tagName === "TEXTAREA" ? "break-word" : "normal";
+  mirror.style.position = "absolute";
+  mirror.style.visibility = "hidden";
+  mirror.style.overflow = "hidden";
+  mirror.style.top = "0";
+  mirror.style.left = "0";
+  mirror.style.width = el.offsetWidth + "px";
+
+  document.body.appendChild(mirror);
+  mirror.appendChild(document.createTextNode(el.value.substring(0, position)));
+
+  const marker = document.createElement("span");
+  marker.textContent = "\\u200b";
+  mirror.appendChild(marker);
+
+  const markerRect = marker.getBoundingClientRect();
+  const mirrorRect = mirror.getBoundingClientRect();
+  document.body.removeChild(mirror);
+
+  const scrollTop = el instanceof HTMLTextAreaElement ? el.scrollTop : 0;
+  return {
+    top: markerRect.top - mirrorRect.top - scrollTop,
+    left: markerRect.left - mirrorRect.left,
+  };
+}
+
+// Uses same visual classes as DropdownMenuContent + DropdownMenuItem.
+// Position is cursor-anchored via getCaretPixelPos.
+function VarPopup({
+  variables,
+  onSelect,
+  style,
+}: {
+  variables: string[];
+  onSelect: (v: string) => void;
+  style?: React.CSSProperties;
+}) {
+  if (variables.length === 0) return null;
+  return (
+    <div
+      role="listbox"
+      style={style}
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+    >
+      {variables.map((v) => (
+        <button
+          key={v}
+          type="button"
+          role="option"
+          onMouseDown={(e) => {
+            e.preventDefault(); // keep input focused so blur doesn't close popup first
+            onSelect(v);
+          }}
+          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+        >
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ── VariableInput — input with {{ autocomplete ─────────────────────────────────
+
+function VariableInput({
+  value,
+  onChange,
+  sessionVariables,
+  placeholder,
+  maxLength,
+  className,
+  inputRef: externalInputRef,
+  ...inputProps
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  sessionVariables: string[];
+  placeholder?: string;
+  maxLength?: number;
+  className?: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  [k: string]: unknown;
+}) {
+  const internalRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = externalInputRef ?? internalRef;
+  const [trigger, setTrigger] = React.useState<TriggerState | null>(null);
+  const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
+
+  const filtered = trigger
+    ? sessionVariables.filter((v) => v.toLowerCase().includes(trigger.query))
+    : [];
+
+  const updatePopupPos = (el: HTMLInputElement, cursor: number) => {
+    const caret = getCaretPixelPos(el, cursor);
+    const lineHeight = parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+    const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+    setPopupStyle({ top: caret.top + lineHeight, left });
+  };
+
+  const clearTrigger = () => {
+    setTrigger(null);
+    setPopupStyle(undefined);
+  };
+
+  const handleSelect = (variable: string) => {
+    if (!trigger) return;
+    onChange(insertVar(value, variable, trigger.from, trigger.to));
+    clearTrigger();
+    requestAnimationFrame(() => {
+      const el = inputRef.current;
+      if (el) {
+        const pos = trigger.from + variable.length;
+        el.focus();
+        el.setSelectionRange(pos, pos);
+      }
+    });
+  };
+
+  return (
+    <div className="relative w-full">
+      <input
+        ref={inputRef}
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        className={className}
+        onChange={(e) => {
+          onChange(e.target.value);
+          const cursor = e.target.selectionStart ?? e.target.value.length;
+          const t = detectVarTrigger(e.target.value, cursor);
+          setTrigger(t);
+          if (t) updatePopupPos(e.target, cursor);
+          else setPopupStyle(undefined);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") clearTrigger();
+        }}
+        onBlur={() => clearTrigger()}
+        {...inputProps}
+      />
+      <VarPopup variables={filtered} onSelect={handleSelect} style={popupStyle} />
+    </div>
+  );
+}
+
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
   "w-full h-[42px] px-4 text-base rounded border",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
-  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+  "disabled:opacity-50 disabled:cursor-not-allowed"
 );
 
 const textareaCls = cn(
@@ -14591,7 +17611,8 @@ const textareaCls = cn(
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none hover:border-semantic-border-input-focus",
-  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+  "disabled:opacity-50 disabled:cursor-not-allowed"
 );
 
 // ── KeyValueTable ─────────────────────────────────────────────────────────────
@@ -14606,6 +17627,8 @@ function KeyValueTable({
   valueMaxLength,
   keyRegex,
   keyRegexError,
+  sessionVariables = [],
+  disabled = false,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
@@ -14615,6 +17638,8 @@ function KeyValueTable({
   valueMaxLength?: number;
   keyRegex?: RegExp;
   keyRegexError?: string;
+  sessionVariables?: string[];
+  disabled?: boolean;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
     // Replace spaces with hyphens in key values
@@ -14677,8 +17702,10 @@ function KeyValueTable({
                   onChange={(e) => update(row.id, { key: e.target.value })}
                   placeholder="Key"
                   maxLength={keyMaxLength}
+                  disabled={disabled}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.key && "border-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.key)}
@@ -14691,19 +17718,21 @@ function KeyValueTable({
                 )}
               </div>
 
-              {/* Value column */}
+              {/* Value column — uses VariableInput for {{ autocomplete */}
               <div className="flex-[2] flex flex-col min-w-0">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Value
                 </span>
-                <input
-                  type="text"
+                <VariableInput
                   value={row.value}
-                  onChange={(e) => update(row.id, { value: e.target.value })}
+                  onChange={(v) => update(row.id, { value: v })}
+                  sessionVariables={sessionVariables}
                   placeholder="Type {{ to add variables"
                   maxLength={valueMaxLength}
+                  disabled={disabled}
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.value && "border-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.value)}
@@ -14723,6 +17752,7 @@ function KeyValueTable({
                   variant="ghost"
                   size="icon"
                   onClick={() => remove(row.id)}
+                  disabled={disabled}
                   className={cn("rounded-md", deleteRowButtonClass)}
                   aria-label="Delete row"
                 >
@@ -14737,7 +17767,11 @@ function KeyValueTable({
         <button
           type="button"
           onClick={add}
-          className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
+          disabled={disabled}
+          className={cn(
+            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
         >
           <Plus className="size-3.5 shrink-0" />
           <span>Add row</span>
@@ -14764,6 +17798,8 @@ export const CreateFunctionModal = React.forwardRef<
       promptMaxLength = 1000,
       initialStep = 1,
       initialTab = "header",
+      sessionVariables = DEFAULT_SESSION_VARIABLES,
+      disabled = false,
       className,
     },
     ref
@@ -14787,6 +17823,46 @@ export const CreateFunctionModal = React.forwardRef<
     const [urlError, setUrlError] = React.useState("");
     const [bodyError, setBodyError] = React.useState("");
 
+    // Variable trigger state for URL and body
+    const urlInputRef = React.useRef<HTMLInputElement>(null);
+    const bodyTextareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const [urlTrigger, setUrlTrigger] = React.useState<TriggerState | null>(null);
+    const [bodyTrigger, setBodyTrigger] = React.useState<TriggerState | null>(null);
+    const [urlPopupStyle, setUrlPopupStyle] = React.useState<React.CSSProperties | undefined>();
+    const [bodyPopupStyle, setBodyPopupStyle] = React.useState<React.CSSProperties | undefined>();
+
+    const filteredUrlVars = urlTrigger
+      ? sessionVariables.filter((v) => v.toLowerCase().includes(urlTrigger.query))
+      : [];
+    const filteredBodyVars = bodyTrigger
+      ? sessionVariables.filter((v) => v.toLowerCase().includes(bodyTrigger.query))
+      : [];
+
+    const computePopupStyle = (
+      el: HTMLTextAreaElement | HTMLInputElement,
+      cursor: number
+    ): React.CSSProperties => {
+      const caret = getCaretPixelPos(el, cursor);
+      const lineHeight = parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+      const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+      return { top: caret.top + lineHeight, left };
+    };
+
+    // Test variable values — filled by user before clicking Test API
+    const [testVarValues, setTestVarValues] = React.useState<Record<string, string>>({});
+
+    // Unique {{variable}} refs found across url, body, headers, queryParams
+    const testableVars = React.useMemo(
+      () =>
+        extractVarRefs([
+          url,
+          body,
+          ...headers.map((h) => h.value),
+          ...queryParams.map((q) => q.value),
+        ]),
+      [url, body, headers, queryParams]
+    );
+
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
       if (open) {
@@ -14804,6 +17880,11 @@ export const CreateFunctionModal = React.forwardRef<
         setNameError("");
         setUrlError("");
         setBodyError("");
+        setUrlTrigger(null);
+        setBodyTrigger(null);
+        setUrlPopupStyle(undefined);
+        setBodyPopupStyle(undefined);
+        setTestVarValues({});
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -14824,6 +17905,11 @@ export const CreateFunctionModal = React.forwardRef<
       setNameError("");
       setUrlError("");
       setBodyError("");
+      setUrlTrigger(null);
+      setBodyTrigger(null);
+      setUrlPopupStyle(undefined);
+      setBodyPopupStyle(undefined);
+      setTestVarValues({});
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -14870,7 +17956,7 @@ export const CreateFunctionModal = React.forwardRef<
     };
 
     const handleNext = () => {
-      if (name.trim() && prompt.trim().length >= promptMinLength) setStep(2);
+      if (disabled || (name.trim() && prompt.trim().length >= promptMinLength)) setStep(2);
     };
 
     const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
@@ -14901,22 +17987,58 @@ export const CreateFunctionModal = React.forwardRef<
       handleClose();
     };
 
+    // Substitute {{variable}} references with user-provided test values before calling onTestApi
+    const substituteVars = (text: string) =>
+      text.replace(/\\{\\{[^}]+\\}\\}/g, (match) => testVarValues[match] ?? match);
+
     const handleTestApi = async () => {
       if (!onTestApi) return;
       setIsTesting(true);
       try {
         const step2: CreateFunctionStep2Data = {
           method,
-          url,
-          headers,
-          queryParams,
-          body,
+          url: substituteVars(url),
+          headers: headers.map((h) => ({ ...h, value: substituteVars(h.value) })),
+          queryParams: queryParams.map((q) => ({ ...q, value: substituteVars(q.value) })),
+          body: substituteVars(body),
         };
         const response = await onTestApi(step2);
         setApiResponse(response);
       } finally {
         setIsTesting(false);
       }
+    };
+
+    // URL variable insertion
+    const handleUrlVarSelect = (variable: string) => {
+      if (!urlTrigger) return;
+      setUrl(insertVar(url, variable, urlTrigger.from, urlTrigger.to));
+      setUrlTrigger(null);
+      setUrlPopupStyle(undefined);
+      requestAnimationFrame(() => {
+        const el = urlInputRef.current;
+        if (el) {
+          const pos = urlTrigger.from + variable.length;
+          el.focus();
+          el.setSelectionRange(pos, pos);
+        }
+      });
+    };
+
+    // Body variable insertion
+    const handleBodyVarSelect = (variable: string) => {
+      if (!bodyTrigger) return;
+      setBody(insertVar(body, variable, bodyTrigger.from, bodyTrigger.to));
+      setBodyTrigger(null);
+      setBodyPopupStyle(undefined);
+      requestAnimationFrame(() => {
+        const el = bodyTextareaRef.current;
+        if (el) {
+          const pos = bodyTrigger.from + variable.length;
+          el.focus();
+          el.setSelectionRange(pos, pos);
+        }
+      });
     };
 
     const headersHaveKeyErrors = headers.some(
@@ -14987,6 +18109,7 @@ export const CreateFunctionModal = React.forwardRef<
                       type="text"
                       value={name}
                       maxLength={FUNCTION_NAME_MAX}
+                      disabled={disabled}
                       onChange={(e) => {
                         setName(e.target.value);
                         if (nameError) validateName(e.target.value);
@@ -15017,6 +18140,7 @@ export const CreateFunctionModal = React.forwardRef<
                       id="fn-prompt"
                       value={prompt}
                       maxLength={promptMaxLength}
+                      disabled={disabled}
                       onChange={(e) => setPrompt(e.target.value)}
                       placeholder="Enter the description of the function"
                       rows={5}
@@ -15045,7 +18169,7 @@ export const CreateFunctionModal = React.forwardRef<
                   </span>
                   <div
                     className={cn(
-                      "flex h-[42px] rounded border border-semantic-border-input overflow-hidden bg-semantic-bg-primary",
+                      "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
                       "hover:border-semantic-border-input-focus",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
@@ -15055,10 +18179,14 @@ export const CreateFunctionModal = React.forwardRef<
                     <div className="relative shrink-0 border-r border-semantic-border-layout">
                       <select
                         value={method}
+                        disabled={disabled}
                         onChange={(e) =>
                           setMethod(e.target.value as HttpMethod)
                         }
-                        className="h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]"
+                        className={cn(
+                          "h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]",
+                          disabled && "opacity-50 cursor-not-allowed"
+                        )}
                         aria-label="HTTP method"
                       >
                         {HTTP_METHODS.map((m) => (
@@ -15072,19 +18200,39 @@ export const CreateFunctionModal = React.forwardRef<
                         aria-hidden="true"
                       />
                     </div>
-                    {/* URL input */}
-                    <input
-                      type="text"
-                      value={url}
-                      maxLength={URL_MAX}
-                      onChange={(e) => {
-                        setUrl(e.target.value);
-                        if (urlError) validateUrl(e.target.value);
-                      }}
-                      onBlur={(e) => validateUrl(e.target.value)}
-                      placeholder="Enter URL or Type {{ to add variables"
-                      className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
-                    />
+                    {/* URL input with {{ trigger */}
+                    <div className="relative flex-1 min-w-0">
+                      <input
+                        ref={urlInputRef}
+                        type="text"
+                        value={url}
+                        maxLength={URL_MAX}
+                        disabled={disabled}
+                        onChange={(e) => {
+                          setUrl(e.target.value);
+                          if (urlError) validateUrl(e.target.value);
+                          const cursor = e.target.selectionStart ?? e.target.value.length;
+                          const t = detectVarTrigger(e.target.value, cursor);
+                          setUrlTrigger(t);
+                          if (t) setUrlPopupStyle(computePopupStyle(e.target, cursor));
+                          else setUrlPopupStyle(undefined);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") { setUrlTrigger(null); setUrlPopupStyle(undefined); }
+                        }}
+                        onBlur={(e) => {
+                          validateUrl(e.target.value);
+                          setUrlTrigger(null);
+                          setUrlPopupStyle(undefined);
+                        }}
+                        placeholder="Enter URL or Type {{ to add variables"
+                        className={cn(
+                          "h-full w-full px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none",
+                          disabled && "opacity-50 cursor-not-allowed"
+                        )}
+                      />
+                      <VarPopup variables={filteredUrlVars} onSelect={handleUrlVarSelect} style={urlPopupStyle} />
+                    </div>
                   </div>
                   {urlError && (
                     <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
@@ -15126,6 +18274,8 @@ export const CreateFunctionModal = React.forwardRef<
                       valueMaxLength={HEADER_VALUE_MAX}
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters."
+                      sessionVariables={sessionVariables}
+                      disabled={disabled}
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -15143,6 +18293,8 @@ export const CreateFunctionModal = React.forwardRef<
                           value: validateQueryParamValue(row.value),
                         };
                       }}
+                      sessionVariables={sessionVariables}
+                      disabled={disabled}
                     />
                   )}
                   {activeTab === "body" && (
@@ -15152,13 +18304,27 @@ export const CreateFunctionModal = React.forwardRef<
                       </span>
                       <div className={cn("relative")}>
                         <textarea
+                          ref={bodyTextareaRef}
                           value={body}
                           maxLength={BODY_MAX}
+                          disabled={disabled}
                           onChange={(e) => {
                             setBody(e.target.value);
                             if (bodyError) validateBody(e.target.value);
+                            const cursor = e.target.selectionStart ?? e.target.value.length;
+                            const t = detectVarTrigger(e.target.value, cursor);
+                            setBodyTrigger(t);
+                            if (t) setBodyPopupStyle(computePopupStyle(e.target, cursor));
+                            else setBodyPopupStyle(undefined);
                           }}
-                          onBlur={(e) => validateBody(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Escape") { setBodyTrigger(null); setBodyPopupStyle(undefined); }
+                          }}
+                          onBlur={(e) => {
+                            validateBody(e.target.value);
+                            setBodyTrigger(null);
+                            setBodyPopupStyle(undefined);
+                          }}
                           placeholder="Enter request body (JSON). Type {{ to add variables"
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
@@ -15166,6 +18332,7 @@ export const CreateFunctionModal = React.forwardRef<
                         <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
                           {body.length}/{BODY_MAX}
                         </span>
+                        <VarPopup variables={filteredBodyVars} onSelect={handleBodyVarSelect} style={bodyPopupStyle} />
                       </div>
                       {bodyError && (
                         <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
@@ -15182,6 +18349,34 @@ export const CreateFunctionModal = React.forwardRef<
                     </span>
                     <div className="border-t border-semantic-border-layout" />
                   </div>
+
+                  {/* Variable test values — shown when URL/body/params contain {{variables}} */}
+                  {testableVars.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs text-semantic-text-muted">
+                        Variable values for testing
+                      </span>
+                      {testableVars.map((variable) => (
+                        <div key={variable} className="flex items-center gap-3">
+                          <span className="text-xs text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
+                            {variable}
+                          </span>
+                          <input
+                            type="text"
+                            value={testVarValues[variable] ?? ""}
+                            onChange={(e) =>
+                              setTestVarValues((prev) => ({
+                                ...prev,
+                                [variable]: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter test value"
+                            className={cn(inputCls, "flex-1 h-9 text-sm")}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   <button
                     type="button"
@@ -15224,7 +18419,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleNext}
-                  disabled={!isStep1Valid}
+                  disabled={!disabled && !isStep1Valid}
                 >
                   Next
                 </Button>
@@ -15242,7 +18437,7 @@ export const CreateFunctionModal = React.forwardRef<
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
-                  disabled={!isStep2Valid}
+                  disabled={!isStep2Valid || disabled}
                 >
                   Submit
                 </Button>
@@ -15334,11 +18529,14 @@ function Field({
   label,
   required,
   helperText,
+  characterCount,
   children,
 }: {
   label: string;
   required?: boolean;
   helperText?: string;
+  /** e.g. { current: 0, max: 50 } to show "0/50" below right */
+  characterCount?: { current: number; max: number };
   children: React.ReactNode;
 }) {
   return (
@@ -15350,36 +18548,58 @@ function Field({
         )}
       </label>
       {children}
-      {helperText && (
-        <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted">
-          <Info className="size-3.5 shrink-0" />
-          <p className="m-0">{helperText}</p>
+      {(helperText || characterCount) && (
+        <div className="flex items-center justify-between gap-2">
+          {helperText ? (
+            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
+              <Info className="size-3.5 shrink-0" />
+              <p className="m-0">{helperText}</p>
+            </div>
+          ) : (
+            <span />
+          )}
+          {characterCount != null && (
+            <span className="text-sm text-semantic-text-muted shrink-0">
+              {characterCount.current}/{characterCount.max}
+            </span>
+          )}
         </div>
       )}
     </div>
   );
 }
 
+const BOT_NAME_MAX_LENGTH = 50;
+const PRIMARY_ROLE_MAX_LENGTH = 50;
+const TONE_MAX_ITEMS = 5;
+const TONE_MAX_LENGTH_PER_ITEM = 20;
+
 function StyledInput({
   placeholder,
   value,
   onChange,
   disabled,
+  maxLength,
   className,
 }: {
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
   disabled?: boolean;
+  maxLength?: number;
   className?: string;
 }) {
   return (
     <input
       type="text"
       value={value ?? ""}
-      onChange={(e) => onChange?.(e.target.value)}
+      onChange={(e) => {
+        const v = e.target.value;
+        onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
+      }}
       placeholder={placeholder}
       disabled={disabled}
+      maxLength={maxLength}
       className={cn(
         "w-full h-[42px] px-4 text-base rounded border",
         "border-semantic-border-input bg-semantic-bg-primary",
@@ -15475,34 +18695,52 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
             <Field
               label="Bot Name & Identity"
               helperText="This is the name the bot will use to refer to itself during conversations."
+              characterCount={{
+                current: (data.botName ?? "").length,
+                max: BOT_NAME_MAX_LENGTH,
+              }}
             >
               <StyledInput
                 placeholder="e.g., Rhea from CaratLane"
                 value={data.botName}
                 onChange={(v) => onChange({ botName: v })}
                 disabled={disabled}
+                maxLength={BOT_NAME_MAX_LENGTH}
               />
             </Field>
 
-            <Field label="Primary Role">
+            <Field
+              label="Primary Role"
+              characterCount={{
+                current: (data.primaryRole ?? "").length,
+                max: PRIMARY_ROLE_MAX_LENGTH,
+              }}
+            >
               <CreatableSelect
-                value={data.primaryRole || ""}
-                onValueChange={(v) => onChange({ primaryRole: v })}
+                value={(data.primaryRole ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH)}
+                onValueChange={(v) =>
+                  onChange({ primaryRole: (v ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH) })
+                }
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
                 disabled={disabled}
+                maxLength={PRIMARY_ROLE_MAX_LENGTH}
               />
             </Field>
 
             <Field label="Tone">
               <CreatableMultiSelect
-                value={Array.isArray(data.tone) ? data.tone : []}
-                onValueChange={(v) => onChange({ tone: v })}
+                value={(Array.isArray(data.tone) ? data.tone : []).slice(0, TONE_MAX_ITEMS)}
+                onValueChange={(v) =>
+                  onChange({ tone: (v ?? []).slice(0, TONE_MAX_ITEMS) })
+                }
                 options={toneOptions}
                 placeholder="Enter or select tone"
-                creatableHint="Type to create a custom tone"
+                creatableHint='Press Enter to add "Conversational" ↵'
                 disabled={disabled}
+                maxItems={TONE_MAX_ITEMS}
+                maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}
               />
             </Field>
 
@@ -15598,7 +18836,7 @@ export { BotIdentityCard };
         {
           name: "bot-behavior-card.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Plus } from "lucide-react";
+import { Plus, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { tagVariants } from "../tag";
 
@@ -15613,11 +18851,18 @@ export interface BotBehaviorCardProps {
   data: Partial<BotBehaviorData>;
   /** Callback when any field changes */
   onChange: (patch: Partial<BotBehaviorData>) => void;
-  /** Called when the system prompt textarea loses focus */
+  /**
+   * Called when focus leaves the **entire** prompt section (textarea + session
+   * variable chips). Clicking a chip or the instruction text does NOT trigger
+   * this — only clicking outside the whole section does.
+   *
+   * Use this to persist the system prompt (e.g. fire an API call) once the
+   * user is done editing, including any variables they just inserted.
+   */
   onSystemPromptBlur?: (value: string) => void;
-  /** Session variables shown as insertable chips */
+  /** Session variables shown as insertable chips and in the {{ autocomplete dropdown */
   sessionVariables?: string[];
-  /** Maximum character length for the system prompt textarea (default: 25000) */
+  /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
@@ -15632,6 +18877,115 @@ const DEFAULT_SESSION_VARIABLES = [
   "{{Time}}",
   "{{Contact Details}}",
 ];
+
+// ─── Variable trigger helpers ─────────────────────────────────────────────────
+
+interface TriggerState {
+  query: string;
+  from: number;
+  to: number;
+}
+
+function detectVarTrigger(value: string, cursor: number): TriggerState | null {
+  const before = value.slice(0, cursor);
+  const match = /\\{\\{([^}]*)$/.exec(before);
+  if (!match) return null;
+  return { query: match[1].toLowerCase(), from: match.index, to: cursor };
+}
+
+function insertVar(value: string, variable: string, from: number, to: number): string {
+  return value.slice(0, from) + variable + value.slice(to);
+}
+
+/**
+ * Mirror-div technique: create an invisible clone of the element with identical
+ * styles, fill it with text up to the cursor, place a zero-width marker span at
+ * the end, and read the marker's position to get pixel-exact cursor coordinates.
+ * Returns { top, left } relative to the element's own top-left corner.
+ */
+function getCaretPixelPos(
+  el: HTMLTextAreaElement | HTMLInputElement,
+  position: number
+): { top: number; left: number } {
+  const cs = window.getComputedStyle(el);
+  const mirror = document.createElement("div");
+
+  // Copy every style property that affects text layout
+  (
+    [
+      "boxSizing", "width", "paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
+      "borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth",
+      "fontFamily", "fontSize", "fontWeight", "fontStyle", "fontVariant",
+      "letterSpacing", "lineHeight", "textTransform", "wordSpacing", "tabSize",
+    ] as (keyof CSSStyleDeclaration)[]
+  ).forEach((prop) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mirror.style as any)[prop] = cs[prop];
+  });
+
+  // textarea wraps; input does not
+  mirror.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "pre";
+  mirror.style.wordWrap = el.tagName === "TEXTAREA" ? "break-word" : "normal";
+  mirror.style.position = "absolute";
+  mirror.style.visibility = "hidden";
+  mirror.style.overflow = "hidden";
+  mirror.style.top = "0";
+  mirror.style.left = "0";
+  mirror.style.width = el.offsetWidth + "px";
+
+  document.body.appendChild(mirror);
+  mirror.appendChild(document.createTextNode(el.value.substring(0, position)));
+
+  const marker = document.createElement("span");
+  marker.textContent = "\\u200b"; // zero-width space
+  mirror.appendChild(marker);
+
+  const markerRect = marker.getBoundingClientRect();
+  const mirrorRect = mirror.getBoundingClientRect();
+  document.body.removeChild(mirror);
+
+  const scrollTop = el instanceof HTMLTextAreaElement ? el.scrollTop : 0;
+  return {
+    top: markerRect.top - mirrorRect.top - scrollTop,
+    left: markerRect.left - mirrorRect.left,
+  };
+}
+
+// Uses the same visual classes as DropdownMenuContent + DropdownMenuItem.
+// Position is driven by cursor coordinates from getCaretPixelPos.
+function VarPopup({
+  variables,
+  onSelect,
+  style,
+}: {
+  variables: string[];
+  onSelect: (v: string) => void;
+  style?: React.CSSProperties;
+}) {
+  if (variables.length === 0) return null;
+  return (
+    <div
+      role="listbox"
+      style={style}
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+    >
+      {variables.map((v) => (
+        <button
+          key={v}
+          type="button"
+          role="option"
+          onMouseDown={(e) => {
+            e.preventDefault(); // keep textarea focused so blur doesn't close popup first
+            onSelect(v);
+          }}
+          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+        >
+          {v}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 // ─── Internal helpers ───────────────────────────────────────────────────────
 
@@ -15661,44 +19015,6 @@ function SectionCard({
   );
 }
 
-function StyledTextarea({
-  placeholder,
-  value,
-  rows = 3,
-  onChange,
-  onBlur,
-  disabled,
-  className,
-}: {
-  placeholder?: string;
-  value?: string;
-  rows?: number;
-  onChange?: (v: string) => void;
-  onBlur?: (v: string) => void;
-  disabled?: boolean;
-  className?: string;
-}) {
-  return (
-    <textarea
-      value={value ?? ""}
-      rows={rows}
-      onChange={(e) => onChange?.(e.target.value)}
-      onBlur={(e) => onBlur?.(e.target.value)}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={cn(
-        "w-full px-4 py-2.5 text-base rounded border resize-none",
-        "border-semantic-border-input bg-semantic-bg-primary",
-        "text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none hover:border-semantic-border-input-focus",
-        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
-      )}
-    />
-  );
-}
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
@@ -15708,7 +19024,7 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       onChange,
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
-      maxLength = 25000,
+      maxLength = 5000,
       disabled,
       className,
     },
@@ -15716,53 +19032,161 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
+    const sectionRef = React.useRef<HTMLDivElement>(null);
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    /** Tracks whether the section has been focused at least once (prevents firing blur on initial render). */
+    const hasFocusedRef = React.useRef(false);
+
+    const [varTrigger, setVarTrigger] = React.useState<TriggerState | null>(null);
+    const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
+
+    const filteredVars = varTrigger
+      ? sessionVariables.filter((v) =>
+          v.toLowerCase().includes(varTrigger.query)
+        )
+      : [];
+
+    /** Compute popup pixel position anchored to the cursor, clamped within the textarea. */
+    const updatePopupPos = (el: HTMLTextAreaElement, cursor: number) => {
+      const caret = getCaretPixelPos(el, cursor);
+      const lineHeight = parseFloat(window.getComputedStyle(el).lineHeight) || 20;
+      const top = caret.top + lineHeight;
+      // Clamp left so popup (max-w-xs = 320px) doesn't overflow the textarea width
+      const left = Math.min(caret.left, Math.max(0, el.offsetWidth - 320));
+      setPopupStyle({ top, left });
+    };
+
+    const clearTrigger = () => {
+      setVarTrigger(null);
+      setPopupStyle(undefined);
+    };
 
     const insertVariable = (variable: string) => {
       onChange({ systemPrompt: prompt + variable });
     };
 
+    const handleVarSelect = (variable: string) => {
+      if (!varTrigger) return;
+      const newVal = insertVar(prompt, variable, varTrigger.from, varTrigger.to);
+      if (newVal.length <= MAX) onChange({ systemPrompt: newVal });
+      clearTrigger();
+      // Restore focus and place cursor after inserted variable
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        if (el) {
+          const pos = varTrigger.from + variable.length;
+          el.focus();
+          el.setSelectionRange(pos, pos);
+        }
+      });
+    };
+
+    const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const v = e.target.value;
+      if (v.length <= MAX) {
+        onChange({ systemPrompt: v });
+        const trigger = detectVarTrigger(v, e.target.selectionStart);
+        setVarTrigger(trigger);
+        if (trigger) updatePopupPos(e.target, e.target.selectionStart);
+        else setPopupStyle(undefined);
+      }
+    };
+
+    const handlePromptKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Escape" && varTrigger) {
+        e.preventDefault();
+        clearTrigger();
+      }
+    };
+
+    /**
+     * Fires when focus enters the prompt section (textarea or any chip button).
+     * We track this so the section-level blur only fires after the user has
+     * actually interacted with the section.
+     */
+    const handleSectionFocus = () => {
+      hasFocusedRef.current = true;
+    };
+
+    /**
+     * Fires when focus leaves any element inside the prompt section.
+     * We check \`relatedTarget\` — if the new focus target is still inside
+     * this section, we do nothing. Only when focus moves fully outside
+     * do we fire \`onSystemPromptBlur\` with the current prompt value.
+     */
+    const handleSectionBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+      clearTrigger();
+      if (!onSystemPromptBlur || !hasFocusedRef.current) return;
+      const section = sectionRef.current;
+      const next = e.relatedTarget as Node | null;
+      // Focus moved to another element inside this section — ignore
+      if (section && next && section.contains(next)) return;
+      onSystemPromptBlur(prompt);
+    };
+
     return (
       <div ref={ref} className={className}>
         <SectionCard title="How It Behaves">
-          <div className="flex flex-col gap-3">
+          {/* onBlur is on this wrapper so clicking chips / instruction text
+              does NOT fire the callback — only clicking outside fires it. */}
+          <div
+            ref={sectionRef}
+            className="flex flex-col gap-3"
+            onFocus={handleSectionFocus}
+            onBlur={handleSectionBlur}
+          >
             <p className="m-0 text-sm text-semantic-text-muted">
               Define workflows, conditions and handover logic (System prompt)
             </p>
             <div className="relative">
-              <StyledTextarea
+              <textarea
+                ref={textareaRef}
                 value={prompt}
                 rows={6}
-                onChange={(v) => {
-                  if (v.length <= MAX) onChange({ systemPrompt: v });
-                }}
-                onBlur={onSystemPromptBlur}
+                onChange={handlePromptChange}
+                onKeyDown={handlePromptKeyDown}
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
-                className="pb-8"
+                className={cn(
+                  "w-full px-4 py-2.5 text-base rounded border resize-none pb-10 pr-[4.5rem]",
+                  "border-semantic-border-input bg-semantic-bg-primary",
+                  "text-semantic-text-primary placeholder:text-semantic-text-muted",
+                  "outline-none hover:border-semantic-border-input-focus",
+                  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+                  disabled && "opacity-50 cursor-not-allowed"
+                )}
               />
-              <span className="absolute bottom-2.5 right-3 text-sm text-semantic-text-muted">
+              <span
+                className="absolute bottom-3 right-4 text-sm text-semantic-text-muted pointer-events-none"
+                aria-live="polite"
+                aria-label={\`\${prompt.length} of \${MAX} characters\`}
+              >
                 {prompt.length}/{MAX}
               </span>
+              <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
             </div>
-            <p className="m-0 text-sm text-semantic-text-muted">
-              Type [[ to enable dropdown or use the below chips to input variables.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-semantic-text-secondary">
-                Session variables:
-              </span>
-              {sessionVariables.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => insertVariable(v)}
-                  disabled={disabled}
-                  className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
-                >
-                  <Plus className="size-3 shrink-0" />
-                  {v}
-                </button>
-              ))}
+            <div className="flex flex-col gap-3">
+              <p className="m-0 flex items-center gap-1.5 text-sm text-semantic-text-muted">
+                <Info className="size-4 shrink-0 text-semantic-text-muted" aria-hidden />
+                Type {'{{'} to enable dropdown or use the below chips to input variables.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-semantic-text-secondary">
+                  Session variables:
+                </span>
+                {sessionVariables.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => insertVariable(v)}
+                    disabled={disabled}
+                    className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
+                  >
+                    <Plus className="size-3 shrink-0" />
+                    {v}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </SectionCard>
@@ -15797,14 +19221,24 @@ export interface KnowledgeBaseCardProps {
   files: KnowledgeBaseFile[];
   /** Called when user clicks the "+ Files" button */
   onAdd?: () => void;
-  /** Called when user clicks the download button on a file */
+  /**
+   * Called when user clicks the download button on a file.
+   * When omitted, the download button is **not rendered**.
+   */
   onDownload?: (id: string) => void;
-  /** Called when user clicks the delete button on a file */
+  /**
+   * Called when user clicks the delete button on a file.
+   * When omitted, the delete button is **not rendered**.
+   */
   onDelete?: (id: string) => void;
   /** Hover text shown on the info icon next to the "Knowledge Base" title */
   infoTooltip?: string;
-  /** Disables all interactive elements in the card (view mode) */
+  /** Disables the "+ Files" button and other form-level interactions (view mode) */
   disabled?: boolean;
+  /** Independently disables the download button (e.g. user lacks download permission) */
+  downloadDisabled?: boolean;
+  /** Independently disables the delete button (e.g. user lacks delete permission) */
+  deleteDisabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -15830,6 +19264,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       onDelete,
       infoTooltip,
       disabled,
+      downloadDisabled,
+      deleteDisabled,
       className,
     },
     ref
@@ -15898,26 +19334,32 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
                           {status.label}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0 ml-2">
-                        <button
-                          type="button"
-                          onClick={() => onDownload?.(file.id)}
-                          disabled={disabled}
-                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label="Download file"
-                        >
-                          <Download className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDelete?.(file.id)}
-                          disabled={disabled}
-                          className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label="Delete file"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
+                      {(onDownload || onDelete) && (
+                        <div className="flex items-center gap-1 shrink-0 ml-2">
+                          {onDownload && (
+                            <button
+                              type="button"
+                              onClick={() => onDownload(file.id)}
+                              disabled={downloadDisabled}
+                              className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", downloadDisabled && "opacity-50 cursor-not-allowed")}
+                              aria-label="Download file"
+                            >
+                              <Download className="size-4" />
+                            </button>
+                          )}
+                          {onDelete && (
+                            <button
+                              type="button"
+                              onClick={() => onDelete(file.id)}
+                              disabled={deleteDisabled}
+                              className={cn("p-2 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", deleteDisabled && "opacity-50 cursor-not-allowed")}
+                              aria-label="Delete file"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -15954,14 +19396,24 @@ export interface FunctionsCardProps {
   functions: FunctionItem[];
   /** Called when user clicks the add function button */
   onAddFunction?: () => void;
-  /** Called when user edits a custom (non-built-in) function */
+  /**
+   * Called when user clicks the edit button on a custom function.
+   * When omitted, the edit button is **not rendered**.
+   */
   onEditFunction?: (id: string) => void;
-  /** Called when user deletes a custom (non-built-in) function */
+  /**
+   * Called when user clicks the delete button on a custom function.
+   * When omitted, the delete button is **not rendered**.
+   */
   onDeleteFunction?: (id: string) => void;
   /** Hover text shown on the info icon next to the "Functions" title */
   infoTooltip?: string;
-  /** Disables all interactive elements in the card (view mode) */
+  /** Disables the "Add Functions" button and other form-level interactions (view mode) */
   disabled?: boolean;
+  /** Independently disables the edit button (e.g. user lacks edit permission) */
+  editDisabled?: boolean;
+  /** Independently disables the delete button (e.g. user lacks delete permission) */
+  deleteDisabled?: boolean;
   /** Additional className */
   className?: string;
 }
@@ -15969,7 +19421,7 @@ export interface FunctionsCardProps {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, className }, ref) => {
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
     return (
       <div
         ref={ref}
@@ -16044,24 +19496,28 @@ const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
                       </Badge>
                     ) : (
                       <>
-                        <button
-                          type="button"
-                          onClick={() => onEditFunction?.(fn.id)}
-                          disabled={disabled}
-                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label={\`Edit \${fn.name}\`}
-                        >
-                          <Pencil className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDeleteFunction?.(fn.id)}
-                          disabled={disabled}
-                          className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", disabled && "opacity-50 cursor-not-allowed")}
-                          aria-label={\`Delete \${fn.name}\`}
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
+                        {onEditFunction && (
+                          <button
+                            type="button"
+                            onClick={() => onEditFunction(fn.id)}
+                            disabled={editDisabled}
+                            className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors", editDisabled && "opacity-50 cursor-not-allowed")}
+                            aria-label={\`Edit \${fn.name}\`}
+                          >
+                            <Pencil className="size-4" />
+                          </button>
+                        )}
+                        {onDeleteFunction && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteFunction(fn.id)}
+                            disabled={deleteDisabled}
+                            className={cn("p-1.5 rounded text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors", deleteDisabled && "opacity-50 cursor-not-allowed")}
+                            aria-label={\`Delete \${fn.name}\`}
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        )}
                       </>
                     )}
                   </div>
@@ -16647,6 +20103,10 @@ export interface CreateFunctionModalProps {
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
   initialTab?: FunctionTabType;
+  /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
+  sessionVariables?: string[];
+  /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
+  disabled?: boolean;
   className?: string;
 }
 
@@ -16687,13 +20147,23 @@ export interface IvrBotConfigProps {
   /** Called for each file during upload with progress/error handlers. If omitted, uses fake progress. */
   onUploadKnowledgeFile?: (file: File, handlers: UploadProgressHandlers) => Promise<void>;
   onSampleFileDownload?: () => void;
+  /** Called when user downloads a knowledge file. When omitted, download button is hidden. */
   onDownloadKnowledgeFile?: (fileId: string) => void;
+  /** Called when user deletes a knowledge file. When omitted, delete button is hidden. */
   onDeleteKnowledgeFile?: (fileId: string) => void;
+  /** Independently disables the knowledge file download button */
+  knowledgeDownloadDisabled?: boolean;
+  /** Independently disables the knowledge file delete button */
+  knowledgeDeleteDisabled?: boolean;
   onCreateFunction?: (data: CreateFunctionData) => void;
-  /** Called when user edits a custom function. Receives the function id. */
+  /** Called when user edits a custom function. When omitted, edit button is hidden. */
   onEditFunction?: (id: string) => void;
-  /** Called when user deletes a custom function */
+  /** Called when user deletes a custom function. When omitted, delete button is hidden. */
   onDeleteFunction?: (id: string) => void;
+  /** Independently disables the function edit button */
+  functionEditDisabled?: boolean;
+  /** Independently disables the function delete button */
+  functionDeleteDisabled?: boolean;
   onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
@@ -16708,9 +20178,14 @@ export interface IvrBotConfigProps {
    * Pass when your app fetches full function data after onEditFunction fires.
    */
   functionEditData?: Partial<CreateFunctionData>;
-  /** Max character length for the "How It Behaves" system prompt (default: 25000) */
+  /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
-  /** Called when the system prompt textarea loses focus */
+  /**
+   * Called when focus leaves the **entire** "How It Behaves" section
+   * (textarea + session variable chips). Clicking a chip does NOT trigger
+   * this — only clicking outside the whole section does.
+   * Use this to persist the system prompt via an API call.
+   */
   onSystemPromptBlur?: (value: string) => void;
   /** Called when the Agent Busy Prompt textarea loses focus */
   onAgentBusyPromptBlur?: (value: string) => void;

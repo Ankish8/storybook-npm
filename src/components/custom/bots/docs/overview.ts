@@ -26,9 +26,6 @@ import {
   botListGridDescription,
   botListGridPropsTable,
   botListGridEvents,
-  botListActionDescription,
-  botListActionPropsTable,
-  botListActionEvents,
   botTypePropsTable,
 } from "./props";
 
@@ -72,7 +69,6 @@ import {
   BotListCreateCard,
   BotListGrid,
   BotCard,
-  BotListAction,
   CreateBotModal,
 } from "@/components/custom/bots";
 import type {
@@ -82,7 +78,6 @@ import type {
   BotListCreateCardProps,
   BotListGridProps,
   BotCardProps,
-  BotListActionProps,
   CreateBotModalProps,
   Bot,
   BotType,
@@ -157,16 +152,6 @@ ${botListGridDescription}
 ${eventsLine(botListGridEvents)}
 
 ${botListGridPropsTable}
-
----
-
-## BotListAction
-
-${botListActionDescription}
-
-${eventsLine(botListActionEvents)}
-
-${botListActionPropsTable}
 
 ---
 

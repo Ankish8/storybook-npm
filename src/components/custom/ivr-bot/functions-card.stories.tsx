@@ -28,10 +28,16 @@ import { FunctionsCard } from "@/components/custom/ivr-bot/functions-card"
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | \`functions\` | \`FunctionItem[]\` | — | List of functions to display |
+| \`onEditFunction\` | \`(id: string) => void\` | — | Edit handler. **Omit to hide** the edit button entirely |
+| \`onDeleteFunction\` | \`(id: string) => void\` | — | Delete handler. **Omit to hide** the delete button entirely |
+| \`editDisabled\` | \`boolean\` | \`false\` | Independently disables the edit button |
+| \`deleteDisabled\` | \`boolean\` | \`false\` | Independently disables the delete button |
+| \`disabled\` | \`boolean\` | \`false\` | Disables the "Add Functions" button (view mode) |
 | \`infoTooltip\` | \`string\` | \`undefined\` | Hover text on the info icon next to the "Functions" title |
-| \`disabled\` | \`boolean\` | \`false\` | Disables all interactive elements (view mode) |
 
 Each \`FunctionItem\` accepts an optional \`tooltip?: string\` for per-function info icon hover text.
+
+> **Visibility vs disabled**: Omitting \`onEditFunction\`/\`onDeleteFunction\` **hides** the button. Providing the handler but setting \`editDisabled\`/\`deleteDisabled\` shows it **grayed out**. Use this to differentiate "no permission to see" vs "visible but not allowed right now".
 
 ### Design Tokens
 
@@ -114,12 +120,65 @@ export const WithEditAndDelete: Story = {
   },
 };
 
-/** All interactive elements are disabled in view mode. */
-export const Disabled: Story = {
+/** View mode — Add button disabled, edit enabled (opens read-only modal), delete disabled. */
+export const ViewMode: Story = {
+  name: "View Mode (disabled)",
   args: {
     functions: SAMPLE_FUNCTIONS,
+    onEditFunction: fn(),
+    onDeleteFunction: fn(),
     infoTooltip: "Functions extend the bot's capabilities beyond conversation",
     disabled: true,
+    deleteDisabled: true,
+  },
+  render: (args) => (
+    <div className="max-w-[500px]">
+      <FunctionsCard {...args} />
+    </div>
+  ),
+};
+
+/** Edit only — user can edit functions but has no delete permission. */
+export const EditOnlyPermission: Story = {
+  name: "Edit Only (no delete)",
+  args: {
+    functions: SAMPLE_FUNCTIONS,
+    onEditFunction: fn(),
+    // onDeleteFunction omitted → delete button hidden
+  },
+  render: (args) => (
+    <div className="max-w-[500px]">
+      <FunctionsCard {...args} />
+    </div>
+  ),
+};
+
+/** Delete only — user can delete functions but has no edit permission. */
+export const DeleteOnlyPermission: Story = {
+  name: "Delete Only (no edit)",
+  render: function Render() {
+    const [fns, setFns] = useState<FunctionItem[]>(SAMPLE_FUNCTIONS);
+    return (
+      <div className="max-w-[500px]">
+        <FunctionsCard
+          functions={fns}
+          // onEditFunction omitted → edit button hidden
+          onDeleteFunction={(id) => setFns((prev) => prev.filter((f) => f.id !== id))}
+        />
+      </div>
+    );
+  },
+};
+
+/** Both actions visible but independently disabled — shows grayed out buttons. */
+export const BothDisabled: Story = {
+  name: "Both Actions Disabled",
+  args: {
+    functions: SAMPLE_FUNCTIONS,
+    onEditFunction: fn(),
+    onDeleteFunction: fn(),
+    editDisabled: true,
+    deleteDisabled: true,
   },
   render: (args) => (
     <div className="max-w-[500px]">

@@ -95,17 +95,40 @@ describe("CreateBotModal", () => {
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it("resets form after submitting", () => {
+  it("keeps form values after submitting while modal stays open", () => {
     const handleOpenChange = vi.fn();
     render(<CreateBotModal open onOpenChange={handleOpenChange} onSubmit={vi.fn()} />);
     const input = screen.getByPlaceholderText("Enter bot name");
     fireEvent.change(input, { target: { value: "Test Bot" } });
     fireEvent.click(screen.getByText("Create"));
-    expect((input as HTMLInputElement).value).toBe("");
+    expect((input as HTMLInputElement).value).toBe("Test Bot");
+    expect(handleOpenChange).not.toHaveBeenCalled();
   });
 
   it("shows required asterisk on Name label", () => {
     render(<CreateBotModal open onOpenChange={vi.fn()} />);
     expect(screen.getByText("*")).toBeInTheDocument();
+  });
+
+  it("disables Create button when isLoading is true even with a name", () => {
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} isLoading />
+    );
+    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+      target: { value: "My Bot" },
+    });
+    expect(screen.getByText("Create").closest("button")).toBeDisabled();
+  });
+
+  it("does not call onSubmit when isLoading is true", () => {
+    const handleSubmit = vi.fn();
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} isLoading />
+    );
+    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+      target: { value: "My Bot" },
+    });
+    fireEvent.click(screen.getByText("Create"));
+    expect(handleSubmit).not.toHaveBeenCalled();
   });
 });
