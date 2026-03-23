@@ -133,15 +133,15 @@ const TextField = React.forwardRef(
       type,
       ...props
     }: TextFieldProps,
-    ref: React.Ref<HTMLInputElement>
+    ref: React.ForwardedRef<HTMLInputElement>
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
-    const internalRef = React.useRef<HTMLInputElement>(null);
+    const internalRef = React.useRef<HTMLInputElement | null>(null);
     const mergedRef = React.useCallback(
       (node: HTMLInputElement | null) => {
         internalRef.current = node;
         if (typeof ref === "function") ref(node);
-        else if (ref) ref.current = node;
+        else if (ref && typeof ref === "object") ref.current = node;
       },
       [ref]
     );
