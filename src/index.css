@@ -131,6 +131,7 @@
     --semantic-brand-selected-hover: var(--color-secondary-600);
     --semantic-brand-highlighted: var(--color-secondary-600);
     --semantic-brand-surface: var(--color-secondary-50);
+    --semantic-brand-text: var(--color-secondary-800);
 
     /* Background Colors */
     --semantic-bg-primary: var(--color-white);
@@ -139,7 +140,7 @@
     --semantic-bg-grey: var(--color-neutral-200);
     --semantic-bg-grey-hover: var(--color-neutral-400);
     --semantic-bg-inverted: var(--color-black);
-    --semantic-bg-hover: var(--color-neutral-300);
+    --semantic-bg-hover: var(--color-neutral-100);
 
     /* Text Colors */
     --semantic-text-primary: var(--color-neutral-900);

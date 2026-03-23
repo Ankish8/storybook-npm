@@ -1305,7 +1305,7 @@ export { Switch, switchVariants };
           name: "text-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 
@@ -1338,7 +1338,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "h-[42px] w-full rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:text-base file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "w-full rounded bg-semantic-bg-primary text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
@@ -1347,9 +1347,14 @@ const textFieldInputVariants = cva(
         error:
           "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
+      size: {
+        default: "h-[42px] px-4 py-2 text-base file:text-base",
+        sm: "h-9 px-3 py-1.5 text-sm file:text-sm",
+      },
     },
     defaultVariants: {
       state: "default",
+      size: "default",
     },
   }
 );
@@ -1368,6 +1373,8 @@ export interface TextFieldProps
   extends
     Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
+  /** Size of the text field — \`default\` (42px) or \`sm\` (36px, compact) */
+  size?: "default" | "sm";
   /** Label text displayed above the input */
   label?: string;
   /** Shows red asterisk next to label when true */
@@ -1388,6 +1395,10 @@ export interface TextFieldProps
   showCount?: boolean;
   /** Shows loading spinner inside input */
   loading?: boolean;
+  /** Shows a clear (X) button when input has a value */
+  clearable?: boolean;
+  /** Callback fired when the clear button is clicked */
+  onClear?: () => void;
   /** Additional class for the wrapper container */
   wrapperClassName?: string;
   /** Additional class for the label */
@@ -1404,6 +1415,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       labelClassName,
       inputContainerClassName,
       state,
+      size,
       label,
       required,
       helperText,
@@ -1414,6 +1426,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       suffix,
       showCount,
       loading,
+      clearable,
+      onClear,
       maxLength,
       value,
       defaultValue,
@@ -1426,6 +1440,17 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     },
     ref
   ) => {
+    // Internal ref for programmatic control (e.g., clearable)
+    const internalRef = React.useRef<HTMLInputElement>(null);
+    const mergedRef = React.useCallback(
+      (node: HTMLInputElement | null) => {
+        internalRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
     // Internal state for character count in uncontrolled mode
     const [internalValue, setInternalValue] = React.useState(
       defaultValue ?? ""
@@ -1447,7 +1472,20 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     };
 
     // Determine if we need the container wrapper (for icons/prefix/suffix)
-    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading;
+    const hasAddons = leftIcon || rightIcon || prefix || suffix || loading || clearable;
+
+    // Handle clear
+    const handleClear = () => {
+      if (!isControlled) {
+        setInternalValue("");
+        if (internalRef.current) {
+          internalRef.current.value = "";
+        }
+      }
+      onClear?.();
+    };
+
+    const showClearButton = clearable && String(currentValue).length > 0 && !disabled && !loading;
 
     // Character count
     const charCount = String(currentValue).length;
@@ -1464,13 +1502,16 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     // Render the input element
     const inputElement = (
       <input
-        ref={ref}
+        ref={mergedRef}
         id={inputId}
         type={type}
         className={cn(
           hasAddons
-            ? "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed"
-            : textFieldInputVariants({ state: derivedState, className }),
+            ? cn(
+                "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed",
+                size === "sm" ? "text-sm" : "text-base"
+              )
+            : textFieldInputVariants({ state: derivedState, size, className }),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
@@ -1500,7 +1541,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           <label
             htmlFor={inputId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -1519,7 +1560,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
                 state: derivedState,
                 disabled: disabled || loading,
               }),
-              "h-[42px] px-4",
+              size === "sm" ? "h-9 px-3" : "h-[42px] px-4",
               inputContainerClassName
             )}
           >
@@ -1541,6 +1582,17 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
+            )}
+            {showClearButton && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="ml-2 text-semantic-text-muted hover:text-semantic-text-primary flex-shrink-0 cursor-pointer"
+                aria-label="Clear input"
+                tabIndex={-1}
+              >
+                <X className="size-4" />
+              </button>
             )}
             {suffix && (
               <span className="text-sm text-semantic-text-muted ml-2 select-none">
@@ -1837,7 +1889,7 @@ ReadableField.displayName = "ReadableField";
         {
           name: "select-field.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 
 import { cn } from "../../lib/utils";
 import {
@@ -2048,7 +2100,7 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-muted",
               labelClassName
             )}
           >
@@ -2084,13 +2136,14 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="px-2 pb-2">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+                <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}

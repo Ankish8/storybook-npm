@@ -633,7 +633,7 @@ describe('CLI E2E: component installation', () => {
     const textCorruptionPatterns = [
       /tw-[A-Z][a-z]+/, // tw- followed by capitalized word (e.g., "tw-Text-based")
       /tw-for\b/, /tw-and\b/, /tw-the\b/, /tw-with\b/, /tw-over\b/,
-      /tw-from\b/, /tw-into\b/, /tw-that\b/, /tw-this\b/,
+      /tw-from(?!-)/, /tw-into\b/, /tw-that\b/, /tw-this\b/,
     ]
 
     for (const [name, component] of Object.entries(registry)) {

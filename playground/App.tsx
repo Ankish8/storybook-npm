@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { TextField } from "@/components/ui/text-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -9,15 +10,49 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
+  DropdownMenuSeparator,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from "@/components/ui/tooltip"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion"
+import { ConfirmationModal } from "@/components/ui/confirmation-modal"
+import { Panel } from "@/components/ui/panel"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Tag } from "@/components/ui/tag"
+import { Spinner } from "@/components/ui/spinner"
+import { Avatar } from "@/components/ui/avatar"
 import { ChatListItem } from "@/components/custom/chat-list-item"
+import { ChatComposer } from "@/components/custom/chat-composer"
 import {
   Search,
   Plus,
@@ -45,7 +80,6 @@ import {
   ChevronRight,
   ExternalLink,
   Reply,
-  Loader2,
   File,
   ArrowLeft,
   UserPlus,
@@ -55,6 +89,12 @@ import {
   Eye,
   Pencil,
   Info,
+  Bot,
+  ArrowDown,
+  LayoutGrid,
+  CircleAlert,
+  Megaphone,
+  Code,
 } from "lucide-react"
 import noConversationImg from "./assets/no-conversation.png"
 import noTemplateSelectedImg from "./assets/no-template-selected.svg"
@@ -63,11 +103,13 @@ import noTemplateSelectedImg from "./assets/no-template-selected.svg"
 
 const FilterIcon = () => (
   <svg
+    aria-hidden="true"
     width="24"
     height="24"
     viewBox="0 0 24 24"
     fill="none"
-    stroke="#343e55"
+    stroke="currentColor"
+    className="text-semantic-text-primary"
     strokeWidth="1.5"
     strokeLinecap="round"
   >
@@ -169,8 +211,8 @@ const chatItems = [
     name: "Arsh Raj",
     message: "Authentication message sent",
     timestamp: "2:29 PM",
-    messageStatus: "delivered" as const,
     channel: "MY01",
+    isFailed: true,
   },
   {
     id: "4",
@@ -380,17 +422,37 @@ type MediaPayload = {
   }>
 }
 
+type SentByType = "agent" | "bot" | "campaign" | "api"
+
 type ChatMessage = {
   id: string
   text: string
   time: string
   sender: "customer" | "agent"
   senderName?: string
-  type?: "text" | "image" | "video" | "audio" | "document" | "docPreview" | "carousel" | "otherDoc" | "loading"
-  status?: "sent" | "delivered" | "read"
-  replyTo?: { sender: string; text: string }
+  type?: "text" | "image" | "video" | "audio" | "document" | "docPreview" | "carousel" | "otherDoc" | "loading" | "system"
+  status?: "sent" | "delivered" | "read" | "failed"
+  replyTo?: { sender: string; text: string; messageId?: string }
   media?: MediaPayload
   error?: string
+  /** Who sent this outbound message — rendered as sender indicator outside the bubble */
+  sentBy?: { type: SentByType; name?: string }
+}
+
+/* ── Sender Indicator Helper ── */
+
+function getInitials(name: string): string {
+  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+}
+
+function SenderIndicatorBadge({ sentBy }: { sentBy: { type: SentByType; name?: string } }) {
+  const iconClass = "size-3.5 text-semantic-text-muted"
+  if (sentBy.type === "agent" && sentBy.name) {
+    return <span className="text-[10px] font-medium text-semantic-text-secondary leading-none">{getInitials(sentBy.name)}</span>
+  }
+  if (sentBy.type === "bot") return <Bot className={iconClass} />
+  if (sentBy.type === "campaign") return <Megaphone className={iconClass} />
+  return <Code className={iconClass} />
 }
 
 /* ── Media Sub-Renderers ── */
@@ -407,14 +469,14 @@ function ImageMedia({ media }: { media: MediaPayload }) {
   )
 }
 
-const SPEED_OPTIONS = [1, 1.5, 2, 3] as const
+const SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const
 
 function VideoMedia({ media }: { media: MediaPayload }) {
   const [playing, setPlaying] = useState(false)
   const [muted, setMuted] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
-  const [speedIdx, setSpeedIdx] = useState(0)
-  const speed = SPEED_OPTIONS[speedIdx]
+  const [speed, setSpeed] = useState(1)
+  const [volume, setVolume] = useState(75)
   return (
     <div className="relative rounded-t overflow-hidden cursor-pointer group" onClick={() => setPlaying(!playing)}>
       <img
@@ -424,22 +486,30 @@ function VideoMedia({ media }: { media: MediaPayload }) {
         style={{ aspectRatio: "16/10" }}
       />
       {/* Gradient overlay — stronger for visibility */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d12]/70 via-[#0a0d12]/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
       {/* Center play/pause — visible on hover or when paused */}
       <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}>
-        <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
+        <button type="button" aria-label={playing ? "Pause video" : "Play video"} className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors border-none cursor-pointer">
           {playing ? (
             <Pause className="size-7 text-white fill-white" />
           ) : (
             <Play className="size-7 text-white fill-white ml-0.5" />
           )}
-        </div>
+        </button>
       </div>
       {/* Bottom controls */}
       <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-8">
         {/* Seek bar */}
         <div className="flex items-center gap-2 mb-2">
-          <div className="relative flex-1 h-[3px] rounded-full bg-white/30">
+          <div
+            role="slider"
+            aria-label="Seek"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={15}
+            tabIndex={0}
+            className="relative flex-1 h-[3px] rounded-full bg-white/30"
+          >
             <div className="absolute left-0 top-0 h-full w-[15%] rounded-full bg-white" />
             <div className="absolute top-1/2 -translate-y-1/2 size-3 rounded-full bg-white shadow-md" style={{ left: "15%" }} />
           </div>
@@ -448,14 +518,65 @@ function VideoMedia({ media }: { media: MediaPayload }) {
         <div className="flex items-center justify-between">
           <span className="text-[12px] text-white tabular-nums">{media.duration || "0:00"}</span>
           <div className="flex items-center gap-2.5">
-            <button
-              onClick={(e) => { e.stopPropagation(); setSpeedIdx((speedIdx + 1) % SPEED_OPTIONS.length) }}
-              className="text-[11px] font-semibold text-white bg-white/20 hover:bg-white/30 transition-colors px-2 py-0.5 rounded-full"
-            >{speed}x</button>
-            <button onClick={(e) => { e.stopPropagation(); setMuted(!muted) }} className="hover:opacity-70 transition-opacity">
-              {muted ? <VolumeX className="size-4 text-white/50" /> : <Volume2 className="size-4 text-white" />}
-            </button>
-            <button onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
+            {/* Speed dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label={`Playback speed ${speed}x`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[11px] font-semibold text-white bg-white/20 hover:bg-white/30 transition-colors px-2 py-0.5 rounded-full"
+                >
+                  {speed}x
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+                <DropdownMenuRadioGroup value={String(speed)} onValueChange={(v) => setSpeed(Number(v))}>
+                  {SPEED_OPTIONS.map((s) => (
+                    <DropdownMenuRadioItem key={s} value={String(s)}>
+                      {s === 1 ? "1x (Normal)" : `${s}x`}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* Volume control */}
+            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+              <button aria-label={muted || volume === 0 ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)} className="hover:opacity-70 transition-opacity">
+                {muted || volume === 0 ? <VolumeX className="size-4 text-white/50" /> : <Volume2 className="size-4 text-white" />}
+              </button>
+              <div
+                role="slider"
+                aria-label="Volume"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={muted ? 0 : volume}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+                    e.preventDefault(); e.stopPropagation(); setVolume(v => Math.min(100, v + 5)); setMuted(false)
+                  } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+                    e.preventDefault(); e.stopPropagation(); setVolume(v => Math.max(0, v - 5)); setMuted(false)
+                  }
+                }}
+                className="relative w-[60px] h-4 flex items-center cursor-pointer"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100)
+                  setVolume(Math.max(0, Math.min(100, pct)))
+                  setMuted(false)
+                }}
+              >
+                <div className="w-full h-[3px] rounded-full bg-white/30">
+                  <div className="h-full rounded-full bg-white" style={{ width: `${muted ? 0 : volume}%` }} />
+                </div>
+                <div
+                  className="absolute top-1/2 size-2.5 rounded-full bg-white"
+                  style={{ left: `${muted ? 0 : volume}%`, transform: "translate(-50%, -50%)" }}
+                />
+              </div>
+            </div>
+            <button aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
               {fullscreen ? <Minimize className="size-4 text-white" /> : <Maximize className="size-4 text-white" />}
             </button>
           </div>
@@ -467,8 +588,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
 
 function AudioMedia({ media }: { media: MediaPayload }) {
   const [playing, setPlaying] = useState(false)
-  const [speedIdx, setSpeedIdx] = useState(0)
-  const speed = SPEED_OPTIONS[speedIdx]
+  const [speed, setSpeed] = useState(1)
 
   // Waveform bar heights (deterministic pseudo-random pattern)
   const waveform = [
@@ -489,9 +609,9 @@ function AudioMedia({ media }: { media: MediaPayload }) {
       <div className="flex items-center gap-3">
         {/* Play / Pause — circular button */}
         <button
+          aria-label={playing ? "Pause audio" : "Play audio"}
           onClick={(e) => { e.stopPropagation(); setPlaying(!playing) }}
-          className="shrink-0 rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
-          style={{ width: 40, height: 40, backgroundColor: "#343e55" }}
+          className="shrink-0 size-10 rounded-full bg-semantic-primary flex items-center justify-center hover:opacity-90 transition-opacity"
         >
           {playing ? (
             <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
@@ -508,6 +628,7 @@ function AudioMedia({ media }: { media: MediaPayload }) {
         {/* Waveform with scrubber — single SVG fills available width */}
         <div className="flex-1 min-w-0" style={{ height: svgH }}>
           <svg
+            aria-hidden="true"
             viewBox={`0 0 ${svgW} ${svgH}`}
             preserveAspectRatio="none"
             width="100%"
@@ -522,20 +643,34 @@ function AudioMedia({ media }: { media: MediaPayload }) {
                 width={barW}
                 height={h}
                 rx={1.5}
-                fill={i < playedBars ? "#27ABB8" : "#C0C3CA"}
+                fill={i < playedBars ? "var(--semantic-brand-hover, #1F858F)" : "var(--semantic-text-muted, #C0C3CA)"}
               />
             ))}
           </svg>
         </div>
 
-        {/* Speed pill — cycles through 1x → 1.5x → 2x → 3x */}
-        <button
-          onClick={(e) => { e.stopPropagation(); setSpeedIdx((speedIdx + 1) % SPEED_OPTIONS.length) }}
-          className="shrink-0 flex items-center justify-center rounded-full hover:opacity-80 transition-opacity"
-          style={{ minWidth: 34, height: 22, backgroundColor: "rgba(65,70,81,0.6)", padding: "0 8px" }}
-        >
-          <span style={{ fontSize: 11, fontWeight: 600, color: "white", lineHeight: 1 }}>{speed}x</span>
-        </button>
+        {/* Speed dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              aria-label={`Playback speed ${speed}x`}
+              onClick={(e) => e.stopPropagation()}
+              className="shrink-0 min-w-[34px] h-[22px] px-2 flex items-center justify-center rounded-full bg-black/40 hover:opacity-80 transition-opacity"
+            >
+              <span className="text-[11px] font-semibold text-white leading-none">{speed}x</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+            <DropdownMenuRadioGroup value={String(speed)} onValueChange={(v) => setSpeed(Number(v))}>
+              {SPEED_OPTIONS.map((s) => (
+                <DropdownMenuRadioItem key={s} value={String(s)}>
+                  {s === 1 ? "1x (Normal)" : `${s}x`}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )
@@ -551,10 +686,10 @@ function DocPreviewMedia({ media }: { media: MediaPayload }) {
         style={{ aspectRatio: "442/308" }}
       />
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#343e55]/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       {/* Bottom overlay bar */}
       <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
-        <p className="text-[14px] font-semibold text-white truncate">{media.filename || "Document"}</p>
+        <p className="m-0 text-[14px] font-semibold text-white truncate">{media.filename || "Document"}</p>
         <div className="flex items-center gap-1.5 mt-1">
           <File className="size-3.5 text-white/80" />
           <span className="text-[12px] text-white/80">
@@ -568,35 +703,25 @@ function DocPreviewMedia({ media }: { media: MediaPayload }) {
 
 function DocDownloadMedia({ media }: { media: MediaPayload }) {
   return (
-    <div className="relative rounded-t overflow-hidden">
+    <div className="relative">
       <img
         src={media.thumbnailUrl || media.url}
-        alt={media.filename || "Document"}
-        className="w-full object-cover"
-        style={{ aspectRatio: "442/308" }}
+        alt={media.caption || media.filename || "Document"}
+        className="w-full rounded-t object-cover max-h-[280px]"
       />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#343e55]/30 to-transparent" />
-      {/* Bottom overlay bar */}
-      <div className="absolute bottom-0 left-0 right-0 px-4 py-3 flex items-center justify-between">
-        <p className="text-[14px] font-semibold text-white truncate flex-1">{media.filename || "Document"}</p>
-        <button className="size-7 rounded-full bg-white/20 flex items-center justify-center shrink-0 ml-2 hover:bg-white/30 transition-colors">
-          <ArrowDownToLine className="size-4 text-white" />
-        </button>
-      </div>
     </div>
   )
 }
 
 function OtherDocMedia({ media }: { media: MediaPayload }) {
   const isSpreadsheet = media.fileType === "XLS" || media.fileType === "XLSX"
-  const accent = isSpreadsheet ? "#217346" : "#535862"
-  const accentLight = isSpreadsheet ? "#dcfae6" : "#e9eaeb"
+  const accent = isSpreadsheet ? "var(--semantic-success-primary, #217346)" : "var(--semantic-text-secondary, #535862)"
+  const accentLight = isSpreadsheet ? "var(--semantic-success-surface, #dcfae6)" : "var(--semantic-bg-ui, #e9eaeb)"
   const label = media.fileType || "FILE"
   return (
-    <div className="mx-2.5 mt-2.5 rounded overflow-hidden border border-[#d5d7da]">
+    <div className="mx-2.5 mt-2.5 rounded overflow-hidden border border-semantic-border-layout">
       {/* Preview area */}
-      <div className="bg-[#f5f5f5] flex items-center justify-center w-full" style={{ padding: "36px 0" }}>
+      <div className="bg-semantic-bg-ui flex items-center justify-center w-full" style={{ padding: "36px 0" }}>
         <div className="flex flex-col items-center">
           <div className="rounded-2xl flex items-center justify-center" style={{ width: 72, height: 72, backgroundColor: accentLight }}>
             <FileSpreadsheet style={{ width: 32, height: 32, color: accent }} />
@@ -607,10 +732,10 @@ function OtherDocMedia({ media }: { media: MediaPayload }) {
         </div>
       </div>
       {/* Filename bar */}
-      <div className="bg-[#e9eaeb] flex items-center gap-2" style={{ padding: "12px 16px" }}>
-        <span className="text-[14px] font-semibold text-[#343e55] truncate flex-1 tracking-[0.1px]">{media.filename || "File"}</span>
-        <button className="shrink-0 size-8 rounded-full flex items-center justify-center hover:bg-[#d5d7da] transition-colors">
-          <ArrowDownToLine className="size-[18px] text-[#535862]" />
+      <div className="bg-semantic-bg-ui flex items-center gap-2" style={{ padding: "12px 16px" }}>
+        <span className="text-[14px] font-semibold text-semantic-text-primary truncate flex-1 tracking-[0.1px]">{media.filename || "File"}</span>
+        <button aria-label={`Download ${media.filename || 'file'}`} className="shrink-0 size-8 rounded-full flex items-center justify-center hover:bg-semantic-bg-hover transition-colors">
+          <ArrowDownToLine className="size-[18px] text-semantic-text-secondary" />
         </button>
       </div>
     </div>
@@ -635,9 +760,9 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
   return (
     <div className="relative">
       {/* Scrollable card row */}
-      <div ref={scrollRef} onScroll={updateScrollState} className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3" style={{ scrollbarWidth: "none" }}>
+      <div ref={scrollRef} onScroll={updateScrollState} tabIndex={0} role="region" aria-label="Carousel" aria-roledescription="carousel" className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3" style={{ scrollbarWidth: "none" }}>
         {media.images?.map((img, i) => (
-          <div key={i} className="shrink-0 bg-white rounded border border-[#e9eaeb] overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]" style={{ width: 260 }}>
+          <div key={i} className="shrink-0 bg-white rounded border border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]" style={{ width: 260 }}>
             {/* Card image */}
             <img
               src={img.url}
@@ -647,17 +772,17 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
             />
             {/* Card title */}
             <div className="px-3 pt-2.5 pb-2">
-              <p className="text-[14px] font-semibold text-[#181d27] line-clamp-2">{img.title}</p>
+              <p className="m-0 text-[14px] font-medium text-semantic-text-primary line-clamp-2">{img.title}</p>
             </div>
             {/* Card buttons */}
             {img.buttons?.map((btn, j) => (
               <button
                 key={j}
-                className="flex items-center justify-center gap-2 w-full border-t border-[#e9eaeb] text-[13px] font-semibold text-[#343e55] hover:bg-[#fafafa] transition-colors"
+                className="flex items-center justify-center gap-2 w-full border-t border-semantic-border-layout text-[13px] font-normal text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
                 style={{ height: 40 }}
               >
-                {btn.icon === "reply" && <Reply className="size-4" />}
-                {btn.icon === "link" && <ExternalLink className="size-4" />}
+                {btn.icon === "reply" && <Reply className="size-3.5" />}
+                {btn.icon === "link" && <ExternalLink className="size-3.5" />}
                 {btn.label}
               </button>
             ))}
@@ -666,13 +791,13 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
       </div>
       {/* Navigation arrows — show/hide based on scroll position */}
       {canScrollLeft && (
-        <button onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#fafafa] transition-colors">
-          <ChevronLeft className="size-4 text-[#343e55]" />
+        <button aria-label="Scroll carousel left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+          <ChevronLeft className="size-4 text-semantic-text-primary" />
         </button>
       )}
       {canScrollRight && (
-        <button onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-[#fafafa] transition-colors">
-          <ChevronRight className="size-4 text-[#343e55]" />
+        <button aria-label="Scroll carousel right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+          <ChevronRight className="size-4 text-semantic-text-primary" />
         </button>
       )}
     </div>
@@ -684,12 +809,12 @@ function LoadingMedia({ error }: { error?: string }) {
     <div className="overflow-hidden">
       {/* White preview area — aspect ~442:308 matching doc previews */}
       <div className="bg-white flex items-center justify-center" style={{ aspectRatio: "442 / 308" }}>
-        <Loader2 className="size-[60px] text-[#717680] opacity-40 animate-spin" />
+        <Spinner size="xl" variant="muted" />
       </div>
       {/* Error banner */}
       {error && (
-        <div className="border-t border-[#fecdca] bg-[#fef3f2] px-4 py-3">
-          <p className="text-[14px] leading-5 text-[#b42318]">
+        <div className="border-t border-semantic-error-primary bg-semantic-error-surface px-4 py-3">
+          <p className="m-0 text-[14px] leading-5 text-semantic-error-primary">
             {error}
           </p>
         </div>
@@ -704,42 +829,43 @@ const chatMessages: Record<string, ChatMessage[]> = {
   "1": [
     // Text messages (with reply quote)
     { id: "m1", text: "Hi, I need help with my account settings", time: "2:15 PM", sender: "customer" },
-    { id: "m2", text: "Sure, I'd be happy to help!", time: "2:16 PM", sender: "agent", senderName: "Alex Smith", status: "read", replyTo: { sender: "Aditi Kumar", text: "Hi, I need help with my account settings" } },
+    { id: "m1b", text: "Assigned to **Alex Smith** by **Alex Smith**", time: "", sender: "agent", type: "system" },
+    { id: "m2", text: "Sure, I'd be happy to help!", time: "2:16 PM", sender: "agent", senderName: "Alex Smith", status: "read", sentBy: { type: "agent", name: "Alex Smith" }, replyTo: { sender: "Aditi Kumar", text: "Hi, I need help with my account settings", messageId: "m1" } },
     // Image
     { id: "m3", text: "", time: "2:18 PM", sender: "customer", type: "image", media: { url: "https://picsum.photos/seed/chat1/683/546", caption: "Here is a screenshot of the issue I'm facing" } },
     // Audio (both directions)
     { id: "m4", text: "", time: "2:20 PM", sender: "customer", type: "audio", media: { url: "#", duration: "0:10" } },
-    { id: "m5", text: "", time: "2:21 PM", sender: "agent", senderName: "Alex Smith", status: "delivered", type: "audio", media: { url: "#", duration: "1:35" } },
+    { id: "m5", text: "", time: "2:21 PM", sender: "agent", senderName: "Alex Smith", status: "delivered", sentBy: { type: "agent", name: "Alex Smith" }, type: "audio", media: { url: "#", duration: "1:35" } },
     // Video
-    { id: "m6", text: "", time: "2:23 PM", sender: "agent", senderName: "Alex Smith", status: "delivered", type: "video", media: { url: "https://picsum.photos/seed/vid1/683/400", thumbnailUrl: "https://picsum.photos/seed/vid1/683/400", duration: "3:45", caption: "WhatsApp API Setup Tutorial" } },
+    { id: "m6", text: "", time: "2:23 PM", sender: "agent", senderName: "Alex Smith", status: "delivered", sentBy: { type: "agent", name: "Alex Smith" }, type: "video", media: { url: "https://picsum.photos/seed/vid1/683/400", thumbnailUrl: "https://picsum.photos/seed/vid1/683/400", duration: "3:45", caption: "WhatsApp API Setup Tutorial" } },
     // Document preview (PDF)
-    { id: "m7", text: "", time: "2:25 PM", sender: "agent", senderName: "Alex Smith", status: "read", type: "docPreview", media: { url: "https://picsum.photos/seed/doc1/442/308", thumbnailUrl: "https://picsum.photos/seed/doc1/442/308", filename: "Project_Proposal_2025.pdf", fileType: "PDF", pageCount: 46, fileSize: "5MB" } },
+    { id: "m7", text: "Have a look at this document", time: "2:30 PM", sender: "agent", senderName: "Alex Smith", status: "failed", sentBy: { type: "agent", name: "Alex Smith" }, type: "docPreview", media: { url: "https://picsum.photos/seed/doc1/442/308", thumbnailUrl: "https://picsum.photos/seed/doc1/442/308", filename: "Introduction to Live Chat.pdf", fileType: "PDF", pageCount: 46, fileSize: "5MB" } },
     // Document with download
     { id: "m8", text: "", time: "2:27 PM", sender: "customer", type: "document", media: { url: "https://picsum.photos/seed/doc2/442/308", thumbnailUrl: "https://picsum.photos/seed/doc2/442/308", filename: "Monthly_Report_Feb.pdf", fileType: "PDF", pageCount: 12, fileSize: "3.1MB" } },
     // Other doc (XLS)
     { id: "m9", text: "Have a look at this document", time: "2:28 PM", sender: "customer", type: "otherDoc", media: { url: "#", filename: "Order_Data_Q4.xlsx", fileType: "XLS", pageCount: 46, fileSize: "2.3MB" } },
     // Carousel
-    { id: "m10", text: "Check out our latest products!", time: "2:29 PM", sender: "agent", senderName: "Alex Smith", status: "delivered", type: "carousel", media: { url: "#", images: [
+    { id: "m10", text: "Check out our latest products!", time: "2:29 PM", sender: "agent", senderName: "Alex Smith", status: "delivered", sentBy: { type: "campaign" }, type: "carousel", media: { url: "#", images: [
       { url: "https://picsum.photos/seed/c1/300/240", title: "Product Catalog 2025", buttons: [{ label: "View Details", icon: "link" }, { label: "Share", icon: "reply" }] },
       { url: "https://picsum.photos/seed/c2/300/240", title: "New Arrivals Collection", buttons: [{ label: "Shop Now", icon: "link" }] },
       { url: "https://picsum.photos/seed/c3/300/240", title: "Special Offers & Deals", buttons: [{ label: "Learn More", icon: "link" }, { label: "Share", icon: "reply" }] },
     ] } },
     // Loading / Error
-    { id: "m11", text: "", time: "2:30 PM", sender: "agent", senderName: "Alex Smith", status: "sent", type: "loading", error: "Template message could not be delivered. The message template has been rejected." },
+    { id: "m11", text: "", time: "2:30 PM", sender: "agent", senderName: "Alex Smith", status: "sent", sentBy: { type: "campaign" }, type: "loading", error: "Template message could not be delivered. The message template has been rejected." },
   ],
   "2": [
     { id: "m1", text: "Hello, I'd like to know about your enterprise plans", time: "2:10 PM", sender: "customer" },
-    { id: "m2", text: "Welcome! I'll share our enterprise pricing details with you.", time: "2:15 PM", sender: "agent", status: "read" },
+    { id: "m2", text: "Welcome! I'll share our enterprise pricing details with you.", time: "2:15 PM", sender: "agent", status: "read", sentBy: { type: "agent", name: "Kavita Nair" } },
     { id: "m3", text: "", time: "2:20 PM", sender: "customer", type: "audio", media: { url: "#", duration: "0:10" } },
-    { id: "m4", text: "", time: "2:22 PM", sender: "agent", status: "delivered", type: "audio", media: { url: "#", duration: "1:35" } },
-    { id: "m5", text: "Authentication message sent", time: "2:29 PM", sender: "agent", status: "read" },
+    { id: "m4", text: "", time: "2:22 PM", sender: "agent", status: "delivered", sentBy: { type: "agent", name: "Kavita Nair" }, type: "audio", media: { url: "#", duration: "1:35" } },
+    { id: "m5", text: "Authentication message sent", time: "2:29 PM", sender: "agent", status: "read", sentBy: { type: "api" } },
   ],
   "3": [
     { id: "m1", text: "Can you help me set up the API integration?", time: "1:45 PM", sender: "customer" },
-    { id: "m2", text: "Of course! Here's a quick video tutorial.", time: "1:50 PM", sender: "agent", status: "delivered" },
-    { id: "m3", text: "", time: "1:52 PM", sender: "agent", status: "delivered", type: "video", media: { url: "https://picsum.photos/seed/vid1/683/400", thumbnailUrl: "https://picsum.photos/seed/vid1/683/400", duration: "3:45", caption: "WhatsApp API Setup Tutorial" } },
+    { id: "m2", text: "Of course! Here's a quick video tutorial.", time: "1:50 PM", sender: "agent", status: "delivered", sentBy: { type: "bot" } },
+    { id: "m3", text: "", time: "1:52 PM", sender: "agent", status: "delivered", sentBy: { type: "bot" }, type: "video", media: { url: "https://picsum.photos/seed/vid1/683/400", thumbnailUrl: "https://picsum.photos/seed/vid1/683/400", duration: "3:45", caption: "WhatsApp API Setup Tutorial" } },
     { id: "m4", text: "The WhatsApp Business API", time: "2:00 PM", sender: "customer" },
-    { id: "m5", text: "Authentication message sent", time: "2:29 PM", sender: "agent", status: "sent" },
+    { id: "m5", text: "Authentication message sent", time: "2:29 PM", sender: "agent", status: "failed", sentBy: { type: "api" } },
   ],
   "4": [
     { id: "m1", text: "I am super excited", time: "Yesterday", sender: "customer" },
@@ -751,18 +877,18 @@ const chatMessages: Record<string, ChatMessage[]> = {
   ],
   "5": [
     { id: "m1", text: "Hi, can you share the proposal?", time: "Yesterday", sender: "customer" },
-    { id: "m2", text: "Sure, here's the PDF.", time: "Yesterday", sender: "agent", status: "read" },
-    { id: "m3", text: "", time: "Yesterday", sender: "agent", status: "read", type: "docPreview", media: { url: "https://picsum.photos/seed/doc1/442/308", thumbnailUrl: "https://picsum.photos/seed/doc1/442/308", filename: "Project_Proposal_2025.pdf", fileType: "PDF", pageCount: 46, fileSize: "5MB" } },
+    { id: "m2", text: "Sure, here's the PDF.", time: "Yesterday", sender: "agent", status: "read", sentBy: { type: "agent", name: "Jane Doe" } },
+    { id: "m3", text: "", time: "Yesterday", sender: "agent", status: "read", sentBy: { type: "agent", name: "Jane Doe" }, type: "docPreview", media: { url: "https://picsum.photos/seed/doc1/442/308", thumbnailUrl: "https://picsum.photos/seed/doc1/442/308", filename: "Project_Proposal_2025.pdf", fileType: "PDF", pageCount: 46, fileSize: "5MB" } },
   ],
   "6": [
     { id: "m1", text: "We get many food delivery orders. Can we set up an automated response for those?", time: "Yesterday", sender: "customer" },
     { id: "m2", text: "Here's the order data from last quarter", time: "Yesterday", sender: "customer", type: "otherDoc", media: { url: "#", filename: "Order_Data_Q4.xlsx", fileType: "XLS", pageCount: 12, fileSize: "2.3MB" } },
-    { id: "m3", text: "", time: "Yesterday", sender: "agent", status: "sent", type: "loading", error: "Template message could not be delivered. The message template has been rejected." },
+    { id: "m3", text: "", time: "Yesterday", sender: "agent", status: "sent", sentBy: { type: "campaign" }, type: "loading", error: "Template message could not be delivered. The message template has been rejected." },
   ],
   "7": [
     { id: "m1", text: "I am super excited!", time: "Saturday", sender: "customer" },
-    { id: "m2", text: "Here's the report you requested!", time: "Saturday", sender: "agent", status: "delivered" },
-    { id: "m3", text: "", time: "Saturday", sender: "agent", status: "delivered", type: "document", media: { url: "https://picsum.photos/seed/doc2/442/308", thumbnailUrl: "https://picsum.photos/seed/doc2/442/308", filename: "Monthly_Report_Feb.pdf", fileType: "PDF", pageCount: 12, fileSize: "3.1MB" } },
+    { id: "m2", text: "Here's the report you requested!", time: "Saturday", sender: "agent", status: "delivered", sentBy: { type: "agent", name: "Alex Smith" } },
+    { id: "m3", text: "", time: "Saturday", sender: "agent", status: "delivered", sentBy: { type: "agent", name: "Alex Smith" }, type: "document", media: { url: "https://picsum.photos/seed/doc2/442/308", thumbnailUrl: "https://picsum.photos/seed/doc2/442/308", filename: "Monthly_Report_Feb.pdf", fileType: "PDF", pageCount: 12, fileSize: "3.1MB" } },
   ],
 }
 
@@ -772,39 +898,129 @@ type Contact = {
   id: string
   name: string
   phone: string
+  channel?: string
 }
 
 const contacts: Contact[] = [
-  { id: "c1", name: "Aditi Kumar", phone: "+91 98765 43210" },
-  { id: "c2", name: "Arsh Raj", phone: "+91 91234 56789" },
-  { id: "c3", name: "Deepika Patel", phone: "+91 87654 32109" },
-  { id: "c4", name: "Jane Doe", phone: "+91 76543 21098" },
-  { id: "c5", name: "Kavita Nair", phone: "+91 65432 10987" },
-  { id: "c6", name: "Mohit Kumar", phone: "+91 99887 76655" },
-  { id: "c7", name: "Neha Gupta", phone: "+91 88776 65544" },
-  { id: "c8", name: "Nitin Rajput", phone: "+91 77665 54433" },
-  { id: "c9", name: "Priya Sharma", phone: "+91 66554 43322" },
-  { id: "c10", name: "Rahul Verma", phone: "+91 55443 32211" },
-  { id: "c11", name: "Rohit Gupta", phone: "+91 44332 21100" },
-  { id: "c12", name: "Sam Lee", phone: "+91 93300 11122" },
-  { id: "c13", name: "Sushmit", phone: "+91 92200 33344" },
-  { id: "c14", name: "Sushant Arya", phone: "+91 91100 55566" },
-  { id: "c15", name: "Vikram Singh", phone: "+91 90000 77788" },
+  { id: "c1", name: "Aditi Kumar", phone: "+91 98765 43210", channel: "MY01" },
+  { id: "c2", name: "Arsh Raj", phone: "+91 91234 56789", channel: "MY01" },
+  { id: "c3", name: "Deepika Patel", phone: "+91 87654 32109", channel: "MY01" },
+  { id: "c4", name: "Jane Doe", phone: "+91 76543 21098", channel: "MY02" },
+  { id: "c5", name: "Kavita Nair", phone: "+91 65432 10987", channel: "MY03" },
+  { id: "c6", name: "Mohit Kumar", phone: "+91 99887 76655", channel: "MY01" },
+  { id: "c7", name: "Neha Gupta", phone: "+91 88776 65544", channel: "MY02" },
+  { id: "c8", name: "Nitin Rajput", phone: "+91 77665 54433", channel: "MY01" },
+  { id: "c9", name: "Priya Sharma", phone: "+91 66554 43322", channel: "MY03" },
+  { id: "c10", name: "Rahul Verma", phone: "+91 55443 32211", channel: "MY01" },
+  { id: "c11", name: "Rohit Gupta", phone: "+91 44332 21100", channel: "MY02" },
+  { id: "c12", name: "Sam Lee", phone: "+91 93300 11122", channel: "MY01" },
+  { id: "c13", name: "Sushmit", phone: "+91 92200 33344", channel: "MY03" },
+  { id: "c14", name: "Sushant Arya", phone: "+91 91100 55566", channel: "MY01" },
+  { id: "c15", name: "Vikram Singh", phone: "+91 90000 77788", channel: "MY02" },
 ]
 
-function getInitials(name: string) {
-  const parts = name.trim().split(" ")
-  return parts.length >= 2
-    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    : name.slice(0, 2).toUpperCase()
+// getInitials is now available from the Avatar component library
+// import { getInitials } from "@/components/ui/avatar"
+
+/* ── Add New Contact Modal ── */
+
+function AddNewContactModal({
+  defaultChannel,
+  onClose,
+}: {
+  defaultChannel: ChannelItem
+  onClose: () => void
+}) {
+  const [phone, setPhone] = useState("")
+  const [name, setName] = useState("")
+  const [channel, setChannel] = useState(defaultChannel)
+
+  return (
+    <Dialog open onOpenChange={(open) => { if (!open) onClose() }}>
+      <DialogContent size="default" className="w-[480px] max-w-[90vw] p-0 gap-0" hideCloseButton>
+        <DialogDescription className="sr-only">Add a new contact to start a conversation</DialogDescription>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4">
+          <DialogTitle>Add New Contact</DialogTitle>
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  {channel.badge}
+                  <ChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[280px]">
+                {channels.map((ch) => (
+                  <DropdownMenuItem
+                    key={ch.id}
+                    onSelect={() => setChannel(channels.find((c) => c.id === ch.id)!)}
+                    description={ch.phone}
+                    suffix={ch.badge}
+                    className={cn(channel.id === ch.id && "bg-semantic-primary-surface text-semantic-primary font-medium")}
+                  >
+                    {ch.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="size-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Form */}
+        <div className="px-6 pb-6 flex flex-col gap-4">
+          {/* Phone */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="add-contact-phone" className="text-[14px] font-medium text-semantic-text-primary">
+              Phone<span className="text-semantic-error-primary">*</span>
+            </label>
+            <div className="flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors">
+              <div className="flex items-center gap-1.5 pl-3 pr-2 h-10 shrink-0">
+                <span className="text-sm">🇮🇳</span>
+                <span className="text-sm text-semantic-text-secondary">+91</span>
+              </div>
+              <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+              <input
+                id="add-contact-phone"
+                type="tel"
+                placeholder="Enter phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                aria-required="true"
+                className="flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Save contact as */}
+          <TextField
+            label="Save contact as"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+
+          {/* Start Conversation button */}
+          <div className="flex justify-end pt-2">
+            <Button>Start Conversation</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 /* ── New Chat Panel ── */
 
 function NewChatPanel({
   onBack,
+  onOpenAddContact,
 }: {
   onBack: () => void
+  onOpenAddContact: () => void
 }) {
   const [contactSearch, setContactSearch] = useState("")
   const [selectedChannel, setSelectedChannel] = useState(channels[0])
@@ -818,41 +1034,32 @@ function NewChatPanel({
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-3 border-b border-[#e9eaeb] shrink-0">
+      <div className="flex items-center justify-between px-3 py-3 border-b border-semantic-border-layout shrink-0">
         <div className="flex items-center gap-2">
-          <button
-            onClick={onBack}
-            className="flex items-center justify-center size-8 rounded hover:bg-[#f5f5f5] transition-colors text-[#343e55]"
-          >
+          <Button variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="size-5" />
-          </button>
-          <span className="text-[16px] font-semibold text-[#181d27]">New Chat</span>
+          </Button>
+          <span className="text-[16px] font-semibold text-semantic-text-primary">New Chat</span>
         </div>
 
         {/* Channel selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 h-8 px-2.5 border border-[#d5d7da] rounded bg-white hover:bg-[#fafafa] transition-colors">
-              <span className="text-[13px] font-semibold text-[#181d27]">
-                {selectedChannel.badge}
-              </span>
-              <ChevronDown className="size-4 text-[#717680]" />
-            </button>
+            <Button variant="outline">
+              {selectedChannel.badge}
+              <ChevronDown className="size-4" />
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[220px]">
+          <DropdownMenuContent align="end" className="w-[280px]">
             {channels.map((ch) => (
               <DropdownMenuItem
                 key={ch.id}
-                onClick={() => setSelectedChannel(ch)}
-                className="flex items-center justify-between text-[13px] cursor-pointer"
+                onSelect={() => setSelectedChannel(channels.find((c) => c.id === ch.id)!)}
+                description={ch.phone}
+                suffix={ch.badge}
+                className={cn(selectedChannel.id === ch.id && "bg-semantic-primary-surface text-semantic-primary font-medium")}
               >
-                <div className="flex flex-col">
-                  <span className="text-[#181d27]">{ch.name}</span>
-                  <span className="text-[#717680] text-[12px]">{ch.phone}</span>
-                </div>
-                {selectedChannel.id === ch.id && (
-                  <Check className="size-4 text-[#181d27] shrink-0" />
-                )}
+                {ch.name}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -860,50 +1067,51 @@ function NewChatPanel({
       </div>
 
       {/* Search row */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#e9eaeb] shrink-0">
-        <div className="flex-1 flex items-center gap-2 h-9 px-3 border border-[#d5d7da] rounded-lg bg-white focus-within:border-[#27abb8] transition-colors">
-          <Search className="size-4 text-[#a4a7ae] shrink-0" />
-          <input
-            type="text"
-            placeholder="Search contacts"
-            value={contactSearch}
-            onChange={(e) => setContactSearch(e.target.value)}
-            className="flex-1 text-[13px] text-[#181d27] placeholder:text-[#a4a7ae] outline-none bg-transparent"
-          />
-        </div>
-        <button className="flex items-center justify-center size-9 border border-[#d5d7da] rounded-lg bg-white hover:bg-[#fafafa] transition-colors text-[#343e55] shrink-0">
+      <div role="search" aria-label="Search contacts" className="flex items-center gap-2 px-3 py-2.5 border-b border-semantic-border-layout shrink-0">
+        <TextField
+          placeholder="Search contacts"
+          aria-label="Search contacts"
+          value={contactSearch}
+          onChange={(e) => setContactSearch(e.target.value)}
+          leftIcon={<Search className="size-4" />}
+          wrapperClassName="flex-1 min-w-0"
+        />
+        <Button variant="outline" size="icon-lg" onClick={onOpenAddContact} className="shrink-0" aria-label="Add new contact">
           <UserPlus className="size-4" />
-        </button>
+        </Button>
       </div>
 
       {/* Contact list */}
       <div className="flex-1 overflow-y-auto">
         {filtered.length === 0 ? (
-          <div className="flex items-center justify-center h-24 text-[13px] text-[#a4a7ae]">
+          <div className="flex items-center justify-center h-24 text-[13px] text-semantic-text-muted">
             No contacts found
           </div>
         ) : (
           filtered.map((contact, i) => (
-            <div
+            <button
+              type="button"
               key={contact.id}
-              className={`flex items-center gap-3 px-3 py-3 hover:bg-[#fafafa] cursor-pointer transition-colors ${
-                i < filtered.length - 1 ? "border-b border-[#e9eaeb]" : ""
+              className={`flex items-center gap-3 px-3 py-3 hover:bg-semantic-bg-hover cursor-pointer transition-colors text-left w-full ${
+                i < filtered.length - 1 ? "border-b border-semantic-border-layout" : ""
               }`}
             >
-              {/* Avatar */}
-              <div className="size-9 rounded-full bg-[#e9eaeb] flex items-center justify-center shrink-0">
-                <span className="text-[12px] font-semibold text-[#535862]">
-                  {getInitials(contact.name)}
-                </span>
-              </div>
+              <Avatar name={contact.name} size="sm" />
               {/* Info */}
-              <div className="flex flex-col min-w-0">
-                <span className="text-[14px] font-medium text-[#181d27] leading-5 truncate">
-                  {contact.name}
-                </span>
-                <span className="text-[12px] text-[#717680]">{contact.phone}</span>
+              <div className="flex-1 flex items-center justify-between min-w-0">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[14px] font-medium text-semantic-text-primary leading-5 truncate">
+                    {contact.name}
+                  </span>
+                  <span className="text-[12px] text-semantic-text-muted">{contact.phone}</span>
+                </div>
+                {contact.channel && (
+                  <span className="text-[12px] font-medium text-semantic-text-muted shrink-0 ml-2">
+                    {contact.channel}
+                  </span>
+                )}
               </div>
-            </div>
+            </button>
           ))
         )}
       </div>
@@ -913,15 +1121,14 @@ function NewChatPanel({
 
 /* ── Filter Panel Content (renders below the search bar) ── */
 
-function FilterContent({
-  filterSearch,
+function FilterPanel({
   onClose,
   onApply,
 }: {
-  filterSearch: string
   onClose: () => void
   onApply: (assignees: Set<string>, channels: Set<string>) => void
 }) {
+  const [filterSearch, setFilterSearch] = useState("")
   const [selectedAssignees, setSelectedAssignees] = useState<Set<string>>(
     () => new Set(["all", "unassigned", "ivr-voice-bot", "alex-smith", "jane-doe"])
   )
@@ -959,21 +1166,40 @@ function FilterContent({
   }
 
   return (
-    <>
-      {/* Filter header bar (replaces tabs) */}
-      <div className="flex items-center h-10 px-4 border-b border-[#e9eaeb] shrink-0">
-        <span className="text-[14px] font-semibold text-[#181d27] flex-1">
-          Filters
-        </span>
-        <button
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Header — matches NewChat pattern */}
+      <div className="flex items-center justify-between px-3 py-3 border-b border-semantic-border-layout shrink-0">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <ArrowLeft className="size-5" />
+          </Button>
+          <span className="text-[16px] font-semibold text-semantic-text-primary">Filters</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-sm"
           onClick={() => {
             setSelectedAssignees(new Set())
             setSelectedChannels(new Set())
           }}
-          className="text-[12px] font-semibold text-[#717680] hover:text-[#343e55] transition-colors"
         >
           Reset
-        </button>
+        </Button>
+      </div>
+
+      {/* Search row */}
+      <div role="search" aria-label="Search filters" className="flex items-center gap-2 px-3 py-2.5 border-b border-semantic-border-layout shrink-0">
+        <TextField
+          placeholder="Search filters..."
+          aria-label="Search filters"
+          value={filterSearch}
+          onChange={(e) => setFilterSearch(e.target.value)}
+          leftIcon={<Search className="size-4" />}
+          wrapperClassName="flex-1 min-w-0"
+          clearable
+          onClear={() => setFilterSearch("")}
+        />
       </div>
 
       {/* Scrollable filter sections */}
@@ -981,54 +1207,58 @@ function FilterContent({
         {/* ── Assignment Section ── */}
         <div className="mb-5">
           <div className="flex items-center gap-2 mb-2">
-            <Users className="size-4 text-[#717680]" />
-            <span className="text-[13px] font-semibold text-[#181d27] flex-1">
+            <Users className="size-4 text-semantic-text-muted" />
+            <span className="text-[13px] font-semibold text-semantic-text-primary">
               Assignment
             </span>
-            <span className="text-[12px] text-[#717680] tabular-nums">
+            <span className="text-[12px] text-semantic-text-muted tabular-nums">
               {selectedAssignees.size}/{assignees.length}
             </span>
-            <button
+            <span className="flex-1" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-semantic-error-primary hover:bg-semantic-error-surface hover:text-semantic-error-primary"
               onClick={() => setSelectedAssignees(new Set())}
-              className="text-[12px] font-semibold text-[#717680] hover:text-[#343e55] ml-1"
             >
               Clear All
-            </button>
+            </Button>
           </div>
 
-          <div className="border border-[#e9eaeb] rounded-lg overflow-hidden">
+          <div className="border border-semantic-border-layout rounded-lg overflow-hidden">
             {topLevel.map((item) => (
               <label
                 key={item.id}
-                className="flex items-center gap-3 px-3 py-2.5 hover:bg-[#fafafa] cursor-pointer transition-colors border-b border-[#e9eaeb]"
+                className="flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors border-b border-semantic-border-layout"
               >
                 <Checkbox
                   size="sm"
                   checked={selectedAssignees.has(item.id)}
                   onCheckedChange={() => toggleAssignee(item.id)}
                 />
-                <span className="text-[14px] text-[#181d27]">{item.label}</span>
+                <span className="text-[14px] text-semantic-text-primary">{item.label}</span>
               </label>
             ))}
 
             {filteredBots.length > 0 && (
               <>
-                <div className="px-3 py-2 bg-[#f5f5f5] border-b border-[#e9eaeb]">
-                  <span className="text-[13px] font-semibold text-[#535862]">
+                <div className="px-3 py-2 bg-semantic-bg-ui border-b border-semantic-border-layout">
+                  <span className="text-[13px] font-semibold text-semantic-text-secondary">
                     Bots ({bots.length})
                   </span>
                 </div>
                 {filteredBots.map((bot) => (
                   <label
                     key={bot.id}
-                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-[#fafafa] cursor-pointer transition-colors border-b border-[#e9eaeb]"
+                    className="flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors border-b border-semantic-border-layout"
                   >
                     <Checkbox
                       size="sm"
                       checked={selectedAssignees.has(bot.id)}
                       onCheckedChange={() => toggleAssignee(bot.id)}
                     />
-                    <span className="text-[14px] text-[#181d27]">{bot.label}</span>
+                    <span className="text-[14px] text-semantic-text-primary flex-1">{bot.label}</span>
+                    <Bot className="size-4 text-semantic-text-muted" />
                   </label>
                 ))}
               </>
@@ -1036,16 +1266,16 @@ function FilterContent({
 
             {filteredAgents.length > 0 && (
               <>
-                <div className="px-3 py-2 bg-[#f5f5f5] border-b border-[#e9eaeb]">
-                  <span className="text-[13px] font-semibold text-[#535862]">
+                <div className="px-3 py-2 bg-semantic-bg-ui border-b border-semantic-border-layout">
+                  <span className="text-[13px] font-semibold text-semantic-text-secondary">
                     Agents ({agents.length})
                   </span>
                 </div>
                 {filteredAgents.map((agent, i) => (
                   <label
                     key={agent.id}
-                    className={`flex items-center gap-3 px-3 py-2.5 hover:bg-[#fafafa] cursor-pointer transition-colors ${
-                      i < filteredAgents.length - 1 ? "border-b border-[#e9eaeb]" : ""
+                    className={`flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors ${
+                      i < filteredAgents.length - 1 ? "border-b border-semantic-border-layout" : ""
                     }`}
                   >
                     <Checkbox
@@ -1053,7 +1283,7 @@ function FilterContent({
                       checked={selectedAssignees.has(agent.id)}
                       onCheckedChange={() => toggleAssignee(agent.id)}
                     />
-                    <span className="text-[14px] text-[#181d27]">{agent.label}</span>
+                    <span className="text-[14px] text-semantic-text-primary">{agent.label}</span>
                   </label>
                 ))}
               </>
@@ -1064,27 +1294,30 @@ function FilterContent({
         {/* ── Channels Section ── */}
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <Radio className="size-4 text-[#717680]" />
-            <span className="text-[13px] font-semibold text-[#181d27] flex-1">
+            <Radio className="size-4 text-semantic-text-muted" />
+            <span className="text-[13px] font-semibold text-semantic-text-primary">
               Channels
             </span>
-            <span className="text-[12px] text-[#717680] tabular-nums">
+            <span className="text-[12px] text-semantic-text-muted tabular-nums">
               {selectedChannels.size}/{channels.length}
             </span>
-            <button
+            <span className="flex-1" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-semantic-error-primary hover:bg-semantic-error-surface hover:text-semantic-error-primary"
               onClick={() => setSelectedChannels(new Set())}
-              className="text-[12px] font-semibold text-[#717680] hover:text-[#343e55] ml-1"
             >
               Clear All
-            </button>
+            </Button>
           </div>
 
-          <div className="border border-[#e9eaeb] rounded-lg overflow-hidden">
+          <div className="border border-semantic-border-layout rounded-lg overflow-hidden">
             {filteredChannels.map((ch, i) => (
               <label
                 key={ch.id}
-                className={`flex items-center gap-3 px-3 py-2.5 hover:bg-[#fafafa] cursor-pointer transition-colors ${
-                  i < filteredChannels.length - 1 ? "border-b border-[#e9eaeb]" : ""
+                className={`flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors ${
+                  i < filteredChannels.length - 1 ? "border-b border-semantic-border-layout" : ""
                 }`}
               >
                 <Checkbox
@@ -1094,14 +1327,14 @@ function FilterContent({
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] text-[#181d27] truncate">
+                    <span className="text-[14px] text-semantic-text-primary truncate">
                       {ch.name}
                     </span>
-                    <span className="shrink-0 text-[12px] font-semibold text-[#717680] bg-[#f0f0f0] px-1.5 py-0.5 rounded">
+                    <span className="shrink-0 text-[12px] font-semibold text-semantic-text-muted bg-semantic-bg-hover px-1.5 py-0.5 rounded">
                       {ch.badge}
                     </span>
                   </div>
-                  <span className="text-[13px] text-[#a2a6b1]">{ch.phone}</span>
+                  <span className="text-[13px] text-semantic-text-muted">{ch.phone}</span>
                 </div>
               </label>
             ))}
@@ -1110,27 +1343,27 @@ function FilterContent({
       </div>
 
       {/* Footer */}
-      <div className="shrink-0 border-t border-[#e9eaeb] px-4 py-3">
-        <p className="text-[13px] text-[#a2a6b1] mb-3 text-center">
+      <div className="shrink-0 border-t border-semantic-border-layout px-4 py-3">
+        <p className="m-0 text-[13px] text-semantic-text-muted mb-3 text-center">
           Maximum selections allowed per category: 50
         </p>
         <div className="flex gap-3">
           <Button
             variant="outline"
-            className="flex-1 h-10 border-[#c0c3ca] text-[14px] text-[#343e55]"
+            className="flex-1"
             onClick={onClose}
           >
             Cancel
           </Button>
           <Button
-            className="flex-1 h-10 bg-[#343e55] text-white text-[14px] font-semibold hover:bg-[#2a3245]"
+            className="flex-1"
             onClick={() => onApply(selectedAssignees, selectedChannels)}
           >
             Apply
           </Button>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -1140,7 +1373,7 @@ function resolveVars(text: string, vars: VarMap): React.ReactNode {
   const parts = text.split(/(\{\{[^}]+\}\})/g)
   return parts.map((part, i) =>
     /^\{\{[^}]+\}\}$/.test(part) ? (
-      <span key={i} className="text-[#4A90D9] font-medium">{vars[part] || part}</span>
+      <span key={i} className="text-semantic-text-link font-medium">{vars[part] || part}</span>
     ) : (
       part
     )
@@ -1151,7 +1384,7 @@ function TemplatePreviewEmpty() {
   return (
     <div className="flex flex-col items-center gap-5 pt-20 pb-8 px-6">
       <img src={noTemplateSelectedImg} alt="" className="size-[140px]" />
-      <p className="m-0 text-[18px] font-semibold text-[#181d27]">No template selected</p>
+      <p className="m-0 text-[18px] font-semibold text-semantic-text-primary">No template selected</p>
     </div>
   )
 }
@@ -1183,10 +1416,10 @@ function TemplateCarouselPreview({
   }
 
   return (
-    <div className="bg-semantic-info-surface border border-[#e9eaeb] rounded overflow-hidden w-full max-w-[360px]">
+    <div className="bg-semantic-info-surface border border-semantic-border-layout rounded overflow-hidden w-full max-w-[360px]">
       {/* Body text */}
       <div className="px-3 pt-3">
-        <p className="text-[14px] leading-5 text-[#181d27] m-0">{resolveVars(template.body, varValues)}</p>
+        <p className="text-[14px] leading-5 text-semantic-text-primary m-0">{resolveVars(template.body, varValues)}</p>
       </div>
 
       {/* Cards — same structure as CarouselMedia */}
@@ -1202,30 +1435,30 @@ function TemplateCarouselPreview({
             return (
               <div
                 key={card.cardIndex}
-                className="shrink-0 bg-white rounded border border-[#e9eaeb] overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
+                className="shrink-0 bg-white rounded border border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
                 style={{ width: 260 }}
               >
                 {imgUrl ? (
                   <img src={imgUrl} alt={`Card ${card.cardIndex}`} className="w-full object-cover" style={{ height: 200 }} />
                 ) : (
-                  <div className="w-full bg-[#f5f5f5] flex items-center justify-center" style={{ height: 200 }}>
-                    <FileSpreadsheet className="size-10 text-[#c0c3ca]" />
+                  <div className="w-full bg-semantic-bg-ui flex items-center justify-center" style={{ height: 200 }}>
+                    <FileSpreadsheet className="size-10 text-semantic-text-muted" />
                   </div>
                 )}
                 <div className="px-3 pt-2.5 pb-2">
-                  <p className="text-[14px] font-semibold text-[#181d27] m-0">
+                  <p className="text-[14px] font-semibold text-semantic-text-primary m-0">
                     {card.bodyVariables.length > 0
                       ? resolveVars(card.bodyVariables[0], varValues)
                       : `Card ${card.cardIndex}`}
                   </p>
                   {card.bodyVariables.slice(1).map((v) => (
-                    <p key={v} className="text-[13px] text-[#717680] m-0 mt-0.5">{resolveVars(v, varValues)}</p>
+                    <p key={v} className="text-[13px] text-semantic-text-muted m-0 mt-0.5">{resolveVars(v, varValues)}</p>
                   ))}
                 </div>
                 {card.buttonVariables.map((v, j) => (
                   <button
                     key={j}
-                    className="flex items-center justify-center gap-2 w-full border-t border-[#e9eaeb] text-[13px] font-semibold text-[#343e55] hover:bg-[#fafafa] transition-colors"
+                    className="flex items-center justify-center gap-2 w-full border-t border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                     style={{ height: 40 }}
                   >
                     <ExternalLink className="size-4" />
@@ -1234,7 +1467,7 @@ function TemplateCarouselPreview({
                 ))}
                 {card.buttonVariables.length === 0 && (
                   <button
-                    className="flex items-center justify-center gap-2 w-full border-t border-[#e9eaeb] text-[13px] font-semibold text-[#343e55] hover:bg-[#fafafa] transition-colors"
+                    className="flex items-center justify-center gap-2 w-full border-t border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                     style={{ height: 40 }}
                   >
                     <Reply className="size-4" />
@@ -1246,13 +1479,13 @@ function TemplateCarouselPreview({
           })}
         </div>
         {canScrollLeft && (
-          <button onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-[#fafafa] transition-colors">
-            <ChevronLeft className="size-4 text-[#343e55]" />
+          <button aria-label="Scroll template preview left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-semantic-bg-hover transition-colors">
+            <ChevronLeft className="size-4 text-semantic-text-primary" />
           </button>
         )}
         {canScrollRight && (
-          <button onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-[#fafafa] transition-colors">
-            <ChevronRight className="size-4 text-[#343e55]" />
+          <button aria-label="Scroll template preview right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-semantic-bg-hover transition-colors">
+            <ChevronRight className="size-4 text-semantic-text-primary" />
           </button>
         )}
       </div>
@@ -1260,7 +1493,7 @@ function TemplateCarouselPreview({
       {/* Footer + delivery */}
       <div className="px-3 pb-2">
         {template.footer && (
-          <p className="text-[12px] text-[#717680] m-0 mb-1">{template.footer}</p>
+          <p className="text-[12px] text-semantic-text-muted m-0 mb-1">{template.footer}</p>
         )}
         <DeliveryRow />
       </div>
@@ -1271,20 +1504,20 @@ function TemplateCarouselPreview({
 function TemplatePreviewBubble({ template, varValues }: { template: TemplateDef; varValues: VarMap }) {
   const DeliveryRow = () => (
     <div className="flex items-center justify-end gap-1.5 mt-1.5">
-      <CheckCheck className="size-4 text-[#717680]" />
-      <span className="text-[12px] text-[#717680]">Delivered</span>
-      <span className="text-[10px] font-bold text-[#717680]">•</span>
-      <span className="text-[12px] text-[#717680]">2:30 PM</span>
-      <span className="size-6 rounded-full bg-[#343e55] text-white text-[10px] font-bold flex items-center justify-center shrink-0">AS</span>
+      <CheckCheck className="size-4 text-semantic-text-muted" />
+      <span className="text-[12px] text-semantic-text-muted">Delivered</span>
+      <span className="text-[10px] font-bold text-semantic-text-muted">•</span>
+      <span className="text-[12px] text-semantic-text-muted">2:30 PM</span>
+      <Avatar initials="AS" size="xs" variant="filled" />
     </div>
   )
 
   if (template.type === "text") {
     return (
-      <div className="bg-[#ECF1FB] rounded-lg px-3 pt-3 pb-2 max-w-[280px] w-full">
-        <p className="text-[14px] leading-[1.4] text-[#181d27]">{resolveVars(template.body, varValues)}</p>
+      <div className="bg-semantic-info-surface rounded-lg px-3 pt-3 pb-2 max-w-[280px] w-full">
+        <p className="m-0 text-[14px] leading-[1.4] text-semantic-text-primary">{resolveVars(template.body, varValues)}</p>
         {template.button && (
-          <div className="border-t border-[#c5d5f0] mt-2 pt-2 flex items-center justify-center gap-1.5 text-[#343e55] text-[13px] font-semibold">
+          <div className="border-t border-semantic-border-layout mt-2 pt-2 flex items-center justify-center gap-1.5 text-semantic-text-primary text-[13px] font-semibold">
             <Reply className="size-3.5" />
             {template.button}
           </div>
@@ -1296,16 +1529,16 @@ function TemplatePreviewBubble({ template, varValues }: { template: TemplateDef;
 
   if (template.type === "image") {
     return (
-      <div className="bg-[#ECF1FB] rounded-lg overflow-hidden max-w-[280px] w-full">
+      <div className="bg-semantic-info-surface rounded-lg overflow-hidden max-w-[280px] w-full">
         <img
           src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=560&h=320&fit=crop"
           alt="Template image"
           className="w-full h-[160px] object-cover"
         />
         <div className="px-3 pt-2.5 pb-2">
-          <p className="text-[14px] leading-[1.4] text-[#181d27]">{resolveVars(template.body, varValues)}</p>
+          <p className="m-0 text-[14px] leading-[1.4] text-semantic-text-primary">{resolveVars(template.body, varValues)}</p>
           {template.button && (
-            <div className="border-t border-[#c5d5f0] mt-2 pt-2 flex items-center justify-center gap-1.5 text-[#343e55] text-[13px] font-semibold">
+            <div className="border-t border-semantic-border-layout mt-2 pt-2 flex items-center justify-center gap-1.5 text-semantic-text-primary text-[13px] font-semibold">
               <Reply className="size-3.5" />
               {template.button}
             </div>
@@ -1334,7 +1567,7 @@ function VarRow({
 }) {
   return (
     <div className="flex items-center gap-3 py-1.5">
-      <span className="text-[13px] text-[#535862] w-[148px] shrink-0 truncate font-mono">{varName}</span>
+      <span className="text-[13px] text-semantic-text-secondary w-[148px] shrink-0 truncate font-mono">{varName}</span>
       <TextField
         wrapperClassName="flex-1"
         placeholder="Enter value"
@@ -1347,7 +1580,7 @@ function VarRow({
 
 function VarSectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[11px] font-semibold text-[#a2a6b1] uppercase tracking-[0.4px] mt-4 mb-1">{children}</p>
+    <p className="m-0 text-[11px] font-semibold text-semantic-text-muted uppercase tracking-[0.4px] mt-4 mb-1">{children}</p>
   )
 }
 
@@ -1373,8 +1606,8 @@ function VariablesTab({
   if (hasNoVars) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-2 p-8 text-center">
-        <p className="text-[14px] font-semibold text-[#535862]">No variables</p>
-        <p className="text-[13px] text-[#a2a6b1]">This template has no dynamic variables to fill in.</p>
+        <p className="m-0 text-[14px] font-semibold text-semantic-text-secondary">No variables</p>
+        <p className="m-0 text-[13px] text-semantic-text-muted">This template has no dynamic variables to fill in.</p>
       </div>
     )
   }
@@ -1400,8 +1633,8 @@ function VariablesTab({
       {template.cards?.map((card) => (
         <div key={card.cardIndex}>
           <div className="flex items-center gap-3 mt-5 mb-1">
-            <span className="text-[13px] font-semibold text-[#181d27] shrink-0">Card {card.cardIndex}</span>
-            <div className="flex-1 h-px bg-[#e9eaeb]" />
+            <span className="text-[13px] font-semibold text-semantic-text-primary shrink-0">Card {card.cardIndex}</span>
+            <div className="flex-1 h-px bg-semantic-border-layout" />
           </div>
           {card.bodyVariables.length > 0 && (
             <>
@@ -1468,13 +1701,13 @@ function MediaTab({
         <div key={card.cardIndex} className="mb-5">
           {template.type === "carousel" && (
             <div className="flex items-center gap-3 mb-3">
-              <span className="text-[13px] font-semibold text-[#1a1a1a] shrink-0">Card {card.cardIndex}</span>
-              <div className="flex-1 h-px bg-[#e9eaeb]" />
+              <span className="text-[13px] font-semibold text-semantic-text-primary shrink-0">Card {card.cardIndex}</span>
+              <div className="flex-1 h-px bg-semantic-border-layout" />
             </div>
           )}
           {uploadedMedia[card.cardIndex] ? (
-            <div className="flex items-center gap-3 px-3 py-2.5 border border-[#e9eaeb] rounded">
-              <div className="size-10 shrink-0 rounded overflow-hidden bg-[#f5f5f5] flex items-center justify-center">
+            <div className="flex items-center gap-3 px-3 py-2.5 border border-semantic-border-layout rounded">
+              <div className="size-10 shrink-0 rounded overflow-hidden bg-semantic-bg-ui flex items-center justify-center">
                 <img
                   src={URL.createObjectURL(uploadedMedia[card.cardIndex]!)}
                   alt=""
@@ -1482,35 +1715,38 @@ function MediaTab({
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-[#181d27] truncate">{uploadedMedia[card.cardIndex]!.name}</p>
-                <p className="text-[12px] text-[#717680]">
+                <p className="m-0 text-[13px] font-semibold text-semantic-text-primary truncate">{uploadedMedia[card.cardIndex]!.name}</p>
+                <p className="m-0 text-[12px] text-semantic-text-muted">
                   {(uploadedMedia[card.cardIndex]!.size / (1024 * 1024)).toFixed(1)} MB size
                 </p>
               </div>
-              <button
-                onClick={() => setUploadedMedia((p) => ({ ...p, [card.cardIndex]: null }))}
-                className="shrink-0 p-1.5 rounded hover:bg-[#fef3f2] text-[#f04438] transition-colors"
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => setMediaDeleteIndex(card.cardIndex)}
+                className="shrink-0 hover:bg-semantic-error-surface text-semantic-error-primary"
               >
                 <Trash2 className="size-4" />
-              </button>
+              </Button>
             </div>
           ) : (
-            <label className="flex flex-col items-center gap-2 px-4 py-5 border border-dashed border-[#d5d7da] rounded cursor-pointer hover:bg-[#fafafa] transition-colors">
+            <label className="flex flex-col items-center gap-2 px-4 py-5 border border-dashed border-semantic-border-layout rounded cursor-pointer hover:bg-semantic-bg-hover transition-colors">
               <input
                 type="file"
                 accept="image/jpeg,image/png"
                 className="sr-only"
+                aria-label={`Upload media for card ${card.cardIndex}`}
                 onChange={(e) => {
                   const file = e.target.files?.[0]
                   if (file) setUploadedMedia((p) => ({ ...p, [card.cardIndex]: file }))
                 }}
               />
-              <div className="flex items-center gap-2 text-[14px] font-semibold text-[#343e55]">
+              <div className="flex items-center gap-2 text-[14px] font-semibold text-semantic-text-primary">
                 <Upload className="size-4" />
                 Upload from device
               </div>
-              <p className="text-[13px] text-[#717680]">or drag and drop file here</p>
-              <p className="text-[11px] text-[#a2a6b1]">Supported file types: JPG/PNG with 5 MB size</p>
+              <p className="m-0 text-[13px] text-semantic-text-muted">or drag and drop file here</p>
+              <p className="m-0 text-[11px] text-semantic-text-muted">Supported file types: JPG/PNG with 5 MB size</p>
             </label>
           )}
         </div>
@@ -1527,6 +1763,7 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
   const [varValues, setVarValues] = useState<VarMap>({})
   const [cardVarValues, setCardVarValues] = useState<CardVarMap>({})
   const [uploadedMedia, setUploadedMedia] = useState<Record<number, File | null>>({})
+  const [mediaDeleteIndex, setMediaDeleteIndex] = useState<number | null>(null)
 
   const handleSelectTemplate = (t: TemplateDef) => {
     setSelectedTemplate(t)
@@ -1537,34 +1774,30 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-8"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
-    >
-      <div className="bg-white rounded-xl w-full max-w-[1100px] flex flex-col shadow-[0px_24px_48px_-12px_rgba(10,13,18,0.25)]" style={{ height: "88vh", maxHeight: 800 }}>
+  <>
+    <Dialog open onOpenChange={(open) => { if (!open) onClose() }}>
+      <DialogContent size="xl" className="max-w-[1100px] h-[88vh] max-h-[800px] p-0 gap-0 flex flex-col" hideCloseButton>
+        <DialogDescription className="sr-only">Select from pre-approved message templates</DialogDescription>
 
         {/* ── Header: title + close ── */}
-        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-[#e9eaeb] shrink-0">
+        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-semantic-border-layout shrink-0">
           <div>
-            <h2 className="text-[18px] font-semibold text-[#181d27] leading-6">Select Template</h2>
-            <p className="text-[13px] text-[#717680] mt-0.5">Select from pre-approved message templates</p>
+            <DialogTitle>Select Template</DialogTitle>
+            <p className="text-[13px] text-semantic-text-muted mt-0.5 m-0">Select from pre-approved message templates</p>
           </div>
-          <button
-            onClick={onClose}
-            className="size-8 flex items-center justify-center rounded-md hover:bg-[#f5f5f5] text-[#717680] hover:text-[#343e55] transition-colors mt-0.5"
-          >
+          <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="size-[18px]" />
-          </button>
+          </Button>
         </div>
 
         {/* ── Body: LEFT (selectors + variables) | RIGHT (preview) ── */}
         <div className="flex flex-1 min-h-0 overflow-hidden">
 
           {/* ── Left column ── */}
-          <div className="flex-[1.25] border-r border-[#e9eaeb] flex flex-col min-h-0 overflow-y-auto">
+          <div className="flex-[1.25] border-r border-semantic-border-layout flex flex-col min-h-0">
 
             {/* Selectors section */}
-            <div className="px-5 pt-5 pb-4 border-b border-[#e9eaeb] shrink-0">
+            <div className="px-5 pt-5 pb-4 border-b border-semantic-border-layout shrink-0">
               <div className="flex items-start gap-3">
                 {/* Category */}
                 <div className="w-[160px] shrink-0">
@@ -1598,11 +1831,11 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
                   />
                 </div>
               </div>
-              <p className="text-[13px] text-[#717680] mt-2">
+              <p className="m-0 text-[13px] text-semantic-text-muted mt-2">
                 Template not found?{" "}
-                <a href="#" className="text-[#4A90D9] underline font-medium hover:text-[#4275D6]" onClick={(e) => e.preventDefault()}>
+                <button type="button" className="text-semantic-text-link underline font-medium hover:text-semantic-text-link bg-transparent border-none p-0 cursor-pointer text-[13px]" onClick={() => {}}>
                   Create new
-                </a>
+                </button>
               </p>
             </div>
 
@@ -1610,23 +1843,19 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
             {selectedTemplate ? (
               <div className="flex flex-col flex-1 min-h-0">
                 {/* Tabs */}
-                <div className="shrink-0 border-b border-[#e9eaeb]">
-                  <div className="flex px-5">
-                    {(["variables", "media"] as const).map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => { setTabSlideDir(tab === "media" ? "right" : "left"); setActiveTab(tab) }}
-                        className={`py-3 px-3 mr-4 text-[13px] font-medium transition-colors border-b-2 -mb-px ${
-                          activeTab === tab
-                            ? "text-[#343e55] border-[#343e55]"
-                            : "text-[#a2a6b1] border-transparent hover:text-[#717680]"
-                        }`}
-                      >
-                        {tab === "variables" ? "Template variables" : "Media"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                <Tabs
+                  value={activeTab}
+                  onValueChange={(v) => {
+                    const tab = v as "variables" | "media"
+                    setTabSlideDir(tab === "media" ? "right" : "left")
+                    setActiveTab(tab)
+                  }}
+                >
+                  <TabsList className="shrink-0 px-5">
+                    <TabsTrigger value="variables">Template variables</TabsTrigger>
+                    <TabsTrigger value="media">Media</TabsTrigger>
+                  </TabsList>
+                </Tabs>
                 <div key={activeTab} className={`animate-in ${tabSlideDir === "right" ? "slide-in-from-right-3" : "slide-in-from-left-3"} fade-in duration-200 ease-out flex flex-col flex-1 min-h-0 overflow-hidden`}>
                   {activeTab === "variables" ? (
                     <VariablesTab
@@ -1647,12 +1876,12 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center">
-                <div className="size-14 rounded-xl bg-[#f5f5f5] flex items-center justify-center">
-                  <FileSpreadsheet className="size-7 text-[#c0c3ca]" />
+                <div className="size-14 rounded-xl bg-semantic-bg-ui flex items-center justify-center">
+                  <FileSpreadsheet className="size-7 text-semantic-text-muted" />
                 </div>
                 <div>
-                  <p className="text-[14px] font-semibold text-[#535862]">No template selected</p>
-                  <p className="text-[13px] text-[#a2a6b1] mt-0.5">Choose a template above to map variables</p>
+                  <p className="m-0 text-[14px] font-semibold text-semantic-text-secondary">No template selected</p>
+                  <p className="m-0 text-[13px] text-semantic-text-muted mt-0.5">Choose a template above to map variables</p>
                 </div>
               </div>
             )}
@@ -1660,11 +1889,11 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
 
           {/* ── Right column: preview + send button ── */}
           <div className="flex-1 flex flex-col min-h-0">
-            <div className="px-5 pt-5 pb-3 shrink-0 border-b border-[#e9eaeb] flex items-center gap-2">
-              <Eye className="size-[14px] text-[#535862]" />
-              <p className="m-0 text-[12px] font-semibold tracking-wide uppercase text-[#535862]">Preview</p>
+            <div className="px-5 pt-5 pb-3 shrink-0 border-b border-semantic-border-layout flex items-center gap-2">
+              <Eye className="size-[14px] text-semantic-text-secondary" />
+              <p className="m-0 text-[12px] font-semibold tracking-wide uppercase text-semantic-text-secondary">Preview</p>
             </div>
-            <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start p-6 bg-[#f5f5f5]">
+            <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start p-6 bg-semantic-bg-ui">
               {selectedTemplate ? (
                 <div className="w-full flex flex-col items-end">
                   <TemplatePreviewBubble template={selectedTemplate} varValues={varValues} />
@@ -1673,7 +1902,7 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
                 <TemplatePreviewEmpty />
               )}
             </div>
-            <div className="px-5 py-4 shrink-0 border-t-2 border-[#e9eaeb] bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)]">
+            <div className="px-5 py-4 shrink-0 border-t-2 border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)]">
               <Button
                 onClick={() => { onSend(); onClose() }}
                 disabled={!selectedTemplate}
@@ -1685,8 +1914,23 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
+    <ConfirmationModal
+      open={mediaDeleteIndex !== null}
+      onOpenChange={(open) => { if (!open) setMediaDeleteIndex(null) }}
+      title="Remove uploaded media?"
+      description="This media file will be removed from the template."
+      variant="destructive"
+      confirmButtonText="Remove"
+      onConfirm={() => {
+        if (mediaDeleteIndex !== null) {
+          setUploadedMedia((p) => ({ ...p, [mediaDeleteIndex]: null }))
+        }
+        setMediaDeleteIndex(null)
+      }}
+    />
+  </>
   )
 }
 
@@ -1694,233 +1938,428 @@ function SelectTemplateModal({ onClose, onSend }: { onClose: () => void; onSend:
 
 function ContactDetailsPanel({ name, open, onClose }: { name: string; open: boolean; onClose: () => void }) {
   const [isEditing, setIsEditing] = useState(false)
-  const [basicExpanded, setBasicExpanded] = useState(true)
-  const [customExpanded, setCustomExpanded] = useState(true)
   const [marketingOptIn, setMarketingOptIn] = useState(true)
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
 
-  const fieldClass = "flex-1 h-10 border border-[#e9eaeb] rounded px-3 text-[14px] text-[#181d27] placeholder:text-[#a2a6b1] bg-white focus:outline-none focus:border-[#343e55]"
-  const labelClass = "w-[120px] shrink-0 text-[14px] font-semibold text-[#717680]"
+  const editFooter = (
+    <>
+      <Button variant="outline" className="flex-1" onClick={() => setShowDiscardConfirm(true)}>
+        Cancel
+      </Button>
+      <Button className="flex-1" leftIcon={<Check className="size-4" />} onClick={() => setIsEditing(false)}>
+        Save Details
+      </Button>
+    </>
+  )
 
   return (
-    <div
-      className={`border-l border-[#e9eaeb] bg-white flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0 ${open ? "w-[320px]" : "w-0 border-l-0"}`}
+  <>
+    <Panel
+      open={open}
+      title={isEditing ? "Edit Details" : "Contact Details"}
+      onClose={() => { setIsEditing(false); onClose() }}
+      footer={isEditing ? editFooter : undefined}
     >
-    <div className="w-[320px] flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-4 h-[72px] border-b border-[#e9eaeb] shrink-0">
-        <span className="flex-1 text-[18px] font-semibold text-[#343e55]">
-          {isEditing ? "Edit Details" : "Contact Details"}
-        </span>
-        <button
-          onClick={() => { setIsEditing(false); onClose() }}
-          className="size-6 flex items-center justify-center text-[#717680] hover:text-[#181d27] transition-colors"
-        >
-          <X className="size-5" />
-        </button>
-      </div>
-
       {isEditing ? (
         /* ── Edit View ── */
-        <>
-          <div className="flex-1 overflow-y-auto">
-            {/* Name field */}
-            <div className="px-4 py-4 border-b border-[#e9eaeb]">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[14px] font-semibold text-[#181d27]">
-                  Name<span className="text-[#b42318] ml-0.5">*</span>
-                </label>
-                <div className="flex items-center h-10 border border-[#27abb8] rounded px-3 gap-2 bg-white focus-within:border-[#343e55]">
-                  <User className="size-[18px] text-[#a2a6b1] shrink-0" />
-                  <input
-                    defaultValue={name}
-                    className="flex-1 text-[14px] text-[#343e55] bg-transparent outline-none"
-                  />
-                </div>
-              </div>
-            </div>
+        <div key="edit" className="animate-in fade-in duration-200 ease-out">
+          {/* Name field */}
+          <div className="px-4 py-4 border-b border-semantic-border-layout">
+            <TextField
+              label="Name"
+              required
+              defaultValue={name}
+              leftIcon={<User className="size-[18px]" />}
+              size="sm"
+              autoFocus
+            />
+          </div>
 
+          <Accordion type="multiple" defaultValue={["basic", "custom"]} variant="bordered" className="rounded-none border-x-0">
             {/* Basic Information */}
-            <div className="border-b border-[#e9eaeb]">
-              <button
-                onClick={() => setBasicExpanded(!basicExpanded)}
-                className="flex items-center justify-between w-full px-4 py-3"
-              >
-                <span className="text-[12px] font-semibold text-[#343e55]">Basic Information</span>
-                <ChevronDown className={`size-4 text-[#343e55] transition-transform duration-200 ${basicExpanded ? "" : "-rotate-90"}`} />
-              </button>
-              {basicExpanded && (
-                <div className="flex flex-col gap-4 px-4 pb-4">
+            <AccordionItem value="basic">
+              <AccordionTrigger>
+                <span className="text-sm font-semibold text-semantic-text-primary">Basic Information</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-4">
                   {/* Phone */}
-                  <div className="flex gap-4 items-center">
-                    <span className={labelClass}>
-                      Phone<span className="text-[#b42318] ml-0.5">*</span>
-                    </span>
-                    <div className="flex flex-1 gap-2">
-                      <button className="flex items-center gap-1.5 h-10 px-2.5 border border-[#e9eaeb] rounded bg-[#f5f5f5] text-[12px] text-[#717680] shrink-0">
-                        <span>🇮🇳</span>
-                        <span>+91</span>
-                      </button>
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="edit-phone" className="text-sm font-medium text-semantic-text-muted">
+                      Phone<span className="text-semantic-error-primary ml-0.5">*</span>
+                    </label>
+                    <div className="flex items-center border border-semantic-border-layout rounded opacity-60">
+                      <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
+                        <span className="text-sm">🇮🇳</span>
+                        <span className="text-sm text-semantic-text-secondary">+91</span>
+                      </div>
+                      <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
                       <input
+                        id="edit-phone"
+                        type="tel"
                         defaultValue="98765 43210"
-                        className="flex-1 h-10 border border-[#e9eaeb] rounded px-3 text-[14px] text-[#a2a6b1] bg-[#f5f5f5] outline-none min-w-0"
+                        disabled
+                        aria-required="true"
+                        className="flex-1 h-9 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent min-w-0"
                       />
                     </div>
                   </div>
-                  {/* Email */}
-                  <div className="flex gap-4 items-center">
-                    <span className={labelClass}>Email</span>
-                    <input placeholder="Enter Email" className={fieldClass} />
-                  </div>
-                  {/* Marketing Opt In */}
-                  <div className="flex gap-4 items-center">
-                    <div className="flex items-center gap-1 w-[120px] shrink-0">
-                      <span className="text-[14px] font-semibold text-[#717680]">Marketing Opt In</span>
-                      <Info className="size-[14px] text-[#a2a6b1] shrink-0" />
+                  <TextField label="Email" placeholder="Enter Email" size="sm" />
+                  <TextField label="Source" value="Chat" disabled size="sm" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-medium text-semantic-text-muted">Marketing Opt In</span>
+                      <Info className="size-3.5 text-semantic-text-muted shrink-0" />
                     </div>
                     <Switch checked={marketingOptIn} onCheckedChange={setMarketingOptIn} />
                   </div>
                 </div>
-              )}
-            </div>
+              </AccordionContent>
+            </AccordionItem>
 
             {/* Custom Fields */}
-            <div className="border-b border-[#e9eaeb]">
-              <button
-                onClick={() => setCustomExpanded(!customExpanded)}
-                className="flex items-center justify-between w-full px-4 py-3"
-              >
-                <span className="text-[12px] font-semibold text-[#343e55]">Custom Fields</span>
-                <ChevronDown className={`size-4 text-[#343e55] transition-transform duration-200 ${customExpanded ? "" : "-rotate-90"}`} />
-              </button>
-              {customExpanded && (
-                <div className="flex flex-col gap-4 px-4 pb-4">
-                  {/* Tags */}
-                  <div className="flex gap-4 items-center">
-                    <span className={labelClass}>Tags</span>
-                    <button className="flex-1 h-10 border border-[#e9eaeb] rounded px-3 flex items-center justify-between text-[14px] text-[#a2a6b1] bg-white">
-                      <span>Select options</span>
-                      <ChevronDown className="size-4 shrink-0" />
-                    </button>
+            <AccordionItem value="custom">
+              <AccordionTrigger>
+                <span className="text-sm font-semibold text-semantic-text-primary">Custom Fields</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium text-semantic-text-muted">Tags</span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          <div className="flex gap-1.5 flex-1 min-w-0">
+                            <Tag variant="default" size="sm">VIP Customer</Tag>
+                            <Tag variant="default" size="sm">Enterprise</Tag>
+                          </div>
+                          <ChevronDown className="size-4 shrink-0" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
+                        <DropdownMenuItem>VIP Customer</DropdownMenuItem>
+                        <DropdownMenuItem>Enterprise</DropdownMenuItem>
+                        <DropdownMenuItem>New Lead</DropdownMenuItem>
+                        <DropdownMenuItem>Support</DropdownMenuItem>
+                        <DropdownMenuItem>Billing</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   {[
                     { label: "Location", placeholder: "Enter Location" },
                     { label: "Secondary Phone", placeholder: "XXXXX XXXXX" },
                     { label: "DOB", placeholder: "DD / MM / YYYY" },
                   ].map(({ label, placeholder }) => (
-                    <div key={label} className="flex gap-4 items-center">
-                      <span className={labelClass}>{label}</span>
-                      <input placeholder={placeholder} className={fieldClass} />
-                    </div>
+                    <TextField key={label} label={label} placeholder={placeholder} size="sm" />
                   ))}
                 </div>
-              )}
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="flex gap-3 px-4 py-4 shrink-0 border-t border-[#e9eaeb]">
-            <button
-              onClick={() => setIsEditing(false)}
-              className="flex-1 h-10 border border-[#d5d7da] rounded text-[14px] font-semibold text-[#343e55] bg-white hover:bg-[#f5f5f5] transition-colors shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="flex-1 h-10 rounded text-[14px] font-semibold text-white bg-[#343e55] hover:bg-[#2a3245] transition-colors flex items-center justify-center gap-2 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
-            >
-              <Check className="size-4" />
-              Save Details
-            </button>
-          </div>
-        </>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       ) : (
         /* ── View Mode ── */
-        <div className="flex-1 overflow-y-auto">
+        <div key="view" className="animate-in fade-in duration-200 ease-out">
           {/* Name + Edit button */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-[#e9eaeb]">
-            <span className="text-[16px] font-semibold text-[#181d27]">{name}</span>
-            <button
-              onClick={() => setIsEditing(true)}
-              className="size-10 flex items-center justify-center border border-[#d5d7da] rounded shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] hover:bg-[#f5f5f5] transition-colors text-[#343e55]"
-            >
+          <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout">
+            <span className="text-base font-semibold text-semantic-text-primary">{name}</span>
+            <Button variant="outline" size="icon-lg" onClick={() => setIsEditing(true)}>
               <Pencil className="size-[18px]" />
-            </button>
+            </Button>
           </div>
 
-          {/* Basic Information */}
-          <div className="border-b border-[#e9eaeb]">
-            <button
-              onClick={() => setBasicExpanded(!basicExpanded)}
-              className="flex items-center justify-between w-full px-4 py-3"
-            >
-              <span className="text-[12px] font-semibold tracking-[0.06px] text-[#343e55] uppercase">Basic Information</span>
-              <ChevronDown className={`size-[16px] text-[#343e55] transition-transform duration-200 ${basicExpanded ? "" : "-rotate-90"}`} />
-            </button>
-            {basicExpanded && (
-              <div className="flex flex-col gap-4 px-4 pb-4">
-                <div className="flex gap-6 items-center">
-                  <span className="w-[120px] shrink-0 text-[14px] font-semibold text-[#717680]">Phone</span>
-                  <span className="text-[14px] text-[#181d27] flex items-center gap-1.5">
-                    +91 98765 43210 <span>🇮🇳</span>
-                  </span>
-                </div>
-                <div className="flex gap-6 items-center">
-                  <span className="w-[120px] shrink-0 text-[14px] font-semibold text-[#717680]">Email</span>
-                  <span className="text-[14px] text-[#181d27]">email@example.com</span>
-                </div>
-                <div className="flex gap-6 items-center">
-                  <div className="flex items-center gap-1 w-[120px] shrink-0">
-                    <span className="text-[14px] font-semibold text-[#717680]">Marketing Opt In</span>
-                    <Info className="size-[14px] text-[#a2a6b1] shrink-0" />
+          <Accordion type="multiple" defaultValue={["basic", "custom"]} variant="bordered" className="rounded-none border-x-0">
+            {/* Basic Information */}
+            <AccordionItem value="basic">
+              <AccordionTrigger>
+                <span className="text-sm font-semibold tracking-wide text-semantic-text-primary uppercase">Basic Information</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="view-phone" className="text-sm font-medium text-semantic-text-muted">Phone</label>
+                    <div className="flex items-center border border-semantic-border-layout rounded opacity-60">
+                      <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
+                        <span className="text-sm">🇮🇳</span>
+                        <span className="text-sm text-semantic-text-secondary">+91</span>
+                      </div>
+                      <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+                      <input
+                        id="view-phone"
+                        type="tel"
+                        value="98765 43210"
+                        disabled
+                        className="flex-1 h-9 px-3 text-sm text-semantic-text-primary outline-none bg-transparent min-w-0"
+                      />
+                    </div>
                   </div>
-                  <Switch checked={marketingOptIn} onCheckedChange={setMarketingOptIn} />
+                  <TextField label="Email" value="email@example.com" disabled size="sm" />
+                  <TextField label="Source" value="Chat" disabled size="sm" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-medium text-semantic-text-muted">Marketing Opt In</span>
+                      <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                    </div>
+                    <Switch checked={marketingOptIn} onCheckedChange={setMarketingOptIn} />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              </AccordionContent>
+            </AccordionItem>
 
-          {/* Custom Fields */}
-          <div className="border-b border-[#e9eaeb]">
-            <button
-              onClick={() => setCustomExpanded(!customExpanded)}
-              className="flex items-center justify-between w-full px-4 py-3"
-            >
-              <span className="text-[12px] font-semibold tracking-[0.06px] text-[#343e55] uppercase">Custom Fields</span>
-              <ChevronDown className={`size-[16px] text-[#343e55] transition-transform duration-200 ${customExpanded ? "" : "-rotate-90"}`} />
-            </button>
-            {customExpanded && (
-              <div className="flex flex-col gap-4 px-4 pb-4">
-                <div className="flex gap-4 items-center">
-                  <span className="w-[120px] shrink-0 text-[14px] font-semibold text-[#717680]">Tags</span>
-                  <div className="flex-1 border border-[#e9eaeb] rounded px-3 py-2 flex items-center gap-2">
-                    <span className="bg-[#f5f5f5] text-[12px] text-[#181d27] px-2 py-0.5 rounded flex items-center gap-1">
-                      New
-                      <button className="text-[#a2a6b1] hover:text-[#343e55] transition-colors">
-                        <X className="size-[10px]" />
-                      </button>
-                    </span>
+            {/* Custom Fields */}
+            <AccordionItem value="custom">
+              <AccordionTrigger>
+                <span className="text-sm font-semibold tracking-wide text-semantic-text-primary uppercase">Custom Fields</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-sm font-medium text-semantic-text-muted">Tags</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      <Tag variant="default" size="sm">VIP Customer</Tag>
+                      <Tag variant="default" size="sm">Enterprise</Tag>
+                    </div>
                   </div>
+                  {[
+                    { label: "Location", placeholder: "Enter Location", val: "XYZ, place" },
+                    { label: "Secondary Phone", placeholder: "XXXXX XXXXX", val: "" },
+                    { label: "DOB", placeholder: "DD / MM / YYYY", val: "" },
+                  ].map(({ label, placeholder, val }) => (
+                    <TextField key={label} label={label} defaultValue={val} placeholder={placeholder} size="sm" disabled />
+                  ))}
                 </div>
-                {[
-                  { label: "Location", value: "XYZ, place" },
-                  { label: "Secondary Phone", value: "XXXXX XXXXX" },
-                  { label: "DOB", value: "DD/MM/YYYY" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="flex gap-6 items-start">
-                    <span className="w-[120px] shrink-0 text-[14px] font-semibold text-[#717680]">{label}</span>
-                    <span className="text-[14px] text-[#181d27]">{value}</span>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
+    </Panel>
+    <ConfirmationModal
+      open={showDiscardConfirm}
+      onOpenChange={setShowDiscardConfirm}
+      title="Discard changes?"
+      description="Your unsaved edits will be lost."
+      variant="destructive"
+      confirmButtonText="Discard"
+      onConfirm={() => {
+        setIsEditing(false)
+        setShowDiscardConfirm(false)
+      }}
+    />
+  </>
+  )
+}
+
+/* ── Assignment Dropdown (2.1) ── */
+
+function AssignmentDropdown({ defaultAgent }: { defaultAgent?: string }) {
+  // Resolve agent name to assignee id
+  const resolvedDefault = defaultAgent
+    ? assignees.find((a) => a.label === defaultAgent)?.id || "unassigned"
+    : "unassigned"
+  const [value, setValue] = useState(resolvedDefault)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const bots = assignees.filter((a) => a.type === "bot")
+  const agents = assignees.filter((a) => a.type === "agent")
+
+  const q = searchQuery.toLowerCase()
+  const filteredBots = bots.filter((b) => b.label.toLowerCase().includes(q))
+  const filteredAgents = agents.filter((a) => a.label.toLowerCase().includes(q))
+
+  return (
+    <DropdownMenu onOpenChange={() => setSearchQuery("")}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          <span className="truncate">
+            {value === "unassigned" ? "Unassigned" : assignees.find((a) => a.id === value)?.label || value}
+          </span>
+          <ChevronDown className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[240px]">
+        {/* Search */}
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-semantic-border-layout" onClick={(e) => e.stopPropagation()}>
+          <Search className="size-4 text-semantic-text-muted shrink-0" />
+          <input
+            type="text"
+            placeholder="Search..."
+            aria-label="Search agents"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-7 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
+            onKeyDown={(e) => e.stopPropagation()}
+          />
+        </div>
+        <DropdownMenuRadioGroup value={value} onValueChange={setValue} className="max-h-[240px] overflow-y-auto">
+          {/* Unassigned */}
+          <DropdownMenuRadioItem value="unassigned">
+            Unassigned
+          </DropdownMenuRadioItem>
+
+          {/* Bots */}
+          {filteredBots.length > 0 && (
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex items-center gap-1.5">
+                <Bot className="size-3.5" />
+                Bots
+              </DropdownMenuLabel>
+              {filteredBots.map((bot) => (
+                <DropdownMenuRadioItem key={bot.id} value={bot.id}>
+                  <div className="flex items-center gap-2">
+                    <div className="size-5 rounded-full bg-semantic-bg-ui flex items-center justify-center shrink-0">
+                      <Bot className="size-3 text-semantic-text-muted" />
+                    </div>
+                    {bot.label}
                   </div>
-                ))}
-              </div>
-            )}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuGroup>
+          )}
+
+          {/* Agents */}
+          {filteredAgents.length > 0 && (
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex items-center gap-1.5">
+                <Users className="size-3.5" />
+                Agents
+              </DropdownMenuLabel>
+              {filteredAgents.map((agent) => (
+                <DropdownMenuRadioItem key={agent.id} value={agent.id}>
+                  <div className="flex items-center gap-2">
+                    <Avatar name={agent.label} size="xs" />
+                    {agent.label}
+                  </div>
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuGroup>
+          )}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+/* ── Resolve Button (2.3) ── */
+
+function ResolveButton() {
+  const [resolved, setResolved] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  return (
+    <>
+      <Button
+        variant={resolved ? "success" : "default"}
+        leftIcon={<Check className={cn("size-[18px] transition-transform duration-200", resolved && "scale-110")} />}
+        onClick={() => {
+          if (resolved) {
+            setResolved(false)
+          } else {
+            setShowConfirm(true)
+          }
+        }}
+        className="transition-all duration-200"
+      >
+        {resolved ? "Resolved" : "Resolve"}
+      </Button>
+      <ConfirmationModal
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Resolve this conversation?"
+        description="This will close the conversation and move it to the Resolved tab."
+        confirmButtonText="Resolve"
+        onConfirm={() => {
+          setResolved(true)
+          setShowConfirm(false)
+        }}
+      />
+    </>
+  )
+}
+
+/* ── Composer Attachment Preview ── */
+
+function ComposerAttachmentPreview({ file, onRemove }: { file: File; onRemove: () => void }) {
+  const url = React.useMemo(() => URL.createObjectURL(file), [file])
+  const isImage = file.type.startsWith("image/")
+  const isVideo = file.type.startsWith("video/")
+  const isAudio = file.type.startsWith("audio/")
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  React.useEffect(() => {
+    return () => URL.revokeObjectURL(url)
+  }, [url])
+
+  return (
+    <div className="relative border-b border-semantic-border-layout">
+      <button
+        aria-label="Remove attachment"
+        onClick={() => setShowConfirm(true)}
+        className="absolute top-2 right-2 z-10 size-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+      >
+        <X className="size-4 text-white" />
+      </button>
+      <ConfirmationModal
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Remove attachment?"
+        description={`"${file.name}" will be removed from this message.`}
+        variant="destructive"
+        confirmButtonText="Remove"
+        onConfirm={() => {
+          onRemove()
+          setShowConfirm(false)
+        }}
+      />
+      {isImage ? (
+        <img src={url} alt={file.name} className="w-full object-cover max-h-[300px]" />
+      ) : isVideo ? (
+        <div className="relative bg-black" style={{ aspectRatio: "16/10" }}>
+          <video src={url} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+              <Play className="size-7 text-white fill-white ml-0.5" />
+            </div>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6 bg-gradient-to-t from-black/70 to-transparent">
+            <div className="flex items-center gap-2">
+              <Play className="size-4 text-white" />
+              <span className="text-[12px] text-white/60">●</span>
+              <div className="flex-1 h-[3px] rounded-full bg-white/30" />
+              <span className="text-[12px] text-white tabular-nums">0:00</span>
+            </div>
+          </div>
+        </div>
+      ) : isAudio ? (
+        <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3">
+          <div className="size-10 rounded-full bg-semantic-primary flex items-center justify-center shrink-0">
+            <Play className="size-5 text-white fill-white ml-0.5" />
+          </div>
+          <div className="flex-1 h-1 bg-semantic-border-layout rounded-full">
+            <div className="w-0 h-full bg-semantic-primary rounded-full" />
+          </div>
+          <span className="text-[12px] text-semantic-text-muted tabular-nums shrink-0">0:00</span>
+        </div>
+      ) : (
+        /* PDF / other document preview */
+        <div className="bg-semantic-bg-ui flex flex-col items-center justify-center" style={{ aspectRatio: "16/10" }}>
+          <div className="size-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-3">
+            <File className="size-8 text-semantic-text-muted" />
+          </div>
+          <p className="text-[14px] font-semibold text-semantic-text-primary truncate max-w-[80%] px-4 m-0">{file.name}</p>
+          <p className="text-[12px] text-semantic-text-muted mt-1 m-0">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
         </div>
       )}
     </div>
-    </div>
   )
 }
+
+/* ── Canned Messages Data ── */
+
+const cannedMessages = [
+  { id: "cm1", title: "Test", body: "hello {{contact.name}}, how can I help you today?" },
+  { id: "cm2", title: "Greeting", body: "👋 Hi there! Thank you for reaching out to MyOperator." },
+]
 
 /* ── Main App ── */
 
@@ -1931,10 +2370,18 @@ export default function App() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [showNewChat, setShowNewChat] = useState(false)
+  const [showAddContact, setShowAddContact] = useState(false)
   const [showTemplateModal, setShowTemplateModal] = useState(false)
   const [showContactDetails, setShowContactDetails] = useState(false)
   const [appliedAssignees, setAppliedAssignees] = useState<Set<string> | null>(null)
   const [appliedChannels, setAppliedChannels] = useState<Set<string> | null>(null)
+  const [composerAttachment, setComposerAttachment] = useState<File | null>(null)
+  const [replyingTo, setReplyingTo] = useState<{ messageId: string; sender: string; text: string } | null>(null)
+  const [composerText, setComposerText] = useState("")
+  const [cannedIndex, setCannedIndex] = useState(-1)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const chatAreaRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   const openNewChat = () => {
     setShowFilters(false)
@@ -1946,18 +2393,45 @@ export default function App() {
 
   const hasActiveFilters = appliedAssignees !== null || appliedChannels !== null
 
+  const filteredChats = chatItems.filter((c) => {
+    if (c.tab !== activeTab) return false
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      return c.name.toLowerCase().includes(q) || c.message.toLowerCase().includes(q)
+    }
+    return true
+  })
+
   return (
-    <div className="flex h-screen bg-[#e9eaeb]">
+    <TooltipProvider delayDuration={200}>
+    <div className="flex h-screen bg-semantic-bg-ui">
       {/* ── Left Panel ── */}
-      <div className="flex flex-col w-[356px] h-full bg-white shrink-0 border-r border-[#d0d3db]">
+      <nav aria-label="Inbox" className="flex flex-col w-[356px] h-full bg-white shrink-0 border-r border-semantic-border-layout">
         {/* Swappable content area */}
         {showNewChat ? (
-          <NewChatPanel onBack={() => setShowNewChat(false)} />
+          <div key="newchat" className="flex flex-col flex-1 min-h-0 animate-in slide-in-from-right-3 fade-in duration-200">
+            <NewChatPanel onBack={() => setShowNewChat(false)} onOpenAddContact={() => setShowAddContact(true)} />
+          </div>
+        ) : showFilters ? (
+          <div key="filters" className="flex flex-col flex-1 min-h-0 animate-in slide-in-from-right-3 fade-in duration-200">
+            <FilterPanel
+              onClose={() => {
+                setShowFilters(false)
+                setSearch("")
+              }}
+              onApply={(assigneeSet, channelSet) => {
+                setAppliedAssignees(assigneeSet.size > 0 ? assigneeSet : null)
+                setAppliedChannels(channelSet.size > 0 ? channelSet : null)
+                setShowFilters(false)
+                setSearch("")
+              }}
+            />
+          </div>
         ) : (
-          <>
+          <div key="inbox" className="flex flex-col flex-1 min-h-0 animate-in fade-in duration-150">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 h-[72px] shrink-0">
-              <h1 className="text-[24px] font-semibold text-[#181d27] leading-8">
+              <h1 className="text-[24px] font-semibold text-semantic-text-primary leading-8">
                 Inbox
               </h1>
               <Button
@@ -1971,178 +2445,194 @@ export default function App() {
             </div>
 
             {/* Search + Filter button */}
-            <div className="flex gap-2 px-4 shrink-0">
+            <div role="search" aria-label="Search conversations" className="flex gap-2 px-4 shrink-0">
               <TextField
-                placeholder={showFilters ? "Search filters..." : "Search conversations"}
+                placeholder="Search conversations"
+                aria-label="Search conversations"
                 leftIcon={<Search className="size-[18px]" />}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                clearable
+                onClear={() => setSearch("")}
                 wrapperClassName="flex-1"
               />
               <Button
                 variant="outline"
                 size="icon-lg"
                 onClick={() => {
-                  setShowFilters(!showFilters)
+                  setShowFilters(true)
                   setSearch("")
                 }}
-                className={showFilters || hasActiveFilters ? "bg-[#f0f0f0]" : ""}
+                className={cn("relative", hasActiveFilters && "border-semantic-primary text-semantic-primary")}
               >
                 <FilterIcon />
+                {hasActiveFilters && (
+                  <span className="absolute top-1 right-1 size-2 rounded-full bg-semantic-primary animate-in zoom-in duration-200" />
+                )}
               </Button>
             </div>
-          </>
-        )}
 
-        {/* Filter / chat list area */}
-        {!showNewChat && (showFilters ? (
-          <FilterContent
-            filterSearch={search}
-            onClose={() => {
-              setShowFilters(false)
-              setSearch("")
-            }}
-            onApply={(assigneeSet, channelSet) => {
-              setAppliedAssignees(assigneeSet.size > 0 ? assigneeSet : null)
-              setAppliedChannels(channelSet.size > 0 ? channelSet : null)
-              setShowFilters(false)
-              setSearch("")
-            }}
-          />
-        ) : (
-          <>
             {/* Tabs */}
-            <div className="flex items-end border-b border-[#e9eaeb] shrink-0 w-full mt-1">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 h-10 px-4 py-2 text-[14px] font-semibold tracking-[0.1px] leading-5 transition-colors border-b-2 -mb-px ${
-                    activeTab === tab.id
-                      ? "text-[#343e55] border-[#343e55]"
-                      : "text-[#717680] border-transparent hover:text-[#535862]"
-                  }`}
-                >
-                  {tab.label}
-                  <span
-                    className={`shrink-0 inline-flex items-center justify-center rounded-full font-semibold transition-colors ${
-                      activeTab === tab.id ? "bg-[#343e55] text-white" : "bg-[#EBECEE] text-[#414651]"
-                    }`}
-                    style={{ width: 20, height: 20, fontSize: 12, lineHeight: 1 }}
-                  >
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </div>
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Tab)}>
+              <TabsList fullWidth className="shrink-0 mt-1">
+                {tabs.map((tab) => (
+                  <TabsTrigger key={tab.id} value={tab.id}>
+                    {tab.label}
+                    <Badge
+                      variant={activeTab === tab.id ? "primary" : "default"}
+                      size="sm"
+                    >
+                      {tab.count}
+                    </Badge>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
 
             {/* Sort Bar with Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-[10px] h-[44px] pl-4 py-3 bg-[#fafafa] border-b border-[#e9eaeb] shrink-0 w-full cursor-pointer hover:bg-[#f0f0f0] transition-colors">
-                  <ArrowDownUp className="size-[18px] text-[#343e55] shrink-0" />
-                  <span className="text-[12px] font-semibold text-[#343e55] tracking-[0.5px] shrink-0">
+                <Button variant="ghost" className="w-full justify-start rounded-none shrink-0 focus-visible:ring-inset border-b border-semantic-border-layout h-10">
+                  <ArrowDownUp className="size-4 text-semantic-text-muted shrink-0" />
+                  <span className="text-sm text-semantic-text-muted shrink-0">
                     Sort by:
                   </span>
-                  <span className="flex-1 text-[12px] font-semibold text-[#343e55] tracking-[0.5px] text-left">
+                  <span className="flex-1 text-sm font-medium text-semantic-text-secondary text-left">
                     {activeSortLabel}
                   </span>
-                  <ChevronDown className="size-5 text-[#717680] shrink-0 mr-3" />
-                </button>
+                  <ChevronDown className="size-4 text-semantic-text-muted shrink-0 mr-3" />
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[356px]">
+              <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
                 {sortOptions.map((option) => (
                   <DropdownMenuItem
                     key={option.id}
-                    onClick={() => setSortBy(option.id)}
-                    className="flex items-center justify-between text-[13px] cursor-pointer text-[#343e55]"
+                    onSelect={() => setSortBy(option.id)}
+                    className={cn("justify-between", sortBy === option.id && "text-semantic-primary font-medium")}
                   >
                     {option.label}
-                    {sortBy === option.id && (
-                      <Check className="size-4 text-[#181d27]" />
-                    )}
+                    {sortBy === option.id && <Check className="size-4 shrink-0" />}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* Chat List */}
-            <div className="flex-1 overflow-y-auto">
-              {chatItems.filter((c) => c.tab === activeTab).map((chat) => (
-                <ChatListItem
-                  key={chat.id}
-                  {...chat}
-                  isSelected={selectedChatId === chat.id}
-                  onClick={() => { setSelectedChatId(chat.id); setShowContactDetails(false) }}
-                />
+            <div className="sr-only" aria-live="polite">
+              {`${filteredChats.length} conversations`}
+            </div>
+            <div key={activeTab} className="flex-1 overflow-y-auto animate-in fade-in duration-150 ease-out">
+              {filteredChats.map((chat) => (
+                <div key={chat.id} className="relative">
+                  <ChatListItem
+                    {...chat}
+                    messageStatus={chat.isFailed ? undefined : chat.messageStatus}
+                    isSelected={selectedChatId === chat.id}
+                    onClick={() => {
+                      setSelectedChatId(chat.id)
+                      setShowContactDetails(false)
+                      requestAnimationFrame(() => chatAreaRef.current?.focus())
+                    }}
+                  />
+                  {chat.isFailed && (
+                    <div className="absolute top-5 right-4">
+                      <CircleAlert className="size-4 text-semantic-error-primary" />
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
-          </>
-        ))}
-      </div>
+          </div>
+        )}
+      </nav>
 
       {/* ── Right Panel ── */}
       {selectedChatId ? (() => {
         const selectedChat = chatItems.find((c) => c.id === selectedChatId)!
         const messages = chatMessages[selectedChatId] || []
         return (
-          <div className="flex-[1_0_0] min-h-0 min-w-0 flex">
+          <main className="flex-[1_0_0] min-h-0 min-w-0 flex" ref={chatAreaRef} tabIndex={-1}>
             {/* Chat Window */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div
+              className="flex-1 flex flex-col min-w-0 relative"
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+              onDragLeave={(e) => { if (e.currentTarget === e.target || !e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false) }}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragging(false)
+                const file = e.dataTransfer.files?.[0]
+                if (file) setComposerAttachment(file)
+              }}
+            >
+              <h2 className="sr-only">{selectedChat.name} — Chat</h2>
+              <div className="sr-only" aria-live="assertive">
+                {isDragging ? "Drop zone active. Release to attach file." : ""}
+              </div>
               {/* ── Chat Header ── */}
-              <div className="flex items-center justify-between px-4 h-[72px] bg-white border-b border-[#e9eaeb] shrink-0">
+              <div className="flex items-center justify-between px-4 h-[72px] bg-white border-b border-semantic-border-layout shrink-0">
                 <div className="flex items-center gap-3">
-                  <span className="text-[18px] font-semibold text-[#181d27]">
-                    {selectedChat.name}
-                  </span>
+                  <button
+                    aria-label={`View contact details for ${selectedChat.name}`}
+                    onClick={() => setShowContactDetails(!showContactDetails)}
+                    className="flex items-center gap-3 hover:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus focus-visible:outline-offset-2 rounded"
+                  >
+                    <span className="text-[18px] font-semibold text-semantic-text-primary">
+                      {selectedChat.name}
+                    </span>
+                  </button>
+                  {selectedChat.channel && (() => {
+                    const ch = channels.find((c) => c.badge === selectedChat.channel)
+                    return (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" size="sm">
+                              {selectedChat.channel}
+                            </Badge>
+                          </TooltipTrigger>
+                          {ch && (
+                            <TooltipContent side="bottom">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-[13px] font-medium text-white">{ch.name}</span>
+                                <span className="text-[12px] text-semantic-text-muted">{ch.phone}</span>
+                              </div>
+                              <TooltipArrow />
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                    )
+                  })()}
                   {selectedChat.slaTimer && (
-                    <div className="flex items-center gap-2 bg-[#fffaeb] rounded px-1.5 py-0.5">
-                      <Clock className="size-3 text-[#b54708]" />
-                      <span className="text-[12px] text-[#b54708]">
-                        {selectedChat.slaTimer}
-                      </span>
-                    </div>
+                    <Tag variant="warning" size="sm">
+                      <Clock className="size-3" />
+                      {selectedChat.slaTimer}
+                    </Tag>
                   )}
                 </div>
                 <div className="flex items-center gap-3">
                   {/* Assignment Dropdown */}
-                  <Select defaultValue={selectedChat.agentName || "unassigned"}>
-                    <SelectTrigger className="w-[160px] h-10">
-                      <SelectValue placeholder="Unassigned" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {assignees
-                        .filter((a) => a.type === "agent" || a.type === "bot")
-                        .map((a) => (
-                          <SelectItem key={a.id} value={a.id}>
-                            {a.label}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <AssignmentDropdown defaultAgent={selectedChat.agentName} />
                   {/* Resolve Button */}
-                  <Button
-                    className="h-10 bg-[#343e55] text-white text-[14px] font-semibold tracking-[0.014px] hover:bg-[#2a3245] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
-                    leftIcon={<Check className="size-[18px]" />}
-                  >
-                    Resolve
-                  </Button>
+                  <ResolveButton />
                 </div>
               </div>
 
               {/* ── Chat Messages Area ── */}
-              <div className="flex-1 overflow-y-auto bg-[#f5f5f5] px-6 py-4">
+              <div className="flex-1 relative">
+              <div key={selectedChatId} className="absolute inset-0 overflow-y-auto bg-semantic-bg-ui px-6 py-4 animate-in fade-in duration-200 ease-out">
                 {/* Date Divider */}
-                <div className="flex items-center gap-4 my-4">
-                  <div className="flex-1 h-px bg-[#e9eaeb]" />
-                  <span className="text-[12px] text-[#717680] shrink-0">Today</span>
-                  <div className="flex-1 h-px bg-[#e9eaeb]" />
+                <div role="separator" aria-label="Today" className="flex items-center gap-4 my-4">
+                  <div className="flex-1 h-px bg-semantic-border-layout" />
+                  <span className="text-[12px] text-semantic-text-muted shrink-0">Today</span>
+                  <div className="flex-1 h-px bg-semantic-border-layout" />
                 </div>
 
                 {/* Messages */}
                 <div className="flex flex-col gap-4">
-                  {messages.map((msg) => {
+                  {messages.map((msg, msgIdx) => {
+                    // Show unread separator before the last N messages (based on chat's unreadCount)
+                    const unreadCount = selectedChat.unreadCount || 0
+                    const unreadStartIdx = messages.length - unreadCount
+                    const showUnreadSeparator = unreadCount > 0 && msgIdx === unreadStartIdx
                     const hasMedia = msg.type && msg.type !== "text"
                     const mediaCaption = msg.media?.caption
                     const hasText = msg.text || mediaCaption
@@ -2157,33 +2647,89 @@ export default function App() {
                           ? "max-w-[340px] w-[340px]"
                           : "max-w-[65%]"
 
+                    const replyButton = (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              onClick={() => setReplyingTo({ messageId: msg.id, sender: msg.sender === "customer" ? selectedChat.name : (msg.senderName || "Agent"), text: msg.text || msg.media?.caption || "" })}
+                              className="opacity-0 group-hover/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                            >
+                              <Reply className="size-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <p className="m-0">Reply</p>
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
+                    )
+
+                    // System messages (e.g., assignment actions)
+                    if (msg.type === "system") {
+                      return (
+                        <React.Fragment key={msg.id}>
+                          {showUnreadSeparator && (
+                            <div role="separator" aria-label={`${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`} className="flex items-center gap-4 my-2">
+                              <div className="flex-1 h-px bg-semantic-border-accent/40" />
+                              <span className="text-[12px] font-medium text-semantic-brand-text bg-semantic-brand-surface px-2.5 py-0.5 rounded-full shrink-0">
+                                {unreadCount} unread message{unreadCount > 1 ? "s" : ""}
+                              </span>
+                              <div className="flex-1 h-px bg-semantic-border-accent/40" />
+                            </div>
+                          )}
+                          <div className="flex justify-center my-1">
+                            <span className="text-[13px] text-semantic-text-muted">
+                              {msg.text.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
+                                part.startsWith("**") ? (
+                                  <span key={i} className="text-semantic-text-link font-medium">{part.slice(2, -2)}</span>
+                                ) : part
+                              )}
+                            </span>
+                          </div>
+                        </React.Fragment>
+                      )
+                    }
+
                     return (
+                      <React.Fragment key={msg.id}>
+                      {showUnreadSeparator && (
+                        <div role="separator" aria-label={`${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`} className="flex items-center gap-4 my-2">
+                          <div className="flex-1 h-px bg-semantic-border-accent/40" />
+                          <span className="text-[12px] font-medium text-semantic-brand-text bg-semantic-brand-surface px-2.5 py-0.5 rounded-full shrink-0">
+                            {unreadCount} unread message{unreadCount > 1 ? "s" : ""}
+                          </span>
+                          <div className="flex-1 h-px bg-semantic-border-accent/40" />
+                        </div>
+                      )}
+                      <div className={`flex items-start gap-1.5 group/msg ${msg.sender === "agent" ? "justify-end" : "justify-start"}`}>
                       <div
-                        key={msg.id}
+                        id={`msg-${msg.id}`}
                         className={`flex flex-col ${bubbleWidth} ${
-                          msg.sender === "agent" ? "self-end items-end" : "self-start items-start"
+                          msg.sender === "agent" ? "items-end" : "items-start"
                         }`}
                       >
                         {msg.senderName && (
-                          <span className="text-[12px] text-[#717680] mb-1 px-1">
+                          <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
                             {msg.senderName}
                           </span>
                         )}
                         <div
-                          className={`rounded overflow-hidden ${
+                          className={`rounded-lg overflow-hidden ${
                             hasMedia ? "" : "px-3 pt-3 pb-1.5"
                           } ${
                             msg.type === "audio" || msg.type === "otherDoc" || msg.type === "carousel" || msg.type === "loading" ? "w-full" : ""
                           } ${
                             msg.sender === "agent"
-                              ? "bg-semantic-info-surface border-[0.2px] border-[#e9eaeb] text-[#181d27]"
-                              : "bg-white border-[0.2px] border-[#e9eaeb] text-[#181d27] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+                              ? "bg-semantic-info-surface border-[0.2px] border-semantic-border-layout text-semantic-text-primary"
+                              : "bg-white border-[0.2px] border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
                           }`}
                         >
                           {/* Carousel: body text goes ABOVE cards */}
                           {msg.type === "carousel" && hasText && (
                             <div className="px-3 pt-3">
-                              <p className="text-[14px] leading-5">{msg.text || mediaCaption}</p>
+                              <p className="text-[14px] leading-5 m-0">{msg.text || mediaCaption}</p>
                             </div>
                           )}
 
@@ -2200,25 +2746,45 @@ export default function App() {
                           {/* Text + footer area (with padding) */}
                           <div className={hasMedia ? `px-3 pb-1.5 ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" || msg.type === "document" ? "pt-3 mt-1" : "pt-2"}` : ""}>
                             {msg.replyTo && (
-                              <div className="w-full bg-[#f5f5f5] border-l-[3px] border-[#4275D6] rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center">
-                                <p className="text-[14px] font-semibold text-[#343e55] truncate leading-5 tracking-[0.014px]">
+                              <button
+                                type="button"
+                                className="w-full bg-white border-l-[3px] border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors text-left border-t-0 border-r-0 border-b-0"
+                                aria-label={`Jump to quoted message from ${msg.replyTo.sender}`}
+                                onClick={() => {
+                                  if (msg.replyTo?.messageId) {
+                                    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+                                    const el = document.getElementById(`msg-${msg.replyTo.messageId}`)
+                                    if (el) {
+                                      el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" })
+                                      el.style.outline = "2px solid var(--semantic-border-accent)"
+                                      el.style.outlineOffset = "2px"
+                                      el.style.transition = "outline-color 0.3s ease-out"
+                                      setTimeout(() => {
+                                        el.style.outlineColor = "transparent"
+                                        setTimeout(() => { el.style.outline = ""; el.style.outlineOffset = ""; el.style.transition = "" }, 300)
+                                      }, 1700)
+                                    }
+                                  }
+                                }}
+                              >
+                                <p className="text-[14px] font-semibold text-semantic-text-primary truncate leading-5 tracking-[0.014px] m-0">
                                   {msg.replyTo.sender}
                                 </p>
-                                <p className="text-[14px] text-[#717680] truncate">
+                                <p className="text-[14px] text-semantic-text-muted truncate m-0">
                                   {msg.replyTo.text}
                                 </p>
-                              </div>
+                              </button>
                             )}
                             {hasText && msg.type !== "carousel" && (
-                              <p className="text-[14px] leading-5">
+                              <p className="text-[14px] leading-5 m-0">
                                 {msg.text || mediaCaption}
                               </p>
                             )}
                             {/* File metadata row for download-type docs */}
                             {isDocWithMeta && (
                               <div className="flex items-center gap-2 mt-1.5">
-                                <File className="size-3.5 text-[#717680]" />
-                                <span className="text-[13px] text-[#717680]">
+                                <File className="size-3.5 text-semantic-text-muted" />
+                                <span className="text-[13px] text-semantic-text-muted">
                                   {[msg.media!.fileType, msg.media!.pageCount && `${msg.media!.pageCount} pages`, msg.media!.fileSize].filter(Boolean).join(" · ")}
                                 </span>
                               </div>
@@ -2227,70 +2793,262 @@ export default function App() {
                             <div className={`flex items-center mt-1.5 ${msg.type === "audio" ? "justify-between" : msg.sender === "agent" ? "justify-end gap-1.5" : "justify-start gap-1.5"}`} style={msg.type === "audio" ? { paddingLeft: 0 } : undefined}>
                               {/* Audio duration on the left */}
                               {msg.type === "audio" && msg.media && (
-                                <span className="font-semibold text-[#717680] tabular-nums" style={{ fontSize: 12, letterSpacing: 0.05 }}>{msg.media.duration || "0:00"}</span>
+                                <span className="font-semibold text-semantic-text-muted tabular-nums" style={{ fontSize: 12, letterSpacing: 0.05 }}>{msg.media.duration || "0:00"}</span>
                               )}
                               {/* Delivery status + time */}
                               <div className="flex items-center gap-1.5">
                                 {msg.sender === "agent" && msg.status && (
                                   <>
-                                    {msg.status === "sent" ? (
-                                      <Check className="size-4 text-[#717680] shrink-0" />
+                                    {msg.status === "failed" ? (
+                                      <span role="alert">
+                                        <CircleAlert className="size-4 text-semantic-error-primary shrink-0 inline-block align-middle" />
+                                        <span style={{ fontSize: 12 }} className="text-semantic-error-primary font-medium ml-1.5">Failed</span>
+                                        <button
+                                          onClick={(e) => { e.stopPropagation() }}
+                                          className="text-[12px] font-semibold text-semantic-text-link underline hover:no-underline ml-1.5"
+                                        >
+                                          Retry
+                                        </button>
+                                      </span>
                                     ) : (
-                                      <CheckCheck className={`size-4 shrink-0 ${msg.status === "read" ? "text-[#4275D6]" : "text-[#717680]"}`} />
+                                      <>
+                                        {msg.status === "sent" ? (
+                                          <Check className="size-4 text-semantic-text-muted shrink-0" />
+                                        ) : (
+                                          <CheckCheck className={`size-4 shrink-0 ${msg.status === "read" ? "text-semantic-text-link" : "text-semantic-text-muted"}`} />
+                                        )}
+                                        <span style={{ fontSize: 12 }} className="text-semantic-text-muted">
+                                          {msg.status === "sent" ? "Sent" : msg.status === "delivered" ? "Delivered" : "Read"}
+                                        </span>
+                                      </>
                                     )}
-                                    <span style={{ fontSize: 12 }} className="text-[#717680]">
-                                      {msg.status === "sent" ? "Sent" : msg.status === "delivered" ? "Delivered" : "Read"}
-                                    </span>
-                                    <span className="font-semibold text-[#717680]" style={{ fontSize: 10 }}>•</span>
+                                    <span className="font-semibold text-semantic-text-muted" style={{ fontSize: 10 }}>•</span>
                                   </>
                                 )}
-                                <span style={{ fontSize: 12 }} className="text-[#717680]">{msg.time}</span>
+                                <span style={{ fontSize: 12 }} className="text-semantic-text-muted">{msg.time}</span>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
+                      {/* Sender indicator for outbound messages */}
+                      {msg.sender === "agent" && msg.sentBy && (
+                        <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center">
+                          <SenderIndicatorBadge sentBy={msg.sentBy} />
+                        </div>
+                      )}
+                      {msg.sender === "customer" && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => setReplyingTo({ messageId: msg.id, sender: selectedChat.name, text: msg.text || msg.media?.caption || "" })}
+                                className="opacity-0 group-hover/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                              >
+                                <Reply className="size-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              <p className="m-0">Reply</p>
+                              <TooltipArrow />
+                            </TooltipContent>
+                          </Tooltip>
+                      )}
+                      </div>
+                    </React.Fragment>
                     )
                   })}
                 </div>
               </div>
 
+              {/* Scroll to bottom button */}
+              <Button variant="secondary" size="icon-lg" aria-label={(selectedChat.unreadCount || 0) > 0 ? `Scroll to bottom, ${selectedChat.unreadCount} unread messages` : "Scroll to bottom"} className="absolute bottom-4 left-1/2 -translate-x-1/2 shadow-md">
+                <ArrowDown className="size-5" />
+                {(selectedChat.unreadCount || 0) > 0 && (
+                  <Badge variant="primary" size="sm" className="absolute -top-1.5 -right-1.5">
+                    {selectedChat.unreadCount}
+                  </Badge>
+                )}
+              </Button>
+              {/* New messages live region */}
+              <div className="sr-only" aria-live="polite" aria-atomic="true">
+                {messages.length > 0 ? `${messages[messages.length - 1].sender === 'customer' ? selectedChat.name : 'Agent'}: ${messages[messages.length - 1].text || 'sent media'}` : ''}
+              </div>
+              </div>
+
               {/* ── Message Input Area ── */}
-              {selectedChat.isWindowExpired ? (
-                <div className="shrink-0 bg-[#f5f5f5] p-4">
-                  <div className="bg-white rounded shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.06)] px-4 py-3 flex items-center justify-center gap-4">
-                    <span className="text-[14px] text-[#717680]">
-                      Send a template to continue.
-                    </span>
-                    <button
-                      className="bg-[#343e55] text-white h-9 px-4 rounded text-[14px] font-semibold flex items-center justify-center hover:bg-[#2a3245] transition-colors shrink-0 shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
-                      onClick={() => setShowTemplateModal(true)}
-                    >
-                      Select Template
-                    </button>
-                  </div>
+              <div className="relative">
+                {/* Canned message count live region */}
+                <div className="sr-only" aria-live="polite">
+                  {composerText.startsWith("/") ? `${cannedMessages.filter(cm => cm.title.toLowerCase().includes(composerText.slice(1).toLowerCase()) || cm.body.toLowerCase().includes(composerText.slice(1).toLowerCase())).length} canned message${cannedMessages.filter(cm => cm.title.toLowerCase().includes(composerText.slice(1).toLowerCase()) || cm.body.toLowerCase().includes(composerText.slice(1).toLowerCase())).length !== 1 ? "s" : ""} found` : ""}
                 </div>
-              ) : (
-                <div className="shrink-0 bg-white border-t border-[#e9eaeb] px-4 py-3">
-                  <div className="flex items-end gap-2">
-                    <div className="flex-1 flex items-end border border-[#d5d7da] rounded-lg bg-white focus-within:border-[#27abb8] focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] transition-all">
-                      <textarea
-                        placeholder="Type a message..."
-                        rows={1}
-                        className="flex-1 resize-none px-3 py-2.5 text-[14px] text-[#181d27] placeholder:text-[#a4a7ae] outline-none bg-transparent min-h-[40px] max-h-[120px]"
-                      />
-                      <div className="flex items-center gap-1 px-2 py-2">
-                        <button className="p-1 rounded hover:bg-[#f5f5f5] transition-colors text-[#717680]">
-                          <Paperclip className="size-[18px]" />
-                        </button>
-                        <button className="p-1 rounded hover:bg-[#f5f5f5] transition-colors text-[#717680]">
-                          <Smile className="size-[18px]" />
-                        </button>
+                {/* Canned messages dropdown (above composer) */}
+                {composerText.startsWith("/") && !(selectedChat.isWindowExpired || selectedChat.tab === "resolved") && (() => {
+                  const query = composerText.slice(1).toLowerCase()
+                  const filtered = cannedMessages.filter(cm =>
+                    cm.title.toLowerCase().includes(query) || cm.body.toLowerCase().includes(query)
+                  )
+                  if (filtered.length === 0) {
+                    return (
+                      <div className="absolute bottom-full left-4 right-4 mb-1 bg-semantic-bg-primary rounded-lg shadow-[0px_4px_16px_0px_rgba(10,13,18,0.15)] border border-semantic-border-layout overflow-hidden z-10 animate-in fade-in slide-in-from-bottom-2 duration-150 ease-out">
+                        <div className="px-4 py-3 text-[13px] text-semantic-text-muted text-center">
+                          No canned messages found
+                        </div>
                       </div>
+                    )
+                  }
+                  return (
+                    <div id="canned-listbox" role="listbox" aria-label="Canned messages" className="absolute bottom-full left-4 right-4 mb-1 bg-semantic-bg-primary rounded-lg shadow-[0px_4px_16px_0px_rgba(10,13,18,0.15)] border border-semantic-border-layout overflow-hidden z-10 animate-in fade-in slide-in-from-bottom-2 duration-150 ease-out">
+                      {filtered.map((cm, i) => (
+                        <button
+                          type="button"
+                          role="option"
+                          id={`canned-${cm.id}`}
+                          aria-selected={cannedIndex === i}
+                          key={cm.id}
+                          className={`px-4 py-3 hover:bg-semantic-bg-ui cursor-pointer transition-colors text-left w-full ${cannedIndex === i ? "bg-semantic-bg-ui" : ""} ${i < filtered.length - 1 ? "border-b border-semantic-border-layout" : ""}`}
+                          onClick={() => { setComposerText(cm.body); setCannedIndex(-1) }}
+                        >
+                          <p className="text-[13px] font-semibold text-semantic-text-primary m-0">{cm.title}</p>
+                          <p className="text-[13px] text-semantic-text-muted truncate m-0 mt-0.5">{cm.body}</p>
+                        </button>
+                      ))}
                     </div>
-                    <button className="flex items-center justify-center size-10 rounded-lg bg-[#343e55] text-white hover:bg-[#2a3245] transition-colors shrink-0">
-                      <Send className="size-[18px]" />
-                    </button>
+                  )
+                })()}
+
+                <ChatComposer
+                  expired={selectedChat.isWindowExpired || selectedChat.tab === "resolved"}
+                  expiredMessage={`${selectedChat.tab === "resolved" ? "This chat is closed." : "This chat has expired."} Send a template to continue.`}
+                  onTemplateClick={() => setShowTemplateModal(true)}
+                  value={composerText}
+                  onChange={(val) => { setComposerText(val); setCannedIndex(-1) }}
+                  onSend={() => {
+                    setComposerText("")
+                    setComposerAttachment(null)
+                    setReplyingTo(null)
+                    setCannedIndex(-1)
+                  }}
+                  onKeyDown={(e) => {
+                    // Enter to send (when not in canned menu)
+                    if (e.key === "Enter" && !e.shiftKey && !composerText.startsWith("/")) {
+                      e.preventDefault()
+                      if (composerText.trim()) {
+                        setComposerText("")
+                        setComposerAttachment(null)
+                        setReplyingTo(null)
+                      }
+                      return
+                    }
+                    // Canned message keyboard navigation
+                    if (composerText.startsWith("/")) {
+                      const query = composerText.slice(1).toLowerCase()
+                      const filtered = cannedMessages.filter(cm =>
+                        cm.title.toLowerCase().includes(query) || cm.body.toLowerCase().includes(query)
+                      )
+                      if (filtered.length === 0) return
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault()
+                        setCannedIndex((prev) => (prev + 1) % filtered.length)
+                      } else if (e.key === "ArrowUp") {
+                        e.preventDefault()
+                        setCannedIndex((prev) => (prev <= 0 ? filtered.length - 1 : prev - 1))
+                      } else if (e.key === "Enter" && cannedIndex >= 0 && cannedIndex < filtered.length) {
+                        e.preventDefault()
+                        setComposerText(filtered[cannedIndex].body)
+                        setCannedIndex(-1)
+                      } else if (e.key === "Escape") {
+                        e.preventDefault()
+                        setComposerText("")
+                        setCannedIndex(-1)
+                      }
+                    }
+                  }}
+                  placeholder="Type '/' for canned message"
+                  reply={replyingTo ? {
+                    sender: replyingTo.sender,
+                    message: replyingTo.text,
+                    messageId: replyingTo.messageId,
+                  } : undefined}
+                  onDismissReply={() => setReplyingTo(null)}
+                  onReplyClick={() => {
+                    if (replyingTo) {
+                      const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+                      const el = document.getElementById(`msg-${replyingTo.messageId}`)
+                      if (el) {
+                        el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" })
+                        el.classList.add("ring-2", "ring-semantic-border-accent", "ring-offset-2")
+                        setTimeout(() => el.classList.remove("ring-2", "ring-semantic-border-accent", "ring-offset-2"), 2000)
+                      }
+                    }
+                  }}
+                  attachment={composerAttachment ? (
+                    <ComposerAttachmentPreview
+                      file={composerAttachment}
+                      onRemove={() => setComposerAttachment(null)}
+                    />
+                  ) : undefined}
+                  leftActions={
+                    <>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon-sm" onClick={() => fileInputRef.current?.click()}>
+                              <Paperclip className="size-[18px]" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <p className="m-0">Attach Media</p>
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon-sm" onClick={() => setShowTemplateModal(true)}>
+                              <LayoutGrid className="size-[18px]" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <p className="m-0">Templates</p>
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
+                    </>
+                  }
+                  rightActions={
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon-sm">
+                            <Smile className="size-[18px]" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="m-0">Emoji</p>
+                          <TooltipArrow />
+                        </TooltipContent>
+                      </Tooltip>
+                  }
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) setComposerAttachment(file)
+                    e.target.value = ""
+                  }}
+                />
+              </div>
+
+              {/* Drag & drop overlay */}
+              {isDragging && (
+                <div role="region" aria-label="Drop zone — drop file to attach" className="absolute inset-0 z-50 bg-semantic-primary/5 backdrop-blur-[1px] flex items-center justify-center border-2 border-dashed border-semantic-primary rounded-lg animate-in fade-in duration-200 ease-out">
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="size-10 text-semantic-primary" />
+                    <span className="text-[16px] font-semibold text-semantic-primary">Drop file to attach</span>
+                    <span className="text-[13px] text-semantic-text-muted">Images, videos, documents</span>
                   </div>
                 </div>
               )}
@@ -2304,46 +3062,88 @@ export default function App() {
             />
 
             {/* ── Right Sidebar ── */}
-            <div className="w-[56px] bg-white border-l border-[#e9eaeb] flex flex-col items-center py-2 gap-4 shrink-0">
-              <button
+            <aside aria-label="Actions" className="w-[56px] bg-white border-l border-semantic-border-layout flex flex-col items-center py-2 gap-4 shrink-0">
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                aria-label="Contact details"
                 onClick={() => setShowContactDetails(!showContactDetails)}
-                className={`flex items-center justify-center size-[48px] rounded transition-colors ${showContactDetails ? "bg-[#f0f0f0] text-[#181d27]" : "hover:bg-[#f5f5f5] text-[#343e55]"}`}
+                className={cn("transition-colors duration-200", showContactDetails && "bg-semantic-bg-hover text-semantic-primary")}
               >
                 <User className="size-6" />
-              </button>
-              <button className="flex items-center justify-center size-[48px] rounded hover:bg-[#f5f5f5] transition-colors text-[#343e55]">
+              </Button>
+              <Button variant="ghost" size="icon-lg" aria-label="Keyboard shortcuts">
                 <Keyboard className="size-6" />
-              </button>
-            </div>
-          </div>
+              </Button>
+            </aside>
+          </main>
         )
       })() : (
-        <div className="flex-[1_0_0] min-h-0 min-w-0 bg-[#f5f5f5] shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] flex flex-col items-center justify-center p-4">
-          <div className="flex flex-col items-center gap-5 w-[276px] shrink-0">
-            <div className="w-[180px] h-[180px] shrink-0 rounded-full bg-white overflow-hidden">
-              <img
-                src={noConversationImg}
-                alt="No conversation"
-                className="w-full h-full object-cover"
-              />
+        <div className="flex-[1_0_0] min-h-0 min-w-0 bg-semantic-bg-ui shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] flex flex-col items-center justify-center p-4">
+          {showNewChat ? (
+            /* Empty state when New Chat panel is open */
+            <div className="flex flex-col items-center gap-5 w-[300px] shrink-0">
+              <div className="w-[80px] h-[80px] shrink-0 flex items-center justify-center">
+                <svg aria-hidden="true" width="64" height="64" viewBox="0 0 64 64" fill="none">
+                  <rect x="8" y="12" width="48" height="36" rx="4" stroke="#a4a7ae" strokeWidth="2" />
+                  <rect x="16" y="22" width="20" height="2" rx="1" fill="#d5d7da" />
+                  <rect x="16" y="28" width="28" height="2" rx="1" fill="#d5d7da" />
+                  <rect x="16" y="34" width="16" height="2" rx="1" fill="#d5d7da" />
+                  <path d="M44 48V56L52 48H44Z" stroke="#a4a7ae" strokeWidth="2" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col items-center gap-[6px]">
+                <h2 className="text-[24px] font-semibold text-semantic-text-primary leading-8">
+                  Start New Conversation
+                </h2>
+                <p className="text-[16px] text-semantic-text-muted text-center m-0">
+                  Select a contact or add new contact.
+                </p>
+              </div>
+              <Button
+                className="w-full h-12"
+                leftIcon={<Plus className="w-6 h-6" />}
+                onClick={() => setShowAddContact(true)}
+              >
+                Add New Contact
+              </Button>
             </div>
-            <div className="flex flex-col items-center gap-[6px]">
-              <h2 className="text-[24px] font-semibold text-[#181d27] leading-8">
-                No conversation selected
-              </h2>
-              <p className="text-[16px] text-[#717680] text-center">
-                Select a chat from inbox or start new chat
-              </p>
+          ) : (
+            /* Default empty state */
+            <div className="flex flex-col items-center gap-5 w-[276px] shrink-0">
+              <div className="w-[180px] h-[180px] shrink-0 rounded-full bg-white overflow-hidden">
+                <img
+                  src={noConversationImg}
+                  alt="No conversation"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex flex-col items-center gap-[6px]">
+                <h2 className="text-[24px] font-semibold text-semantic-text-primary leading-8">
+                  No conversation selected
+                </h2>
+                <p className="text-[16px] text-semantic-text-muted text-center m-0">
+                  Select a chat from inbox or start new chat
+                </p>
+              </div>
+              <Button
+                className="w-full h-12"
+                leftIcon={<Plus className="w-6 h-6" />}
+                onClick={openNewChat}
+              >
+                Start New Chat
+              </Button>
             </div>
-            <Button
-              className="w-full h-12 rounded bg-[#343e55] text-white text-[14px] font-semibold tracking-[0.014px] hover:bg-[#2a3245]"
-              leftIcon={<Plus className="w-6 h-6" />}
-              onClick={openNewChat}
-            >
-              Start New Chat
-            </Button>
-          </div>
+          )}
         </div>
+      )}
+
+      {/* ── Add New Contact Modal ── */}
+      {showAddContact && (
+        <AddNewContactModal
+          defaultChannel={channels[0]}
+          onClose={() => setShowAddContact(false)}
+        />
       )}
 
       {/* ── Select Template Modal ── */}
@@ -2354,5 +3154,6 @@ export default function App() {
         />
       )}
     </div>
+    </TooltipProvider>
   )
 }

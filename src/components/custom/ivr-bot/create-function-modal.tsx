@@ -77,7 +77,7 @@ function insertVar(value: string, variable: string, from: number, to: number): s
 function extractVarRefs(texts: string[]): string[] {
   const pattern = /\{\{[^}]+\}\}/g;
   const all = texts.flatMap((t) => t.match(pattern) ?? []);
-  return [...new Set(all)];
+  return Array.from(new Set(all));
 }
 
 /** Mirror-div technique — returns { top, left } relative to the element's top-left corner. */

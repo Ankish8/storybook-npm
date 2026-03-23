@@ -135,6 +135,80 @@ describe("DropdownMenuItem", () => {
   });
 });
 
+describe("DropdownMenuItem description and suffix", () => {
+  it("renders description text below children", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem description="Secondary text">
+            Primary text
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    expect(screen.getByText("Primary text")).toBeInTheDocument();
+    expect(screen.getByText("Secondary text")).toBeInTheDocument();
+    expect(screen.getByText("Secondary text")).toHaveClass(
+      "text-xs",
+      "text-semantic-text-muted"
+    );
+  });
+
+  it("renders suffix at the right edge", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem suffix="MY01">Channel Name</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    expect(screen.getByText("MY01")).toBeInTheDocument();
+    expect(screen.getByText("MY01")).toHaveClass("ml-auto", "text-xs");
+  });
+
+  it("renders both description and suffix together", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem description="+91 9876543210" suffix="WA01">
+            MyOperator Sales
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    expect(screen.getByText("MyOperator Sales")).toBeInTheDocument();
+    expect(screen.getByText("+91 9876543210")).toBeInTheDocument();
+    expect(screen.getByText("WA01")).toBeInTheDocument();
+  });
+
+  it("renders without description or suffix (backward compatible)", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Simple Item</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    expect(screen.getByRole("menuitem")).toHaveTextContent("Simple Item");
+  });
+});
+
 describe("DropdownMenuCheckboxItem", () => {
   it("renders checkbox item", async () => {
     const user = userEvent.setup();
@@ -220,6 +294,37 @@ describe("DropdownMenuRadioGroup", () => {
     const radioItems = screen.getAllByRole("menuitemradio");
     expect(radioItems[0]).toHaveAttribute("data-state", "checked");
     expect(radioItems[1]).toHaveAttribute("data-state", "unchecked");
+  });
+});
+
+describe("DropdownMenuRadioItem description and suffix", () => {
+  it("renders description and suffix on radio items", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuRadioGroup value="ch1">
+            <DropdownMenuRadioItem
+              value="ch1"
+              description="+91 9212992129"
+              suffix="MY01"
+            >
+              MyOperator Sales
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="ch2">
+              Simple Item
+            </DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    expect(screen.getByText("MyOperator Sales")).toBeInTheDocument();
+    expect(screen.getByText("+91 9212992129")).toBeInTheDocument();
+    expect(screen.getByText("MY01")).toBeInTheDocument();
+    expect(screen.getByText("Simple Item")).toBeInTheDocument();
   });
 });
 

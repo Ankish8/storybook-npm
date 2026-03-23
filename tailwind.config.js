@@ -67,6 +67,7 @@ export default {
         "semantic-brand-selected-hover": "var(--semantic-brand-selected-hover)",
         "semantic-brand-highlighted": "var(--semantic-brand-highlighted)",
         "semantic-brand-surface": "var(--semantic-brand-surface)",
+        "semantic-brand-text": "var(--semantic-brand-text)",
         // Semantic colors - Background
         "semantic-bg-primary": "var(--semantic-bg-primary)",
         "semantic-bg-secondary": "var(--semantic-bg-secondary)",

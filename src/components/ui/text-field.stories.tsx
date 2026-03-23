@@ -11,6 +11,7 @@ import {
   Lock,
   Globe,
   DollarSign,
+  X,
 } from "lucide-react";
 
 const meta: Meta<typeof TextField> = {
@@ -138,15 +139,15 @@ import { TextField } from "@/components/ui/text-field"
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Input Text</td>
-      <td style="padding: 12px 16px;">Body/Medium</td>
-      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / Regular</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm</code></td>
+      <td style="padding: 12px 16px;">Body/Base</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">16px / Regular</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-base</code></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Placeholder</td>
-      <td style="padding: 12px 16px;">Body/Medium</td>
-      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / Regular</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm</code></td>
+      <td style="padding: 12px 16px;">Body/Base</td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">16px / Regular</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-base</code></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Helper Text</td>
@@ -177,6 +178,15 @@ import { TextField } from "@/components/ui/text-field"
     onChange: fn(),
   },
   argTypes: {
+    size: {
+      control: "select",
+      options: ["default", "sm"],
+      description: "Size of the text field — `default` (42px) or `sm` (36px, compact)",
+      table: {
+        type: { summary: '"default" | "sm"' },
+        defaultValue: { summary: "default" },
+      },
+    },
     label: {
       control: "text",
       description: "Label text displayed above the input",
@@ -286,6 +296,21 @@ import { TextField } from "@/components/ui/text-field"
         type: { summary: "ReactNode" },
       },
     },
+    clearable: {
+      control: "boolean",
+      description: "Shows a clear (X) button when input has a value",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    onClear: {
+      action: "cleared",
+      description: "Callback fired when the clear button is clicked",
+      table: {
+        type: { summary: "() => void" },
+      },
+    },
   },
 };
 
@@ -304,6 +329,36 @@ export const Overview: Story = {
   render: (args) => (
     <div className="w-80">
       <TextField {...args} />
+    </div>
+  ),
+};
+
+// Small Size - compact variant for dense forms
+export const SmallSize: Story = {
+  name: "Small size",
+  render: () => (
+    <div className="flex flex-col gap-4 w-80">
+      <TextField size="sm" label="Name" placeholder="Enter name" required />
+      <TextField size="sm" label="Email" placeholder="Enter email" leftIcon={<Mail />} />
+      <TextField size="sm" label="Website" prefix="https://" placeholder="example" suffix=".com" />
+      <TextField size="sm" label="Search" placeholder="Search..." leftIcon={<Search />} clearable />
+    </div>
+  ),
+};
+
+// Size Comparison
+export const SizeComparison: Story = {
+  name: "Size comparison",
+  render: () => (
+    <div className="flex flex-col gap-6 w-80">
+      <div>
+        <p className="m-0 text-xs font-semibold text-semantic-text-muted mb-2 uppercase tracking-wider">Default (42px)</p>
+        <TextField label="Email" placeholder="Enter email" leftIcon={<Mail />} />
+      </div>
+      <div>
+        <p className="m-0 text-xs font-semibold text-semantic-text-muted mb-2 uppercase tracking-wider">Small (36px)</p>
+        <TextField size="sm" label="Email" placeholder="Enter email" leftIcon={<Mail />} />
+      </div>
     </div>
   ),
 };
@@ -359,6 +414,37 @@ export const WithIcons: Story = {
       />
     </div>
   ),
+};
+
+// Clearable
+const ClearableExample = () => {
+  const [value, setValue] = useState("Some text to clear");
+
+  return (
+    <div className="flex flex-col gap-4 w-80">
+      <TextField
+        label="Clearable Input"
+        placeholder="Type something..."
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        clearable
+        onClear={() => setValue("")}
+      />
+      <TextField
+        label="Clearable Search"
+        placeholder="Search..."
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        clearable
+        onClear={() => setValue("")}
+        leftIcon={<Search />}
+      />
+    </div>
+  );
+};
+
+export const Clearable: Story = {
+  render: () => <ClearableExample />,
 };
 
 // With Prefix/Suffix
@@ -457,7 +543,7 @@ const ControlledExample = () => {
         showCount
         maxLength={20}
       />
-      <p className="text-sm text-[#6B7280]">
+      <p className="m-0 text-sm text-semantic-text-muted">
         Current value: {value || "(empty)"}
       </p>
     </div>
@@ -484,7 +570,7 @@ const PasswordExample = () => {
           <button
             type="button"
             onClick={() => setShow(!show)}
-            className="cursor-pointer hover:text-[#333333]"
+            className="cursor-pointer hover:text-semantic-text-primary"
           >
             {show ? <EyeOff /> : <Eye />}
           </button>

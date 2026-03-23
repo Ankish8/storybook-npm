@@ -5,6 +5,10 @@ export { cn } from "./lib/utils";
 export { MyOperatorChatIcon } from "./components/custom/talk-to-us-modal/icon";
 export type { BrandIconProps } from "./components/custom/talk-to-us-modal/icon";
 
+// Avatar
+export { Avatar, avatarVariants, getInitials } from "./components/ui/avatar";
+export type { AvatarProps } from "./components/ui/avatar";
+
 // Button
 export { Button, buttonVariants } from "./components/ui/button";
 export type { ButtonProps } from "./components/ui/button";
@@ -43,6 +47,10 @@ export type {
   TableAvatarProps,
   TableToggleProps,
 } from "./components/ui/table";
+
+// Tabs
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs";
+export type { TabsListProps } from "./components/ui/tabs";
 
 // Dropdown Menu
 export {
@@ -135,6 +143,14 @@ export type {
 // Checkbox
 export { Checkbox, checkboxVariants } from "./components/ui/checkbox";
 export type { CheckboxProps, CheckedState } from "./components/ui/checkbox";
+
+// ContactListItem
+export { ContactListItem } from "./components/ui/contact-list-item";
+export type { ContactListItemProps } from "./components/ui/contact-list-item";
+
+// Panel
+export { Panel, panelVariants } from "./components/ui/panel";
+export type { PanelProps } from "./components/ui/panel";
 
 // Accordion (renamed from Collapsible)
 export {
@@ -384,4 +400,56 @@ export type {
   HttpMethod,
   FunctionTabType,
 } from "./components/custom/ivr-bot";
+
+// ReplyQuote
+export { ReplyQuote } from "./components/ui/reply-quote";
+export type { ReplyQuoteProps } from "./components/ui/reply-quote";
+
+// DateDivider
+export { DateDivider } from "./components/ui/date-divider";
+export type { DateDividerProps } from "./components/ui/date-divider";
+
+// UnreadSeparator
+export { UnreadSeparator } from "./components/ui/unread-separator";
+export type { UnreadSeparatorProps } from "./components/ui/unread-separator";
+
+// SystemMessage
+export { SystemMessage } from "./components/ui/system-message";
+export type { SystemMessageProps } from "./components/ui/system-message";
+
+// PhoneInput
+export { PhoneInput } from "./components/ui/phone-input";
+export type { PhoneInputProps } from "./components/ui/phone-input";
+
+// ImageMedia
+export { ImageMedia } from "./components/ui/image-media";
+export type { ImageMediaProps } from "./components/ui/image-media";
+
+// VideoMedia (Custom)
+export { VideoMedia } from "./components/custom/video-media";
+export type { VideoMediaProps } from "./components/custom/video-media";
+
+// AudioMedia (Custom)
+export { AudioMedia } from "./components/custom/audio-media";
+export type { AudioMediaProps } from "./components/custom/audio-media";
+
+// DocMedia (Custom)
+export { DocMedia } from "./components/custom/doc-media";
+export type { DocMediaProps, DocMediaVariant } from "./components/custom/doc-media";
+
+// CarouselMedia (Custom)
+export { CarouselMedia } from "./components/custom/carousel-media";
+export type { CarouselMediaProps, CarouselCard, CarouselCardButton } from "./components/custom/carousel-media";
+
+// ChatBubble (Custom)
+export { ChatBubble } from "./components/custom/chat-bubble";
+export type { ChatBubbleProps, ChatBubbleReply, DeliveryStatus } from "./components/custom/chat-bubble";
+
+// ChatComposer (Custom)
+export { ChatComposer } from "./components/custom/chat-composer";
+export type { ChatComposerProps, ChatComposerReply } from "./components/custom/chat-composer";
+
+// AttachmentPreview (Custom)
+export { AttachmentPreview } from "./components/custom/attachment-preview";
+export type { AttachmentPreviewProps } from "./components/custom/attachment-preview";
 

@@ -1,12 +1,22 @@
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { Check, ChevronRight, Circle } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <DropdownMenuPrimitive.Trigger
+    ref={ref}
+    className={cn("focus-visible:outline-none focus-visible:ring-0", className)}
+    {...props}
+  />
+));
+DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
@@ -25,7 +35,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
-      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-semantic-bg-ui data-[state=open]:bg-semantic-bg-ui",
+      "flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[state=open]:bg-semantic-bg-ui",
       inset && "pl-8",
       className
     )}
@@ -77,39 +87,70 @@ const DropdownMenuItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
+    /** Secondary text displayed below children */
+    description?: string;
+    /** Content displayed at the right edge of the item */
+    suffix?: React.ReactNode;
   }
->(({ className, inset, ...props }, ref) => (
+>(({ className, inset, children, description, suffix, ...props }, ref) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className
     )}
     {...props}
-  />
+  >
+    {description ? (
+      <div className="flex flex-1 flex-col">
+        <span>{children}</span>
+        <span className="text-xs text-semantic-text-muted">{description}</span>
+      </div>
+    ) : (
+      children
+    )}
+    {suffix && (
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+    )}
+  </DropdownMenuPrimitive.Item>
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
+    /** Secondary text displayed below children */
+    description?: string;
+    /** Content displayed at the right edge of the item */
+    suffix?: React.ReactNode;
+  }
+>(({ className, children, checked, description, suffix, ...props }, ref) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     checked={checked}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-semantic-primary">
       <DropdownMenuPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
-    {children}
+    {description ? (
+      <div className="flex flex-1 flex-col">
+        <span>{children}</span>
+        <span className="text-xs text-semantic-text-muted">{description}</span>
+      </div>
+    ) : (
+      children
+    )}
+    {suffix && (
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+    )}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
 DropdownMenuCheckboxItem.displayName =
@@ -117,22 +158,37 @@ DropdownMenuCheckboxItem.displayName =
 
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
+    /** Secondary text displayed below children */
+    description?: string;
+    /** Content displayed at the right edge of the item */
+    suffix?: React.ReactNode;
+  }
+>(({ className, children, description, suffix, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-semantic-primary">
       <DropdownMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
+        <Check className="h-4 w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
-    {children}
+    {description ? (
+      <div className="flex flex-1 flex-col">
+        <span>{children}</span>
+        <span className="text-xs text-semantic-text-muted">{description}</span>
+      </div>
+    ) : (
+      children
+    )}
+    {suffix && (
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+    )}
   </DropdownMenuPrimitive.RadioItem>
 ));
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;

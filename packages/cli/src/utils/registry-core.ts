@@ -528,6 +528,577 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
 export function getCoreRegistry(prefix: string = ''): Registry {
   return {
+    "avatar": {
+      name: "avatar",
+      description: "A versatile avatar component displaying user initials or images with size variants and optional online status indicator",
+      category: "core",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "avatar.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * Extracts initials from a name string.
+ * For two+ words, takes first letter of first and last word.
+ * For single words, takes first two characters.
+ *
+ * @example
+ * getInitials("Ankish Sachdeva") // "AS"
+ * getInitials("John") // "JO"
+ */
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\\s+/);
+  return parts.length >= 2
+    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    : name.slice(0, 2).toUpperCase();
+}
+
+const avatarVariants = cva(
+  "relative inline-flex items-center justify-center rounded-full font-semibold select-none shrink-0 overflow-hidden",
+  {
+    variants: {
+      variant: {
+        soft: "bg-semantic-bg-grey text-semantic-text-muted",
+        filled: "bg-semantic-primary text-semantic-text-inverted",
+      },
+      size: {
+        xs: "size-6 text-[10px]",
+        sm: "size-8 text-xs",
+        md: "size-10 text-sm",
+        lg: "size-12 text-base",
+        xl: "size-16 text-lg",
+      },
+    },
+    defaultVariants: {
+      variant: "soft",
+      size: "md",
+    },
+  }
+);
+
+const statusDotSizeMap = {
+  xs: "size-2 border",
+  sm: "size-2.5 border-[1.5px]",
+  md: "size-3 border-2",
+  lg: "size-3.5 border-2",
+  xl: "size-4 border-2",
+} as const;
+
+const statusColorMap = {
+  online: "bg-semantic-success-primary",
+  offline: "bg-semantic-bg-grey",
+  busy: "bg-semantic-error-primary",
+  away: "bg-semantic-warning-primary",
+} as const;
+
+export interface AvatarProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof avatarVariants> {
+  /** Name used to auto-generate initials and aria-label */
+  name?: string;
+  /** Image URL — renders an <img> instead of initials */
+  src?: string;
+  /** Alt text for the image (defaults to name) */
+  alt?: string;
+  /** Override auto-generated initials (e.g., "AS") */
+  initials?: string;
+  /** Status indicator dot shown at bottom-right */
+  status?: "online" | "offline" | "busy" | "away";
+}
+
+/**
+ * Avatar component for displaying user identity via image or initials.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Avatar name="Ankish Sachdeva" />
+ * <Avatar name="John Doe" size="lg" variant="filled" />
+ * <Avatar src="/photo.jpg" alt="Profile" status="online" />
+ * <Avatar initials="AS" size="xs" />
+ * \`\`\`
+ */
+const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      name,
+      src,
+      alt,
+      initials,
+      status,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const resolvedSize = size ?? "md";
+    const displayInitials = initials ?? (name ? getInitials(name) : undefined);
+
+    return (
+      <div
+        ref={ref}
+        className={cn(avatarVariants({ variant, size, className }))}
+        aria-label={name}
+        role="img"
+        {...props}
+      >
+        {src ? (
+          <img
+            src={src}
+            alt={alt ?? name ?? "Avatar"}
+            className="size-full object-cover"
+          />
+        ) : children ? (
+          children
+        ) : displayInitials ? (
+          <span aria-hidden="true">{displayInitials}</span>
+        ) : null}
+
+        {status && (
+          <span
+            className={cn(
+              "absolute bottom-0 right-0 rounded-full border-background",
+              statusDotSizeMap[resolvedSize],
+              statusColorMap[status]
+            )}
+            data-status={status}
+          />
+        )}
+      </div>
+    );
+  }
+);
+Avatar.displayName = "Avatar";
+
+export { Avatar, avatarVariants, getInitials };
+`, prefix),
+        },
+      ],
+    },
+    "date-divider": {
+      name: "date-divider",
+      description: "A horizontal line with centered date text for separating chat messages by date",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "date-divider.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * DateDivider component for separating chat messages by date.
+ * Renders a horizontal line with centered date text.
+ *
+ * @example
+ * \`\`\`tsx
+ * <DateDivider>Today</DateDivider>
+ * <DateDivider>March 20, 2026</DateDivider>
+ * \`\`\`
+ */
+export interface DateDividerProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** The date text to display. Can be a string like "Today", "March 20, 2026", etc. */
+  children: React.ReactNode;
+}
+
+const DateDivider = React.forwardRef<HTMLDivElement, DateDividerProps>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center gap-4 my-4", className)}
+      {...props}
+    >
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <span className="text-xs text-semantic-text-muted shrink-0">
+        {children}
+      </span>
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+    </div>
+  )
+);
+DateDivider.displayName = "DateDivider";
+
+export { DateDivider };
+`, prefix),
+        },
+      ],
+    },
+    "image-media": {
+      name: "image-media",
+      description: "An image display component for chat messages with rounded corners and configurable max height",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "image-media.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * ImageMedia component for displaying images in chat messages.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ImageMedia src="https://example.com/photo.jpg" />
+ * <ImageMedia src="https://example.com/photo.jpg" alt="A sunset" />
+ * <ImageMedia src="https://example.com/photo.jpg" maxHeight={400} />
+ * <ImageMedia src="https://example.com/photo.jpg" maxHeight="50vh" />
+ * \`\`\`
+ */
+export interface ImageMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Image source URL */
+  src: string;
+  /** Alt text for the image */
+  alt?: string;
+  /** Maximum height of the image. Defaults to 280px */
+  maxHeight?: number | string;
+}
+
+const ImageMedia = React.forwardRef<HTMLDivElement, ImageMediaProps>(
+  ({ className, src, alt = "Image", maxHeight = 280, ...props }, ref) => {
+    const maxHeightStyle =
+      typeof maxHeight === "number" ? \`\${maxHeight}px\` : maxHeight;
+
+    return (
+      <div ref={ref} className={cn("relative", className)} {...props}>
+        <img
+          src={src}
+          alt={alt}
+          className="w-full rounded-t object-cover"
+          style={{ maxHeight: maxHeightStyle }}
+        />
+      </div>
+    );
+  }
+);
+ImageMedia.displayName = "ImageMedia";
+
+export { ImageMedia };
+`, prefix),
+        },
+      ],
+    },
+    "phone-input": {
+      name: "phone-input",
+      description: "A phone number input with country code prefix, flag emoji, and optional country selector",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      files: [
+        {
+          name: "phone-input.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { ChevronDown } from "lucide-react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * A phone number input with a country code prefix area.
+ *
+ * @example
+ * \`\`\`tsx
+ * <PhoneInput placeholder="Enter phone number" />
+ * <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
+ * <PhoneInput onCountryClick={() => openCountryPicker()} />
+ * \`\`\`
+ */
+export interface PhoneInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  /** Country flag emoji (e.g., "🇮🇳", "🇺🇸"). Defaults to "🇮🇳" */
+  countryFlag?: string;
+  /** Country dial code (e.g., "+91", "+1"). Defaults to "+91" */
+  countryCode?: string;
+  /** Whether to show the chevron dropdown indicator. Defaults to true */
+  showChevron?: boolean;
+  /** Handler called when the country code area is clicked */
+  onCountryClick?: () => void;
+  /** Additional className for the outer wrapper */
+  wrapperClassName?: string;
+}
+
+const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
+  (
+    {
+      className,
+      countryFlag = "🇮🇳",
+      countryCode = "+91",
+      showChevron = true,
+      onCountryClick,
+      wrapperClassName,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        className={cn(
+          "flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
+          disabled && "opacity-60",
+          wrapperClassName
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-1.5 pl-3 pr-2 h-10 shrink-0",
+            onCountryClick && "cursor-pointer"
+          )}
+          onClick={onCountryClick}
+          data-testid="phone-input-country"
+        >
+          <span className="text-sm">{countryFlag}</span>
+          <span className="text-sm text-semantic-text-secondary">
+            {countryCode}
+          </span>
+          {showChevron && (
+            <ChevronDown className="size-3 text-semantic-text-muted" />
+          )}
+        </div>
+        <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+        <input
+          type="tel"
+          ref={ref}
+          disabled={disabled}
+          className={cn(
+            "flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent disabled:cursor-not-allowed",
+            className
+          )}
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+PhoneInput.displayName = "PhoneInput";
+
+export { PhoneInput };
+`, prefix),
+        },
+      ],
+    },
+    "reply-quote": {
+      name: "reply-quote",
+      description: "A quoted message block with blue left border showing sender name and quoted text for reply previews",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "reply-quote.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * ReplyQuote component for displaying a quoted message with a brand-accented left border.
+ * Used in chat applications for reply-to previews.
+ *
+ * When an \`onClick\` handler is provided, the component becomes interactive:
+ * it receives \`role="button"\`, \`tabIndex={0}\`, and keyboard support (Enter/Space).
+ * A focus ring is shown when focused via keyboard.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ReplyQuote sender="John Doe" message="Hello, how are you?" />
+ * <ReplyQuote sender="Jane" message="Check this out!" onClick={() => scrollToMessage()} />
+ * \`\`\`
+ */
+export interface ReplyQuoteProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Name of the person being quoted */
+  sender: string;
+  /** The quoted message text */
+  message: string;
+}
+
+const ReplyQuote = React.forwardRef<HTMLDivElement, ReplyQuoteProps>(
+  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }, ref) => {
+    const isInteractive = !!onClick;
+
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          if (e.key === " ") {
+            e.preventDefault();
+          }
+          onClick(e as unknown as React.MouseEvent<HTMLDivElement>);
+        }
+        onKeyDown?.(e);
+      },
+      [onClick, onKeyDown]
+    );
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "w-full bg-semantic-bg-ui border-l-[3px] border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
+          isInteractive && "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-1 focus-visible:outline-none",
+          className
+        )}
+        role={role ?? (isInteractive ? "button" : undefined)}
+        tabIndex={tabIndex ?? (isInteractive ? 0 : undefined)}
+        onClick={onClick}
+        onKeyDown={isInteractive ? handleKeyDown : onKeyDown}
+        aria-label={ariaLabel ?? \`Quoted reply from \${sender}: \${message}\`}
+        {...props}
+      >
+        <p className="text-[14px] font-semibold text-semantic-text-primary truncate leading-5 tracking-[0.014px] m-0">
+          {sender}
+        </p>
+        <p className="text-[14px] text-semantic-text-muted truncate m-0">
+          {message}
+        </p>
+      </div>
+    );
+  }
+);
+ReplyQuote.displayName = "ReplyQuote";
+
+export { ReplyQuote };
+`, prefix),
+        },
+      ],
+    },
+    "system-message": {
+      name: "system-message",
+      description: "A centered system message for chat timelines with bold markdown support",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "system-message.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * SystemMessage component for displaying centered, muted system/timeline
+ * events in a chat interface. Supports **bold** markdown-style formatting
+ * which renders as link-colored bold text.
+ *
+ * @example
+ * \`\`\`tsx
+ * <SystemMessage>Assigned to **Alex Smith** by **Admin**</SystemMessage>
+ * <SystemMessage>Chat was closed</SystemMessage>
+ * \`\`\`
+ */
+export interface SystemMessageProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** The message text. Supports **bold** markdown syntax which renders as link-colored bold text. */
+  children: string;
+}
+
+const SystemMessage = React.forwardRef<HTMLDivElement, SystemMessageProps>(
+  ({ className, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex justify-center my-1", className)}
+      {...props}
+    >
+      <span className="text-[13px] text-semantic-text-muted">
+        {children.split(/(\\*\\*[^*]+\\*\\*)/).map((part, i) =>
+          part.startsWith("**") ? (
+            <span key={i} className="text-semantic-text-link font-medium">
+              {part.slice(2, -2)}
+            </span>
+          ) : (
+            part
+          )
+        )}
+      </span>
+    </div>
+  )
+);
+SystemMessage.displayName = "SystemMessage";
+
+export { SystemMessage };
+`, prefix),
+        },
+      ],
+    },
+    "unread-separator": {
+      name: "unread-separator",
+      description: "A horizontal divider with unread message count label for chat message lists",
+      category: "core",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "unread-separator.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * UnreadSeparator component for displaying a horizontal divider with an unread message count.
+ * Used in chat message lists to indicate where unread messages begin.
+ *
+ * @example
+ * \`\`\`tsx
+ * <UnreadSeparator count={3} />
+ * <UnreadSeparator count={1} />
+ * <UnreadSeparator count={5} label="5 new messages" />
+ * \`\`\`
+ */
+export interface UnreadSeparatorProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Number of unread messages */
+  count: number;
+  /** Custom label. Defaults to "{count} unread message(s)" */
+  label?: string;
+}
+
+const UnreadSeparator = React.forwardRef<HTMLDivElement, UnreadSeparatorProps>(
+  ({ className, count, label, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn("flex items-center gap-4 my-2", className)}
+      {...props}
+    >
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <span className="text-xs text-semantic-text-muted bg-semantic-bg-ui px-2 shrink-0">
+        {label ?? \`\${count} unread message\${count !== 1 ? "s" : ""}\`}
+      </span>
+      <div className="flex-1 h-px bg-semantic-border-layout" />
+    </div>
+  )
+);
+UnreadSeparator.displayName = "UnreadSeparator";
+
+export { UnreadSeparator };
+`, prefix),
+        },
+      ],
+    },
     "button": {
       name: "button",
       description: "A customizable button component with variants, sizes, and icons",
@@ -560,6 +1131,8 @@ const buttonVariants = cva(
           "bg-semantic-primary text-semantic-text-inverted hover:bg-semantic-primary-hover",
         destructive:
           "bg-semantic-error-primary text-semantic-text-inverted hover:bg-semantic-error-hover",
+        success:
+          "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
           "border border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
@@ -793,6 +1366,122 @@ export { Badge, badgeVariants };
         },
       ],
     },
+    "contact-list-item": {
+      name: "contact-list-item",
+      description: "Contact list item with avatar, name, subtitle, and trailing content",
+      category: "core",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "avatar"
+      ],
+      files: [
+        {
+          name: "contact-list-item.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+
+import { cn } from "../../lib/utils";
+
+import { Avatar } from "./avatar";
+
+export interface ContactListItemProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
+  /** Contact name — displayed as primary text and used for Avatar initials */
+  name: string;
+  /** Secondary text below the name (e.g., phone number, email) */
+  subtitle?: string;
+  /** Content rendered at the right edge (e.g., channel badge, status text) */
+  trailing?: React.ReactNode;
+  /** Avatar image source — shows image instead of initials when provided */
+  avatarSrc?: string;
+  /** Whether this item is currently selected/active */
+  isSelected?: boolean;
+  /** Click handler */
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+/**
+ * ContactListItem displays a contact entry with avatar, name, optional subtitle,
+ * and trailing content — used in contact directories, user lists, and search results.
+ *
+ * @example
+ * \`\`\`tsx
+ * <ContactListItem
+ *   name="Aditi Kumar"
+ *   subtitle="+91 98765 43210"
+ *   trailing="MY01"
+ *   onClick={() => selectContact("1")}
+ * />
+ * \`\`\`
+ */
+const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
+  (
+    {
+      name,
+      subtitle,
+      trailing,
+      avatarSrc,
+      isSelected = false,
+      onClick,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <div
+        ref={ref}
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>);
+          }
+        }}
+        className={cn(
+          "flex items-center gap-3 px-3 py-3 cursor-pointer transition-colors",
+          isSelected
+            ? "bg-semantic-bg-ui"
+            : "hover:bg-semantic-bg-hover",
+          className
+        )}
+        {...props}
+      >
+        <Avatar name={name} src={avatarSrc} size="sm" />
+
+        <div className="flex-1 flex items-center justify-between min-w-0">
+          <div className="flex flex-col min-w-0">
+            <span className="text-sm font-medium text-semantic-text-primary leading-5 truncate">
+              {name}
+            </span>
+            {subtitle && (
+              <span className="text-xs text-semantic-text-muted">
+                {subtitle}
+              </span>
+            )}
+          </div>
+          {trailing && (
+            <span className="text-xs font-medium text-semantic-text-muted shrink-0 ml-2">
+              {trailing}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+ContactListItem.displayName = "ContactListItem";
+
+export { ContactListItem };
+`, prefix),
+        },
+      ],
+    },
     "typography": {
       name: "typography",
       description: "A semantic typography component with kind, variant, color, alignment, and truncation support",
@@ -990,6 +1679,100 @@ export {
   mapColorClassName,
   mapAlignClassName,
 };
+`, prefix),
+        },
+      ],
+    },
+    "tabs": {
+      name: "tabs",
+      description: "A flexible tabs component with underline-style active indicator, supporting badges/counts, equal-width and auto-width layouts",
+      category: "core",
+      dependencies: [
+            "@radix-ui/react-tabs",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "tabs.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import * as TabsPrimitive from "@radix-ui/react-tabs"
+
+import { cn } from "../../lib/utils"
+
+/**
+ * A flexible tabs component with underline-style active indicator.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Tabs defaultValue="tab1">
+ *   <TabsList>
+ *     <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+ *     <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+ *   </TabsList>
+ *   <TabsContent value="tab1">Content 1</TabsContent>
+ *   <TabsContent value="tab2">Content 2</TabsContent>
+ * </Tabs>
+ * \`\`\`
+ */
+const Tabs = TabsPrimitive.Root
+
+export interface TabsListProps
+  extends React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> {
+  /** When true, tabs stretch to fill the full width equally */
+  fullWidth?: boolean
+}
+
+const TabsList = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.List>,
+  TabsListProps
+>(({ className, fullWidth, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn(
+      "inline-flex items-center border-b border-semantic-border-layout w-full",
+      fullWidth && "[&>*]:flex-1",
+      className
+    )}
+    {...props}
+  />
+))
+TabsList.displayName = TabsPrimitive.List.displayName
+
+const TabsTrigger = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 -mb-px cursor-pointer transition-colors",
+      "text-semantic-text-muted border-transparent hover:text-semantic-text-secondary",
+      "data-[state=active]:text-semantic-text-primary data-[state=active]:border-semantic-primary",
+      "focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+      className
+    )}
+    {...props}
+  />
+))
+TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+
+const TabsContent = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Content
+    ref={ref}
+    className={cn(
+      "mt-2 focus-visible:outline-none",
+      className
+    )}
+    {...props}
+  />
+))
+TabsContent.displayName = TabsPrimitive.Content.displayName
+
+export { Tabs, TabsList, TabsTrigger, TabsContent }
 `, prefix),
         },
       ],

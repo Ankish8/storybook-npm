@@ -12,9 +12,18 @@ categories:
   core:
     description: "Essential UI primitives"
     components:
+      - avatar
       - button
       - badge
+      - contact-list-item
+      - date-divider
+      - image-media
+      - phone-input
+      - reply-quote
+      - system-message
+      - tabs
       - typography
+      - unread-separator
 
   form:
     description: "Form inputs and controls"
@@ -58,11 +67,18 @@ categories:
     components:
       - accordion
       - page-header
+      - panel
       - pagination
 
   custom:
     description: "Multi-file complex components"
     components:
+      - attachment-preview
+      - audio-media
+      - carousel-media
+      - chat-bubble
+      - chat-composer
+      - doc-media
       - event-selector
       - key-value-input
       - api-feature-card
@@ -83,6 +99,7 @@ categories:
       - talk-to-us-modal
       - wallet-topup
       - file-upload-modal
+      - video-media
 
 # =============================================================================
 # COMPONENT DEFINITIONS
@@ -93,6 +110,57 @@ components:
   # ---------------------------------------------------------------------------
   # CORE COMPONENTS
   # ---------------------------------------------------------------------------
+  avatar:
+    description: "A versatile avatar component displaying user initials or images with size variants and optional online status indicator"
+    category: core
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  date-divider:
+    description: "A horizontal line with centered date text for separating chat messages by date"
+    category: core
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+
+  image-media:
+    description: "An image display component for chat messages with rounded corners and configurable max height"
+    category: core
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+
+  phone-input:
+    description: "A phone number input with country code prefix, flag emoji, and optional country selector"
+    category: core
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+
+  reply-quote:
+    description: "A quoted message block with blue left border showing sender name and quoted text for reply previews"
+    category: core
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+
+  system-message:
+    description: "A centered system message for chat timelines with bold markdown support"
+    category: core
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+
+  unread-separator:
+    description: "A horizontal divider with unread message count label for chat message lists"
+    category: core
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+
   button:
     description: "A customizable button component with variants, sizes, and icons"
     category: core
@@ -111,6 +179,16 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge"
+
+  contact-list-item:
+    description: "Contact list item with avatar, name, subtitle, and trailing content"
+    category: core
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - avatar
 
   typography:
     description: "A semantic typography component with kind, variant, color, alignment, and truncation support"
@@ -223,6 +301,14 @@ components:
     category: data
     dependencies:
       - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+
+  tabs:
+    description: "A flexible tabs component with underline-style active indicator, supporting badges/counts, equal-width and auto-width layouts"
+    category: core
+    dependencies:
+      - "@radix-ui/react-tabs"
       - "clsx"
       - "tailwind-merge"
 
@@ -364,6 +450,17 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+
+  panel:
+    description: "A collapsible side panel layout with header, scrollable body, and optional footer"
+    category: layout
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
 
   pagination:
     description: "A composable pagination component with page navigation, next/previous links, and ellipsis"
@@ -767,6 +864,119 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "file-upload-modal.tsx"
+
+  attachment-preview:
+    description: "A file attachment preview for chat composers with image, video, audio, and document previews"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    isMultiFile: true
+    directory: "attachment-preview"
+    files:
+      - "attachment-preview.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "attachment-preview.tsx"
+
+  audio-media:
+    description: "A waveform-based audio player with play/pause, speed control, and SVG waveform visualization"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - dropdown-menu
+    isMultiFile: true
+    directory: "audio-media"
+    files:
+      - "audio-media.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "audio-media.tsx"
+
+  carousel-media:
+    description: "A horizontally scrollable card carousel with images, titles, and action buttons"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    isMultiFile: true
+    directory: "carousel-media"
+    files:
+      - "carousel-media.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "carousel-media.tsx"
+
+  chat-bubble:
+    description: "A chat message bubble with sender/receiver variants, delivery status, reply quote, and media slot"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - reply-quote
+    isMultiFile: true
+    directory: "chat-bubble"
+    files:
+      - "chat-bubble.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "chat-bubble.tsx"
+
+  chat-composer:
+    description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - reply-quote
+    isMultiFile: true
+    directory: "chat-composer"
+    files:
+      - "chat-composer.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "chat-composer.tsx"
+
+  doc-media:
+    description: "A document media component with preview, download, and file variants for chat messages"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    isMultiFile: true
+    directory: "doc-media"
+    files:
+      - "doc-media.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "doc-media.tsx"
+
+  video-media:
+    description: "A video player with thumbnail overlay, play/pause, seek bar, speed dropdown, volume, and fullscreen"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - dropdown-menu
+    isMultiFile: true
+    directory: "video-media"
+    files:
+      - "video-media.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "video-media.tsx"
 
   ivr-bot:
     description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)"
