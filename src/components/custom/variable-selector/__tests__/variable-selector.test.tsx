@@ -160,4 +160,103 @@ describe("VariableSelector", () => {
     fireEvent.click(screen.getByRole("button", { name: /add new variable/i }));
     expect(onAddNewVariable).toHaveBeenCalledTimes(1);
   });
+
+  it("calls onOpenChange(false) before onAddNewVariable when Add new is clicked", () => {
+    const order: string[] = [];
+    const onOpenChange = vi.fn((open: boolean) => {
+      if (open === false) order.push("close");
+    });
+    const onAddNewVariable = vi.fn(() => order.push("add"));
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={onOpenChange}
+        anchorRef={anchorRef}
+        sections={defaultSections}
+        onAddNewVariable={onAddNewVariable}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /add new variable/i }));
+    expect(order).toEqual(["close", "add"]);
+  });
+
+  it("calls onSearchChange when search input changes", () => {
+    const onSearchChange = vi.fn();
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={defaultSections}
+        onSearchChange={onSearchChange}
+      />
+    );
+    fireEvent.change(screen.getByLabelText("Search"), {
+      target: { value: "order" },
+    });
+    expect(onSearchChange).toHaveBeenCalledWith("order");
+  });
+
+  it("shows No variables found when search matches nothing", () => {
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={defaultSections}
+      />
+    );
+    fireEvent.change(screen.getByLabelText("Search"), {
+      target: { value: "zzznomatch" },
+    });
+    expect(screen.getByText("No variables found")).toBeInTheDocument();
+  });
+
+  it("calls onOpenChange(false) when Escape is pressed", () => {
+    const onOpenChange = vi.fn();
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={onOpenChange}
+        anchorRef={anchorRef}
+        sections={defaultSections}
+      />
+    );
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("hides pencil when showEditIcon is false even if onEditVariable is set", () => {
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={defaultSections}
+        onEditVariable={() => {}}
+        showEditIcon={false}
+      />
+    );
+    expect(
+      screen.queryByRole("button", { name: /edit order_id/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows No variables found when sections is empty", () => {
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={[]}
+      />
+    );
+    expect(screen.getByText("No variables found")).toBeInTheDocument();
+  });
 });

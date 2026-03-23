@@ -254,7 +254,6 @@ export const VariableValueInput = React.forwardRef<
                 onOpenChange={setOverflowPopoverOpen}
                 anchorRef={rootRef}
                 segments={segments}
-                title="Variables"
                 showEditIcon={showEditIcon}
                 onEditVariable={onEditVariableChip}
               />

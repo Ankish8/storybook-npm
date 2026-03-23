@@ -190,7 +190,10 @@ export const VariableSelector = React.forwardRef<
               </p>
             ) : (
               filteredSections.map((section, sectionIndex) => (
-                <div key={section.label} className="flex flex-col">
+                <div
+                  key={`${section.label}-${sectionIndex}`}
+                  className="flex flex-col"
+                >
                   {sectionIndex > 0 && (
                     <div className="my-0 border-t border-semantic-border-layout" aria-hidden />
                   )}
