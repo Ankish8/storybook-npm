@@ -36,7 +36,7 @@ An individual bot card showing the bot's type badge, icon, name, conversation co
 ## Installation
 
 \`\`\`bash
-npx myoperator-ui add bots
+npx myoperator-ui add bot-card
 \`\`\`
 
 ## Import

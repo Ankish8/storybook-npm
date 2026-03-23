@@ -65,6 +65,7 @@ categories:
     components:
       - event-selector
       - key-value-input
+      - variable-selector
       - api-feature-card
       - endpoint-details
       - alert-configuration
@@ -396,6 +397,24 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "event-selector.tsx"
+
+  variable-selector:
+    description: "Variable selection popover for API config; opens when user types {{ in a value field"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    isMultiFile: true
+    directory: "variable-selector"
+    files:
+      - "variable-selector.tsx"
+      - "variable-chip.tsx"
+      - "variable-value-input.tsx"
+      - "selected-variables-popover.tsx"
+      - "types.ts"
+      - "index.ts"
+    mainFile: "variable-selector.tsx"
 
   key-value-input:
     description: "A component for managing key-value pairs with validation and duplicate detection"
@@ -782,12 +801,14 @@ components:
       - switch
       - accordion
       - dialog
+      - input
       - select
       - creatable-select
       - creatable-multi-select
       - page-header
       - tag
       - file-upload-modal
+      - variable-selector
     isMultiFile: true
     directory: "ivr-bot"
     files:

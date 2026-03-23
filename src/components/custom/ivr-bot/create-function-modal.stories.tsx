@@ -25,7 +25,7 @@ A **2-step wizard modal** for creating a new bot function.
 - **Tabs** — Header · Query parameter · Body (Body tab only visible for POST / PUT / PATCH)
   - *Header / Query parameter* — editable key-value rows with delete action; click the empty row to add a new entry
   - *Body* — textarea with 4 000 char counter (hidden for GET / DELETE)
-- **Test Your API** — "Test API" button + read-only response area
+- **Test Your API** — Gray panel ([Figma](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM?node-id=40829-29141)): one row per variable with **variable name** (read-only) and **Value** side by side; empty values show **Test value is required** after **Test**; \`onTestApi\` receives optional \`apiTestVariableValues\`
 - **Back** (returns to Step 1) / **Submit** (calls \`onSubmit\` and closes)
 
 ### Prop Defaults

@@ -11,6 +11,12 @@ const meta: Meta<typeof BotListAction> = {
         component: `
 Context menu for bot card actions: Edit and Delete (with separator).
 Uses semantic tokens; Delete is styled as destructive (red).
+
+### Installation
+
+\`\`\`bash
+npx myoperator-ui add bot-list-action
+\`\`\`
         `,
       },
     },

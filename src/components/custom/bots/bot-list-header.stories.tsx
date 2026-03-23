@@ -19,7 +19,7 @@ ${botListHeaderDescription}
 ### Installation
 
 \`\`\`bash
-npx myoperator-ui add bot-list
+npx myoperator-ui add bot-list-header
 \`\`\`
 
 ### Import

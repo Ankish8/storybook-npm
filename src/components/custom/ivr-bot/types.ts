@@ -1,4 +1,5 @@
 import type { UploadProgressHandlers } from "../file-upload-modal";
+import type { VariableSelectorSection } from "../variable-selector/types";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -46,6 +47,11 @@ export interface CreateFunctionStep2Data {
   headers: KeyValuePair[];
   queryParams: KeyValuePair[];
   body: string;
+  /**
+   * Sample values for `{{variable}}` placeholders (Test Your API).
+   * Present when calling `onTestApi` after validation; keys are inner names (e.g. `contact.name`).
+   */
+  apiTestVariableValues?: Record<string, string>;
 }
 
 export interface CreateFunctionData
@@ -69,6 +75,13 @@ export interface CreateFunctionModalProps {
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
   initialTab?: FunctionTabType;
+  /**
+   * Variable picker sections for header/query/value fields (Figma: Function variables + Contact fields).
+   * When the modal opens, the catalog resets from this list (or the default catalog if omitted).
+   */
+  initialVariableCatalog?: VariableSelectorSection[];
+  /** Fires when test values for API variables change (Test Your API two-column rows). */
+  onApiTestVariableValuesChange?: (values: Record<string, string>) => void;
   className?: string;
 }
 

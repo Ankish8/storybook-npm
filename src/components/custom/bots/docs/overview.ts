@@ -44,6 +44,20 @@ Full-page bot management view: header, search, responsive grid of bot cards, and
 
 ## Installation
 
+Install only the components you need:
+
+\`\`\`bash
+npx myoperator-ui add bot-card
+npx myoperator-ui add bot-list-action
+npx myoperator-ui add bot-list-header
+npx myoperator-ui add create-bot-flow
+npx myoperator-ui add create-bot-modal
+npx myoperator-ui add edit-bot-flow
+npx myoperator-ui add bot-list
+\`\`\`
+
+Or install everything at once:
+
 \`\`\`bash
 npx myoperator-ui add bots
 \`\`\`

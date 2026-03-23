@@ -1,12 +1,20 @@
 import * as React from "react";
-import { Trash2, ChevronDown, X, Plus } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, AlertCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogFooter,
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { VariableValueInput } from "../variable-selector/variable-value-input";
+import {
+  parseValueToSegments,
+  type VariableSelectorItem,
+  type VariableSelectorSection,
+} from "../variable-selector/types";
 import type {
   CreateFunctionModalProps,
   CreateFunctionData,
@@ -49,6 +57,74 @@ function generateId() {
   return Math.random().toString(36).slice(2, 9);
 }
 
+/** Default catalog aligned with Figma variable picker (Create Function → Header value `{{`). */
+const DEFAULT_FUNCTION_VARIABLE_CATALOG: VariableSelectorSection[] = [
+  {
+    label: "Function variables",
+    variables: [
+      { id: "fv-order", name: "Order_id" },
+      { id: "fv-customer", name: "customer_name" },
+      { id: "fv-product", name: "product_id" },
+      { id: "fv-tracking", name: "tracking_id" },
+      { id: "fv-delivery", name: "delivery_date" },
+      { id: "fv-payment", name: "payment_status" },
+      { id: "fv-delivery-st", name: "delivery_status" },
+    ],
+  },
+  {
+    label: "Contact fields",
+    variables: [
+      { id: "cf-name", name: "Name" },
+      { id: "cf-email", name: "Email" },
+      { id: "cf-phone", name: "Phone number" },
+      { id: "cf-address", name: "Contact address" },
+      { id: "cf-city", name: "City" },
+    ],
+  },
+];
+
+function findVariableItemByName(
+  sections: VariableSelectorSection[],
+  name: string
+): VariableSelectorItem | null {
+  for (const s of sections) {
+    const v = s.variables.find((x) => x.name === name);
+    if (v) return v;
+  }
+  return null;
+}
+
+function cloneVariableCatalog(
+  catalog: VariableSelectorSection[]
+): VariableSelectorSection[] {
+  return catalog.map((s) => ({
+    ...s,
+    variables: s.variables.map((v) => ({ ...v })),
+  }));
+}
+
+/** Unique `{{variable}}` names from URL, header values, query values, and body (sorted). */
+function collectApiVariableNames(
+  url: string,
+  headers: KeyValuePair[],
+  queryParams: KeyValuePair[],
+  body: string
+): string[] {
+  const names = new Set<string>();
+  const addFromText = (s: string) => {
+    parseValueToSegments(s).forEach((seg) => {
+      if (seg.type === "variable" && seg.name.trim()) {
+        names.add(seg.name.trim());
+      }
+    });
+  };
+  addFromText(url);
+  headers.forEach((h) => addFromText(h.value));
+  queryParams.forEach((q) => addFromText(q.value));
+  addFromText(body);
+  return Array.from(names).sort((a, b) => a.localeCompare(b));
+}
+
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
   "w-full h-[42px] px-4 text-base rounded border",
@@ -78,6 +154,10 @@ function KeyValueTable({
   valueMaxLength,
   keyRegex,
   keyRegexError,
+  variableSections,
+  onAddCatalogVariable,
+  onEditCatalogVariable,
+  onEditVariableChipByName,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
@@ -87,6 +167,10 @@ function KeyValueTable({
   valueMaxLength?: number;
   keyRegex?: RegExp;
   keyRegexError?: string;
+  variableSections: VariableSelectorSection[];
+  onAddCatalogVariable: () => void;
+  onEditCatalogVariable: (item: VariableSelectorItem) => void;
+  onEditVariableChipByName: (name: string) => void;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
     // Replace spaces with hyphens in key values
@@ -130,14 +214,15 @@ function KeyValueTable({
           <div className="w-10 shrink-0" aria-hidden="true" />
         </div>
 
-        {/* Filled rows — same flex ratio (flex-1 / flex-2 / w-10) so middle border aligns with header */}
-        {rows.map((row) => {
-          const errors = getErrors(row);
-          return (
-            <div
-              key={row.id}
-              className="border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
-            >
+        {/* Filled rows — same ul/li as VariableSelector (m-0 list-none p-0 / m-0); flex ratio (flex-1 / flex-2 / w-10) aligns with header */}
+        <ul className="m-0 list-none p-0">
+          {rows.map((row) => {
+            const errors = getErrors(row);
+            return (
+              <li
+                key={row.id}
+                className="m-0 border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+              >
               {/* Key column — border-r on column (not input) so it aligns with header */}
               <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
@@ -168,19 +253,26 @@ function KeyValueTable({
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Value
                 </span>
-                <input
-                  type="text"
-                  value={row.value}
-                  onChange={(e) => update(row.id, { value: e.target.value })}
-                  placeholder="Type {{ to add variables"
-                  maxLength={valueMaxLength}
+                <div
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
-                    errors.value && "border-semantic-error-primary"
+                    "min-h-[40px] w-full bg-semantic-bg-primary",
+                    errors.value && "ring-1 ring-semantic-error-primary ring-inset"
                   )}
-                  aria-invalid={Boolean(errors.value)}
-                  aria-describedby={errors.value ? `err-value-${row.id}` : undefined}
-                />
+                >
+                  <VariableValueInput
+                    value={row.value}
+                    onChange={(v) => update(row.id, { value: v })}
+                    placeholder="Type {{ to add variables"
+                    variableSections={variableSections}
+                    maxLength={valueMaxLength}
+                    maxVisibleChips={1}
+                    showEditIcon
+                    onAddNewVariable={onAddCatalogVariable}
+                    onEditVariable={onEditCatalogVariable}
+                    onEditVariableChip={onEditVariableChipByName}
+                    className="h-10 min-h-[40px] rounded-none border-0 px-3 py-2.5 text-base focus-within:ring-0 focus-within:ring-offset-0"
+                  />
+                </div>
                 {errors.value && (
                   <p id={`err-value-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
                     {errors.value}
@@ -201,9 +293,10 @@ function KeyValueTable({
                   <Trash2 className="size-4" />
                 </Button>
               </div>
-            </div>
-          );
-        })}
+              </li>
+            );
+          })}
+        </ul>
 
         {/* Add row — always visible */}
         <button
@@ -236,6 +329,8 @@ export const CreateFunctionModal = React.forwardRef<
       promptMaxLength = 1000,
       initialStep = 1,
       initialTab = "header",
+      initialVariableCatalog,
+      onApiTestVariableValuesChange,
       className,
     },
     ref
@@ -254,10 +349,104 @@ export const CreateFunctionModal = React.forwardRef<
     const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
+    const [apiTestValues, setApiTestValues] = React.useState<
+      Record<string, string>
+    >({});
+    const [apiTestValidationAttempted, setApiTestValidationAttempted] =
+      React.useState(false);
     const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
     const [nameError, setNameError] = React.useState("");
     const [urlError, setUrlError] = React.useState("");
     const [bodyError, setBodyError] = React.useState("");
+
+    const [variableCatalog, setVariableCatalog] = React.useState<
+      VariableSelectorSection[]
+    >(() => cloneVariableCatalog(DEFAULT_FUNCTION_VARIABLE_CATALOG));
+
+    const [varCatalogDialogOpen, setVarCatalogDialogOpen] =
+      React.useState(false);
+    const [varCatalogMode, setVarCatalogMode] = React.useState<"add" | "edit">(
+      "add"
+    );
+    const [varCatalogEditingId, setVarCatalogEditingId] = React.useState<
+      string | null
+    >(null);
+    const [varCatalogNameDraft, setVarCatalogNameDraft] = React.useState("");
+    const [varCatalogNameError, setVarCatalogNameError] = React.useState("");
+
+    const openAddCatalogVariable = React.useCallback(() => {
+      setVarCatalogMode("add");
+      setVarCatalogEditingId(null);
+      setVarCatalogNameDraft("");
+      setVarCatalogNameError("");
+      setVarCatalogDialogOpen(true);
+    }, []);
+
+    const openEditCatalogVariable = React.useCallback(
+      (item: VariableSelectorItem) => {
+        setVarCatalogMode("edit");
+        setVarCatalogEditingId(item.id);
+        setVarCatalogNameDraft(item.name);
+        setVarCatalogNameError("");
+        setVarCatalogDialogOpen(true);
+      },
+      []
+    );
+
+    const handleEditChipByName = React.useCallback(
+      (name: string) => {
+        const item = findVariableItemByName(variableCatalog, name);
+        if (item) openEditCatalogVariable(item);
+      },
+      [variableCatalog, openEditCatalogVariable]
+    );
+
+    const handleSaveCatalogVariable = React.useCallback(() => {
+      const name = varCatalogNameDraft.trim();
+      if (!name) {
+        setVarCatalogNameError("Variable name is required");
+        return;
+      }
+      const nameTaken = variableCatalog.some((s) =>
+        s.variables.some(
+          (v) =>
+            v.name.toLowerCase() === name.toLowerCase() &&
+            v.id !== varCatalogEditingId
+        )
+      );
+      if (nameTaken) {
+        setVarCatalogNameError("A variable with this name already exists");
+        return;
+      }
+      setVarCatalogNameError("");
+      if (varCatalogMode === "edit" && varCatalogEditingId) {
+        setVariableCatalog((prev) =>
+          prev.map((section) => ({
+            ...section,
+            variables: section.variables.map((v) =>
+              v.id === varCatalogEditingId ? { ...v, name } : v
+            ),
+          }))
+        );
+      } else {
+        setVariableCatalog((prev) => {
+          const next = cloneVariableCatalog(prev);
+          const target =
+            next.find((s) => s.label === "Function variables") ?? next[0];
+          if (!target) return prev;
+          target.variables.push({ id: generateId(), name });
+          return next;
+        });
+      }
+      setVarCatalogDialogOpen(false);
+      setVarCatalogNameDraft("");
+      setVarCatalogEditingId(null);
+    }, [
+      varCatalogNameDraft,
+      varCatalogMode,
+      varCatalogEditingId,
+      variableCatalog,
+    ]);
 
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
@@ -276,10 +465,46 @@ export const CreateFunctionModal = React.forwardRef<
         setNameError("");
         setUrlError("");
         setBodyError("");
+        setVariableCatalog(
+          cloneVariableCatalog(
+            initialVariableCatalog ?? DEFAULT_FUNCTION_VARIABLE_CATALOG
+          )
+        );
+        setApiTestValidationAttempted(false);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
+
+    React.useEffect(() => {
+      if (!open) setVarCatalogDialogOpen(false);
+    }, [open]);
+
+    const variableNamesForTest = React.useMemo(
+      () => collectApiVariableNames(url, headers, queryParams, body),
+      [url, headers, queryParams, body]
+    );
+
+    React.useEffect(() => {
+      setApiTestValues((prev) => {
+        const next: Record<string, string> = {};
+        for (const n of variableNamesForTest) {
+          next[n] = prev[n] ?? "";
+        }
+        return next;
+      });
+    }, [variableNamesForTest]);
+
+    const updateApiTestValue = React.useCallback(
+      (varName: string, value: string) => {
+        setApiTestValues((prev) => {
+          const next = { ...prev, [varName]: value };
+          onApiTestVariableValuesChange?.(next);
+          return next;
+        });
+      },
+      [onApiTestVariableValuesChange]
+    );
 
     const reset = React.useCallback(() => {
       setStep(initialStep);
@@ -296,6 +521,8 @@ export const CreateFunctionModal = React.forwardRef<
       setNameError("");
       setUrlError("");
       setBodyError("");
+      setApiTestValues({});
+      setApiTestValidationAttempted(false);
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -375,6 +602,13 @@ export const CreateFunctionModal = React.forwardRef<
 
     const handleTestApi = async () => {
       if (!onTestApi) return;
+      setApiTestValidationAttempted(true);
+      const missingValue = variableNamesForTest.some(
+        (n) => !apiTestValues[n]?.trim()
+      );
+      if (variableNamesForTest.length > 0 && missingValue) {
+        return;
+      }
       setIsTesting(true);
       try {
         const step2: CreateFunctionStep2Data = {
@@ -383,6 +617,8 @@ export const CreateFunctionModal = React.forwardRef<
           headers,
           queryParams,
           body,
+          apiTestVariableValues:
+            variableNamesForTest.length > 0 ? { ...apiTestValues } : undefined,
         };
         const response = await onTestApi(step2);
         setApiResponse(response);
@@ -414,6 +650,7 @@ export const CreateFunctionModal = React.forwardRef<
       : ["header", "queryParams"];
 
     return (
+      <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           ref={ref}
@@ -544,18 +781,22 @@ export const CreateFunctionModal = React.forwardRef<
                         aria-hidden="true"
                       />
                     </div>
-                    {/* URL input */}
-                    <input
-                      type="text"
+                    {/* URL input — same variable picker as header/query (Figma) */}
+                    <VariableValueInput
                       value={url}
-                      maxLength={URL_MAX}
-                      onChange={(e) => {
-                        setUrl(e.target.value);
-                        if (urlError) validateUrl(e.target.value);
+                      onChange={(v) => {
+                        setUrl(v);
+                        if (urlError) validateUrl(v);
                       }}
-                      onBlur={(e) => validateUrl(e.target.value)}
+                      maxLength={URL_MAX}
                       placeholder="Enter URL or Type {{ to add variables"
-                      className="flex-1 min-w-0 px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none"
+                      variableSections={variableCatalog}
+                      maxVisibleChips={1}
+                      showEditIcon
+                      onAddNewVariable={openAddCatalogVariable}
+                      onEditVariable={openEditCatalogVariable}
+                      onEditVariableChip={handleEditChipByName}
+                      className="h-full min-h-[42px] flex-1 rounded-none border-0 bg-transparent px-3 py-0 text-base focus-within:ring-0 focus-within:ring-offset-0"
                     />
                   </div>
                   {urlError && (
@@ -598,6 +839,10 @@ export const CreateFunctionModal = React.forwardRef<
                       valueMaxLength={HEADER_VALUE_MAX}
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters."
+                      variableSections={variableCatalog}
+                      onAddCatalogVariable={openAddCatalogVariable}
+                      onEditCatalogVariable={openEditCatalogVariable}
+                      onEditVariableChipByName={handleEditChipByName}
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -615,6 +860,10 @@ export const CreateFunctionModal = React.forwardRef<
                           value: validateQueryParamValue(row.value),
                         };
                       }}
+                      variableSections={variableCatalog}
+                      onAddCatalogVariable={openAddCatalogVariable}
+                      onEditCatalogVariable={openEditCatalogVariable}
+                      onEditVariableChipByName={handleEditChipByName}
                     />
                   )}
                   {activeTab === "body" && (
@@ -646,23 +895,103 @@ export const CreateFunctionModal = React.forwardRef<
                   )}
                 </div>
 
-                {/* Test Your API */}
+                {/* Test Your API — Figma: gray panel, two inputs per row (variable | value) */}
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
                     <span className="text-xs font-semibold text-semantic-text-muted tracking-[0.048px]">
                       Test Your API
                     </span>
-                    <div className="border-t border-semantic-border-layout" />
-                  </div>
+                    <div
+                      className={cn(
+                        "rounded border border-semantic-border-layout bg-semantic-bg-ui p-3",
+                        "flex flex-col gap-3"
+                      )}
+                    >
+                      {variableNamesForTest.length === 0 ? (
+                        <p className="m-0 text-sm text-semantic-text-muted">
+                          Add variables in the URL, headers, query params, or body
+                          (type{" "}
+                          <code className="rounded bg-semantic-bg-primary px-1 py-0.5 text-xs">
+                            {`{{`}
+                          </code>{" "}
+                          …{" "}
+                          <code className="rounded bg-semantic-bg-primary px-1 py-0.5 text-xs">
+                            {`}}`}
+                          </code>
+                          ) to map test values here.
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-3">
+                          {variableNamesForTest.map((varName) => {
+                            const showError =
+                              apiTestValidationAttempted &&
+                              !apiTestValues[varName]?.trim();
+                            return (
+                              <div
+                                key={varName}
+                                className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3.5"
+                              >
+                                <input
+                                  type="text"
+                                  readOnly
+                                  tabIndex={-1}
+                                  value={varName}
+                                  aria-label={`Variable ${varName}`}
+                                  className="m-0 h-10 min-h-10 min-w-0 flex-1 cursor-default rounded border border-semantic-border-layout bg-semantic-bg-primary px-3 text-sm text-semantic-text-primary outline-none"
+                                />
+                                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                                  <Input
+                                    value={apiTestValues[varName] ?? ""}
+                                    onChange={(e) =>
+                                      updateApiTestValue(
+                                        varName,
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="Value"
+                                    state={showError ? "error" : "default"}
+                                    aria-label={`Test value for ${varName}`}
+                                    aria-invalid={showError}
+                                    aria-describedby={
+                                      showError
+                                        ? `api-test-err-${varName.replace(/[^a-zA-Z0-9_-]/g, "_")}`
+                                        : undefined
+                                    }
+                                    className="h-10 min-h-10 text-sm"
+                                  />
+                                  {showError && (
+                                    <p
+                                      id={`api-test-err-${varName.replace(/[^a-zA-Z0-9_-]/g, "_")}`}
+                                      className="m-0 flex items-center gap-2 text-xs text-semantic-error-primary"
+                                    >
+                                      <AlertCircle
+                                        className="size-3 shrink-0"
+                                        aria-hidden
+                                      />
+                                      Test value is required
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
 
-                  <button
-                    type="button"
-                    onClick={handleTestApi}
-                    disabled={isTesting || !url.trim()}
-                    className="w-full h-[42px] rounded text-sm font-semibold text-semantic-text-secondary bg-semantic-primary-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-semantic-primary-surface/80 sm:w-auto sm:px-6 sm:self-end sm:ml-auto flex items-center justify-center"
-                  >
-                    {isTesting ? "Testing..." : "Test API"}
-                  </button>
+                      <div className="flex justify-end pt-1">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={handleTestApi}
+                          disabled={isTesting || !url.trim() || !onTestApi}
+                          className="h-10 min-w-[80px] px-6 text-xs font-semibold"
+                        >
+                          {isTesting ? "Testing..." : "Test"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
 
                   <div className="flex flex-col gap-1.5">
                     <span className="text-xs text-semantic-text-muted">
@@ -723,6 +1052,70 @@ export const CreateFunctionModal = React.forwardRef<
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={varCatalogDialogOpen}
+        onOpenChange={(next) => {
+          setVarCatalogDialogOpen(next);
+          if (!next) {
+            setVarCatalogNameError("");
+            setVarCatalogNameDraft("");
+            setVarCatalogEditingId(null);
+          }
+        }}
+      >
+        <DialogContent
+          size="sm"
+          className="border-semantic-border-layout bg-semantic-bg-primary"
+        >
+          <DialogTitle className="text-base font-semibold text-semantic-text-primary">
+            {varCatalogMode === "edit" ? "Edit variable" : "Add new variable"}
+          </DialogTitle>
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="catalog-var-name"
+              className="text-sm font-semibold text-semantic-text-primary"
+            >
+              Variable name
+            </label>
+            <Input
+              id="catalog-var-name"
+              value={varCatalogNameDraft}
+              onChange={(e) => {
+                setVarCatalogNameDraft(e.target.value);
+                if (varCatalogNameError) setVarCatalogNameError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSaveCatalogVariable();
+                }
+              }}
+              placeholder="e.g. order_id"
+              className="border-semantic-border-input"
+              autoFocus
+            />
+            {varCatalogNameError && (
+              <p className="m-0 text-xs text-semantic-error-primary">
+                {varCatalogNameError}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setVarCatalogDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="button" onClick={handleSaveCatalogVariable}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      </>
     );
   }
 );

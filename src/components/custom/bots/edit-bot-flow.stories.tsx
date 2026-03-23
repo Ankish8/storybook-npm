@@ -16,15 +16,8 @@ const sampleBots: Bot[] = [
     lastPublishedBy: "Nandan Raikwar",
     lastPublishedDate: "15 Jan, 2025",
   },
-  {
-    id: "bot-2",
-    name: "Excepteur sint occaecat cupidatat...",
-    type: "chatbot",
-    conversationCount: 56,
-    lastPublishedBy: "Nandan Raikwar",
-    lastPublishedDate: "15 Jan, 2025",
-  },
 ];
+
 
 const meta: Meta<typeof EditBotFlow> = {
   title: "Custom/AI Bot/BotList/EditBotFlow",
@@ -35,6 +28,12 @@ const meta: Meta<typeof EditBotFlow> = {
       description: {
         component: `
 **Edit Bot → Config** as a standalone component: bot list and config view when Edit is clicked. Supply the config view via \`renderConfig(bot, onBack)\`.
+
+## Installation
+
+\`\`\`bash
+npx myoperator-ui add edit-bot-flow
+\`\`\`
 
 ## Import
 

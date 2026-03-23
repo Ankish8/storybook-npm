@@ -357,6 +357,25 @@ export type {
   BotStatus,
 } from "./components/custom/bots";
 
+// VariableSelector (Custom)
+export {
+  VariableSelector,
+  VariableChip,
+  SelectedVariablesPopover,
+  VariableValueInput,
+  parseValueToSegments,
+  segmentsToValue,
+} from "./components/custom/variable-selector";
+export type {
+  VariableSelectorProps,
+  VariableSelectorItem,
+  VariableSelectorSection,
+  ValueSegment,
+  VariableChipProps,
+  SelectedVariablesPopoverProps,
+  VariableValueInputProps,
+} from "./components/custom/variable-selector";
+
 // IvrBot (Custom)
 export { BotIdentityCard, BotBehaviorCard, KnowledgeBaseCard, FunctionsCard, FrustrationHandoverCard, AdvancedSettingsCard, IvrBotConfig, CreateFunctionModal } from "./components/custom/ivr-bot";
 export type {

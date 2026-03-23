@@ -15,6 +15,12 @@ const meta: Meta<typeof CreateBotModal> = {
         component: `
 Modal to create a new bot: name input and bot type (Chat / Voice) selection. Used by **BotList** when the Create new bot card is clicked.
 
+## Installation
+
+\`\`\`bash
+npx myoperator-ui add create-bot-modal
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

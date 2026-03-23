@@ -14,6 +14,12 @@ const meta: Meta<typeof CreateBotFlow> = {
         component: `
 **Create Bot Modal** flow: "Create new bot" card only (no header). Click the create card to open the modal.
 
+## Installation
+
+\`\`\`bash
+npx myoperator-ui add create-bot-flow
+\`\`\`
+
 ## Import
 
 \`\`\`tsx

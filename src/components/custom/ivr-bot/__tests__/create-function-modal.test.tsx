@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CreateFunctionModal } from "../create-function-modal";
@@ -104,6 +105,53 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ name: "MyFunc", prompt: VALID_PROMPT })
+    );
+  });
+
+  it("shows Test Your API variable rows with name + value inputs when URL contains {{var}}", async () => {
+    const onTestApi = vi.fn().mockResolvedValue("ok");
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onTestApi={onTestApi}
+        initialStep={2}
+        initialData={{
+          name: "TestFunc",
+          prompt: VALID_PROMPT,
+          url: "https://example.com/{{contact.name}}/{{contact.phone}}",
+        }}
+      />
+    );
+    expect(screen.getByLabelText(/Variable contact\.name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Variable contact\.phone/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Test value for contact\.name/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Test value for contact\.phone/i)
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^Test$/i }));
+    expect(onTestApi).not.toHaveBeenCalled();
+    expect(screen.getAllByText(/Test value is required/i).length).toBeGreaterThan(
+      0
+    );
+    await user.type(
+      screen.getByLabelText(/Test value for contact\.name/i),
+      "Alice"
+    );
+    await user.type(
+      screen.getByLabelText(/Test value for contact\.phone/i),
+      "555"
+    );
+    await user.click(screen.getByRole("button", { name: /^Test$/i }));
+    expect(onTestApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        apiTestVariableValues: expect.objectContaining({
+          "contact.name": "Alice",
+          "contact.phone": "555",
+        }),
+      })
     );
   });
 
