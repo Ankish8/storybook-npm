@@ -357,6 +357,9 @@ function findCorruption(content: string, fileName: string): Violation[] {
     [/tw-\(/, 'Prefixed opening paren'],
     [/tw-typeof\b/, 'Prefixed "typeof"'],
     [/tw-extends\b/, 'Prefixed "extends"'],
+    [/tw-calc\(/, 'Prefixed CSS calc() — style prop value was corrupted by prefixer'],
+    [/tw-inherit\b/, 'Prefixed CSS value "inherit" — style prop value was corrupted'],
+    [/tw-auto(?![-\w])/, 'Possible prefixed CSS value "auto" — check if inside style prop'],
   ]
 
   for (const [pattern, desc] of patterns) {
@@ -593,6 +596,37 @@ describe('CLI E2E: component installation', () => {
     for (const [name, component] of Object.entries(registry)) {
       for (const file of component.files) {
         violations.push(...findCorruption(file.content, `${name}/${file.name}`))
+      }
+    }
+
+    expect(violations, formatViolations(violations)).toEqual([])
+  }, 30_000)
+
+  // --------------------------------------------------------------------------
+  // Test 10b: style={{}} props are never corrupted by tw- prefixer
+  // --------------------------------------------------------------------------
+  it('style prop values are not corrupted by prefixer', async () => {
+    const violations: Violation[] = []
+    // Regex matches style={{ ... }} blocks and checks for tw- inside the values
+    const styleBlockRegex = /style=\{\{([^}]*)\}\}/g
+
+    for (const [name, component] of Object.entries(registry)) {
+      for (const file of component.files) {
+        let match
+        const regex = new RegExp(styleBlockRegex.source, 'g')
+        while ((match = regex.exec(file.content)) !== null) {
+          const styleContent = match[1]
+          // Check for tw- prefix inside style values (should never happen)
+          if (/\btw-/.test(styleContent)) {
+            const lineNum = file.content.substring(0, match.index).split('\n').length
+            violations.push({
+              file: `${name}/${file.name}`,
+              line: lineNum,
+              message: `style={{}} contains "tw-" prefix: ${styleContent.trim().substring(0, 80)}`,
+              suggestion: 'CSS style prop values must not be prefixed. Add the key to nonClassKeys in prefix-utils.ts.',
+            })
+          }
+        }
       }
     }
 

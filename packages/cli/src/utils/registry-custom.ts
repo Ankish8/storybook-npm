@@ -6611,7 +6611,7 @@ export const BotCard = React.forwardRef(
         </div>
 
         {/* Bot name */}
-        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary truncate mb-1 min-w-0">
+        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary line-clamp-1 mb-1 min-w-0">
           {bot.name}
         </h3>
 
@@ -6639,7 +6639,7 @@ export const BotCard = React.forwardRef(
             </span>
           )}
           {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
-            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
+            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted line-clamp-1">
               {bot.lastPublishedBy
                 ? \`\${bot.lastPublishedBy} | \${bot.lastPublishedDate ?? "—"}\`
                 : bot.lastPublishedDate}

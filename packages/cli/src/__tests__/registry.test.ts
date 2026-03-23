@@ -718,4 +718,74 @@ describe('Registry', () => {
       })
     })
   })
+
+  describe('style={{}} property protection', () => {
+    it('does not prefix CSS calc() values in style props', () => {
+      const input = 'style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }}'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('width: "calc(100% - 1px)"')
+      expect(result).toContain('height: "calc(100% - 1px)"')
+      expect(result).not.toContain('tw-calc')
+    })
+
+    it('does not prefix overflow: "visible" in style props', () => {
+      const input = 'style={{ overflow: "visible" }}'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('overflow: "visible"')
+      expect(result).not.toContain('tw-visible')
+    })
+
+    it('does not prefix padding CSS values in style props', () => {
+      const input = 'style={{ padding: "10px 14px 0 14px" }}'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('padding: "10px 14px 0 14px"')
+    })
+
+    it('does not prefix aspectRatio in style props', () => {
+      const input = 'style={{ aspectRatio: "16/10" }}'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('aspectRatio: "16/10"')
+    })
+
+    it('does not prefix fontSize in style props', () => {
+      const input = 'style={{ fontSize: "1.5rem" }}'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('fontSize: "1.5rem"')
+    })
+
+    it('still prefixes CVA variant values with conflicting key names', () => {
+      // "outline" is both a CSS property and a CVA variant key — must still prefix the classes
+      const input = 'outline: "border border-semantic-border-layout bg-transparent"'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('tw-border')
+      expect(result).toContain('tw-bg-transparent')
+    })
+  })
+
+  describe('border-solid auto-injection', () => {
+    it('injects border-solid when border-width exists without border-style', () => {
+      const input = 'className="border border-gray-200 p-4"'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('tw-border-solid')
+    })
+
+    it('injects border-solid for directional borders', () => {
+      const input = 'className="border-t border-gray-200"'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('tw-border-solid')
+    })
+
+    it('does not inject border-solid when border-style already present', () => {
+      const input = 'className="border border-dashed border-gray-200"'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).not.toContain('tw-border-solid')
+      expect(result).toContain('tw-border-dashed')
+    })
+
+    it('does not inject border-solid when no border-width classes', () => {
+      const input = 'className="flex items-center p-4"'
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).not.toContain('border-solid')
+    })
+  })
 })
