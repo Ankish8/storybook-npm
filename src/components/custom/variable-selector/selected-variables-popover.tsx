@@ -3,9 +3,10 @@ import { createPortal } from "react-dom";
 import { cn } from "../../../lib/utils";
 import { VariableChip } from "./variable-chip";
 import type { SelectedVariablesPopoverProps, ValueSegment } from "./types";
+import { computeAnchoredPopoverLayout } from "./popover-layout";
 
 const POPOVER_OFFSET = 4;
-const FALLBACK_WIDTH = 406;
+const PREFERRED_WIDTH = 406;
 const MAX_HEIGHT = 280;
 
 export const SelectedVariablesPopover = React.forwardRef<
@@ -26,18 +27,26 @@ export const SelectedVariablesPopover = React.forwardRef<
     _ref
   ) => {
     const panelRef = React.useRef<HTMLDivElement>(null);
-    const [layout, setLayout] = React.useState({ top: 0, left: 0, width: FALLBACK_WIDTH });
+    const [layout, setLayout] = React.useState({
+      top: 0,
+      left: 0,
+      width: PREFERRED_WIDTH,
+      maxHeight: MAX_HEIGHT,
+    });
 
     React.useEffect(() => {
       if (!open || !anchorRef.current) return;
       const el = anchorRef.current;
       const update = () => {
         const rect = el.getBoundingClientRect();
-        setLayout({
-          top: rect.bottom + POPOVER_OFFSET,
-          left: rect.left,
-          width: Math.max(rect.width, 1),
-        });
+        setLayout(
+          computeAnchoredPopoverLayout(rect, {
+            preferredWidth: PREFERRED_WIDTH,
+            minWidth: 220,
+            maxHeight: MAX_HEIGHT,
+            offset: POPOVER_OFFSET,
+          })
+        );
       };
       update();
       window.addEventListener("scroll", update, true);
@@ -71,14 +80,14 @@ export const SelectedVariablesPopover = React.forwardRef<
         role="dialog"
         aria-label={title ?? "All variables"}
         className={cn(
-          "fixed z-[10000] flex flex-col overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-3 shadow-lg",
+          "fixed z-[10000] box-border max-w-[calc(100vw-1rem)] flex flex-col overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-2.5 shadow-lg sm:p-3",
           className
         )}
         style={{
           top: layout.top,
           left: layout.left,
           width: layout.width,
-          maxHeight: MAX_HEIGHT,
+          maxHeight: layout.maxHeight,
         }}
       >
         {title ? (

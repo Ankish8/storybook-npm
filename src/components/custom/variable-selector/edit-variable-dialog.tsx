@@ -119,13 +119,13 @@ export const EditVariableDialog = React.forwardRef<
             className
           )}
         >
-          <DialogHeader className="border-b border-semantic-border-layout px-6 py-4 text-left">
-            <DialogTitle className="m-0 pr-8 text-base font-semibold text-semantic-text-primary">
+          <DialogHeader className="border-b border-semantic-border-layout px-4 py-3 text-left sm:px-6 sm:py-4">
+            <DialogTitle className="m-0 pr-8 text-sm font-semibold text-semantic-text-primary sm:text-base">
               {title}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex flex-col gap-4 px-6 py-5">
+          <div className="flex flex-col gap-4 px-4 py-4 sm:px-6 sm:py-5">
             <TextField
               id="edit-var-name"
               label="Variable name"
@@ -182,15 +182,20 @@ export const EditVariableDialog = React.forwardRef<
             />
           </div>
 
-          <DialogFooter className="gap-2 border-t border-semantic-border-layout px-6 py-4 sm:justify-end">
+          <DialogFooter className="flex-col-reverse gap-2 border-t border-semantic-border-layout px-4 py-3 sm:flex-row sm:justify-end sm:px-6 sm:py-4">
             <Button
               type="button"
               variant="outline"
+              className="w-full sm:w-auto"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button type="button" onClick={validateAndSave}>
+            <Button
+              type="button"
+              className="w-full sm:w-auto"
+              onClick={validateAndSave}
+            >
               Save Changes
             </Button>
           </DialogFooter>

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Search, Plus, Pencil } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { VariableSelectorProps, VariableSelectorItem, VariableSelectorSection } from "./types";
+import { computeAnchoredPopoverLayout } from "./popover-layout";
 
 const POPOVER_OFFSET = 4;
 const POPOVER_WIDTH = 427;
@@ -61,7 +62,12 @@ export const VariableSelector = React.forwardRef<
       [sections, search]
     );
 
-    const [position, setPosition] = React.useState({ top: 0, left: 0 });
+    const [layout, setLayout] = React.useState({
+      top: 0,
+      left: 0,
+      width: POPOVER_WIDTH,
+      maxHeight: MAX_HEIGHT,
+    });
 
     const searchInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -81,10 +87,14 @@ export const VariableSelector = React.forwardRef<
       const el = anchorRef.current;
       const updatePosition = () => {
         const rect = el.getBoundingClientRect();
-        setPosition({
-          top: rect.bottom + POPOVER_OFFSET,
-          left: rect.left,
-        });
+        setLayout(
+          computeAnchoredPopoverLayout(rect, {
+            preferredWidth: POPOVER_WIDTH,
+            minWidth: 260,
+            maxHeight: MAX_HEIGHT,
+            offset: POPOVER_OFFSET,
+          })
+        );
       };
       updatePosition();
       window.addEventListener("scroll", updatePosition, true);
@@ -141,20 +151,20 @@ export const VariableSelector = React.forwardRef<
         role="listbox"
         aria-label="Select variable"
         className={cn(
-          "fixed z-[10000] flex flex-col overflow-hidden rounded border border-semantic-border-layout bg-semantic-bg-primary p-4 text-semantic-text-primary shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]",
+          "fixed z-[10000] box-border max-w-[calc(100vw-1rem)] flex flex-col overflow-hidden rounded border border-semantic-border-layout bg-semantic-bg-primary p-3 text-semantic-text-primary shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] sm:p-4",
           className
         )}
         style={{
-          top: position.top,
-          left: position.left,
-          width: POPOVER_WIDTH,
-          maxHeight: MAX_HEIGHT,
+          top: layout.top,
+          left: layout.left,
+          width: layout.width,
+          maxHeight: layout.maxHeight,
         }}
       >
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-3.5">
             {/* Search: Figma h-[38px], icon on right, placeholder #999 14px */}
-            <div className="flex h-[38px] items-center rounded border border-semantic-border-layout bg-semantic-bg-primary px-2 py-1">
+            <div className="flex min-h-10 items-center rounded border border-semantic-border-layout bg-semantic-bg-primary px-2 py-1 sm:h-[38px] sm:min-h-0">
               <input
                 ref={searchInputRef}
                 type="text"
@@ -174,7 +184,7 @@ export const VariableSelector = React.forwardRef<
                   onOpenChange(false);
                   onAddNewVariable();
                 }}
-                className="flex w-full cursor-pointer items-center gap-1.5 text-left font-semibold text-sm text-semantic-text-secondary hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-2"
+                className="flex min-h-10 w-full cursor-pointer items-center gap-1.5 text-left text-sm font-semibold text-semantic-text-secondary hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-2 sm:min-h-0"
                 aria-label={addNewLabel}
               >
                 <Plus className="h-3.5 w-3.5 shrink-0 text-semantic-text-secondary" aria-hidden />
@@ -197,14 +207,14 @@ export const VariableSelector = React.forwardRef<
                   {sectionIndex > 0 && (
                     <div className="my-0 border-t border-semantic-border-layout" aria-hidden />
                   )}
-                  <p className="m-0 py-2.5 text-sm text-semantic-text-muted">
+                  <p className="m-0 break-words py-2.5 text-sm text-semantic-text-muted">
                     {section.label}
                   </p>
                   <ul className="m-0 list-none p-0">
                     {section.variables.map((item) => (
                       <li key={item.id} className="m-0">
                         {/* Sibling buttons — never nest <button> inside <button> (invalid HTML; breaks pencil clicks). */}
-                        <div className="flex h-[37px] w-full items-center gap-1 py-2.5">
+                        <div className="flex min-h-11 w-full items-center gap-1 py-2 sm:h-[37px] sm:min-h-0 sm:py-2.5">
                           <button
                             type="button"
                             role="option"

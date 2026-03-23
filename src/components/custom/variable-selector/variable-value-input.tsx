@@ -201,14 +201,14 @@ export const VariableValueInput = React.forwardRef<
         onPointerDownCapture={handleFieldPointerDownCapture}
         onMouseDownCapture={handleFieldPointerDownCapture}
         className={cn(
-          "flex h-10 min-h-10 w-full min-w-0 cursor-text items-center gap-1.5 overflow-hidden rounded border border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-semantic-text-primary focus-within:border-semantic-border-input-focus focus-within:outline-none focus-within:ring-1 focus-within:ring-semantic-border-input-focus",
+          "flex min-h-10 w-full min-w-0 cursor-text items-center gap-1 overflow-hidden rounded border border-semantic-border-input bg-semantic-bg-primary px-2 text-xs text-semantic-text-primary focus-within:border-semantic-border-input-focus focus-within:outline-none focus-within:ring-1 focus-within:ring-semantic-border-input-focus sm:min-h-10 sm:gap-1.5 sm:px-3 sm:text-sm",
           className
         )}
         data-state={undefined}
       >
         <div
           ref={containerRef}
-          className="flex min-h-0 min-w-0 flex-1 flex-nowrap items-center gap-1.5 overflow-hidden"
+          className="flex min-h-0 min-w-0 flex-1 flex-nowrap items-center gap-1 overflow-hidden sm:gap-1.5"
         >
           {visible.map((seg, i) =>
             seg.type === "text" ? (
@@ -240,7 +240,7 @@ export const VariableValueInput = React.forwardRef<
                     : `${overflowNames.length} more variable${overflowNames.length === 1 ? "" : "s"} — show all`
                 }
                 onClick={() => setOverflowPopoverOpen(true)}
-                className="flex shrink-0 cursor-pointer items-center gap-1 rounded px-1 py-0.5 text-sm text-semantic-text-secondary hover:bg-semantic-bg-ui hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-1"
+                className="flex min-h-9 min-w-9 shrink-0 touch-manipulation cursor-pointer items-center justify-center gap-1 rounded px-1 py-0.5 text-sm text-semantic-text-secondary hover:bg-semantic-bg-ui hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-1 sm:min-h-0 sm:min-w-0 sm:justify-start"
               >
                 <span className="font-normal uppercase tracking-[0.056px]">
                   ...
@@ -273,7 +273,7 @@ export const VariableValueInput = React.forwardRef<
                 : Math.max(0, maxLength - value.length)
             }
             placeholder={visible.length === 0 && !pendingInput ? placeholder : ""}
-            className="min-w-[2ch] max-w-full shrink-0 cursor-text border-0 bg-transparent p-0 text-sm text-semantic-text-primary outline-none placeholder:text-semantic-text-muted"
+            className="min-w-[2ch] max-w-full shrink-0 cursor-text border-0 bg-transparent p-0 text-xs text-semantic-text-primary outline-none placeholder:text-semantic-text-muted sm:text-sm"
             aria-label={placeholder}
           />
           {/* Absorb extra row width after the caret so text + input stay left-aligned. */}

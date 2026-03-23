@@ -9,7 +9,7 @@ export const VariableChip = React.forwardRef<HTMLSpanElement, VariableChipProps>
       <span
         ref={ref}
         className={cn(
-          "inline-flex h-7 shrink-0 items-center gap-1 rounded bg-semantic-bg-ui px-2 py-[3px] text-sm text-semantic-text-secondary",
+          "inline-flex h-7 max-w-[min(100%,18rem)] shrink-0 items-center gap-0.5 rounded bg-semantic-bg-ui px-1.5 py-[3px] text-xs text-semantic-text-secondary sm:gap-1 sm:px-2 sm:text-sm",
           className
         )}
         data-variable-name={name}

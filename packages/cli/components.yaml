@@ -516,6 +516,7 @@ components:
       - "variable-chip.tsx"
       - "variable-value-input.tsx"
       - "selected-variables-popover.tsx"
+      - "popover-layout.ts"
       - "edit-variable-dialog.tsx"
       - "types.ts"
       - "index.ts"

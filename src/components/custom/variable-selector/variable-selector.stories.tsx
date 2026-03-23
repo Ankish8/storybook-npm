@@ -166,6 +166,12 @@ function getVariableNamesFromRows(rows: HeaderRow[]): string[] {
 
 /** Full integration: tabs, Key/Value table, Test Your API, + EditVariableDialog (add / edit catalog + chip pencil). */
 function VariableSelectorIntegrationOverview() {
+  /** Mirrors \`CreateFunctionModal\` \`module\`: only \`"function"\` enables catalog add/edit (pencils, dialog). */
+  const [integrationModule, setIntegrationModule] = React.useState<
+    "function" | "other"
+  >("function");
+  const allowCatalogVariableEdit = integrationModule === "function";
+
   const [activeTab, setActiveTab] = React.useState<"header" | "query" | "body">("header");
   const [rows, setRows] = React.useState<HeaderRow[]>([
     {
@@ -345,9 +351,50 @@ function VariableSelectorIntegrationOverview() {
     };
   }, [variableCatalog, varCatalogEditingId, varCatalogOrphanName]);
 
+  React.useEffect(() => {
+    if (!allowCatalogVariableEdit) {
+      setVarCatalogDialogOpen(false);
+      setVarCatalogSubmitError("");
+      setVarCatalogEditingId(null);
+      setVarCatalogOrphanName(null);
+    }
+  }, [allowCatalogVariableEdit]);
+
   return (
     <>
-    <div className="w-[696px] rounded border border-semantic-border-layout bg-semantic-bg-primary p-0">
+    <div className="w-full max-w-[696px] rounded border border-semantic-border-layout bg-semantic-bg-primary p-0">
+      <div className="flex flex-wrap items-center gap-2 border-b border-semantic-border-layout px-3 py-2.5">
+        <span className="m-0 text-xs text-semantic-text-muted">
+          Integration <code className="rounded bg-semantic-bg-ui px-1 py-0.5 text-[11px]">module</code> (like{" "}
+          <code className="rounded bg-semantic-bg-ui px-1 py-0.5 text-[11px]">option.module</code>):
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => setIntegrationModule("function")}
+            className={cn(
+              "rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors",
+              integrationModule === "function"
+                ? "border-semantic-border-focus bg-semantic-bg-ui text-semantic-text-primary"
+                : "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-muted hover:bg-semantic-bg-hover"
+            )}
+          >
+            function — edit on
+          </button>
+          <button
+            type="button"
+            onClick={() => setIntegrationModule("other")}
+            className={cn(
+              "rounded-md border px-2.5 py-1 text-xs font-semibold transition-colors",
+              integrationModule === "other"
+                ? "border-semantic-border-focus bg-semantic-bg-ui text-semantic-text-primary"
+                : "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-muted hover:bg-semantic-bg-hover"
+            )}
+          >
+            other — variables without edit
+          </button>
+        </div>
+      </div>
       {/* Tabs */}
       <div className="flex border-b border-semantic-border-layout">
         {(
@@ -404,10 +451,16 @@ function VariableSelectorIntegrationOverview() {
                   placeholder="Type {{ to add variables"
                   variableSections={variableCatalog}
                   maxVisibleChips={1}
-                  showEditIcon
-                  onAddNewVariable={openAddCatalogVariable}
-                  onEditVariable={openEditCatalogVariable}
-                  onEditVariableChip={handleEditChipByName}
+                  showEditIcon={allowCatalogVariableEdit}
+                  onAddNewVariable={
+                    allowCatalogVariableEdit ? openAddCatalogVariable : undefined
+                  }
+                  onEditVariable={
+                    allowCatalogVariableEdit ? openEditCatalogVariable : undefined
+                  }
+                  onEditVariableChip={
+                    allowCatalogVariableEdit ? handleEditChipByName : undefined
+                  }
                   className="h-10 rounded-none border-0 border-l-0 focus-within:ring-0 focus-within:ring-offset-0"
                 />
               </div>
@@ -512,22 +565,24 @@ function VariableSelectorIntegrationOverview() {
       </div>
     </div>
 
-    <EditVariableDialog
-      open={varCatalogDialogOpen}
-      onOpenChange={(next) => {
-        setVarCatalogDialogOpen(next);
-        if (!next) {
-          setVarCatalogSubmitError("");
-          setVarCatalogEditingId(null);
-          setVarCatalogOrphanName(null);
-        }
-      }}
-      mode={varCatalogMode}
-      initialValues={catalogDialogInitialValues}
-      onSave={handleSaveCatalogVariable}
-      submitError={varCatalogSubmitError}
-      onClearSubmitError={() => setVarCatalogSubmitError("")}
-    />
+    {allowCatalogVariableEdit ? (
+      <EditVariableDialog
+        open={varCatalogDialogOpen}
+        onOpenChange={(next) => {
+          setVarCatalogDialogOpen(next);
+          if (!next) {
+            setVarCatalogSubmitError("");
+            setVarCatalogEditingId(null);
+            setVarCatalogOrphanName(null);
+          }
+        }}
+        mode={varCatalogMode}
+        initialValues={catalogDialogInitialValues}
+        onSave={handleSaveCatalogVariable}
+        submitError={varCatalogSubmitError}
+        onClearSubmitError={() => setVarCatalogSubmitError("")}
+      />
+    ) : null}
     </>
   );
 }
@@ -576,14 +631,15 @@ export const Overview: Story = {
         story: `
 **Full integration** matching the design screenshots and **Create Function** (step 2) behavior:
 
+0. **Module toggle** — Use the bar at the top to switch \`module\` between **function — edit on** and **other — variables without edit**. Same rule as \`CreateFunctionModal\` \`module\`: only \`"function"\` enables catalog add/edit (chip pencils, \`{{}}\` list pencils, **+ Add new variable**, \`EditVariableDialog\`). With **other**, you can still insert existing variables via \`{{\`.
 1. **Tabs** — Header(0) (active), Query parameter(0), Body.
-2. **Header table** — Key | Value | Action (trash). Row 1: Key "Contact", Value with \`application/atom+xml\` + chips \`{{contact.name}}\`, \`{{contact.phone}}\` + pencil + \`...\` when more variables are hidden. Row 2: placeholder "Key" and "Type \`{{\` to add variables". Delete row via trash icon.
-3. **VariableSelector** — Type \`{{\` in any Value field → popover (Search, **+ Add new variable**, Function variables / Contact fields, **pencil per row** to edit a catalog entry).
-4. **EditVariableDialog** — **+ Add new variable** opens **Add new variable** (name with counter, description, Required, Cancel / Save Changes). Pencil on a **catalog** row opens **Edit variable** with saved metadata. Pencil on a **chip** opens **Edit variable**: if the name is not in the catalog yet (e.g. typed \`{{contact.name}}\`), saving adds it to **Function variables** and optionally renames tokens in the value fields.
-5. **SelectedVariablesPopover** — Click \`...\` → list of variables; chip pencils use the same **onEditVariableChip** handler.
+2. **Header table** — Key | Value | Action (trash). Row 1: Key "Contact", Value with \`application/atom+xml\` + chips \`{{contact.name}}\`, \`{{contact.phone}}\` + pencil + \`...\` when more variables are hidden (pencils hidden when module is not function). Row 2: placeholder "Key" and "Type \`{{\` to add variables". Delete row via trash icon.
+3. **VariableSelector** — Type \`{{\` in any Value field → popover (Search, optional **+ Add new variable**, Function variables / Contact fields, optional **pencil per row** when module is function).
+4. **EditVariableDialog** — Only when module is function. **+ Add new variable** / pencils open the dialog as described below.
+5. **SelectedVariablesPopover** — Click \`...\` → list of variables; chip pencils only when module is function.
 6. **Test Your API** — Variables from all row values are collected; each gets a test input. Empty values show "Test value is required" after **Test**. **Test** validates required test values.
 
-**Props wired here:** \`variableSections={variableCatalog}\` (mutable), \`onAddNewVariable\`, \`onEditVariable\`, \`onEditVariableChip\` → \`EditVariableDialog\`. Production: see **CreateFunctionModal** in \`ivr-bot\`.
+**Props wired here:** \`showEditIcon\`, \`onAddNewVariable\`, \`onEditVariable\`, \`onEditVariableChip\` follow \`allowCatalogVariableEdit\` (\`module === "function"\`). Production: **CreateFunctionModal** in \`ivr-bot\`.
         `,
       },
     },
