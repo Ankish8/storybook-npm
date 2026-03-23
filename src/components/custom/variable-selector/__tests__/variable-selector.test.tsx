@@ -61,6 +61,29 @@ describe("VariableSelector", () => {
     expect(screen.getByRole("button", { name: /add new variable/i })).toBeInTheDocument();
   });
 
+  it("renders panelExtra between search and add-new", () => {
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={defaultSections}
+        onAddNewVariable={() => {}}
+        panelExtra={<span data-testid="panel-extra">Extra slot</span>}
+      />
+    );
+    const search = screen.getByPlaceholderText("Search");
+    const addNew = screen.getByRole("button", { name: /add new variable/i });
+    const extra = screen.getByTestId("panel-extra");
+    expect(
+      search.compareDocumentPosition(extra) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(
+      extra.compareDocumentPosition(addNew) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
   it("calls onSelectVariable when a variable option is clicked", () => {
     const onSelectVariable = vi.fn();
     const onOpenChange = vi.fn();
@@ -96,6 +119,59 @@ describe("VariableSelector", () => {
     fireEvent.click(screen.getByRole("button", { name: /edit order_id/i }));
     expect(onEditVariable).toHaveBeenCalledWith({ id: "1", name: "Order_id" });
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("with flatList merges sections without section headings", () => {
+    const anchorRef = { current: document.createElement("div") };
+    const compactSections = [
+      { label: "Section A", variables: [{ id: "a", name: "Alpha" }] },
+      { label: "Section B", variables: [{ id: "b", name: "Beta" }] },
+    ];
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={compactSections}
+        flatList
+      />
+    );
+    expect(screen.queryByText("Section A")).not.toBeInTheDocument();
+    expect(screen.queryByText("Section B")).not.toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /Alpha/ })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /Beta/ })).toBeInTheDocument();
+  });
+
+  it("omits pencil when item.catalogEditable is false", () => {
+    const onEditVariable = vi.fn();
+    const sections = [
+      {
+        label: "A",
+        variables: [{ id: "a1", name: "editable_var" }],
+      },
+      {
+        label: "B",
+        variables: [{ id: "b1", name: "locked_var", catalogEditable: false }],
+      },
+    ];
+    const anchorRef = { current: document.createElement("div") };
+    render(
+      <VariableSelector
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        sections={sections}
+        flatList
+        onSelectVariable={vi.fn()}
+        onEditVariable={onEditVariable}
+      />
+    );
+    expect(
+      screen.getByRole("button", { name: /edit editable_var/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /edit locked_var/i })
+    ).not.toBeInTheDocument();
   });
 
   it("applies custom className to panel", () => {

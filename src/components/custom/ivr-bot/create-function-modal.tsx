@@ -69,7 +69,7 @@ const DEFAULT_FUNCTION_VARIABLE_CATALOG: VariableSelectorSection[] = [
     variables: [
       { id: "fv-order", name: "Order_id" },
       { id: "fv-customer", name: "customer_name" },
-      { id: "fv-product", name: "product_id" },
+      { id: "fv-product", name: "product_id", catalogEditable: false },
       { id: "fv-tracking", name: "tracking_id" },
       { id: "fv-delivery", name: "delivery_date" },
       { id: "fv-payment", name: "payment_status" },
@@ -79,11 +79,11 @@ const DEFAULT_FUNCTION_VARIABLE_CATALOG: VariableSelectorSection[] = [
   {
     label: "Contact fields",
     variables: [
-      { id: "cf-name", name: "Name" },
-      { id: "cf-email", name: "Email" },
-      { id: "cf-phone", name: "Phone number" },
-      { id: "cf-address", name: "Contact address" },
-      { id: "cf-city", name: "City" },
+      { id: "cf-name", name: "Name", catalogEditable: false },
+      { id: "cf-email", name: "Email", catalogEditable: false },
+      { id: "cf-phone", name: "Phone number", catalogEditable: false },
+      { id: "cf-address", name: "Contact address", catalogEditable: false },
+      { id: "cf-city", name: "City", catalogEditable: false },
     ],
   },
 ];
@@ -579,6 +579,7 @@ export const CreateFunctionModal = React.forwardRef<
 
     const openEditCatalogVariable = React.useCallback(
       (item: VariableSelectorItem) => {
+        if (item.catalogEditable === false) return;
         setVarCatalogOrphanName(null);
         setVarCatalogMode("edit");
         setVarCatalogEditingId(item.id);
@@ -592,6 +593,7 @@ export const CreateFunctionModal = React.forwardRef<
       (name: string) => {
         const item = findVariableItemByName(variableCatalog, name);
         if (item) {
+          if (item.catalogEditable === false) return;
           openEditCatalogVariable(item);
           return;
         }

@@ -22,6 +22,7 @@ export const SelectedVariablesPopover = React.forwardRef<
       title,
       showEditIcon = true,
       onEditVariable,
+      showEditIconForVariable,
       className,
     },
     _ref
@@ -116,7 +117,10 @@ export const SelectedVariablesPopover = React.forwardRef<
                   <VariableChip
                     key={`v-${index}-${seg.name}`}
                     name={seg.name}
-                    showEditIcon={showEditIcon}
+                    showEditIcon={
+                      showEditIcon &&
+                      (showEditIconForVariable?.(seg.name) ?? true)
+                    }
                     onEdit={onEditVariable}
                   />
                 )

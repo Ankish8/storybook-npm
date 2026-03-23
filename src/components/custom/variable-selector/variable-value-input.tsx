@@ -65,6 +65,8 @@ export const VariableValueInput = React.forwardRef<
       onBlur,
       containerRef: containerRefProp,
       className,
+      selectorPanelExtra,
+      selectorFlatList = false,
     },
     ref
   ) => {
@@ -117,6 +119,17 @@ export const VariableValueInput = React.forwardRef<
         ? overflowButtonLabel(overflowNames.length)
         : "";
     const overflowExtraLabel = overflowRawLabel.trim();
+
+    const isCatalogEditableName = React.useCallback(
+      (name: string) => {
+        for (const s of variableSections) {
+          const v = s.variables.find((x) => x.name === name);
+          if (v) return v.catalogEditable !== false;
+        }
+        return true;
+      },
+      [variableSections]
+    );
 
     React.useEffect(() => {
       setPendingInput("");
@@ -224,7 +237,11 @@ export const VariableValueInput = React.forwardRef<
               <VariableChip
                 key={`v-${i}-${seg.name}`}
                 name={seg.name}
-                showEditIcon={showEditIcon}
+                showEditIcon={
+                  showEditIcon &&
+                  !!onEditVariableChip &&
+                  isCatalogEditableName(seg.name)
+                }
                 onEdit={onEditVariableChip}
               />
             )
@@ -296,6 +313,8 @@ export const VariableValueInput = React.forwardRef<
           onEditVariable={
             onEditVariable ? handleEditFromSelector : undefined
           }
+          panelExtra={selectorPanelExtra}
+          flatList={selectorFlatList}
         />
       </div>
     );

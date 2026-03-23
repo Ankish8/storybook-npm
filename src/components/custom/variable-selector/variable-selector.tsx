@@ -25,6 +25,14 @@ function filterSectionsBySearch(
     .filter((s) => s.variables.length > 0);
 }
 
+function flattenSections(sections: VariableSelectorSection[]): VariableSelectorItem[] {
+  const out: VariableSelectorItem[] = [];
+  for (const s of sections) {
+    out.push(...s.variables);
+  }
+  return out;
+}
+
 export const VariableSelector = React.forwardRef<
   HTMLDivElement,
   VariableSelectorProps
@@ -43,6 +51,8 @@ export const VariableSelector = React.forwardRef<
       onEditVariable,
       onSearchChange,
       className,
+      panelExtra,
+      flatList = false,
     },
     _ref
   ) => {
@@ -60,6 +70,11 @@ export const VariableSelector = React.forwardRef<
     const filteredSections = React.useMemo(
       () => filterSectionsBySearch(sections, search),
       [sections, search]
+    );
+
+    const filteredFlatItems = React.useMemo(
+      () => flattenSections(filteredSections),
+      [filteredSections]
     );
 
     const [layout, setLayout] = React.useState({
@@ -151,7 +166,7 @@ export const VariableSelector = React.forwardRef<
         role="listbox"
         aria-label="Select variable"
         className={cn(
-          "fixed z-[10000] box-border max-w-[calc(100vw-1rem)] flex flex-col overflow-hidden rounded border border-semantic-border-layout bg-semantic-bg-primary p-3 text-semantic-text-primary shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] sm:p-4",
+          "fixed z-[10000] box-border max-w-[calc(100vw-1rem)] flex flex-col overflow-hidden rounded border border-semantic-border-layout bg-semantic-bg-primary p-4 text-semantic-text-primary shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]",
           className
         )}
         style={{
@@ -177,6 +192,10 @@ export const VariableSelector = React.forwardRef<
               <Search className="h-3 w-3 shrink-0 text-semantic-text-muted" aria-hidden />
             </div>
 
+            {panelExtra ? (
+              <div className="flex flex-col gap-2">{panelExtra}</div>
+            ) : null}
+
             {onAddNewVariable && (
               <button
                 type="button"
@@ -184,7 +203,7 @@ export const VariableSelector = React.forwardRef<
                   onOpenChange(false);
                   onAddNewVariable();
                 }}
-                className="flex min-h-10 w-full cursor-pointer items-center gap-1.5 text-left text-sm font-semibold text-semantic-text-secondary hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-2 sm:min-h-0"
+                className="flex min-h-10 w-full cursor-pointer items-center gap-[5px] text-left text-sm font-semibold text-semantic-text-secondary hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-2 sm:min-h-0"
                 aria-label={addNewLabel}
               >
                 <Plus className="h-3.5 w-3.5 shrink-0 text-semantic-text-secondary" aria-hidden />
@@ -193,37 +212,33 @@ export const VariableSelector = React.forwardRef<
             )}
           </div>
 
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
-            {filteredSections.length === 0 ? (
-              <p className="m-0 py-2 text-sm text-semantic-text-muted">
-                No variables found
-              </p>
-            ) : (
-              filteredSections.map((section, sectionIndex) => (
-                <div
-                  key={`${section.label}-${sectionIndex}`}
-                  className="flex flex-col"
-                >
-                  {sectionIndex > 0 && (
-                    <div className="my-0 border-t border-semantic-border-layout" aria-hidden />
-                  )}
-                  <p className="m-0 break-words py-2.5 text-sm text-semantic-text-muted">
-                    {section.label}
-                  </p>
-                  <ul className="m-0 list-none p-0">
-                    {section.variables.map((item) => (
-                      <li key={item.id} className="m-0">
-                        {/* Sibling buttons — never nest <button> inside <button> (invalid HTML; breaks pencil clicks). */}
-                        <div className="flex min-h-11 w-full items-center gap-1 py-2 sm:h-[37px] sm:min-h-0 sm:py-2.5">
-                          <button
-                            type="button"
-                            role="option"
-                            onClick={() => handleSelect(item)}
-                            className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-semantic-text-primary hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui focus:outline-none"
-                          >
-                            {item.name}
-                          </button>
-                          {showEditIcon && onEditVariable && (
+          <div
+            className={cn(
+              "flex min-h-0 flex-1 flex-col overflow-y-auto",
+              flatList ? "gap-0" : "gap-4"
+            )}
+          >
+            {flatList ? (
+              filteredFlatItems.length === 0 ? (
+                <p className="m-0 py-2 text-sm text-semantic-text-muted">
+                  No variables found
+                </p>
+              ) : (
+                <ul className="m-0 list-none divide-y divide-semantic-border-layout p-0">
+                  {filteredFlatItems.map((item) => (
+                    <li key={item.id} className="m-0">
+                      <div className="flex min-h-11 w-full items-center gap-2 py-2.5 sm:h-[37px] sm:min-h-0 sm:py-2.5">
+                        <button
+                          type="button"
+                          role="option"
+                          onClick={() => handleSelect(item)}
+                          className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-semantic-text-primary hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui focus:outline-none"
+                        >
+                          {item.name}
+                        </button>
+                        {showEditIcon &&
+                          onEditVariable &&
+                          item.catalogEditable !== false && (
                             <button
                               type="button"
                               aria-label={`Edit ${item.name}`}
@@ -236,6 +251,54 @@ export const VariableSelector = React.forwardRef<
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
                           )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : filteredSections.length === 0 ? (
+              <p className="m-0 py-2 text-sm text-semantic-text-muted">
+                No variables found
+              </p>
+            ) : (
+              filteredSections.map((section, sectionIndex) => (
+                <div
+                  key={`${section.label}-${sectionIndex}`}
+                  className="flex flex-col"
+                >
+                  {sectionIndex > 0 && (
+                    <div className="my-0 border-t border-semantic-border-layout" aria-hidden />
+                  )}
+                  <p className="m-0 min-h-7 break-words py-2.5 text-sm font-normal leading-normal text-semantic-text-muted">
+                    {section.label}
+                  </p>
+                  <ul className="m-0 list-none p-0">
+                    {section.variables.map((item) => (
+                      <li key={item.id} className="m-0">
+                        <div className="flex min-h-11 w-full items-center gap-2 py-2.5 sm:h-[37px] sm:min-h-0 sm:py-2.5">
+                          <button
+                            type="button"
+                            role="option"
+                            onClick={() => handleSelect(item)}
+                            className="min-w-0 flex-1 cursor-pointer truncate text-left text-sm text-semantic-text-primary hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui focus:outline-none"
+                          >
+                            {item.name}
+                          </button>
+                          {showEditIcon &&
+                            onEditVariable &&
+                            item.catalogEditable !== false && (
+                              <button
+                                type="button"
+                                aria-label={`Edit ${item.name}`}
+                                onClick={() => {
+                                  onEditVariable(item);
+                                  onOpenChange(false);
+                                }}
+                                className="shrink-0 cursor-pointer rounded p-0.5 text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-input-focus focus-visible:ring-offset-1"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                            )}
                         </div>
                       </li>
                     ))}

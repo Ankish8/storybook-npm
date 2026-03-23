@@ -8,6 +8,11 @@ export interface VariableSelectorItem {
   description?: string;
   /** Optional metadata — whether the variable is required in downstream flows. */
   required?: boolean;
+  /**
+   * When `false`, the catalog row (and matching chips / overflow popover) omit the edit pencil
+   * even if `onEditVariable` is set. Omitted defaults to `true`.
+   */
+  catalogEditable?: boolean;
 }
 
 /**
@@ -79,12 +84,14 @@ export function removeLastVariableOrChar(value: string): string {
  * | `sections` | **Required.** Each section needs a unique `label` (used as React key with index) and `variables` with **unique `id`** per item across all sections. |
  * | `onSelectVariable` | Optional. Fired with the item when user clicks a row (name button); then `onOpenChange(false)`. |
  * | `onAddNewVariable` | Optional. If set, shows “Add new variable”; click runs `onOpenChange(false)` then this callback. |
- * | `onEditVariable` | Optional. If set **and** `showEditIcon`, shows pencil; click runs `onEditVariable(item)` then `onOpenChange(false)`. |
+ * | `onEditVariable` | Optional. If set **and** `showEditIcon`, shows pencil on rows where `item.catalogEditable !== false`; click runs `onEditVariable(item)` then `onOpenChange(false)`. |
  * | `onSearchChange` | Optional. Fired on every search input change (local filter always applied by name substring, case-insensitive). |
- * | `showEditIcon` | Default `true`. Pencils only render when both this and `onEditVariable` are set. |
+ * | `showEditIcon` | Default `true`. Row pencils render when this and `onEditVariable` are set and `item.catalogEditable !== false`. |
  * | `searchPlaceholder` | Default `"Search"`. |
  * | `addNewLabel` | Default `"Add new variable"`. |
  * | `className` | Merged onto the portaled listbox root. |
+ * | `panelExtra` | Optional. Rendered after the search field and before “+ Add new variable” (e.g. Storybook-only controls). |
+ * | `flatList` | Optional. When `true`, merges all sections into one list (no section headings). Default `false` matches Figma (40753:29023): Search → Add new → section labels → rows. |
  *
  * **Validation / data rules (caller responsibility)**
  *
@@ -117,6 +124,10 @@ export interface VariableSelectorProps {
   onSearchChange?: (value: string) => void;
   /** Optional class name for the popover panel */
   className?: string;
+  /** Optional content below search, above “+ Add new variable” (e.g. demo controls). */
+  panelExtra?: React.ReactNode;
+  /** Merge sections into one scrollable list without section labels. */
+  flatList?: boolean;
 }
 
 /** Props for a single variable chip (pill) display. */
@@ -149,6 +160,11 @@ export interface SelectedVariablesPopoverProps {
   onEditVariable?: (name: string) => void;
   /** Optional class name for the popover panel. */
   className?: string;
+  /**
+   * Per-variable edit affordance in the chip list. When provided, return `false` to hide the pencil
+   * for that name (e.g. read-only catalog entries). Omitted: same as returning `true`.
+   */
+  showEditIconForVariable?: (name: string) => boolean;
 }
 
 /** Props for the input that displays value as text + variable chips with overflow. */
@@ -183,4 +199,8 @@ export interface VariableValueInputProps {
   containerRef?: React.RefObject<HTMLDivElement | null>;
   /** Optional class name for the root. */
   className?: string;
+  /** Passed to VariableSelector as `panelExtra` (below search, above add-new). */
+  selectorPanelExtra?: React.ReactNode;
+  /** When true, VariableSelector merges sections into one list; default false matches Figma (section headings). */
+  selectorFlatList?: boolean;
 }

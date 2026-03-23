@@ -64,4 +64,26 @@ describe("SelectedVariablesPopover", () => {
     );
     expect(screen.getByText(/no content/i)).toBeInTheDocument();
   });
+
+  it("hides chip pencil when showEditIconForVariable returns false", () => {
+    const onEdit = vi.fn();
+    const anchorRef = { current: document.createElement("button") };
+    render(
+      <SelectedVariablesPopover
+        open={true}
+        onOpenChange={() => {}}
+        anchorRef={anchorRef}
+        segments={segments}
+        showEditIcon
+        onEditVariable={onEdit}
+        showEditIconForVariable={(name) => name !== "customer_name"}
+      />
+    );
+    expect(
+      screen.getByRole("button", { name: /edit order_id/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /edit customer_name/i })
+    ).not.toBeInTheDocument();
+  });
 });
