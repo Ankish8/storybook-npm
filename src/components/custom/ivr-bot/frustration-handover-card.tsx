@@ -68,8 +68,8 @@ function Field({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }, ref) => {
+const FrustrationHandoverCard = React.forwardRef(
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}

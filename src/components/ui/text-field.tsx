@@ -102,7 +102,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = React.forwardRef(
   (
     {
       className,
@@ -132,8 +132,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       id,
       type,
       ...props
-    },
-    ref
+    }: TextFieldProps,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
     const internalRef = React.useRef<HTMLInputElement>(null);

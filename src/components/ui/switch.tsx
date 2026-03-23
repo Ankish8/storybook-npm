@@ -81,13 +81,10 @@ export interface SwitchProps
   labelPosition?: "left" | "right";
 }
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  SwitchProps
->(
+const Switch = React.forwardRef(
   (
-    { className, size, label, labelPosition = "right", disabled, ...props },
-    ref
+    { className, size, label, labelPosition = "right", disabled, ...props }: SwitchProps,
+    ref: React.Ref<React.ElementRef<typeof SwitchPrimitives.Root>>
   ) => {
     const switchElement = (
       <SwitchPrimitives.Root

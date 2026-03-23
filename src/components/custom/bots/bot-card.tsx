@@ -31,8 +31,8 @@ function getTypeLabel(
  * All displayed data (icon, badge, name, count, last published) comes from the `bot` prop.
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
-export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
+export const BotCard = React.forwardRef(
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }: BotCardProps, ref: React.Ref<HTMLDivElement>) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 

@@ -42,8 +42,8 @@ export interface InputProps
   showCheckIcon?: boolean;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }, ref) => {
+const Input = React.forwardRef(
+  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }: InputProps, ref: React.Ref<HTMLInputElement>) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     const inputEl = (

@@ -89,7 +89,7 @@ export interface SelectFieldProps {
  * />
  * ```
  */
-const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
+const SelectField = React.forwardRef(
   (
     {
       label,
@@ -112,8 +112,8 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       labelClassName,
       id,
       name,
-    },
-    ref
+    }: SelectFieldProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");

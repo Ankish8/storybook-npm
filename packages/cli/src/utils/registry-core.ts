@@ -625,7 +625,7 @@ export interface AvatarProps
  * <Avatar initials="AS" size="xs" />
  * \`\`\`
  */
-const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+const Avatar = React.forwardRef(
   (
     {
       className,
@@ -638,8 +638,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       status,
       children,
       ...props
-    },
-    ref
+    }: AvatarProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedSize = size ?? "md";
     const displayInitials = initials ?? (name ? getInitials(name) : undefined);
@@ -716,8 +716,8 @@ export interface DateDividerProps
   children: React.ReactNode;
 }
 
-const DateDivider = React.forwardRef<HTMLDivElement, DateDividerProps>(
-  ({ className, children, ...props }, ref) => (
+const DateDivider = React.forwardRef(
+  ({ className, children, ...props }: DateDividerProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex items-center gap-4 my-4", className)}
@@ -773,8 +773,8 @@ export interface ImageMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   maxHeight?: number | string;
 }
 
-const ImageMedia = React.forwardRef<HTMLDivElement, ImageMediaProps>(
-  ({ className, src, alt = "Image", maxHeight = 280, ...props }, ref) => {
+const ImageMedia = React.forwardRef(
+  ({ className, src, alt = "Image", maxHeight = 280, ...props }: ImageMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const maxHeightStyle =
       typeof maxHeight === "number" ? \`\${maxHeight}px\` : maxHeight;
 
@@ -838,7 +838,7 @@ export interface PhoneInputProps
   wrapperClassName?: string;
 }
 
-const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
+const PhoneInput = React.forwardRef(
   (
     {
       className,
@@ -849,8 +849,8 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
       wrapperClassName,
       disabled,
       ...props
-    },
-    ref
+    }: PhoneInputProps,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     return (
       <div
@@ -934,8 +934,8 @@ export interface ReplyQuoteProps extends React.HTMLAttributes<HTMLDivElement> {
   message: string;
 }
 
-const ReplyQuote = React.forwardRef<HTMLDivElement, ReplyQuoteProps>(
-  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }, ref) => {
+const ReplyQuote = React.forwardRef(
+  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }: ReplyQuoteProps, ref: React.Ref<HTMLDivElement>) => {
     const isInteractive = !!onClick;
 
     const handleKeyDown = React.useCallback(
@@ -1015,8 +1015,8 @@ export interface SystemMessageProps
   children: string;
 }
 
-const SystemMessage = React.forwardRef<HTMLDivElement, SystemMessageProps>(
-  ({ className, children, ...props }, ref) => (
+const SystemMessage = React.forwardRef(
+  ({ className, children, ...props }: SystemMessageProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex justify-center my-1", className)}
@@ -1077,8 +1077,8 @@ export interface UnreadSeparatorProps
   label?: string;
 }
 
-const UnreadSeparator = React.forwardRef<HTMLDivElement, UnreadSeparatorProps>(
-  ({ className, count, label, ...props }, ref) => (
+const UnreadSeparator = React.forwardRef(
+  ({ className, count, label, ...props }: UnreadSeparatorProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex items-center gap-4 my-2", className)}
@@ -1185,7 +1185,7 @@ export interface ButtonProps
   loadingText?: string;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef(
   (
     {
       className,
@@ -1199,8 +1199,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       disabled,
       ...props
-    },
-    ref
+    }: ButtonProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     const Comp = asChild ? Slot : "button";
 
@@ -1316,7 +1316,7 @@ export interface BadgeProps
   asChild?: boolean;
 }
 
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+const Badge = React.forwardRef(
   (
     {
       className,
@@ -1327,8 +1327,8 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       asChild = false,
       children,
       ...props
-    },
-    ref
+    }: BadgeProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const Comp = asChild ? Slot : "div";
 
@@ -1417,7 +1417,7 @@ export interface ContactListItemProps
  * />
  * \`\`\`
  */
-const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
+const ContactListItem = React.forwardRef(
   (
     {
       name,
@@ -1428,8 +1428,8 @@ const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
       onClick,
       className,
       ...props
-    },
-    ref
+    }: ContactListItemProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -1628,7 +1628,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
  * <Typography truncate>Very long text that will be truncated...</Typography>
  * \`\`\`
  */
-const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+const Typography = React.forwardRef(
   (
     {
       children,
@@ -1641,8 +1641,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       tag,
       htmlFor,
       ...props
-    },
-    ref
+    }: TypographyProps,
+    ref: React.Ref<HTMLElement>
   ) => {
     const key: Key = \`\${kind}-\${variant}\`;
     const Tag = (tag || mapTagName[key]) as React.ElementType;
@@ -1723,10 +1723,7 @@ export interface TabsListProps
   fullWidth?: boolean
 }
 
-const TabsList = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.List>,
-  TabsListProps
->(({ className, fullWidth, ...props }, ref) => (
+const TabsList = React.forwardRef(({ className, fullWidth, ...props }: TabsListProps, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
@@ -1739,10 +1736,7 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
-const TabsTrigger = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+const TabsTrigger = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Trigger>>) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -1757,10 +1751,7 @@ const TabsTrigger = React.forwardRef<
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-const TabsContent = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+const TabsContent = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Content>>) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(

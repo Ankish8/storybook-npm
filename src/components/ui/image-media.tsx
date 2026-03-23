@@ -22,8 +22,8 @@ export interface ImageMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   maxHeight?: number | string;
 }
 
-const ImageMedia = React.forwardRef<HTMLDivElement, ImageMediaProps>(
-  ({ className, src, alt = "Image", maxHeight = 280, ...props }, ref) => {
+const ImageMedia = React.forwardRef(
+  ({ className, src, alt = "Image", maxHeight = 280, ...props }: ImageMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const maxHeightStyle =
       typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight;
 

@@ -433,10 +433,7 @@ function KeyValueTable({
 }
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
-export const CreateFunctionModal = React.forwardRef<
-  HTMLDivElement,
-  CreateFunctionModalProps
->(
+export const CreateFunctionModal = React.forwardRef(
   (
     {
       open,
@@ -452,8 +449,8 @@ export const CreateFunctionModal = React.forwardRef<
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       disabled = false,
       className,
-    },
-    ref
+    }: CreateFunctionModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 

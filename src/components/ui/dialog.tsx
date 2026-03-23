@@ -13,10 +13,7 @@ const DialogPortal = DialogPrimitive.Portal;
 
 const DialogClose = DialogPrimitive.Close;
 
-const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+const DialogOverlay = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Overlay>>) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
@@ -74,10 +71,7 @@ const hasDialogDescription = (children: React.ReactNode): boolean => {
   return found;
 };
 
-const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  DialogContentProps
->(({ className, children, size, hideCloseButton = false, ...props }, ref) => {
+const DialogContent = React.forwardRef(({ className, children, size, hideCloseButton = false, ...props }: DialogContentProps, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Content>>) => {
   const hasDescription = hasDialogDescription(children);
 
   return (
@@ -135,10 +129,7 @@ const DialogFooter = ({
 );
 DialogFooter.displayName = "DialogFooter";
 
-const DialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
+const DialogTitle = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Title>>) => (
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
@@ -150,10 +141,7 @@ const DialogTitle = React.forwardRef<
 ));
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-const DialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
+const DialogDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Description>>) => (
   <DialogPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}

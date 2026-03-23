@@ -24,7 +24,7 @@ import type { PricingToggleProps } from "./types";
  * />
  * ```
  */
-const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
+const PricingToggle = React.forwardRef(
   (
     {
       tabs,
@@ -37,8 +37,8 @@ const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
       yearlyLabel = "Yearly (Save 20%)",
       className,
       ...props
-    },
-    ref
+    }: PricingToggleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isYearly = billingPeriod === "yearly";
 

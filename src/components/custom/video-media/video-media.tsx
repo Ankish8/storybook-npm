@@ -21,7 +21,7 @@ import type { VideoMediaProps } from "./types";
 
 const DEFAULT_SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
-const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
+const VideoMedia = React.forwardRef(
   (
     {
       className,
@@ -33,8 +33,8 @@ const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
       onSpeedChange,
       onClick,
       ...props
-    },
-    ref
+    }: VideoMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = useState(false);
     const [muted, setMuted] = useState(false);

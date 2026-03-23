@@ -21,7 +21,7 @@ import type { AutoPaySetupProps } from "./types";
  * />
  * ```
  */
-export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
+export const AutoPaySetup = React.forwardRef(
   (
     {
       title = "Auto-pay setup",
@@ -40,8 +40,8 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: AutoPaySetupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 

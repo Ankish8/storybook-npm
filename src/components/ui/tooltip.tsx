@@ -9,10 +9,7 @@ const Tooltip = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+const TooltipContent = React.forwardRef(({ className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Content>>) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       ref={ref}
@@ -27,10 +24,7 @@ const TooltipContent = React.forwardRef<
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-const TooltipArrow = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Arrow>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
->(({ className, ...props }, ref) => (
+const TooltipArrow = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>, ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Arrow>>) => (
   <TooltipPrimitive.Arrow
     ref={ref}
     className={cn("fill-semantic-primary", className)}

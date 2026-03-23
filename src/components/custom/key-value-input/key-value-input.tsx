@@ -32,10 +32,7 @@ const generateId = () =>
  * />
  * ```
  */
-export const KeyValueInput = React.forwardRef<
-  HTMLDivElement,
-  KeyValueInputProps
->(
+export const KeyValueInput = React.forwardRef(
   (
     {
       title,
@@ -53,8 +50,8 @@ export const KeyValueInput = React.forwardRef<
       defaultValue = [],
       className,
       ...props
-    },
-    ref
+    }: KeyValueInputProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalPairs, setInternalPairs] =

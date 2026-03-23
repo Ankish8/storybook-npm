@@ -29,7 +29,7 @@ import type { PricingPageProps } from "./types";
  * />
  * ```
  */
-const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
+const PricingPage = React.forwardRef(
   (
     {
       title = "Select business plan",
@@ -52,8 +52,8 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       letUsDriveExpandMode,
       className,
       ...props
-    },
-    ref
+    }: PricingPageProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Internal state for uncontrolled mode
     const [internalTab, setInternalTab] = React.useState(

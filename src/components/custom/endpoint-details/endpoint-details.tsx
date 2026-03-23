@@ -71,10 +71,7 @@ export interface EndpointDetailsProps
  * />
  * ```
  */
-export const EndpointDetails = React.forwardRef<
-  HTMLDivElement,
-  EndpointDetailsProps
->(
+export const EndpointDetails = React.forwardRef(
   (
     {
       title = "Endpoint Details",
@@ -95,8 +92,8 @@ export const EndpointDetails = React.forwardRef<
       revokeDescription = "Revoking access will immediately disable all integrations using these keys.",
       className,
       ...props
-    },
-    ref
+    }: EndpointDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isCalling = variant === "calling";
 

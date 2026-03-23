@@ -42,7 +42,7 @@ const DEFAULT_DATA: IvrBotConfigData = {
 };
 
 // ─── Main IvrBotConfig ────────────────────────────────────────────────────────
-export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
+export const IvrBotConfig = React.forwardRef(
   (
     {
       botTitle = "IVR bot",
@@ -89,8 +89,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       callEndThresholdMin,
       callEndThresholdMax,
       className,
-    },
-    ref
+    }: IvrBotConfigProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [data, setData] = React.useState<IvrBotConfigData>({
       ...DEFAULT_DATA,

@@ -17,10 +17,10 @@ const botListHeaderVariants = cva("min-w-0", {
   },
 });
 
-export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
+export const BotListHeader = React.forwardRef(
   (
-    { title, subtitle, variant = "default", rightContent, className, ...props },
-    ref
+    { title, subtitle, variant = "default", rightContent, className, ...props }: BotListHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const rootClassName = cn(botListHeaderVariants({ variant }), className);
     const titleBlock = (

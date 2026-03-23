@@ -40,10 +40,7 @@ export interface AlertValuesModalProps {
  * AlertValuesModal component for editing alert configuration values.
  * Displays a form with inputs for minimum balance and minimum top-up.
  */
-export const AlertValuesModal = React.forwardRef<
-  HTMLDivElement,
-  AlertValuesModalProps
->(
+export const AlertValuesModal = React.forwardRef(
   (
     {
       open,
@@ -55,8 +52,8 @@ export const AlertValuesModal = React.forwardRef<
       topupOptions,
       onSave,
       loading = false,
-    },
-    ref
+    }: AlertValuesModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [minimumBalance, setMinimumBalance] = React.useState(
       initialMinimumBalance.toString()

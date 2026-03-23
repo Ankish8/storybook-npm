@@ -74,7 +74,7 @@ export interface PageHeaderProps
   mobileOverflowLimit?: number;
 }
 
-const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
+const PageHeader = React.forwardRef(
   (
     {
       className,
@@ -90,8 +90,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       layout = "responsive",
       mobileOverflowLimit = 2,
       ...props
-    },
-    ref
+    }: PageHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // State for overflow expansion (moved to top level)
     const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false);

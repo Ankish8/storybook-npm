@@ -19,8 +19,8 @@ export interface SystemMessageProps
   children: string;
 }
 
-const SystemMessage = React.forwardRef<HTMLDivElement, SystemMessageProps>(
-  ({ className, children, ...props }, ref) => (
+const SystemMessage = React.forwardRef(
+  ({ className, children, ...props }: SystemMessageProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex justify-center my-1", className)}

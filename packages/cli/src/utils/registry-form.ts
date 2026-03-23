@@ -584,8 +584,8 @@ export interface InputProps
   showCheckIcon?: boolean;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }, ref) => {
+const Input = React.forwardRef(
+  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }: InputProps, ref: React.Ref<HTMLInputElement>) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     const inputEl = (
@@ -683,10 +683,7 @@ const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Value>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
->(({ className, ...props }, ref) => (
+const SelectValue = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>) => (
   <SelectPrimitive.Value
     ref={ref}
     className={cn("[&[data-placeholder]]:text-semantic-text-muted", className)}
@@ -700,10 +697,7 @@ export interface SelectTriggerProps
     React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
     VariantProps<typeof selectTriggerVariants> {}
 
-const SelectTrigger = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Trigger>,
-  SelectTriggerProps
->(({ className, state, children, ...props }, ref) => (
+const SelectTrigger = React.forwardRef(({ className, state, children, ...props }: SelectTriggerProps, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Trigger>>) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(selectTriggerVariants({ state, className }))}
@@ -717,10 +711,7 @@ const SelectTrigger = React.forwardRef<
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
-const SelectScrollUpButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
->(({ className, ...props }, ref) => (
+const SelectScrollUpButton = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollUpButton>>) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
     className={cn(
@@ -734,10 +725,7 @@ const SelectScrollUpButton = React.forwardRef<
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 
-const SelectScrollDownButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
->(({ className, ...props }, ref) => (
+const SelectScrollDownButton = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollDownButton>>) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
     className={cn(
@@ -791,10 +779,7 @@ function useUnlockBodyScroll() {
   }, []);
 }
 
-const SelectContent = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => {
+const SelectContent = React.forwardRef(({ className, children, position = "popper", ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>) => {
   useUnlockBodyScroll();
 
   return (
@@ -832,10 +817,7 @@ const SelectContent = React.forwardRef<
 });
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
-const SelectLabel = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
+const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Label>>) => (
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
@@ -847,10 +829,7 @@ const SelectLabel = React.forwardRef<
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
-const SelectItem = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+const SelectItem = React.forwardRef(({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
@@ -871,10 +850,7 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
-const SelectSeparator = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
+const SelectSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>) => (
   <SelectPrimitive.Separator
     ref={ref}
     className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
@@ -1005,10 +981,7 @@ export interface CheckboxProps
   separateLabel?: boolean;
 }
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  CheckboxProps
->(
+const Checkbox = React.forwardRef(
   (
     {
       className,
@@ -1021,8 +994,8 @@ const Checkbox = React.forwardRef<
       id,
       disabled,
       ...props
-    },
-    ref
+    }: CheckboxProps,
+    ref: React.Ref<React.ElementRef<typeof CheckboxPrimitive.Root>>
   ) => {
     const checkbox = (
       <CheckboxPrimitive.Root
@@ -1226,13 +1199,10 @@ export interface SwitchProps
   labelPosition?: "left" | "right";
 }
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  SwitchProps
->(
+const Switch = React.forwardRef(
   (
-    { className, size, label, labelPosition = "right", disabled, ...props },
-    ref
+    { className, size, label, labelPosition = "right", disabled, ...props }: SwitchProps,
+    ref: React.Ref<React.ElementRef<typeof SwitchPrimitives.Root>>
   ) => {
     const switchElement = (
       <SwitchPrimitives.Root
@@ -1407,7 +1377,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = React.forwardRef(
   (
     {
       className,
@@ -1437,8 +1407,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       id,
       type,
       ...props
-    },
-    ref
+    }: TextFieldProps,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
     const internalRef = React.useRef<HTMLInputElement>(null);
@@ -1712,7 +1682,7 @@ export interface ReadableFieldProps
  * />
  * \`\`\`
  */
-export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps>(
+export const ReadableField = React.forwardRef(
   (
     {
       label,
@@ -1724,8 +1694,8 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
       className,
       inputClassName,
       ...props
-    },
-    ref
+    }: ReadableFieldProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [copied, setCopied] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(!secret);
@@ -1979,7 +1949,7 @@ export interface SelectFieldProps {
  * />
  * \`\`\`
  */
-const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
+const SelectField = React.forwardRef(
   (
     {
       label,
@@ -2002,8 +1972,8 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       labelClassName,
       id,
       name,
-    },
-    ref
+    }: SelectFieldProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
@@ -2331,7 +2301,7 @@ export interface MultiSelectProps extends VariantProps<
  * />
  * \`\`\`
  */
-const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
+const MultiSelect = React.forwardRef(
   (
     {
       label,
@@ -2354,8 +2324,8 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
       state,
       id,
       name,
-    },
-    ref
+    }: MultiSelectProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for selected values (uncontrolled mode)
     const [internalValue, setInternalValue] =
@@ -2739,7 +2709,7 @@ export interface CreatableSelectProps
   maxLength?: number
 }
 
-const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
+const CreatableSelect = React.forwardRef(
   (
     {
       className,
@@ -2752,8 +2722,8 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       disabled = false,
       maxLength,
       ...props
-    },
-    ref
+    }: CreatableSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [open, setOpen] = React.useState(false)
     const [search, setSearch] = React.useState("")
@@ -3084,10 +3054,7 @@ export interface CreatableMultiSelectProps
   maxLengthPerItem?: number
 }
 
-const CreatableMultiSelect = React.forwardRef<
-  HTMLDivElement,
-  CreatableMultiSelectProps
->(
+const CreatableMultiSelect = React.forwardRef(
   (
     {
       className,
@@ -3102,8 +3069,8 @@ const CreatableMultiSelect = React.forwardRef<
       maxItems,
       maxLengthPerItem,
       ...props
-    },
-    ref
+    }: CreatableMultiSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [isOpen, setIsOpen] = React.useState(false)
     const [inputValue, setInputValue] = React.useState("")

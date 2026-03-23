@@ -672,7 +672,7 @@ export interface AccordionProps
   onValueChange?: (value: string[]) => void;
 }
 
-const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
+const Accordion = React.forwardRef(
   (
     {
       className,
@@ -683,8 +683,8 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       onValueChange,
       children,
       ...props
-    },
-    ref
+    }: AccordionProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] =
       React.useState<string[]>(defaultValue);
@@ -740,8 +740,8 @@ export interface AccordionItemProps
   disabled?: boolean;
 }
 
-const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
-  ({ className, value, disabled, children, ...props }, ref) => {
+const AccordionItem = React.forwardRef(
+  ({ className, value, disabled, children, ...props }: AccordionItemProps, ref: React.Ref<HTMLDivElement>) => {
     const { value: openValues, variant } = useAccordionContext();
     const isOpen = openValues.includes(value);
 
@@ -781,10 +781,7 @@ export interface AccordionTriggerProps
   showChevron?: boolean;
 }
 
-const AccordionTrigger = React.forwardRef<
-  HTMLButtonElement,
-  AccordionTriggerProps
->(({ className, showChevron = true, children, ...props }, ref) => {
+const AccordionTrigger = React.forwardRef(({ className, showChevron = true, children, ...props }: AccordionTriggerProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     type,
     value: openValues,
@@ -843,10 +840,7 @@ export interface AccordionContentProps
     React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = React.forwardRef<
-  HTMLDivElement,
-  AccordionContentProps
->(({ className, children, ...props }, ref) => {
+const AccordionContent = React.forwardRef(({ className, children, ...props }: AccordionContentProps, ref: React.Ref<HTMLDivElement>) => {
   const { variant } = useAccordionContext();
   const { isOpen } = useAccordionItemContext();
   const contentRef = React.useRef<HTMLDivElement>(null);
@@ -978,7 +972,7 @@ export interface PageHeaderProps
   mobileOverflowLimit?: number;
 }
 
-const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
+const PageHeader = React.forwardRef(
   (
     {
       className,
@@ -994,8 +988,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       layout = "responsive",
       mobileOverflowLimit = 2,
       ...props
-    },
-    ref
+    }: PageHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // State for overflow expansion (moved to top level)
     const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false);
@@ -1283,7 +1277,7 @@ export interface PanelProps
  * </Panel>
  * \`\`\`
  */
-const Panel = React.forwardRef<HTMLElement, PanelProps>(
+const Panel = React.forwardRef(
   (
     {
       open = true,
@@ -1297,8 +1291,8 @@ const Panel = React.forwardRef<HTMLElement, PanelProps>(
       "aria-label": ariaLabel,
       onKeyDown,
       ...props
-    },
-    ref
+    }: PanelProps,
+    ref: React.Ref<HTMLElement>
   ) => {
     const resolvedSize = size ?? "default";
     const widthClass = panelWidths[resolvedSize];

@@ -3,7 +3,7 @@ import { cn } from "../../../lib/utils";
 import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
 import type { DocMediaProps } from "./types";
 
-const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
+const DocMedia = React.forwardRef(
   (
     {
       className,
@@ -16,8 +16,8 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
       caption,
       onDownload,
       ...props
-    },
-    ref
+    }: DocMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     if (variant === "preview") {
       return (

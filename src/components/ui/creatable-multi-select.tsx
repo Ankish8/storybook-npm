@@ -55,10 +55,7 @@ export interface CreatableMultiSelectProps
   maxLengthPerItem?: number
 }
 
-const CreatableMultiSelect = React.forwardRef<
-  HTMLDivElement,
-  CreatableMultiSelectProps
->(
+const CreatableMultiSelect = React.forwardRef(
   (
     {
       className,
@@ -73,8 +70,8 @@ const CreatableMultiSelect = React.forwardRef<
       maxItems,
       maxLengthPerItem,
       ...props
-    },
-    ref
+    }: CreatableMultiSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [isOpen, setIsOpen] = React.useState(false)
     const [inputValue, setInputValue] = React.useState("")

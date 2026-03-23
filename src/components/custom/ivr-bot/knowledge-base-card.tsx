@@ -52,7 +52,7 @@ const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: Badg
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProps>(
+const KnowledgeBaseCard = React.forwardRef(
   (
     {
       files,
@@ -64,8 +64,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       downloadDisabled,
       deleteDisabled,
       className,
-    },
-    ref
+    }: KnowledgeBaseCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

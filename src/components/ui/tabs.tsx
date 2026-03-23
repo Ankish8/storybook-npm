@@ -26,10 +26,7 @@ export interface TabsListProps
   fullWidth?: boolean
 }
 
-const TabsList = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.List>,
-  TabsListProps
->(({ className, fullWidth, ...props }, ref) => (
+const TabsList = React.forwardRef(({ className, fullWidth, ...props }: TabsListProps, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
@@ -42,10 +39,7 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
-const TabsTrigger = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+const TabsTrigger = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Trigger>>) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -60,10 +54,7 @@ const TabsTrigger = React.forwardRef<
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-const TabsContent = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+const TabsContent = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Content>>) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(

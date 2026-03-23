@@ -3,18 +3,15 @@ import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListCreateCardProps } from "./types";
 
-export const BotListCreateCard = React.forwardRef<
-  HTMLButtonElement,
-  BotListCreateCardProps
->(
+export const BotListCreateCard = React.forwardRef(
   (
     {
       label = "Create new bot",
       onClick,
       className,
       ...props
-    },
-    ref
+    }: BotListCreateCardProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => (
     <button
       ref={ref}

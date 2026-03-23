@@ -202,8 +202,8 @@ const BreakdownCardRow = ({ item }: { item: BreakdownCardItem }) => (
  * />
  * ```
  */
-export const PaymentSummary = React.forwardRef<HTMLDivElement, PaymentSummaryProps>(
-  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }, ref) => {
+export const PaymentSummary = React.forwardRef(
+  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }: PaymentSummaryProps, ref: React.Ref<HTMLDivElement>) => {
     const hasItemsBorder =
       items.length > 0 &&
       (!!subtotal || !!breakdownCard || (summaryItems && summaryItems.length > 0));

@@ -8,7 +8,7 @@ import { BotListGrid } from "./bot-list-grid";
 import { CreateBotModal } from "./create-bot-modal";
 import type { BotListProps } from "./types";
 
-export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
+export const BotList = React.forwardRef(
   (
     {
       bots = [],
@@ -24,8 +24,8 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       createCardLabel = "Create new bot",
       className,
       ...props
-    },
-    ref
+    }: BotListProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [createModalOpen, setCreateModalOpen] = React.useState(false);

@@ -34,7 +34,7 @@ export interface ContactListItemProps
  * />
  * ```
  */
-const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
+const ContactListItem = React.forwardRef(
   (
     {
       name,
@@ -45,8 +45,8 @@ const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
       onClick,
       className,
       ...props
-    },
-    ref
+    }: ContactListItemProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

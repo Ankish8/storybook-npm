@@ -590,8 +590,8 @@ export interface TagProps
   label?: string;
 }
 
-const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, label, children, ...props }, ref) => {
+const Tag = React.forwardRef(
+  ({ className, variant, size, label, children, ...props }: TagProps, ref: React.Ref<HTMLSpanElement>) => {
     return (
       <span
         className={cn(tagVariants({ variant, size, className }))}
@@ -787,7 +787,7 @@ export interface AlertProps
   defaultOpen?: boolean;
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+const Alert = React.forwardRef(
   (
     {
       className,
@@ -802,8 +802,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       defaultOpen = true,
       children,
       ...props
-    },
-    ref
+    }: AlertProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const isControlled = controlledOpen !== undefined;
@@ -875,10 +875,7 @@ Alert.displayName = "Alert";
 /**
  * Alert title component for the heading text.
  */
-const AlertTitle = React.forwardRef<
-  HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+const AlertTitle = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>, ref: React.Ref<HTMLHeadingElement>) => (
   <h5
     ref={ref}
     className={cn("font-semibold leading-tight tracking-tight", className)}
@@ -890,10 +887,7 @@ AlertTitle.displayName = "AlertTitle";
 /**
  * Alert description component for the body text.
  */
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
+const AlertDescription = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>, ref: React.Ref<HTMLParagraphElement>) => (
   <p ref={ref} className={cn("m-0 mt-1 text-sm", className)} {...props} />
 ));
 AlertDescription.displayName = "AlertDescription";
@@ -927,10 +921,7 @@ import { cn } from "../../lib/utils";
 
 const ToastProvider = ToastPrimitives.Provider;
 
-const ToastViewport = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
+const ToastViewport = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Viewport>>) => (
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
@@ -964,11 +955,8 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+const Toast = React.forwardRef(({ className, variant, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
+    VariantProps<typeof toastVariants>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Root>>) => {
   return (
     <ToastPrimitives.Root
       ref={ref}
@@ -979,10 +967,7 @@ const Toast = React.forwardRef<
 });
 Toast.displayName = ToastPrimitives.Root.displayName;
 
-const ToastAction = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Action>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
->(({ className, ...props }, ref) => (
+const ToastAction = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Action>>) => (
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
@@ -998,10 +983,7 @@ const ToastAction = React.forwardRef<
 ));
 ToastAction.displayName = ToastPrimitives.Action.displayName;
 
-const ToastClose = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Close>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
->(({ className, ...props }, ref) => (
+const ToastClose = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Close>>) => (
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
@@ -1016,10 +998,7 @@ const ToastClose = React.forwardRef<
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
 
-const ToastTitle = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Title>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
->(({ className, ...props }, ref) => (
+const ToastTitle = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Title>>) => (
   <ToastPrimitives.Title
     ref={ref}
     className={cn("text-sm font-semibold tracking-[0.014px]", className)}
@@ -1028,10 +1007,7 @@ const ToastTitle = React.forwardRef<
 ));
 ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
-const ToastDescription = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Description>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
->(({ className, ...props }, ref) => (
+const ToastDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Description>>) => (
   <ToastPrimitives.Description
     ref={ref}
     className={cn("text-xs tracking-[0.048px]", className)}
@@ -1480,7 +1456,7 @@ export interface SpinnerProps
   "aria-label"?: string;
 }
 
-const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
+const Spinner = React.forwardRef(
   (
     {
       className,
@@ -1488,8 +1464,8 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
       variant,
       "aria-label": ariaLabel = "Loading",
       ...props
-    },
-    ref
+    }: SpinnerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const strokeWidth = strokeWidths[size || "default"] ?? 3;
     const radius = 10;
@@ -1609,8 +1585,8 @@ export interface SkeletonProps
   height?: number | string;
 }
 
-const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, variant, shape, width, height, style, ...props }, ref) => {
+const Skeleton = React.forwardRef(
+  ({ className, variant, shape, width, height, style, ...props }: SkeletonProps, ref: React.Ref<HTMLDivElement>) => {
     const dimensionStyle: React.CSSProperties = {
       ...style,
       ...(width !== undefined

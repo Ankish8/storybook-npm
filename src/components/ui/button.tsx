@@ -70,7 +70,7 @@ export interface ButtonProps
   loadingText?: string;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef(
   (
     {
       className,
@@ -84,8 +84,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       disabled,
       ...props
-    },
-    ref
+    }: ButtonProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     const Comp = asChild ? Slot : "button";
 

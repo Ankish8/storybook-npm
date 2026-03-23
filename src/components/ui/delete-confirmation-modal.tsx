@@ -66,10 +66,7 @@ export interface DeleteConfirmationModalProps {
  * />
  * ```
  */
-const DeleteConfirmationModal = React.forwardRef<
-  HTMLDivElement,
-  DeleteConfirmationModalProps
->(
+const DeleteConfirmationModal = React.forwardRef(
   (
     {
       open,
@@ -85,8 +82,8 @@ const DeleteConfirmationModal = React.forwardRef<
       cancelButtonText = "Cancel",
       trigger,
       className,
-    },
-    ref
+    }: DeleteConfirmationModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [inputValue, setInputValue] = React.useState("");
     const isConfirmEnabled = inputValue === confirmText;

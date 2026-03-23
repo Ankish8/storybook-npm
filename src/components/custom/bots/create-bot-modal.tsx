@@ -29,10 +29,7 @@ const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   },
 ];
 
-export const CreateBotModal = React.forwardRef<
-  HTMLDivElement,
-  CreateBotModalProps
->(({ open, onOpenChange, onSubmit, isLoading, className }, ref) => {
+export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, isLoading, className }: CreateBotModalProps, ref: React.Ref<HTMLDivElement>) => {
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
 

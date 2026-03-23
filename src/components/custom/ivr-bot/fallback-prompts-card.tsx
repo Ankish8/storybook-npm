@@ -83,10 +83,7 @@ function PromptField({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FallbackPromptsCard = React.forwardRef<
-  HTMLDivElement,
-  FallbackPromptsCardProps
->(
+const FallbackPromptsCard = React.forwardRef(
   (
     {
       data,
@@ -97,8 +94,8 @@ const FallbackPromptsCard = React.forwardRef<
       disabled,
       defaultOpen = false,
       className,
-    },
-    ref
+    }: FallbackPromptsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

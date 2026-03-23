@@ -644,7 +644,7 @@ export interface AvatarProps
  * <Avatar initials="AS" size="xs" />
  * \`\`\`
  */
-const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+const Avatar = React.forwardRef(
   (
     {
       className,
@@ -657,8 +657,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       status,
       children,
       ...props
-    },
-    ref
+    }: AvatarProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedSize = size ?? "md";
     const displayInitials = initials ?? (name ? getInitials(name) : undefined);
@@ -735,8 +735,8 @@ export interface DateDividerProps
   children: React.ReactNode;
 }
 
-const DateDivider = React.forwardRef<HTMLDivElement, DateDividerProps>(
-  ({ className, children, ...props }, ref) => (
+const DateDivider = React.forwardRef(
+  ({ className, children, ...props }: DateDividerProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex items-center gap-4 my-4", className)}
@@ -792,8 +792,8 @@ export interface ImageMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   maxHeight?: number | string;
 }
 
-const ImageMedia = React.forwardRef<HTMLDivElement, ImageMediaProps>(
-  ({ className, src, alt = "Image", maxHeight = 280, ...props }, ref) => {
+const ImageMedia = React.forwardRef(
+  ({ className, src, alt = "Image", maxHeight = 280, ...props }: ImageMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const maxHeightStyle =
       typeof maxHeight === "number" ? \`\${maxHeight}px\` : maxHeight;
 
@@ -857,7 +857,7 @@ export interface PhoneInputProps
   wrapperClassName?: string;
 }
 
-const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
+const PhoneInput = React.forwardRef(
   (
     {
       className,
@@ -868,8 +868,8 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
       wrapperClassName,
       disabled,
       ...props
-    },
-    ref
+    }: PhoneInputProps,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     return (
       <div
@@ -953,8 +953,8 @@ export interface ReplyQuoteProps extends React.HTMLAttributes<HTMLDivElement> {
   message: string;
 }
 
-const ReplyQuote = React.forwardRef<HTMLDivElement, ReplyQuoteProps>(
-  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }, ref) => {
+const ReplyQuote = React.forwardRef(
+  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }: ReplyQuoteProps, ref: React.Ref<HTMLDivElement>) => {
     const isInteractive = !!onClick;
 
     const handleKeyDown = React.useCallback(
@@ -1034,8 +1034,8 @@ export interface SystemMessageProps
   children: string;
 }
 
-const SystemMessage = React.forwardRef<HTMLDivElement, SystemMessageProps>(
-  ({ className, children, ...props }, ref) => (
+const SystemMessage = React.forwardRef(
+  ({ className, children, ...props }: SystemMessageProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex justify-center my-1", className)}
@@ -1096,8 +1096,8 @@ export interface UnreadSeparatorProps
   label?: string;
 }
 
-const UnreadSeparator = React.forwardRef<HTMLDivElement, UnreadSeparatorProps>(
-  ({ className, count, label, ...props }, ref) => (
+const UnreadSeparator = React.forwardRef(
+  ({ className, count, label, ...props }: UnreadSeparatorProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex items-center gap-4 my-2", className)}
@@ -1204,7 +1204,7 @@ export interface ButtonProps
   loadingText?: string;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef(
   (
     {
       className,
@@ -1218,8 +1218,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       disabled,
       ...props
-    },
-    ref
+    }: ButtonProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     const Comp = asChild ? Slot : "button";
 
@@ -1335,7 +1335,7 @@ export interface BadgeProps
   asChild?: boolean;
 }
 
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+const Badge = React.forwardRef(
   (
     {
       className,
@@ -1346,8 +1346,8 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       asChild = false,
       children,
       ...props
-    },
-    ref
+    }: BadgeProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const Comp = asChild ? Slot : "div";
 
@@ -1436,7 +1436,7 @@ export interface ContactListItemProps
  * />
  * \`\`\`
  */
-const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
+const ContactListItem = React.forwardRef(
   (
     {
       name,
@@ -1447,8 +1447,8 @@ const ContactListItem = React.forwardRef<HTMLDivElement, ContactListItemProps>(
       onClick,
       className,
       ...props
-    },
-    ref
+    }: ContactListItemProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -1647,7 +1647,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
  * <Typography truncate>Very long text that will be truncated...</Typography>
  * \`\`\`
  */
-const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+const Typography = React.forwardRef(
   (
     {
       children,
@@ -1660,8 +1660,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       tag,
       htmlFor,
       ...props
-    },
-    ref
+    }: TypographyProps,
+    ref: React.Ref<HTMLElement>
   ) => {
     const key: Key = \`\${kind}-\${variant}\`;
     const Tag = (tag || mapTagName[key]) as React.ElementType;
@@ -1758,8 +1758,8 @@ export interface InputProps
   showCheckIcon?: boolean;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }, ref) => {
+const Input = React.forwardRef(
+  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }: InputProps, ref: React.Ref<HTMLInputElement>) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     const inputEl = (
@@ -1857,10 +1857,7 @@ const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Value>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
->(({ className, ...props }, ref) => (
+const SelectValue = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>) => (
   <SelectPrimitive.Value
     ref={ref}
     className={cn("[&[data-placeholder]]:text-semantic-text-muted", className)}
@@ -1874,10 +1871,7 @@ export interface SelectTriggerProps
     React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
     VariantProps<typeof selectTriggerVariants> {}
 
-const SelectTrigger = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Trigger>,
-  SelectTriggerProps
->(({ className, state, children, ...props }, ref) => (
+const SelectTrigger = React.forwardRef(({ className, state, children, ...props }: SelectTriggerProps, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Trigger>>) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(selectTriggerVariants({ state, className }))}
@@ -1891,10 +1885,7 @@ const SelectTrigger = React.forwardRef<
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
-const SelectScrollUpButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
->(({ className, ...props }, ref) => (
+const SelectScrollUpButton = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollUpButton>>) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
     className={cn(
@@ -1908,10 +1899,7 @@ const SelectScrollUpButton = React.forwardRef<
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 
-const SelectScrollDownButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
->(({ className, ...props }, ref) => (
+const SelectScrollDownButton = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollDownButton>>) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
     className={cn(
@@ -1965,10 +1953,7 @@ function useUnlockBodyScroll() {
   }, []);
 }
 
-const SelectContent = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => {
+const SelectContent = React.forwardRef(({ className, children, position = "popper", ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>) => {
   useUnlockBodyScroll();
 
   return (
@@ -2006,10 +1991,7 @@ const SelectContent = React.forwardRef<
 });
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
-const SelectLabel = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
+const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Label>>) => (
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
@@ -2021,10 +2003,7 @@ const SelectLabel = React.forwardRef<
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
-const SelectItem = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+const SelectItem = React.forwardRef(({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
@@ -2045,10 +2024,7 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
-const SelectSeparator = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
+const SelectSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>) => (
   <SelectPrimitive.Separator
     ref={ref}
     className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
@@ -2179,10 +2155,7 @@ export interface CheckboxProps
   separateLabel?: boolean;
 }
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  CheckboxProps
->(
+const Checkbox = React.forwardRef(
   (
     {
       className,
@@ -2195,8 +2168,8 @@ const Checkbox = React.forwardRef<
       id,
       disabled,
       ...props
-    },
-    ref
+    }: CheckboxProps,
+    ref: React.Ref<React.ElementRef<typeof CheckboxPrimitive.Root>>
   ) => {
     const checkbox = (
       <CheckboxPrimitive.Root
@@ -2400,13 +2373,10 @@ export interface SwitchProps
   labelPosition?: "left" | "right";
 }
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  SwitchProps
->(
+const Switch = React.forwardRef(
   (
-    { className, size, label, labelPosition = "right", disabled, ...props },
-    ref
+    { className, size, label, labelPosition = "right", disabled, ...props }: SwitchProps,
+    ref: React.Ref<React.ElementRef<typeof SwitchPrimitives.Root>>
   ) => {
     const switchElement = (
       <SwitchPrimitives.Root
@@ -2581,7 +2551,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = React.forwardRef(
   (
     {
       className,
@@ -2611,8 +2581,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       id,
       type,
       ...props
-    },
-    ref
+    }: TextFieldProps,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
     const internalRef = React.useRef<HTMLInputElement>(null);
@@ -2886,7 +2856,7 @@ export interface ReadableFieldProps
  * />
  * \`\`\`
  */
-export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps>(
+export const ReadableField = React.forwardRef(
   (
     {
       label,
@@ -2898,8 +2868,8 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
       className,
       inputClassName,
       ...props
-    },
-    ref
+    }: ReadableFieldProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [copied, setCopied] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(!secret);
@@ -3153,7 +3123,7 @@ export interface SelectFieldProps {
  * />
  * \`\`\`
  */
-const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
+const SelectField = React.forwardRef(
   (
     {
       label,
@@ -3176,8 +3146,8 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       labelClassName,
       id,
       name,
-    },
-    ref
+    }: SelectFieldProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
@@ -3505,7 +3475,7 @@ export interface MultiSelectProps extends VariantProps<
  * />
  * \`\`\`
  */
-const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
+const MultiSelect = React.forwardRef(
   (
     {
       label,
@@ -3528,8 +3498,8 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
       state,
       id,
       name,
-    },
-    ref
+    }: MultiSelectProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for selected values (uncontrolled mode)
     const [internalValue, setInternalValue] =
@@ -3913,7 +3883,7 @@ export interface CreatableSelectProps
   maxLength?: number
 }
 
-const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
+const CreatableSelect = React.forwardRef(
   (
     {
       className,
@@ -3926,8 +3896,8 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       disabled = false,
       maxLength,
       ...props
-    },
-    ref
+    }: CreatableSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [open, setOpen] = React.useState(false)
     const [search, setSearch] = React.useState("")
@@ -4258,10 +4228,7 @@ export interface CreatableMultiSelectProps
   maxLengthPerItem?: number
 }
 
-const CreatableMultiSelect = React.forwardRef<
-  HTMLDivElement,
-  CreatableMultiSelectProps
->(
+const CreatableMultiSelect = React.forwardRef(
   (
     {
       className,
@@ -4276,8 +4243,8 @@ const CreatableMultiSelect = React.forwardRef<
       maxItems,
       maxLengthPerItem,
       ...props
-    },
-    ref
+    }: CreatableMultiSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [isOpen, setIsOpen] = React.useState(false)
     const [inputValue, setInputValue] = React.useState("")
@@ -4572,8 +4539,8 @@ export interface TableProps
   wrapContent?: boolean;
 }
 
-const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, size, withoutBorder, wrapContent, ...props }, ref) => (
+const Table = React.forwardRef(
+  ({ className, size, withoutBorder, wrapContent, ...props }: TableProps, ref: React.Ref<HTMLTableElement>) => (
     <div
       className={cn(
         "relative w-full overflow-auto",
@@ -4594,10 +4561,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
 );
 Table.displayName = "Table";
 
-const TableHeader = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
+const TableHeader = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>, ref: React.Ref<HTMLTableSectionElement>) => (
   <thead
     ref={ref}
     className={cn("bg-[var(--color-neutral-100)] [&_tr]:border-b", className)}
@@ -4616,8 +4580,8 @@ export interface TableBodyProps
   loadingColumns?: number;
 }
 
-const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
-  ({ className, isLoading, loadingRows = 5, loadingColumns = 5, children, ...props }, ref) => (
+const TableBody = React.forwardRef(
+  ({ className, isLoading, loadingRows = 5, loadingColumns = 5, children, ...props }: TableBodyProps, ref: React.Ref<HTMLTableSectionElement>) => (
     <tbody
       ref={ref}
       className={cn("[&_tr:last-child]:border-0", className)}
@@ -4633,10 +4597,7 @@ const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
 );
 TableBody.displayName = "TableBody";
 
-const TableFooter = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
+const TableFooter = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>, ref: React.Ref<HTMLTableSectionElement>) => (
   <tfoot
     ref={ref}
     className={cn(
@@ -4653,8 +4614,8 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
   highlighted?: boolean;
 }
 
-const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ className, highlighted, ...props }, ref) => (
+const TableRow = React.forwardRef(
+  ({ className, highlighted, ...props }: TableRowProps, ref: React.Ref<HTMLTableRowElement>) => (
     <tr
       ref={ref}
       className={cn(
@@ -4679,10 +4640,10 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
   infoTooltip?: string;
 }
 
-const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+const TableHead = React.forwardRef(
   (
-    { className, sticky, sortDirection, infoTooltip, children, ...props },
-    ref
+    { className, sticky, sortDirection, infoTooltip, children, ...props }: TableHeadProps,
+    ref: React.Ref<HTMLTableCellElement>
   ) => (
     <th
       ref={ref}
@@ -4720,8 +4681,8 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
   sticky?: boolean;
 }
 
-const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
-  ({ className, sticky, ...props }, ref) => (
+const TableCell = React.forwardRef(
+  ({ className, sticky, ...props }: TableCellProps, ref: React.Ref<HTMLTableCellElement>) => (
     <td
       ref={ref}
       className={cn(
@@ -4735,10 +4696,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
 );
 TableCell.displayName = "TableCell";
 
-const TableCaption = React.forwardRef<
-  HTMLTableCaptionElement,
-  React.HTMLAttributes<HTMLTableCaptionElement>
->(({ className, ...props }, ref) => (
+const TableCaption = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableCaptionElement>, ref: React.Ref<HTMLTableCaptionElement>) => (
   <caption
     ref={ref}
     className={cn("mt-4 text-sm text-semantic-text-muted", className)}
@@ -4827,8 +4785,8 @@ export interface TableToggleProps extends Omit<SwitchProps, "size"> {
   size?: "sm" | "default";
 }
 
-const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
-  ({ size = "sm", ...props }, ref) => (
+const TableToggle = React.forwardRef(
+  ({ size = "sm", ...props }: TableToggleProps, ref: React.Ref<HTMLButtonElement>) => (
     <Switch ref={ref} size={size} {...props} />
   )
 );
@@ -4893,10 +4851,7 @@ export interface TabsListProps
   fullWidth?: boolean
 }
 
-const TabsList = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.List>,
-  TabsListProps
->(({ className, fullWidth, ...props }, ref) => (
+const TabsList = React.forwardRef(({ className, fullWidth, ...props }: TabsListProps, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
@@ -4909,10 +4864,7 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
-const TabsTrigger = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+const TabsTrigger = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Trigger>>) => (
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -4927,10 +4879,7 @@ const TabsTrigger = React.forwardRef<
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
-const TabsContent = React.forwardRef<
-  React.ComponentRef<typeof TabsPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
+const TabsContent = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>, ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Content>>) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
@@ -4977,10 +4926,7 @@ const DialogPortal = DialogPrimitive.Portal;
 
 const DialogClose = DialogPrimitive.Close;
 
-const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+const DialogOverlay = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Overlay>>) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
@@ -5038,10 +4984,7 @@ const hasDialogDescription = (children: React.ReactNode): boolean => {
   return found;
 };
 
-const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  DialogContentProps
->(({ className, children, size, hideCloseButton = false, ...props }, ref) => {
+const DialogContent = React.forwardRef(({ className, children, size, hideCloseButton = false, ...props }: DialogContentProps, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Content>>) => {
   const hasDescription = hasDialogDescription(children);
 
   return (
@@ -5099,10 +5042,7 @@ const DialogFooter = ({
 );
 DialogFooter.displayName = "DialogFooter";
 
-const DialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
+const DialogTitle = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Title>>) => (
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
@@ -5114,10 +5054,7 @@ const DialogTitle = React.forwardRef<
 ));
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-const DialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
+const DialogDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Description>>) => (
   <DialogPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
@@ -5165,10 +5102,7 @@ import { cn } from "../../lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
-const DropdownMenuTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+const DropdownMenuTrigger = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Trigger>>) => (
   <DropdownMenuPrimitive.Trigger
     ref={ref}
     className={cn("focus-visible:outline-none focus-visible:ring-0", className)}
@@ -5185,12 +5119,9 @@ const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
-const DropdownMenuSubTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
+const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
     inset?: boolean;
-  }
->(({ className, inset, children, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>>) => (
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
@@ -5207,10 +5138,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubTrigger.displayName;
 
-const DropdownMenuSubContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
+const DropdownMenuSubContent = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubContent>>) => (
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
@@ -5223,10 +5151,7 @@ const DropdownMenuSubContent = React.forwardRef<
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName;
 
-const DropdownMenuContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Content>>) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
@@ -5242,16 +5167,13 @@ const DropdownMenuContent = React.forwardRef<
 ));
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
-const DropdownMenuItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+const DropdownMenuItem = React.forwardRef(({ className, inset, children, description, suffix, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
     /** Secondary text displayed below children */
     description?: string;
     /** Content displayed at the right edge of the item */
     suffix?: React.ReactNode;
-  }
->(({ className, inset, children, description, suffix, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item>>) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
@@ -5276,15 +5198,12 @@ const DropdownMenuItem = React.forwardRef<
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
-const DropdownMenuCheckboxItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
+const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checked, description, suffix, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
     /** Secondary text displayed below children */
     description?: string;
     /** Content displayed at the right edge of the item */
     suffix?: React.ReactNode;
-  }
->(({ className, children, checked, description, suffix, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>>) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
@@ -5315,15 +5234,12 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 DropdownMenuCheckboxItem.displayName =
   DropdownMenuPrimitive.CheckboxItem.displayName;
 
-const DropdownMenuRadioItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
+const DropdownMenuRadioItem = React.forwardRef(({ className, children, description, suffix, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
     /** Secondary text displayed below children */
     description?: string;
     /** Content displayed at the right edge of the item */
     suffix?: React.ReactNode;
-  }
->(({ className, children, description, suffix, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>>) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
@@ -5352,12 +5268,9 @@ const DropdownMenuRadioItem = React.forwardRef<
 ));
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;
 
-const DropdownMenuLabel = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
+const DropdownMenuLabel = React.forwardRef(({ className, inset, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
     inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Label>>) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
@@ -5370,10 +5283,7 @@ const DropdownMenuLabel = React.forwardRef<
 ));
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName;
 
-const DropdownMenuSeparator = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
->(({ className, ...props }, ref) => (
+const DropdownMenuSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Separator>>) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
     className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
@@ -5440,10 +5350,7 @@ const Tooltip = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+const TooltipContent = React.forwardRef(({ className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Content>>) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       ref={ref}
@@ -5458,10 +5365,7 @@ const TooltipContent = React.forwardRef<
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-const TooltipArrow = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Arrow>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
->(({ className, ...props }, ref) => (
+const TooltipArrow = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>, ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Arrow>>) => (
   <TooltipPrimitive.Arrow
     ref={ref}
     className={cn("fill-semantic-primary", className)}
@@ -5565,10 +5469,7 @@ export interface DeleteConfirmationModalProps {
  * />
  * \`\`\`
  */
-const DeleteConfirmationModal = React.forwardRef<
-  HTMLDivElement,
-  DeleteConfirmationModalProps
->(
+const DeleteConfirmationModal = React.forwardRef(
   (
     {
       open,
@@ -5584,8 +5485,8 @@ const DeleteConfirmationModal = React.forwardRef<
       cancelButtonText = "Cancel",
       trigger,
       className,
-    },
-    ref
+    }: DeleteConfirmationModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [inputValue, setInputValue] = React.useState("");
     const isConfirmEnabled = inputValue === confirmText;
@@ -5753,10 +5654,7 @@ export interface ConfirmationModalProps {
  * />
  * \`\`\`
  */
-const ConfirmationModal = React.forwardRef<
-  HTMLDivElement,
-  ConfirmationModalProps
->(
+const ConfirmationModal = React.forwardRef(
   (
     {
       open,
@@ -5771,8 +5669,8 @@ const ConfirmationModal = React.forwardRef<
       cancelButtonText = "Cancel",
       trigger,
       className,
-    },
-    ref
+    }: ConfirmationModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleConfirm = () => {
       onConfirm?.();
@@ -5904,7 +5802,7 @@ export interface FormModalProps {
  * </FormModal>
  * \`\`\`
  */
-const FormModal = React.forwardRef<HTMLDivElement, FormModalProps>(
+const FormModal = React.forwardRef(
   (
     {
       open,
@@ -5920,8 +5818,8 @@ const FormModal = React.forwardRef<HTMLDivElement, FormModalProps>(
       disableSave = false,
       className,
       size = "sm",
-    },
-    ref
+    }: FormModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleSave = () => {
       onSave?.();
@@ -6036,8 +5934,8 @@ export interface TagProps
   label?: string;
 }
 
-const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, label, children, ...props }, ref) => {
+const Tag = React.forwardRef(
+  ({ className, variant, size, label, children, ...props }: TagProps, ref: React.Ref<HTMLSpanElement>) => {
     return (
       <span
         className={cn(tagVariants({ variant, size, className }))}
@@ -6233,7 +6131,7 @@ export interface AlertProps
   defaultOpen?: boolean;
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+const Alert = React.forwardRef(
   (
     {
       className,
@@ -6248,8 +6146,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       defaultOpen = true,
       children,
       ...props
-    },
-    ref
+    }: AlertProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const isControlled = controlledOpen !== undefined;
@@ -6321,10 +6219,7 @@ Alert.displayName = "Alert";
 /**
  * Alert title component for the heading text.
  */
-const AlertTitle = React.forwardRef<
-  HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+const AlertTitle = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>, ref: React.Ref<HTMLHeadingElement>) => (
   <h5
     ref={ref}
     className={cn("font-semibold leading-tight tracking-tight", className)}
@@ -6336,10 +6231,7 @@ AlertTitle.displayName = "AlertTitle";
 /**
  * Alert description component for the body text.
  */
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
+const AlertDescription = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>, ref: React.Ref<HTMLParagraphElement>) => (
   <p ref={ref} className={cn("m-0 mt-1 text-sm", className)} {...props} />
 ));
 AlertDescription.displayName = "AlertDescription";
@@ -6373,10 +6265,7 @@ import { cn } from "../../lib/utils";
 
 const ToastProvider = ToastPrimitives.Provider;
 
-const ToastViewport = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
+const ToastViewport = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Viewport>>) => (
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
@@ -6410,11 +6299,8 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+const Toast = React.forwardRef(({ className, variant, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
+    VariantProps<typeof toastVariants>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Root>>) => {
   return (
     <ToastPrimitives.Root
       ref={ref}
@@ -6425,10 +6311,7 @@ const Toast = React.forwardRef<
 });
 Toast.displayName = ToastPrimitives.Root.displayName;
 
-const ToastAction = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Action>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
->(({ className, ...props }, ref) => (
+const ToastAction = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Action>>) => (
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
@@ -6444,10 +6327,7 @@ const ToastAction = React.forwardRef<
 ));
 ToastAction.displayName = ToastPrimitives.Action.displayName;
 
-const ToastClose = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Close>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
->(({ className, ...props }, ref) => (
+const ToastClose = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Close>>) => (
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
@@ -6462,10 +6342,7 @@ const ToastClose = React.forwardRef<
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
 
-const ToastTitle = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Title>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
->(({ className, ...props }, ref) => (
+const ToastTitle = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Title>>) => (
   <ToastPrimitives.Title
     ref={ref}
     className={cn("text-sm font-semibold tracking-[0.014px]", className)}
@@ -6474,10 +6351,7 @@ const ToastTitle = React.forwardRef<
 ));
 ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
-const ToastDescription = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Description>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
->(({ className, ...props }, ref) => (
+const ToastDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Description>>) => (
   <ToastPrimitives.Description
     ref={ref}
     className={cn("text-xs tracking-[0.048px]", className)}
@@ -6926,7 +6800,7 @@ export interface SpinnerProps
   "aria-label"?: string;
 }
 
-const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
+const Spinner = React.forwardRef(
   (
     {
       className,
@@ -6934,8 +6808,8 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
       variant,
       "aria-label": ariaLabel = "Loading",
       ...props
-    },
-    ref
+    }: SpinnerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const strokeWidth = strokeWidths[size || "default"] ?? 3;
     const radius = 10;
@@ -7055,8 +6929,8 @@ export interface SkeletonProps
   height?: number | string;
 }
 
-const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, variant, shape, width, height, style, ...props }, ref) => {
+const Skeleton = React.forwardRef(
+  ({ className, variant, shape, width, height, style, ...props }: SkeletonProps, ref: React.Ref<HTMLDivElement>) => {
     const dimensionStyle: React.CSSProperties = {
       ...style,
       ...(width !== undefined
@@ -7299,7 +7173,7 @@ export interface AccordionProps
   onValueChange?: (value: string[]) => void;
 }
 
-const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
+const Accordion = React.forwardRef(
   (
     {
       className,
@@ -7310,8 +7184,8 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       onValueChange,
       children,
       ...props
-    },
-    ref
+    }: AccordionProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] =
       React.useState<string[]>(defaultValue);
@@ -7367,8 +7241,8 @@ export interface AccordionItemProps
   disabled?: boolean;
 }
 
-const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
-  ({ className, value, disabled, children, ...props }, ref) => {
+const AccordionItem = React.forwardRef(
+  ({ className, value, disabled, children, ...props }: AccordionItemProps, ref: React.Ref<HTMLDivElement>) => {
     const { value: openValues, variant } = useAccordionContext();
     const isOpen = openValues.includes(value);
 
@@ -7408,10 +7282,7 @@ export interface AccordionTriggerProps
   showChevron?: boolean;
 }
 
-const AccordionTrigger = React.forwardRef<
-  HTMLButtonElement,
-  AccordionTriggerProps
->(({ className, showChevron = true, children, ...props }, ref) => {
+const AccordionTrigger = React.forwardRef(({ className, showChevron = true, children, ...props }: AccordionTriggerProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     type,
     value: openValues,
@@ -7470,10 +7341,7 @@ export interface AccordionContentProps
     React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = React.forwardRef<
-  HTMLDivElement,
-  AccordionContentProps
->(({ className, children, ...props }, ref) => {
+const AccordionContent = React.forwardRef(({ className, children, ...props }: AccordionContentProps, ref: React.Ref<HTMLDivElement>) => {
   const { variant } = useAccordionContext();
   const { isOpen } = useAccordionItemContext();
   const contentRef = React.useRef<HTMLDivElement>(null);
@@ -7605,7 +7473,7 @@ export interface PageHeaderProps
   mobileOverflowLimit?: number;
 }
 
-const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
+const PageHeader = React.forwardRef(
   (
     {
       className,
@@ -7621,8 +7489,8 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
       layout = "responsive",
       mobileOverflowLimit = 2,
       ...props
-    },
-    ref
+    }: PageHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // State for overflow expansion (moved to top level)
     const [isOverflowExpanded, setIsOverflowExpanded] = React.useState(false);
@@ -7910,7 +7778,7 @@ export interface PanelProps
  * </Panel>
  * \`\`\`
  */
-const Panel = React.forwardRef<HTMLElement, PanelProps>(
+const Panel = React.forwardRef(
   (
     {
       open = true,
@@ -7924,8 +7792,8 @@ const Panel = React.forwardRef<HTMLElement, PanelProps>(
       "aria-label": ariaLabel,
       onKeyDown,
       ...props
-    },
-    ref
+    }: PanelProps,
+    ref: React.Ref<HTMLElement>
   ) => {
     const resolvedSize = size ?? "default";
     const widthClass = panelWidths[resolvedSize];
@@ -8369,10 +8237,7 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types";
  * />
  * \`\`\`
  */
-export const EventSelector = React.forwardRef<
-  HTMLDivElement,
-  EventSelectorProps
->(
+export const EventSelector = React.forwardRef(
   (
     {
       events,
@@ -8387,8 +8252,8 @@ export const EventSelector = React.forwardRef<
       renderEmptyGroup,
       className,
       ...props
-    },
-    ref
+    }: EventSelectorProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalSelected, setInternalSelected] = React.useState<string[]>(
@@ -8549,10 +8414,7 @@ import type { EventGroupComponentProps } from "./types";
 /**
  * Event group with accordion section and group-level checkbox
  */
-export const EventGroupComponent = React.forwardRef<
-  HTMLDivElement,
-  EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const EventGroupComponent = React.forwardRef(
   (
     {
       group,
@@ -8564,8 +8426,8 @@ export const EventGroupComponent = React.forwardRef<
       defaultExpanded = false,
       className,
       ...props
-    },
-    ref
+    }: EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Calculate selection state for this group
     const groupEventIds = events.map((e) => e.id);
@@ -8728,10 +8590,7 @@ import type { EventItemComponentProps } from "./types";
 /**
  * Individual event item with checkbox
  */
-export const EventItemComponent = React.forwardRef<
-  HTMLDivElement,
-  EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>
->(({ event, isSelected, onSelectionChange, className, ...props }, ref) => {
+export const EventItemComponent = React.forwardRef(({ event, isSelected, onSelectionChange, className, ...props }: EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       ref={ref}
@@ -8942,10 +8801,7 @@ const generateId = () =>
  * />
  * \`\`\`
  */
-export const KeyValueInput = React.forwardRef<
-  HTMLDivElement,
-  KeyValueInputProps
->(
+export const KeyValueInput = React.forwardRef(
   (
     {
       title,
@@ -8963,8 +8819,8 @@ export const KeyValueInput = React.forwardRef<
       defaultValue = [],
       className,
       ...props
-    },
-    ref
+    }: KeyValueInputProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalPairs, setInternalPairs] =
@@ -9161,10 +9017,7 @@ import type { KeyValueRowProps } from "./types";
 /**
  * Individual key-value pair row with inputs and delete button
  */
-export const KeyValueRow = React.forwardRef<
-  HTMLDivElement,
-  KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const KeyValueRow = React.forwardRef(
   (
     {
       pair,
@@ -9180,8 +9033,8 @@ export const KeyValueRow = React.forwardRef<
       onDelete,
       className,
       ...props
-    },
-    ref
+    }: KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Determine if inputs should show error state
     const keyHasError = isDuplicateKey || (keyRequired && isKeyEmpty);
@@ -9396,10 +9249,7 @@ export interface ApiFeatureCardProps
  * />
  * \`\`\`
  */
-export const ApiFeatureCard = React.forwardRef<
-  HTMLDivElement,
-  ApiFeatureCardProps
->(
+export const ApiFeatureCard = React.forwardRef(
   (
     {
       icon,
@@ -9412,8 +9262,8 @@ export const ApiFeatureCard = React.forwardRef<
       capabilitiesLabel = "Key Capabilities",
       className,
       ...props
-    },
-    ref
+    }: ApiFeatureCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -9585,10 +9435,7 @@ export interface EndpointDetailsProps
  * />
  * \`\`\`
  */
-export const EndpointDetails = React.forwardRef<
-  HTMLDivElement,
-  EndpointDetailsProps
->(
+export const EndpointDetails = React.forwardRef(
   (
     {
       title = "Endpoint Details",
@@ -9609,8 +9456,8 @@ export const EndpointDetails = React.forwardRef<
       revokeDescription = "Revoking access will immediately disable all integrations using these keys.",
       className,
       ...props
-    },
-    ref
+    }: EndpointDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isCalling = variant === "calling";
 
@@ -9800,10 +9647,7 @@ export interface AlertConfigurationProps {
  * AlertConfiguration component displays current alert values for minimum balance and top-up.
  * Used in payment auto-pay setup to show notification thresholds.
  */
-export const AlertConfiguration = React.forwardRef<
-  HTMLDivElement,
-  AlertConfigurationProps
->(
+export const AlertConfiguration = React.forwardRef(
   (
     {
       minimumBalance,
@@ -9811,8 +9655,8 @@ export const AlertConfiguration = React.forwardRef<
       currencySymbol = "₹",
       onEdit,
       className,
-    },
-    ref
+    }: AlertConfigurationProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const formatCurrency = (amount: number) => {
       const formatted = amount.toLocaleString("en-IN", {
@@ -9947,10 +9791,7 @@ export interface AlertValuesModalProps {
  * AlertValuesModal component for editing alert configuration values.
  * Displays a form with inputs for minimum balance and minimum top-up.
  */
-export const AlertValuesModal = React.forwardRef<
-  HTMLDivElement,
-  AlertValuesModalProps
->(
+export const AlertValuesModal = React.forwardRef(
   (
     {
       open,
@@ -9962,8 +9803,8 @@ export const AlertValuesModal = React.forwardRef<
       topupOptions,
       onSave,
       loading = false,
-    },
-    ref
+    }: AlertValuesModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [minimumBalance, setMinimumBalance] = React.useState(
       initialMinimumBalance.toString()
@@ -10112,7 +9953,7 @@ import type { AutoPaySetupProps } from "./types";
  * />
  * \`\`\`
  */
-export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
+export const AutoPaySetup = React.forwardRef(
   (
     {
       title = "Auto-pay setup",
@@ -10131,8 +9972,8 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: AutoPaySetupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 
@@ -10323,7 +10164,7 @@ import type { BankDetailsProps, BankDetailItem } from "./types";
  * />
  * \`\`\`
  */
-export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
+export const BankDetails = React.forwardRef(
   (
     {
       title = "Bank details",
@@ -10335,8 +10176,8 @@ export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
       onOpenChange,
       onCopy,
       className,
-    },
-    ref
+    }: BankDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 
@@ -11152,8 +10993,8 @@ const BreakdownCardRow = ({ item }: { item: BreakdownCardItem }) => (
  * />
  * \`\`\`
  */
-export const PaymentSummary = React.forwardRef<HTMLDivElement, PaymentSummaryProps>(
-  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }, ref) => {
+export const PaymentSummary = React.forwardRef(
+  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }: PaymentSummaryProps, ref: React.Ref<HTMLDivElement>) => {
     const hasItemsBorder =
       items.length > 0 &&
       (!!subtotal || !!breakdownCard || (summaryItems && summaryItems.length > 0));
@@ -11350,10 +11191,7 @@ import type { PaymentOptionCardProps } from "./types";
  * />
  * \`\`\`
  */
-export const PaymentOptionCard = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardProps
->(
+export const PaymentOptionCard = React.forwardRef(
   (
     {
       title = "Select payment method",
@@ -11368,8 +11206,8 @@ export const PaymentOptionCard = React.forwardRef<
       loading = false,
       disabled = false,
       className,
-    },
-    ref
+    }: PaymentOptionCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalSelected, setInternalSelected] = React.useState<
       string | undefined
@@ -11502,10 +11340,7 @@ export interface PaymentOptionCardModalProps
  * />
  * \`\`\`
  */
-export const PaymentOptionCardModal = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardModalProps
->(
+export const PaymentOptionCardModal = React.forwardRef(
   (
     {
       open,
@@ -11521,8 +11356,8 @@ export const PaymentOptionCardModal = React.forwardRef<
       loading,
       disabled,
       className,
-    },
-    ref
+    }: PaymentOptionCardModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onOpenChange(false);
@@ -11660,7 +11495,7 @@ const DEFAULT_FEATURES: PlanFeature[] = [
   { name: "Channel(s)", free: "1 Pair(s)", rate: "₹ 300.00" },
 ];
 
-const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
+const PlanDetailModal = React.forwardRef(
   (
     {
       open,
@@ -11671,8 +11506,8 @@ const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanDetailModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onClose?.();
@@ -11881,7 +11716,7 @@ const renderOptionIcon = (icon: BillingCycleOption["icon"]) => {
   return icon;
 };
 
-const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>(
+const PlanUpgradeModal = React.forwardRef(
   (
     {
       open,
@@ -11898,8 +11733,8 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const initialOptionId = defaultSelectedOptionId ?? options[0]?.id;
     const [internalSelectedOptionId, setInternalSelectedOptionId] = React.useState<
@@ -12177,10 +12012,7 @@ const getStatusIcon = (tone: PlanUpgradeSummaryTone) => {
   return <AlertCircle className="size-6 text-semantic-warning-text" aria-hidden="true" />;
 };
 
-const PlanUpgradeSummaryModal = React.forwardRef<
-  HTMLDivElement,
-  PlanUpgradeSummaryModalProps
->(
+const PlanUpgradeSummaryModal = React.forwardRef(
   (
     {
       open,
@@ -12202,8 +12034,8 @@ const PlanUpgradeSummaryModal = React.forwardRef<
       closeAriaLabel = "Close plan summary modal",
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeSummaryModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedStatus = status ?? defaultStatusByMode[mode];
     const resolvedTone = resolvedStatus.tone ?? defaultStatusByMode[mode].tone ?? "warning";
@@ -12440,7 +12272,7 @@ import type { LetUsDriveCardProps } from "./types";
  * />
  * \`\`\`
  */
-const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
+const LetUsDriveCard = React.forwardRef(
   (
     {
       title,
@@ -12460,8 +12292,8 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: LetUsDriveCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalExpanded, setInternalExpanded] = React.useState(false);
     const isControlled = controlledExpanded !== undefined;
@@ -12724,7 +12556,7 @@ import type { PowerUpCardProps } from "./types";
  * />
  * \`\`\`
  */
-const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
+const PowerUpCard = React.forwardRef(
   (
     {
       icon,
@@ -12735,8 +12567,8 @@ const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: PowerUpCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -12863,7 +12695,7 @@ import type { PricingCardProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
+const PricingCard = React.forwardRef(
   (
     {
       planName,
@@ -12887,8 +12719,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       infoText,
       className,
       ...props
-    },
-    ref
+    }: PricingCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const buttonText =
       ctaText || (isCurrentPlan ? "Current plan" : "Select plan");
@@ -13064,8 +12896,8 @@ interface PlanIconProps extends React.SVGAttributes<SVGElement> {
   className?: string;
 }
 
-const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const CompactCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -13104,8 +12936,8 @@ const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 CompactCarIcon.displayName = "CompactCarIcon";
 
-const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SedanCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -13156,8 +12988,8 @@ const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 SedanCarIcon.displayName = "SedanCarIcon";
 
-const SuvCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SuvCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -13370,7 +13202,7 @@ import type { PricingPageProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
+const PricingPage = React.forwardRef(
   (
     {
       title = "Select business plan",
@@ -13393,8 +13225,8 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       letUsDriveExpandMode,
       className,
       ...props
-    },
-    ref
+    }: PricingPageProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Internal state for uncontrolled mode
     const [internalTab, setInternalTab] = React.useState(
@@ -13705,7 +13537,7 @@ import type { PricingToggleProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
+const PricingToggle = React.forwardRef(
   (
     {
       tabs,
@@ -13718,8 +13550,8 @@ const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
       yearlyLabel = "Yearly (Save 20%)",
       className,
       ...props
-    },
-    ref
+    }: PricingToggleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isYearly = billingPeriod === "yearly";
 
@@ -13964,8 +13796,8 @@ interface BrandIconProps extends React.SVGAttributes<SVGElement> {
  * Used in TalkToUsModal and available for any component that needs
  * the MyOperator contact/chat branding.
  */
-const MyOperatorChatIcon = React.forwardRef<SVGSVGElement, BrandIconProps>(
-  ({ className, ...props }, ref) => (
+const MyOperatorChatIcon = React.forwardRef(
+  ({ className, ...props }: BrandIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -14098,8 +13930,8 @@ function getTypeLabel(
  * All displayed data (icon, badge, name, count, last published) comes from the \`bot\` prop.
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
-export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
+export const BotCard = React.forwardRef(
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }: BotCardProps, ref: React.Ref<HTMLDivElement>) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 
@@ -14264,10 +14096,7 @@ const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   },
 ];
 
-export const CreateBotModal = React.forwardRef<
-  HTMLDivElement,
-  CreateBotModalProps
->(({ open, onOpenChange, onSubmit, isLoading, className }, ref) => {
+export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, isLoading, className }: CreateBotModalProps, ref: React.Ref<HTMLDivElement>) => {
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
 
@@ -14415,15 +14244,15 @@ import type { CreateBotFlowProps } from "./types";
  * Create bot flow: "Create new bot" card + Create Bot modal. No header (title/subtitle/search).
  * Use when you want the create-bot experience without the list header.
  */
-export const CreateBotFlow = React.forwardRef<HTMLDivElement, CreateBotFlowProps>(
+export const CreateBotFlow = React.forwardRef(
   (
     {
       createCardLabel = "Create new bot",
       onSubmit,
       className,
       ...props
-    },
-    ref
+    }: CreateBotFlowProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -14539,7 +14368,7 @@ import { BotListGrid } from "./bot-list-grid";
 import { CreateBotModal } from "./create-bot-modal";
 import type { BotListProps } from "./types";
 
-export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
+export const BotList = React.forwardRef(
   (
     {
       bots = [],
@@ -14555,8 +14384,8 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       createCardLabel = "Create new bot",
       className,
       ...props
-    },
-    ref
+    }: BotListProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [createModalOpen, setCreateModalOpen] = React.useState(false);
@@ -14666,10 +14495,10 @@ const botListHeaderVariants = cva("min-w-0", {
   },
 });
 
-export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
+export const BotListHeader = React.forwardRef(
   (
-    { title, subtitle, variant = "default", rightContent, className, ...props },
-    ref
+    { title, subtitle, variant = "default", rightContent, className, ...props }: BotListHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const rootClassName = cn(botListHeaderVariants({ variant }), className);
     const titleBlock = (
@@ -14716,7 +14545,7 @@ import { Search } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListSearchProps } from "./types";
 
-export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps>(
+export const BotListSearch = React.forwardRef(
   (
     {
       value,
@@ -14725,8 +14554,8 @@ export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps
       defaultValue,
       className,
       ...props
-    },
-    ref
+    }: BotListSearchProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
     const isControlled = value !== undefined;
@@ -14773,18 +14602,15 @@ import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListCreateCardProps } from "./types";
 
-export const BotListCreateCard = React.forwardRef<
-  HTMLButtonElement,
-  BotListCreateCardProps
->(
+export const BotListCreateCard = React.forwardRef(
   (
     {
       label = "Create new bot",
       onClick,
       className,
       ...props
-    },
-    ref
+    }: BotListCreateCardProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => (
     <button
       ref={ref}
@@ -14833,8 +14659,8 @@ BotListCreateCard.displayName = "BotListCreateCard";
 import { cn } from "../../../lib/utils";
 import type { BotListGridProps } from "./types";
 
-export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
-  ({ children, className, ...props }, ref) => (
+export const BotListGrid = React.forwardRef(
+  ({ children, className, ...props }: BotListGridProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn(
@@ -15135,7 +14961,7 @@ function getTimeRemaining(progress: number) {
     : \`\${secs} seconds remaining\`;
 }
 
-const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
+const FileUploadModal = React.forwardRef(
   (
     {
       open,
@@ -15158,8 +14984,8 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
       loading = false,
       className,
       ...props
-    },
-    ref
+    }: FileUploadModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [items, setItems] = React.useState<UploadItem[]>([]);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -15529,8 +15355,8 @@ import { X, Play, File } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { AttachmentPreviewProps } from "./types";
 
-const AttachmentPreview = React.forwardRef<HTMLDivElement, AttachmentPreviewProps>(
-  ({ className, file, onRemove, ...props }, ref) => {
+const AttachmentPreview = React.forwardRef(
+  ({ className, file, onRemove, ...props }: AttachmentPreviewProps, ref: React.Ref<HTMLDivElement>) => {
     const url = React.useMemo(() => URL.createObjectURL(file), [file]);
 
     const isImage = file.type.startsWith("image/");
@@ -15688,7 +15514,7 @@ const BAR_WIDTH = 2;
 const BAR_GAP = 1.5;
 const SVG_HEIGHT = 32;
 
-const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
+const AudioMedia = React.forwardRef(
   (
     {
       className,
@@ -15702,8 +15528,8 @@ const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
       onPlayChange,
       onSpeedChange,
       ...props
-    },
-    ref
+    }: AudioMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = React.useState(false);
     const [speed, setSpeed] = React.useState(1);
@@ -15903,8 +15729,8 @@ import { Reply, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { CarouselMediaProps } from "./types";
 
-const CarouselMedia = React.forwardRef<HTMLDivElement, CarouselMediaProps>(
-  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }, ref) => {
+const CarouselMedia = React.forwardRef(
+  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }: CarouselMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(
@@ -16158,7 +15984,7 @@ function DeliveryFooter({
  * </ChatBubble>
  * \`\`\`
  */
-const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+const ChatBubble = React.forwardRef(
   (
     {
       variant,
@@ -16173,8 +15999,8 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       children,
       className,
       ...props
-    },
-    ref
+    }: ChatBubbleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const hasMedia = !!media;
 
@@ -16347,7 +16173,7 @@ import type { ChatComposerProps } from "./types";
  * />
  * \`\`\`
  */
-const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
+const ChatComposer = React.forwardRef(
   (
     {
       className,
@@ -16371,8 +16197,8 @@ const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       expiredMessage = "This chat has expired. Send a template to continue.",
       onTemplateClick,
       ...props
-    },
-    ref
+    }: ChatComposerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -16589,7 +16415,7 @@ import { cn } from "../../../lib/utils";
 import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
 import type { DocMediaProps } from "./types";
 
-const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
+const DocMedia = React.forwardRef(
   (
     {
       className,
@@ -16602,8 +16428,8 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
       caption,
       onDownload,
       ...props
-    },
-    ref
+    }: DocMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     if (variant === "preview") {
       return (
@@ -16790,7 +16616,7 @@ import type { VideoMediaProps } from "./types";
 
 const DEFAULT_SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
-const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
+const VideoMedia = React.forwardRef(
   (
     {
       className,
@@ -16802,8 +16628,8 @@ const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
       onSpeedChange,
       onClick,
       ...props
-    },
-    ref
+    }: VideoMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = useState(false);
     const [muted, setMuted] = useState(false);
@@ -17088,7 +16914,7 @@ const DEFAULT_DATA: IvrBotConfigData = {
 };
 
 // ─── Main IvrBotConfig ────────────────────────────────────────────────────────
-export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
+export const IvrBotConfig = React.forwardRef(
   (
     {
       botTitle = "IVR bot",
@@ -17135,8 +16961,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       callEndThresholdMin,
       callEndThresholdMax,
       className,
-    },
-    ref
+    }: IvrBotConfigProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [data, setData] = React.useState<IvrBotConfigData>({
       ...DEFAULT_DATA,
@@ -17773,10 +17599,7 @@ function KeyValueTable({
 }
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
-export const CreateFunctionModal = React.forwardRef<
-  HTMLDivElement,
-  CreateFunctionModalProps
->(
+export const CreateFunctionModal = React.forwardRef(
   (
     {
       open,
@@ -17792,8 +17615,8 @@ export const CreateFunctionModal = React.forwardRef<
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       disabled = false,
       className,
-    },
-    ref
+    }: CreateFunctionModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
@@ -18648,7 +18471,7 @@ const DEFAULT_LANGUAGE_OPTIONS: LanguageOption[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
+const BotIdentityCard = React.forwardRef(
   (
     {
       data,
@@ -18662,8 +18485,8 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       playingVoice,
       disabled,
       className,
-    },
-    ref
+    }: BotIdentityCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -19008,7 +18831,7 @@ function SectionCard({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
+const BotBehaviorCard = React.forwardRef(
   (
     {
       data,
@@ -19018,8 +18841,8 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       maxLength = 5000,
       disabled,
       className,
-    },
-    ref
+    }: BotBehaviorCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
@@ -19246,7 +19069,7 @@ const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: Badg
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProps>(
+const KnowledgeBaseCard = React.forwardRef(
   (
     {
       files,
@@ -19258,8 +19081,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       downloadDisabled,
       deleteDisabled,
       className,
-    },
-    ref
+    }: KnowledgeBaseCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -19411,8 +19234,8 @@ export interface FunctionsCardProps {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
+const FunctionsCard = React.forwardRef(
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }: FunctionsCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}
@@ -19598,8 +19421,8 @@ function Field({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }, ref) => {
+const FrustrationHandoverCard = React.forwardRef(
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}
@@ -19772,7 +19595,7 @@ function NumberSpinner({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCardProps>(
+const AdvancedSettingsCard = React.forwardRef(
   (
     {
       data,
@@ -19783,8 +19606,8 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
       callEndThresholdMax = 10,
       disabled,
       className,
-    },
-    ref
+    }: AdvancedSettingsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -19950,10 +19773,7 @@ function PromptField({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FallbackPromptsCard = React.forwardRef<
-  HTMLDivElement,
-  FallbackPromptsCardProps
->(
+const FallbackPromptsCard = React.forwardRef(
   (
     {
       data,
@@ -19964,8 +19784,8 @@ const FallbackPromptsCard = React.forwardRef<
       disabled,
       defaultOpen = false,
       className,
-    },
-    ref
+    }: FallbackPromptsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -20325,7 +20145,7 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
  * />
  * \`\`\`
  */
-export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
+export const WalletTopup = React.forwardRef(
   (
     {
       title = "Instant wallet top-up",
@@ -20372,8 +20192,8 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: WalletTopupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isOpenControlled = open !== undefined;
 

@@ -574,10 +574,7 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types";
  * />
  * \`\`\`
  */
-export const EventSelector = React.forwardRef<
-  HTMLDivElement,
-  EventSelectorProps
->(
+export const EventSelector = React.forwardRef(
   (
     {
       events,
@@ -592,8 +589,8 @@ export const EventSelector = React.forwardRef<
       renderEmptyGroup,
       className,
       ...props
-    },
-    ref
+    }: EventSelectorProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalSelected, setInternalSelected] = React.useState<string[]>(
@@ -754,10 +751,7 @@ import type { EventGroupComponentProps } from "./types";
 /**
  * Event group with accordion section and group-level checkbox
  */
-export const EventGroupComponent = React.forwardRef<
-  HTMLDivElement,
-  EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const EventGroupComponent = React.forwardRef(
   (
     {
       group,
@@ -769,8 +763,8 @@ export const EventGroupComponent = React.forwardRef<
       defaultExpanded = false,
       className,
       ...props
-    },
-    ref
+    }: EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Calculate selection state for this group
     const groupEventIds = events.map((e) => e.id);
@@ -933,10 +927,7 @@ import type { EventItemComponentProps } from "./types";
 /**
  * Individual event item with checkbox
  */
-export const EventItemComponent = React.forwardRef<
-  HTMLDivElement,
-  EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>
->(({ event, isSelected, onSelectionChange, className, ...props }, ref) => {
+export const EventItemComponent = React.forwardRef(({ event, isSelected, onSelectionChange, className, ...props }: EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       ref={ref}
@@ -1147,10 +1138,7 @@ const generateId = () =>
  * />
  * \`\`\`
  */
-export const KeyValueInput = React.forwardRef<
-  HTMLDivElement,
-  KeyValueInputProps
->(
+export const KeyValueInput = React.forwardRef(
   (
     {
       title,
@@ -1168,8 +1156,8 @@ export const KeyValueInput = React.forwardRef<
       defaultValue = [],
       className,
       ...props
-    },
-    ref
+    }: KeyValueInputProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalPairs, setInternalPairs] =
@@ -1366,10 +1354,7 @@ import type { KeyValueRowProps } from "./types";
 /**
  * Individual key-value pair row with inputs and delete button
  */
-export const KeyValueRow = React.forwardRef<
-  HTMLDivElement,
-  KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const KeyValueRow = React.forwardRef(
   (
     {
       pair,
@@ -1385,8 +1370,8 @@ export const KeyValueRow = React.forwardRef<
       onDelete,
       className,
       ...props
-    },
-    ref
+    }: KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Determine if inputs should show error state
     const keyHasError = isDuplicateKey || (keyRequired && isKeyEmpty);
@@ -1601,10 +1586,7 @@ export interface ApiFeatureCardProps
  * />
  * \`\`\`
  */
-export const ApiFeatureCard = React.forwardRef<
-  HTMLDivElement,
-  ApiFeatureCardProps
->(
+export const ApiFeatureCard = React.forwardRef(
   (
     {
       icon,
@@ -1617,8 +1599,8 @@ export const ApiFeatureCard = React.forwardRef<
       capabilitiesLabel = "Key Capabilities",
       className,
       ...props
-    },
-    ref
+    }: ApiFeatureCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -1790,10 +1772,7 @@ export interface EndpointDetailsProps
  * />
  * \`\`\`
  */
-export const EndpointDetails = React.forwardRef<
-  HTMLDivElement,
-  EndpointDetailsProps
->(
+export const EndpointDetails = React.forwardRef(
   (
     {
       title = "Endpoint Details",
@@ -1814,8 +1793,8 @@ export const EndpointDetails = React.forwardRef<
       revokeDescription = "Revoking access will immediately disable all integrations using these keys.",
       className,
       ...props
-    },
-    ref
+    }: EndpointDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isCalling = variant === "calling";
 
@@ -2005,10 +1984,7 @@ export interface AlertConfigurationProps {
  * AlertConfiguration component displays current alert values for minimum balance and top-up.
  * Used in payment auto-pay setup to show notification thresholds.
  */
-export const AlertConfiguration = React.forwardRef<
-  HTMLDivElement,
-  AlertConfigurationProps
->(
+export const AlertConfiguration = React.forwardRef(
   (
     {
       minimumBalance,
@@ -2016,8 +1992,8 @@ export const AlertConfiguration = React.forwardRef<
       currencySymbol = "₹",
       onEdit,
       className,
-    },
-    ref
+    }: AlertConfigurationProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const formatCurrency = (amount: number) => {
       const formatted = amount.toLocaleString("en-IN", {
@@ -2152,10 +2128,7 @@ export interface AlertValuesModalProps {
  * AlertValuesModal component for editing alert configuration values.
  * Displays a form with inputs for minimum balance and minimum top-up.
  */
-export const AlertValuesModal = React.forwardRef<
-  HTMLDivElement,
-  AlertValuesModalProps
->(
+export const AlertValuesModal = React.forwardRef(
   (
     {
       open,
@@ -2167,8 +2140,8 @@ export const AlertValuesModal = React.forwardRef<
       topupOptions,
       onSave,
       loading = false,
-    },
-    ref
+    }: AlertValuesModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [minimumBalance, setMinimumBalance] = React.useState(
       initialMinimumBalance.toString()
@@ -2317,7 +2290,7 @@ import type { AutoPaySetupProps } from "./types";
  * />
  * \`\`\`
  */
-export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
+export const AutoPaySetup = React.forwardRef(
   (
     {
       title = "Auto-pay setup",
@@ -2336,8 +2309,8 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: AutoPaySetupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 
@@ -2528,7 +2501,7 @@ import type { BankDetailsProps, BankDetailItem } from "./types";
  * />
  * \`\`\`
  */
-export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
+export const BankDetails = React.forwardRef(
   (
     {
       title = "Bank details",
@@ -2540,8 +2513,8 @@ export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
       onOpenChange,
       onCopy,
       className,
-    },
-    ref
+    }: BankDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 
@@ -3357,8 +3330,8 @@ const BreakdownCardRow = ({ item }: { item: BreakdownCardItem }) => (
  * />
  * \`\`\`
  */
-export const PaymentSummary = React.forwardRef<HTMLDivElement, PaymentSummaryProps>(
-  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }, ref) => {
+export const PaymentSummary = React.forwardRef(
+  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }: PaymentSummaryProps, ref: React.Ref<HTMLDivElement>) => {
     const hasItemsBorder =
       items.length > 0 &&
       (!!subtotal || !!breakdownCard || (summaryItems && summaryItems.length > 0));
@@ -3555,10 +3528,7 @@ import type { PaymentOptionCardProps } from "./types";
  * />
  * \`\`\`
  */
-export const PaymentOptionCard = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardProps
->(
+export const PaymentOptionCard = React.forwardRef(
   (
     {
       title = "Select payment method",
@@ -3573,8 +3543,8 @@ export const PaymentOptionCard = React.forwardRef<
       loading = false,
       disabled = false,
       className,
-    },
-    ref
+    }: PaymentOptionCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalSelected, setInternalSelected] = React.useState<
       string | undefined
@@ -3707,10 +3677,7 @@ export interface PaymentOptionCardModalProps
  * />
  * \`\`\`
  */
-export const PaymentOptionCardModal = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardModalProps
->(
+export const PaymentOptionCardModal = React.forwardRef(
   (
     {
       open,
@@ -3726,8 +3693,8 @@ export const PaymentOptionCardModal = React.forwardRef<
       loading,
       disabled,
       className,
-    },
-    ref
+    }: PaymentOptionCardModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onOpenChange(false);
@@ -3865,7 +3832,7 @@ const DEFAULT_FEATURES: PlanFeature[] = [
   { name: "Channel(s)", free: "1 Pair(s)", rate: "₹ 300.00" },
 ];
 
-const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
+const PlanDetailModal = React.forwardRef(
   (
     {
       open,
@@ -3876,8 +3843,8 @@ const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanDetailModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onClose?.();
@@ -4086,7 +4053,7 @@ const renderOptionIcon = (icon: BillingCycleOption["icon"]) => {
   return icon;
 };
 
-const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>(
+const PlanUpgradeModal = React.forwardRef(
   (
     {
       open,
@@ -4103,8 +4070,8 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const initialOptionId = defaultSelectedOptionId ?? options[0]?.id;
     const [internalSelectedOptionId, setInternalSelectedOptionId] = React.useState<
@@ -4382,10 +4349,7 @@ const getStatusIcon = (tone: PlanUpgradeSummaryTone) => {
   return <AlertCircle className="size-6 text-semantic-warning-text" aria-hidden="true" />;
 };
 
-const PlanUpgradeSummaryModal = React.forwardRef<
-  HTMLDivElement,
-  PlanUpgradeSummaryModalProps
->(
+const PlanUpgradeSummaryModal = React.forwardRef(
   (
     {
       open,
@@ -4407,8 +4371,8 @@ const PlanUpgradeSummaryModal = React.forwardRef<
       closeAriaLabel = "Close plan summary modal",
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeSummaryModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedStatus = status ?? defaultStatusByMode[mode];
     const resolvedTone = resolvedStatus.tone ?? defaultStatusByMode[mode].tone ?? "warning";
@@ -4645,7 +4609,7 @@ import type { LetUsDriveCardProps } from "./types";
  * />
  * \`\`\`
  */
-const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
+const LetUsDriveCard = React.forwardRef(
   (
     {
       title,
@@ -4665,8 +4629,8 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: LetUsDriveCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalExpanded, setInternalExpanded] = React.useState(false);
     const isControlled = controlledExpanded !== undefined;
@@ -4929,7 +4893,7 @@ import type { PowerUpCardProps } from "./types";
  * />
  * \`\`\`
  */
-const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
+const PowerUpCard = React.forwardRef(
   (
     {
       icon,
@@ -4940,8 +4904,8 @@ const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: PowerUpCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -5068,7 +5032,7 @@ import type { PricingCardProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
+const PricingCard = React.forwardRef(
   (
     {
       planName,
@@ -5092,8 +5056,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       infoText,
       className,
       ...props
-    },
-    ref
+    }: PricingCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const buttonText =
       ctaText || (isCurrentPlan ? "Current plan" : "Select plan");
@@ -5269,8 +5233,8 @@ interface PlanIconProps extends React.SVGAttributes<SVGElement> {
   className?: string;
 }
 
-const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const CompactCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -5309,8 +5273,8 @@ const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 CompactCarIcon.displayName = "CompactCarIcon";
 
-const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SedanCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -5361,8 +5325,8 @@ const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 SedanCarIcon.displayName = "SedanCarIcon";
 
-const SuvCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SuvCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -5575,7 +5539,7 @@ import type { PricingPageProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
+const PricingPage = React.forwardRef(
   (
     {
       title = "Select business plan",
@@ -5598,8 +5562,8 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       letUsDriveExpandMode,
       className,
       ...props
-    },
-    ref
+    }: PricingPageProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Internal state for uncontrolled mode
     const [internalTab, setInternalTab] = React.useState(
@@ -5910,7 +5874,7 @@ import type { PricingToggleProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
+const PricingToggle = React.forwardRef(
   (
     {
       tabs,
@@ -5923,8 +5887,8 @@ const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
       yearlyLabel = "Yearly (Save 20%)",
       className,
       ...props
-    },
-    ref
+    }: PricingToggleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isYearly = billingPeriod === "yearly";
 
@@ -6169,8 +6133,8 @@ interface BrandIconProps extends React.SVGAttributes<SVGElement> {
  * Used in TalkToUsModal and available for any component that needs
  * the MyOperator contact/chat branding.
  */
-const MyOperatorChatIcon = React.forwardRef<SVGSVGElement, BrandIconProps>(
-  ({ className, ...props }, ref) => (
+const MyOperatorChatIcon = React.forwardRef(
+  ({ className, ...props }: BrandIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -6303,8 +6267,8 @@ function getTypeLabel(
  * All displayed data (icon, badge, name, count, last published) comes from the \`bot\` prop.
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
-export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
+export const BotCard = React.forwardRef(
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }: BotCardProps, ref: React.Ref<HTMLDivElement>) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 
@@ -6469,10 +6433,7 @@ const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   },
 ];
 
-export const CreateBotModal = React.forwardRef<
-  HTMLDivElement,
-  CreateBotModalProps
->(({ open, onOpenChange, onSubmit, isLoading, className }, ref) => {
+export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, isLoading, className }: CreateBotModalProps, ref: React.Ref<HTMLDivElement>) => {
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
 
@@ -6620,15 +6581,15 @@ import type { CreateBotFlowProps } from "./types";
  * Create bot flow: "Create new bot" card + Create Bot modal. No header (title/subtitle/search).
  * Use when you want the create-bot experience without the list header.
  */
-export const CreateBotFlow = React.forwardRef<HTMLDivElement, CreateBotFlowProps>(
+export const CreateBotFlow = React.forwardRef(
   (
     {
       createCardLabel = "Create new bot",
       onSubmit,
       className,
       ...props
-    },
-    ref
+    }: CreateBotFlowProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -6744,7 +6705,7 @@ import { BotListGrid } from "./bot-list-grid";
 import { CreateBotModal } from "./create-bot-modal";
 import type { BotListProps } from "./types";
 
-export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
+export const BotList = React.forwardRef(
   (
     {
       bots = [],
@@ -6760,8 +6721,8 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       createCardLabel = "Create new bot",
       className,
       ...props
-    },
-    ref
+    }: BotListProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [createModalOpen, setCreateModalOpen] = React.useState(false);
@@ -6871,10 +6832,10 @@ const botListHeaderVariants = cva("min-w-0", {
   },
 });
 
-export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
+export const BotListHeader = React.forwardRef(
   (
-    { title, subtitle, variant = "default", rightContent, className, ...props },
-    ref
+    { title, subtitle, variant = "default", rightContent, className, ...props }: BotListHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const rootClassName = cn(botListHeaderVariants({ variant }), className);
     const titleBlock = (
@@ -6921,7 +6882,7 @@ import { Search } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListSearchProps } from "./types";
 
-export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps>(
+export const BotListSearch = React.forwardRef(
   (
     {
       value,
@@ -6930,8 +6891,8 @@ export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps
       defaultValue,
       className,
       ...props
-    },
-    ref
+    }: BotListSearchProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
     const isControlled = value !== undefined;
@@ -6978,18 +6939,15 @@ import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListCreateCardProps } from "./types";
 
-export const BotListCreateCard = React.forwardRef<
-  HTMLButtonElement,
-  BotListCreateCardProps
->(
+export const BotListCreateCard = React.forwardRef(
   (
     {
       label = "Create new bot",
       onClick,
       className,
       ...props
-    },
-    ref
+    }: BotListCreateCardProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => (
     <button
       ref={ref}
@@ -7038,8 +6996,8 @@ BotListCreateCard.displayName = "BotListCreateCard";
 import { cn } from "../../../lib/utils";
 import type { BotListGridProps } from "./types";
 
-export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
-  ({ children, className, ...props }, ref) => (
+export const BotListGrid = React.forwardRef(
+  ({ children, className, ...props }: BotListGridProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn(
@@ -7340,7 +7298,7 @@ function getTimeRemaining(progress: number) {
     : \`\${secs} seconds remaining\`;
 }
 
-const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
+const FileUploadModal = React.forwardRef(
   (
     {
       open,
@@ -7363,8 +7321,8 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
       loading = false,
       className,
       ...props
-    },
-    ref
+    }: FileUploadModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [items, setItems] = React.useState<UploadItem[]>([]);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -7734,8 +7692,8 @@ import { X, Play, File } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { AttachmentPreviewProps } from "./types";
 
-const AttachmentPreview = React.forwardRef<HTMLDivElement, AttachmentPreviewProps>(
-  ({ className, file, onRemove, ...props }, ref) => {
+const AttachmentPreview = React.forwardRef(
+  ({ className, file, onRemove, ...props }: AttachmentPreviewProps, ref: React.Ref<HTMLDivElement>) => {
     const url = React.useMemo(() => URL.createObjectURL(file), [file]);
 
     const isImage = file.type.startsWith("image/");
@@ -7893,7 +7851,7 @@ const BAR_WIDTH = 2;
 const BAR_GAP = 1.5;
 const SVG_HEIGHT = 32;
 
-const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
+const AudioMedia = React.forwardRef(
   (
     {
       className,
@@ -7907,8 +7865,8 @@ const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
       onPlayChange,
       onSpeedChange,
       ...props
-    },
-    ref
+    }: AudioMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = React.useState(false);
     const [speed, setSpeed] = React.useState(1);
@@ -8108,8 +8066,8 @@ import { Reply, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { CarouselMediaProps } from "./types";
 
-const CarouselMedia = React.forwardRef<HTMLDivElement, CarouselMediaProps>(
-  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }, ref) => {
+const CarouselMedia = React.forwardRef(
+  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }: CarouselMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(
@@ -8363,7 +8321,7 @@ function DeliveryFooter({
  * </ChatBubble>
  * \`\`\`
  */
-const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+const ChatBubble = React.forwardRef(
   (
     {
       variant,
@@ -8378,8 +8336,8 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       children,
       className,
       ...props
-    },
-    ref
+    }: ChatBubbleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const hasMedia = !!media;
 
@@ -8552,7 +8510,7 @@ import type { ChatComposerProps } from "./types";
  * />
  * \`\`\`
  */
-const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
+const ChatComposer = React.forwardRef(
   (
     {
       className,
@@ -8576,8 +8534,8 @@ const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       expiredMessage = "This chat has expired. Send a template to continue.",
       onTemplateClick,
       ...props
-    },
-    ref
+    }: ChatComposerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -8794,7 +8752,7 @@ import { cn } from "../../../lib/utils";
 import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
 import type { DocMediaProps } from "./types";
 
-const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
+const DocMedia = React.forwardRef(
   (
     {
       className,
@@ -8807,8 +8765,8 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
       caption,
       onDownload,
       ...props
-    },
-    ref
+    }: DocMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     if (variant === "preview") {
       return (
@@ -8995,7 +8953,7 @@ import type { VideoMediaProps } from "./types";
 
 const DEFAULT_SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
-const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
+const VideoMedia = React.forwardRef(
   (
     {
       className,
@@ -9007,8 +8965,8 @@ const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
       onSpeedChange,
       onClick,
       ...props
-    },
-    ref
+    }: VideoMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = useState(false);
     const [muted, setMuted] = useState(false);
@@ -9293,7 +9251,7 @@ const DEFAULT_DATA: IvrBotConfigData = {
 };
 
 // ─── Main IvrBotConfig ────────────────────────────────────────────────────────
-export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
+export const IvrBotConfig = React.forwardRef(
   (
     {
       botTitle = "IVR bot",
@@ -9340,8 +9298,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       callEndThresholdMin,
       callEndThresholdMax,
       className,
-    },
-    ref
+    }: IvrBotConfigProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [data, setData] = React.useState<IvrBotConfigData>({
       ...DEFAULT_DATA,
@@ -9978,10 +9936,7 @@ function KeyValueTable({
 }
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
-export const CreateFunctionModal = React.forwardRef<
-  HTMLDivElement,
-  CreateFunctionModalProps
->(
+export const CreateFunctionModal = React.forwardRef(
   (
     {
       open,
@@ -9997,8 +9952,8 @@ export const CreateFunctionModal = React.forwardRef<
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       disabled = false,
       className,
-    },
-    ref
+    }: CreateFunctionModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
@@ -10853,7 +10808,7 @@ const DEFAULT_LANGUAGE_OPTIONS: LanguageOption[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
+const BotIdentityCard = React.forwardRef(
   (
     {
       data,
@@ -10867,8 +10822,8 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       playingVoice,
       disabled,
       className,
-    },
-    ref
+    }: BotIdentityCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -11213,7 +11168,7 @@ function SectionCard({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
+const BotBehaviorCard = React.forwardRef(
   (
     {
       data,
@@ -11223,8 +11178,8 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       maxLength = 5000,
       disabled,
       className,
-    },
-    ref
+    }: BotBehaviorCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
@@ -11451,7 +11406,7 @@ const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: Badg
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProps>(
+const KnowledgeBaseCard = React.forwardRef(
   (
     {
       files,
@@ -11463,8 +11418,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       downloadDisabled,
       deleteDisabled,
       className,
-    },
-    ref
+    }: KnowledgeBaseCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -11616,8 +11571,8 @@ export interface FunctionsCardProps {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
+const FunctionsCard = React.forwardRef(
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }: FunctionsCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}
@@ -11803,8 +11758,8 @@ function Field({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }, ref) => {
+const FrustrationHandoverCard = React.forwardRef(
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}
@@ -11977,7 +11932,7 @@ function NumberSpinner({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCardProps>(
+const AdvancedSettingsCard = React.forwardRef(
   (
     {
       data,
@@ -11988,8 +11943,8 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
       callEndThresholdMax = 10,
       disabled,
       className,
-    },
-    ref
+    }: AdvancedSettingsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -12155,10 +12110,7 @@ function PromptField({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FallbackPromptsCard = React.forwardRef<
-  HTMLDivElement,
-  FallbackPromptsCardProps
->(
+const FallbackPromptsCard = React.forwardRef(
   (
     {
       data,
@@ -12169,8 +12121,8 @@ const FallbackPromptsCard = React.forwardRef<
       disabled,
       defaultOpen = false,
       className,
-    },
-    ref
+    }: FallbackPromptsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -12530,7 +12482,7 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
  * />
  * \`\`\`
  */
-export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
+export const WalletTopup = React.forwardRef(
   (
     {
       title = "Instant wallet top-up",
@@ -12577,8 +12529,8 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: WalletTopupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isOpenControlled = open !== undefined;
 

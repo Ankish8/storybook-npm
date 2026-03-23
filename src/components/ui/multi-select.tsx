@@ -93,7 +93,7 @@ export interface MultiSelectProps extends VariantProps<
  * />
  * ```
  */
-const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
+const MultiSelect = React.forwardRef(
   (
     {
       label,
@@ -116,8 +116,8 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
       state,
       id,
       name,
-    },
-    ref
+    }: MultiSelectProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for selected values (uncontrolled mode)
     const [internalValue, setInternalValue] =

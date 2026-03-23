@@ -20,10 +20,7 @@ export interface AlertConfigurationProps {
  * AlertConfiguration component displays current alert values for minimum balance and top-up.
  * Used in payment auto-pay setup to show notification thresholds.
  */
-export const AlertConfiguration = React.forwardRef<
-  HTMLDivElement,
-  AlertConfigurationProps
->(
+export const AlertConfiguration = React.forwardRef(
   (
     {
       minimumBalance,
@@ -31,8 +28,8 @@ export const AlertConfiguration = React.forwardRef<
       currencySymbol = "₹",
       onEdit,
       className,
-    },
-    ref
+    }: AlertConfigurationProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const formatCurrency = (amount: number) => {
       const formatted = amount.toLocaleString("en-IN", {

@@ -22,7 +22,7 @@ const BAR_WIDTH = 2;
 const BAR_GAP = 1.5;
 const SVG_HEIGHT = 32;
 
-const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
+const AudioMedia = React.forwardRef(
   (
     {
       className,
@@ -36,8 +36,8 @@ const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
       onPlayChange,
       onSpeedChange,
       ...props
-    },
-    ref
+    }: AudioMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = React.useState(false);
     const [speed, setSpeed] = React.useState(1);

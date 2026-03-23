@@ -24,7 +24,7 @@ import type { PricingCardProps } from "./types";
  * />
  * ```
  */
-const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
+const PricingCard = React.forwardRef(
   (
     {
       planName,
@@ -48,8 +48,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       infoText,
       className,
       ...props
-    },
-    ref
+    }: PricingCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const buttonText =
       ctaText || (isCurrentPlan ? "Current plan" : "Select plan");

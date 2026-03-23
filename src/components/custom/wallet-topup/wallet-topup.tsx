@@ -42,7 +42,7 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
  * />
  * ```
  */
-export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
+export const WalletTopup = React.forwardRef(
   (
     {
       title = "Instant wallet top-up",
@@ -89,8 +89,8 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: WalletTopupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isOpenControlled = open !== undefined;
 

@@ -129,7 +129,7 @@ export interface AccordionProps
   onValueChange?: (value: string[]) => void;
 }
 
-const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
+const Accordion = React.forwardRef(
   (
     {
       className,
@@ -140,8 +140,8 @@ const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
       onValueChange,
       children,
       ...props
-    },
-    ref
+    }: AccordionProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] =
       React.useState<string[]>(defaultValue);
@@ -197,8 +197,8 @@ export interface AccordionItemProps
   disabled?: boolean;
 }
 
-const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
-  ({ className, value, disabled, children, ...props }, ref) => {
+const AccordionItem = React.forwardRef(
+  ({ className, value, disabled, children, ...props }: AccordionItemProps, ref: React.Ref<HTMLDivElement>) => {
     const { value: openValues, variant } = useAccordionContext();
     const isOpen = openValues.includes(value);
 
@@ -238,10 +238,7 @@ export interface AccordionTriggerProps
   showChevron?: boolean;
 }
 
-const AccordionTrigger = React.forwardRef<
-  HTMLButtonElement,
-  AccordionTriggerProps
->(({ className, showChevron = true, children, ...props }, ref) => {
+const AccordionTrigger = React.forwardRef(({ className, showChevron = true, children, ...props }: AccordionTriggerProps, ref: React.Ref<HTMLButtonElement>) => {
   const {
     type,
     value: openValues,
@@ -300,10 +297,7 @@ export interface AccordionContentProps
     React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = React.forwardRef<
-  HTMLDivElement,
-  AccordionContentProps
->(({ className, children, ...props }, ref) => {
+const AccordionContent = React.forwardRef(({ className, children, ...props }: AccordionContentProps, ref: React.Ref<HTMLDivElement>) => {
   const { variant } = useAccordionContext();
   const { isOpen } = useAccordionItemContext();
   const contentRef = React.useRef<HTMLDivElement>(null);

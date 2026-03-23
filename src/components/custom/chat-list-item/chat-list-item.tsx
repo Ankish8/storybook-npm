@@ -178,7 +178,7 @@ function ChannelPill({
  * />
  * ```
  */
-const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
+const ChatListItem = React.forwardRef(
   (
     {
       name,
@@ -196,8 +196,8 @@ const ChatListItem = React.forwardRef<HTMLDivElement, ChatListItemProps>(
       onClick,
       className,
       ...props
-    },
-    ref
+    }: ChatListItemProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const defaultAriaLabel = `${name}. ${message}. ${timestamp}${unreadCount ? `. ${unreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
 

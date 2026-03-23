@@ -180,7 +180,7 @@ function SectionCard({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
+const BotBehaviorCard = React.forwardRef(
   (
     {
       data,
@@ -190,8 +190,8 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       maxLength = 5000,
       disabled,
       className,
-    },
-    ref
+    }: BotBehaviorCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;

@@ -93,7 +93,7 @@ export interface AlertProps
   defaultOpen?: boolean;
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+const Alert = React.forwardRef(
   (
     {
       className,
@@ -108,8 +108,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       defaultOpen = true,
       children,
       ...props
-    },
-    ref
+    }: AlertProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const isControlled = controlledOpen !== undefined;
@@ -181,10 +181,7 @@ Alert.displayName = "Alert";
 /**
  * Alert title component for the heading text.
  */
-const AlertTitle = React.forwardRef<
-  HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+const AlertTitle = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>, ref: React.Ref<HTMLHeadingElement>) => (
   <h5
     ref={ref}
     className={cn("font-semibold leading-tight tracking-tight", className)}
@@ -196,10 +193,7 @@ AlertTitle.displayName = "AlertTitle";
 /**
  * Alert description component for the body text.
  */
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
+const AlertDescription = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>, ref: React.Ref<HTMLParagraphElement>) => (
   <p ref={ref} className={cn("m-0 mt-1 text-sm", className)} {...props} />
 ));
 AlertDescription.displayName = "AlertDescription";

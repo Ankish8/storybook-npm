@@ -27,7 +27,7 @@ export interface PhoneInputProps
   wrapperClassName?: string;
 }
 
-const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
+const PhoneInput = React.forwardRef(
   (
     {
       className,
@@ -38,8 +38,8 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
       wrapperClassName,
       disabled,
       ...props
-    },
-    ref
+    }: PhoneInputProps,
+    ref: React.Ref<HTMLInputElement>
   ) => {
     return (
       <div

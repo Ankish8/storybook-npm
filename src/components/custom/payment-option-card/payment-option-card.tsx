@@ -20,10 +20,7 @@ import type { PaymentOptionCardProps } from "./types";
  * />
  * ```
  */
-export const PaymentOptionCard = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardProps
->(
+export const PaymentOptionCard = React.forwardRef(
   (
     {
       title = "Select payment method",
@@ -38,8 +35,8 @@ export const PaymentOptionCard = React.forwardRef<
       loading = false,
       disabled = false,
       className,
-    },
-    ref
+    }: PaymentOptionCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalSelected, setInternalSelected] = React.useState<
       string | undefined

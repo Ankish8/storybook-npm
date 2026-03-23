@@ -3,8 +3,8 @@ import { X, Play, File } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { AttachmentPreviewProps } from "./types";
 
-const AttachmentPreview = React.forwardRef<HTMLDivElement, AttachmentPreviewProps>(
-  ({ className, file, onRemove, ...props }, ref) => {
+const AttachmentPreview = React.forwardRef(
+  ({ className, file, onRemove, ...props }: AttachmentPreviewProps, ref: React.Ref<HTMLDivElement>) => {
     const url = React.useMemo(() => URL.createObjectURL(file), [file]);
 
     const isImage = file.type.startsWith("image/");
