@@ -248,7 +248,13 @@ export async function sync(options: SyncOptions) {
     'carousel-media': 'Chat',
     'chat-bubble': 'Chat',
     'chat-composer': 'Chat',
+    'contact-list-item': 'Chat',
+    'date-divider': 'Chat',
     'doc-media': 'Chat',
+    'image-media': 'Chat',
+    'reply-quote': 'Chat',
+    'system-message': 'Chat',
+    'unread-separator': 'Chat',
     'video-media': 'Chat',
     'event-selector': 'Webhook',
     'key-value-input': 'Webhook',
@@ -276,9 +282,9 @@ export async function sync(options: SyncOptions) {
   }
 
   if (!options.yes && toAdd.length > 0) {
-    // Split into UI components and custom components
-    const uiToAdd = toAdd.filter((c) => (registry[c] as any).category !== 'custom')
-    const customToAdd = toAdd.filter((c) => (registry[c] as any).category === 'custom')
+    // Split into generic components and grouped (folder) components
+    const uiToAdd = toAdd.filter((c) => !CUSTOM_GROUPS[c])
+    const customToAdd = toAdd.filter((c) => !!CUSTOM_GROUPS[c])
 
     const picked: string[] = []
 
