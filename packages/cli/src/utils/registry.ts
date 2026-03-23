@@ -12792,7 +12792,7 @@ const LetUsDriveCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex h-full min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
+          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
           className
         )}
         {...props}
@@ -13819,8 +13819,8 @@ const PricingPage = React.forwardRef(
                 {letUsDriveTitle}
               </h2>
 
-              {/* Service cards — items-stretch + card h-full + mt-auto on actions align Talk to us buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+              {/* Service cards — items-start so expanding one card doesn't stretch others */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                 {letUsDriveCards.map((cardProps, index) => (
                   <LetUsDriveCard key={index} {...cardProps} />
                 ))}
