@@ -177,13 +177,20 @@ export const VariableValueInput = React.forwardRef<
       [onEditVariable]
     );
 
-    /** Clicking the field (text/chips/empty padding) focuses the input; buttons keep their own behavior. */
-    const handleFieldPointerDown = React.useCallback(
-      (e: React.PointerEvent<HTMLDivElement>) => {
+    /**
+     * Focus the real `<input>` when the user clicks anywhere on the field (text, chips, trailing
+     * spacer). Uses **capture** so nested content cannot swallow the event before we run; skips
+     * real `<button>`s (overflow …, chip pencil).
+     */
+    const handleFieldPointerDownCapture = React.useCallback(
+      (e: React.PointerEvent<HTMLDivElement> | React.MouseEvent<HTMLDivElement>) => {
         const target = e.target as HTMLElement | null;
         if (!target) return;
         if (target.closest("button")) return;
-        inputRef.current?.focus();
+        if (target.closest("input")) return;
+        if ("button" in e && typeof e.button === "number" && e.button !== 0) return;
+        e.preventDefault();
+        inputRef.current?.focus({ preventScroll: true });
       },
       []
     );
@@ -191,7 +198,8 @@ export const VariableValueInput = React.forwardRef<
     return (
       <div
         ref={setRootRef}
-        onPointerDown={handleFieldPointerDown}
+        onPointerDownCapture={handleFieldPointerDownCapture}
+        onMouseDownCapture={handleFieldPointerDownCapture}
         className={cn(
           "flex h-10 min-h-10 w-full min-w-0 cursor-text items-center gap-1.5 overflow-hidden rounded border border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-semantic-text-primary focus-within:border-semantic-border-input-focus focus-within:outline-none focus-within:ring-1 focus-within:ring-semantic-border-input-focus",
           className
@@ -200,7 +208,7 @@ export const VariableValueInput = React.forwardRef<
       >
         <div
           ref={containerRef}
-          className="flex min-w-0 flex-1 flex-nowrap items-center gap-1.5 overflow-hidden"
+          className="flex min-h-0 min-w-0 flex-1 flex-nowrap items-center gap-1.5 overflow-hidden"
         >
           {visible.map((seg, i) =>
             seg.type === "text" ? (

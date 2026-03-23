@@ -36,6 +36,38 @@ A **2-step wizard modal** for creating a new bot function.
 | \`promptMaxLength\` | \`5000\` |
 | \`initialStep\` | \`1\` |
 | \`initialTab\` | \`"header"\` |
+| \`module\` | *omitted* — variable catalog **add/edit** enabled |
+
+### Variable catalog editing — \`module\`
+
+Pass **\`module={option.module}\`** (or **\`module={functionVariableContext.module}\`** if you use **\`FunctionVariableContextValue\`** from \`@/components/custom/ivr-bot\`) so add/edit catalog behavior matches the parent integration.
+
+- If **\`option.module === "function"\`** → users can add/edit variables (pencils, “+ Add new variable”, edit dialog).
+- If **\`module\` is any other string** → **no** catalog editing; users can still type \`{{\` to insert **existing** catalog variables only.
+
+**Render the modal only when the integration is the function module:**
+
+\`\`\`tsx
+{option.module === "function" && (
+  <CreateFunctionModal
+    open={open}
+    onOpenChange={setOpen}
+    module={option.module}
+    onSubmit={onSubmit}
+  />
+)}
+\`\`\`
+
+**Always render the modal, but tie variable editing to \`module\` (no need for the \`&&\` wrapper):**
+
+\`\`\`tsx
+<CreateFunctionModal
+  open={open}
+  onOpenChange={setOpen}
+  module={option.module}
+  onSubmit={onSubmit}
+/>
+\`\`\`
 
 ---
 
@@ -101,6 +133,11 @@ const [open, setOpen] = React.useState(false);
       control: { type: "radio" },
       options: ["header", "queryParams", "body"],
       description: "Active tab when initialStep = 2",
+    },
+    module: {
+      control: { type: "text" },
+      description:
+        'option.module — add/edit catalog only when value is "function". See docs section “Variable catalog editing” for {option.module === "function" && (...)}.',
     },
     onOpenChange: { action: "openChange" },
     onSubmit: { action: "submit" },

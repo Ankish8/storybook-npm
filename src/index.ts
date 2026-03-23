@@ -424,6 +424,7 @@ export type {
   KeyValuePair as IvrBotKeyValuePair,
   HttpMethod,
   FunctionTabType,
+  FunctionVariableContextValue,
 } from "./components/custom/ivr-bot";
 
 // ReplyQuote

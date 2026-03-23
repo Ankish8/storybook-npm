@@ -323,6 +323,7 @@ function KeyValueTable({
   onAddCatalogVariable,
   onEditCatalogVariable,
   onEditVariableChipByName,
+  allowCatalogVariableEdit = true,
   disabled = false,
 }: {
   rows: KeyValuePair[];
@@ -337,6 +338,8 @@ function KeyValueTable({
   onAddCatalogVariable: () => void;
   onEditCatalogVariable: (item: VariableSelectorItem) => void;
   onEditVariableChipByName: (name: string) => void;
+  /** When false, hide variable edit UI; `{{` insert still works from the catalog. */
+  allowCatalogVariableEdit?: boolean;
   disabled?: boolean;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
@@ -388,7 +391,7 @@ function KeyValueTable({
             return (
               <li
                 key={row.id}
-                className="m-0 border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+                className="m-0 flex min-h-0 items-stretch border-b border-semantic-border-layout last:border-b-0"
               >
               {/* Key column — border-r on column (not input) so it aligns with header */}
               <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
@@ -436,11 +439,19 @@ function KeyValueTable({
                     variableSections={variableSections}
                     maxLength={valueMaxLength}
                     maxVisibleChips={1}
-                    showEditIcon
-                    onAddNewVariable={onAddCatalogVariable}
-                    onEditVariable={onEditCatalogVariable}
-                    onEditVariableChip={onEditVariableChipByName}
-                    className="h-10 min-h-[40px] rounded-none border-0 px-3 py-2.5 text-base focus-within:ring-0 focus-within:ring-offset-0"
+                    showEditIcon={allowCatalogVariableEdit}
+                    onAddNewVariable={
+                      allowCatalogVariableEdit ? onAddCatalogVariable : undefined
+                    }
+                    onEditVariable={
+                      allowCatalogVariableEdit ? onEditCatalogVariable : undefined
+                    }
+                    onEditVariableChip={
+                      allowCatalogVariableEdit
+                        ? onEditVariableChipByName
+                        : undefined
+                    }
+                    className="h-full min-h-[40px] rounded-none border-0 px-3 py-2.5 text-base focus-within:ring-0 focus-within:ring-offset-0"
                   />
                 </div>
                 {errors.value && (
@@ -508,10 +519,13 @@ export const CreateFunctionModal = React.forwardRef<
       onApiTestVariableValuesChange,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       disabled = false,
+      module,
       className,
     },
     ref
   ) => {
+    const allowCatalogVariableEdit =
+      module === undefined ? true : module === "function";
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
     const [name, setName] = React.useState(initialData?.name ?? "");
@@ -1132,10 +1146,22 @@ export const CreateFunctionModal = React.forwardRef<
                         placeholder="Enter URL or Type {{ to add variables"
                         variableSections={variableCatalog}
                         maxVisibleChips={1}
-                        showEditIcon
-                        onAddNewVariable={openAddCatalogVariable}
-                        onEditVariable={openEditCatalogVariable}
-                        onEditVariableChip={handleEditChipByName}
+                        showEditIcon={allowCatalogVariableEdit}
+                        onAddNewVariable={
+                          allowCatalogVariableEdit
+                            ? openAddCatalogVariable
+                            : undefined
+                        }
+                        onEditVariable={
+                          allowCatalogVariableEdit
+                            ? openEditCatalogVariable
+                            : undefined
+                        }
+                        onEditVariableChip={
+                          allowCatalogVariableEdit
+                            ? handleEditChipByName
+                            : undefined
+                        }
                         className="h-full min-h-[42px] w-full rounded-none border-0 bg-transparent px-3 py-0 text-base focus-within:ring-0 focus-within:ring-offset-0"
                       />
                     </div>
@@ -1183,6 +1209,7 @@ export const CreateFunctionModal = React.forwardRef<
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters."
                       variableSections={variableCatalog}
+                      allowCatalogVariableEdit={allowCatalogVariableEdit}
                       onAddCatalogVariable={openAddCatalogVariable}
                       onEditCatalogVariable={openEditCatalogVariable}
                       onEditVariableChipByName={handleEditChipByName}
@@ -1205,6 +1232,7 @@ export const CreateFunctionModal = React.forwardRef<
                         };
                       }}
                       variableSections={variableCatalog}
+                      allowCatalogVariableEdit={allowCatalogVariableEdit}
                       onAddCatalogVariable={openAddCatalogVariable}
                       onEditCatalogVariable={openEditCatalogVariable}
                       onEditVariableChipByName={handleEditChipByName}
@@ -1427,22 +1455,24 @@ export const CreateFunctionModal = React.forwardRef<
         </DialogContent>
       </Dialog>
 
-      <EditVariableDialog
-        open={varCatalogDialogOpen}
-        onOpenChange={(next) => {
-          setVarCatalogDialogOpen(next);
-          if (!next) {
-            setVarCatalogSubmitError("");
-            setVarCatalogEditingId(null);
-            setVarCatalogOrphanName(null);
-          }
-        }}
-        mode={varCatalogMode}
-        initialValues={catalogDialogInitialValues}
-        onSave={handleSaveCatalogVariable}
-        submitError={varCatalogSubmitError}
-        onClearSubmitError={() => setVarCatalogSubmitError("")}
-      />
+      {allowCatalogVariableEdit ? (
+        <EditVariableDialog
+          open={varCatalogDialogOpen}
+          onOpenChange={(next) => {
+            setVarCatalogDialogOpen(next);
+            if (!next) {
+              setVarCatalogSubmitError("");
+              setVarCatalogEditingId(null);
+              setVarCatalogOrphanName(null);
+            }
+          }}
+          mode={varCatalogMode}
+          initialValues={catalogDialogInitialValues}
+          onSave={handleSaveCatalogVariable}
+          submitError={varCatalogSubmitError}
+          onClearSubmitError={() => setVarCatalogSubmitError("")}
+        />
+      ) : null}
       </>
     );
   }

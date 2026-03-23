@@ -22,6 +22,18 @@ export interface KeyValuePair {
   value: string;
 }
 
+/**
+ * Shape for host app context (or props) that drives function-variable behavior.
+ * Use `module` with {@link CreateFunctionModalProps.module} — e.g. `module={ctx.module}`.
+ * `variables` are bare names (e.g. `Order_id`); the UI still renders `{{Order_id}}`.
+ */
+export interface FunctionVariableContextValue {
+  module: string;
+  description: string;
+  /** Variable names available for `{{…}}` (no braces). */
+  variables: string[];
+}
+
 export interface FunctionItem {
   id: string;
   name: string;
@@ -83,6 +95,39 @@ export interface CreateFunctionModalProps {
   onApiTestVariableValuesChange?: (values: Record<string, string>) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
+  /**
+   * Parent integration kind — pass through from your option or {@link FunctionVariableContextValue},
+   * e.g. `module={option.module}` or `module={functionVariableContext.module}`.
+   *
+   * When **set** to any value other than `"function"`, variable catalog **add/edit** is off: no chip
+   * pencils, no list-row pencils, no “+ Add new variable”, and `EditVariableDialog` is not mounted.
+   * Users can still type `{{` to **insert** variables that already exist in the catalog.
+   *
+   * When **omitted**, catalog add/edit stays enabled (backward compatible).
+   *
+   * @example Only render this modal for the function module:
+   * ```tsx
+   * {option.module === "function" && (
+   *   <CreateFunctionModal
+   *     open={open}
+   *     onOpenChange={setOpen}
+   *     module={option.module}
+   *     onSubmit={onSubmit}
+   *   />
+   * )}
+   * ```
+   *
+   * @example Always show the modal but disable variable editing unless module is function:
+   * ```tsx
+   * <CreateFunctionModal
+   *   open={open}
+   *   onOpenChange={setOpen}
+   *   module={option.module}
+   *   onSubmit={onSubmit}
+   * />
+   * ```
+   */
+  module?: string;
   className?: string;
 }
 

@@ -258,6 +258,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           sessionVariables={sessionVariables}
+          module="function"
         />
 
         {/* Edit Function Modal */}
@@ -272,6 +273,7 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
           promptMaxLength={functionPromptMaxLength}
           sessionVariables={sessionVariables}
           disabled={disabled}
+          module="function"
         />
 
         {/* File Upload Modal */}

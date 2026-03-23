@@ -155,6 +155,44 @@ describe("CreateFunctionModal", () => {
     );
   });
 
+  it("hides variable catalog edit (chip pencil) when module is not function", () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        module="integration"
+        initialStep={2}
+        initialData={{
+          name: "Fn",
+          prompt: VALID_PROMPT,
+          url: "https://example.com/{{Order_id}}",
+        }}
+      />
+    );
+    expect(
+      screen.queryByRole("button", { name: /Edit Order_id/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows variable catalog edit when module is function", () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        module="function"
+        initialStep={2}
+        initialData={{
+          name: "Fn",
+          prompt: VALID_PROMPT,
+          url: "https://example.com/{{Order_id}}",
+        }}
+      />
+    );
+    expect(
+      screen.getByRole("button", { name: /Edit Order_id/i })
+    ).toBeInTheDocument();
+  });
+
   it("calls onOpenChange when closed after submit", async () => {
     const onOpenChange = vi.fn();
     render(
