@@ -283,9 +283,14 @@ function looksLikeTailwindClasses(str: string): boolean {
   })
 }
 
+// Regex to detect border-WIDTH classes (border, border-2, border-t, border-b-4, border-[3px], etc.)
+const BORDER_WIDTH_RE = /^border(-[trblxy])?(-[0248]|-\[.+\])?$/
+// Regex to detect border-STYLE classes
+const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
+
 // Helper to prefix a single class string
 function prefixClassString(classString: string, prefix: string): string {
-  return classString
+  const prefixed = classString
     .split(' ')
     .map((cls: string) => {
       if (!cls) return cls
@@ -363,7 +368,19 @@ function prefixClassString(classString: string, prefix: string): string {
       // Regular class (including arbitrary values like bg-[#343E55])
       return `${prefix}${cls}`
     })
-    .join(' ')
+
+  // Auto-inject border-solid when border-width classes are present without an explicit border-style.
+  // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
+  // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
+  // the border visible regardless of the host CSS environment.
+  const origClasses = classString.split(' ')
+  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
+  if (hasBorderWidth && !hasBorderStyle) {
+    prefixed.push(`${prefix}border-solid`)
+  }
+
+  return prefixed.join(' ')
 }
 
 // Context-aware Tailwind class prefixing
