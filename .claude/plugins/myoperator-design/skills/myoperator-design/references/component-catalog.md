@@ -1,19 +1,29 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 52 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 70 components across 7 categories.
 
 ## Quick Reference
 
 | Component | Category | Install |
 |-----------|----------|---------|
+| Avatar | core | `npx myoperator-ui add avatar` |
 | Button | core | `npx myoperator-ui add button` |
 | Badge | core | `npx myoperator-ui add badge` |
+| ContactListItem | core | `npx myoperator-ui add contact-list-item` |
+| DateDivider | core | `npx myoperator-ui add date-divider` |
+| ImageMedia | core | `npx myoperator-ui add image-media` |
+| PhoneInput | core | `npx myoperator-ui add phone-input` |
+| ReplyQuote | core | `npx myoperator-ui add reply-quote` |
+| SystemMessage | core | `npx myoperator-ui add system-message` |
+| Tabs | core | `npx myoperator-ui add tabs` |
 | Typography | core | `npx myoperator-ui add typography` |
+| UnreadSeparator | core | `npx myoperator-ui add unread-separator` |
 | Input | form | `npx myoperator-ui add input` |
 | Select | form | `npx myoperator-ui add select` |
 | Checkbox | form | `npx myoperator-ui add checkbox` |
 | Switch | form | `npx myoperator-ui add switch` |
 | TextField | form | `npx myoperator-ui add text-field` |
+| Textarea | form | `npx myoperator-ui add textarea` |
 | SelectField | form | `npx myoperator-ui add select-field` |
 | MultiSelect | form | `npx myoperator-ui add multi-select` |
 | ReadableField | form | `npx myoperator-ui add readable-field` |
@@ -32,7 +42,14 @@
 | EmptyState | feedback | `npx myoperator-ui add empty-state` |
 | Accordion | layout | `npx myoperator-ui add accordion` |
 | PageHeader | layout | `npx myoperator-ui add page-header` |
+| Panel | layout | `npx myoperator-ui add panel` |
 | Pagination | layout | `npx myoperator-ui add pagination` |
+| AttachmentPreview | custom | `npx myoperator-ui add attachment-preview` |
+| AudioMedia | custom | `npx myoperator-ui add audio-media` |
+| CarouselMedia | custom | `npx myoperator-ui add carousel-media` |
+| ChatBubble | custom | `npx myoperator-ui add chat-bubble` |
+| ChatComposer | custom | `npx myoperator-ui add chat-composer` |
+| DocMedia | custom | `npx myoperator-ui add doc-media` |
 | EventSelector | custom | `npx myoperator-ui add event-selector` |
 | KeyValueInput | custom | `npx myoperator-ui add key-value-input` |
 | ApiFeatureCard | custom | `npx myoperator-ui add api-feature-card` |
@@ -53,8 +70,16 @@
 | TalkToUsModal | custom | `npx myoperator-ui add talk-to-us-modal` |
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
 | FileUploadModal | custom | `npx myoperator-ui add file-upload-modal` |
+| VideoMedia | custom | `npx myoperator-ui add video-media` |
 
 ## Core — Essential UI primitives
+
+### Avatar
+> A versatile avatar component displaying user initials or images with size variants and optional online status indicator
+
+**Install**: `npx myoperator-ui add avatar`
+
+---
 
 ### Button
 > A customizable button component with variants, sizes, and icons. Supports loading states and can render as a child element using Radix Slot.
@@ -121,10 +146,67 @@ import { Mail } from "lucide-react"
 
 ---
 
+### ContactListItem
+> Contact list item with avatar, name, subtitle, and trailing content
+
+**Install**: `npx myoperator-ui add contact-list-item`
+**Requires**: `avatar` (auto-installed)
+
+---
+
+### DateDivider
+> A horizontal line with centered date text for separating chat messages by date
+
+**Install**: `npx myoperator-ui add date-divider`
+
+---
+
+### ImageMedia
+> An image display component for chat messages with rounded corners and configurable max height
+
+**Install**: `npx myoperator-ui add image-media`
+
+---
+
+### PhoneInput
+> A phone number input with country code prefix, flag emoji, and optional country selector
+
+**Install**: `npx myoperator-ui add phone-input`
+
+---
+
+### ReplyQuote
+> A quoted message block with blue left border showing sender name and quoted text for reply previews
+
+**Install**: `npx myoperator-ui add reply-quote`
+
+---
+
+### SystemMessage
+> A centered system message for chat timelines with bold markdown support
+
+**Install**: `npx myoperator-ui add system-message`
+
+---
+
+### Tabs
+> A flexible tabs component with underline-style active indicator, supporting badges/counts, equal-width and auto-width layouts
+
+**Install**: `npx myoperator-ui add tabs`
+
+---
+
 ### Typography
 > A semantic typography component with kind, variant, color, alignment, and truncation support
 
 **Install**: `npx myoperator-ui add typography`
+
+---
+
+### UnreadSeparator
+> A horizontal divider with unread message count label for chat message lists
+
+**Install**: `npx myoperator-ui add unread-separator`
 
 ---
 
@@ -255,6 +337,13 @@ import { Mail } from "lucide-react"
 ```jsx
 <TextField label="Username" error="Username is already taken" />
 ```
+
+---
+
+### Textarea
+> A multi-line text input with label, error state, helper text, character counter, and resize control
+
+**Install**: `npx myoperator-ui add textarea`
 
 ---
 
@@ -529,6 +618,14 @@ import { Mail } from "lucide-react"
 
 ---
 
+### Panel
+> A collapsible side panel layout with header, scrollable body, and optional footer
+
+**Install**: `npx myoperator-ui add panel`
+**Requires**: `button` (auto-installed)
+
+---
+
 ### Pagination
 > A composable pagination component with page navigation, next/previous links, and ellipsis
 
@@ -538,6 +635,57 @@ import { Mail } from "lucide-react"
 ---
 
 ## Custom — Multi-file complex components
+
+### AttachmentPreview
+> A file attachment preview for chat composers with image, video, audio, and document previews
+
+**Install**: `npx myoperator-ui add attachment-preview`
+**Type**: Multi-file component
+
+---
+
+### AudioMedia
+> A waveform-based audio player with play/pause, speed control, and SVG waveform visualization
+
+**Install**: `npx myoperator-ui add audio-media`
+**Requires**: `dropdown-menu` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CarouselMedia
+> A horizontally scrollable card carousel with images, titles, and action buttons
+
+**Install**: `npx myoperator-ui add carousel-media`
+**Type**: Multi-file component
+
+---
+
+### ChatBubble
+> A chat message bubble with sender/receiver variants, delivery status, reply quote, and media slot
+
+**Install**: `npx myoperator-ui add chat-bubble`
+**Requires**: `reply-quote` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatComposer
+> A message composition area with textarea, action slots, reply preview, attachment slot, and send button
+
+**Install**: `npx myoperator-ui add chat-composer`
+**Requires**: `button`, `reply-quote` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### DocMedia
+> A document media component with preview, download, and file variants for chat messages
+
+**Install**: `npx myoperator-ui add doc-media`
+**Type**: Multi-file component
+
+---
 
 ### EventSelector
 > A component for selecting webhook events with groups, categories, and tri-state checkboxes
@@ -715,6 +863,15 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add file-upload-modal`
 **Requires**: `dialog`, `button` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### VideoMedia
+> A video player with thumbnail overlay, play/pause, seek bar, speed dropdown, volume, and fullscreen
+
+**Install**: `npx myoperator-ui add video-media`
+**Requires**: `dropdown-menu` (auto-installed)
 **Type**: Multi-file component
 
 ---
