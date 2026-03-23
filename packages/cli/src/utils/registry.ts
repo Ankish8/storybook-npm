@@ -546,7 +546,216 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 6. Handle className={...} JSX expression bindings
+  // Covers template literals, ternaries, and any other expression patterns
+  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
+  // e.g., className={active ? "border-b-2" : "text-muted"}
+  {
+    let jsxResult = ''
+    let jsxLastIndex = 0
+    const jsxRegex = /className\s*=\s*\{/g
+    let jsxMatch
+
+    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
+      if (jsxMatch.index < jsxLastIndex) continue
+
+      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
+
+      // Find the matching closing } by tracking brace depth
+      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
+      let depth = 1
+      let pos = bracePos + 1
+
+      while (pos < content.length && depth > 0) {
+        const ch = content[pos]
+        if (ch === '{') { depth++; pos++; continue }
+        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '"') {
+          pos++
+          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === "'") {
+          pos++
+          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === '`') {
+          pos++
+          let tDepth = 0
+          while (pos < content.length) {
+            if (content[pos] === '\\') { pos += 2; continue }
+            if (content[pos] === '`' && tDepth === 0) { pos++; break }
+            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
+            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            pos++
+          }
+          continue
+        }
+        pos++
+      }
+
+      // Extract expression between { and }
+      const expr = content.slice(bracePos + 1, pos - 1)
+
+      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
+      const exprTrimmed = expr.trimStart()
+      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
+        jsxResult += content.slice(jsxMatch.index, pos)
+        jsxLastIndex = pos
+        continue
+      }
+
+      // Prefix the expression using the className expression handler
+      const prefixedExpr = prefixClassNameExpression(expr, prefix)
+
+      jsxResult += jsxMatch[0] + prefixedExpr + '}'
+      jsxLastIndex = pos
+    }
+    jsxResult += content.slice(jsxLastIndex)
+    content = jsxResult
+  }
+
   return content
+}
+
+function isAlreadyPrefixed(classString: string, prefix: string): boolean {
+  if (!classString.trim()) return false
+  return classString.trim().split(/\s+/).every(c => {
+    // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
+    const lastColon = c.lastIndexOf(':')
+    const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
+    return utility.startsWith(prefix) || utility.startsWith(`-${prefix}`) ||
+           utility.startsWith(`!${prefix}`) || utility.startsWith(`!-${prefix}`)
+  })
+}
+
+function prefixStaticTemplatePart(text: string, prefix: string): string {
+  const trimmed = text.trim()
+  if (!trimmed || !looksLikeTailwindClasses(trimmed)) return text
+  const leading = text.match(/^(\s*)/)?.[1] || ''
+  const trailing = text.match(/(\s*)$/)?.[1] || ''
+  return leading + prefixClassString(trimmed, prefix) + trailing
+}
+
+function prefixStringLiteralsInExpr(code: string, prefix: string): string {
+  let result = code.replace(/"([^"]*)"/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `"${prefixClassString(classes, prefix)}"`
+  })
+  result = result.replace(/'([^']*)'/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `'${prefixClassString(classes, prefix)}'`
+  })
+  return result
+}
+
+function prefixClassNameExpression(expr: string, prefix: string): string {
+  let result = ''
+  let i = 0
+
+  while (i < expr.length) {
+    if (expr[i] === '`') {
+      // Template literal — process static parts and string literals in expressions
+      result += '`'
+      i++ // past opening backtick
+      let staticText = ''
+
+      while (i < expr.length && expr[i] !== '`') {
+        if (expr[i] === '\\') {
+          staticText += expr[i] + (expr[i + 1] || '')
+          i += 2
+          continue
+        }
+        if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') {
+          // Flush and prefix the static text accumulated so far
+          if (staticText) {
+            result += prefixStaticTemplatePart(staticText, prefix)
+            staticText = ''
+          }
+          // Collect the expression content inside ${...}
+          result += '${'
+          i += 2 // past ${
+          let exprDepth = 1
+          let exprContent = ''
+          while (i < expr.length && exprDepth > 0) {
+            // Skip strings inside the expression to avoid brace-counting issues
+            if (expr[i] === '"') {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== '"') {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === "'") {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== "'") {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === '`') {
+              // Nested template literal — skip as-is
+              exprContent += expr[i]; i++
+              let nestedDepth = 0
+              while (i < expr.length) {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++; if (i < expr.length) { exprContent += expr[i]; i++ }; continue }
+                if (expr[i] === '`' && nestedDepth === 0) { exprContent += expr[i]; i++; break }
+                if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') { nestedDepth++; exprContent += '${'; i += 2; continue }
+                if (expr[i] === '}' && nestedDepth > 0) { nestedDepth-- }
+                exprContent += expr[i]; i++
+              }
+              continue
+            }
+            if (expr[i] === '{') exprDepth++
+            else if (expr[i] === '}') { exprDepth--; if (exprDepth === 0) { i++; break } }
+            exprContent += expr[i]
+            i++
+          }
+          // Prefix string literals within the expression
+          result += prefixStringLiteralsInExpr(exprContent, prefix) + '}'
+          continue
+        }
+        staticText += expr[i]
+        i++
+      }
+      // Flush remaining static text
+      if (staticText) {
+        result += prefixStaticTemplatePart(staticText, prefix)
+      }
+      if (i < expr.length && expr[i] === '`') {
+        result += '`'
+        i++ // past closing backtick
+      }
+    } else if (expr[i] === '"' || expr[i] === "'") {
+      // Bare string literal — prefix if it looks like Tailwind classes
+      const quote = expr[i]
+      const strStart = i
+      i++ // past opening quote
+      let str = ''
+      while (i < expr.length && expr[i] !== quote) {
+        if (expr[i] === '\\') { str += expr[i] + (expr[i + 1] || ''); i += 2; continue }
+        str += expr[i]
+        i++
+      }
+      if (i < expr.length) i++ // past closing quote
+
+      if (str.trim() && looksLikeTailwindClasses(str) && !isAlreadyPrefixed(str, prefix)) {
+        result += quote + prefixClassString(str, prefix) + quote
+      } else {
+        result += expr.slice(strStart, i)
+      }
+    } else {
+      result += expr[i]
+      i++
+    }
+  }
+
+  return result
 }
 
 // In a real implementation, this would fetch from a remote URL

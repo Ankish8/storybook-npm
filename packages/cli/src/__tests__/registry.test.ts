@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { getRegistry } from '../utils/registry.js'
+import { prefixTailwindClasses, prefixClassNameExpression } from '../utils/prefix-utils.js'
 
 describe('Registry', () => {
   describe('getRegistry', () => {
@@ -614,6 +615,107 @@ describe('Registry', () => {
           expect(expectedPath).toContain(`/${component.directory}/`)
         }
       }
+    })
+  })
+
+  describe('className={...} JSX expression prefixing', () => {
+    describe('prefixClassNameExpression', () => {
+      it('prefixes bare string literals in ternary', () => {
+        const expr = 'active ? "border-b-2 border-primary" : "text-muted-foreground"'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('"tw-border-b-2 tw-border-primary tw-border-solid"')
+        expect(result).toContain('"tw-text-muted-foreground"')
+      })
+
+      it('prefixes template literal static parts', () => {
+        const expr = '`flex items-center gap-3`'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('tw-flex tw-items-center tw-gap-3')
+      })
+
+      it('prefixes template literal static parts and expression strings', () => {
+        const expr = '`flex items-center ${active ? "bg-primary" : "bg-gray-500"}`'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('tw-flex tw-items-center')
+        expect(result).toContain('"tw-bg-primary"')
+        expect(result).toContain('"tw-bg-gray-500"')
+      })
+
+      it('handles template literal with multiple expressions', () => {
+        const expr = '`flex ${a ? "gap-2" : "gap-4"} border-b ${b ? "px-4" : ""}`'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('tw-flex')
+        expect(result).toContain('"tw-gap-2"')
+        expect(result).toContain('"tw-gap-4"')
+        expect(result).toContain('tw-border-b')
+        expect(result).toContain('"tw-px-4"')
+      })
+
+      it('skips already-prefixed strings (no double-prefixing)', () => {
+        const expr = 'cn("tw-flex tw-items-center", active && "tw-bg-primary")'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).not.toContain('tw-tw-')
+      })
+
+      it('skips empty strings', () => {
+        const expr = 'active ? "flex" : ""'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('"tw-flex"')
+        expect(result).toContain('""')
+        expect(result).not.toContain('"tw-"')
+      })
+
+      it('skips non-class values', () => {
+        const expr = 'type === "button" ? "flex" : "hidden"'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('"button"')
+        expect(result).toContain('"tw-flex"')
+        expect(result).toContain('"tw-hidden"')
+      })
+
+      it('handles complex hover/focus variant classes', () => {
+        const expr = '`flex ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`'
+        const result = prefixClassNameExpression(expr, 'tw-')
+        expect(result).toContain('tw-flex')
+        expect(result).toContain('"tw-opacity-0 group-hover:tw-opacity-100"')
+        expect(result).toContain('"tw-opacity-100"')
+      })
+    })
+
+    describe('prefixTailwindClasses with className={...}', () => {
+      it('prefixes className with ternary expression', () => {
+        const input = '<div className={active ? "border-b-2 border-primary" : "text-muted"}></div>'
+        const result = prefixTailwindClasses(input, 'tw-')
+        expect(result).toContain('"tw-border-b-2 tw-border-primary tw-border-solid"')
+        expect(result).toContain('"tw-text-muted"')
+      })
+
+      it('prefixes className with template literal', () => {
+        const input = '<div className={`flex h-screen overflow-hidden`}></div>'
+        const result = prefixTailwindClasses(input, 'tw-')
+        expect(result).toContain('tw-flex tw-h-screen tw-overflow-hidden')
+      })
+
+      it('prefixes className with template literal and expressions', () => {
+        const input = '<div className={`flex items-center ${i < 5 ? "border-b border-border" : ""}`}></div>'
+        const result = prefixTailwindClasses(input, 'tw-')
+        expect(result).toContain('tw-flex tw-items-center')
+        expect(result).toContain('"tw-border-b tw-border-border tw-border-solid"')
+      })
+
+      it('does not double-prefix cn() args inside className expression', () => {
+        const input = '<div className={cn("flex items-center", active && "bg-primary")}></div>'
+        const result = prefixTailwindClasses(input, 'tw-')
+        // cn() args are prefixed by pattern 2, then pattern 6 should NOT re-prefix
+        expect(result).toContain('"tw-flex tw-items-center"')
+        expect(result).not.toContain('tw-tw-')
+      })
+
+      it('does not affect className="..." static strings', () => {
+        const input = '<div className="flex items-center"></div>'
+        const result = prefixTailwindClasses(input, 'tw-')
+        expect(result).toContain('className="tw-flex tw-items-center"')
+      })
     })
   })
 })

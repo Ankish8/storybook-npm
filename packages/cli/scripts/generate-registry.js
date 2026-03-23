@@ -45,6 +45,96 @@ if (!singleWordMatch) {
 const SINGLE_WORD_UTILITIES_LITERAL = singleWordMatch[1]
 
 /**
+ * Extract a function body from TypeScript source by name.
+ * Properly handles strings, template literals, and comments to track brace depth.
+ */
+function extractFunctionFromSource(source, funcName) {
+  const funcRegex = new RegExp(`(?:export )?function ${funcName}\\b`)
+  const match = funcRegex.exec(source)
+  if (!match) {
+    console.warn(`Warning: Could not find function ${funcName} in prefix-utils.ts`)
+    return ''
+  }
+
+  let depth = 0
+  let i = match.index
+  while (i < source.length) {
+    if (source[i] === '/' && source[i + 1] === '/') {
+      while (i < source.length && source[i] !== '\n') i++
+      continue
+    }
+    if (source[i] === '/' && source[i + 1] === '*') {
+      i += 2
+      while (i < source.length && !(source[i] === '*' && source[i + 1] === '/')) i++
+      i += 2
+      continue
+    }
+    // Handle regex literals: /pattern/flags
+    // A '/' is a regex start when preceded by certain tokens (not a division operator)
+    if (source[i] === '/' && source[i + 1] !== '/' && source[i + 1] !== '*') {
+      // Look back to determine if this is a regex or division
+      let j = i - 1
+      while (j >= 0 && /\s/.test(source[j])) j--
+      const prevChar = j >= 0 ? source[j] : ''
+      // After these chars/keywords, '/' starts a regex (not division)
+      if ('=([!&|?:,;{}>~^%*/+-'.includes(prevChar) || prevChar === '' ||
+          source.slice(Math.max(0, j - 5), j + 1).match(/\breturn$/)) {
+        i++ // skip opening /
+        while (i < source.length && source[i] !== '/') {
+          if (source[i] === '\\') i++ // skip escaped char
+          if (source[i] === '[') { // character class
+            i++
+            while (i < source.length && source[i] !== ']') { if (source[i] === '\\') i++; i++ }
+          }
+          i++
+        }
+        i++ // skip closing /
+        while (i < source.length && /[gimsuy]/.test(source[i])) i++ // skip flags
+        continue
+      }
+    }
+    if (source[i] === "'" || source[i] === '"') {
+      const quote = source[i]
+      i++
+      while (i < source.length && source[i] !== quote) { if (source[i] === '\\') i++; i++ }
+      i++
+      continue
+    }
+    if (source[i] === '`') {
+      i++
+      let tmplDepth = 0
+      while (i < source.length) {
+        if (source[i] === '\\') { i += 2; continue }
+        if (source[i] === '`' && tmplDepth === 0) { i++; break }
+        if (source[i] === '$' && source[i + 1] === '{') { tmplDepth++; i += 2; continue }
+        if (source[i] === '}' && tmplDepth > 0) { tmplDepth--; i++; continue }
+        i++
+      }
+      continue
+    }
+    if (source[i] === '{') depth++
+    else if (source[i] === '}') {
+      depth--
+      if (depth === 0) { i++; break }
+    }
+    i++
+  }
+
+  let code = source.slice(match.index, i)
+  code = code.replace(/^export /, '')
+  return code
+}
+
+// Extract Pattern 6 block and helper functions from prefix-utils.ts
+const pattern6Match = prefixUtilsSource.match(/\/\/ PATTERN-6-START\n([\s\S]*?)\/\/ PATTERN-6-END/)
+const PATTERN_6_CODE = pattern6Match ? pattern6Match[1].trimEnd() : ''
+
+const HELPER_FUNCTIONS = ['isAlreadyPrefixed', 'prefixStaticTemplatePart', 'prefixStringLiteralsInExpr', 'prefixClassNameExpression']
+  .map(name => extractFunctionFromSource(prefixUtilsSource, name))
+  .filter(Boolean)
+  .join('\n\n')
+
+/**
  * Load and parse components.yaml
  */
 function loadConfig() {
@@ -207,7 +297,7 @@ function escapeForTemplate(str) {
  * Generate the prefix utils code that gets embedded in each registry file
  */
 function getPrefixUtilsCode() {
-  return `/**
+  let code = `/**
  * Semantic token to fallback color mapping
  * Ensures components work even without semantic tokens defined in user's Tailwind config
  */
@@ -734,6 +824,27 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
   return content
 }`
+
+  // Inject Pattern 6 (className={...} expression handling) from prefix-utils.ts
+  // Use function replacement to prevent $ pattern interpretation in String.replace
+  // IMPORTANT: Target the LAST 'return content\n}' (in prefixTailwindClasses),
+  // NOT the first one (in transformSemanticClassesInContent)
+  if (PATTERN_6_CODE) {
+    // Use a unique anchor from the end of Pattern 5 to avoid matching the wrong function
+    const anchor = `  )\n\n  return content\n}`
+    const anchorIndex = code.lastIndexOf(anchor)
+    if (anchorIndex !== -1) {
+      const insertPos = anchorIndex + '  )\n\n'.length
+      code = code.slice(0, insertPos) + PATTERN_6_CODE + '\n\n  return content\n}' + code.slice(anchorIndex + anchor.length)
+    }
+  }
+
+  // Append helper functions extracted from prefix-utils.ts
+  if (HELPER_FUNCTIONS) {
+    code += '\n\n' + HELPER_FUNCTIONS
+  }
+
+  return code
 }
 
 /**
