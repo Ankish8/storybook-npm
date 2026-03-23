@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ContactListItem } from "./contact-list-item";
 
 const meta: Meta<typeof ContactListItem> = {
-  title: "Components/ContactListItem",
+  title: "Custom/Chat/ContactListItem",
   component: ContactListItem,
   parameters: {
     layout: "centered",

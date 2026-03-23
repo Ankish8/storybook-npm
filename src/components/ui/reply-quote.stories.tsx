@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ReplyQuote } from "./reply-quote";
 
 const meta: Meta<typeof ReplyQuote> = {
-  title: "Components/Reply Quote",
+  title: "Custom/Chat/Reply Quote",
   component: ReplyQuote,
   parameters: {
     layout: "centered",

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { SystemMessage } from "./system-message";
 
 const meta: Meta<typeof SystemMessage> = {
-  title: "Components/System Message",
+  title: "Custom/Chat/System Message",
   component: SystemMessage,
   parameters: {
     layout: "centered",

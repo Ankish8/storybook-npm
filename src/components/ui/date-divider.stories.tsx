@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { DateDivider } from "./date-divider";
 
 const meta: Meta<typeof DateDivider> = {
-  title: "Components/Date Divider",
+  title: "Custom/Chat/Date Divider",
   component: DateDivider,
   parameters: {
     layout: "padded",
