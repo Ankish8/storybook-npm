@@ -51,7 +51,6 @@ describe("PhoneInput", () => {
 
   it("applies wrapperClassName to the outer wrapper", () => {
     render(<PhoneInput wrapperClassName="custom-wrapper" data-testid="phone" />);
-    const wrapper = screen.getByTestId("phone").closest("div");
     // The immediate parent is the wrapper with flex items-center
     const outerWrapper = screen.getByTestId("phone-input-country").parentElement;
     expect(outerWrapper).toHaveClass("custom-wrapper");

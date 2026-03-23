@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { TextField } from "@/components/ui/text-field"
@@ -12,19 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuGroup,
-  DropdownMenuSeparator,
+
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Tooltip,
   TooltipContent,
@@ -1501,16 +1492,17 @@ function TemplateCarouselPreview({
   )
 }
 
+const DeliveryRow = () => (
+  <div className="flex items-center justify-end gap-1.5 mt-1.5">
+    <CheckCheck className="size-4 text-semantic-text-muted" />
+    <span className="text-[12px] text-semantic-text-muted">Delivered</span>
+    <span className="text-[10px] font-bold text-semantic-text-muted">•</span>
+    <span className="text-[12px] text-semantic-text-muted">2:30 PM</span>
+    <Avatar initials="AS" size="xs" variant="filled" />
+  </div>
+)
+
 function TemplatePreviewBubble({ template, varValues }: { template: TemplateDef; varValues: VarMap }) {
-  const DeliveryRow = () => (
-    <div className="flex items-center justify-end gap-1.5 mt-1.5">
-      <CheckCheck className="size-4 text-semantic-text-muted" />
-      <span className="text-[12px] text-semantic-text-muted">Delivered</span>
-      <span className="text-[10px] font-bold text-semantic-text-muted">•</span>
-      <span className="text-[12px] text-semantic-text-muted">2:30 PM</span>
-      <Avatar initials="AS" size="xs" variant="filled" />
-    </div>
-  )
 
   if (template.type === "text") {
     return (
@@ -2647,6 +2639,7 @@ export default function App() {
                           ? "max-w-[340px] w-[340px]"
                           : "max-w-[65%]"
 
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const replyButton = (
                         <Tooltip>
                           <TooltipTrigger asChild>

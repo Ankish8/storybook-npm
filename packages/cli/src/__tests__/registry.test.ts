@@ -388,8 +388,8 @@ describe('Registry', () => {
       // Classes inside cn() with nested function calls should be prefixed
       expect(content).toContain('"tw-h-[42px] tw-px-4"')
       expect(content).not.toContain('"h-[42px] px-4"')
-      expect(content).toContain('"tw-text-xs"')
-      expect(content).not.toContain('"text-xs"')
+      expect(content).toContain('"tw-text-sm"')
+      expect(content).not.toContain('"text-sm"')
     })
 
     it('prefixes utility after data-[] selector, not before', async () => {
