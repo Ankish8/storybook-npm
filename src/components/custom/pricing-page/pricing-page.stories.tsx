@@ -670,81 +670,15 @@ export const PlanCardCtaStates: Story = {
   },
 };
 
-// ─── Let Us Drive: Show/Hide Details (dedicated page, single expand) ───────────
-
-export const LetUsDriveShowHideDetailsSingle: Story = {
-  name: "Let Us Drive — Show/Hide Details (Single)",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Dedicated page for the Let us drive section. Clicking \"Show details\" on one card expands only that card (accordion). Click \"Hide details\" to collapse.",
-      },
-    },
-  },
-  args: {
-    title: "Let us drive",
-    tabs: [],
-    headerActions: null,
-    planCards: [],
-    letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveTitle: "Let us drive — Full-service management",
-    letUsDriveExpandMode: "single",
-    onFeatureComparisonClick: fn(),
-  },
-};
-
-// ─── Let Us Drive: Show/Hide Details (dedicated page, expand all) ──────────────
-
-export const LetUsDriveShowHideDetailsAll: Story = {
-  name: "Let Us Drive — Show/Hide Details (Expand All)",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Same section with expand mode \"all\": clicking \"Show details\" on any card expands all three cards. Each \"Hide details\" collapses only that card.",
-      },
-    },
-  },
-  args: {
-    title: "Let us drive",
-    tabs: [],
-    headerActions: null,
-    planCards: [],
-    letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveTitle: "Let us drive — Full-service management",
-    letUsDriveExpandMode: "all",
-    onFeatureComparisonClick: fn(),
-  },
-};
-
-// ─── Full page with Let Us Drive details (single expand) ──────────────────────
+// ─── Full page with Let Us Drive details ─────────────────────────────────────
 
 export const FullPageWithLetUsDriveDetails: Story = {
-  name: "Full Page With Let Us Drive Details (Single)",
-  args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
-    headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
-    powerUpCards,
-    onFeatureComparisonClick: fn(),
-    letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveExpandMode: "single",
-  },
-};
-
-// ─── Full page with Let Us Drive details (multiple expand) ─────────────────────
-
-export const FullPageWithLetUsDriveDetailsMultiple: Story = {
-  name: "Full Page With Let Us Drive Details (Multiple)",
+  name: "Full Page With Let Us Drive Details",
   parameters: {
     docs: {
       description: {
         story:
-          "Each card toggles independently — multiple cards can be open at the same time. Clicking one card does not collapse others.",
+          "Full pricing page with expandable details on the Let us drive cards. Each card manages its own expand/collapse independently.",
       },
     },
   },
@@ -758,6 +692,5 @@ export const FullPageWithLetUsDriveDetailsMultiple: Story = {
     powerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveExpandMode: "multiple",
   },
 };

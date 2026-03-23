@@ -49,7 +49,6 @@ const PricingPage = React.forwardRef(
       onFeatureComparisonClick,
       letUsDriveCards = [],
       letUsDriveTitle = "Let us drive — Full-service management",
-      letUsDriveExpandMode,
       className,
       ...props
     }: PricingPageProps,
@@ -62,9 +61,6 @@ const PricingPage = React.forwardRef(
     const [internalBilling, setInternalBilling] = React.useState<
       "monthly" | "yearly"
     >("monthly");
-    const [expandedLetUsDriveIndices, setExpandedLetUsDriveIndices] =
-      React.useState<number[]>([]);
-
     const currentTab = controlledTab ?? internalTab;
     const currentBilling = controlledBilling ?? internalBilling;
 
@@ -76,39 +72,6 @@ const PricingPage = React.forwardRef(
     const handleBillingChange = (period: "monthly" | "yearly") => {
       if (!controlledBilling) setInternalBilling(period);
       onBillingPeriodChange?.(period);
-    };
-
-    const cardCount = letUsDriveCards.length;
-
-    const handleLetUsDriveExpandedChange = (index: number, expanded: boolean) => {
-      if (letUsDriveExpandMode === "all") {
-        if (expanded) {
-          setExpandedLetUsDriveIndices(
-            Array.from({ length: cardCount }, (_, i) => i)
-          );
-        } else {
-          setExpandedLetUsDriveIndices((prev) =>
-            prev.filter((i) => i !== index)
-          );
-        }
-      } else if (letUsDriveExpandMode === "multiple") {
-        if (expanded) {
-          setExpandedLetUsDriveIndices((prev) => [...prev, index]);
-        } else {
-          setExpandedLetUsDriveIndices((prev) =>
-            prev.filter((i) => i !== index)
-          );
-        }
-      } else {
-        // "single" — accordion
-        if (expanded) {
-          setExpandedLetUsDriveIndices([index]);
-        } else {
-          setExpandedLetUsDriveIndices((prev) =>
-            prev.filter((i) => i !== index)
-          );
-        }
-      }
     };
 
     const hasPowerUps = powerUpCards.length > 0;
@@ -208,20 +171,9 @@ const PricingPage = React.forwardRef(
 
               {/* Service cards — items-stretch + card h-full + mt-auto on actions align Talk to us buttons */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                {letUsDriveCards.map((cardProps, index) => {
-                  const hasDetailsContent =
-                    cardProps.detailsContent &&
-                    cardProps.detailsContent.items.length > 0;
-                  const useControlledExpand =
-                    letUsDriveExpandMode && hasDetailsContent;
-                  const merged = { ...cardProps };
-                  if (useControlledExpand) {
-                    merged.expanded = expandedLetUsDriveIndices.includes(index);
-                    merged.onExpandedChange = (expanded: boolean) =>
-                      handleLetUsDriveExpandedChange(index, expanded);
-                  }
-                  return <LetUsDriveCard key={index} {...merged} />;
-                })}
+                {letUsDriveCards.map((cardProps, index) => (
+                  <LetUsDriveCard key={index} {...cardProps} />
+                ))}
               </div>
             </div>
           </div>
