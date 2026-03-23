@@ -302,7 +302,7 @@ export async function sync(options: SyncOptions) {
       picked.push(...selected)
     }
 
-    // 2. Custom Components prompt (grouped by Storybook folder)
+    // 2. Custom Components prompt (folder-level selection like Storybook sidebar)
     if (customToAdd.length > 0) {
       // Group custom components by their Storybook folder
       const grouped = new Map<string, string[]>()
@@ -315,42 +315,30 @@ export async function sync(options: SyncOptions) {
       // Sort groups alphabetically
       const sortedGroups = [...grouped.keys()].sort()
 
-      // Build choices with group headers as disabled separators
-      const choices: Array<{ title: string; value: string; selected: boolean; disabled?: boolean; description?: string }> = []
-      for (const group of sortedGroups) {
-        const components = grouped.get(group)!.sort()
-        // Group header (disabled — acts as visual separator)
-        choices.push({
-          title: chalk.bold.underline(group),
-          value: `__group_${group}`,
-          selected: false,
-          disabled: true,
-        })
-        // Components in this group
-        for (const c of components) {
-          const comp = registry[c]
-          const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
-          choices.push({
-            title: `  ${c}${fileCount}`,
-            value: c,
-            selected: false,
-            description: comp.description,
-          })
-        }
-      }
-
       console.log(chalk.cyan.bold('\n  ── Custom ──\n'))
       const { selected } = await prompts({
         type: 'multiselect',
         name: 'selected',
-        message: 'Select new custom components to add',
-        choices,
+        message: 'Select custom component folders to add',
+        choices: sortedGroups.map((group) => {
+          const components = grouped.get(group)!
+          const count = components.length
+          return {
+            title: group,
+            value: group,
+            selected: false,
+            description: `${count} component${count === 1 ? '' : 's'}`,
+          }
+        }),
       })
       if (!selected) {
         console.log(chalk.yellow('\n  Sync cancelled.\n'))
         process.exit(0)
       }
-      picked.push(...(selected as string[]).filter((v: string) => !v.startsWith('__group_')))
+      // Expand selected folders into their component lists
+      for (const group of selected as string[]) {
+        picked.push(...grouped.get(group)!)
+      }
     }
 
     selectedToAdd = picked
