@@ -247,23 +247,23 @@ describe("PricingCard", () => {
     expect(screen.getByTestId("pricing-card")).toBeInTheDocument();
   });
 
-  it("applies header background color via style", () => {
+  it("ignores headerBgColor prop (no inline background)", () => {
     const { container } = render(
       <PricingCard {...defaultProps} headerBgColor="#d7eae9" />
     );
     const header = container.querySelector(
       ".flex.flex-col.gap-4.rounded-t-xl"
     );
-    expect(header).toHaveStyle({ backgroundColor: "#d7eae9" });
+    expect(header).not.toHaveStyle({ backgroundColor: "#d7eae9" });
   });
 
-  it("renders outline button variant for current plan", () => {
+  it("renders secondary disabled button for current plan", () => {
     render(
       <PricingCard {...defaultProps} isCurrentPlan data-testid="card" />
     );
     const button = screen.getByRole("button", { name: "Current plan" });
-    expect(button.className).toContain("border");
-    expect(button.className).toContain("bg-semantic-bg-primary");
+    expect(button.className).toContain("bg-semantic-primary-surface");
+    expect(button).toBeDisabled();
   });
 
   it("renders default button variant for selectable plan", () => {

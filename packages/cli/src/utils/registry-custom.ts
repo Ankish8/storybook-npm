@@ -5335,9 +5335,6 @@ const PricingCard = React.forwardRef(
         {/* Header */}
         <div
           className="flex flex-col gap-4 rounded-t-xl rounded-b-lg p-4"
-          style={
-            headerBgColor ? { backgroundColor: headerBgColor } : undefined
-          }
         >
           {/* Plan name + badge */}
           <div className="flex items-center gap-4">
@@ -5395,11 +5392,11 @@ const PricingCard = React.forwardRef(
               </div>
             )}
             <Button
-              variant={isCurrentPlan ? "outline" : "default"}
+              variant={isCurrentPlan ? "secondary" : "default"}
               className="w-full"
               onClick={onCtaClick}
               loading={ctaLoading}
-              disabled={ctaDisabled}
+              disabled={ctaDisabled || isCurrentPlan}
             >
               {buttonText}
             </Button>
