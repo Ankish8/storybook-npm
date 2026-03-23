@@ -74,7 +74,8 @@ export interface PricingPageProps
    * When set, controls how "Show details" expands across cards.
    * - "single": only the clicked card expands (accordion).
    * - "all": clicking "Show details" on any card expands all cards that have detailsContent.
+   * - "multiple": each card toggles independently (parent tracks state, multiple can be open).
    * Ignored when cards are used without detailsContent or without controlled expanded state.
    */
-  letUsDriveExpandMode?: "single" | "all";
+  letUsDriveExpandMode?: "single" | "all" | "multiple";
 }

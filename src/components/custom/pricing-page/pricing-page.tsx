@@ -91,7 +91,16 @@ const PricingPage = React.forwardRef(
             prev.filter((i) => i !== index)
           );
         }
+      } else if (letUsDriveExpandMode === "multiple") {
+        if (expanded) {
+          setExpandedLetUsDriveIndices((prev) => [...prev, index]);
+        } else {
+          setExpandedLetUsDriveIndices((prev) =>
+            prev.filter((i) => i !== index)
+          );
+        }
       } else {
+        // "single" — accordion
         if (expanded) {
           setExpandedLetUsDriveIndices([index]);
         } else {

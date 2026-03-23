@@ -735,3 +735,29 @@ export const FullPageWithLetUsDriveDetails: Story = {
     letUsDriveExpandMode: "single",
   },
 };
+
+// ─── Full page with Let Us Drive details (multiple expand) ─────────────────────
+
+export const FullPageWithLetUsDriveDetailsMultiple: Story = {
+  name: "Full Page With Let Us Drive Details (Multiple)",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Each card toggles independently — multiple cards can be open at the same time. Clicking one card does not collapse others.",
+      },
+    },
+  },
+  args: {
+    tabs,
+    activeTab: "team",
+    showBillingToggle: true,
+    billingPeriod: "monthly",
+    headerActions: <NumberTypeSelect />,
+    planCards: teamMonthlyCards,
+    powerUpCards,
+    onFeatureComparisonClick: fn(),
+    letUsDriveCards: letUsDriveCardsWithDetails,
+    letUsDriveExpandMode: "multiple",
+  },
+};

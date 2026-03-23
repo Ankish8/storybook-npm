@@ -376,4 +376,49 @@ describe("PricingPage", () => {
     expect(screen.getAllByText("Show details")).toHaveLength(1);
     expect(screen.getAllByText("Hide details")).toHaveLength(1);
   });
+
+  it("allows multiple Let us drive cards open when letUsDriveExpandMode is multiple", () => {
+    const driveCardsWithDetails: LetUsDriveCardProps[] = [
+      {
+        title: "Onboarding",
+        price: "20,000",
+        period: "/one-time",
+        description: "Cut adoption time.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Setup", description: "Help with setup." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+      {
+        title: "Account Manager",
+        price: "15,000",
+        period: "/month",
+        description: "One expert.",
+        detailsContent: {
+          heading: "Includes:",
+          items: [{ title: "Reviews", description: "Strategic reviews." }],
+        },
+        onCtaClick: vi.fn(),
+      },
+    ];
+    render(
+      <PricingPage
+        letUsDriveCards={driveCardsWithDetails}
+        letUsDriveExpandMode="multiple"
+      />
+    );
+    // expand first card
+    fireEvent.click(screen.getAllByText("Show details")[0]);
+    expect(screen.getByText("Setup")).toBeInTheDocument();
+    expect(screen.queryByText("Reviews")).not.toBeInTheDocument();
+    // expand second card — first should stay open
+    fireEvent.click(screen.getByText("Show details"));
+    expect(screen.getByText("Setup")).toBeInTheDocument();
+    expect(screen.getByText("Reviews")).toBeInTheDocument();
+    // collapse first card — second stays open
+    fireEvent.click(screen.getAllByText("Hide details")[0]);
+    expect(screen.queryByText("Setup")).not.toBeInTheDocument();
+    expect(screen.getByText("Reviews")).toBeInTheDocument();
+  });
 });
