@@ -1409,12 +1409,12 @@ const buttonVariants = cva(
         success:
           "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
-          "border border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
+          "border border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
           "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
         ghost:
           "text-semantic-text-muted hover:bg-semantic-bg-ui hover:text-semantic-text-primary",
-        link: "text-semantic-text-secondary underline-offset-4 hover:underline",
+        link: "text-semantic-text-link underline-offset-4 hover:underline",
         dashed:
           "border border-dashed border-semantic-bg-hover bg-transparent text-semantic-text-muted hover:border-semantic-border-primary hover:text-semantic-text-secondary hover:bg-[var(--color-neutral-50)]",
       },
@@ -13328,29 +13328,34 @@ const PricingCard = React.forwardRef(
           </div>
         )}
 
-        {/* Addon */}
-        {addon && (
-          <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
-            {addon.icon && (
-              <div className="size-5 shrink-0">{addon.icon}</div>
-            )}
-            <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
-              {addon.text}
-            </span>
-          </div>
-        )}
-
-        {/* Usage Details */}
-        {usageDetails && usageDetails.length > 0 && (
-          <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
-            {usageDetails.map((detail, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+        {/* Bottom sections pushed to card bottom for grid alignment */}
+        {(addon || (usageDetails && usageDetails.length > 0)) && (
+          <div className="mt-auto flex flex-col gap-6">
+            {/* Addon */}
+            {addon && (
+              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
+                {addon.icon && (
+                  <div className="size-5 shrink-0">{addon.icon}</div>
+                )}
                 <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
-                  <strong>{detail.label}:</strong> {detail.value}
+                  {addon.text}
                 </span>
               </div>
-            ))}
+            )}
+
+            {/* Usage Details */}
+            {usageDetails && usageDetails.length > 0 && (
+              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
+                {usageDetails.map((detail, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+                    <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                      <strong>{detail.label}:</strong> {detail.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

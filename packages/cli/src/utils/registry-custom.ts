@@ -5446,29 +5446,34 @@ const PricingCard = React.forwardRef(
           </div>
         )}
 
-        {/* Addon */}
-        {addon && (
-          <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
-            {addon.icon && (
-              <div className="size-5 shrink-0">{addon.icon}</div>
-            )}
-            <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
-              {addon.text}
-            </span>
-          </div>
-        )}
-
-        {/* Usage Details */}
-        {usageDetails && usageDetails.length > 0 && (
-          <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
-            {usageDetails.map((detail, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+        {/* Bottom sections pushed to card bottom for grid alignment */}
+        {(addon || (usageDetails && usageDetails.length > 0)) && (
+          <div className="mt-auto flex flex-col gap-6">
+            {/* Addon */}
+            {addon && (
+              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
+                {addon.icon && (
+                  <div className="size-5 shrink-0">{addon.icon}</div>
+                )}
                 <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
-                  <strong>{detail.label}:</strong> {detail.value}
+                  {addon.text}
                 </span>
               </div>
-            ))}
+            )}
+
+            {/* Usage Details */}
+            {usageDetails && usageDetails.length > 0 && (
+              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
+                {usageDetails.map((detail, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+                    <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                      <strong>{detail.label}:</strong> {detail.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

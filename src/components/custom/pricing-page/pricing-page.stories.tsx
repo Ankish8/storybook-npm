@@ -58,7 +58,7 @@ const teamMonthlyCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For small teams that need a WhatsApp-first plan with missed call automation",
-    headerBgColor: "#d7eae9",
+
     planIcon: (
       <CompactCarIcon className="size-[30px] text-semantic-text-primary" />
     ),
@@ -80,7 +80,7 @@ const teamMonthlyCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For growing businesses that need scalable calling, WhatsApp campaigns, and smarter team routing.",
-    headerBgColor: "#f4f0ec",
+
     planIcon: (
       <SedanCarIcon className="size-[30px] text-semantic-text-primary" />
     ),
@@ -105,7 +105,7 @@ const teamMonthlyCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For teams that need everything in Sedan plus advanced IVR, analytics, and deep integrations.",
-    headerBgColor: "#dbe2fe",
+
     planIcon: (
       <SuvCarIcon className="size-[30px] text-semantic-text-primary" />
     ),
@@ -145,7 +145,7 @@ const aiCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For teams that want a self-learning AI system to run WhatsApp, Calls, and workflows end-to-end.",
-    headerBgColor: "#d7eae9",
+
     features: [
       "AI chatbot for WhatsApp conversations",
       "AI voicebot for inbound calls",
@@ -170,7 +170,7 @@ const aiCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For large organisations that need AI at scale with custom deployment and governance.",
-    headerBgColor: "#dbe2fe",
+
     features: [
       { text: "Everything in AIO", bold: true },
       "Custom AI setup & architecture",
