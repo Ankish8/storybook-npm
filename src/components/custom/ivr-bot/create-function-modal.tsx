@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trash2, ChevronDown, X, Plus, Search, Pencil } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, Pencil } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -7,6 +7,9 @@ import {
   DialogTitle,
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
+import { FormModal } from "../../ui/form-modal";
+import { TextField } from "../../ui/text-field";
+import { Textarea } from "../../ui/textarea";
 import type {
   CreateFunctionModalProps,
   CreateFunctionData,
@@ -15,10 +18,11 @@ import type {
   HttpMethod,
   KeyValuePair,
   VariableGroup,
+  VariableItem,
+  VariableFormData,
 } from "./types";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
 const FUNCTION_NAME_MAX = 100;
 const BODY_MAX = 4000;
 const URL_MAX = 500;
@@ -26,6 +30,8 @@ const HEADER_KEY_MAX = 512;
 const HEADER_VALUE_MAX = 2048;
 
 const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+const VARIABLE_NAME_MAX = 30;
+const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 const URL_REGEX = /^https?:\/\//;
 const HEADER_KEY_REGEX = /^[!#$%&'*+\-.^_`|~0-9a-zA-Z]+$/;
 // Query parameter validation (aligned with apiIntegrationSchema.queryParams)
@@ -81,6 +87,30 @@ function extractVarRefs(texts: string[]): string[] {
   return Array.from(new Set(all));
 }
 
+// ── Value segment parser — splits "text {{var}} text" into typed segments ─────
+
+type ValueSegment =
+  | { type: "text"; content: string }
+  | { type: "var"; name: string; raw: string };
+
+function parseValueSegments(value: string): ValueSegment[] {
+  const segments: ValueSegment[] = [];
+  const regex = /\{\{([^}]+)\}\}/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(value)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: "text", content: value.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: "var", name: match[1], raw: match[0] });
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < value.length) {
+    segments.push({ type: "text", content: value.slice(lastIndex) });
+  }
+  return segments;
+}
+
 /** Mirror-div technique — returns { top, left } relative to the element's top-left corner. */
 function getCaretPixelPos(
   el: HTMLTextAreaElement | HTMLInputElement,
@@ -130,10 +160,11 @@ function getCaretPixelPos(
 
 // Uses same visual classes as DropdownMenuContent + DropdownMenuItem.
 // Position is cursor-anchored via getCaretPixelPos.
-// Supports both flat `variables` (backward compat) and grouped `variableGroups`.
+// No search bar — typing after {{ already filters via filterQuery.
 function VarPopup({
   variables,
   variableGroups,
+  filterQuery = "",
   onSelect,
   onAddVariable,
   onEditVariable,
@@ -141,52 +172,24 @@ function VarPopup({
 }: {
   variables: string[];
   variableGroups?: VariableGroup[];
+  filterQuery?: string;
   onSelect: (v: string) => void;
   onAddVariable?: () => void;
   onEditVariable?: (variable: string) => void;
   style?: React.CSSProperties;
 }) {
-  const [search, setSearch] = React.useState("");
-  const searchRef = React.useRef<HTMLInputElement>(null);
   const hasGroups = variableGroups && variableGroups.length > 0;
-
-  // Reset search when popup closes (variables go empty)
-  const isOpen = hasGroups ? true : variables.length > 0;
-  React.useEffect(() => {
-    if (!isOpen) setSearch("");
-  }, [isOpen]);
 
   if (!hasGroups && variables.length === 0) return null;
 
-  const lowerSearch = search.toLowerCase();
-
-  // Flat mode — filter and render simple list
+  // Flat mode — variables are already pre-filtered by VariableInput
   if (!hasGroups) {
-    const filtered = search
-      ? variables.filter((v) => v.toLowerCase().includes(lowerSearch))
-      : variables;
-
     return (
       <div
         role="listbox"
         style={style}
-        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary pt-1.5 text-semantic-text-primary shadow-md"
+        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
       >
-        {/* Search — matches SelectField inline search style */}
-        <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
-          <Search className="size-4 text-semantic-text-muted shrink-0" />
-          <input
-            ref={searchRef}
-            type="text"
-            value={search}
-            placeholder="Search..."
-            onMouseDown={(e) => e.preventDefault()}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Escape") setSearch(""); }}
-            className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
-          />
-        </div>
-
         {/* Add new variable */}
         {onAddVariable && (
           <button
@@ -201,7 +204,7 @@ function VarPopup({
 
         {/* Variable list */}
         <div className="max-h-48 overflow-y-auto p-1">
-          {filtered.map((v) => (
+          {variables.map((v) => (
             <button
               key={v}
               type="button"
@@ -212,7 +215,7 @@ function VarPopup({
               {v}
             </button>
           ))}
-          {filtered.length === 0 && (
+          {variables.length === 0 && (
             <p className="m-0 px-2 py-1.5 text-sm text-semantic-text-muted">No variables found</p>
           )}
         </div>
@@ -220,12 +223,12 @@ function VarPopup({
     );
   }
 
-  // Grouped mode — render with group headers and edit icons
+  // Grouped mode — filter by the {{ trigger query
+  const lowerQuery = filterQuery.toLowerCase();
   const filteredGroups = variableGroups.map((g) => ({
     ...g,
     items: g.items.filter((item) =>
-      item.name.toLowerCase().includes(lowerSearch) ||
-      (item.value ?? `{{${item.name}}}`).toLowerCase().includes(lowerSearch)
+      item.name.toLowerCase().includes(lowerQuery)
     ),
   })).filter((g) => g.items.length > 0);
 
@@ -233,59 +236,47 @@ function VarPopup({
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
     >
-      {/* Search */}
-      <div className="relative px-2 pt-2 pb-1">
-        <input
-          ref={searchRef}
-          type="text"
-          value={search}
-          placeholder="Search"
-          onMouseDown={(e) => e.preventDefault()}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Escape") setSearch(""); }}
-          className="w-full h-9 pl-3 pr-9 text-sm rounded border border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary placeholder:text-semantic-text-muted outline-none focus:border-semantic-border-input-focus"
-        />
-        <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-semantic-text-muted pointer-events-none" />
-      </div>
-
       {/* Add new variable */}
       {onAddVariable && (
-        <button
-          type="button"
-          onMouseDown={(e) => { e.preventDefault(); onAddVariable(); }}
-          className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
-        >
-          <Plus className="size-3.5 shrink-0" />
-          Add new variable
-        </button>
+        <>
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); onAddVariable(); }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
+          >
+            <Plus className="size-3.5 shrink-0" />
+            Add new variable
+          </button>
+          <div className="border-t border-semantic-border-layout" />
+        </>
       )}
 
       {/* Grouped variable list */}
       <div className="max-h-48 overflow-y-auto p-1">
         {filteredGroups.map((group) => (
           <div key={group.label}>
-            <p className="m-0 px-2 pt-2 pb-1 text-xs font-medium text-semantic-text-muted">
+            <p className="m-0 px-2 pt-2 pb-1 text-sm font-medium text-semantic-text-muted">
               {group.label}
             </p>
             {group.items.map((item) => {
               const insertValue = item.value ?? `{{${item.name}}}`;
               return (
-                <div key={item.name} className="flex items-center">
+                <div key={item.name} className="flex items-center rounded-sm transition-colors hover:bg-semantic-bg-ui">
                   <button
                     type="button"
                     role="option"
                     onMouseDown={(e) => { e.preventDefault(); onSelect(insertValue); }}
-                    className="relative flex flex-1 min-w-0 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui"
+                    className="relative flex flex-1 min-w-0 cursor-pointer select-none items-center px-2 py-1.5 text-sm outline-none"
                   >
-                    {item.name}
+                    {`{{${item.name}}}`}
                   </button>
                   {item.editable && onEditVariable && (
                     <button
                       type="button"
                       onMouseDown={(e) => { e.preventDefault(); onEditVariable(item.name); }}
-                      className="shrink-0 p-1.5 text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                      className="shrink-0 p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
                       aria-label={`Edit ${item.name}`}
                     >
                       <Pencil className="size-3.5" />
@@ -304,7 +295,129 @@ function VarPopup({
   );
 }
 
-// ── VariableInput — input with {{ autocomplete ─────────────────────────────────
+// ── VariableFormModal — create/edit a variable ───────────────────────────────
+
+function VariableFormModal({
+  open,
+  onOpenChange,
+  mode,
+  initialData,
+  onSave,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mode: "create" | "edit";
+  initialData?: VariableItem;
+  onSave: (data: VariableFormData) => void;
+}) {
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [required, setRequired] = React.useState(false);
+  const [nameError, setNameError] = React.useState("");
+
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (open) {
+      setName(initialData?.name ?? "");
+      setDescription(initialData?.description ?? "");
+      setRequired(initialData?.required ?? false);
+      setNameError("");
+    }
+  }, [open, initialData]);
+
+  const validateName = (v: string) => {
+    if (!v.trim()) return "";
+    if (!VARIABLE_NAME_REGEX.test(v)) {
+      return "Variable name should start with alphabet; Cannot have special characters except underscore (_)";
+    }
+    return "";
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setName(v);
+    setNameError(validateName(v));
+  };
+
+  const handleSave = () => {
+    const error = validateName(name);
+    if (error || !name.trim()) {
+      setNameError(error || "Variable name is required");
+      return;
+    }
+    onSave({ name: name.trim(), description: description.trim() || undefined, required });
+  };
+
+  return (
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={mode === "create" ? "Create new variable" : "Edit variable"}
+      saveButtonText={mode === "create" ? "Save" : "Save Changes"}
+      disableSave={!name.trim() || !!nameError}
+      onSave={handleSave}
+      size="default"
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-semantic-text-muted">
+            Variable name{" "}
+            <span className="text-semantic-error-primary">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={name}
+              onChange={handleNameChange}
+              placeholder="e.g., customer_name"
+              maxLength={VARIABLE_NAME_MAX}
+              className={cn(inputCls, "pr-16")}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
+              {name.length}/{VARIABLE_NAME_MAX}
+            </span>
+          </div>
+          <span className={cn("text-sm", nameError ? "text-semantic-error-primary" : "text-semantic-text-muted")}>
+            {nameError || "Variable name should start with alphabet; Cannot have special characters except underscore (_)"}
+          </span>
+        </div>
+        <TextField
+          label="Description (optional)"
+          placeholder="What this variable represents"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-semantic-text-muted">Required</span>
+          <div className="flex items-center gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="variable-required"
+                checked={required}
+                onChange={() => setRequired(true)}
+                className="size-4 accent-semantic-primary"
+              />
+              <span className="text-base text-semantic-text-primary">Yes</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="variable-required"
+                checked={!required}
+                onChange={() => setRequired(false)}
+                className="size-4 accent-semantic-primary"
+              />
+              <span className="text-base text-semantic-text-primary">No</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </FormModal>
+  );
+}
+
+// ── VariableInput — input with {{ autocomplete + badge display ──────────────
 
 function VariableInput({
   value,
@@ -317,6 +430,7 @@ function VariableInput({
   maxLength,
   className,
   inputRef: externalInputRef,
+  disabled,
   ...inputProps
 }: {
   value: string;
@@ -329,16 +443,36 @@ function VariableInput({
   maxLength?: number;
   className?: string;
   inputRef?: React.RefObject<HTMLInputElement>;
+  disabled?: boolean;
   [k: string]: unknown;
 }) {
   const internalRef = React.useRef<HTMLInputElement>(null);
   const inputRef = externalInputRef ?? internalRef;
+  const displayRef = React.useRef<HTMLDivElement>(null);
   const [trigger, setTrigger] = React.useState<TriggerState | null>(null);
   const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
 
   const filtered = trigger
     ? sessionVariables.filter((v) => v.toLowerCase().includes(trigger.query))
     : [];
+
+  // Parse value into text + variable segments
+  const segments = React.useMemo(() => parseValueSegments(value), [value]);
+  const hasVariables = segments.some((s) => s.type === "var");
+  const showDisplay = !isEditing && value.length > 0 && hasVariables;
+
+  // Check overflow in display mode
+  React.useEffect(() => {
+    if (showDisplay && displayRef.current && !isExpanded) {
+      const el = displayRef.current;
+      setIsOverflowing(el.scrollWidth > el.clientWidth);
+    } else {
+      setIsOverflowing(false);
+    }
+  }, [showDisplay, value, isExpanded]);
 
   const updatePopupPos = (el: HTMLInputElement, cursor: number) => {
     const caret = getCaretPixelPos(el, cursor);
@@ -368,13 +502,15 @@ function VariableInput({
 
   return (
     <div className="relative w-full">
+      {/* Input — always in DOM, hidden when display mode is active */}
       <input
         ref={inputRef}
         type="text"
         value={value}
         placeholder={placeholder}
         maxLength={maxLength}
-        className={className}
+        disabled={disabled}
+        className={cn(className, showDisplay && "opacity-0 pointer-events-none")}
         onChange={(e) => {
           onChange(e.target.value);
           const cursor = e.target.selectionStart ?? e.target.value.length;
@@ -386,12 +522,83 @@ function VariableInput({
         onKeyDown={(e) => {
           if (e.key === "Escape") clearTrigger();
         }}
-        onBlur={() => clearTrigger()}
+        onFocus={() => setIsEditing(true)}
+        onBlur={() => {
+          clearTrigger();
+          setIsEditing(false);
+          setIsExpanded(false);
+        }}
         {...inputProps}
       />
+
+      {/* Display mode — variable badges + text + overflow */}
+      {showDisplay && (
+        <div
+          className={cn(
+            "absolute cursor-text",
+            !isExpanded && "inset-0 flex items-center",
+            isExpanded && "inset-x-0 top-0 z-10",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+          onClick={() => {
+            if (!disabled) inputRef.current?.focus();
+          }}
+        >
+          <div
+            ref={displayRef}
+            className={cn(
+              "flex items-center gap-1 px-2",
+              !isExpanded && "flex-1 min-w-0 overflow-hidden",
+              isExpanded && "flex-wrap bg-semantic-bg-primary border border-semantic-border-input rounded py-1.5 shadow-sm"
+            )}
+          >
+            {segments.map((seg, i) =>
+              seg.type === "text" ? (
+                <span key={i} className="text-sm text-semantic-text-primary whitespace-pre shrink-0">{seg.content}</span>
+              ) : (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 shrink-0 rounded px-1.5 py-0.5 text-sm bg-semantic-info-surface text-semantic-text-primary"
+                >
+                  {seg.name}
+                  {onEditVariable && (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onEditVariable(seg.name);
+                      }}
+                      className="p-0.5 text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                    >
+                      <Pencil className="size-3" />
+                    </button>
+                  )}
+                </span>
+              )
+            )}
+          </div>
+          {isOverflowing && !isExpanded && (
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsExpanded(true);
+              }}
+              className="shrink-0 px-1 text-sm font-medium text-semantic-text-muted hover:text-semantic-text-primary"
+            >
+              ...
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* VarPopup */}
       <VarPopup
         variables={filtered}
         variableGroups={trigger ? variableGroups : undefined}
+        filterQuery={trigger?.query ?? ""}
         onSelect={handleSelect}
         onAddVariable={onAddVariable}
         onEditVariable={onEditVariable}
@@ -406,7 +613,7 @@ const inputCls = cn(
   "w-full h-[42px] px-4 text-base rounded border",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
-  "outline-none hover:border-semantic-border-input-focus",
+  "outline-none",
   "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
   "disabled:opacity-50 disabled:cursor-not-allowed"
 );
@@ -415,7 +622,7 @@ const textareaCls = cn(
   "w-full px-4 py-2.5 text-base rounded border resize-none",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
-  "outline-none hover:border-semantic-border-input-focus",
+  "outline-none",
   "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
   "disabled:opacity-50 disabled:cursor-not-allowed"
 );
@@ -504,7 +711,7 @@ function KeyValueTable({
             >
               {/* Key column — border-r on column (not input) so it aligns with header */}
               <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
-                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
                 <input
@@ -517,21 +724,15 @@ function KeyValueTable({
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    errors.key && "border-semantic-error-primary"
+                    errors.key && "text-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.key)}
-                  aria-describedby={errors.key ? `err-key-${row.id}` : undefined}
                 />
-                {errors.key && (
-                  <p id={`err-key-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
-                    {errors.key}
-                  </p>
-                )}
               </div>
 
               {/* Value column — uses VariableInput for {{ autocomplete */}
               <div className="flex-[2] flex flex-col min-w-0">
-                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Value
                 </span>
                 <VariableInput
@@ -547,16 +748,10 @@ function KeyValueTable({
                   className={cn(
                     "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    errors.value && "border-semantic-error-primary"
+                    errors.value && "text-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.value)}
-                  aria-describedby={errors.value ? `err-value-${row.id}` : undefined}
                 />
-                {errors.value && (
-                  <p id={`err-value-${row.id}`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
-                    {errors.value}
-                  </p>
-                )}
               </div>
 
               {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
@@ -591,6 +786,29 @@ function KeyValueTable({
           <span>Add row</span>
         </button>
       </div>
+
+      {/* Collected row errors — shown below the table */}
+      {(() => {
+        const allErrors = rows
+          .map((row) => {
+            const errs = getErrors(row);
+            const msgs: string[] = [];
+            if (errs.key) msgs.push(errs.key);
+            if (errs.value) msgs.push(errs.value);
+            return msgs;
+          })
+          .flat();
+        if (allErrors.length === 0) return null;
+        // Deduplicate
+        const unique = Array.from(new Set(allErrors));
+        return (
+          <div className="flex flex-col gap-0.5">
+            {unique.map((msg) => (
+              <p key={msg} className="m-0 text-sm text-semantic-error-primary">{msg}</p>
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -636,6 +854,35 @@ export const CreateFunctionModal = React.forwardRef(
     const [nameError, setNameError] = React.useState("");
     const [urlError, setUrlError] = React.useState("");
     const [bodyError, setBodyError] = React.useState("");
+
+    // Variable modal state
+    const [varModalOpen, setVarModalOpen] = React.useState(false);
+    const [varModalMode, setVarModalMode] = React.useState<"create" | "edit">("create");
+    const [varModalInitialData, setVarModalInitialData] = React.useState<VariableItem | undefined>();
+
+    const handleAddVariableClick = () => {
+      setVarModalMode("create");
+      setVarModalInitialData(undefined);
+      setVarModalOpen(true);
+    };
+
+    const handleEditVariableClick = (variableName: string) => {
+      const variable = variableGroups
+        ?.flatMap((g) => g.items)
+        .find((item) => item.name === variableName);
+      setVarModalMode("edit");
+      setVarModalInitialData(variable ?? { name: variableName, editable: true });
+      setVarModalOpen(true);
+    };
+
+    const handleVariableSave = (data: VariableFormData) => {
+      if (varModalMode === "create") {
+        onAddVariable?.(data);
+      } else {
+        onEditVariable?.(varModalInitialData?.name ?? "", data);
+      }
+      setVarModalOpen(false);
+    };
 
     // Variable trigger state for URL and body
     const urlInputRef = React.useRef<HTMLInputElement>(null);
@@ -731,14 +978,7 @@ export const CreateFunctionModal = React.forwardRef(
       onOpenChange(false);
     }, [reset, onOpenChange]);
 
-    const supportsBody = METHODS_WITH_BODY.includes(method);
-
-    // When switching to a method without body, reset to header tab if body was active
-    React.useEffect(() => {
-      if (!supportsBody && activeTab === "body") {
-        setActiveTab("header");
-      }
-    }, [supportsBody, activeTab]);
+    // Body tab is always visible regardless of HTTP method
 
     const validateName = (value: string) => {
       if (value.trim() && !FUNCTION_NAME_REGEX.test(value.trim())) {
@@ -873,11 +1113,10 @@ export const CreateFunctionModal = React.forwardRef(
       body: "Body",
     };
 
-    const visibleTabs: FunctionTabType[] = supportsBody
-      ? ["header", "queryParams", "body"]
-      : ["header", "queryParams"];
+    const visibleTabs: FunctionTabType[] = ["header", "queryParams", "body"];
 
     return (
+      <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           ref={ref}
@@ -885,7 +1124,7 @@ export const CreateFunctionModal = React.forwardRef(
           hideCloseButton
           className={cn(
             "flex flex-col gap-0 p-0 w-[calc(100vw-2rem)] sm:w-full",
-            "max-h-[calc(100svh-2rem)] overflow-hidden",
+            "max-h-[calc(100vh-2rem)] overflow-hidden",
             className
           )}
         >
@@ -905,7 +1144,7 @@ export const CreateFunctionModal = React.forwardRef(
           </div>
 
           {/* ── Scrollable body ── */}
-          <div className="flex-1 overflow-y-auto min-h-0 px-4 py-5 sm:px-6">
+          <div className="flex-1 overflow-y-auto min-h-0 overscroll-contain px-4 py-5 sm:px-6">
             {/* ─ Step 1 ─ */}
             {step === 1 && (
               <div className="flex flex-col gap-5">
@@ -932,44 +1171,33 @@ export const CreateFunctionModal = React.forwardRef(
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs italic text-semantic-text-muted pointer-events-none">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
                       {name.length}/{FUNCTION_NAME_MAX}
                     </span>
                   </div>
                   {nameError && (
-                    <p className="m-0 text-xs text-semantic-error-primary">{nameError}</p>
+                    <p className="m-0 text-sm text-semantic-error-primary">{nameError}</p>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="fn-prompt"
-                    className="text-sm font-semibold text-semantic-text-primary"
-                  >
-                    Prompt{" "}
-                    <span className="text-semantic-error-primary">*</span>
-                  </label>
-                  <div className="relative">
-                    <textarea
-                      id="fn-prompt"
-                      value={prompt}
-                      maxLength={promptMaxLength}
-                      disabled={disabled}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="Enter the description of the function"
-                      rows={5}
-                      className={cn(textareaCls, "pb-7")}
-                    />
-                    <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
-                      {prompt.length}/{promptMaxLength}
-                    </span>
-                  </div>
-                  {prompt.length > 0 && prompt.trim().length < promptMinLength && (
-                    <p className="m-0 text-xs text-semantic-error-primary">
-                      Minimum {promptMinLength} characters required
-                    </p>
-                  )}
-                </div>
+                <Textarea
+                  id="fn-prompt"
+                  label="Prompt"
+                  required
+                  value={prompt}
+                  maxLength={promptMaxLength}
+                  showCount
+                  disabled={disabled}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Enter the description of the function"
+                  rows={5}
+                  labelClassName="font-semibold text-semantic-text-primary"
+                  error={
+                    prompt.length > 0 && prompt.trim().length < promptMinLength
+                      ? `Minimum ${promptMinLength} characters required`
+                      : undefined
+                  }
+                />
               </div>
             )}
 
@@ -984,7 +1212,6 @@ export const CreateFunctionModal = React.forwardRef(
                   <div
                     className={cn(
                       "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
-                      "hover:border-semantic-border-input-focus",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
                     )}
@@ -1045,11 +1272,19 @@ export const CreateFunctionModal = React.forwardRef(
                           disabled && "opacity-50 cursor-not-allowed"
                         )}
                       />
-                      <VarPopup variables={filteredUrlVars} onSelect={handleUrlVarSelect} style={urlPopupStyle} />
+                      <VarPopup
+                        variables={filteredUrlVars}
+                        variableGroups={urlTrigger ? variableGroups : undefined}
+                        filterQuery={urlTrigger?.query ?? ""}
+                        onSelect={handleUrlVarSelect}
+                        onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                        onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
+                        style={urlPopupStyle}
+                      />
                     </div>
                   </div>
                   {urlError && (
-                    <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
+                    <p className="m-0 text-sm text-semantic-error-primary">{urlError}</p>
                   )}
                 </div>
 
@@ -1090,8 +1325,8 @@ export const CreateFunctionModal = React.forwardRef(
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters."
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
-                      onAddVariable={onAddVariable}
-                      onEditVariable={onEditVariable}
+                      onAddVariable={handleAddVariableClick}
+                      onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
                   )}
@@ -1112,8 +1347,8 @@ export const CreateFunctionModal = React.forwardRef(
                       }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
-                      onAddVariable={onAddVariable}
-                      onEditVariable={onEditVariable}
+                      onAddVariable={handleAddVariableClick}
+                      onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
                   )}
@@ -1149,13 +1384,21 @@ export const CreateFunctionModal = React.forwardRef(
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
                         />
-                        <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
+                        <span className="absolute bottom-2 right-3 text-sm text-semantic-text-muted pointer-events-none">
                           {body.length}/{BODY_MAX}
                         </span>
-                        <VarPopup variables={filteredBodyVars} onSelect={handleBodyVarSelect} style={bodyPopupStyle} />
+                        <VarPopup
+                          variables={filteredBodyVars}
+                          variableGroups={bodyTrigger ? variableGroups : undefined}
+                          filterQuery={bodyTrigger?.query ?? ""}
+                          onSelect={handleBodyVarSelect}
+                          onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                          onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
+                          style={bodyPopupStyle}
+                        />
                       </div>
                       {bodyError && (
-                        <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
+                        <p className="m-0 text-sm text-semantic-error-primary">{bodyError}</p>
                       )}
                     </div>
                   )}
@@ -1266,6 +1509,15 @@ export const CreateFunctionModal = React.forwardRef(
           </div>
         </DialogContent>
       </Dialog>
+
+      <VariableFormModal
+        open={varModalOpen}
+        onOpenChange={setVarModalOpen}
+        mode={varModalMode}
+        initialData={varModalInitialData}
+        onSave={handleVariableSave}
+      />
+      </>
     );
   }
 );

@@ -34,4 +34,5 @@ export type {
   SelectOption,
   VariableItem,
   VariableGroup,
+  VariableFormData,
 } from "./types";

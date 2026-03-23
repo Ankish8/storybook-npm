@@ -87,6 +87,10 @@ export {
 } from "./components/ui/text-field";
 export type { TextFieldProps } from "./components/ui/text-field";
 
+// Textarea
+export { Textarea, textareaVariants } from "./components/ui/textarea";
+export type { TextareaProps } from "./components/ui/textarea";
+
 // Select
 export {
   Select,

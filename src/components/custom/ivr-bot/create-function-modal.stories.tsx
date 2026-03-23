@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import * as React from "react";
 import { CreateFunctionModal } from "./create-function-modal";
-import type { VariableGroup } from "./types";
+import type { VariableGroup, VariableFormData } from "./types";
 
 const meta: Meta<typeof CreateFunctionModal> = {
   title: "Custom/AI Bot/Create Function",
@@ -11,75 +11,31 @@ const meta: Meta<typeof CreateFunctionModal> = {
     layout: "centered",
     docs: {
       description: {
-        component: `
-A **2-step wizard modal** for creating a new bot function.
+        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name and prompt. Step 2 configures the API endpoint with headers, query parameters, and body.
 
----
-
-### Step 1 — Name & Prompt
-- **Functions Name** (required, max 30 chars with live counter)
-- **Prompt** (required, min 100 chars, max 5000 chars with live counter)
-- **Next** button — disabled until name is filled and prompt meets min length
-
-### Step 2 — API Configuration
-- **API URL** — HTTP method selector (GET / POST / PUT / DELETE / PATCH) + URL input
-- **Tabs** — Header · Query parameter · Body (Body tab only visible for POST / PUT / PATCH)
-  - *Header / Query parameter* — editable key-value rows with delete action; click the empty row to add a new entry
-  - *Body* — textarea with 4 000 char counter (hidden for GET / DELETE)
-- **Test Your API** — "Test API" button + read-only response area
-- **Back** (returns to Step 1) / **Submit** (calls \`onSubmit\` and closes)
-
-### Prop Defaults
-
-| Prop | Default |
-|------|---------|
-| \`promptMinLength\` | \`100\` |
-| \`promptMaxLength\` | \`5000\` |
-| \`initialStep\` | \`1\` |
-| \`initialTab\` | \`"header"\` |
-
----
-
-### Install
+**Install**
 \`\`\`bash
 npx myoperator-ui add ivr-bot
 \`\`\`
 
-### Import
+**Import**
 \`\`\`tsx
-import { CreateFunctionModal } from "@/components/custom/ivr-bot";
-\`\`\`
-
-### Usage
-\`\`\`tsx
-const [open, setOpen] = React.useState(false);
-
-<Button onClick={() => setOpen(true)}>+ Functions</Button>
-
-<CreateFunctionModal
-  open={open}
-  onOpenChange={setOpen}
-  onSubmit={(data) => console.log(data)}
-  onTestApi={async (step2) => {
-    const res = await fetch(step2.url);
-    return await res.text();
-  }}
-/>
+import { CreateFunctionModal } from "@/components/custom/ivr-bot"
 \`\`\`
 
 ### Design Tokens
 
-| Token | Purpose |
-|-------|---------|
-| \`bg-semantic-bg-primary\` | Modal background |
-| \`border-semantic-border-layout\` | Input, table, divider borders |
-| \`text-semantic-text-primary\` | Field values |
-| \`text-semantic-text-secondary\` | Active tab, labels |
-| \`text-semantic-text-muted\` | Placeholder, helper labels |
-| \`text-semantic-error-primary\` | Required asterisk |
-| \`bg-semantic-bg-ui\` | Table header, response textarea |
-| \`bg-semantic-primary\` | Submit button |
-        `,
+| Token | CSS Variable | Value | Preview |
+|-------|-------------|-------|---------|
+| Modal background | \`--semantic-bg-primary\` | #FFFFFF | <span style="display:inline-block;width:16px;height:16px;background:#FFFFFF;border:1px solid #E9EAEB;border-radius:3px;vertical-align:middle"></span> |
+| Input / table borders | \`--semantic-border-layout\` | #E9EAEB | <span style="display:inline-block;width:16px;height:16px;background:#E9EAEB;border-radius:3px;vertical-align:middle"></span> |
+| Input border | \`--semantic-border-input\` | #D5D7DA | <span style="display:inline-block;width:16px;height:16px;background:#D5D7DA;border-radius:3px;vertical-align:middle"></span> |
+| Field values | \`--semantic-text-primary\` | #181D27 | <span style="display:inline-block;width:16px;height:16px;background:#181D27;border-radius:3px;vertical-align:middle"></span> |
+| Tab labels | \`--semantic-text-secondary\` | #343E55 | <span style="display:inline-block;width:16px;height:16px;background:#343E55;border-radius:3px;vertical-align:middle"></span> |
+| Placeholder / counters | \`--semantic-text-muted\` | #717680 | <span style="display:inline-block;width:16px;height:16px;background:#717680;border-radius:3px;vertical-align:middle"></span> |
+| Required asterisk | \`--semantic-error-primary\` | #F04438 | <span style="display:inline-block;width:16px;height:16px;background:#F04438;border-radius:3px;vertical-align:middle"></span> |
+| Table header / hover | \`--semantic-bg-ui\` | #F5F5F5 | <span style="display:inline-block;width:16px;height:16px;background:#F5F5F5;border:1px solid #E9EAEB;border-radius:3px;vertical-align:middle"></span> |
+| Submit button | \`--semantic-primary\` | #343E55 | <span style="display:inline-block;width:16px;height:16px;background:#343E55;border-radius:3px;vertical-align:middle"></span> |`,
       },
     },
   },
@@ -133,8 +89,8 @@ function ModalTrigger({
   initialStep?: 1 | 2;
   initialTab?: "header" | "queryParams" | "body";
   variableGroups?: VariableGroup[];
-  onAddVariable?: () => void;
-  onEditVariable?: (variable: string) => void;
+  onAddVariable?: (data: VariableFormData) => void;
+  onEditVariable?: (originalName: string, data: VariableFormData) => void;
   onSubmit?: (data: unknown) => void;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -161,6 +117,18 @@ function ModalTrigger({
   );
 }
 
+// ─── Sample variable groups (shared by Step 2 stories) ──────────────────────
+const sampleVariableGroups: VariableGroup[] = [
+  {
+    label: "Function variables",
+    items: [
+      { name: "Order_id", editable: true, description: "The order identifier", required: true },
+      { name: "customer_name", editable: true, description: "Customer's full name" },
+      { name: "product_id" },
+    ],
+  },
+];
+
 // ─── Step 1 — Name & Prompt ──────────────────────────────────────────────────
 export const Step1NameAndPrompt: Story = {
   name: "Step 1 — Name & Prompt",
@@ -181,7 +149,14 @@ export const Step1NameAndPrompt: Story = {
 export const Step2HeaderTab: Story = {
   name: "Step 2 — API Config / Header",
   render: () => (
-    <ModalTrigger label="Open Step 2 — Header" initialStep={2} initialTab="header" />
+    <ModalTrigger
+      label="Open Step 2 — Header"
+      initialStep={2}
+      initialTab="header"
+      variableGroups={sampleVariableGroups}
+      onAddVariable={(data) => console.log("Add variable:", data)}
+      onEditVariable={(name, data) => console.log("Edit variable:", name, data)}
+    />
   ),
   parameters: {
     docs: {
@@ -201,6 +176,9 @@ export const Step2QueryParamsTab: Story = {
       label="Open Step 2 — Query Params"
       initialStep={2}
       initialTab="queryParams"
+      variableGroups={sampleVariableGroups}
+      onAddVariable={(data) => console.log("Add variable:", data)}
+      onEditVariable={(name, data) => console.log("Edit variable:", name, data)}
     />
   ),
   parameters: {
@@ -217,7 +195,14 @@ export const Step2QueryParamsTab: Story = {
 export const Step2BodyTab: Story = {
   name: "Step 2 — API Config / Body",
   render: () => (
-    <ModalTrigger label="Open Step 2 — Body" initialStep={2} initialTab="body" />
+    <ModalTrigger
+      label="Open Step 2 — Body"
+      initialStep={2}
+      initialTab="body"
+      variableGroups={sampleVariableGroups}
+      onAddVariable={(data) => console.log("Add variable:", data)}
+      onEditVariable={(name, data) => console.log("Edit variable:", name, data)}
+    />
   ),
   parameters: {
     docs: {
@@ -270,42 +255,61 @@ export const Interactive: Story = {
 };
 
 // ─── With Variable Groups ────────────────────────────────────────────────────
-const sampleVariableGroups: VariableGroup[] = [
-  {
-    label: "Session variables",
-    items: [
-      { name: "Caller number" },
-      { name: "Time" },
-      { name: "Contact Details" },
-    ],
-  },
-  {
-    label: "Function variables",
-    items: [
-      { name: "Order_id", editable: true },
-      { name: "customer_name", editable: true },
-      { name: "product_id" },
-    ],
-  },
-];
+
+// Stateful wrapper that manages variable groups when variables are added/edited
+function VariableGroupsDemo() {
+  const [open, setOpen] = React.useState(false);
+  const [groups, setGroups] = React.useState<VariableGroup[]>(sampleVariableGroups);
+
+  const handleAddVariable = (data: VariableFormData) => {
+    setGroups((prev) => prev.map((g) =>
+      g.label === "Function variables"
+        ? { ...g, items: [...g.items, { name: data.name, description: data.description, required: data.required, editable: true }] }
+        : g
+    ));
+  };
+
+  const handleEditVariable = (originalName: string, data: VariableFormData) => {
+    setGroups((prev) => prev.map((g) => ({
+      ...g,
+      items: g.items.map((item) =>
+        item.name === originalName
+          ? { ...item, name: data.name, description: data.description, required: data.required }
+          : item
+      ),
+    })));
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-semantic-primary text-semantic-text-inverted text-sm font-semibold rounded hover:bg-semantic-primary-hover transition-colors"
+      >
+        Open with Variable Groups
+      </button>
+      <CreateFunctionModal
+        open={open}
+        onOpenChange={setOpen}
+        initialStep={2}
+        initialTab="header"
+        variableGroups={groups}
+        onAddVariable={handleAddVariable}
+        onEditVariable={handleEditVariable}
+      />
+    </>
+  );
+}
 
 export const WithVariableGroups: Story = {
   name: "Step 2 — Variable Groups",
-  render: () => (
-    <ModalTrigger
-      label="Open with Variable Groups"
-      initialStep={2}
-      initialTab="header"
-      variableGroups={sampleVariableGroups}
-      onAddVariable={() => alert("Add new variable clicked")}
-      onEditVariable={(name) => alert(`Edit variable: ${name}`)}
-    />
-  ),
+  render: () => <VariableGroupsDemo />,
   parameters: {
     docs: {
       description: {
         story:
-          "Step 2 with **grouped variable autocomplete**. Type `{{` in a header/query param Value field to see the enhanced popup with search, grouped variables, edit icons, and an 'Add new variable' button.",
+          "Step 2 with **grouped variable autocomplete**. Type `{{` in a header/query param Value field to see the popup with grouped variables, edit icons, and '+ Add new variable' button. Click '+ Add new variable' to open the create modal. Click the edit icon to open the edit modal. Variables are managed statefully in this demo.",
       },
     },
   },

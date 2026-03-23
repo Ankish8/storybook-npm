@@ -13,9 +13,9 @@ const textFieldContainerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
@@ -38,9 +38,9 @@ const textFieldInputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       size: {
         default: "h-[42px] px-4 py-2 text-base file:text-base",
@@ -305,12 +305,12 @@ const TextField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs text-semantic-error-primary"
+                className="text-sm text-semantic-error-primary"
               >
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-semantic-text-muted">
+              <span id={helperId} className="text-sm text-semantic-text-muted">
                 {helperText}
               </span>
             ) : (
@@ -319,7 +319,7 @@ const TextField = React.forwardRef(
             {showCount && maxLength && (
               <span
                 className={cn(
-                  "text-xs",
+                  "text-sm",
                   charCount > maxLength
                     ? "text-semantic-error-primary"
                     : "text-semantic-text-muted"

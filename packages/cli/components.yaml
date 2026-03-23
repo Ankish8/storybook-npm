@@ -33,6 +33,7 @@ categories:
       - checkbox
       - switch
       - text-field
+      - textarea
       - select-field
       - multi-select
       - readable-field
@@ -246,6 +247,14 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+
+  textarea:
+    description: "A multi-line text input with label, error state, helper text, character counter, and resize control"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
 
   readable-field:
     description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys."
@@ -997,6 +1006,9 @@ components:
       - page-header
       - tag
       - file-upload-modal
+      - form-modal
+      - text-field
+      - textarea
     isMultiFile: true
     directory: "ivr-bot"
     files:

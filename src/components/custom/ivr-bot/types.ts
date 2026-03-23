@@ -29,6 +29,17 @@ export interface VariableItem {
   value?: string;
   /** When true, an edit icon is shown next to this variable */
   editable?: boolean;
+  /** Description of what this variable represents */
+  description?: string;
+  /** Whether this variable is required */
+  required?: boolean;
+}
+
+/** Data shape for creating or editing a variable */
+export interface VariableFormData {
+  name: string;
+  description?: string;
+  required?: boolean;
 }
 
 /** A labelled group of variables in the autocomplete popup */
@@ -91,10 +102,10 @@ export interface CreateFunctionModalProps {
   sessionVariables?: string[];
   /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
   variableGroups?: VariableGroup[];
-  /** Called when user clicks "+ Add new variable" in the autocomplete popup */
-  onAddVariable?: () => void;
-  /** Called when user clicks the edit icon on a variable in the autocomplete popup */
-  onEditVariable?: (variable: string) => void;
+  /** Called when user saves a new variable from the autocomplete popup */
+  onAddVariable?: (data: VariableFormData) => void;
+  /** Called when user edits a variable from the autocomplete popup */
+  onEditVariable?: (originalName: string, data: VariableFormData) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
   className?: string;

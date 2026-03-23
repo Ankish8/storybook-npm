@@ -144,6 +144,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "form",
     internalDependencies: [],
   },
+  "textarea": {
+    name: "textarea",
+    description: "A multi-line text input with label, error state, helper text, character counter, and resize control",
+      category: "form",
+    dependencies: ["class-variance-authority","clsx","tailwind-merge"],
+    category: "form",
+    internalDependencies: [],
+  },
   "readable-field": {
     name: "readable-field",
     description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.",
@@ -558,7 +566,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: "custom",
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",
-    internalDependencies: ["button","badge","switch","accordion","dialog","select","creatable-select","creatable-multi-select","page-header","tag","file-upload-modal"],
+    internalDependencies: ["button","badge","switch","accordion","dialog","select","creatable-select","creatable-multi-select","page-header","tag","file-upload-modal","form-modal","text-field","textarea"],
   },
   "wallet-topup": {
     name: "wallet-topup",

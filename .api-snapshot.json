@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-03-17T11:42:31.920Z",
+  "generatedAt": "2026-03-23T13:51:39.905Z",
   "components": {
     "accordion": {
       "exports": [
@@ -106,6 +106,41 @@
       },
       "variants": {
         "alertVariants": {}
+      }
+    },
+    "avatar": {
+      "exports": [
+        "Avatar",
+        "AvatarProps",
+        "avatarVariants",
+        "getInitials"
+      ],
+      "interfaces": {
+        "AvatarProps": {
+          "name": {
+            "type": "string",
+            "optional": true
+          },
+          "src": {
+            "type": "string",
+            "optional": true
+          },
+          "alt": {
+            "type": "string",
+            "optional": true
+          },
+          "initials": {
+            "type": "string",
+            "optional": true
+          },
+          "status": {
+            "type": "\"online\" | \"offline\" | \"busy\" | \"away\"",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "avatarVariants": {}
       }
     },
     "badge": {
@@ -264,6 +299,41 @@
       },
       "variants": {}
     },
+    "contact-list-item": {
+      "exports": [
+        "ContactListItem",
+        "ContactListItemProps"
+      ],
+      "interfaces": {
+        "ContactListItemProps": {
+          "name": {
+            "type": "string",
+            "optional": false
+          },
+          "subtitle": {
+            "type": "string",
+            "optional": true
+          },
+          "trailing": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "avatarSrc": {
+            "type": "string",
+            "optional": true
+          },
+          "isSelected": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onClick": {
+            "type": "(event: React.MouseEvent<HTMLDivElement>) => void",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
     "creatable-multi-select": {
       "exports": [
         "CreatableMultiSelect",
@@ -318,6 +388,14 @@
           "helperText": {
             "type": "string",
             "optional": true
+          },
+          "maxItems": {
+            "type": "number",
+            "optional": true
+          },
+          "maxLengthPerItem": {
+            "type": "number",
+            "optional": true
           }
         }
       },
@@ -371,12 +449,31 @@
           "disabled": {
             "type": "boolean",
             "optional": true
+          },
+          "maxLength": {
+            "type": "number",
+            "optional": true
           }
         }
       },
       "variants": {
         "creatableSelectTriggerVariants": {}
       }
+    },
+    "date-divider": {
+      "exports": [
+        "DateDivider",
+        "DateDividerProps"
+      ],
+      "interfaces": {
+        "DateDividerProps": {
+          "children": {
+            "type": "React.ReactNode",
+            "optional": false
+          }
+        }
+      },
+      "variants": {}
     },
     "delete-confirmation-modal": {
       "exports": [
@@ -577,6 +674,29 @@
           },
           "size": {
             "type": "\"sm\" | \"default\" | \"lg\" | \"xl\" | \"full\"",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "image-media": {
+      "exports": [
+        "ImageMedia",
+        "ImageMediaProps"
+      ],
+      "interfaces": {
+        "ImageMediaProps": {
+          "src": {
+            "type": "string",
+            "optional": false
+          },
+          "alt": {
+            "type": "string",
+            "optional": true
+          },
+          "maxHeight": {
+            "type": "number | string",
             "optional": true
           }
         }
@@ -865,6 +985,71 @@
       },
       "variants": {}
     },
+    "panel": {
+      "exports": [
+        "Panel",
+        "PanelProps",
+        "panelVariants"
+      ],
+      "interfaces": {
+        "PanelProps": {
+          "open": {
+            "type": "boolean",
+            "optional": true
+          },
+          "title": {
+            "type": "string",
+            "optional": true
+          },
+          "onClose": {
+            "type": "() => void",
+            "optional": true
+          },
+          "footer": {
+            "type": "React.ReactNode",
+            "optional": true
+          },
+          "header": {
+            "type": "React.ReactNode",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "panelVariants": {}
+      }
+    },
+    "phone-input": {
+      "exports": [
+        "PhoneInput",
+        "PhoneInputProps"
+      ],
+      "interfaces": {
+        "PhoneInputProps": {
+          "countryFlag": {
+            "type": "string",
+            "optional": true
+          },
+          "countryCode": {
+            "type": "string",
+            "optional": true
+          },
+          "showChevron": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onCountryClick": {
+            "type": "() => void",
+            "optional": true
+          },
+          "wrapperClassName": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
     "readable-field": {
       "exports": [
         "ReadableField",
@@ -903,6 +1088,25 @@
           "disabledTooltip": {
             "type": "string",
             "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "reply-quote": {
+      "exports": [
+        "ReplyQuote",
+        "ReplyQuoteProps"
+      ],
+      "interfaces": {
+        "ReplyQuoteProps": {
+          "sender": {
+            "type": "string",
+            "optional": false
+          },
+          "message": {
+            "type": "string",
+            "optional": false
           }
         }
       },
@@ -1097,6 +1301,21 @@
         "labelSizeVariants": {}
       }
     },
+    "system-message": {
+      "exports": [
+        "SystemMessage",
+        "SystemMessageProps"
+      ],
+      "interfaces": {
+        "SystemMessageProps": {
+          "children": {
+            "type": "string",
+            "optional": false
+          }
+        }
+      },
+      "variants": {}
+    },
     "table": {
       "exports": [
         "Table",
@@ -1214,6 +1433,24 @@
         "tableVariants": {}
       }
     },
+    "tabs": {
+      "exports": [
+        "Tabs",
+        "TabsContent",
+        "TabsList",
+        "TabsListProps",
+        "TabsTrigger"
+      ],
+      "interfaces": {
+        "TabsListProps": {
+          "fullWidth": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
     "tag": {
       "exports": [
         "Tag",
@@ -1249,6 +1486,10 @@
       ],
       "interfaces": {
         "TextFieldProps": {
+          "size": {
+            "type": "\"default\" | \"sm\"",
+            "optional": true
+          },
           "label": {
             "type": "string",
             "optional": true
@@ -1289,6 +1530,14 @@
             "type": "boolean",
             "optional": true
           },
+          "clearable": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onClear": {
+            "type": "() => void",
+            "optional": true
+          },
           "wrapperClassName": {
             "type": "string",
             "optional": true
@@ -1306,6 +1555,56 @@
       "variants": {
         "textFieldContainerVariants": {},
         "textFieldInputVariants": {}
+      }
+    },
+    "textarea": {
+      "exports": [
+        "Textarea",
+        "TextareaProps",
+        "textareaVariants"
+      ],
+      "interfaces": {
+        "TextareaProps": {
+          "size": {
+            "type": "\"default\" | \"sm\"",
+            "optional": true
+          },
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "required": {
+            "type": "boolean",
+            "optional": true
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          },
+          "error": {
+            "type": "string",
+            "optional": true
+          },
+          "showCount": {
+            "type": "boolean",
+            "optional": true
+          },
+          "resize": {
+            "type": "\"none\" | \"vertical\" | \"horizontal\" | \"both\"",
+            "optional": true
+          },
+          "wrapperClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "labelClassName": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "textareaVariants": {}
       }
     },
     "toast": {
@@ -1384,6 +1683,21 @@
           "htmlFor": {
             "type": "string",
             "optional": true
+          }
+        }
+      },
+      "variants": {}
+    },
+    "unread-separator": {
+      "exports": [
+        "UnreadSeparator",
+        "UnreadSeparatorProps"
+      ],
+      "interfaces": {
+        "UnreadSeparatorProps": {
+          "count": {
+            "type": "number",
+            "optional": false
           }
         }
       },
