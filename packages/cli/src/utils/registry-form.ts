@@ -1303,7 +1303,16 @@ export { Switch, switchVariants };
       files: [
         {
           name: "text-field.tsx",
-          content: prefixTailwindClasses(`import * as React from "react";
+          content: prefixTailwindClasses(`import {
+  forwardRef,
+  useRef,
+  useCallback,
+  useState,
+  useId,
+  type ChangeEvent,
+  type ReactNode,
+  type ComponentProps,
+} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2, X } from "lucide-react";
 
@@ -1371,7 +1380,7 @@ const textFieldInputVariants = cva(
  */
 export interface TextFieldProps
   extends
-    Omit<React.ComponentProps<"input">, "size">,
+    Omit<ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
   /** Size of the text field — \`default\` (42px) or \`sm\` (36px, compact) */
   size?: "default" | "sm";
@@ -1384,9 +1393,9 @@ export interface TextFieldProps
   /** Error message - shows error state with red styling */
   error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
   /** Text prefix inside input (e.g., "https://") */
   prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
@@ -1407,7 +1416,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       className,
@@ -1441,8 +1450,8 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     ref
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
-    const internalRef = React.useRef<HTMLInputElement>(null);
-    const mergedRef = React.useCallback(
+    const internalRef = useRef<HTMLInputElement>(null);
+    const mergedRef = useCallback(
       (node: HTMLInputElement | null) => {
         internalRef.current = node;
         if (typeof ref === "function") ref(node);
@@ -1452,7 +1461,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     );
 
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(
+    const [internalValue, setInternalValue] = useState(
       defaultValue ?? ""
     );
 
@@ -1464,7 +1473,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
@@ -1491,7 +1500,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = React.useId();
+    const generatedId = useId();
     const inputId = id || generatedId;
     const helperId = \`\${inputId}-helper\`;
     const errorId = \`\${inputId}-error\`;
