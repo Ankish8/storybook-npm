@@ -21,6 +21,24 @@ export interface KeyValuePair {
   value: string;
 }
 
+/** A single variable shown in the {{ autocomplete popup */
+export interface VariableItem {
+  /** Display name (e.g., "Order_id") */
+  name: string;
+  /** Value inserted into the input. Defaults to `{{name}}` if omitted */
+  value?: string;
+  /** When true, an edit icon is shown next to this variable */
+  editable?: boolean;
+}
+
+/** A labelled group of variables in the autocomplete popup */
+export interface VariableGroup {
+  /** Group header text (e.g., "Function variables", "Session variables") */
+  label: string;
+  /** Variables in this group */
+  items: VariableItem[];
+}
+
 export interface FunctionItem {
   id: string;
   name: string;
@@ -71,6 +89,12 @@ export interface CreateFunctionModalProps {
   initialTab?: FunctionTabType;
   /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
   sessionVariables?: string[];
+  /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
+  variableGroups?: VariableGroup[];
+  /** Called when user clicks "+ Add new variable" in the autocomplete popup */
+  onAddVariable?: () => void;
+  /** Called when user clicks the edit icon on a variable in the autocomplete popup */
+  onEditVariable?: (variable: string) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
   className?: string;

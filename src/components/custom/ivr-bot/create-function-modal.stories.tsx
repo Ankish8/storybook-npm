@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import * as React from "react";
 import { CreateFunctionModal } from "./create-function-modal";
+import type { VariableGroup } from "./types";
 
 const meta: Meta<typeof CreateFunctionModal> = {
   title: "Custom/AI Bot/Create Function",
@@ -123,11 +124,17 @@ function ModalTrigger({
   label,
   initialStep,
   initialTab,
+  variableGroups,
+  onAddVariable,
+  onEditVariable,
   onSubmit,
 }: {
   label?: string;
   initialStep?: 1 | 2;
   initialTab?: "header" | "queryParams" | "body";
+  variableGroups?: VariableGroup[];
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   onSubmit?: (data: unknown) => void;
 }) {
   const [open, setOpen] = React.useState(false);
@@ -145,6 +152,9 @@ function ModalTrigger({
         onOpenChange={setOpen}
         initialStep={initialStep}
         initialTab={initialTab}
+        variableGroups={variableGroups}
+        onAddVariable={onAddVariable}
+        onEditVariable={onEditVariable}
         onSubmit={onSubmit as (data: import("./types").CreateFunctionData) => void}
       />
     </>
@@ -254,6 +264,48 @@ export const Interactive: Story = {
       description: {
         story:
           "Use the **Controls** panel to change `initialStep` and `initialTab` before opening the modal to preview any step/tab combination.",
+      },
+    },
+  },
+};
+
+// ─── With Variable Groups ────────────────────────────────────────────────────
+const sampleVariableGroups: VariableGroup[] = [
+  {
+    label: "Session variables",
+    items: [
+      { name: "Caller number" },
+      { name: "Time" },
+      { name: "Contact Details" },
+    ],
+  },
+  {
+    label: "Function variables",
+    items: [
+      { name: "Order_id", editable: true },
+      { name: "customer_name", editable: true },
+      { name: "product_id" },
+    ],
+  },
+];
+
+export const WithVariableGroups: Story = {
+  name: "Step 2 — Variable Groups",
+  render: () => (
+    <ModalTrigger
+      label="Open with Variable Groups"
+      initialStep={2}
+      initialTab="header"
+      variableGroups={sampleVariableGroups}
+      onAddVariable={() => alert("Add new variable clicked")}
+      onEditVariable={(name) => alert(`Edit variable: ${name}`)}
+    />
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Step 2 with **grouped variable autocomplete**. Type `{{` in a header/query param Value field to see the enhanced popup with search, grouped variables, edit icons, and an 'Add new variable' button.",
       },
     },
   },

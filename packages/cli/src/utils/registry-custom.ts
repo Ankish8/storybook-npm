@@ -9758,7 +9758,7 @@ IvrBotConfig.displayName = "IvrBotConfig";
         {
           name: "create-function-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Trash2, ChevronDown, X, Plus } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, Search, Pencil } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -9773,6 +9773,7 @@ import type {
   FunctionTabType,
   HttpMethod,
   KeyValuePair,
+  VariableGroup,
 } from "./types";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
@@ -9888,36 +9889,176 @@ function getCaretPixelPos(
 
 // Uses same visual classes as DropdownMenuContent + DropdownMenuItem.
 // Position is cursor-anchored via getCaretPixelPos.
+// Supports both flat \`variables\` (backward compat) and grouped \`variableGroups\`.
 function VarPopup({
   variables,
+  variableGroups,
   onSelect,
+  onAddVariable,
+  onEditVariable,
   style,
 }: {
   variables: string[];
+  variableGroups?: VariableGroup[];
   onSelect: (v: string) => void;
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   style?: React.CSSProperties;
 }) {
-  if (variables.length === 0) return null;
+  const [search, setSearch] = React.useState("");
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const hasGroups = variableGroups && variableGroups.length > 0;
+
+  // Reset search when popup closes (variables go empty)
+  const isOpen = hasGroups ? true : variables.length > 0;
+  React.useEffect(() => {
+    if (!isOpen) setSearch("");
+  }, [isOpen]);
+
+  if (!hasGroups && variables.length === 0) return null;
+
+  const lowerSearch = search.toLowerCase();
+
+  // Flat mode — filter and render simple list
+  if (!hasGroups) {
+    const filtered = search
+      ? variables.filter((v) => v.toLowerCase().includes(lowerSearch))
+      : variables;
+
+    return (
+      <div
+        role="listbox"
+        style={style}
+        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary pt-1.5 text-semantic-text-primary shadow-md"
+      >
+        {/* Search — matches SelectField inline search style */}
+        <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+          <Search className="size-4 text-semantic-text-muted shrink-0" />
+          <input
+            ref={searchRef}
+            type="text"
+            value={search}
+            placeholder="Search..."
+            onMouseDown={(e) => e.preventDefault()}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Escape") setSearch(""); }}
+            className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
+          />
+        </div>
+
+        {/* Add new variable */}
+        {onAddVariable && (
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); onAddVariable(); }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
+          >
+            <Plus className="size-3.5 shrink-0" />
+            Add new variable
+          </button>
+        )}
+
+        {/* Variable list */}
+        <div className="max-h-48 overflow-y-auto p-1">
+          {filtered.map((v) => (
+            <button
+              key={v}
+              type="button"
+              role="option"
+              onMouseDown={(e) => { e.preventDefault(); onSelect(v); }}
+              className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui"
+            >
+              {v}
+            </button>
+          ))}
+          {filtered.length === 0 && (
+            <p className="m-0 px-2 py-1.5 text-sm text-semantic-text-muted">No variables found</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Grouped mode — render with group headers and edit icons
+  const filteredGroups = variableGroups.map((g) => ({
+    ...g,
+    items: g.items.filter((item) =>
+      item.name.toLowerCase().includes(lowerSearch) ||
+      (item.value ?? \`{{\${item.name}}}\`).toLowerCase().includes(lowerSearch)
+    ),
+  })).filter((g) => g.items.length > 0);
+
   return (
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-md"
     >
-      {variables.map((v) => (
+      {/* Search */}
+      <div className="relative px-2 pt-2 pb-1">
+        <input
+          ref={searchRef}
+          type="text"
+          value={search}
+          placeholder="Search"
+          onMouseDown={(e) => e.preventDefault()}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Escape") setSearch(""); }}
+          className="w-full h-9 pl-3 pr-9 text-sm rounded border border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary placeholder:text-semantic-text-muted outline-none focus:border-semantic-border-input-focus"
+        />
+        <Search className="absolute right-4 top-1/2 -translate-y-1/2 size-4 text-semantic-text-muted pointer-events-none" />
+      </div>
+
+      {/* Add new variable */}
+      {onAddVariable && (
         <button
-          key={v}
           type="button"
-          role="option"
-          onMouseDown={(e) => {
-            e.preventDefault(); // keep input focused so blur doesn't close popup first
-            onSelect(v);
-          }}
-          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+          onMouseDown={(e) => { e.preventDefault(); onAddVariable(); }}
+          className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
         >
-          {v}
+          <Plus className="size-3.5 shrink-0" />
+          Add new variable
         </button>
-      ))}
+      )}
+
+      {/* Grouped variable list */}
+      <div className="max-h-48 overflow-y-auto p-1">
+        {filteredGroups.map((group) => (
+          <div key={group.label}>
+            <p className="m-0 px-2 pt-2 pb-1 text-xs font-medium text-semantic-text-muted">
+              {group.label}
+            </p>
+            {group.items.map((item) => {
+              const insertValue = item.value ?? \`{{\${item.name}}}\`;
+              return (
+                <div key={item.name} className="flex items-center">
+                  <button
+                    type="button"
+                    role="option"
+                    onMouseDown={(e) => { e.preventDefault(); onSelect(insertValue); }}
+                    className="relative flex flex-1 min-w-0 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui"
+                  >
+                    {item.name}
+                  </button>
+                  {item.editable && onEditVariable && (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); onEditVariable(item.name); }}
+                      className="shrink-0 p-1.5 text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                      aria-label={\`Edit \${item.name}\`}
+                    >
+                      <Pencil className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+        {filteredGroups.length === 0 && (
+          <p className="m-0 px-2 py-1.5 text-sm text-semantic-text-muted">No variables found</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -9928,6 +10069,9 @@ function VariableInput({
   value,
   onChange,
   sessionVariables,
+  variableGroups,
+  onAddVariable,
+  onEditVariable,
   placeholder,
   maxLength,
   className,
@@ -9937,6 +10081,9 @@ function VariableInput({
   value: string;
   onChange: (v: string) => void;
   sessionVariables: string[];
+  variableGroups?: VariableGroup[];
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   placeholder?: string;
   maxLength?: number;
   className?: string;
@@ -10001,7 +10148,14 @@ function VariableInput({
         onBlur={() => clearTrigger()}
         {...inputProps}
       />
-      <VarPopup variables={filtered} onSelect={handleSelect} style={popupStyle} />
+      <VarPopup
+        variables={filtered}
+        variableGroups={trigger ? variableGroups : undefined}
+        onSelect={handleSelect}
+        onAddVariable={onAddVariable}
+        onEditVariable={onEditVariable}
+        style={popupStyle}
+      />
     </div>
   );
 }
@@ -10038,6 +10192,9 @@ function KeyValueTable({
   keyRegex,
   keyRegexError,
   sessionVariables = [],
+  variableGroups,
+  onAddVariable,
+  onEditVariable,
   disabled = false,
 }: {
   rows: KeyValuePair[];
@@ -10049,6 +10206,9 @@ function KeyValueTable({
   keyRegex?: RegExp;
   keyRegexError?: string;
   sessionVariables?: string[];
+  variableGroups?: VariableGroup[];
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   disabled?: boolean;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
@@ -10080,14 +10240,14 @@ function KeyValueTable({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs text-semantic-text-muted">{label}</span>
-      <div className="border border-semantic-border-layout rounded overflow-hidden">
+      <span className="text-sm text-semantic-text-muted">{label}</span>
+      <div className="border border-semantic-border-layout rounded">
         {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
-        <div className="hidden sm:flex bg-semantic-bg-ui border-b border-semantic-border-layout">
-          <div className="flex-1 min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+        <div className="hidden sm:flex border-b border-semantic-border-layout rounded-t">
+          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
             Key
           </div>
-          <div className="flex-[2] min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted">
+          <div className="flex-[2] min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted">
             Value
           </div>
           <div className="w-10 shrink-0" aria-hidden="true" />
@@ -10114,7 +10274,7 @@ function KeyValueTable({
                   maxLength={keyMaxLength}
                   disabled={disabled}
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.key && "border-semantic-error-primary"
                   )}
@@ -10137,11 +10297,14 @@ function KeyValueTable({
                   value={row.value}
                   onChange={(v) => update(row.id, { value: v })}
                   sessionVariables={sessionVariables}
+                  variableGroups={variableGroups}
+                  onAddVariable={onAddVariable}
+                  onEditVariable={onEditVariable}
                   placeholder="Type {{ to add variables"
                   maxLength={valueMaxLength}
                   disabled={disabled}
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
                     errors.value && "border-semantic-error-primary"
                   )}
@@ -10179,7 +10342,7 @@ function KeyValueTable({
           onClick={add}
           disabled={disabled}
           className={cn(
-            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors",
+            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-ui transition-colors",
             disabled && "opacity-50 cursor-not-allowed"
           )}
         >
@@ -10206,6 +10369,9 @@ export const CreateFunctionModal = React.forwardRef(
       initialStep = 1,
       initialTab = "header",
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      variableGroups,
+      onAddVariable,
+      onEditVariable,
       disabled = false,
       className,
     }: CreateFunctionModalProps,
@@ -10571,7 +10737,7 @@ export const CreateFunctionModal = React.forwardRef(
               <div className="flex flex-col gap-5">
                 {/* API URL — always a single combined row */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-xs text-semantic-text-muted tracking-[0.048px]">
+                  <span className="text-sm text-semantic-text-muted tracking-[0.048px]">
                     API URL
                   </span>
                   <div
@@ -10682,6 +10848,9 @@ export const CreateFunctionModal = React.forwardRef(
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters."
                       sessionVariables={sessionVariables}
+                      variableGroups={variableGroups}
+                      onAddVariable={onAddVariable}
+                      onEditVariable={onEditVariable}
                       disabled={disabled}
                     />
                   )}
@@ -10701,12 +10870,15 @@ export const CreateFunctionModal = React.forwardRef(
                         };
                       }}
                       sessionVariables={sessionVariables}
+                      variableGroups={variableGroups}
+                      onAddVariable={onAddVariable}
+                      onEditVariable={onEditVariable}
                       disabled={disabled}
                     />
                   )}
                   {activeTab === "body" && (
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-xs text-semantic-text-muted">
+                      <span className="text-sm text-semantic-text-muted">
                         Body
                       </span>
                       <div className={cn("relative")}>
@@ -10751,7 +10923,7 @@ export const CreateFunctionModal = React.forwardRef(
                 {/* Test Your API */}
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-semibold text-semantic-text-muted tracking-[0.048px]">
+                    <span className="text-sm font-semibold text-semantic-text-muted tracking-[0.048px]">
                       Test Your API
                     </span>
                     <div className="border-t border-semantic-border-layout" />
@@ -10760,12 +10932,12 @@ export const CreateFunctionModal = React.forwardRef(
                   {/* Variable test values — shown when URL/body/params contain {{variables}} */}
                   {testableVars.length > 0 && (
                     <div className="flex flex-col gap-2">
-                      <span className="text-xs text-semantic-text-muted">
+                      <span className="text-sm text-semantic-text-muted">
                         Variable values for testing
                       </span>
                       {testableVars.map((variable) => (
                         <div key={variable} className="flex items-center gap-3">
-                          <span className="text-xs text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
+                          <span className="text-sm text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
                             {variable}
                           </span>
                           <input
@@ -10795,7 +10967,7 @@ export const CreateFunctionModal = React.forwardRef(
                   </button>
 
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-xs text-semantic-text-muted">
+                    <span className="text-sm text-semantic-text-muted">
                       Response from API
                     </span>
                     <textarea
@@ -12459,6 +12631,24 @@ export interface KeyValuePair {
   value: string;
 }
 
+/** A single variable shown in the {{ autocomplete popup */
+export interface VariableItem {
+  /** Display name (e.g., "Order_id") */
+  name: string;
+  /** Value inserted into the input. Defaults to \`{{name}}\` if omitted */
+  value?: string;
+  /** When true, an edit icon is shown next to this variable */
+  editable?: boolean;
+}
+
+/** A labelled group of variables in the autocomplete popup */
+export interface VariableGroup {
+  /** Group header text (e.g., "Function variables", "Session variables") */
+  label: string;
+  /** Variables in this group */
+  items: VariableItem[];
+}
+
 export interface FunctionItem {
   id: string;
   name: string;
@@ -12509,6 +12699,12 @@ export interface CreateFunctionModalProps {
   initialTab?: FunctionTabType;
   /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
   sessionVariables?: string[];
+  /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
+  variableGroups?: VariableGroup[];
+  /** Called when user clicks "+ Add new variable" in the autocomplete popup */
+  onAddVariable?: () => void;
+  /** Called when user clicks the edit icon on a variable in the autocomplete popup */
+  onEditVariable?: (variable: string) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
   className?: string;
@@ -12669,6 +12865,8 @@ export type {
   HttpMethod,
   FunctionTabType,
   SelectOption,
+  VariableItem,
+  VariableGroup,
 } from "./types";
 `, prefix),
         }
