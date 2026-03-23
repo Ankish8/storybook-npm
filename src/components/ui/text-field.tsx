@@ -1,13 +1,4 @@
-import {
-  forwardRef,
-  useRef,
-  useCallback,
-  useState,
-  useId,
-  type ChangeEvent,
-  type ReactNode,
-  type ComponentProps,
-} from "react";
+import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2, X } from "lucide-react";
 
@@ -75,7 +66,7 @@ const textFieldInputVariants = cva(
  */
 export interface TextFieldProps
   extends
-    Omit<ComponentProps<"input">, "size">,
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
   /** Size of the text field — `default` (42px) or `sm` (36px, compact) */
   size?: "default" | "sm";
@@ -88,9 +79,9 @@ export interface TextFieldProps
   /** Error message - shows error state with red styling */
   error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: ReactNode;
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: ReactNode;
+  rightIcon?: React.ReactNode;
   /** Text prefix inside input (e.g., "https://") */
   prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
@@ -111,7 +102,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
       className,
@@ -145,8 +136,8 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     ref
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
-    const internalRef = useRef<HTMLInputElement>(null);
-    const mergedRef = useCallback(
+    const internalRef = React.useRef<HTMLInputElement>(null);
+    const mergedRef = React.useCallback(
       (node: HTMLInputElement | null) => {
         internalRef.current = node;
         if (typeof ref === "function") ref(node);
@@ -156,7 +147,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     );
 
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = useState(
+    const [internalValue, setInternalValue] = React.useState(
       defaultValue ?? ""
     );
 
@@ -168,7 +159,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
@@ -195,7 +186,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = useId();
+    const generatedId = React.useId();
     const inputId = id || generatedId;
     const helperId = `${inputId}-helper`;
     const errorId = `${inputId}-error`;
