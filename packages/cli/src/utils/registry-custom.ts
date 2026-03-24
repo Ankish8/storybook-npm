@@ -6334,6 +6334,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
         className={cn(
           "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
           "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
+          "min-h-[180px] sm:min-h-[207px] h-full shrink-0",
           onEdit && "cursor-pointer",
           className
         )}
@@ -7043,8 +7044,9 @@ export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
     <div
       ref={ref}
       className={cn(
-        "grid w-full min-w-0 max-w-full overflow-hidden gap-3 sm:gap-5 md:gap-6",
+        "grid w-full min-w-0 max-w-full content-start gap-3 sm:gap-5 md:gap-6",
         "grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]",
+        "auto-rows-auto items-stretch",
         className
       )}
       {...props}
@@ -9695,6 +9697,7 @@ function VarPopup({
           key={v}
           type="button"
           role="option"
+          aria-selected={false}
           onMouseDown={(e) => {
             e.preventDefault(); // keep input focused so blur doesn't close popup first
             onSelect(v);
@@ -11170,6 +11173,7 @@ function VarPopup({
           key={v}
           type="button"
           role="option"
+          aria-selected={false}
           onMouseDown={(e) => {
             e.preventDefault(); // keep textarea focused so blur doesn't close popup first
             onSelect(v);
@@ -11408,7 +11412,7 @@ import {
   TooltipTrigger,
 } from "../tooltip";
 import { BOT_KNOWLEDGE_STATUS } from "./types";
-import type { KnowledgeBaseFile } from "./types";
+import type { KnowledgeBaseFile, KnowledgeFileStatus } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -11442,7 +11446,7 @@ export interface KnowledgeBaseCardProps {
 // ─── Status config ──────────────────────────────────────────────────────────
 
 type BadgeVariant = "default" | "active" | "destructive";
-const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: BadgeVariant }> = {
+const STATUS_CONFIG: Record<KnowledgeFileStatus, { label: string; variant: BadgeVariant }> = {
   [BOT_KNOWLEDGE_STATUS.PENDING]:    { label: "Pending",    variant: "default"      },
   [BOT_KNOWLEDGE_STATUS.READY]:      { label: "Ready",      variant: "active"       },
   [BOT_KNOWLEDGE_STATUS.PROCESSING]: { label: "Processing", variant: "active"       },
@@ -12241,9 +12245,7 @@ export const BOT_KNOWLEDGE_STATUS = {
   FAILED: "failed",
 } as const;
 
-export type BOT_KNOWLEDGE_STATUS = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
-
-export type KnowledgeFileStatus = BOT_KNOWLEDGE_STATUS;
+export type KnowledgeFileStatus = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
 
 export interface KeyValuePair {
   id: string;

@@ -140,6 +140,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     // Generate unique IDs for accessibility
     const generatedId = React.useId();
     const selectId = id || generatedId;
+    const listboxId = `${selectId}-listbox`;
     const helperId = `${selectId}-helper`;
     const errorId = `${selectId}-error`;
 
@@ -253,6 +254,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
+          aria-controls={listboxId}
           aria-invalid={!!error}
           aria-describedby={ariaDescribedBy}
           disabled={disabled || loading}
@@ -332,6 +334,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {/* Dropdown */}
         {isOpen && (
           <div
+            id={listboxId}
             className={cn(
               "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
               "top-full"

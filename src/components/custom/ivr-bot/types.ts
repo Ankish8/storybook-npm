@@ -11,9 +11,7 @@ export const BOT_KNOWLEDGE_STATUS = {
   FAILED: "failed",
 } as const;
 
-export type BOT_KNOWLEDGE_STATUS = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
-
-export type KnowledgeFileStatus = BOT_KNOWLEDGE_STATUS;
+export type KnowledgeFileStatus = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
 
 export interface KeyValuePair {
   id: string;

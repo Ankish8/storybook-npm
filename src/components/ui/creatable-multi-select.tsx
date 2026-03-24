@@ -80,6 +80,7 @@ const CreatableMultiSelect = React.forwardRef<
     const [inputValue, setInputValue] = React.useState("")
     const containerRef = React.useRef<HTMLDivElement>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
+    const listboxId = React.useId()
 
     React.useImperativeHandle(ref, () => containerRef.current!)
 
@@ -217,6 +218,7 @@ const CreatableMultiSelect = React.forwardRef<
             className="flex-1 min-w-[100px] text-base bg-transparent outline-none text-semantic-text-primary placeholder:text-semantic-text-muted"
             role="combobox"
             aria-expanded={isOpen}
+            aria-controls={listboxId}
             aria-haspopup="listbox"
           />
 
@@ -230,7 +232,7 @@ const CreatableMultiSelect = React.forwardRef<
 
         {/* Dropdown panel */}
         {isOpen && (
-          <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint — Enter key */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">

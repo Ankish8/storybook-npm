@@ -68,6 +68,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
     const containerRef = React.useRef<HTMLDivElement>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const listRef = React.useRef<HTMLDivElement>(null)
+    const listboxId = React.useId()
 
     // Merge forwarded ref with internal ref
     React.useImperativeHandle(ref, () => containerRef.current!)
@@ -210,6 +211,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
               placeholder={selectedLabel || placeholder}
               aria-expanded="true"
               aria-haspopup="listbox"
+              aria-controls={listboxId}
               role="combobox"
               aria-autocomplete="list"
             />
@@ -226,6 +228,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
             )}
             aria-haspopup="listbox"
             aria-expanded="false"
+            aria-controls={listboxId}
           >
             <span
               className={cn(
@@ -255,6 +258,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
             {/* Options list */}
             <div
               ref={listRef}
+              id={listboxId}
               role="listbox"
               className="max-h-60 overflow-y-auto p-1"
             >

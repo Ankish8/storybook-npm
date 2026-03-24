@@ -137,6 +137,7 @@ function VarPopup({
           key={v}
           type="button"
           role="option"
+          aria-selected={false}
           onMouseDown={(e) => {
             e.preventDefault(); // keep textarea focused so blur doesn't close popup first
             onSelect(v);

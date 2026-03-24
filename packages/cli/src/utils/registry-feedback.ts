@@ -878,12 +878,14 @@ Alert.displayName = "Alert";
 const AlertTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <h5
     ref={ref}
     className={cn("font-semibold leading-tight tracking-tight", className)}
     {...props}
-  />
+  >
+    {children}
+  </h5>
 ));
 AlertTitle.displayName = "AlertTitle";
 

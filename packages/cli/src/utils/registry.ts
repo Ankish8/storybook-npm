@@ -3561,6 +3561,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     // Generate unique IDs for accessibility
     const generatedId = React.useId();
     const selectId = id || generatedId;
+    const listboxId = \`\${selectId}-listbox\`;
     const helperId = \`\${selectId}-helper\`;
     const errorId = \`\${selectId}-error\`;
 
@@ -3674,6 +3675,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
+          aria-controls={listboxId}
           aria-invalid={!!error}
           aria-describedby={ariaDescribedBy}
           disabled={disabled || loading}
@@ -3753,6 +3755,7 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
         {/* Dropdown */}
         {isOpen && (
           <div
+            id={listboxId}
             className={cn(
               "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
               "top-full"
@@ -3944,6 +3947,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
     const containerRef = React.useRef<HTMLDivElement>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const listRef = React.useRef<HTMLDivElement>(null)
+    const listboxId = React.useId()
 
     // Merge forwarded ref with internal ref
     React.useImperativeHandle(ref, () => containerRef.current!)
@@ -4086,6 +4090,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
               placeholder={selectedLabel || placeholder}
               aria-expanded="true"
               aria-haspopup="listbox"
+              aria-controls={listboxId}
               role="combobox"
               aria-autocomplete="list"
             />
@@ -4102,6 +4107,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
             )}
             aria-haspopup="listbox"
             aria-expanded="false"
+            aria-controls={listboxId}
           >
             <span
               className={cn(
@@ -4131,6 +4137,7 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
             {/* Options list */}
             <div
               ref={listRef}
+              id={listboxId}
               role="listbox"
               className="max-h-60 overflow-y-auto p-1"
             >
@@ -4292,6 +4299,7 @@ const CreatableMultiSelect = React.forwardRef<
     const [inputValue, setInputValue] = React.useState("")
     const containerRef = React.useRef<HTMLDivElement>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
+    const listboxId = React.useId()
 
     React.useImperativeHandle(ref, () => containerRef.current!)
 
@@ -4429,6 +4437,7 @@ const CreatableMultiSelect = React.forwardRef<
             className="flex-1 min-w-[100px] text-base bg-transparent outline-none text-semantic-text-primary placeholder:text-semantic-text-muted"
             role="combobox"
             aria-expanded={isOpen}
+            aria-controls={listboxId}
             aria-haspopup="listbox"
           />
 
@@ -4442,7 +4451,7 @@ const CreatableMultiSelect = React.forwardRef<
 
         {/* Dropdown panel */}
         {isOpen && (
-          <div className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint — Enter key */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
@@ -6333,12 +6342,14 @@ Alert.displayName = "Alert";
 const AlertTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <h5
     ref={ref}
     className={cn("font-semibold leading-tight tracking-tight", className)}
     {...props}
-  />
+  >
+    {children}
+  </h5>
 ));
 AlertTitle.displayName = "AlertTitle";
 
@@ -14138,6 +14149,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
         className={cn(
           "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
           "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
+          "min-h-[180px] sm:min-h-[207px] h-full shrink-0",
           onEdit && "cursor-pointer",
           className
         )}
@@ -14847,8 +14859,9 @@ export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
     <div
       ref={ref}
       className={cn(
-        "grid w-full min-w-0 max-w-full overflow-hidden gap-3 sm:gap-5 md:gap-6",
+        "grid w-full min-w-0 max-w-full content-start gap-3 sm:gap-5 md:gap-6",
         "grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]",
+        "auto-rows-auto items-stretch",
         className
       )}
       {...props}
@@ -17499,6 +17512,7 @@ function VarPopup({
           key={v}
           type="button"
           role="option"
+          aria-selected={false}
           onMouseDown={(e) => {
             e.preventDefault(); // keep input focused so blur doesn't close popup first
             onSelect(v);
@@ -18974,6 +18988,7 @@ function VarPopup({
           key={v}
           type="button"
           role="option"
+          aria-selected={false}
           onMouseDown={(e) => {
             e.preventDefault(); // keep textarea focused so blur doesn't close popup first
             onSelect(v);
@@ -19212,7 +19227,7 @@ import {
   TooltipTrigger,
 } from "../tooltip";
 import { BOT_KNOWLEDGE_STATUS } from "./types";
-import type { KnowledgeBaseFile } from "./types";
+import type { KnowledgeBaseFile, KnowledgeFileStatus } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -19246,7 +19261,7 @@ export interface KnowledgeBaseCardProps {
 // ─── Status config ──────────────────────────────────────────────────────────
 
 type BadgeVariant = "default" | "active" | "destructive";
-const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: BadgeVariant }> = {
+const STATUS_CONFIG: Record<KnowledgeFileStatus, { label: string; variant: BadgeVariant }> = {
   [BOT_KNOWLEDGE_STATUS.PENDING]:    { label: "Pending",    variant: "default"      },
   [BOT_KNOWLEDGE_STATUS.READY]:      { label: "Ready",      variant: "active"       },
   [BOT_KNOWLEDGE_STATUS.PROCESSING]: { label: "Processing", variant: "active"       },
@@ -20045,9 +20060,7 @@ export const BOT_KNOWLEDGE_STATUS = {
   FAILED: "failed",
 } as const;
 
-export type BOT_KNOWLEDGE_STATUS = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
-
-export type KnowledgeFileStatus = BOT_KNOWLEDGE_STATUS;
+export type KnowledgeFileStatus = typeof BOT_KNOWLEDGE_STATUS[keyof typeof BOT_KNOWLEDGE_STATUS];
 
 export interface KeyValuePair {
   id: string;

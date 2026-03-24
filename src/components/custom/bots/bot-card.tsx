@@ -62,6 +62,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
         className={cn(
           "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
           "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
+          "min-h-[180px] sm:min-h-[207px] h-full shrink-0",
           onEdit && "cursor-pointer",
           className
         )}

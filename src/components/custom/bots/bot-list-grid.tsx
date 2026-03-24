@@ -7,8 +7,9 @@ export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
     <div
       ref={ref}
       className={cn(
-        "grid w-full min-w-0 max-w-full overflow-hidden gap-3 sm:gap-5 md:gap-6",
+        "grid w-full min-w-0 max-w-full content-start gap-3 sm:gap-5 md:gap-6",
         "grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))]",
+        "auto-rows-auto items-stretch",
         className
       )}
       {...props}

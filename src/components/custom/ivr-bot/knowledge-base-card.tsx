@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "../../ui/tooltip";
 import { BOT_KNOWLEDGE_STATUS } from "./types";
-import type { KnowledgeBaseFile } from "./types";
+import type { KnowledgeBaseFile, KnowledgeFileStatus } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -43,7 +43,7 @@ export interface KnowledgeBaseCardProps {
 // ─── Status config ──────────────────────────────────────────────────────────
 
 type BadgeVariant = "default" | "active" | "destructive";
-const STATUS_CONFIG: Record<BOT_KNOWLEDGE_STATUS, { label: string; variant: BadgeVariant }> = {
+const STATUS_CONFIG: Record<KnowledgeFileStatus, { label: string; variant: BadgeVariant }> = {
   [BOT_KNOWLEDGE_STATUS.PENDING]:    { label: "Pending",    variant: "default"      },
   [BOT_KNOWLEDGE_STATUS.READY]:      { label: "Ready",      variant: "active"       },
   [BOT_KNOWLEDGE_STATUS.PROCESSING]: { label: "Processing", variant: "active"       },
