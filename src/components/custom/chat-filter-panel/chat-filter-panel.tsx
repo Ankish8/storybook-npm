@@ -49,11 +49,15 @@ export function ChatFilterPanel({ onClose, onApply }: ChatFilterPanelProps) {
   const isDirty = () => {
     if (selectedAssignees.size !== initialAssignees.current.size) return true
     if (selectedChannels.size !== initialChannels.current.size) return true
-    for (const id of selectedAssignees)
-      if (!initialAssignees.current.has(id)) return true
-    for (const id of selectedChannels)
-      if (!initialChannels.current.has(id)) return true
-    return false
+    let dirty = false
+    selectedAssignees.forEach((id) => {
+      if (!initialAssignees.current.has(id)) dirty = true
+    })
+    if (dirty) return true
+    selectedChannels.forEach((id) => {
+      if (!initialChannels.current.has(id)) dirty = true
+    })
+    return dirty
   }
 
   const handleBack = () => {

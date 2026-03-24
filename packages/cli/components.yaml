@@ -79,6 +79,7 @@ categories:
       - carousel-media
       - chat-bubble
       - chat-composer
+      - chat-list-item
       - chat-timeline-divider
       - doc-media
       - event-selector
@@ -950,6 +951,20 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "chat-bubble.tsx"
+
+  chat-list-item:
+    description: "A chat list item showing contact name, message preview, timestamp, delivery status, and channel badge"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    isMultiFile: true
+    directory: "chat-list-item"
+    files:
+      - "chat-list-item.tsx"
+      - "index.ts"
+    mainFile: "chat-list-item.tsx"
 
   chat-timeline-divider:
     description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants"

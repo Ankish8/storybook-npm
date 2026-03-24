@@ -536,6 +536,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["reply-quote"],
   },
+  "chat-list-item": {
+    name: "chat-list-item",
+    description: "A chat list item showing contact name, message preview, timestamp, delivery status, and channel badge",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge","lucide-react"],
+    category: "custom",
+    internalDependencies: [],
+  },
   "chat-timeline-divider": {
     name: "chat-timeline-divider",
     description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants",
