@@ -536,6 +536,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["reply-quote"],
   },
+  "chat-timeline-divider": {
+    name: "chat-timeline-divider",
+    description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge"],
+    category: "custom",
+    internalDependencies: [],
+  },
   "chat-composer": {
     name: "chat-composer",
     description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button",

@@ -1066,10 +1066,10 @@ function FilterPanel({
   const initialChannels = useRef(new Set(["my01"]))
 
   const [selectedAssignees, setSelectedAssignees] = useState<Set<string>>(
-    () => new Set(initialAssignees.current)
+    () => new Set(["all", "unassigned", "ivr-voice-bot", "alex-smith", "jane-doe"])
   )
   const [selectedChannels, setSelectedChannels] = useState<Set<string>>(
-    () => new Set(initialChannels.current)
+    () => new Set(["my01"])
   )
 
   const isDirty = () => {
