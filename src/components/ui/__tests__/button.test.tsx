@@ -20,10 +20,10 @@ describe("Button", () => {
     ["primary", "bg-semantic-primary"],
     ["destructive", "bg-semantic-error-primary"],
     ["success", "bg-semantic-success-primary"],
-    ["outline", "border-semantic-border-layout"],
+    ["outline", "bg-semantic-bg-primary"],
     ["secondary", "bg-semantic-primary-surface"],
     ["ghost", "hover:bg-semantic-bg-ui"],
-    ["link", "underline-offset-4"],
+    ["link", "text-semantic-text-link"],
     ["dashed", "border-dashed"],
   ] as const)("renders %s variant", (variant, expectedClass) => {
     render(<Button variant={variant}>Test</Button>);

@@ -446,6 +446,34 @@ export const Searchable: Story = {
   ),
 };
 
+// Searchable with Groups — inline search + grouped options (e.g., Bots & Agents)
+const assigneeOptions: SelectOption[] = [
+  { value: "unassigned", label: "Unassigned" },
+  { value: "ivr-voice-bot", label: "IVR voice bot", group: "Bots" },
+  { value: "whatsapp-bot", label: "WhatsApp bot", group: "Bots" },
+  { value: "support-bot", label: "Support bot", group: "Bots" },
+  { value: "alex-smith", label: "Alex Smith", group: "Agents" },
+  { value: "priya-sharma", label: "Priya Sharma", group: "Agents" },
+  { value: "rahul-kumar", label: "Rahul Kumar", group: "Agents" },
+  { value: "neha-gupta", label: "Neha Gupta", group: "Agents" },
+];
+
+export const SearchableWithGroups: Story = {
+  name: "Searchable with groups",
+  render: () => (
+    <div className="w-80">
+      <SelectField
+        label="Assign to"
+        placeholder="Select assignee"
+        options={assigneeOptions}
+        searchable
+        searchPlaceholder="Search..."
+        helperText="Search across bots and agents"
+      />
+    </div>
+  ),
+};
+
 // Controlled Example
 const ControlledExample = () => {
   const [value, setValue] = useState("");

@@ -18,8 +18,8 @@ export interface DateDividerProps
   children: React.ReactNode;
 }
 
-const DateDivider = React.forwardRef<HTMLDivElement, DateDividerProps>(
-  ({ className, children, ...props }, ref) => (
+const DateDivider = React.forwardRef(
+  ({ className, children, ...props }: DateDividerProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex items-center gap-4 my-4", className)}

@@ -241,22 +241,113 @@ export async function sync(options: SyncOptions) {
   let selectedToAdd = toAdd
   let selectedToUpdate = toUpdate
 
+  // Storybook group mapping for custom components
+  const CUSTOM_GROUPS: Record<string, string> = {
+    'attachment-preview': 'Chat',
+    'audio-media': 'Chat',
+    'carousel-media': 'Chat',
+    'chat-bubble': 'Chat',
+    'chat-composer': 'Chat',
+    'contact-list-item': 'Chat',
+    'date-divider': 'Chat',
+    'doc-media': 'Chat',
+    'image-media': 'Chat',
+    'reply-quote': 'Chat',
+    'system-message': 'Chat',
+    'unread-separator': 'Chat',
+    'video-media': 'Chat',
+    'event-selector': 'Webhook',
+    'key-value-input': 'Webhook',
+    'api-feature-card': 'Webhook',
+    'endpoint-details': 'Webhook',
+    'alert-configuration': 'Webhook',
+    'auto-pay-setup': 'Plan & Payment',
+    'bank-details': 'Plan & Payment',
+    'date-range-modal': 'Plan & Payment',
+    'payment-option-card': 'Plan & Payment',
+    'plan-upgrade-modal': 'Plan & Payment',
+    'plan-upgrade-summary-modal': 'Plan & Payment',
+    'payment-summary': 'Plan & Payment',
+    'let-us-drive-card': 'Plan & Payment',
+    'power-up-card': 'Plan & Payment',
+    'pricing-card': 'Plan & Payment',
+    'pricing-page': 'Plan & Payment',
+    'pricing-toggle': 'Plan & Payment',
+    'talk-to-us-modal': 'Plan & Payment',
+    'wallet-topup': 'Plan & Payment',
+    'file-upload-modal': 'Plan & Payment',
+    'plan-detail-modal': 'Plan & Payment',
+    'bots': 'AI Bot',
+    'ivr-bot': 'AI Bot',
+  }
+
   if (!options.yes && toAdd.length > 0) {
-    const { selected } = await prompts({
-      type: 'multiselect',
-      name: 'selected',
-      message: 'Select new components to add',
-      choices: toAdd.map((c) => {
-        const comp = registry[c]
-        const fileCount = comp.isMultiFile ? ` (${comp.files.length} files)` : ''
-        return { title: `${c}${fileCount}`, value: c, selected: true }
-      }),
-    })
-    if (!selected) {
-      console.log(chalk.yellow('\n  Sync cancelled.\n'))
-      process.exit(0)
+    // Split into generic components and grouped (folder) components
+    const uiToAdd = toAdd.filter((c) => !CUSTOM_GROUPS[c])
+    const customToAdd = toAdd.filter((c) => !!CUSTOM_GROUPS[c])
+
+    const picked: string[] = []
+
+    // 1. UI Components prompt
+    if (uiToAdd.length > 0) {
+      console.log(chalk.cyan.bold('  ── Components ──\n'))
+      const { selected } = await prompts({
+        type: 'multiselect',
+        name: 'selected',
+        message: 'Select new components to add',
+        choices: uiToAdd.map((c) => ({
+          title: c,
+          value: c,
+          selected: false,
+        })),
+      })
+      if (!selected) {
+        console.log(chalk.yellow('\n  Sync cancelled.\n'))
+        process.exit(0)
+      }
+      picked.push(...selected)
     }
-    selectedToAdd = selected
+
+    // 2. Custom Components prompt (folder-level selection like Storybook sidebar)
+    if (customToAdd.length > 0) {
+      // Group custom components by their Storybook folder
+      const grouped = new Map<string, string[]>()
+      for (const c of customToAdd) {
+        const group = CUSTOM_GROUPS[c] || 'Other'
+        if (!grouped.has(group)) grouped.set(group, [])
+        grouped.get(group)!.push(c)
+      }
+
+      // Sort groups alphabetically
+      const sortedGroups = [...grouped.keys()].sort()
+
+      console.log(chalk.cyan.bold('\n  ── Custom ──\n'))
+      const { selected } = await prompts({
+        type: 'multiselect',
+        name: 'selected',
+        message: 'Select custom component folders to add',
+        choices: sortedGroups.map((group) => {
+          const components = grouped.get(group)!
+          const count = components.length
+          return {
+            title: group,
+            value: group,
+            selected: false,
+            description: `${count} component${count === 1 ? '' : 's'}`,
+          }
+        }),
+      })
+      if (!selected) {
+        console.log(chalk.yellow('\n  Sync cancelled.\n'))
+        process.exit(0)
+      }
+      // Expand selected folders into their component lists
+      for (const group of selected as string[]) {
+        picked.push(...grouped.get(group)!)
+      }
+    }
+
+    selectedToAdd = picked
   }
 
   if (!options.yes && toUpdate.length > 0) {

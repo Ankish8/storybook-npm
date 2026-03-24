@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { TextField } from "@/components/ui/text-field"
@@ -12,19 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuGroup,
-  DropdownMenuSeparator,
+
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Tooltip,
   TooltipContent,
@@ -53,17 +44,17 @@ import { Spinner } from "@/components/ui/spinner"
 import { Avatar } from "@/components/ui/avatar"
 import { ChatListItem } from "@/components/custom/chat-list-item"
 import { ChatComposer } from "@/components/custom/chat-composer"
+import { ChatTimelineDivider } from "@/components/custom/chat-timeline-divider"
+import { DocMedia } from "@/components/custom/doc-media"
 import {
   Search,
   Plus,
-  ArrowDownUp,
   ChevronDown,
   Check,
   Users,
   Radio,
   Clock,
   User,
-  Keyboard,
   Send,
   Paperclip,
   Smile,
@@ -74,7 +65,6 @@ import {
   VolumeX,
   Maximize,
   Minimize,
-  ArrowDownToLine,
   FileSpreadsheet,
   ChevronLeft,
   ChevronRight,
@@ -95,8 +85,11 @@ import {
   CircleAlert,
   Megaphone,
   Code,
+  MessageSquare,
+  Image as LucideImage,
+  Music,
+  FileText,
 } from "lucide-react"
-import noConversationImg from "./assets/no-conversation.png"
 import noTemplateSelectedImg from "./assets/no-template-selected.svg"
 
 /* ── Custom Icons ── */
@@ -122,18 +115,11 @@ const FilterIcon = () => (
 /* ── Types & Data ── */
 
 type Tab = "open" | "assigned" | "resolved"
-type SortOption = "newest" | "urgent" | "unread"
 
 const tabs: { id: Tab; label: string; count: number }[] = [
   { id: "open", label: "Open", count: 10 },
   { id: "assigned", label: "Assigned", count: 2 },
   { id: "resolved", label: "Resolved", count: 5 },
-]
-
-const sortOptions: { id: SortOption; label: string }[] = [
-  { id: "newest", label: "Newest First" },
-  { id: "urgent", label: "Urgent First" },
-  { id: "unread", label: "Unread First" },
 ]
 
 /* ── Filter Data ── */
@@ -676,71 +662,7 @@ function AudioMedia({ media }: { media: MediaPayload }) {
   )
 }
 
-function DocPreviewMedia({ media }: { media: MediaPayload }) {
-  return (
-    <div className="relative rounded-t overflow-hidden">
-      <img
-        src={media.thumbnailUrl || media.url}
-        alt={media.filename || "Document preview"}
-        className="w-full object-cover"
-        style={{ aspectRatio: "442/308" }}
-      />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-      {/* Bottom overlay bar */}
-      <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
-        <p className="m-0 text-[14px] font-semibold text-white truncate">{media.filename || "Document"}</p>
-        <div className="flex items-center gap-1.5 mt-1">
-          <File className="size-3.5 text-white/80" />
-          <span className="text-[12px] text-white/80">
-            {[media.fileType, media.pageCount && `${media.pageCount} pages`, media.fileSize].filter(Boolean).join("  ·  ")}
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
 
-function DocDownloadMedia({ media }: { media: MediaPayload }) {
-  return (
-    <div className="relative">
-      <img
-        src={media.thumbnailUrl || media.url}
-        alt={media.caption || media.filename || "Document"}
-        className="w-full rounded-t object-cover max-h-[280px]"
-      />
-    </div>
-  )
-}
-
-function OtherDocMedia({ media }: { media: MediaPayload }) {
-  const isSpreadsheet = media.fileType === "XLS" || media.fileType === "XLSX"
-  const accent = isSpreadsheet ? "var(--semantic-success-primary, #217346)" : "var(--semantic-text-secondary, #535862)"
-  const accentLight = isSpreadsheet ? "var(--semantic-success-surface, #dcfae6)" : "var(--semantic-bg-ui, #e9eaeb)"
-  const label = media.fileType || "FILE"
-  return (
-    <div className="mx-2.5 mt-2.5 rounded overflow-hidden border border-semantic-border-layout">
-      {/* Preview area */}
-      <div className="bg-semantic-bg-ui flex items-center justify-center w-full" style={{ padding: "36px 0" }}>
-        <div className="flex flex-col items-center">
-          <div className="rounded-2xl flex items-center justify-center" style={{ width: 72, height: 72, backgroundColor: accentLight }}>
-            <FileSpreadsheet style={{ width: 32, height: 32, color: accent }} />
-          </div>
-          <div className="mt-2.5 rounded-full px-3 py-0.5" style={{ backgroundColor: accent }}>
-            <span className="text-[11px] font-bold text-white tracking-wide">{label}</span>
-          </div>
-        </div>
-      </div>
-      {/* Filename bar */}
-      <div className="bg-semantic-bg-ui flex items-center gap-2" style={{ padding: "12px 16px" }}>
-        <span className="text-[14px] font-semibold text-semantic-text-primary truncate flex-1 tracking-[0.1px]">{media.filename || "File"}</span>
-        <button aria-label={`Download ${media.filename || 'file'}`} className="shrink-0 size-8 rounded-full flex items-center justify-center hover:bg-semantic-bg-hover transition-colors">
-          <ArrowDownToLine className="size-[18px] text-semantic-text-secondary" />
-        </button>
-      </div>
-    </div>
-  )
-}
 
 function CarouselMedia({ media }: { media: MediaPayload }) {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -977,10 +899,10 @@ function AddNewContactModal({
             <label htmlFor="add-contact-phone" className="text-[14px] font-medium text-semantic-text-primary">
               Phone<span className="text-semantic-error-primary">*</span>
             </label>
-            <div className="flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors">
-              <div className="flex items-center gap-1.5 pl-3 pr-2 h-10 shrink-0">
-                <span className="text-sm">🇮🇳</span>
-                <span className="text-sm text-semantic-text-secondary">+91</span>
+            <div className="flex items-center border border-semantic-border-layout rounded focus-within:border-semantic-border-focus transition-colors">
+              <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
+                <span className="text-[14px]">🇮🇳</span>
+                <span className="text-[14px] text-semantic-text-secondary">+91</span>
               </div>
               <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
               <input
@@ -990,7 +912,7 @@ function AddNewContactModal({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 aria-required="true"
-                className="flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent"
+                className="flex-1 h-9 px-3 text-[14px] text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent"
               />
             </div>
           </div>
@@ -1001,6 +923,7 @@ function AddNewContactModal({
             placeholder="Enter name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            size="sm"
           />
 
           {/* Start Conversation button */}
@@ -1075,6 +998,9 @@ function NewChatPanel({
           onChange={(e) => setContactSearch(e.target.value)}
           leftIcon={<Search className="size-4" />}
           wrapperClassName="flex-1 min-w-0"
+          size="sm"
+          clearable={!!contactSearch}
+          onClear={() => setContactSearch("")}
         />
         <Button variant="outline" size="icon-lg" onClick={onOpenAddContact} className="shrink-0" aria-label="Add new contact">
           <UserPlus className="size-4" />
@@ -1101,9 +1027,11 @@ function NewChatPanel({
               <div className="flex-1 flex items-center justify-between min-w-0">
                 <div className="flex flex-col min-w-0">
                   <span className="text-[14px] font-medium text-semantic-text-primary leading-5 truncate">
-                    {contact.name}
+                    {contactSearch ? highlightMatch(contact.name, contactSearch) : contact.name}
                   </span>
-                  <span className="text-[12px] text-semantic-text-muted">{contact.phone}</span>
+                  <span className="text-[12px] text-semantic-text-muted">
+                    {contactSearch ? highlightMatch(contact.phone, contactSearch) : contact.phone}
+                  </span>
                 </div>
                 {contact.channel && (
                   <span className="text-[12px] font-medium text-semantic-text-muted shrink-0 ml-2">
@@ -1129,12 +1057,36 @@ function FilterPanel({
   onApply: (assignees: Set<string>, channels: Set<string>) => void
 }) {
   const [filterSearch, setFilterSearch] = useState("")
+  const [showAllBots, setShowAllBots] = useState(false)
+  const [showAllAgents, setShowAllAgents] = useState(false)
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false)
+  const COLLAPSED_COUNT = 4
+
+  const initialAssignees = useRef(new Set(["all", "unassigned", "ivr-voice-bot", "alex-smith", "jane-doe"]))
+  const initialChannels = useRef(new Set(["my01"]))
+
   const [selectedAssignees, setSelectedAssignees] = useState<Set<string>>(
     () => new Set(["all", "unassigned", "ivr-voice-bot", "alex-smith", "jane-doe"])
   )
   const [selectedChannels, setSelectedChannels] = useState<Set<string>>(
     () => new Set(["my01"])
   )
+
+  const isDirty = () => {
+    if (selectedAssignees.size !== initialAssignees.current.size) return true
+    if (selectedChannels.size !== initialChannels.current.size) return true
+    for (const id of selectedAssignees) if (!initialAssignees.current.has(id)) return true
+    for (const id of selectedChannels) if (!initialChannels.current.has(id)) return true
+    return false
+  }
+
+  const handleBack = () => {
+    if (isDirty()) {
+      setShowDiscardDialog(true)
+    } else {
+      onClose()
+    }
+  }
 
   const bots = assignees.filter((a) => a.type === "bot")
   const agents = assignees.filter((a) => a.type === "agent")
@@ -1170,7 +1122,7 @@ function FilterPanel({
       {/* Header — matches NewChat pattern */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-semantic-border-layout shrink-0">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={handleBack}>
             <ArrowLeft className="size-5" />
           </Button>
           <span className="text-[16px] font-semibold text-semantic-text-primary">Filters</span>
@@ -1240,14 +1192,18 @@ function FilterPanel({
               </label>
             ))}
 
-            {filteredBots.length > 0 && (
+            {filteredBots.length > 0 && (() => {
+              const isSearching = filterSearch.trim().length > 0
+              const visibleBots = isSearching || showAllBots ? filteredBots : filteredBots.slice(0, COLLAPSED_COUNT)
+              const hiddenCount = filteredBots.length - COLLAPSED_COUNT
+              return (
               <>
                 <div className="px-3 py-2 bg-semantic-bg-ui border-b border-semantic-border-layout">
                   <span className="text-[13px] font-semibold text-semantic-text-secondary">
                     Bots ({bots.length})
                   </span>
                 </div>
-                {filteredBots.map((bot) => (
+                {visibleBots.map((bot) => (
                   <label
                     key={bot.id}
                     className="flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors border-b border-semantic-border-layout"
@@ -1261,21 +1217,35 @@ function FilterPanel({
                     <Bot className="size-4 text-semantic-text-muted" />
                   </label>
                 ))}
+                {!isSearching && hiddenCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllBots((p) => !p)}
+                    className="w-full px-3 py-2 text-[13px] font-medium text-semantic-text-link hover:bg-semantic-bg-hover transition-colors text-left border-b border-semantic-border-layout"
+                  >
+                    {showAllBots ? "Show less" : `Show more (+${hiddenCount})`}
+                  </button>
+                )}
               </>
-            )}
+              )
+            })()}
 
-            {filteredAgents.length > 0 && (
+            {filteredAgents.length > 0 && (() => {
+              const isSearching = filterSearch.trim().length > 0
+              const visibleAgents = isSearching || showAllAgents ? filteredAgents : filteredAgents.slice(0, COLLAPSED_COUNT)
+              const hiddenCount = filteredAgents.length - COLLAPSED_COUNT
+              return (
               <>
                 <div className="px-3 py-2 bg-semantic-bg-ui border-b border-semantic-border-layout">
                   <span className="text-[13px] font-semibold text-semantic-text-secondary">
                     Agents ({agents.length})
                   </span>
                 </div>
-                {filteredAgents.map((agent, i) => (
+                {visibleAgents.map((agent, i) => (
                   <label
                     key={agent.id}
                     className={`flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors ${
-                      i < filteredAgents.length - 1 ? "border-b border-semantic-border-layout" : ""
+                      i < visibleAgents.length - 1 || (!isSearching && hiddenCount > 0) ? "border-b border-semantic-border-layout" : ""
                     }`}
                   >
                     <Checkbox
@@ -1286,8 +1256,18 @@ function FilterPanel({
                     <span className="text-[14px] text-semantic-text-primary">{agent.label}</span>
                   </label>
                 ))}
+                {!isSearching && hiddenCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllAgents((p) => !p)}
+                    className="w-full px-3 py-2 text-[13px] font-medium text-semantic-text-link hover:bg-semantic-bg-hover transition-colors text-left"
+                  >
+                    {showAllAgents ? "Show less" : `Show more (+${hiddenCount})`}
+                  </button>
+                )}
               </>
-            )}
+              )
+            })()}
           </div>
         </div>
 
@@ -1363,6 +1343,26 @@ function FilterPanel({
           </Button>
         </div>
       </div>
+
+      {/* Discard unsaved filters confirmation */}
+      {showDiscardDialog && (
+        <Dialog open onOpenChange={(open) => { if (!open) setShowDiscardDialog(false) }}>
+          <DialogContent size="default" className="w-[400px] max-w-[90vw]">
+            <DialogTitle>Discard filter changes?</DialogTitle>
+            <DialogDescription>
+              You have unsaved filter changes. Do you want to apply them or discard?
+            </DialogDescription>
+            <div className="flex gap-3 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => { setShowDiscardDialog(false); onClose() }}>
+                Discard
+              </Button>
+              <Button className="flex-1" onClick={() => { setShowDiscardDialog(false); onApply(selectedAssignees, selectedChannels) }}>
+                Apply Filters
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
@@ -1501,16 +1501,17 @@ function TemplateCarouselPreview({
   )
 }
 
+const DeliveryRow = () => (
+  <div className="flex items-center justify-end gap-1.5 mt-1.5">
+    <CheckCheck className="size-4 text-semantic-text-muted" />
+    <span className="text-[12px] text-semantic-text-muted">Delivered</span>
+    <span className="text-[10px] font-bold text-semantic-text-muted">•</span>
+    <span className="text-[12px] text-semantic-text-muted">2:30 PM</span>
+    <Avatar initials="AS" size="xs" variant="filled" />
+  </div>
+)
+
 function TemplatePreviewBubble({ template, varValues }: { template: TemplateDef; varValues: VarMap }) {
-  const DeliveryRow = () => (
-    <div className="flex items-center justify-end gap-1.5 mt-1.5">
-      <CheckCheck className="size-4 text-semantic-text-muted" />
-      <span className="text-[12px] text-semantic-text-muted">Delivered</span>
-      <span className="text-[10px] font-bold text-semantic-text-muted">•</span>
-      <span className="text-[12px] text-semantic-text-muted">2:30 PM</span>
-      <Avatar initials="AS" size="xs" variant="filled" />
-    </div>
-  )
 
   if (template.type === "text") {
     return (
@@ -2005,7 +2006,6 @@ function ContactDetailsPanel({ name, open, onClose }: { name: string; open: bool
                     </div>
                   </div>
                   <TextField label="Email" placeholder="Enter Email" size="sm" />
-                  <TextField label="Source" value="Chat" disabled size="sm" />
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <span className="text-sm font-medium text-semantic-text-muted">Marketing Opt In</span>
@@ -2013,6 +2013,7 @@ function ContactDetailsPanel({ name, open, onClose }: { name: string; open: bool
                     </div>
                     <Switch checked={marketingOptIn} onCheckedChange={setMarketingOptIn} />
                   </div>
+                  <TextField label="Source" value="Chat" disabled size="sm" />
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -2058,79 +2059,69 @@ function ContactDetailsPanel({ name, open, onClose }: { name: string; open: bool
           </Accordion>
         </div>
       ) : (
-        /* ── View Mode ── */
+        /* ── View Mode (two-column layout) ── */
         <div key="view" className="animate-in fade-in duration-200 ease-out">
           {/* Name + Edit button */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout">
             <span className="text-base font-semibold text-semantic-text-primary">{name}</span>
-            <Button variant="outline" size="icon-lg" onClick={() => setIsEditing(true)}>
-              <Pencil className="size-[18px]" />
+            <Button variant="outline" size="icon" onClick={() => setIsEditing(true)}>
+              <Pencil className="size-4" />
             </Button>
           </div>
 
-          <Accordion type="multiple" defaultValue={["basic", "custom"]} variant="bordered" className="rounded-none border-x-0">
-            {/* Basic Information */}
-            <AccordionItem value="basic">
-              <AccordionTrigger>
-                <span className="text-sm font-semibold tracking-wide text-semantic-text-primary uppercase">Basic Information</span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label htmlFor="view-phone" className="text-sm font-medium text-semantic-text-muted">Phone</label>
-                    <div className="flex items-center border border-semantic-border-layout rounded opacity-60">
-                      <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
-                        <span className="text-sm">🇮🇳</span>
-                        <span className="text-sm text-semantic-text-secondary">+91</span>
-                      </div>
-                      <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
-                      <input
-                        id="view-phone"
-                        type="tel"
-                        value="98765 43210"
-                        disabled
-                        className="flex-1 h-9 px-3 text-sm text-semantic-text-primary outline-none bg-transparent min-w-0"
-                      />
-                    </div>
-                  </div>
-                  <TextField label="Email" value="email@example.com" disabled size="sm" />
-                  <TextField label="Source" value="Chat" disabled size="sm" />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-semantic-text-muted">Marketing Opt In</span>
-                      <Info className="size-3.5 text-semantic-text-muted shrink-0" />
-                    </div>
-                    <Switch checked={marketingOptIn} onCheckedChange={setMarketingOptIn} />
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+          {/* Basic Information */}
+          <div className="px-4 pt-3 pb-2 border-t border-semantic-border-layout">
+            <span className="text-[13px] font-semibold text-semantic-text-primary">Basic Information</span>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">Phone</span>
+              <span className="text-sm text-semantic-text-primary flex-1">🇮🇳 +91 98765 43210</span>
+            </div>
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">Email</span>
+              <span className="text-sm text-semantic-text-primary flex-1">email@example.com</span>
+            </div>
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0 flex items-center gap-1">
+                Marketing Opt In
+                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+              </span>
+              <div className="flex-1">
+                <Switch checked={marketingOptIn} onCheckedChange={setMarketingOptIn} size="sm" />
+              </div>
+            </div>
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">Source</span>
+              <span className="text-sm text-semantic-text-primary flex-1">Chat</span>
+            </div>
+          </div>
 
-            {/* Custom Fields */}
-            <AccordionItem value="custom">
-              <AccordionTrigger>
-                <span className="text-sm font-semibold tracking-wide text-semantic-text-primary uppercase">Custom Fields</span>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm font-medium text-semantic-text-muted">Tags</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      <Tag variant="default" size="sm">VIP Customer</Tag>
-                      <Tag variant="default" size="sm">Enterprise</Tag>
-                    </div>
-                  </div>
-                  {[
-                    { label: "Location", placeholder: "Enter Location", val: "XYZ, place" },
-                    { label: "Secondary Phone", placeholder: "XXXXX XXXXX", val: "" },
-                    { label: "DOB", placeholder: "DD / MM / YYYY", val: "" },
-                  ].map(({ label, placeholder, val }) => (
-                    <TextField key={label} label={label} defaultValue={val} placeholder={placeholder} size="sm" disabled />
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          {/* Custom Fields */}
+          <div className="px-4 pt-3 pb-2 border-t border-semantic-border-layout">
+            <span className="text-[13px] font-semibold text-semantic-text-primary">Custom Fields</span>
+          </div>
+          <div className="flex flex-col pb-2 border-b border-semantic-border-layout">
+            <div className="flex items-start py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0 pt-0.5">Tags</span>
+              <div className="flex flex-wrap gap-1.5 flex-1">
+                <Tag variant="default" size="sm">VIP Customer</Tag>
+                <Tag variant="default" size="sm">Enterprise</Tag>
+              </div>
+            </div>
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">Location</span>
+              <span className="text-sm text-semantic-text-primary flex-1">XYZ, place</span>
+            </div>
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">Secondary Phone</span>
+              <span className="text-sm text-semantic-text-placeholder flex-1">XXXXX XXXXX</span>
+            </div>
+            <div className="flex items-center py-2.5 px-4">
+              <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">DOB</span>
+              <span className="text-sm text-semantic-text-placeholder flex-1">DD / MM / YYYY</span>
+            </div>
+          </div>
         </div>
       )}
     </Panel>
@@ -2193,7 +2184,7 @@ function AssignmentDropdown({ defaultAgent }: { defaultAgent?: string }) {
         </div>
         <DropdownMenuRadioGroup value={value} onValueChange={setValue} className="max-h-[240px] overflow-y-auto">
           {/* Unassigned */}
-          <DropdownMenuRadioItem value="unassigned">
+          <DropdownMenuRadioItem value="unassigned" disabled={value !== "unassigned"}>
             Unassigned
           </DropdownMenuRadioItem>
 
@@ -2244,36 +2235,16 @@ function AssignmentDropdown({ defaultAgent }: { defaultAgent?: string }) {
 
 function ResolveButton() {
   const [resolved, setResolved] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
 
   return (
-    <>
-      <Button
-        variant={resolved ? "success" : "default"}
-        leftIcon={<Check className={cn("size-[18px] transition-transform duration-200", resolved && "scale-110")} />}
-        onClick={() => {
-          if (resolved) {
-            setResolved(false)
-          } else {
-            setShowConfirm(true)
-          }
-        }}
-        className="transition-all duration-200"
-      >
-        {resolved ? "Resolved" : "Resolve"}
-      </Button>
-      <ConfirmationModal
-        open={showConfirm}
-        onOpenChange={setShowConfirm}
-        title="Resolve this conversation?"
-        description="This will close the conversation and move it to the Resolved tab."
-        confirmButtonText="Resolve"
-        onConfirm={() => {
-          setResolved(true)
-          setShowConfirm(false)
-        }}
-      />
-    </>
+    <Button
+      variant={resolved ? "success" : "default"}
+      leftIcon={<Check className={cn("size-[18px] transition-transform duration-200", resolved && "scale-110")} />}
+      onClick={() => setResolved((prev) => !prev)}
+      className="transition-all duration-200"
+    >
+      {resolved ? "Resolved" : "Resolve"}
+    </Button>
   )
 }
 
@@ -2312,26 +2283,20 @@ function ComposerAttachmentPreview({ file, onRemove }: { file: File; onRemove: (
         }}
       />
       {isImage ? (
-        <img src={url} alt={file.name} className="w-full object-cover max-h-[300px]" />
+        <div className="h-[200px] bg-semantic-bg-ui">
+          <img src={url} alt={file.name} className="w-full h-full object-cover" />
+        </div>
       ) : isVideo ? (
-        <div className="relative bg-black" style={{ aspectRatio: "16/10" }}>
+        <div className="relative bg-black h-[200px]">
           <video src={url} className="w-full h-full object-cover" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
               <Play className="size-7 text-white fill-white ml-0.5" />
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6 bg-gradient-to-t from-black/70 to-transparent">
-            <div className="flex items-center gap-2">
-              <Play className="size-4 text-white" />
-              <span className="text-[12px] text-white/60">●</span>
-              <div className="flex-1 h-[3px] rounded-full bg-white/30" />
-              <span className="text-[12px] text-white tabular-nums">0:00</span>
-            </div>
-          </div>
         </div>
       ) : isAudio ? (
-        <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3">
+        <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3 h-[80px]">
           <div className="size-10 rounded-full bg-semantic-primary flex items-center justify-center shrink-0">
             <Play className="size-5 text-white fill-white ml-0.5" />
           </div>
@@ -2342,7 +2307,7 @@ function ComposerAttachmentPreview({ file, onRemove }: { file: File; onRemove: (
         </div>
       ) : (
         /* PDF / other document preview */
-        <div className="bg-semantic-bg-ui flex flex-col items-center justify-center" style={{ aspectRatio: "16/10" }}>
+        <div className="bg-semantic-bg-ui flex flex-col items-center justify-center h-[200px]">
           <div className="size-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-3">
             <File className="size-8 text-semantic-text-muted" />
           </div>
@@ -2361,12 +2326,26 @@ const cannedMessages = [
   { id: "cm2", title: "Greeting", body: "👋 Hi there! Thank you for reaching out to MyOperator." },
 ]
 
+/* ── Helpers ── */
+
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return text
+  return (
+    <>
+      {text.slice(0, idx)}
+      <strong className="font-semibold text-semantic-text-primary">{text.slice(idx, idx + query.length)}</strong>
+      {text.slice(idx + query.length)}
+    </>
+  )
+}
+
 /* ── Main App ── */
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("open")
   const [search, setSearch] = useState("")
-  const [sortBy, setSortBy] = useState<SortOption>("newest")
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
   const [showNewChat, setShowNewChat] = useState(false)
@@ -2389,7 +2368,6 @@ export default function App() {
     setShowNewChat(true)
   }
 
-  const activeSortLabel = sortOptions.find((o) => o.id === sortBy)?.label
 
   const hasActiveFilters = appliedAssignees !== null || appliedChannels !== null
 
@@ -2455,6 +2433,7 @@ export default function App() {
                 clearable
                 onClear={() => setSearch("")}
                 wrapperClassName="flex-1"
+                size="sm"
               />
               <Button
                 variant="outline"
@@ -2467,7 +2446,7 @@ export default function App() {
               >
                 <FilterIcon />
                 {hasActiveFilters && (
-                  <span className="absolute top-1 right-1 size-2 rounded-full bg-semantic-primary animate-in zoom-in duration-200" />
+                  <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-semantic-border-accent animate-in zoom-in duration-200 ring-1 ring-semantic-border-layout" />
                 )}
               </Button>
             </div>
@@ -2489,34 +2468,6 @@ export default function App() {
               </TabsList>
             </Tabs>
 
-            {/* Sort Bar with Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start rounded-none shrink-0 focus-visible:ring-inset border-b border-semantic-border-layout h-10">
-                  <ArrowDownUp className="size-4 text-semantic-text-muted shrink-0" />
-                  <span className="text-sm text-semantic-text-muted shrink-0">
-                    Sort by:
-                  </span>
-                  <span className="flex-1 text-sm font-medium text-semantic-text-secondary text-left">
-                    {activeSortLabel}
-                  </span>
-                  <ChevronDown className="size-4 text-semantic-text-muted shrink-0 mr-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-[--radix-dropdown-menu-trigger-width]">
-                {sortOptions.map((option) => (
-                  <DropdownMenuItem
-                    key={option.id}
-                    onSelect={() => setSortBy(option.id)}
-                    className={cn("justify-between", sortBy === option.id && "text-semantic-primary font-medium")}
-                  >
-                    {option.label}
-                    {sortBy === option.id && <Check className="size-4 shrink-0" />}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             {/* Chat List */}
             <div className="sr-only" aria-live="polite">
               {`${filteredChats.length} conversations`}
@@ -2526,6 +2477,7 @@ export default function App() {
                 <div key={chat.id} className="relative">
                   <ChatListItem
                     {...chat}
+                    message={search ? highlightMatch(chat.message, search) : chat.message}
                     messageStatus={chat.isFailed ? undefined : chat.messageStatus}
                     isSelected={selectedChatId === chat.id}
                     onClick={() => {
@@ -2603,7 +2555,7 @@ export default function App() {
                   })()}
                   {selectedChat.slaTimer && (
                     <Tag variant="warning" size="sm">
-                      <Clock className="size-3" />
+                      <Clock className="size-3 shrink-0" />
                       {selectedChat.slaTimer}
                     </Tag>
                   )}
@@ -2620,11 +2572,7 @@ export default function App() {
               <div className="flex-1 relative">
               <div key={selectedChatId} className="absolute inset-0 overflow-y-auto bg-semantic-bg-ui px-6 py-4 animate-in fade-in duration-200 ease-out">
                 {/* Date Divider */}
-                <div role="separator" aria-label="Today" className="flex items-center gap-4 my-4">
-                  <div className="flex-1 h-px bg-semantic-border-layout" />
-                  <span className="text-[12px] text-semantic-text-muted shrink-0">Today</span>
-                  <div className="flex-1 h-px bg-semantic-border-layout" />
-                </div>
+                <ChatTimelineDivider className="my-4" aria-label="Today">Today</ChatTimelineDivider>
 
                 {/* Messages */}
                 <div className="flex flex-col gap-4">
@@ -2636,7 +2584,7 @@ export default function App() {
                     const hasMedia = msg.type && msg.type !== "text"
                     const mediaCaption = msg.media?.caption
                     const hasText = msg.text || mediaCaption
-                    const isDocWithMeta = (msg.type === "document" || msg.type === "otherDoc") && msg.media
+                    const isDocWithMeta = msg.type === "otherDoc" && msg.media
 
                     // Media types get different bubble widths
                     const bubbleWidth = msg.type === "carousel"
@@ -2647,6 +2595,7 @@ export default function App() {
                           ? "max-w-[340px] w-[340px]"
                           : "max-w-[65%]"
 
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const replyButton = (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -2671,23 +2620,17 @@ export default function App() {
                       return (
                         <React.Fragment key={msg.id}>
                           {showUnreadSeparator && (
-                            <div role="separator" aria-label={`${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`} className="flex items-center gap-4 my-2">
-                              <div className="flex-1 h-px bg-semantic-border-accent/40" />
-                              <span className="text-[12px] font-medium text-semantic-brand-text bg-semantic-brand-surface px-2.5 py-0.5 rounded-full shrink-0">
-                                {unreadCount} unread message{unreadCount > 1 ? "s" : ""}
-                              </span>
-                              <div className="flex-1 h-px bg-semantic-border-accent/40" />
-                            </div>
+                            <ChatTimelineDivider variant="unread" aria-label={`${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`}>
+                              {unreadCount} unread message{unreadCount > 1 ? "s" : ""}
+                            </ChatTimelineDivider>
                           )}
-                          <div className="flex justify-center my-1">
-                            <span className="text-[13px] text-semantic-text-muted">
-                              {msg.text.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
-                                part.startsWith("**") ? (
-                                  <span key={i} className="text-semantic-text-link font-medium">{part.slice(2, -2)}</span>
-                                ) : part
-                              )}
-                            </span>
-                          </div>
+                          <ChatTimelineDivider variant="system">
+                            {msg.text.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
+                              part.startsWith("**") ? (
+                                <span key={i} className="text-semantic-text-link font-medium">{part.slice(2, -2)}</span>
+                              ) : part
+                            )}
+                          </ChatTimelineDivider>
                         </React.Fragment>
                       )
                     }
@@ -2695,13 +2638,9 @@ export default function App() {
                     return (
                       <React.Fragment key={msg.id}>
                       {showUnreadSeparator && (
-                        <div role="separator" aria-label={`${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`} className="flex items-center gap-4 my-2">
-                          <div className="flex-1 h-px bg-semantic-border-accent/40" />
-                          <span className="text-[12px] font-medium text-semantic-brand-text bg-semantic-brand-surface px-2.5 py-0.5 rounded-full shrink-0">
-                            {unreadCount} unread message{unreadCount > 1 ? "s" : ""}
-                          </span>
-                          <div className="flex-1 h-px bg-semantic-border-accent/40" />
-                        </div>
+                        <ChatTimelineDivider variant="unread" aria-label={`${unreadCount} unread message${unreadCount > 1 ? "s" : ""}`}>
+                          {unreadCount} unread message{unreadCount > 1 ? "s" : ""}
+                        </ChatTimelineDivider>
                       )}
                       <div className={`flex items-start gap-1.5 group/msg ${msg.sender === "agent" ? "justify-end" : "justify-start"}`}>
                       <div
@@ -2737,14 +2676,14 @@ export default function App() {
                           {msg.type === "image" && msg.media && <ImageMedia media={msg.media} />}
                           {msg.type === "video" && msg.media && <VideoMedia media={msg.media} />}
                           {msg.type === "audio" && msg.media && <AudioMedia media={msg.media} />}
-                          {msg.type === "docPreview" && msg.media && <DocPreviewMedia media={msg.media} />}
-                          {msg.type === "document" && msg.media && <DocDownloadMedia media={msg.media} />}
-                          {msg.type === "otherDoc" && msg.media && <OtherDocMedia media={msg.media} />}
+                          {msg.type === "docPreview" && msg.media && <DocMedia variant="preview" thumbnailUrl={msg.media.thumbnailUrl || msg.media.url} filename={msg.media.filename} fileType={msg.media.fileType} pageCount={msg.media.pageCount} fileSize={msg.media.fileSize} />}
+                          {msg.type === "document" && msg.media && <DocMedia variant="download" thumbnailUrl={msg.media.thumbnailUrl || msg.media.url} filename={msg.media.filename} fileType={msg.media.fileType} pageCount={msg.media.pageCount} fileSize={msg.media.fileSize} />}
+                          {msg.type === "otherDoc" && msg.media && <DocMedia variant="file" filename={msg.media.filename} fileType={msg.media.fileType} />}
                           {msg.type === "carousel" && msg.media && <CarouselMedia media={msg.media} />}
                           {msg.type === "loading" && <LoadingMedia error={msg.error} />}
 
                           {/* Text + footer area (with padding) */}
-                          <div className={hasMedia ? `px-3 pb-1.5 ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" || msg.type === "document" ? "pt-3 mt-1" : "pt-2"}` : ""}>
+                          <div className={hasMedia ? `px-3 pb-1.5 ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" ? "pt-3 mt-1" : "pt-2"}` : ""}>
                             {msg.replyTo && (
                               <button
                                 type="button"
@@ -2800,12 +2739,12 @@ export default function App() {
                                 {msg.sender === "agent" && msg.status && (
                                   <>
                                     {msg.status === "failed" ? (
-                                      <span role="alert">
-                                        <CircleAlert className="size-4 text-semantic-error-primary shrink-0 inline-block align-middle" />
-                                        <span style={{ fontSize: 12 }} className="text-semantic-error-primary font-medium ml-1.5">Failed</span>
+                                      <span role="alert" className="inline-flex items-center gap-1.5">
+                                        <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
+                                        <span className="text-[13px] text-semantic-error-primary font-medium">Failed</span>
                                         <button
                                           onClick={(e) => { e.stopPropagation() }}
-                                          className="text-[12px] font-semibold text-semantic-text-link underline hover:no-underline ml-1.5"
+                                          className="text-[13px] font-semibold text-semantic-text-link underline hover:no-underline"
                                         >
                                           Retry
                                         </button>
@@ -2833,9 +2772,22 @@ export default function App() {
                       </div>
                       {/* Sender indicator for outbound messages */}
                       {msg.sender === "agent" && msg.sentBy && (
-                        <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center">
-                          <SenderIndicatorBadge sentBy={msg.sentBy} />
-                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center cursor-default">
+                              <SenderIndicatorBadge sentBy={msg.sentBy} />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">
+                            <p className="m-0">
+                              {msg.sentBy.type === "agent" ? msg.sentBy.name
+                                : msg.sentBy.type === "bot" ? (msg.sentBy.name || "Bot")
+                                : msg.sentBy.type === "campaign" ? "Campaign"
+                                : "API"}
+                            </p>
+                            <TooltipArrow />
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                       {msg.sender === "customer" && (
                           <Tooltip>
@@ -2863,12 +2815,12 @@ export default function App() {
               </div>
 
               {/* Scroll to bottom button */}
-              <Button variant="secondary" size="icon-lg" aria-label={(selectedChat.unreadCount || 0) > 0 ? `Scroll to bottom, ${selectedChat.unreadCount} unread messages` : "Scroll to bottom"} className="absolute bottom-4 left-1/2 -translate-x-1/2 shadow-md">
+              <Button variant="outline" size="icon-lg" aria-label={(selectedChat.unreadCount || 0) > 0 ? `Scroll to bottom, ${selectedChat.unreadCount} unread messages` : "Scroll to bottom"} className="absolute bottom-4 left-1/2 -translate-x-1/2 shadow-md bg-white">
                 <ArrowDown className="size-5" />
                 {(selectedChat.unreadCount || 0) > 0 && (
-                  <Badge variant="primary" size="sm" className="absolute -top-1.5 -right-1.5">
+                  <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center size-5 rounded-full bg-semantic-border-accent text-white text-[11px] font-semibold">
                     {selectedChat.unreadCount}
-                  </Badge>
+                  </span>
                 )}
               </Button>
               {/* New messages live region */}
@@ -2919,6 +2871,7 @@ export default function App() {
                 })()}
 
                 <ChatComposer
+                  sendLabel={<><Send className="size-4" />Send</>}
                   expired={selectedChat.isWindowExpired || selectedChat.tab === "resolved"}
                   expiredMessage={`${selectedChat.tab === "resolved" ? "This chat is closed." : "This chat has expired."} Send a template to continue.`}
                   onTemplateClick={() => setShowTemplateModal(true)}
@@ -2991,17 +2944,28 @@ export default function App() {
                   ) : undefined}
                   leftActions={
                     <>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon-sm" onClick={() => fileInputRef.current?.click()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon-sm">
                               <Paperclip className="size-[18px]" />
                             </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <p className="m-0">Attach Media</p>
-                            <TooltipArrow />
-                          </TooltipContent>
-                        </Tooltip>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="top" align="start">
+                            <DropdownMenuLabel>Attach Media</DropdownMenuLabel>
+                            <DropdownMenuItem onSelect={() => { if (fileInputRef.current) { fileInputRef.current.accept = "image/*"; fileInputRef.current.click() } }}>
+                              <LucideImage className="size-4" /> Image
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => { if (fileInputRef.current) { fileInputRef.current.accept = "video/*"; fileInputRef.current.click() } }}>
+                              <Play className="size-4" /> Video
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => { if (fileInputRef.current) { fileInputRef.current.accept = "audio/*"; fileInputRef.current.click() } }}>
+                              <Music className="size-4" /> Audio
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => { if (fileInputRef.current) { fileInputRef.current.accept = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"; fileInputRef.current.click() } }}>
+                              <FileText className="size-4" /> Document
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon-sm" onClick={() => setShowTemplateModal(true)}>
@@ -3072,9 +3036,6 @@ export default function App() {
               >
                 <User className="size-6" />
               </Button>
-              <Button variant="ghost" size="icon-lg" aria-label="Keyboard shortcuts">
-                <Keyboard className="size-6" />
-              </Button>
             </aside>
           </main>
         )
@@ -3083,14 +3044,8 @@ export default function App() {
           {showNewChat ? (
             /* Empty state when New Chat panel is open */
             <div className="flex flex-col items-center gap-5 w-[300px] shrink-0">
-              <div className="w-[80px] h-[80px] shrink-0 flex items-center justify-center">
-                <svg aria-hidden="true" width="64" height="64" viewBox="0 0 64 64" fill="none">
-                  <rect x="8" y="12" width="48" height="36" rx="4" stroke="#a4a7ae" strokeWidth="2" />
-                  <rect x="16" y="22" width="20" height="2" rx="1" fill="#d5d7da" />
-                  <rect x="16" y="28" width="28" height="2" rx="1" fill="#d5d7da" />
-                  <rect x="16" y="34" width="16" height="2" rx="1" fill="#d5d7da" />
-                  <path d="M44 48V56L52 48H44Z" stroke="#a4a7ae" strokeWidth="2" strokeLinejoin="round" />
-                </svg>
+              <div className="size-[100px] shrink-0 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center shadow-sm">
+                <MessageSquare className="size-12 text-semantic-text-muted" />
               </div>
               <div className="flex flex-col items-center gap-[6px]">
                 <h2 className="text-[24px] font-semibold text-semantic-text-primary leading-8">
@@ -3111,12 +3066,8 @@ export default function App() {
           ) : (
             /* Default empty state */
             <div className="flex flex-col items-center gap-5 w-[276px] shrink-0">
-              <div className="w-[180px] h-[180px] shrink-0 rounded-full bg-white overflow-hidden">
-                <img
-                  src={noConversationImg}
-                  alt="No conversation"
-                  className="w-full h-full object-cover"
-                />
+              <div className="size-[100px] shrink-0 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center shadow-sm">
+                <MessageSquare className="size-12 text-semantic-text-muted" />
               </div>
               <div className="flex flex-col items-center gap-[6px]">
                 <h2 className="text-[24px] font-semibold text-semantic-text-primary leading-8">

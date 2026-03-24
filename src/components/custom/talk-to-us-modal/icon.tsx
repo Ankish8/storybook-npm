@@ -11,8 +11,8 @@ interface BrandIconProps extends React.SVGAttributes<SVGElement> {
  * Used in TalkToUsModal and available for any component that needs
  * the MyOperator contact/chat branding.
  */
-const MyOperatorChatIcon = React.forwardRef<SVGSVGElement, BrandIconProps>(
-  ({ className, ...props }, ref) => (
+const MyOperatorChatIcon = React.forwardRef(
+  ({ className, ...props }: BrandIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}

@@ -58,7 +58,7 @@ export interface SpinnerProps
   "aria-label"?: string;
 }
 
-const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
+const Spinner = React.forwardRef(
   (
     {
       className,
@@ -66,8 +66,8 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
       variant,
       "aria-label": ariaLabel = "Loading",
       ...props
-    },
-    ref
+    }: SpinnerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const strokeWidth = strokeWidths[size || "default"] ?? 3;
     const radius = 10;

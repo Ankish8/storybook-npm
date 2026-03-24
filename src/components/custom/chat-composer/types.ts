@@ -41,8 +41,8 @@ export interface ChatComposerProps extends Omit<React.HTMLAttributes<HTMLDivElem
   leftActions?: React.ReactNode;
   /** Slot for right action buttons (rendered inside textarea container, bottom-right) */
   rightActions?: React.ReactNode;
-  /** Send button label. Defaults to "Send" */
-  sendLabel?: string;
+  /** Send button label. Accepts text or JSX (e.g. icon + text). Defaults to "Send" */
+  sendLabel?: React.ReactNode;
   /** Whether to show the send dropdown chevron. Defaults to false */
   showSendDropdown?: boolean;
   /** Whether the chat is expired (shows template prompt instead of composer) */

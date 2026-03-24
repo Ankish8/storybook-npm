@@ -6,10 +6,7 @@ import type { EventItemComponentProps } from "./types";
 /**
  * Individual event item with checkbox
  */
-export const EventItemComponent = React.forwardRef<
-  HTMLDivElement,
-  EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>
->(({ event, isSelected, onSelectionChange, className, ...props }, ref) => {
+export const EventItemComponent = React.forwardRef(({ event, isSelected, onSelectionChange, className, ...props }: EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       ref={ref}

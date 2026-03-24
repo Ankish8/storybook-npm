@@ -41,8 +41,8 @@ export interface FunctionsCardProps {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
+const FunctionsCard = React.forwardRef(
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }: FunctionsCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}

@@ -8,7 +8,7 @@ const PORTRAIT_IMAGE =
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=500&fit=crop";
 
 const meta: Meta<typeof ImageMedia> = {
-  title: "Components/Image Media",
+  title: "Custom/Chat/Image Media",
   component: ImageMedia,
   parameters: {
     layout: "centered",

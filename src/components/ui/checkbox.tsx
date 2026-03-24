@@ -89,10 +89,7 @@ export interface CheckboxProps
   separateLabel?: boolean;
 }
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  CheckboxProps
->(
+const Checkbox = React.forwardRef(
   (
     {
       className,
@@ -105,8 +102,8 @@ const Checkbox = React.forwardRef<
       id,
       disabled,
       ...props
-    },
-    ref
+    }: CheckboxProps,
+    ref: React.Ref<React.ElementRef<typeof CheckboxPrimitive.Root>>
   ) => {
     const checkbox = (
       <CheckboxPrimitive.Root

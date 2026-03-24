@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { UnreadSeparator } from "./unread-separator";
 
 const meta: Meta<typeof UnreadSeparator> = {
-  title: "Components/Unread Separator",
+  title: "Custom/Chat/Unread Separator",
   component: UnreadSeparator,
   parameters: {
     layout: "centered",

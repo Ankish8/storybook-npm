@@ -345,7 +345,7 @@ describe("TextField", () => {
   it("uses container with focus-within styling when has addons", () => {
     const { container } = render(<TextField leftIcon={<span>L</span>} />);
     const inputContainer = container.querySelector(
-      ".focus-within\\:border-semantic-border-input-focus\\/50"
+      ".focus-within\\:border-semantic-border-input-focus"
     );
     expect(inputContainer).toBeInTheDocument();
   });

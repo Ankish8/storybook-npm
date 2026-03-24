@@ -46,7 +46,7 @@ export interface CreatableSelectProps
   maxLength?: number
 }
 
-const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
+const CreatableSelect = React.forwardRef(
   (
     {
       className,
@@ -59,8 +59,8 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       disabled = false,
       maxLength,
       ...props
-    },
-    ref
+    }: CreatableSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [open, setOpen] = React.useState(false)
     const [search, setSearch] = React.useState("")

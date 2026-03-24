@@ -13,10 +13,7 @@ import type { EventGroupComponentProps } from "./types";
 /**
  * Event group with accordion section and group-level checkbox
  */
-export const EventGroupComponent = React.forwardRef<
-  HTMLDivElement,
-  EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const EventGroupComponent = React.forwardRef(
   (
     {
       group,
@@ -28,8 +25,8 @@ export const EventGroupComponent = React.forwardRef<
       defaultExpanded = false,
       className,
       ...props
-    },
-    ref
+    }: EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Calculate selection state for this group
     const groupEventIds = events.map((e) => e.id);

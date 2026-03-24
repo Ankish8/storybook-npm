@@ -31,10 +31,7 @@ export interface PaymentOptionCardModalProps
  * />
  * ```
  */
-export const PaymentOptionCardModal = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardModalProps
->(
+export const PaymentOptionCardModal = React.forwardRef(
   (
     {
       open,
@@ -50,8 +47,8 @@ export const PaymentOptionCardModal = React.forwardRef<
       loading,
       disabled,
       className,
-    },
-    ref
+    }: PaymentOptionCardModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onOpenChange(false);

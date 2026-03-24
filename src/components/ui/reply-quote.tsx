@@ -23,8 +23,8 @@ export interface ReplyQuoteProps extends React.HTMLAttributes<HTMLDivElement> {
   message: string;
 }
 
-const ReplyQuote = React.forwardRef<HTMLDivElement, ReplyQuoteProps>(
-  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }, ref) => {
+const ReplyQuote = React.forwardRef(
+  ({ className, sender, message, onClick, onKeyDown, role, tabIndex, "aria-label": ariaLabel, ...props }: ReplyQuoteProps, ref: React.Ref<HTMLDivElement>) => {
     const isInteractive = !!onClick;
 
     const handleKeyDown = React.useCallback(

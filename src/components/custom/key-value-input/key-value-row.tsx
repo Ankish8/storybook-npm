@@ -8,10 +8,7 @@ import type { KeyValueRowProps } from "./types";
 /**
  * Individual key-value pair row with inputs and delete button
  */
-export const KeyValueRow = React.forwardRef<
-  HTMLDivElement,
-  KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const KeyValueRow = React.forwardRef(
   (
     {
       pair,
@@ -27,8 +24,8 @@ export const KeyValueRow = React.forwardRef<
       onDelete,
       className,
       ...props
-    },
-    ref
+    }: KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Determine if inputs should show error state
     const keyHasError = isDuplicateKey || (keyRequired && isKeyEmpty);

@@ -53,8 +53,8 @@ export interface SkeletonProps
   height?: number | string;
 }
 
-const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, variant, shape, width, height, style, ...props }, ref) => {
+const Skeleton = React.forwardRef(
+  ({ className, variant, shape, width, height, style, ...props }: SkeletonProps, ref: React.Ref<HTMLDivElement>) => {
     const dimensionStyle: React.CSSProperties = {
       ...style,
       ...(width !== undefined

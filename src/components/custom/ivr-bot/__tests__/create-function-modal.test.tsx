@@ -67,17 +67,14 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
   });
 
-  it("renders tab navigation in step 2 (Body tab only for POST/PUT/PATCH)", async () => {
+  it("renders tab navigation in step 2 (Body tab always visible)", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     expect(screen.getByText(/Header \(0\)/)).toBeInTheDocument();
     expect(screen.getByText(/Query params \(0\)/)).toBeInTheDocument();
-    // Body tab is hidden for GET (default method)
-    expect(screen.queryByText("Body")).not.toBeInTheDocument();
-    // Switch to POST — Body tab appears
-    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
+    // Body tab is always visible regardless of HTTP method
     expect(screen.getByText("Body")).toBeInTheDocument();
   });
 

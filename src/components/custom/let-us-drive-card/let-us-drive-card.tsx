@@ -28,7 +28,7 @@ import type { LetUsDriveCardProps } from "./types";
  * />
  * ```
  */
-const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
+const LetUsDriveCard = React.forwardRef(
   (
     {
       title,
@@ -48,8 +48,8 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: LetUsDriveCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalExpanded, setInternalExpanded] = React.useState(false);
     const isControlled = controlledExpanded !== undefined;
@@ -73,7 +73,7 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       <div
         ref={ref}
         className={cn(
-          "flex h-full min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
+          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
           className
         )}
         {...props}

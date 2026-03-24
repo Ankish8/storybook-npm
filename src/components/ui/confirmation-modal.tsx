@@ -67,10 +67,7 @@ export interface ConfirmationModalProps {
  * />
  * ```
  */
-const ConfirmationModal = React.forwardRef<
-  HTMLDivElement,
-  ConfirmationModalProps
->(
+const ConfirmationModal = React.forwardRef(
   (
     {
       open,
@@ -85,8 +82,8 @@ const ConfirmationModal = React.forwardRef<
       cancelButtonText = "Cancel",
       trigger,
       className,
-    },
-    ref
+    }: ConfirmationModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleConfirm = () => {
       onConfirm?.();

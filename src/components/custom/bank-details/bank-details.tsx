@@ -27,7 +27,7 @@ import type { BankDetailsProps, BankDetailItem } from "./types";
  * />
  * ```
  */
-export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
+export const BankDetails = React.forwardRef(
   (
     {
       title = "Bank details",
@@ -39,8 +39,8 @@ export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
       onOpenChange,
       onCopy,
       className,
-    },
-    ref
+    }: BankDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 

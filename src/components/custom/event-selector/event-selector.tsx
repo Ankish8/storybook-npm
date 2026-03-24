@@ -26,10 +26,7 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types";
  * />
  * ```
  */
-export const EventSelector = React.forwardRef<
-  HTMLDivElement,
-  EventSelectorProps
->(
+export const EventSelector = React.forwardRef(
   (
     {
       events,
@@ -44,8 +41,8 @@ export const EventSelector = React.forwardRef<
       renderEmptyGroup,
       className,
       ...props
-    },
-    ref
+    }: EventSelectorProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalSelected, setInternalSelected] = React.useState<string[]>(

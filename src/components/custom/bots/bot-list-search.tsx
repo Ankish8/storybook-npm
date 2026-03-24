@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListSearchProps } from "./types";
 
-export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps>(
+export const BotListSearch = React.forwardRef(
   (
     {
       value,
@@ -12,8 +12,8 @@ export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps
       defaultValue,
       className,
       ...props
-    },
-    ref
+    }: BotListSearchProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
     const isControlled = value !== undefined;

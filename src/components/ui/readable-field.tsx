@@ -52,7 +52,7 @@ export interface ReadableFieldProps
  * />
  * ```
  */
-export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps>(
+export const ReadableField = React.forwardRef(
   (
     {
       label,
@@ -64,8 +64,8 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
       className,
       inputClassName,
       ...props
-    },
-    ref
+    }: ReadableFieldProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [copied, setCopied] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(!secret);

@@ -69,7 +69,7 @@ export interface FormModalProps {
  * </FormModal>
  * ```
  */
-const FormModal = React.forwardRef<HTMLDivElement, FormModalProps>(
+const FormModal = React.forwardRef(
   (
     {
       open,
@@ -85,8 +85,8 @@ const FormModal = React.forwardRef<HTMLDivElement, FormModalProps>(
       disableSave = false,
       className,
       size = "sm",
-    },
-    ref
+    }: FormModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleSave = () => {
       onSave?.();

@@ -97,10 +97,7 @@ const getStatusIcon = (tone: PlanUpgradeSummaryTone) => {
   return <AlertCircle className="size-6 text-semantic-warning-text" aria-hidden="true" />;
 };
 
-const PlanUpgradeSummaryModal = React.forwardRef<
-  HTMLDivElement,
-  PlanUpgradeSummaryModalProps
->(
+const PlanUpgradeSummaryModal = React.forwardRef(
   (
     {
       open,
@@ -122,8 +119,8 @@ const PlanUpgradeSummaryModal = React.forwardRef<
       closeAriaLabel = "Close plan summary modal",
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeSummaryModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedStatus = status ?? defaultStatusByMode[mode];
     const resolvedTone = resolvedStatus.tone ?? defaultStatusByMode[mode].tone ?? "warning";

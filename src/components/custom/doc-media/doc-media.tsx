@@ -3,7 +3,7 @@ import { cn } from "../../../lib/utils";
 import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
 import type { DocMediaProps } from "./types";
 
-const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
+const DocMedia = React.forwardRef(
   (
     {
       className,
@@ -16,8 +16,8 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
       caption,
       onDownload,
       ...props
-    },
-    ref
+    }: DocMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     if (variant === "preview") {
       return (
@@ -56,12 +56,35 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
 
     if (variant === "download") {
       return (
-        <div ref={ref} className={cn("relative", className)} {...props}>
+        <div
+          ref={ref}
+          className={cn("relative rounded-t overflow-hidden", className)}
+          {...props}
+        >
           <img
             src={thumbnailUrl}
             alt={caption || filename || "Document"}
-            className="w-full rounded-t object-cover max-h-[280px]"
+            className="w-full object-cover"
+            style={{ aspectRatio: "442/308" }}
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#1d222f]/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+            <p className="m-0 text-[14px] font-semibold text-white truncate">
+              {filename || "Document"}
+            </p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <File className="size-3.5 text-white/80" />
+              <span className="text-[12px] text-white/80">
+                {[
+                  fileType,
+                  pageCount && `${pageCount} pages`,
+                  fileSize,
+                ]
+                  .filter(Boolean)
+                  .join("  \u00B7  ")}
+              </span>
+            </div>
+          </div>
         </div>
       );
     }

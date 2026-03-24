@@ -131,6 +131,9 @@ function transformSemanticClassesInContent(content: string): string {
   const cnRegex = /\bcn\s*\(/g
   let cnMatch
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     result += content.slice(lastIndex, cnMatch.index)
     let depth = 1
     let i = cnMatch.index + cnMatch[0].length
@@ -263,9 +266,14 @@ function looksLikeTailwindClasses(str: string): boolean {
   })
 }
 
+// Regex to detect border-WIDTH classes (border, border-2, border-t, border-b-4, border-[3px], etc.)
+const BORDER_WIDTH_RE = /^border(-[trblxy])?(-[0248]|-\[.+\])?$/
+// Regex to detect border-STYLE classes
+const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
+
 // Helper to prefix a single class string
 function prefixClassString(classString: string, prefix: string): string {
-  return classString
+  const prefixed = classString
     .split(' ')
     .map((cls: string) => {
       if (!cls) return cls
@@ -343,7 +351,19 @@ function prefixClassString(classString: string, prefix: string): string {
       // Regular class (including arbitrary values like bg-[#343E55])
       return `${prefix}${cls}`
     })
-    .join(' ')
+
+  // Auto-inject border-solid when border-width classes are present without an explicit border-style.
+  // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
+  // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
+  // the border visible regardless of the host CSS environment.
+  const origClasses = classString.split(' ')
+  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
+  if (hasBorderWidth && !hasBorderStyle) {
+    prefixed.push(`${prefix}border-solid`)
+  }
+
+  return prefixed.join(' ')
 }
 
 // Context-aware Tailwind class prefixing
@@ -372,6 +392,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   let cnMatch
 
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     // Add everything before this cn(
     result += content.slice(lastIndex, cnMatch.index)
 
@@ -427,8 +450,32 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values (only when value is ambiguous)
-  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint']
+  // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
+  // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
+  // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
+  // position, background, top, left, right, bottom, gap, transform, transition, animation,
+  // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  const nonClassKeys = [
+    // HTML attributes
+    'name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint',
+    // CSS style properties (camelCase — safe because they can't be CVA variant keys)
+    'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
+    'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+    'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'lineHeight', 'letterSpacing',
+    'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'borderRadius',
+    'zIndex', 'overflow', 'overflowX', 'overflowY', 'userSelect',
+    'transitionDuration', 'transitionProperty',
+    'boxShadow', 'textShadow', 'outlineOffset',
+    'rowGap', 'columnGap', 'gridTemplateColumns', 'gridTemplateRows',
+    'flexBasis', 'flexGrow', 'flexShrink', 'flexDirection', 'flexWrap',
+    'alignItems', 'alignSelf', 'justifyContent', 'justifyItems',
+    'textAlign', 'textDecoration', 'textTransform', 'whiteSpace', 'wordBreak', 'wordSpacing',
+    'aspectRatio', 'scrollbarWidth', 'scrollBehavior',
+    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
+    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+    'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
+  ]
 
   // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
   function hasObviousTailwindPatterns(value: string): boolean {
@@ -523,7 +570,216 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 6. Handle className={...} JSX expression bindings
+  // Covers template literals, ternaries, and any other expression patterns
+  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
+  // e.g., className={active ? "border-b-2" : "text-muted"}
+  {
+    let jsxResult = ''
+    let jsxLastIndex = 0
+    const jsxRegex = /className\s*=\s*\{/g
+    let jsxMatch
+
+    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
+      if (jsxMatch.index < jsxLastIndex) continue
+
+      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
+
+      // Find the matching closing } by tracking brace depth
+      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
+      let depth = 1
+      let pos = bracePos + 1
+
+      while (pos < content.length && depth > 0) {
+        const ch = content[pos]
+        if (ch === '{') { depth++; pos++; continue }
+        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '"') {
+          pos++
+          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === "'") {
+          pos++
+          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === '`') {
+          pos++
+          let tDepth = 0
+          while (pos < content.length) {
+            if (content[pos] === '\\') { pos += 2; continue }
+            if (content[pos] === '`' && tDepth === 0) { pos++; break }
+            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
+            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            pos++
+          }
+          continue
+        }
+        pos++
+      }
+
+      // Extract expression between { and }
+      const expr = content.slice(bracePos + 1, pos - 1)
+
+      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
+      const exprTrimmed = expr.trimStart()
+      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
+        jsxResult += content.slice(jsxMatch.index, pos)
+        jsxLastIndex = pos
+        continue
+      }
+
+      // Prefix the expression using the className expression handler
+      const prefixedExpr = prefixClassNameExpression(expr, prefix)
+
+      jsxResult += jsxMatch[0] + prefixedExpr + '}'
+      jsxLastIndex = pos
+    }
+    jsxResult += content.slice(jsxLastIndex)
+    content = jsxResult
+  }
+
   return content
+}
+
+function isAlreadyPrefixed(classString: string, prefix: string): boolean {
+  if (!classString.trim()) return false
+  return classString.trim().split(/\s+/).every(c => {
+    // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
+    const lastColon = c.lastIndexOf(':')
+    const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
+    return utility.startsWith(prefix) || utility.startsWith(`-${prefix}`) ||
+           utility.startsWith(`!${prefix}`) || utility.startsWith(`!-${prefix}`)
+  })
+}
+
+function prefixStaticTemplatePart(text: string, prefix: string): string {
+  const trimmed = text.trim()
+  if (!trimmed || !looksLikeTailwindClasses(trimmed)) return text
+  const leading = text.match(/^(\s*)/)?.[1] || ''
+  const trailing = text.match(/(\s*)$/)?.[1] || ''
+  return leading + prefixClassString(trimmed, prefix) + trailing
+}
+
+function prefixStringLiteralsInExpr(code: string, prefix: string): string {
+  let result = code.replace(/"([^"]*)"/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `"${prefixClassString(classes, prefix)}"`
+  })
+  result = result.replace(/'([^']*)'/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `'${prefixClassString(classes, prefix)}'`
+  })
+  return result
+}
+
+function prefixClassNameExpression(expr: string, prefix: string): string {
+  let result = ''
+  let i = 0
+
+  while (i < expr.length) {
+    if (expr[i] === '`') {
+      // Template literal — process static parts and string literals in expressions
+      result += '`'
+      i++ // past opening backtick
+      let staticText = ''
+
+      while (i < expr.length && expr[i] !== '`') {
+        if (expr[i] === '\\') {
+          staticText += expr[i] + (expr[i + 1] || '')
+          i += 2
+          continue
+        }
+        if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') {
+          // Flush and prefix the static text accumulated so far
+          if (staticText) {
+            result += prefixStaticTemplatePart(staticText, prefix)
+            staticText = ''
+          }
+          // Collect the expression content inside ${...}
+          result += '${'
+          i += 2 // past ${
+          let exprDepth = 1
+          let exprContent = ''
+          while (i < expr.length && exprDepth > 0) {
+            // Skip strings inside the expression to avoid brace-counting issues
+            if (expr[i] === '"') {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== '"') {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === "'") {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== "'") {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === '`') {
+              // Nested template literal — skip as-is
+              exprContent += expr[i]; i++
+              let nestedDepth = 0
+              while (i < expr.length) {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++; if (i < expr.length) { exprContent += expr[i]; i++ }; continue }
+                if (expr[i] === '`' && nestedDepth === 0) { exprContent += expr[i]; i++; break }
+                if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') { nestedDepth++; exprContent += '${'; i += 2; continue }
+                if (expr[i] === '}' && nestedDepth > 0) { nestedDepth-- }
+                exprContent += expr[i]; i++
+              }
+              continue
+            }
+            if (expr[i] === '{') exprDepth++
+            else if (expr[i] === '}') { exprDepth--; if (exprDepth === 0) { i++; break } }
+            exprContent += expr[i]
+            i++
+          }
+          // Prefix string literals within the expression
+          result += prefixStringLiteralsInExpr(exprContent, prefix) + '}'
+          continue
+        }
+        staticText += expr[i]
+        i++
+      }
+      // Flush remaining static text
+      if (staticText) {
+        result += prefixStaticTemplatePart(staticText, prefix)
+      }
+      if (i < expr.length && expr[i] === '`') {
+        result += '`'
+        i++ // past closing backtick
+      }
+    } else if (expr[i] === '"' || expr[i] === "'") {
+      // Bare string literal — prefix if it looks like Tailwind classes
+      const quote = expr[i]
+      const strStart = i
+      i++ // past opening quote
+      let str = ''
+      while (i < expr.length && expr[i] !== quote) {
+        if (expr[i] === '\\') { str += expr[i] + (expr[i + 1] || ''); i += 2; continue }
+        str += expr[i]
+        i++
+      }
+      if (i < expr.length) i++ // past closing quote
+
+      if (str.trim() && looksLikeTailwindClasses(str) && !isAlreadyPrefixed(str, prefix)) {
+        result += quote + prefixClassString(str, prefix) + quote
+      } else {
+        result += expr.slice(strStart, i)
+      }
+    } else {
+      result += expr[i]
+      i++
+    }
+  }
+
+  return result
 }
 
 export function getFeedbackRegistry(prefix: string = ''): Registry {
@@ -590,8 +846,8 @@ export interface TagProps
   label?: string;
 }
 
-const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, label, children, ...props }, ref) => {
+const Tag = React.forwardRef(
+  ({ className, variant, size, label, children, ...props }: TagProps, ref: React.Ref<HTMLSpanElement>) => {
     return (
       <span
         className={cn(tagVariants({ variant, size, className }))}
@@ -599,7 +855,7 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
         {...props}
       >
         {label && <span className="font-semibold mr-1">{label}</span>}
-        <span className="font-normal">{children}</span>
+        <span className="font-normal inline-flex items-center gap-1">{children}</span>
       </span>
     );
   }
@@ -787,7 +1043,7 @@ export interface AlertProps
   defaultOpen?: boolean;
 }
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+const Alert = React.forwardRef(
   (
     {
       className,
@@ -802,8 +1058,8 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       defaultOpen = true,
       children,
       ...props
-    },
-    ref
+    }: AlertProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const isControlled = controlledOpen !== undefined;
@@ -875,10 +1131,7 @@ Alert.displayName = "Alert";
 /**
  * Alert title component for the heading text.
  */
-const AlertTitle = React.forwardRef<
-  HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, children, ...props }, ref) => (
+const AlertTitle = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>, ref: React.Ref<HTMLHeadingElement>) => (
   <h5
     ref={ref}
     className={cn("font-semibold leading-tight tracking-tight", className)}
@@ -892,10 +1145,7 @@ AlertTitle.displayName = "AlertTitle";
 /**
  * Alert description component for the body text.
  */
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
+const AlertDescription = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>, ref: React.Ref<HTMLParagraphElement>) => (
   <p ref={ref} className={cn("m-0 mt-1 text-sm", className)} {...props} />
 ));
 AlertDescription.displayName = "AlertDescription";
@@ -929,10 +1179,7 @@ import { cn } from "../../lib/utils";
 
 const ToastProvider = ToastPrimitives.Provider;
 
-const ToastViewport = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Viewport>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>
->(({ className, ...props }, ref) => (
+const ToastViewport = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Viewport>>) => (
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
@@ -966,11 +1213,8 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
-    VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => {
+const Toast = React.forwardRef(({ className, variant, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Root> &
+    VariantProps<typeof toastVariants>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Root>>) => {
   return (
     <ToastPrimitives.Root
       ref={ref}
@@ -981,10 +1225,7 @@ const Toast = React.forwardRef<
 });
 Toast.displayName = ToastPrimitives.Root.displayName;
 
-const ToastAction = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Action>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>
->(({ className, ...props }, ref) => (
+const ToastAction = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Action>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Action>>) => (
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
@@ -1000,10 +1241,7 @@ const ToastAction = React.forwardRef<
 ));
 ToastAction.displayName = ToastPrimitives.Action.displayName;
 
-const ToastClose = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Close>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>
->(({ className, ...props }, ref) => (
+const ToastClose = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Close>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Close>>) => (
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
@@ -1018,10 +1256,7 @@ const ToastClose = React.forwardRef<
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
 
-const ToastTitle = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Title>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
->(({ className, ...props }, ref) => (
+const ToastTitle = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Title>>) => (
   <ToastPrimitives.Title
     ref={ref}
     className={cn("text-sm font-semibold tracking-[0.014px]", className)}
@@ -1030,10 +1265,7 @@ const ToastTitle = React.forwardRef<
 ));
 ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
-const ToastDescription = React.forwardRef<
-  React.ElementRef<typeof ToastPrimitives.Description>,
-  React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
->(({ className, ...props }, ref) => (
+const ToastDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>, ref: React.Ref<React.ElementRef<typeof ToastPrimitives.Description>>) => (
   <ToastPrimitives.Description
     ref={ref}
     className={cn("text-xs tracking-[0.048px]", className)}
@@ -1482,7 +1714,7 @@ export interface SpinnerProps
   "aria-label"?: string;
 }
 
-const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
+const Spinner = React.forwardRef(
   (
     {
       className,
@@ -1490,8 +1722,8 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
       variant,
       "aria-label": ariaLabel = "Loading",
       ...props
-    },
-    ref
+    }: SpinnerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const strokeWidth = strokeWidths[size || "default"] ?? 3;
     const radius = 10;
@@ -1611,8 +1843,8 @@ export interface SkeletonProps
   height?: number | string;
 }
 
-const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
-  ({ className, variant, shape, width, height, style, ...props }, ref) => {
+const Skeleton = React.forwardRef(
+  ({ className, variant, shape, width, height, style, ...props }: SkeletonProps, ref: React.Ref<HTMLDivElement>) => {
     const dimensionStyle: React.CSSProperties = {
       ...style,
       ...(width !== undefined

@@ -21,8 +21,8 @@ export interface UnreadSeparatorProps
   label?: string;
 }
 
-const UnreadSeparator = React.forwardRef<HTMLDivElement, UnreadSeparatorProps>(
-  ({ className, count, label, ...props }, ref) => (
+const UnreadSeparator = React.forwardRef(
+  ({ className, count, label, ...props }: UnreadSeparatorProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn("flex items-center gap-4 my-2", className)}

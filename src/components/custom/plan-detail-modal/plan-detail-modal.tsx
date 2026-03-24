@@ -17,7 +17,7 @@ const DEFAULT_FEATURES: PlanFeature[] = [
   { name: "Channel(s)", free: "1 Pair(s)", rate: "₹ 300.00" },
 ];
 
-const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
+const PlanDetailModal = React.forwardRef(
   (
     {
       open,
@@ -28,8 +28,8 @@ const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanDetailModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onClose?.();

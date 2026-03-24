@@ -4,8 +4,8 @@ import { Reply, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { CarouselMediaProps } from "./types";
 
-const CarouselMedia = React.forwardRef<HTMLDivElement, CarouselMediaProps>(
-  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }, ref) => {
+const CarouselMedia = React.forwardRef(
+  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }: CarouselMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(

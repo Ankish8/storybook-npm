@@ -48,8 +48,8 @@ export interface TagProps
   label?: string;
 }
 
-const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
-  ({ className, variant, size, label, children, ...props }, ref) => {
+const Tag = React.forwardRef(
+  ({ className, variant, size, label, children, ...props }: TagProps, ref: React.Ref<HTMLSpanElement>) => {
     return (
       <span
         className={cn(tagVariants({ variant, size, className }))}
@@ -57,7 +57,7 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
         {...props}
       >
         {label && <span className="font-semibold mr-1">{label}</span>}
-        <span className="font-normal">{children}</span>
+        <span className="font-normal inline-flex items-center gap-1">{children}</span>
       </span>
     );
   }

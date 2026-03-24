@@ -31,8 +31,8 @@ function getTypeLabel(
  * All displayed data (icon, badge, name, count, last published) comes from the `bot` prop.
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
-export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
+export const BotCard = React.forwardRef(
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }: BotCardProps, ref: React.Ref<HTMLDivElement>) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 
@@ -120,7 +120,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
         </div>
 
         {/* Bot name */}
-        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary truncate mb-1 min-w-0">
+        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary line-clamp-1 mb-1 min-w-0">
           {bot.name}
         </h3>
 
@@ -148,7 +148,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
             </span>
           )}
           {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
-            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
+            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted line-clamp-1">
               {bot.lastPublishedBy
                 ? `${bot.lastPublishedBy} | ${bot.lastPublishedDate ?? "—"}`
                 : bot.lastPublishedDate}

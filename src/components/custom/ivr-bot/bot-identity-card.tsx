@@ -200,7 +200,7 @@ const DEFAULT_LANGUAGE_OPTIONS: LanguageOption[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
+const BotIdentityCard = React.forwardRef(
   (
     {
       data,
@@ -214,8 +214,8 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       playingVoice,
       disabled,
       className,
-    },
-    ref
+    }: BotIdentityCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

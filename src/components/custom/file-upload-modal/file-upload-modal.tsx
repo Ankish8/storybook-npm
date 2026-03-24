@@ -78,7 +78,7 @@ function getTimeRemaining(progress: number) {
     : `${secs} seconds remaining`;
 }
 
-const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
+const FileUploadModal = React.forwardRef(
   (
     {
       open,
@@ -101,8 +101,8 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
       loading = false,
       className,
       ...props
-    },
-    ref
+    }: FileUploadModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [items, setItems] = React.useState<UploadItem[]>([]);
     const fileInputRef = React.useRef<HTMLInputElement>(null);

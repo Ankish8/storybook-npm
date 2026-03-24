@@ -131,6 +131,9 @@ function transformSemanticClassesInContent(content: string): string {
   const cnRegex = /\bcn\s*\(/g
   let cnMatch
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     result += content.slice(lastIndex, cnMatch.index)
     let depth = 1
     let i = cnMatch.index + cnMatch[0].length
@@ -263,9 +266,14 @@ function looksLikeTailwindClasses(str: string): boolean {
   })
 }
 
+// Regex to detect border-WIDTH classes (border, border-2, border-t, border-b-4, border-[3px], etc.)
+const BORDER_WIDTH_RE = /^border(-[trblxy])?(-[0248]|-\[.+\])?$/
+// Regex to detect border-STYLE classes
+const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
+
 // Helper to prefix a single class string
 function prefixClassString(classString: string, prefix: string): string {
-  return classString
+  const prefixed = classString
     .split(' ')
     .map((cls: string) => {
       if (!cls) return cls
@@ -343,7 +351,19 @@ function prefixClassString(classString: string, prefix: string): string {
       // Regular class (including arbitrary values like bg-[#343E55])
       return `${prefix}${cls}`
     })
-    .join(' ')
+
+  // Auto-inject border-solid when border-width classes are present without an explicit border-style.
+  // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
+  // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
+  // the border visible regardless of the host CSS environment.
+  const origClasses = classString.split(' ')
+  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
+  if (hasBorderWidth && !hasBorderStyle) {
+    prefixed.push(`${prefix}border-solid`)
+  }
+
+  return prefixed.join(' ')
 }
 
 // Context-aware Tailwind class prefixing
@@ -372,6 +392,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   let cnMatch
 
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     // Add everything before this cn(
     result += content.slice(lastIndex, cnMatch.index)
 
@@ -427,8 +450,32 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values (only when value is ambiguous)
-  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint']
+  // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
+  // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
+  // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
+  // position, background, top, left, right, bottom, gap, transform, transition, animation,
+  // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  const nonClassKeys = [
+    // HTML attributes
+    'name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint',
+    // CSS style properties (camelCase — safe because they can't be CVA variant keys)
+    'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
+    'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+    'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'lineHeight', 'letterSpacing',
+    'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'borderRadius',
+    'zIndex', 'overflow', 'overflowX', 'overflowY', 'userSelect',
+    'transitionDuration', 'transitionProperty',
+    'boxShadow', 'textShadow', 'outlineOffset',
+    'rowGap', 'columnGap', 'gridTemplateColumns', 'gridTemplateRows',
+    'flexBasis', 'flexGrow', 'flexShrink', 'flexDirection', 'flexWrap',
+    'alignItems', 'alignSelf', 'justifyContent', 'justifyItems',
+    'textAlign', 'textDecoration', 'textTransform', 'whiteSpace', 'wordBreak', 'wordSpacing',
+    'aspectRatio', 'scrollbarWidth', 'scrollBehavior',
+    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
+    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+    'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
+  ]
 
   // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
   function hasObviousTailwindPatterns(value: string): boolean {
@@ -523,7 +570,216 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 6. Handle className={...} JSX expression bindings
+  // Covers template literals, ternaries, and any other expression patterns
+  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
+  // e.g., className={active ? "border-b-2" : "text-muted"}
+  {
+    let jsxResult = ''
+    let jsxLastIndex = 0
+    const jsxRegex = /className\s*=\s*\{/g
+    let jsxMatch
+
+    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
+      if (jsxMatch.index < jsxLastIndex) continue
+
+      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
+
+      // Find the matching closing } by tracking brace depth
+      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
+      let depth = 1
+      let pos = bracePos + 1
+
+      while (pos < content.length && depth > 0) {
+        const ch = content[pos]
+        if (ch === '{') { depth++; pos++; continue }
+        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '"') {
+          pos++
+          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === "'") {
+          pos++
+          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === '`') {
+          pos++
+          let tDepth = 0
+          while (pos < content.length) {
+            if (content[pos] === '\\') { pos += 2; continue }
+            if (content[pos] === '`' && tDepth === 0) { pos++; break }
+            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
+            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            pos++
+          }
+          continue
+        }
+        pos++
+      }
+
+      // Extract expression between { and }
+      const expr = content.slice(bracePos + 1, pos - 1)
+
+      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
+      const exprTrimmed = expr.trimStart()
+      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
+        jsxResult += content.slice(jsxMatch.index, pos)
+        jsxLastIndex = pos
+        continue
+      }
+
+      // Prefix the expression using the className expression handler
+      const prefixedExpr = prefixClassNameExpression(expr, prefix)
+
+      jsxResult += jsxMatch[0] + prefixedExpr + '}'
+      jsxLastIndex = pos
+    }
+    jsxResult += content.slice(jsxLastIndex)
+    content = jsxResult
+  }
+
   return content
+}
+
+function isAlreadyPrefixed(classString: string, prefix: string): boolean {
+  if (!classString.trim()) return false
+  return classString.trim().split(/\s+/).every(c => {
+    // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
+    const lastColon = c.lastIndexOf(':')
+    const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
+    return utility.startsWith(prefix) || utility.startsWith(`-${prefix}`) ||
+           utility.startsWith(`!${prefix}`) || utility.startsWith(`!-${prefix}`)
+  })
+}
+
+function prefixStaticTemplatePart(text: string, prefix: string): string {
+  const trimmed = text.trim()
+  if (!trimmed || !looksLikeTailwindClasses(trimmed)) return text
+  const leading = text.match(/^(\s*)/)?.[1] || ''
+  const trailing = text.match(/(\s*)$/)?.[1] || ''
+  return leading + prefixClassString(trimmed, prefix) + trailing
+}
+
+function prefixStringLiteralsInExpr(code: string, prefix: string): string {
+  let result = code.replace(/"([^"]*)"/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `"${prefixClassString(classes, prefix)}"`
+  })
+  result = result.replace(/'([^']*)'/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `'${prefixClassString(classes, prefix)}'`
+  })
+  return result
+}
+
+function prefixClassNameExpression(expr: string, prefix: string): string {
+  let result = ''
+  let i = 0
+
+  while (i < expr.length) {
+    if (expr[i] === '`') {
+      // Template literal — process static parts and string literals in expressions
+      result += '`'
+      i++ // past opening backtick
+      let staticText = ''
+
+      while (i < expr.length && expr[i] !== '`') {
+        if (expr[i] === '\\') {
+          staticText += expr[i] + (expr[i + 1] || '')
+          i += 2
+          continue
+        }
+        if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') {
+          // Flush and prefix the static text accumulated so far
+          if (staticText) {
+            result += prefixStaticTemplatePart(staticText, prefix)
+            staticText = ''
+          }
+          // Collect the expression content inside ${...}
+          result += '${'
+          i += 2 // past ${
+          let exprDepth = 1
+          let exprContent = ''
+          while (i < expr.length && exprDepth > 0) {
+            // Skip strings inside the expression to avoid brace-counting issues
+            if (expr[i] === '"') {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== '"') {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === "'") {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== "'") {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === '`') {
+              // Nested template literal — skip as-is
+              exprContent += expr[i]; i++
+              let nestedDepth = 0
+              while (i < expr.length) {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++; if (i < expr.length) { exprContent += expr[i]; i++ }; continue }
+                if (expr[i] === '`' && nestedDepth === 0) { exprContent += expr[i]; i++; break }
+                if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') { nestedDepth++; exprContent += '${'; i += 2; continue }
+                if (expr[i] === '}' && nestedDepth > 0) { nestedDepth-- }
+                exprContent += expr[i]; i++
+              }
+              continue
+            }
+            if (expr[i] === '{') exprDepth++
+            else if (expr[i] === '}') { exprDepth--; if (exprDepth === 0) { i++; break } }
+            exprContent += expr[i]
+            i++
+          }
+          // Prefix string literals within the expression
+          result += prefixStringLiteralsInExpr(exprContent, prefix) + '}'
+          continue
+        }
+        staticText += expr[i]
+        i++
+      }
+      // Flush remaining static text
+      if (staticText) {
+        result += prefixStaticTemplatePart(staticText, prefix)
+      }
+      if (i < expr.length && expr[i] === '`') {
+        result += '`'
+        i++ // past closing backtick
+      }
+    } else if (expr[i] === '"' || expr[i] === "'") {
+      // Bare string literal — prefix if it looks like Tailwind classes
+      const quote = expr[i]
+      const strStart = i
+      i++ // past opening quote
+      let str = ''
+      while (i < expr.length && expr[i] !== quote) {
+        if (expr[i] === '\\') { str += expr[i] + (expr[i + 1] || ''); i += 2; continue }
+        str += expr[i]
+        i++
+      }
+      if (i < expr.length) i++ // past closing quote
+
+      if (str.trim() && looksLikeTailwindClasses(str) && !isAlreadyPrefixed(str, prefix)) {
+        result += quote + prefixClassString(str, prefix) + quote
+      } else {
+        result += expr.slice(strStart, i)
+      }
+    } else {
+      result += expr[i]
+      i++
+    }
+  }
+
+  return result
 }
 
 export function getOverlayRegistry(prefix: string = ''): Registry {
@@ -558,10 +814,7 @@ const DialogPortal = DialogPrimitive.Portal;
 
 const DialogClose = DialogPrimitive.Close;
 
-const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+const DialogOverlay = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Overlay>>) => (
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
@@ -619,10 +872,7 @@ const hasDialogDescription = (children: React.ReactNode): boolean => {
   return found;
 };
 
-const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  DialogContentProps
->(({ className, children, size, hideCloseButton = false, ...props }, ref) => {
+const DialogContent = React.forwardRef(({ className, children, size, hideCloseButton = false, ...props }: DialogContentProps, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Content>>) => {
   const hasDescription = hasDialogDescription(children);
 
   return (
@@ -680,10 +930,7 @@ const DialogFooter = ({
 );
 DialogFooter.displayName = "DialogFooter";
 
-const DialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
+const DialogTitle = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Title>>) => (
   <DialogPrimitive.Title
     ref={ref}
     className={cn(
@@ -695,10 +942,7 @@ const DialogTitle = React.forwardRef<
 ));
 DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
-const DialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
+const DialogDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Description>>) => (
   <DialogPrimitive.Description
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
@@ -746,10 +990,7 @@ import { cn } from "../../lib/utils";
 
 const DropdownMenu = DropdownMenuPrimitive.Root;
 
-const DropdownMenuTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
->(({ className, ...props }, ref) => (
+const DropdownMenuTrigger = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Trigger>>) => (
   <DropdownMenuPrimitive.Trigger
     ref={ref}
     className={cn("focus-visible:outline-none focus-visible:ring-0", className)}
@@ -766,12 +1007,9 @@ const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
-const DropdownMenuSubTrigger = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
+const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
     inset?: boolean;
-  }
->(({ className, inset, children, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>>) => (
   <DropdownMenuPrimitive.SubTrigger
     ref={ref}
     className={cn(
@@ -788,10 +1026,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
 DropdownMenuSubTrigger.displayName =
   DropdownMenuPrimitive.SubTrigger.displayName;
 
-const DropdownMenuSubContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
+const DropdownMenuSubContent = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubContent>>) => (
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
@@ -804,10 +1039,7 @@ const DropdownMenuSubContent = React.forwardRef<
 DropdownMenuSubContent.displayName =
   DropdownMenuPrimitive.SubContent.displayName;
 
-const DropdownMenuContent = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Content>>) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
@@ -823,20 +1055,17 @@ const DropdownMenuContent = React.forwardRef<
 ));
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
-const DropdownMenuItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
+const DropdownMenuItem = React.forwardRef(({ className, inset, children, description, suffix, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
     inset?: boolean;
     /** Secondary text displayed below children */
     description?: string;
     /** Content displayed at the right edge of the item */
     suffix?: React.ReactNode;
-  }
->(({ className, inset, children, description, suffix, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Item>>) => (
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       inset && "pl-8",
       className
     )}
@@ -857,15 +1086,12 @@ const DropdownMenuItem = React.forwardRef<
 ));
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
-const DropdownMenuCheckboxItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
+const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checked, description, suffix, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem> & {
     /** Secondary text displayed below children */
     description?: string;
     /** Content displayed at the right edge of the item */
     suffix?: React.ReactNode;
-  }
->(({ className, children, checked, description, suffix, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>>) => (
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
@@ -896,15 +1122,12 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 DropdownMenuCheckboxItem.displayName =
   DropdownMenuPrimitive.CheckboxItem.displayName;
 
-const DropdownMenuRadioItem = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
+const DropdownMenuRadioItem = React.forwardRef(({ className, children, description, suffix, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
     /** Secondary text displayed below children */
     description?: string;
     /** Content displayed at the right edge of the item */
     suffix?: React.ReactNode;
-  }
->(({ className, children, description, suffix, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>>) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
@@ -933,12 +1156,9 @@ const DropdownMenuRadioItem = React.forwardRef<
 ));
 DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName;
 
-const DropdownMenuLabel = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
+const DropdownMenuLabel = React.forwardRef(({ className, inset, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
     inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
+  }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Label>>) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
@@ -951,10 +1171,7 @@ const DropdownMenuLabel = React.forwardRef<
 ));
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName;
 
-const DropdownMenuSeparator = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
->(({ className, ...props }, ref) => (
+const DropdownMenuSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.Separator>>) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
     className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
@@ -1021,10 +1238,7 @@ const Tooltip = TooltipPrimitive.Root;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+const TooltipContent = React.forwardRef(({ className, sideOffset = 4, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Content>>) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       ref={ref}
@@ -1039,10 +1253,7 @@ const TooltipContent = React.forwardRef<
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-const TooltipArrow = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Arrow>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
->(({ className, ...props }, ref) => (
+const TooltipArrow = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>, ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Arrow>>) => (
   <TooltipPrimitive.Arrow
     ref={ref}
     className={cn("fill-semantic-primary", className)}
@@ -1146,10 +1357,7 @@ export interface DeleteConfirmationModalProps {
  * />
  * \`\`\`
  */
-const DeleteConfirmationModal = React.forwardRef<
-  HTMLDivElement,
-  DeleteConfirmationModalProps
->(
+const DeleteConfirmationModal = React.forwardRef(
   (
     {
       open,
@@ -1165,8 +1373,8 @@ const DeleteConfirmationModal = React.forwardRef<
       cancelButtonText = "Cancel",
       trigger,
       className,
-    },
-    ref
+    }: DeleteConfirmationModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [inputValue, setInputValue] = React.useState("");
     const isConfirmEnabled = inputValue === confirmText;
@@ -1334,10 +1542,7 @@ export interface ConfirmationModalProps {
  * />
  * \`\`\`
  */
-const ConfirmationModal = React.forwardRef<
-  HTMLDivElement,
-  ConfirmationModalProps
->(
+const ConfirmationModal = React.forwardRef(
   (
     {
       open,
@@ -1352,8 +1557,8 @@ const ConfirmationModal = React.forwardRef<
       cancelButtonText = "Cancel",
       trigger,
       className,
-    },
-    ref
+    }: ConfirmationModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleConfirm = () => {
       onConfirm?.();
@@ -1485,7 +1690,7 @@ export interface FormModalProps {
  * </FormModal>
  * \`\`\`
  */
-const FormModal = React.forwardRef<HTMLDivElement, FormModalProps>(
+const FormModal = React.forwardRef(
   (
     {
       open,
@@ -1501,8 +1706,8 @@ const FormModal = React.forwardRef<HTMLDivElement, FormModalProps>(
       disableSave = false,
       className,
       size = "sm",
-    },
-    ref
+    }: FormModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleSave = () => {
       onSave?.();

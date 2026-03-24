@@ -11,7 +11,6 @@ import {
   Lock,
   Globe,
   DollarSign,
-  X,
 } from "lucide-react";
 
 const meta: Meta<typeof TextField> = {

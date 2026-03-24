@@ -58,7 +58,7 @@ const teamMonthlyCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For small teams that need a WhatsApp-first plan with missed call automation",
-    headerBgColor: "#d7eae9",
+
     planIcon: (
       <CompactCarIcon className="size-[30px] text-semantic-text-primary" />
     ),
@@ -80,7 +80,7 @@ const teamMonthlyCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For growing businesses that need scalable calling, WhatsApp campaigns, and smarter team routing.",
-    headerBgColor: "#f4f0ec",
+
     planIcon: (
       <SedanCarIcon className="size-[30px] text-semantic-text-primary" />
     ),
@@ -105,7 +105,7 @@ const teamMonthlyCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For teams that need everything in Sedan plus advanced IVR, analytics, and deep integrations.",
-    headerBgColor: "#dbe2fe",
+
     planIcon: (
       <SuvCarIcon className="size-[30px] text-semantic-text-primary" />
     ),
@@ -145,7 +145,7 @@ const aiCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For teams that want a self-learning AI system to run WhatsApp, Calls, and workflows end-to-end.",
-    headerBgColor: "#d7eae9",
+
     features: [
       "AI chatbot for WhatsApp conversations",
       "AI voicebot for inbound calls",
@@ -170,7 +170,7 @@ const aiCards: PricingCardProps[] = [
     planDetails: "3 Users | 12 Month plan",
     description:
       "For large organisations that need AI at scale with custom deployment and governance.",
-    headerBgColor: "#dbe2fe",
+
     features: [
       { text: "Everything in AIO", bold: true },
       "Custom AI setup & architecture",
@@ -670,58 +670,18 @@ export const PlanCardCtaStates: Story = {
   },
 };
 
-// ─── Let Us Drive: Show/Hide Details (dedicated page, single expand) ───────────
-
-export const LetUsDriveShowHideDetailsSingle: Story = {
-  name: "Let Us Drive — Show/Hide Details (Single)",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Dedicated page for the Let us drive section. Clicking \"Show details\" on one card expands only that card (accordion). Click \"Hide details\" to collapse.",
-      },
-    },
-  },
-  args: {
-    title: "Let us drive",
-    tabs: [],
-    headerActions: null,
-    planCards: [],
-    letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveTitle: "Let us drive — Full-service management",
-    letUsDriveExpandMode: "single",
-    onFeatureComparisonClick: fn(),
-  },
-};
-
-// ─── Let Us Drive: Show/Hide Details (dedicated page, expand all) ──────────────
-
-export const LetUsDriveShowHideDetailsAll: Story = {
-  name: "Let Us Drive — Show/Hide Details (Expand All)",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Same section with expand mode \"all\": clicking \"Show details\" on any card expands all three cards. Each \"Hide details\" collapses only that card.",
-      },
-    },
-  },
-  args: {
-    title: "Let us drive",
-    tabs: [],
-    headerActions: null,
-    planCards: [],
-    letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveTitle: "Let us drive — Full-service management",
-    letUsDriveExpandMode: "all",
-    onFeatureComparisonClick: fn(),
-  },
-};
-
-// ─── Full page with Let Us Drive details (single expand) ──────────────────────
+// ─── Full page with Let Us Drive details ─────────────────────────────────────
 
 export const FullPageWithLetUsDriveDetails: Story = {
-  name: "Full Page With Let Us Drive Details (Single)",
+  name: "Full Page With Let Us Drive Details",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Full pricing page with expandable details on the Let us drive cards. Each card manages its own expand/collapse independently.",
+      },
+    },
+  },
   args: {
     tabs,
     activeTab: "team",
@@ -732,6 +692,5 @@ export const FullPageWithLetUsDriveDetails: Story = {
     powerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveCardsWithDetails,
-    letUsDriveExpandMode: "single",
   },
 };

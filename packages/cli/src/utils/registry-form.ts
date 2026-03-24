@@ -131,6 +131,9 @@ function transformSemanticClassesInContent(content: string): string {
   const cnRegex = /\bcn\s*\(/g
   let cnMatch
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     result += content.slice(lastIndex, cnMatch.index)
     let depth = 1
     let i = cnMatch.index + cnMatch[0].length
@@ -263,9 +266,14 @@ function looksLikeTailwindClasses(str: string): boolean {
   })
 }
 
+// Regex to detect border-WIDTH classes (border, border-2, border-t, border-b-4, border-[3px], etc.)
+const BORDER_WIDTH_RE = /^border(-[trblxy])?(-[0248]|-\[.+\])?$/
+// Regex to detect border-STYLE classes
+const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
+
 // Helper to prefix a single class string
 function prefixClassString(classString: string, prefix: string): string {
-  return classString
+  const prefixed = classString
     .split(' ')
     .map((cls: string) => {
       if (!cls) return cls
@@ -343,7 +351,19 @@ function prefixClassString(classString: string, prefix: string): string {
       // Regular class (including arbitrary values like bg-[#343E55])
       return `${prefix}${cls}`
     })
-    .join(' ')
+
+  // Auto-inject border-solid when border-width classes are present without an explicit border-style.
+  // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
+  // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
+  // the border visible regardless of the host CSS environment.
+  const origClasses = classString.split(' ')
+  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
+  if (hasBorderWidth && !hasBorderStyle) {
+    prefixed.push(`${prefix}border-solid`)
+  }
+
+  return prefixed.join(' ')
 }
 
 // Context-aware Tailwind class prefixing
@@ -372,6 +392,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   let cnMatch
 
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     // Add everything before this cn(
     result += content.slice(lastIndex, cnMatch.index)
 
@@ -427,8 +450,32 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values (only when value is ambiguous)
-  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint']
+  // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
+  // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
+  // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
+  // position, background, top, left, right, bottom, gap, transform, transition, animation,
+  // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  const nonClassKeys = [
+    // HTML attributes
+    'name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint',
+    // CSS style properties (camelCase — safe because they can't be CVA variant keys)
+    'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
+    'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+    'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'lineHeight', 'letterSpacing',
+    'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'borderRadius',
+    'zIndex', 'overflow', 'overflowX', 'overflowY', 'userSelect',
+    'transitionDuration', 'transitionProperty',
+    'boxShadow', 'textShadow', 'outlineOffset',
+    'rowGap', 'columnGap', 'gridTemplateColumns', 'gridTemplateRows',
+    'flexBasis', 'flexGrow', 'flexShrink', 'flexDirection', 'flexWrap',
+    'alignItems', 'alignSelf', 'justifyContent', 'justifyItems',
+    'textAlign', 'textDecoration', 'textTransform', 'whiteSpace', 'wordBreak', 'wordSpacing',
+    'aspectRatio', 'scrollbarWidth', 'scrollBehavior',
+    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
+    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+    'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
+  ]
 
   // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
   function hasObviousTailwindPatterns(value: string): boolean {
@@ -523,7 +570,216 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 6. Handle className={...} JSX expression bindings
+  // Covers template literals, ternaries, and any other expression patterns
+  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
+  // e.g., className={active ? "border-b-2" : "text-muted"}
+  {
+    let jsxResult = ''
+    let jsxLastIndex = 0
+    const jsxRegex = /className\s*=\s*\{/g
+    let jsxMatch
+
+    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
+      if (jsxMatch.index < jsxLastIndex) continue
+
+      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
+
+      // Find the matching closing } by tracking brace depth
+      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
+      let depth = 1
+      let pos = bracePos + 1
+
+      while (pos < content.length && depth > 0) {
+        const ch = content[pos]
+        if (ch === '{') { depth++; pos++; continue }
+        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '"') {
+          pos++
+          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === "'") {
+          pos++
+          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === '`') {
+          pos++
+          let tDepth = 0
+          while (pos < content.length) {
+            if (content[pos] === '\\') { pos += 2; continue }
+            if (content[pos] === '`' && tDepth === 0) { pos++; break }
+            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
+            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            pos++
+          }
+          continue
+        }
+        pos++
+      }
+
+      // Extract expression between { and }
+      const expr = content.slice(bracePos + 1, pos - 1)
+
+      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
+      const exprTrimmed = expr.trimStart()
+      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
+        jsxResult += content.slice(jsxMatch.index, pos)
+        jsxLastIndex = pos
+        continue
+      }
+
+      // Prefix the expression using the className expression handler
+      const prefixedExpr = prefixClassNameExpression(expr, prefix)
+
+      jsxResult += jsxMatch[0] + prefixedExpr + '}'
+      jsxLastIndex = pos
+    }
+    jsxResult += content.slice(jsxLastIndex)
+    content = jsxResult
+  }
+
   return content
+}
+
+function isAlreadyPrefixed(classString: string, prefix: string): boolean {
+  if (!classString.trim()) return false
+  return classString.trim().split(/\s+/).every(c => {
+    // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
+    const lastColon = c.lastIndexOf(':')
+    const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
+    return utility.startsWith(prefix) || utility.startsWith(`-${prefix}`) ||
+           utility.startsWith(`!${prefix}`) || utility.startsWith(`!-${prefix}`)
+  })
+}
+
+function prefixStaticTemplatePart(text: string, prefix: string): string {
+  const trimmed = text.trim()
+  if (!trimmed || !looksLikeTailwindClasses(trimmed)) return text
+  const leading = text.match(/^(\s*)/)?.[1] || ''
+  const trailing = text.match(/(\s*)$/)?.[1] || ''
+  return leading + prefixClassString(trimmed, prefix) + trailing
+}
+
+function prefixStringLiteralsInExpr(code: string, prefix: string): string {
+  let result = code.replace(/"([^"]*)"/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `"${prefixClassString(classes, prefix)}"`
+  })
+  result = result.replace(/'([^']*)'/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `'${prefixClassString(classes, prefix)}'`
+  })
+  return result
+}
+
+function prefixClassNameExpression(expr: string, prefix: string): string {
+  let result = ''
+  let i = 0
+
+  while (i < expr.length) {
+    if (expr[i] === '`') {
+      // Template literal — process static parts and string literals in expressions
+      result += '`'
+      i++ // past opening backtick
+      let staticText = ''
+
+      while (i < expr.length && expr[i] !== '`') {
+        if (expr[i] === '\\') {
+          staticText += expr[i] + (expr[i + 1] || '')
+          i += 2
+          continue
+        }
+        if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') {
+          // Flush and prefix the static text accumulated so far
+          if (staticText) {
+            result += prefixStaticTemplatePart(staticText, prefix)
+            staticText = ''
+          }
+          // Collect the expression content inside ${...}
+          result += '${'
+          i += 2 // past ${
+          let exprDepth = 1
+          let exprContent = ''
+          while (i < expr.length && exprDepth > 0) {
+            // Skip strings inside the expression to avoid brace-counting issues
+            if (expr[i] === '"') {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== '"') {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === "'") {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== "'") {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === '`') {
+              // Nested template literal — skip as-is
+              exprContent += expr[i]; i++
+              let nestedDepth = 0
+              while (i < expr.length) {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++; if (i < expr.length) { exprContent += expr[i]; i++ }; continue }
+                if (expr[i] === '`' && nestedDepth === 0) { exprContent += expr[i]; i++; break }
+                if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') { nestedDepth++; exprContent += '${'; i += 2; continue }
+                if (expr[i] === '}' && nestedDepth > 0) { nestedDepth-- }
+                exprContent += expr[i]; i++
+              }
+              continue
+            }
+            if (expr[i] === '{') exprDepth++
+            else if (expr[i] === '}') { exprDepth--; if (exprDepth === 0) { i++; break } }
+            exprContent += expr[i]
+            i++
+          }
+          // Prefix string literals within the expression
+          result += prefixStringLiteralsInExpr(exprContent, prefix) + '}'
+          continue
+        }
+        staticText += expr[i]
+        i++
+      }
+      // Flush remaining static text
+      if (staticText) {
+        result += prefixStaticTemplatePart(staticText, prefix)
+      }
+      if (i < expr.length && expr[i] === '`') {
+        result += '`'
+        i++ // past closing backtick
+      }
+    } else if (expr[i] === '"' || expr[i] === "'") {
+      // Bare string literal — prefix if it looks like Tailwind classes
+      const quote = expr[i]
+      const strStart = i
+      i++ // past opening quote
+      let str = ''
+      while (i < expr.length && expr[i] !== quote) {
+        if (expr[i] === '\\') { str += expr[i] + (expr[i + 1] || ''); i += 2; continue }
+        str += expr[i]
+        i++
+      }
+      if (i < expr.length) i++ // past closing quote
+
+      if (str.trim() && looksLikeTailwindClasses(str) && !isAlreadyPrefixed(str, prefix)) {
+        result += quote + prefixClassString(str, prefix) + quote
+      } else {
+        result += expr.slice(strStart, i)
+      }
+    } else {
+      result += expr[i]
+      i++
+    }
+  }
+
+  return result
 }
 
 export function getFormRegistry(prefix: string = ''): Registry {
@@ -555,9 +811,9 @@ const inputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input hover:border-semantic-border-input-focus focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 hover:border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -584,8 +840,8 @@ export interface InputProps
   showCheckIcon?: boolean;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }, ref) => {
+const Input = React.forwardRef(
+  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }: InputProps, ref: React.Ref<HTMLInputElement>) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     const inputEl = (
@@ -683,10 +939,7 @@ const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 
-const SelectValue = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Value>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>
->(({ className, ...props }, ref) => (
+const SelectValue = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>) => (
   <SelectPrimitive.Value
     ref={ref}
     className={cn("[&[data-placeholder]]:text-semantic-text-muted", className)}
@@ -700,10 +953,7 @@ export interface SelectTriggerProps
     React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
     VariantProps<typeof selectTriggerVariants> {}
 
-const SelectTrigger = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Trigger>,
-  SelectTriggerProps
->(({ className, state, children, ...props }, ref) => (
+const SelectTrigger = React.forwardRef(({ className, state, children, ...props }: SelectTriggerProps, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Trigger>>) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(selectTriggerVariants({ state, className }))}
@@ -717,10 +967,7 @@ const SelectTrigger = React.forwardRef<
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
-const SelectScrollUpButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
->(({ className, ...props }, ref) => (
+const SelectScrollUpButton = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollUpButton>>) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
     className={cn(
@@ -734,10 +981,7 @@ const SelectScrollUpButton = React.forwardRef<
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
 
-const SelectScrollDownButton = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.ScrollDownButton>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>
->(({ className, ...props }, ref) => (
+const SelectScrollDownButton = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollDownButton>>) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
     className={cn(
@@ -791,10 +1035,7 @@ function useUnlockBodyScroll() {
   }, []);
 }
 
-const SelectContent = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = "popper", ...props }, ref) => {
+const SelectContent = React.forwardRef(({ className, children, position = "popper", ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>) => {
   useUnlockBodyScroll();
 
   return (
@@ -832,10 +1073,7 @@ const SelectContent = React.forwardRef<
 });
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
-const SelectLabel = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
+const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Label>>) => (
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
@@ -847,10 +1085,7 @@ const SelectLabel = React.forwardRef<
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
-const SelectItem = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+const SelectItem = React.forwardRef(({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
@@ -871,10 +1106,7 @@ const SelectItem = React.forwardRef<
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
-const SelectSeparator = React.forwardRef<
-  React.ElementRef<typeof SelectPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
+const SelectSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>) => (
   <SelectPrimitive.Separator
     ref={ref}
     className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
@@ -1005,10 +1237,7 @@ export interface CheckboxProps
   separateLabel?: boolean;
 }
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  CheckboxProps
->(
+const Checkbox = React.forwardRef(
   (
     {
       className,
@@ -1021,8 +1250,8 @@ const Checkbox = React.forwardRef<
       id,
       disabled,
       ...props
-    },
-    ref
+    }: CheckboxProps,
+    ref: React.Ref<React.ElementRef<typeof CheckboxPrimitive.Root>>
   ) => {
     const checkbox = (
       <CheckboxPrimitive.Root
@@ -1226,13 +1455,10 @@ export interface SwitchProps
   labelPosition?: "left" | "right";
 }
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  SwitchProps
->(
+const Switch = React.forwardRef(
   (
-    { className, size, label, labelPosition = "right", disabled, ...props },
-    ref
+    { className, size, label, labelPosition = "right", disabled, ...props }: SwitchProps,
+    ref: React.Ref<React.ElementRef<typeof SwitchPrimitives.Root>>
   ) => {
     const switchElement = (
       <SwitchPrimitives.Root
@@ -1303,16 +1529,7 @@ export { Switch, switchVariants };
       files: [
         {
           name: "text-field.tsx",
-          content: prefixTailwindClasses(`import {
-  forwardRef,
-  useRef,
-  useCallback,
-  useState,
-  useId,
-  type ChangeEvent,
-  type ReactNode,
-  type ComponentProps,
-} from "react";
+          content: prefixTailwindClasses(`import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2, X } from "lucide-react";
 
@@ -1327,9 +1544,9 @@ const textFieldContainerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
@@ -1352,9 +1569,9 @@ const textFieldInputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       size: {
         default: "h-[42px] px-4 py-2 text-base file:text-base",
@@ -1380,7 +1597,7 @@ const textFieldInputVariants = cva(
  */
 export interface TextFieldProps
   extends
-    Omit<ComponentProps<"input">, "size">,
+    Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
   /** Size of the text field — \`default\` (42px) or \`sm\` (36px, compact) */
   size?: "default" | "sm";
@@ -1393,9 +1610,9 @@ export interface TextFieldProps
   /** Error message - shows error state with red styling */
   error?: string;
   /** Icon displayed on the left inside the input */
-  leftIcon?: ReactNode;
+  leftIcon?: React.ReactNode;
   /** Icon displayed on the right inside the input */
-  rightIcon?: ReactNode;
+  rightIcon?: React.ReactNode;
   /** Text prefix inside input (e.g., "https://") */
   prefix?: string;
   /** Text suffix inside input (e.g., ".com") */
@@ -1416,7 +1633,7 @@ export interface TextFieldProps
   inputContainerClassName?: string;
 }
 
-const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+const TextField = React.forwardRef(
   (
     {
       className,
@@ -1446,22 +1663,22 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       id,
       type,
       ...props
-    },
-    ref
+    }: TextFieldProps,
+    ref: React.ForwardedRef<HTMLInputElement>
   ) => {
     // Internal ref for programmatic control (e.g., clearable)
-    const internalRef = useRef<HTMLInputElement>(null);
-    const mergedRef = useCallback(
+    const internalRef = React.useRef<HTMLInputElement | null>(null);
+    const mergedRef = React.useCallback(
       (node: HTMLInputElement | null) => {
         internalRef.current = node;
         if (typeof ref === "function") ref(node);
-        else if (ref) ref.current = node;
+        else if (ref && typeof ref === "object") ref.current = node;
       },
       [ref]
     );
 
     // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = useState(
+    const [internalValue, setInternalValue] = React.useState(
       defaultValue ?? ""
     );
 
@@ -1473,7 +1690,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
@@ -1500,7 +1717,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const charCount = String(currentValue).length;
 
     // Generate unique IDs for accessibility
-    const generatedId = useId();
+    const generatedId = React.useId();
     const inputId = id || generatedId;
     const helperId = \`\${inputId}-helper\`;
     const errorId = \`\${inputId}-error\`;
@@ -1619,12 +1836,12 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs text-semantic-error-primary"
+                className="text-sm text-semantic-error-primary"
               >
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-semantic-text-muted">
+              <span id={helperId} className="text-sm text-semantic-text-muted">
                 {helperText}
               </span>
             ) : (
@@ -1633,7 +1850,7 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             {showCount && maxLength && (
               <span
                 className={cn(
-                  "text-xs",
+                  "text-sm",
                   charCount > maxLength
                     ? "text-semantic-error-primary"
                     : "text-semantic-text-muted"
@@ -1651,6 +1868,225 @@ const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
 TextField.displayName = "TextField";
 
 export { TextField, textFieldContainerVariants, textFieldInputVariants };
+`, prefix),
+        },
+      ],
+    },
+    "textarea": {
+      name: "textarea",
+      description: "A multi-line text input with label, error state, helper text, character counter, and resize control",
+      category: "form",
+      dependencies: [
+            "class-variance-authority",
+            "clsx",
+            "tailwind-merge"
+      ],
+      files: [
+        {
+          name: "textarea.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+
+import { cn } from "../../lib/utils";
+
+/**
+ * Textarea variants for different visual states
+ */
+const textareaVariants = cva(
+  "w-full rounded bg-semantic-bg-primary text-semantic-text-primary outline-none transition-all placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  {
+    variants: {
+      state: {
+        default:
+          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error:
+          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      },
+      size: {
+        default: "px-4 py-2.5 text-base",
+        sm: "px-3 py-2 text-sm",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+      size: "default",
+    },
+  }
+);
+
+/**
+ * A multi-line text input with label, error state, helper text, character counter, and resize control.
+ *
+ * @example
+ * \`\`\`tsx
+ * <Textarea label="Description" placeholder="Enter description" />
+ * <Textarea label="Notes" error="Too short" showCount maxLength={500} />
+ * <Textarea label="JSON" rows={8} resize="vertical" />
+ * \`\`\`
+ */
+export interface TextareaProps
+  extends Omit<React.ComponentProps<"textarea">, "size">,
+    VariantProps<typeof textareaVariants> {
+  /** Size of the textarea — \`default\` or \`sm\` (compact) */
+  size?: "default" | "sm";
+  /** Label text displayed above the textarea */
+  label?: string;
+  /** Shows red asterisk next to label when true */
+  required?: boolean;
+  /** Helper text displayed below the textarea */
+  helperText?: string;
+  /** Error message — shows error state with red styling */
+  error?: string;
+  /** Shows character count when maxLength is set */
+  showCount?: boolean;
+  /** Controls CSS resize behavior. Defaults to "none" */
+  resize?: "none" | "vertical" | "horizontal" | "both";
+  /** Additional class for the wrapper container */
+  wrapperClassName?: string;
+  /** Additional class for the label */
+  labelClassName?: string;
+}
+
+const Textarea = React.forwardRef(
+  (
+    {
+      className,
+      wrapperClassName,
+      labelClassName,
+      state,
+      size,
+      label,
+      required,
+      helperText,
+      error,
+      showCount,
+      resize = "none",
+      maxLength,
+      rows = 4,
+      value,
+      defaultValue,
+      onChange,
+      disabled,
+      id,
+      ...props
+    }: TextareaProps,
+    ref: React.ForwardedRef<HTMLTextAreaElement>
+  ) => {
+    // Internal state for character count in uncontrolled mode
+    const [internalValue, setInternalValue] = React.useState(
+      defaultValue ?? ""
+    );
+
+    // Determine if controlled
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
+
+    // Derive state from props
+    const derivedState = error ? "error" : (state ?? "default");
+
+    // Handle change for both controlled and uncontrolled
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (!isControlled) {
+        setInternalValue(e.target.value);
+      }
+      onChange?.(e);
+    };
+
+    // Character count
+    const charCount = String(currentValue).length;
+
+    // Generate unique IDs for accessibility
+    const generatedId = React.useId();
+    const textareaId = id || generatedId;
+    const helperId = \`\${textareaId}-helper\`;
+    const errorId = \`\${textareaId}-error\`;
+
+    // Determine aria-describedby
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
+
+    // Resize class map
+    const resizeClasses: Record<string, string> = {
+      none: "resize-none",
+      vertical: "resize-y",
+      horizontal: "resize-x",
+      both: "resize",
+    };
+
+    return (
+      <div className={cn("flex flex-col gap-1", wrapperClassName)}>
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={textareaId}
+            className={cn(
+              "text-sm font-medium text-semantic-text-muted",
+              labelClassName
+            )}
+          >
+            {label}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
+          </label>
+        )}
+
+        {/* Textarea */}
+        <textarea
+          ref={ref}
+          id={textareaId}
+          rows={rows}
+          className={cn(
+            textareaVariants({ state: derivedState, size, className }),
+            resizeClasses[resize]
+          )}
+          disabled={disabled}
+          maxLength={maxLength}
+          value={isControlled ? value : undefined}
+          defaultValue={!isControlled ? defaultValue : undefined}
+          onChange={handleChange}
+          aria-invalid={!!error}
+          aria-describedby={ariaDescribedBy}
+          {...props}
+        />
+
+        {/* Helper text / Error message / Character count */}
+        {(error || helperText || (showCount && maxLength)) && (
+          <div className="flex justify-between items-start gap-2">
+            {error ? (
+              <span
+                id={errorId}
+                className="text-sm text-semantic-error-primary"
+              >
+                {error}
+              </span>
+            ) : helperText ? (
+              <span id={helperId} className="text-sm text-semantic-text-muted">
+                {helperText}
+              </span>
+            ) : (
+              <span />
+            )}
+            {showCount && maxLength && (
+              <span
+                className={cn(
+                  "text-sm",
+                  charCount > maxLength
+                    ? "text-semantic-error-primary"
+                    : "text-semantic-text-muted"
+                )}
+              >
+                {charCount}/{maxLength}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+Textarea.displayName = "Textarea";
+
+export { Textarea, textareaVariants };
 `, prefix),
         },
       ],
@@ -1721,7 +2157,7 @@ export interface ReadableFieldProps
  * />
  * \`\`\`
  */
-export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps>(
+export const ReadableField = React.forwardRef(
   (
     {
       label,
@@ -1733,8 +2169,8 @@ export const ReadableField = React.forwardRef<HTMLDivElement, ReadableFieldProps
       className,
       inputClassName,
       ...props
-    },
-    ref
+    }: ReadableFieldProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [copied, setCopied] = React.useState(false);
     const [isVisible, setIsVisible] = React.useState(!secret);
@@ -1988,7 +2424,7 @@ export interface SelectFieldProps {
  * />
  * \`\`\`
  */
-const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
+const SelectField = React.forwardRef(
   (
     {
       label,
@@ -2011,8 +2447,8 @@ const SelectField = React.forwardRef<HTMLButtonElement, SelectFieldProps>(
       labelClassName,
       id,
       name,
-    },
-    ref
+    }: SelectFieldProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for search
     const [searchQuery, setSearchQuery] = React.useState("");
@@ -2340,7 +2776,7 @@ export interface MultiSelectProps extends VariantProps<
  * />
  * \`\`\`
  */
-const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
+const MultiSelect = React.forwardRef(
   (
     {
       label,
@@ -2363,8 +2799,8 @@ const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
       state,
       id,
       name,
-    },
-    ref
+    }: MultiSelectProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => {
     // Internal state for selected values (uncontrolled mode)
     const [internalValue, setInternalValue] =
@@ -2751,7 +3187,7 @@ export interface CreatableSelectProps
   maxLength?: number
 }
 
-const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
+const CreatableSelect = React.forwardRef(
   (
     {
       className,
@@ -2764,8 +3200,8 @@ const CreatableSelect = React.forwardRef<HTMLDivElement, CreatableSelectProps>(
       disabled = false,
       maxLength,
       ...props
-    },
-    ref
+    }: CreatableSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [open, setOpen] = React.useState(false)
     const [search, setSearch] = React.useState("")
@@ -3100,10 +3536,7 @@ export interface CreatableMultiSelectProps
   maxLengthPerItem?: number
 }
 
-const CreatableMultiSelect = React.forwardRef<
-  HTMLDivElement,
-  CreatableMultiSelectProps
->(
+const CreatableMultiSelect = React.forwardRef(
   (
     {
       className,
@@ -3118,8 +3551,8 @@ const CreatableMultiSelect = React.forwardRef<
       maxItems,
       maxLengthPerItem,
       ...props
-    },
-    ref
+    }: CreatableMultiSelectProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [isOpen, setIsOpen] = React.useState(false)
     const [inputValue, setInputValue] = React.useState("")

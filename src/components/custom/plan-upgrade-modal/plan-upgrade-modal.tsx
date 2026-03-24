@@ -44,7 +44,7 @@ const renderOptionIcon = (icon: BillingCycleOption["icon"]) => {
   return icon;
 };
 
-const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>(
+const PlanUpgradeModal = React.forwardRef(
   (
     {
       open,
@@ -61,8 +61,8 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const initialOptionId = defaultSelectedOptionId ?? options[0]?.id;
     const [internalSelectedOptionId, setInternalSelectedOptionId] = React.useState<

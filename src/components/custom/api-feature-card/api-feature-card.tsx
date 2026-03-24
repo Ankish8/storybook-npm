@@ -47,10 +47,7 @@ export interface ApiFeatureCardProps
  * />
  * ```
  */
-export const ApiFeatureCard = React.forwardRef<
-  HTMLDivElement,
-  ApiFeatureCardProps
->(
+export const ApiFeatureCard = React.forwardRef(
   (
     {
       icon,
@@ -63,8 +60,8 @@ export const ApiFeatureCard = React.forwardRef<
       capabilitiesLabel = "Key Capabilities",
       className,
       ...props
-    },
-    ref
+    }: ApiFeatureCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

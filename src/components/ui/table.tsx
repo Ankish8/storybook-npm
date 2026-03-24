@@ -52,8 +52,8 @@ export interface TableProps
   wrapContent?: boolean;
 }
 
-const Table = React.forwardRef<HTMLTableElement, TableProps>(
-  ({ className, size, withoutBorder, wrapContent, ...props }, ref) => (
+const Table = React.forwardRef(
+  ({ className, size, withoutBorder, wrapContent, ...props }: TableProps, ref: React.Ref<HTMLTableElement>) => (
     <div
       className={cn(
         "relative w-full overflow-auto",
@@ -74,10 +74,7 @@ const Table = React.forwardRef<HTMLTableElement, TableProps>(
 );
 Table.displayName = "Table";
 
-const TableHeader = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
+const TableHeader = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>, ref: React.Ref<HTMLTableSectionElement>) => (
   <thead
     ref={ref}
     className={cn("bg-[var(--color-neutral-100)] [&_tr]:border-b", className)}
@@ -96,8 +93,8 @@ export interface TableBodyProps
   loadingColumns?: number;
 }
 
-const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
-  ({ className, isLoading, loadingRows = 5, loadingColumns = 5, children, ...props }, ref) => (
+const TableBody = React.forwardRef(
+  ({ className, isLoading, loadingRows = 5, loadingColumns = 5, children, ...props }: TableBodyProps, ref: React.Ref<HTMLTableSectionElement>) => (
     <tbody
       ref={ref}
       className={cn("[&_tr:last-child]:border-0", className)}
@@ -113,10 +110,7 @@ const TableBody = React.forwardRef<HTMLTableSectionElement, TableBodyProps>(
 );
 TableBody.displayName = "TableBody";
 
-const TableFooter = React.forwardRef<
-  HTMLTableSectionElement,
-  React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
+const TableFooter = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>, ref: React.Ref<HTMLTableSectionElement>) => (
   <tfoot
     ref={ref}
     className={cn(
@@ -133,8 +127,8 @@ export interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>
   highlighted?: boolean;
 }
 
-const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ className, highlighted, ...props }, ref) => (
+const TableRow = React.forwardRef(
+  ({ className, highlighted, ...props }: TableRowProps, ref: React.Ref<HTMLTableRowElement>) => (
     <tr
       ref={ref}
       className={cn(
@@ -159,10 +153,10 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
   infoTooltip?: string;
 }
 
-const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+const TableHead = React.forwardRef(
   (
-    { className, sticky, sortDirection, infoTooltip, children, ...props },
-    ref
+    { className, sticky, sortDirection, infoTooltip, children, ...props }: TableHeadProps,
+    ref: React.Ref<HTMLTableCellElement>
   ) => (
     <th
       ref={ref}
@@ -200,8 +194,8 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
   sticky?: boolean;
 }
 
-const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
-  ({ className, sticky, ...props }, ref) => (
+const TableCell = React.forwardRef(
+  ({ className, sticky, ...props }: TableCellProps, ref: React.Ref<HTMLTableCellElement>) => (
     <td
       ref={ref}
       className={cn(
@@ -215,10 +209,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
 );
 TableCell.displayName = "TableCell";
 
-const TableCaption = React.forwardRef<
-  HTMLTableCaptionElement,
-  React.HTMLAttributes<HTMLTableCaptionElement>
->(({ className, ...props }, ref) => (
+const TableCaption = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableCaptionElement>, ref: React.Ref<HTMLTableCaptionElement>) => (
   <caption
     ref={ref}
     className={cn("mt-4 text-sm text-semantic-text-muted", className)}
@@ -307,8 +298,8 @@ export interface TableToggleProps extends Omit<SwitchProps, "size"> {
   size?: "sm" | "default";
 }
 
-const TableToggle = React.forwardRef<HTMLButtonElement, TableToggleProps>(
-  ({ size = "sm", ...props }, ref) => (
+const TableToggle = React.forwardRef(
+  ({ size = "sm", ...props }: TableToggleProps, ref: React.Ref<HTMLButtonElement>) => (
     <Switch ref={ref} size={size} {...props} />
   )
 );

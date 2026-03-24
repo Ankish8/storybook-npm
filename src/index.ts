@@ -87,6 +87,10 @@ export {
 } from "./components/ui/text-field";
 export type { TextFieldProps } from "./components/ui/text-field";
 
+// Textarea
+export { Textarea, textareaVariants } from "./components/ui/textarea";
+export type { TextareaProps } from "./components/ui/textarea";
+
 // Select
 export {
   Select,
@@ -346,6 +350,10 @@ export type { DateRangeModalProps } from "./components/custom/date-range-modal/i
 // ChatListItem (Custom)
 export { ChatListItem } from "./components/custom/chat-list-item";
 export type { ChatListItemProps, MessageStatus, MessageType } from "./components/custom/chat-list-item";
+
+// ChatTimelineDivider (Custom)
+export { ChatTimelineDivider } from "./components/custom/chat-timeline-divider";
+export type { ChatTimelineDividerProps, ChatTimelineDividerVariant } from "./components/custom/chat-timeline-divider";
 
 // Bots (Custom)
 export {

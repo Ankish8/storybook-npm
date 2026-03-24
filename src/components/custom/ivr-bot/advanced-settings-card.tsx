@@ -105,7 +105,7 @@ function NumberSpinner({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCardProps>(
+const AdvancedSettingsCard = React.forwardRef(
   (
     {
       data,
@@ -116,8 +116,8 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
       callEndThresholdMax = 10,
       disabled,
       className,
-    },
-    ref
+    }: AdvancedSettingsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

@@ -58,7 +58,7 @@ export interface PanelProps
  * </Panel>
  * ```
  */
-const Panel = React.forwardRef<HTMLElement, PanelProps>(
+const Panel = React.forwardRef(
   (
     {
       open = true,
@@ -72,8 +72,8 @@ const Panel = React.forwardRef<HTMLElement, PanelProps>(
       "aria-label": ariaLabel,
       onKeyDown,
       ...props
-    },
-    ref
+    }: PanelProps,
+    ref: React.Ref<HTMLElement>
   ) => {
     const resolvedSize = size ?? "default";
     const widthClass = panelWidths[resolvedSize];

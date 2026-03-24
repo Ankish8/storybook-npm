@@ -30,7 +30,7 @@ import type { ChatComposerProps } from "./types";
  * />
  * ```
  */
-const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
+const ChatComposer = React.forwardRef(
   (
     {
       className,
@@ -54,8 +54,8 @@ const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       expiredMessage = "This chat has expired. Send a template to continue.",
       onTemplateClick,
       ...props
-    },
-    ref
+    }: ChatComposerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 

@@ -9,15 +9,15 @@ import type { CreateBotFlowProps } from "./types";
  * Create bot flow: "Create new bot" card + Create Bot modal. No header (title/subtitle/search).
  * Use when you want the create-bot experience without the list header.
  */
-export const CreateBotFlow = React.forwardRef<HTMLDivElement, CreateBotFlowProps>(
+export const CreateBotFlow = React.forwardRef(
   (
     {
       createCardLabel = "Create new bot",
       onSubmit,
       className,
       ...props
-    },
-    ref
+    }: CreateBotFlowProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [modalOpen, setModalOpen] = React.useState(false);
 

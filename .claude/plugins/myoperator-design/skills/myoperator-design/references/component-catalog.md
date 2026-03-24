@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 69 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 71 components across 7 categories.
 
 ## Quick Reference
 
@@ -23,6 +23,7 @@
 | Checkbox | form | `npx myoperator-ui add checkbox` |
 | Switch | form | `npx myoperator-ui add switch` |
 | TextField | form | `npx myoperator-ui add text-field` |
+| Textarea | form | `npx myoperator-ui add textarea` |
 | SelectField | form | `npx myoperator-ui add select-field` |
 | MultiSelect | form | `npx myoperator-ui add multi-select` |
 | ReadableField | form | `npx myoperator-ui add readable-field` |
@@ -48,6 +49,7 @@
 | CarouselMedia | custom | `npx myoperator-ui add carousel-media` |
 | ChatBubble | custom | `npx myoperator-ui add chat-bubble` |
 | ChatComposer | custom | `npx myoperator-ui add chat-composer` |
+| ChatTimelineDivider | custom | `npx myoperator-ui add chat-timeline-divider` |
 | DocMedia | custom | `npx myoperator-ui add doc-media` |
 | EventSelector | custom | `npx myoperator-ui add event-selector` |
 | KeyValueInput | custom | `npx myoperator-ui add key-value-input` |
@@ -336,6 +338,13 @@ import { Mail } from "lucide-react"
 ```jsx
 <TextField label="Username" error="Username is already taken" />
 ```
+
+---
+
+### Textarea
+> A multi-line text input with label, error state, helper text, character counter, and resize control
+
+**Install**: `npx myoperator-ui add textarea`
 
 ---
 
@@ -667,6 +676,14 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add chat-composer`
 **Requires**: `button`, `reply-quote` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatTimelineDivider
+> A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants
+
+**Install**: `npx myoperator-ui add chat-timeline-divider`
 **Type**: Multi-file component
 
 ---

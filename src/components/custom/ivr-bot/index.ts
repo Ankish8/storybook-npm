@@ -32,4 +32,7 @@ export type {
   HttpMethod,
   FunctionTabType,
   SelectOption,
+  VariableItem,
+  VariableGroup,
+  VariableFormData,
 } from "./types";

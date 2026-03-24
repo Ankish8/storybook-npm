@@ -67,7 +67,7 @@ export interface BadgeProps
   asChild?: boolean;
 }
 
-const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+const Badge = React.forwardRef(
   (
     {
       className,
@@ -78,8 +78,8 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       asChild = false,
       children,
       ...props
-    },
-    ref
+    }: BadgeProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const Comp = asChild ? Slot : "div";
 

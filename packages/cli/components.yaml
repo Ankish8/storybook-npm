@@ -33,6 +33,7 @@ categories:
       - checkbox
       - switch
       - text-field
+      - textarea
       - select-field
       - multi-select
       - readable-field
@@ -78,6 +79,7 @@ categories:
       - carousel-media
       - chat-bubble
       - chat-composer
+      - chat-timeline-divider
       - doc-media
       - event-selector
       - key-value-input
@@ -246,6 +248,14 @@ components:
       - "clsx"
       - "tailwind-merge"
       - "lucide-react"
+
+  textarea:
+    description: "A multi-line text input with label, error state, helper text, character counter, and resize control"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge"
 
   readable-field:
     description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys."
@@ -928,6 +938,19 @@ components:
       - "index.ts"
     mainFile: "chat-bubble.tsx"
 
+  chat-timeline-divider:
+    description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    isMultiFile: true
+    directory: "chat-timeline-divider"
+    files:
+      - "chat-timeline-divider.tsx"
+      - "index.ts"
+    mainFile: "chat-timeline-divider.tsx"
+
   chat-composer:
     description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button"
     category: custom
@@ -997,6 +1020,9 @@ components:
       - page-header
       - tag
       - file-upload-modal
+      - form-modal
+      - text-field
+      - textarea
     isMultiFile: true
     directory: "ivr-bot"
     files:

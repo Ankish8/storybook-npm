@@ -131,6 +131,9 @@ function transformSemanticClassesInContent(content: string): string {
   const cnRegex = /\bcn\s*\(/g
   let cnMatch
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     result += content.slice(lastIndex, cnMatch.index)
     let depth = 1
     let i = cnMatch.index + cnMatch[0].length
@@ -263,9 +266,14 @@ function looksLikeTailwindClasses(str: string): boolean {
   })
 }
 
+// Regex to detect border-WIDTH classes (border, border-2, border-t, border-b-4, border-[3px], etc.)
+const BORDER_WIDTH_RE = /^border(-[trblxy])?(-[0248]|-\[.+\])?$/
+// Regex to detect border-STYLE classes
+const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
+
 // Helper to prefix a single class string
 function prefixClassString(classString: string, prefix: string): string {
-  return classString
+  const prefixed = classString
     .split(' ')
     .map((cls: string) => {
       if (!cls) return cls
@@ -343,7 +351,19 @@ function prefixClassString(classString: string, prefix: string): string {
       // Regular class (including arbitrary values like bg-[#343E55])
       return `${prefix}${cls}`
     })
-    .join(' ')
+
+  // Auto-inject border-solid when border-width classes are present without an explicit border-style.
+  // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
+  // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
+  // the border visible regardless of the host CSS environment.
+  const origClasses = classString.split(' ')
+  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
+  if (hasBorderWidth && !hasBorderStyle) {
+    prefixed.push(`${prefix}border-solid`)
+  }
+
+  return prefixed.join(' ')
 }
 
 // Context-aware Tailwind class prefixing
@@ -372,6 +392,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   let cnMatch
 
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     // Add everything before this cn(
     result += content.slice(lastIndex, cnMatch.index)
 
@@ -427,8 +450,32 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values (only when value is ambiguous)
-  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint']
+  // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
+  // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
+  // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
+  // position, background, top, left, right, bottom, gap, transform, transition, animation,
+  // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  const nonClassKeys = [
+    // HTML attributes
+    'name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint',
+    // CSS style properties (camelCase — safe because they can't be CVA variant keys)
+    'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
+    'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+    'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'lineHeight', 'letterSpacing',
+    'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'borderRadius',
+    'zIndex', 'overflow', 'overflowX', 'overflowY', 'userSelect',
+    'transitionDuration', 'transitionProperty',
+    'boxShadow', 'textShadow', 'outlineOffset',
+    'rowGap', 'columnGap', 'gridTemplateColumns', 'gridTemplateRows',
+    'flexBasis', 'flexGrow', 'flexShrink', 'flexDirection', 'flexWrap',
+    'alignItems', 'alignSelf', 'justifyContent', 'justifyItems',
+    'textAlign', 'textDecoration', 'textTransform', 'whiteSpace', 'wordBreak', 'wordSpacing',
+    'aspectRatio', 'scrollbarWidth', 'scrollBehavior',
+    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
+    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+    'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
+  ]
 
   // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
   function hasObviousTailwindPatterns(value: string): boolean {
@@ -523,7 +570,216 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 6. Handle className={...} JSX expression bindings
+  // Covers template literals, ternaries, and any other expression patterns
+  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
+  // e.g., className={active ? "border-b-2" : "text-muted"}
+  {
+    let jsxResult = ''
+    let jsxLastIndex = 0
+    const jsxRegex = /className\s*=\s*\{/g
+    let jsxMatch
+
+    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
+      if (jsxMatch.index < jsxLastIndex) continue
+
+      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
+
+      // Find the matching closing } by tracking brace depth
+      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
+      let depth = 1
+      let pos = bracePos + 1
+
+      while (pos < content.length && depth > 0) {
+        const ch = content[pos]
+        if (ch === '{') { depth++; pos++; continue }
+        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '"') {
+          pos++
+          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === "'") {
+          pos++
+          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === '`') {
+          pos++
+          let tDepth = 0
+          while (pos < content.length) {
+            if (content[pos] === '\\') { pos += 2; continue }
+            if (content[pos] === '`' && tDepth === 0) { pos++; break }
+            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
+            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            pos++
+          }
+          continue
+        }
+        pos++
+      }
+
+      // Extract expression between { and }
+      const expr = content.slice(bracePos + 1, pos - 1)
+
+      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
+      const exprTrimmed = expr.trimStart()
+      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
+        jsxResult += content.slice(jsxMatch.index, pos)
+        jsxLastIndex = pos
+        continue
+      }
+
+      // Prefix the expression using the className expression handler
+      const prefixedExpr = prefixClassNameExpression(expr, prefix)
+
+      jsxResult += jsxMatch[0] + prefixedExpr + '}'
+      jsxLastIndex = pos
+    }
+    jsxResult += content.slice(jsxLastIndex)
+    content = jsxResult
+  }
+
   return content
+}
+
+function isAlreadyPrefixed(classString: string, prefix: string): boolean {
+  if (!classString.trim()) return false
+  return classString.trim().split(/\s+/).every(c => {
+    // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
+    const lastColon = c.lastIndexOf(':')
+    const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
+    return utility.startsWith(prefix) || utility.startsWith(`-${prefix}`) ||
+           utility.startsWith(`!${prefix}`) || utility.startsWith(`!-${prefix}`)
+  })
+}
+
+function prefixStaticTemplatePart(text: string, prefix: string): string {
+  const trimmed = text.trim()
+  if (!trimmed || !looksLikeTailwindClasses(trimmed)) return text
+  const leading = text.match(/^(\s*)/)?.[1] || ''
+  const trailing = text.match(/(\s*)$/)?.[1] || ''
+  return leading + prefixClassString(trimmed, prefix) + trailing
+}
+
+function prefixStringLiteralsInExpr(code: string, prefix: string): string {
+  let result = code.replace(/"([^"]*)"/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `"${prefixClassString(classes, prefix)}"`
+  })
+  result = result.replace(/'([^']*)'/g, (m: string, classes: string) => {
+    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    return `'${prefixClassString(classes, prefix)}'`
+  })
+  return result
+}
+
+function prefixClassNameExpression(expr: string, prefix: string): string {
+  let result = ''
+  let i = 0
+
+  while (i < expr.length) {
+    if (expr[i] === '`') {
+      // Template literal — process static parts and string literals in expressions
+      result += '`'
+      i++ // past opening backtick
+      let staticText = ''
+
+      while (i < expr.length && expr[i] !== '`') {
+        if (expr[i] === '\\') {
+          staticText += expr[i] + (expr[i + 1] || '')
+          i += 2
+          continue
+        }
+        if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') {
+          // Flush and prefix the static text accumulated so far
+          if (staticText) {
+            result += prefixStaticTemplatePart(staticText, prefix)
+            staticText = ''
+          }
+          // Collect the expression content inside ${...}
+          result += '${'
+          i += 2 // past ${
+          let exprDepth = 1
+          let exprContent = ''
+          while (i < expr.length && exprDepth > 0) {
+            // Skip strings inside the expression to avoid brace-counting issues
+            if (expr[i] === '"') {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== '"') {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === "'") {
+              exprContent += expr[i]; i++
+              while (i < expr.length && expr[i] !== "'") {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
+                exprContent += expr[i]; i++
+              }
+              if (i < expr.length) { exprContent += expr[i]; i++ }
+              continue
+            }
+            if (expr[i] === '`') {
+              // Nested template literal — skip as-is
+              exprContent += expr[i]; i++
+              let nestedDepth = 0
+              while (i < expr.length) {
+                if (expr[i] === '\\') { exprContent += expr[i]; i++; if (i < expr.length) { exprContent += expr[i]; i++ }; continue }
+                if (expr[i] === '`' && nestedDepth === 0) { exprContent += expr[i]; i++; break }
+                if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') { nestedDepth++; exprContent += '${'; i += 2; continue }
+                if (expr[i] === '}' && nestedDepth > 0) { nestedDepth-- }
+                exprContent += expr[i]; i++
+              }
+              continue
+            }
+            if (expr[i] === '{') exprDepth++
+            else if (expr[i] === '}') { exprDepth--; if (exprDepth === 0) { i++; break } }
+            exprContent += expr[i]
+            i++
+          }
+          // Prefix string literals within the expression
+          result += prefixStringLiteralsInExpr(exprContent, prefix) + '}'
+          continue
+        }
+        staticText += expr[i]
+        i++
+      }
+      // Flush remaining static text
+      if (staticText) {
+        result += prefixStaticTemplatePart(staticText, prefix)
+      }
+      if (i < expr.length && expr[i] === '`') {
+        result += '`'
+        i++ // past closing backtick
+      }
+    } else if (expr[i] === '"' || expr[i] === "'") {
+      // Bare string literal — prefix if it looks like Tailwind classes
+      const quote = expr[i]
+      const strStart = i
+      i++ // past opening quote
+      let str = ''
+      while (i < expr.length && expr[i] !== quote) {
+        if (expr[i] === '\\') { str += expr[i] + (expr[i + 1] || ''); i += 2; continue }
+        str += expr[i]
+        i++
+      }
+      if (i < expr.length) i++ // past closing quote
+
+      if (str.trim() && looksLikeTailwindClasses(str) && !isAlreadyPrefixed(str, prefix)) {
+        result += quote + prefixClassString(str, prefix) + quote
+      } else {
+        result += expr.slice(strStart, i)
+      }
+    } else {
+      result += expr[i]
+      i++
+    }
+  }
+
+  return result
 }
 
 export function getCustomRegistry(prefix: string = ''): Registry {
@@ -574,10 +830,7 @@ import type { EventSelectorProps, EventCategory, EventGroup } from "./types";
  * />
  * \`\`\`
  */
-export const EventSelector = React.forwardRef<
-  HTMLDivElement,
-  EventSelectorProps
->(
+export const EventSelector = React.forwardRef(
   (
     {
       events,
@@ -592,8 +845,8 @@ export const EventSelector = React.forwardRef<
       renderEmptyGroup,
       className,
       ...props
-    },
-    ref
+    }: EventSelectorProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalSelected, setInternalSelected] = React.useState<string[]>(
@@ -754,10 +1007,7 @@ import type { EventGroupComponentProps } from "./types";
 /**
  * Event group with accordion section and group-level checkbox
  */
-export const EventGroupComponent = React.forwardRef<
-  HTMLDivElement,
-  EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const EventGroupComponent = React.forwardRef(
   (
     {
       group,
@@ -769,8 +1019,8 @@ export const EventGroupComponent = React.forwardRef<
       defaultExpanded = false,
       className,
       ...props
-    },
-    ref
+    }: EventGroupComponentProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Calculate selection state for this group
     const groupEventIds = events.map((e) => e.id);
@@ -933,10 +1183,7 @@ import type { EventItemComponentProps } from "./types";
 /**
  * Individual event item with checkbox
  */
-export const EventItemComponent = React.forwardRef<
-  HTMLDivElement,
-  EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>
->(({ event, isSelected, onSelectionChange, className, ...props }, ref) => {
+export const EventItemComponent = React.forwardRef(({ event, isSelected, onSelectionChange, className, ...props }: EventItemComponentProps & React.HTMLAttributes<HTMLDivElement>, ref: React.Ref<HTMLDivElement>) => {
   return (
     <div
       ref={ref}
@@ -1147,10 +1394,7 @@ const generateId = () =>
  * />
  * \`\`\`
  */
-export const KeyValueInput = React.forwardRef<
-  HTMLDivElement,
-  KeyValueInputProps
->(
+export const KeyValueInput = React.forwardRef(
   (
     {
       title,
@@ -1168,8 +1412,8 @@ export const KeyValueInput = React.forwardRef<
       defaultValue = [],
       className,
       ...props
-    },
-    ref
+    }: KeyValueInputProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Controlled vs uncontrolled state
     const [internalPairs, setInternalPairs] =
@@ -1366,10 +1610,7 @@ import type { KeyValueRowProps } from "./types";
 /**
  * Individual key-value pair row with inputs and delete button
  */
-export const KeyValueRow = React.forwardRef<
-  HTMLDivElement,
-  KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>
->(
+export const KeyValueRow = React.forwardRef(
   (
     {
       pair,
@@ -1385,8 +1626,8 @@ export const KeyValueRow = React.forwardRef<
       onDelete,
       className,
       ...props
-    },
-    ref
+    }: KeyValueRowProps & React.HTMLAttributes<HTMLDivElement>,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Determine if inputs should show error state
     const keyHasError = isDuplicateKey || (keyRequired && isKeyEmpty);
@@ -1601,10 +1842,7 @@ export interface ApiFeatureCardProps
  * />
  * \`\`\`
  */
-export const ApiFeatureCard = React.forwardRef<
-  HTMLDivElement,
-  ApiFeatureCardProps
->(
+export const ApiFeatureCard = React.forwardRef(
   (
     {
       icon,
@@ -1617,8 +1855,8 @@ export const ApiFeatureCard = React.forwardRef<
       capabilitiesLabel = "Key Capabilities",
       className,
       ...props
-    },
-    ref
+    }: ApiFeatureCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -1790,10 +2028,7 @@ export interface EndpointDetailsProps
  * />
  * \`\`\`
  */
-export const EndpointDetails = React.forwardRef<
-  HTMLDivElement,
-  EndpointDetailsProps
->(
+export const EndpointDetails = React.forwardRef(
   (
     {
       title = "Endpoint Details",
@@ -1814,8 +2049,8 @@ export const EndpointDetails = React.forwardRef<
       revokeDescription = "Revoking access will immediately disable all integrations using these keys.",
       className,
       ...props
-    },
-    ref
+    }: EndpointDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isCalling = variant === "calling";
 
@@ -2005,10 +2240,7 @@ export interface AlertConfigurationProps {
  * AlertConfiguration component displays current alert values for minimum balance and top-up.
  * Used in payment auto-pay setup to show notification thresholds.
  */
-export const AlertConfiguration = React.forwardRef<
-  HTMLDivElement,
-  AlertConfigurationProps
->(
+export const AlertConfiguration = React.forwardRef(
   (
     {
       minimumBalance,
@@ -2016,8 +2248,8 @@ export const AlertConfiguration = React.forwardRef<
       currencySymbol = "₹",
       onEdit,
       className,
-    },
-    ref
+    }: AlertConfigurationProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const formatCurrency = (amount: number) => {
       const formatted = amount.toLocaleString("en-IN", {
@@ -2152,10 +2384,7 @@ export interface AlertValuesModalProps {
  * AlertValuesModal component for editing alert configuration values.
  * Displays a form with inputs for minimum balance and minimum top-up.
  */
-export const AlertValuesModal = React.forwardRef<
-  HTMLDivElement,
-  AlertValuesModalProps
->(
+export const AlertValuesModal = React.forwardRef(
   (
     {
       open,
@@ -2167,8 +2396,8 @@ export const AlertValuesModal = React.forwardRef<
       topupOptions,
       onSave,
       loading = false,
-    },
-    ref
+    }: AlertValuesModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [minimumBalance, setMinimumBalance] = React.useState(
       initialMinimumBalance.toString()
@@ -2317,7 +2546,7 @@ import type { AutoPaySetupProps } from "./types";
  * />
  * \`\`\`
  */
-export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
+export const AutoPaySetup = React.forwardRef(
   (
     {
       title = "Auto-pay setup",
@@ -2336,8 +2565,8 @@ export const AutoPaySetup = React.forwardRef<HTMLDivElement, AutoPaySetupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: AutoPaySetupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 
@@ -2528,7 +2757,7 @@ import type { BankDetailsProps, BankDetailItem } from "./types";
  * />
  * \`\`\`
  */
-export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
+export const BankDetails = React.forwardRef(
   (
     {
       title = "Bank details",
@@ -2540,8 +2769,8 @@ export const BankDetails = React.forwardRef<HTMLDivElement, BankDetailsProps>(
       onOpenChange,
       onCopy,
       className,
-    },
-    ref
+    }: BankDetailsProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isControlled = open !== undefined;
 
@@ -3357,8 +3586,8 @@ const BreakdownCardRow = ({ item }: { item: BreakdownCardItem }) => (
  * />
  * \`\`\`
  */
-export const PaymentSummary = React.forwardRef<HTMLDivElement, PaymentSummaryProps>(
-  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }, ref) => {
+export const PaymentSummary = React.forwardRef(
+  ({ items = [], summaryItems, className, title, headerInfo, subtotal, breakdownCard, creditLimit }: PaymentSummaryProps, ref: React.Ref<HTMLDivElement>) => {
     const hasItemsBorder =
       items.length > 0 &&
       (!!subtotal || !!breakdownCard || (summaryItems && summaryItems.length > 0));
@@ -3555,10 +3784,7 @@ import type { PaymentOptionCardProps } from "./types";
  * />
  * \`\`\`
  */
-export const PaymentOptionCard = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardProps
->(
+export const PaymentOptionCard = React.forwardRef(
   (
     {
       title = "Select payment method",
@@ -3573,8 +3799,8 @@ export const PaymentOptionCard = React.forwardRef<
       loading = false,
       disabled = false,
       className,
-    },
-    ref
+    }: PaymentOptionCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalSelected, setInternalSelected] = React.useState<
       string | undefined
@@ -3707,10 +3933,7 @@ export interface PaymentOptionCardModalProps
  * />
  * \`\`\`
  */
-export const PaymentOptionCardModal = React.forwardRef<
-  HTMLDivElement,
-  PaymentOptionCardModalProps
->(
+export const PaymentOptionCardModal = React.forwardRef(
   (
     {
       open,
@@ -3726,8 +3949,8 @@ export const PaymentOptionCardModal = React.forwardRef<
       loading,
       disabled,
       className,
-    },
-    ref
+    }: PaymentOptionCardModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onOpenChange(false);
@@ -3865,7 +4088,7 @@ const DEFAULT_FEATURES: PlanFeature[] = [
   { name: "Channel(s)", free: "1 Pair(s)", rate: "₹ 300.00" },
 ];
 
-const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
+const PlanDetailModal = React.forwardRef(
   (
     {
       open,
@@ -3876,8 +4099,8 @@ const PlanDetailModal = React.forwardRef<HTMLDivElement, PlanDetailModalProps>(
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanDetailModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const handleClose = () => {
       onClose?.();
@@ -4086,7 +4309,7 @@ const renderOptionIcon = (icon: BillingCycleOption["icon"]) => {
   return icon;
 };
 
-const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>(
+const PlanUpgradeModal = React.forwardRef(
   (
     {
       open,
@@ -4103,8 +4326,8 @@ const PlanUpgradeModal = React.forwardRef<HTMLDivElement, PlanUpgradeModalProps>
       onClose,
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const initialOptionId = defaultSelectedOptionId ?? options[0]?.id;
     const [internalSelectedOptionId, setInternalSelectedOptionId] = React.useState<
@@ -4382,10 +4605,7 @@ const getStatusIcon = (tone: PlanUpgradeSummaryTone) => {
   return <AlertCircle className="size-6 text-semantic-warning-text" aria-hidden="true" />;
 };
 
-const PlanUpgradeSummaryModal = React.forwardRef<
-  HTMLDivElement,
-  PlanUpgradeSummaryModalProps
->(
+const PlanUpgradeSummaryModal = React.forwardRef(
   (
     {
       open,
@@ -4407,8 +4627,8 @@ const PlanUpgradeSummaryModal = React.forwardRef<
       closeAriaLabel = "Close plan summary modal",
       className,
       ...props
-    },
-    ref
+    }: PlanUpgradeSummaryModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedStatus = status ?? defaultStatusByMode[mode];
     const resolvedTone = resolvedStatus.tone ?? defaultStatusByMode[mode].tone ?? "warning";
@@ -4645,7 +4865,7 @@ import type { LetUsDriveCardProps } from "./types";
  * />
  * \`\`\`
  */
-const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
+const LetUsDriveCard = React.forwardRef(
   (
     {
       title,
@@ -4665,8 +4885,8 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: LetUsDriveCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalExpanded, setInternalExpanded] = React.useState(false);
     const isControlled = controlledExpanded !== undefined;
@@ -4690,7 +4910,7 @@ const LetUsDriveCard = React.forwardRef<HTMLDivElement, LetUsDriveCardProps>(
       <div
         ref={ref}
         className={cn(
-          "flex h-full min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
+          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
           className
         )}
         {...props}
@@ -4929,7 +5149,7 @@ import type { PowerUpCardProps } from "./types";
  * />
  * \`\`\`
  */
-const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
+const PowerUpCard = React.forwardRef(
   (
     {
       icon,
@@ -4940,8 +5160,8 @@ const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: PowerUpCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -5068,7 +5288,7 @@ import type { PricingCardProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
+const PricingCard = React.forwardRef(
   (
     {
       planName,
@@ -5092,8 +5312,8 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       infoText,
       className,
       ...props
-    },
-    ref
+    }: PricingCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const buttonText =
       ctaText || (isCurrentPlan ? "Current plan" : "Select plan");
@@ -5115,9 +5335,6 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         {/* Header */}
         <div
           className="flex flex-col gap-4 rounded-t-xl rounded-b-lg p-4"
-          style={
-            headerBgColor ? { backgroundColor: headerBgColor } : undefined
-          }
         >
           {/* Plan name + badge */}
           <div className="flex items-center gap-4">
@@ -5175,11 +5392,11 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
               </div>
             )}
             <Button
-              variant={isCurrentPlan ? "outline" : "default"}
+              variant={isCurrentPlan ? "secondary" : "default"}
               className="w-full"
               onClick={onCtaClick}
               loading={ctaLoading}
-              disabled={ctaDisabled}
+              disabled={ctaDisabled || isCurrentPlan}
             >
               {buttonText}
             </Button>
@@ -5226,29 +5443,34 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           </div>
         )}
 
-        {/* Addon */}
-        {addon && (
-          <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
-            {addon.icon && (
-              <div className="size-5 shrink-0">{addon.icon}</div>
-            )}
-            <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
-              {addon.text}
-            </span>
-          </div>
-        )}
-
-        {/* Usage Details */}
-        {usageDetails && usageDetails.length > 0 && (
-          <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
-            {usageDetails.map((detail, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+        {/* Bottom sections pushed to card bottom for grid alignment */}
+        {(addon || (usageDetails && usageDetails.length > 0)) && (
+          <div className="mt-auto flex flex-col gap-6">
+            {/* Addon */}
+            {addon && (
+              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
+                {addon.icon && (
+                  <div className="size-5 shrink-0">{addon.icon}</div>
+                )}
                 <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
-                  <strong>{detail.label}:</strong> {detail.value}
+                  {addon.text}
                 </span>
               </div>
-            ))}
+            )}
+
+            {/* Usage Details */}
+            {usageDetails && usageDetails.length > 0 && (
+              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
+                {usageDetails.map((detail, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
+                    <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
+                      <strong>{detail.label}:</strong> {detail.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -5269,8 +5491,8 @@ interface PlanIconProps extends React.SVGAttributes<SVGElement> {
   className?: string;
 }
 
-const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const CompactCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -5309,8 +5531,8 @@ const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 CompactCarIcon.displayName = "CompactCarIcon";
 
-const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SedanCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -5361,8 +5583,8 @@ const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 SedanCarIcon.displayName = "SedanCarIcon";
 
-const SuvCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SuvCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -5575,7 +5797,7 @@ import type { PricingPageProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
+const PricingPage = React.forwardRef(
   (
     {
       title = "Select business plan",
@@ -5595,11 +5817,10 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
       onFeatureComparisonClick,
       letUsDriveCards = [],
       letUsDriveTitle = "Let us drive — Full-service management",
-      letUsDriveExpandMode,
       className,
       ...props
-    },
-    ref
+    }: PricingPageProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     // Internal state for uncontrolled mode
     const [internalTab, setInternalTab] = React.useState(
@@ -5608,9 +5829,6 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
     const [internalBilling, setInternalBilling] = React.useState<
       "monthly" | "yearly"
     >("monthly");
-    const [expandedLetUsDriveIndices, setExpandedLetUsDriveIndices] =
-      React.useState<number[]>([]);
-
     const currentTab = controlledTab ?? internalTab;
     const currentBilling = controlledBilling ?? internalBilling;
 
@@ -5622,30 +5840,6 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
     const handleBillingChange = (period: "monthly" | "yearly") => {
       if (!controlledBilling) setInternalBilling(period);
       onBillingPeriodChange?.(period);
-    };
-
-    const cardCount = letUsDriveCards.length;
-
-    const handleLetUsDriveExpandedChange = (index: number, expanded: boolean) => {
-      if (letUsDriveExpandMode === "all") {
-        if (expanded) {
-          setExpandedLetUsDriveIndices(
-            Array.from({ length: cardCount }, (_, i) => i)
-          );
-        } else {
-          setExpandedLetUsDriveIndices((prev) =>
-            prev.filter((i) => i !== index)
-          );
-        }
-      } else {
-        if (expanded) {
-          setExpandedLetUsDriveIndices([index]);
-        } else {
-          setExpandedLetUsDriveIndices((prev) =>
-            prev.filter((i) => i !== index)
-          );
-        }
-      }
     };
 
     const hasPowerUps = powerUpCards.length > 0;
@@ -5743,22 +5937,11 @@ const PricingPage = React.forwardRef<HTMLDivElement, PricingPageProps>(
                 {letUsDriveTitle}
               </h2>
 
-              {/* Service cards — items-stretch + card h-full + mt-auto on actions align Talk to us buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                {letUsDriveCards.map((cardProps, index) => {
-                  const hasDetailsContent =
-                    cardProps.detailsContent &&
-                    cardProps.detailsContent.items.length > 0;
-                  const useControlledExpand =
-                    letUsDriveExpandMode && hasDetailsContent;
-                  const merged = { ...cardProps };
-                  if (useControlledExpand) {
-                    merged.expanded = expandedLetUsDriveIndices.includes(index);
-                    merged.onExpandedChange = (expanded: boolean) =>
-                      handleLetUsDriveExpandedChange(index, expanded);
-                  }
-                  return <LetUsDriveCard key={index} {...merged} />;
-                })}
+              {/* Service cards — items-start so expanding one card doesn't stretch others */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+                {letUsDriveCards.map((cardProps, index) => (
+                  <LetUsDriveCard key={index} {...cardProps} />
+                ))}
               </div>
             </div>
           </div>
@@ -5847,13 +6030,6 @@ export interface PricingPageProps
   letUsDriveCards?: LetUsDriveCardProps[];
   /** Let-us-drive section heading (default: "Let us drive — Full-service management") */
   letUsDriveTitle?: string;
-  /**
-   * When set, controls how "Show details" expands across cards.
-   * - "single": only the clicked card expands (accordion).
-   * - "all": clicking "Show details" on any card expands all cards that have detailsContent.
-   * Ignored when cards are used without detailsContent or without controlled expanded state.
-   */
-  letUsDriveExpandMode?: "single" | "all";
 }
 `, prefix),
         },
@@ -5910,7 +6086,7 @@ import type { PricingToggleProps } from "./types";
  * />
  * \`\`\`
  */
-const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
+const PricingToggle = React.forwardRef(
   (
     {
       tabs,
@@ -5923,8 +6099,8 @@ const PricingToggle = React.forwardRef<HTMLDivElement, PricingToggleProps>(
       yearlyLabel = "Yearly (Save 20%)",
       className,
       ...props
-    },
-    ref
+    }: PricingToggleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isYearly = billingPeriod === "yearly";
 
@@ -6169,8 +6345,8 @@ interface BrandIconProps extends React.SVGAttributes<SVGElement> {
  * Used in TalkToUsModal and available for any component that needs
  * the MyOperator contact/chat branding.
  */
-const MyOperatorChatIcon = React.forwardRef<SVGSVGElement, BrandIconProps>(
-  ({ className, ...props }, ref) => (
+const MyOperatorChatIcon = React.forwardRef(
+  ({ className, ...props }: BrandIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -6303,8 +6479,8 @@ function getTypeLabel(
  * All displayed data (icon, badge, name, count, last published) comes from the \`bot\` prop.
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
-export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
-  ({ bot, typeLabels, onEdit, onDelete, className, ...props }, ref) => {
+export const BotCard = React.forwardRef(
+  ({ bot, typeLabels, onEdit, onDelete, className, ...props }: BotCardProps, ref: React.Ref<HTMLDivElement>) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
 
@@ -6392,7 +6568,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
         </div>
 
         {/* Bot name */}
-        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary truncate mb-1 min-w-0">
+        <h3 className="m-0 text-sm sm:text-base font-normal text-semantic-text-primary line-clamp-1 mb-1 min-w-0">
           {bot.name}
         </h3>
 
@@ -6420,7 +6596,7 @@ export const BotCard = React.forwardRef<HTMLDivElement, BotCardProps>(
             </span>
           )}
           {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
-            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted truncate">
+            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted line-clamp-1">
               {bot.lastPublishedBy
                 ? \`\${bot.lastPublishedBy} | \${bot.lastPublishedDate ?? "—"}\`
                 : bot.lastPublishedDate}
@@ -6470,10 +6646,7 @@ const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   },
 ];
 
-export const CreateBotModal = React.forwardRef<
-  HTMLDivElement,
-  CreateBotModalProps
->(({ open, onOpenChange, onSubmit, isLoading, className }, ref) => {
+export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, isLoading, className }: CreateBotModalProps, ref: React.Ref<HTMLDivElement>) => {
   const [name, setName] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
 
@@ -6621,15 +6794,15 @@ import type { CreateBotFlowProps } from "./types";
  * Create bot flow: "Create new bot" card + Create Bot modal. No header (title/subtitle/search).
  * Use when you want the create-bot experience without the list header.
  */
-export const CreateBotFlow = React.forwardRef<HTMLDivElement, CreateBotFlowProps>(
+export const CreateBotFlow = React.forwardRef(
   (
     {
       createCardLabel = "Create new bot",
       onSubmit,
       className,
       ...props
-    },
-    ref
+    }: CreateBotFlowProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -6745,7 +6918,7 @@ import { BotListGrid } from "./bot-list-grid";
 import { CreateBotModal } from "./create-bot-modal";
 import type { BotListProps } from "./types";
 
-export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
+export const BotList = React.forwardRef(
   (
     {
       bots = [],
@@ -6761,8 +6934,8 @@ export const BotList = React.forwardRef<HTMLDivElement, BotListProps>(
       createCardLabel = "Create new bot",
       className,
       ...props
-    },
-    ref
+    }: BotListProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [searchQuery, setSearchQuery] = React.useState("");
     const [createModalOpen, setCreateModalOpen] = React.useState(false);
@@ -6872,10 +7045,10 @@ const botListHeaderVariants = cva("min-w-0", {
   },
 });
 
-export const BotListHeader = React.forwardRef<HTMLDivElement, BotListHeaderProps>(
+export const BotListHeader = React.forwardRef(
   (
-    { title, subtitle, variant = "default", rightContent, className, ...props },
-    ref
+    { title, subtitle, variant = "default", rightContent, className, ...props }: BotListHeaderProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const rootClassName = cn(botListHeaderVariants({ variant }), className);
     const titleBlock = (
@@ -6922,7 +7095,7 @@ import { Search } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListSearchProps } from "./types";
 
-export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps>(
+export const BotListSearch = React.forwardRef(
   (
     {
       value,
@@ -6931,8 +7104,8 @@ export const BotListSearch = React.forwardRef<HTMLDivElement, BotListSearchProps
       defaultValue,
       className,
       ...props
-    },
-    ref
+    }: BotListSearchProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
     const isControlled = value !== undefined;
@@ -6979,18 +7152,15 @@ import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { BotListCreateCardProps } from "./types";
 
-export const BotListCreateCard = React.forwardRef<
-  HTMLButtonElement,
-  BotListCreateCardProps
->(
+export const BotListCreateCard = React.forwardRef(
   (
     {
       label = "Create new bot",
       onClick,
       className,
       ...props
-    },
-    ref
+    }: BotListCreateCardProps,
+    ref: React.Ref<HTMLButtonElement>
   ) => (
     <button
       ref={ref}
@@ -7039,8 +7209,8 @@ BotListCreateCard.displayName = "BotListCreateCard";
 import { cn } from "../../../lib/utils";
 import type { BotListGridProps } from "./types";
 
-export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
-  ({ children, className, ...props }, ref) => (
+export const BotListGrid = React.forwardRef(
+  ({ children, className, ...props }: BotListGridProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn(
@@ -7342,7 +7512,7 @@ function getTimeRemaining(progress: number) {
     : \`\${secs} seconds remaining\`;
 }
 
-const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
+const FileUploadModal = React.forwardRef(
   (
     {
       open,
@@ -7365,8 +7535,8 @@ const FileUploadModal = React.forwardRef<HTMLDivElement, FileUploadModalProps>(
       loading = false,
       className,
       ...props
-    },
-    ref
+    }: FileUploadModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [items, setItems] = React.useState<UploadItem[]>([]);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -7736,8 +7906,8 @@ import { X, Play, File } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { AttachmentPreviewProps } from "./types";
 
-const AttachmentPreview = React.forwardRef<HTMLDivElement, AttachmentPreviewProps>(
-  ({ className, file, onRemove, ...props }, ref) => {
+const AttachmentPreview = React.forwardRef(
+  ({ className, file, onRemove, ...props }: AttachmentPreviewProps, ref: React.Ref<HTMLDivElement>) => {
     const url = React.useMemo(() => URL.createObjectURL(file), [file]);
 
     const isImage = file.type.startsWith("image/");
@@ -7895,7 +8065,7 @@ const BAR_WIDTH = 2;
 const BAR_GAP = 1.5;
 const SVG_HEIGHT = 32;
 
-const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
+const AudioMedia = React.forwardRef(
   (
     {
       className,
@@ -7909,8 +8079,8 @@ const AudioMedia = React.forwardRef<HTMLDivElement, AudioMediaProps>(
       onPlayChange,
       onSpeedChange,
       ...props
-    },
-    ref
+    }: AudioMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = React.useState(false);
     const [speed, setSpeed] = React.useState(1);
@@ -8110,8 +8280,8 @@ import { Reply, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import type { CarouselMediaProps } from "./types";
 
-const CarouselMedia = React.forwardRef<HTMLDivElement, CarouselMediaProps>(
-  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }, ref) => {
+const CarouselMedia = React.forwardRef(
+  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }: CarouselMediaProps, ref: React.Ref<HTMLDivElement>) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(
@@ -8365,7 +8535,7 @@ function DeliveryFooter({
  * </ChatBubble>
  * \`\`\`
  */
-const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+const ChatBubble = React.forwardRef(
   (
     {
       variant,
@@ -8380,8 +8550,8 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       children,
       className,
       ...props
-    },
-    ref
+    }: ChatBubbleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const hasMedia = !!media;
 
@@ -8503,6 +8673,126 @@ export type { ChatBubbleProps, ChatBubbleReply, DeliveryStatus } from "./types";
         }
       ],
     },
+    "chat-timeline-divider": {
+      name: "chat-timeline-divider",
+      description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [],
+      isMultiFile: true,
+      directory: "chat-timeline-divider",
+      mainFile: "chat-timeline-divider.tsx",
+      files: [
+        {
+          name: "chat-timeline-divider.tsx",
+          content: prefixTailwindClasses(`import * as React from "react";
+import { cn } from "../../../lib/utils";
+
+/* ── Types ── */
+
+export type ChatTimelineDividerVariant = "default" | "unread" | "system";
+
+export interface ChatTimelineDividerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+  /**
+   * Visual style of the divider.
+   * - \`default\`: plain centered text between lines (e.g. "Today", "Yesterday")
+   * - \`unread\`: bold text in a white pill with border (e.g. "3 unread messages")
+   * - \`system\`: muted text in a white pill with border (e.g. "Assigned to Alex Smith")
+   */
+  variant?: ChatTimelineDividerVariant;
+  /** Content to display — text or ReactNode for rich content (e.g. linked names) */
+  children: React.ReactNode;
+}
+
+/* ── Variant styles ── */
+
+const containerStyles: Record<ChatTimelineDividerVariant, string> = {
+  default: "",
+  unread:
+    "bg-white px-2.5 py-0.5 rounded-full border border-semantic-border-layout shadow-sm",
+  system:
+    "bg-white px-2.5 py-1 rounded-full border border-semantic-border-layout shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]",
+};
+
+const textStyles: Record<ChatTimelineDividerVariant, string> = {
+  default: "text-[13px] text-semantic-text-muted",
+  unread: "text-[12px] font-semibold text-semantic-text-primary",
+  system: "text-[13px] text-semantic-text-muted",
+};
+
+/* ── Component ── */
+
+/**
+ * ChatTimelineDivider renders a centered label between two horizontal lines
+ * in a chat message timeline.
+ *
+ * Use it to separate messages by date, mark unread boundaries,
+ * or display system/action events (assignments, resolutions, etc.).
+ *
+ * @example
+ * \`\`\`tsx
+ * // Date separator
+ * <ChatTimelineDivider>Today</ChatTimelineDivider>
+ *
+ * // Unread count
+ * <ChatTimelineDivider variant="unread">3 unread messages</ChatTimelineDivider>
+ *
+ * // System event with linked names
+ * <ChatTimelineDivider variant="system">
+ *   Assigned to <span className="text-semantic-text-link font-medium">Alex Smith</span>
+ * </ChatTimelineDivider>
+ * \`\`\`
+ */
+const ChatTimelineDivider = React.forwardRef<
+  HTMLDivElement,
+  ChatTimelineDividerProps
+>(
+  (
+    { variant = "default", children, className, ...props },
+    ref
+  ) => {
+    const showLines = true;
+
+    return (
+      <div
+        ref={ref}
+        role="separator"
+        className={cn("flex items-center gap-4 my-2", className)}
+        {...props}
+      >
+        {showLines && (
+          <div className="flex-1 h-px bg-semantic-border-layout" />
+        )}
+        <div className={cn(containerStyles[variant])}>
+          <span className={cn(textStyles[variant])}>{children}</span>
+        </div>
+        {showLines && (
+          <div className="flex-1 h-px bg-semantic-border-layout" />
+        )}
+      </div>
+    );
+  }
+);
+ChatTimelineDivider.displayName = "ChatTimelineDivider";
+
+export { ChatTimelineDivider };
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export {
+  ChatTimelineDivider,
+  type ChatTimelineDividerProps,
+  type ChatTimelineDividerVariant,
+} from "./chat-timeline-divider";
+`, prefix),
+        }
+      ],
+    },
     "chat-composer": {
       name: "chat-composer",
       description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button",
@@ -8554,7 +8844,7 @@ import type { ChatComposerProps } from "./types";
  * />
  * \`\`\`
  */
-const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
+const ChatComposer = React.forwardRef(
   (
     {
       className,
@@ -8578,8 +8868,8 @@ const ChatComposer = React.forwardRef<HTMLDivElement, ChatComposerProps>(
       expiredMessage = "This chat has expired. Send a template to continue.",
       onTemplateClick,
       ...props
-    },
-    ref
+    }: ChatComposerProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
@@ -8754,8 +9044,8 @@ export interface ChatComposerProps extends Omit<React.HTMLAttributes<HTMLDivElem
   leftActions?: React.ReactNode;
   /** Slot for right action buttons (rendered inside textarea container, bottom-right) */
   rightActions?: React.ReactNode;
-  /** Send button label. Defaults to "Send" */
-  sendLabel?: string;
+  /** Send button label. Accepts text or JSX (e.g. icon + text). Defaults to "Send" */
+  sendLabel?: React.ReactNode;
   /** Whether to show the send dropdown chevron. Defaults to false */
   showSendDropdown?: boolean;
   /** Whether the chat is expired (shows template prompt instead of composer) */
@@ -8796,7 +9086,7 @@ import { cn } from "../../../lib/utils";
 import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
 import type { DocMediaProps } from "./types";
 
-const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
+const DocMedia = React.forwardRef(
   (
     {
       className,
@@ -8809,8 +9099,8 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
       caption,
       onDownload,
       ...props
-    },
-    ref
+    }: DocMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     if (variant === "preview") {
       return (
@@ -8849,12 +9139,35 @@ const DocMedia = React.forwardRef<HTMLDivElement, DocMediaProps>(
 
     if (variant === "download") {
       return (
-        <div ref={ref} className={cn("relative", className)} {...props}>
+        <div
+          ref={ref}
+          className={cn("relative rounded-t overflow-hidden", className)}
+          {...props}
+        >
           <img
             src={thumbnailUrl}
             alt={caption || filename || "Document"}
-            className="w-full rounded-t object-cover max-h-[280px]"
+            className="w-full object-cover"
+            style={{ aspectRatio: "442/308" }}
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#1d222f]/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+            <p className="m-0 text-[14px] font-semibold text-white truncate">
+              {filename || "Document"}
+            </p>
+            <div className="flex items-center gap-1.5 mt-1">
+              <File className="size-3.5 text-white/80" />
+              <span className="text-[12px] text-white/80">
+                {[
+                  fileType,
+                  pageCount && \`\${pageCount} pages\`,
+                  fileSize,
+                ]
+                  .filter(Boolean)
+                  .join("  \\u00B7  ")}
+              </span>
+            </div>
+          </div>
         </div>
       );
     }
@@ -8997,7 +9310,7 @@ import type { VideoMediaProps } from "./types";
 
 const DEFAULT_SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
-const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
+const VideoMedia = React.forwardRef(
   (
     {
       className,
@@ -9009,8 +9322,8 @@ const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
       onSpeedChange,
       onClick,
       ...props
-    },
-    ref
+    }: VideoMediaProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [playing, setPlaying] = useState(false);
     const [muted, setMuted] = useState(false);
@@ -9243,7 +9556,10 @@ export type { VideoMediaProps } from "./types";
             "creatable-multi-select",
             "page-header",
             "tag",
-            "file-upload-modal"
+            "file-upload-modal",
+            "form-modal",
+            "text-field",
+            "textarea"
       ],
       isMultiFile: true,
       directory: "ivr-bot",
@@ -9295,7 +9611,7 @@ const DEFAULT_DATA: IvrBotConfigData = {
 };
 
 // ─── Main IvrBotConfig ────────────────────────────────────────────────────────
-export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
+export const IvrBotConfig = React.forwardRef(
   (
     {
       botTitle = "IVR bot",
@@ -9342,8 +9658,8 @@ export const IvrBotConfig = React.forwardRef<HTMLDivElement, IvrBotConfigProps>(
       callEndThresholdMin,
       callEndThresholdMax,
       className,
-    },
-    ref
+    }: IvrBotConfigProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [data, setData] = React.useState<IvrBotConfigData>({
       ...DEFAULT_DATA,
@@ -9546,7 +9862,7 @@ IvrBotConfig.displayName = "IvrBotConfig";
         {
           name: "create-function-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Trash2, ChevronDown, X, Plus } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, Pencil } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -9554,6 +9870,9 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Button } from "../button";
+import { FormModal } from "../form-modal";
+import { TextField } from "../text-field";
+import { Textarea } from "../textarea";
 import type {
   CreateFunctionModalProps,
   CreateFunctionData,
@@ -9561,10 +9880,12 @@ import type {
   FunctionTabType,
   HttpMethod,
   KeyValuePair,
+  VariableGroup,
+  VariableItem,
+  VariableFormData,
 } from "./types";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-const METHODS_WITH_BODY: HttpMethod[] = ["POST", "PUT", "PATCH"];
 const FUNCTION_NAME_MAX = 100;
 const BODY_MAX = 4000;
 const URL_MAX = 500;
@@ -9572,6 +9893,8 @@ const HEADER_KEY_MAX = 512;
 const HEADER_VALUE_MAX = 2048;
 
 const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+const VARIABLE_NAME_MAX = 30;
+const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 const URL_REGEX = /^https?:\\/\\//;
 const HEADER_KEY_REGEX = /^[!#$%&'*+\\-.^_\`|~0-9a-zA-Z]+$/;
 // Query parameter validation (aligned with apiIntegrationSchema.queryParams)
@@ -9627,6 +9950,30 @@ function extractVarRefs(texts: string[]): string[] {
   return Array.from(new Set(all));
 }
 
+// ── Value segment parser — splits "text {{var}} text" into typed segments ─────
+
+type ValueSegment =
+  | { type: "text"; content: string }
+  | { type: "var"; name: string; raw: string };
+
+function parseValueSegments(value: string): ValueSegment[] {
+  const segments: ValueSegment[] = [];
+  const regex = /\\{\\{([^}]+)\\}\\}/g;
+  let lastIndex = 0;
+  let match;
+  while ((match = regex.exec(value)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: "text", content: value.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: "var", name: match[1], raw: match[0] });
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < value.length) {
+    segments.push({ type: "text", content: value.slice(lastIndex) });
+  }
+  return segments;
+}
+
 /** Mirror-div technique — returns { top, left } relative to the element's top-left corner. */
 function getCaretPixelPos(
   el: HTMLTextAreaElement | HTMLInputElement,
@@ -9676,70 +10023,319 @@ function getCaretPixelPos(
 
 // Uses same visual classes as DropdownMenuContent + DropdownMenuItem.
 // Position is cursor-anchored via getCaretPixelPos.
+// No search bar — typing after {{ already filters via filterQuery.
 function VarPopup({
   variables,
+  variableGroups,
+  filterQuery = "",
   onSelect,
+  onAddVariable,
+  onEditVariable,
   style,
 }: {
   variables: string[];
+  variableGroups?: VariableGroup[];
+  filterQuery?: string;
   onSelect: (v: string) => void;
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   style?: React.CSSProperties;
 }) {
-  if (variables.length === 0) return null;
+  const hasGroups = variableGroups && variableGroups.length > 0;
+
+  if (!hasGroups && variables.length === 0) return null;
+
+  // Flat mode — variables are already pre-filtered by VariableInput
+  if (!hasGroups) {
+    return (
+      <div
+        role="listbox"
+        style={style}
+        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
+      >
+        {/* Add new variable */}
+        {onAddVariable && (
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); onAddVariable(); }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
+          >
+            <Plus className="size-3.5 shrink-0" />
+            Add new variable
+          </button>
+        )}
+
+        {/* Variable list */}
+        <div className="max-h-48 overflow-y-auto p-1">
+          {variables.map((v) => (
+            <button
+              key={v}
+              type="button"
+              role="option"
+              onMouseDown={(e) => { e.preventDefault(); onSelect(v); }}
+              className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui"
+            >
+              {v}
+            </button>
+          ))}
+          {variables.length === 0 && (
+            <p className="m-0 px-2 py-1.5 text-sm text-semantic-text-muted">No variables found</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Grouped mode — filter by the {{ trigger query
+  const lowerQuery = filterQuery.toLowerCase();
+  const filteredGroups = variableGroups.map((g) => ({
+    ...g,
+    items: g.items.filter((item) =>
+      item.name.toLowerCase().includes(lowerQuery)
+    ),
+  })).filter((g) => g.items.length > 0);
+
   return (
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
     >
-      {variables.map((v) => (
-        <button
-          key={v}
-          type="button"
-          role="option"
-          aria-selected={false}
-          onMouseDown={(e) => {
-            e.preventDefault(); // keep input focused so blur doesn't close popup first
-            onSelect(v);
-          }}
-          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
-        >
-          {v}
-        </button>
-      ))}
+      {/* Add new variable */}
+      {onAddVariable && (
+        <>
+          <button
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); onAddVariable(); }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-sm font-medium text-semantic-text-primary hover:bg-semantic-bg-ui transition-colors"
+          >
+            <Plus className="size-3.5 shrink-0" />
+            Add new variable
+          </button>
+          <div className="border-t border-semantic-border-layout" />
+        </>
+      )}
+
+      {/* Grouped variable list */}
+      <div className="max-h-48 overflow-y-auto p-1">
+        {filteredGroups.map((group) => (
+          <div key={group.label}>
+            <p className="m-0 px-2 pt-2 pb-1 text-sm font-medium text-semantic-text-muted">
+              {group.label}
+            </p>
+            {group.items.map((item) => {
+              const insertValue = item.value ?? \`{{\${item.name}}}\`;
+              return (
+                <div key={item.name} className="flex items-center rounded-sm transition-colors hover:bg-semantic-bg-ui">
+                  <button
+                    type="button"
+                    role="option"
+                    onMouseDown={(e) => { e.preventDefault(); onSelect(insertValue); }}
+                    className="relative flex flex-1 min-w-0 cursor-pointer select-none items-center px-2 py-1.5 text-sm outline-none"
+                  >
+                    {\`{{\${item.name}}}\`}
+                  </button>
+                  {item.editable && onEditVariable && (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); onEditVariable(item.name); }}
+                      className="shrink-0 p-1.5 rounded text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                      aria-label={\`Edit \${item.name}\`}
+                    >
+                      <Pencil className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+        {filteredGroups.length === 0 && (
+          <p className="m-0 px-2 py-1.5 text-sm text-semantic-text-muted">No variables found</p>
+        )}
+      </div>
     </div>
   );
 }
 
-// ── VariableInput — input with {{ autocomplete ─────────────────────────────────
+// ── VariableFormModal — create/edit a variable ───────────────────────────────
+
+function VariableFormModal({
+  open,
+  onOpenChange,
+  mode,
+  initialData,
+  onSave,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mode: "create" | "edit";
+  initialData?: VariableItem;
+  onSave: (data: VariableFormData) => void;
+}) {
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [required, setRequired] = React.useState(false);
+  const [nameError, setNameError] = React.useState("");
+
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (open) {
+      setName(initialData?.name ?? "");
+      setDescription(initialData?.description ?? "");
+      setRequired(initialData?.required ?? false);
+      setNameError("");
+    }
+  }, [open, initialData]);
+
+  const validateName = (v: string) => {
+    if (!v.trim()) return "";
+    if (!VARIABLE_NAME_REGEX.test(v)) {
+      return "Variable name should start with alphabet; Cannot have special characters except underscore (_)";
+    }
+    return "";
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setName(v);
+    setNameError(validateName(v));
+  };
+
+  const handleSave = () => {
+    const error = validateName(name);
+    if (error || !name.trim()) {
+      setNameError(error || "Variable name is required");
+      return;
+    }
+    onSave({ name: name.trim(), description: description.trim() || undefined, required });
+  };
+
+  return (
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      title={mode === "create" ? "Create new variable" : "Edit variable"}
+      saveButtonText={mode === "create" ? "Save" : "Save Changes"}
+      disableSave={!name.trim() || !!nameError}
+      onSave={handleSave}
+      size="default"
+    >
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-semantic-text-muted">
+            Variable name{" "}
+            <span className="text-semantic-error-primary">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={name}
+              onChange={handleNameChange}
+              placeholder="e.g., customer_name"
+              maxLength={VARIABLE_NAME_MAX}
+              className={cn(inputCls, "pr-16")}
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
+              {name.length}/{VARIABLE_NAME_MAX}
+            </span>
+          </div>
+          <span className={cn("text-sm", nameError ? "text-semantic-error-primary" : "text-semantic-text-muted")}>
+            {nameError || "Variable name should start with alphabet; Cannot have special characters except underscore (_)"}
+          </span>
+        </div>
+        <TextField
+          label="Description (optional)"
+          placeholder="What this variable represents"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-semantic-text-muted">Required</span>
+          <div className="flex items-center gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="variable-required"
+                checked={required}
+                onChange={() => setRequired(true)}
+                className="size-4 accent-semantic-primary"
+              />
+              <span className="text-base text-semantic-text-primary">Yes</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="variable-required"
+                checked={!required}
+                onChange={() => setRequired(false)}
+                className="size-4 accent-semantic-primary"
+              />
+              <span className="text-base text-semantic-text-primary">No</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </FormModal>
+  );
+}
+
+// ── VariableInput — input with {{ autocomplete + badge display ──────────────
 
 function VariableInput({
   value,
   onChange,
   sessionVariables,
+  variableGroups,
+  onAddVariable,
+  onEditVariable,
   placeholder,
   maxLength,
   className,
   inputRef: externalInputRef,
+  disabled,
   ...inputProps
 }: {
   value: string;
   onChange: (v: string) => void;
   sessionVariables: string[];
+  variableGroups?: VariableGroup[];
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   placeholder?: string;
   maxLength?: number;
   className?: string;
   inputRef?: React.RefObject<HTMLInputElement>;
+  disabled?: boolean;
   [k: string]: unknown;
 }) {
   const internalRef = React.useRef<HTMLInputElement>(null);
   const inputRef = externalInputRef ?? internalRef;
+  const displayRef = React.useRef<HTMLDivElement>(null);
   const [trigger, setTrigger] = React.useState<TriggerState | null>(null);
   const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
 
   const filtered = trigger
     ? sessionVariables.filter((v) => v.toLowerCase().includes(trigger.query))
     : [];
+
+  // Parse value into text + variable segments
+  const segments = React.useMemo(() => parseValueSegments(value), [value]);
+  const hasVariables = segments.some((s) => s.type === "var");
+  const showDisplay = !isEditing && value.length > 0 && hasVariables;
+
+  // Check overflow in display mode
+  React.useEffect(() => {
+    if (showDisplay && displayRef.current && !isExpanded) {
+      const el = displayRef.current;
+      setIsOverflowing(el.scrollWidth > el.clientWidth);
+    } else {
+      setIsOverflowing(false);
+    }
+  }, [showDisplay, value, isExpanded]);
 
   const updatePopupPos = (el: HTMLInputElement, cursor: number) => {
     const caret = getCaretPixelPos(el, cursor);
@@ -9769,13 +10365,15 @@ function VariableInput({
 
   return (
     <div className="relative w-full">
+      {/* Input — always in DOM, hidden when display mode is active */}
       <input
         ref={inputRef}
         type="text"
         value={value}
         placeholder={placeholder}
         maxLength={maxLength}
-        className={className}
+        disabled={disabled}
+        className={cn(className, showDisplay && "opacity-0 pointer-events-none")}
         onChange={(e) => {
           onChange(e.target.value);
           const cursor = e.target.selectionStart ?? e.target.value.length;
@@ -9787,10 +10385,88 @@ function VariableInput({
         onKeyDown={(e) => {
           if (e.key === "Escape") clearTrigger();
         }}
-        onBlur={() => clearTrigger()}
+        onFocus={() => setIsEditing(true)}
+        onBlur={() => {
+          clearTrigger();
+          setIsEditing(false);
+          setIsExpanded(false);
+        }}
         {...inputProps}
       />
-      <VarPopup variables={filtered} onSelect={handleSelect} style={popupStyle} />
+
+      {/* Display mode — variable badges + text + overflow */}
+      {showDisplay && (
+        <div
+          className={cn(
+            "absolute cursor-text",
+            !isExpanded && "inset-0 flex items-center",
+            isExpanded && "inset-x-0 top-0 z-10",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+          onClick={() => {
+            if (!disabled) inputRef.current?.focus();
+          }}
+        >
+          <div
+            ref={displayRef}
+            className={cn(
+              "flex items-center gap-1 px-2",
+              !isExpanded && "flex-1 min-w-0 overflow-hidden",
+              isExpanded && "flex-wrap bg-semantic-bg-primary border border-semantic-border-input rounded py-1.5 shadow-sm"
+            )}
+          >
+            {segments.map((seg, i) =>
+              seg.type === "text" ? (
+                <span key={i} className="text-sm text-semantic-text-primary whitespace-pre shrink-0">{seg.content}</span>
+              ) : (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 shrink-0 rounded px-1.5 py-0.5 text-sm bg-semantic-info-surface text-semantic-text-primary"
+                >
+                  {seg.name}
+                  {onEditVariable && (
+                    <button
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onEditVariable(seg.name);
+                      }}
+                      className="p-0.5 text-semantic-text-muted hover:text-semantic-text-primary transition-colors"
+                    >
+                      <Pencil className="size-3" />
+                    </button>
+                  )}
+                </span>
+              )
+            )}
+          </div>
+          {isOverflowing && !isExpanded && (
+            <button
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsExpanded(true);
+              }}
+              className="shrink-0 px-1 text-sm font-medium text-semantic-text-muted hover:text-semantic-text-primary"
+            >
+              ...
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* VarPopup */}
+      <VarPopup
+        variables={filtered}
+        variableGroups={trigger ? variableGroups : undefined}
+        filterQuery={trigger?.query ?? ""}
+        onSelect={handleSelect}
+        onAddVariable={onAddVariable}
+        onEditVariable={onEditVariable}
+        style={popupStyle}
+      />
     </div>
   );
 }
@@ -9800,7 +10476,7 @@ const inputCls = cn(
   "w-full h-[42px] px-4 text-base rounded border",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
-  "outline-none hover:border-semantic-border-input-focus",
+  "outline-none",
   "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
   "disabled:opacity-50 disabled:cursor-not-allowed"
 );
@@ -9809,7 +10485,7 @@ const textareaCls = cn(
   "w-full px-4 py-2.5 text-base rounded border resize-none",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
-  "outline-none hover:border-semantic-border-input-focus",
+  "outline-none",
   "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
   "disabled:opacity-50 disabled:cursor-not-allowed"
 );
@@ -9827,6 +10503,9 @@ function KeyValueTable({
   keyRegex,
   keyRegexError,
   sessionVariables = [],
+  variableGroups,
+  onAddVariable,
+  onEditVariable,
   disabled = false,
 }: {
   rows: KeyValuePair[];
@@ -9838,6 +10517,9 @@ function KeyValueTable({
   keyRegex?: RegExp;
   keyRegexError?: string;
   sessionVariables?: string[];
+  variableGroups?: VariableGroup[];
+  onAddVariable?: () => void;
+  onEditVariable?: (variable: string) => void;
   disabled?: boolean;
 }) {
   const update = (id: string, patch: Partial<KeyValuePair>) => {
@@ -9869,14 +10551,14 @@ function KeyValueTable({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-xs text-semantic-text-muted">{label}</span>
-      <div className="border border-semantic-border-layout rounded overflow-hidden">
+      <span className="text-sm text-semantic-text-muted">{label}</span>
+      <div className="border border-semantic-border-layout rounded">
         {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
-        <div className="hidden sm:flex bg-semantic-bg-ui border-b border-semantic-border-layout">
-          <div className="flex-1 min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+        <div className="hidden sm:flex border-b border-semantic-border-layout rounded-t">
+          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
             Key
           </div>
-          <div className="flex-[2] min-w-0 px-3 py-2 text-xs font-semibold text-semantic-text-muted">
+          <div className="flex-[2] min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted">
             Value
           </div>
           <div className="w-10 shrink-0" aria-hidden="true" />
@@ -9892,7 +10574,7 @@ function KeyValueTable({
             >
               {/* Key column — border-r on column (not input) so it aligns with header */}
               <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
-                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
                 <input
@@ -9903,45 +10585,36 @@ function KeyValueTable({
                   maxLength={keyMaxLength}
                   disabled={disabled}
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    errors.key && "border-semantic-error-primary"
+                    errors.key && "text-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.key)}
-                  aria-describedby={errors.key ? \`err-key-\${row.id}\` : undefined}
                 />
-                {errors.key && (
-                  <p id={\`err-key-\${row.id}\`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
-                    {errors.key}
-                  </p>
-                )}
               </div>
 
               {/* Value column — uses VariableInput for {{ autocomplete */}
               <div className="flex-[2] flex flex-col min-w-0">
-                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-[10px] font-semibold text-semantic-text-muted uppercase tracking-wide">
+                <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Value
                 </span>
                 <VariableInput
                   value={row.value}
                   onChange={(v) => update(row.id, { value: v })}
                   sessionVariables={sessionVariables}
+                  variableGroups={variableGroups}
+                  onAddVariable={onAddVariable}
+                  onEditVariable={onEditVariable}
                   placeholder="Type {{ to add variables"
                   maxLength={valueMaxLength}
                   disabled={disabled}
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none focus:bg-semantic-bg-hover",
+                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    errors.value && "border-semantic-error-primary"
+                    errors.value && "text-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.value)}
-                  aria-describedby={errors.value ? \`err-value-\${row.id}\` : undefined}
                 />
-                {errors.value && (
-                  <p id={\`err-value-\${row.id}\`} className="m-0 px-3 pt-0.5 text-xs text-semantic-error-primary">
-                    {errors.value}
-                  </p>
-                )}
               </div>
 
               {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
@@ -9968,7 +10641,7 @@ function KeyValueTable({
           onClick={add}
           disabled={disabled}
           className={cn(
-            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors",
+            "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-ui transition-colors",
             disabled && "opacity-50 cursor-not-allowed"
           )}
         >
@@ -9976,15 +10649,35 @@ function KeyValueTable({
           <span>Add row</span>
         </button>
       </div>
+
+      {/* Collected row errors — shown below the table */}
+      {(() => {
+        const allErrors = rows
+          .map((row) => {
+            const errs = getErrors(row);
+            const msgs: string[] = [];
+            if (errs.key) msgs.push(errs.key);
+            if (errs.value) msgs.push(errs.value);
+            return msgs;
+          })
+          .flat();
+        if (allErrors.length === 0) return null;
+        // Deduplicate
+        const unique = Array.from(new Set(allErrors));
+        return (
+          <div className="flex flex-col gap-0.5">
+            {unique.map((msg) => (
+              <p key={msg} className="m-0 text-sm text-semantic-error-primary">{msg}</p>
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
-export const CreateFunctionModal = React.forwardRef<
-  HTMLDivElement,
-  CreateFunctionModalProps
->(
+export const CreateFunctionModal = React.forwardRef(
   (
     {
       open,
@@ -9998,10 +10691,13 @@ export const CreateFunctionModal = React.forwardRef<
       initialStep = 1,
       initialTab = "header",
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      variableGroups,
+      onAddVariable,
+      onEditVariable,
       disabled = false,
       className,
-    },
-    ref
+    }: CreateFunctionModalProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
@@ -10021,6 +10717,35 @@ export const CreateFunctionModal = React.forwardRef<
     const [nameError, setNameError] = React.useState("");
     const [urlError, setUrlError] = React.useState("");
     const [bodyError, setBodyError] = React.useState("");
+
+    // Variable modal state
+    const [varModalOpen, setVarModalOpen] = React.useState(false);
+    const [varModalMode, setVarModalMode] = React.useState<"create" | "edit">("create");
+    const [varModalInitialData, setVarModalInitialData] = React.useState<VariableItem | undefined>();
+
+    const handleAddVariableClick = () => {
+      setVarModalMode("create");
+      setVarModalInitialData(undefined);
+      setVarModalOpen(true);
+    };
+
+    const handleEditVariableClick = (variableName: string) => {
+      const variable = variableGroups
+        ?.flatMap((g) => g.items)
+        .find((item) => item.name === variableName);
+      setVarModalMode("edit");
+      setVarModalInitialData(variable ?? { name: variableName, editable: true });
+      setVarModalOpen(true);
+    };
+
+    const handleVariableSave = (data: VariableFormData) => {
+      if (varModalMode === "create") {
+        onAddVariable?.(data);
+      } else {
+        onEditVariable?.(varModalInitialData?.name ?? "", data);
+      }
+      setVarModalOpen(false);
+    };
 
     // Variable trigger state for URL and body
     const urlInputRef = React.useRef<HTMLInputElement>(null);
@@ -10116,14 +10841,7 @@ export const CreateFunctionModal = React.forwardRef<
       onOpenChange(false);
     }, [reset, onOpenChange]);
 
-    const supportsBody = METHODS_WITH_BODY.includes(method);
-
-    // When switching to a method without body, reset to header tab if body was active
-    React.useEffect(() => {
-      if (!supportsBody && activeTab === "body") {
-        setActiveTab("header");
-      }
-    }, [supportsBody, activeTab]);
+    // Body tab is always visible regardless of HTTP method
 
     const validateName = (value: string) => {
       if (value.trim() && !FUNCTION_NAME_REGEX.test(value.trim())) {
@@ -10258,11 +10976,10 @@ export const CreateFunctionModal = React.forwardRef<
       body: "Body",
     };
 
-    const visibleTabs: FunctionTabType[] = supportsBody
-      ? ["header", "queryParams", "body"]
-      : ["header", "queryParams"];
+    const visibleTabs: FunctionTabType[] = ["header", "queryParams", "body"];
 
     return (
+      <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           ref={ref}
@@ -10270,7 +10987,7 @@ export const CreateFunctionModal = React.forwardRef<
           hideCloseButton
           className={cn(
             "flex flex-col gap-0 p-0 w-[calc(100vw-2rem)] sm:w-full",
-            "max-h-[calc(100svh-2rem)] overflow-hidden",
+            "max-h-[calc(100vh-2rem)] overflow-hidden",
             className
           )}
         >
@@ -10290,7 +11007,7 @@ export const CreateFunctionModal = React.forwardRef<
           </div>
 
           {/* ── Scrollable body ── */}
-          <div className="flex-1 overflow-y-auto min-h-0 px-4 py-5 sm:px-6">
+          <div className="flex-1 overflow-y-auto min-h-0 overscroll-contain px-4 py-5 sm:px-6">
             {/* ─ Step 1 ─ */}
             {step === 1 && (
               <div className="flex flex-col gap-5">
@@ -10317,44 +11034,33 @@ export const CreateFunctionModal = React.forwardRef<
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs italic text-semantic-text-muted pointer-events-none">
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
                       {name.length}/{FUNCTION_NAME_MAX}
                     </span>
                   </div>
                   {nameError && (
-                    <p className="m-0 text-xs text-semantic-error-primary">{nameError}</p>
+                    <p className="m-0 text-sm text-semantic-error-primary">{nameError}</p>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="fn-prompt"
-                    className="text-sm font-semibold text-semantic-text-primary"
-                  >
-                    Prompt{" "}
-                    <span className="text-semantic-error-primary">*</span>
-                  </label>
-                  <div className="relative">
-                    <textarea
-                      id="fn-prompt"
-                      value={prompt}
-                      maxLength={promptMaxLength}
-                      disabled={disabled}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="Enter the description of the function"
-                      rows={5}
-                      className={cn(textareaCls, "pb-7")}
-                    />
-                    <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
-                      {prompt.length}/{promptMaxLength}
-                    </span>
-                  </div>
-                  {prompt.length > 0 && prompt.trim().length < promptMinLength && (
-                    <p className="m-0 text-xs text-semantic-error-primary">
-                      Minimum {promptMinLength} characters required
-                    </p>
-                  )}
-                </div>
+                <Textarea
+                  id="fn-prompt"
+                  label="Prompt"
+                  required
+                  value={prompt}
+                  maxLength={promptMaxLength}
+                  showCount
+                  disabled={disabled}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Enter the description of the function"
+                  rows={5}
+                  labelClassName="font-semibold text-semantic-text-primary"
+                  error={
+                    prompt.length > 0 && prompt.trim().length < promptMinLength
+                      ? \`Minimum \${promptMinLength} characters required\`
+                      : undefined
+                  }
+                />
               </div>
             )}
 
@@ -10363,13 +11069,12 @@ export const CreateFunctionModal = React.forwardRef<
               <div className="flex flex-col gap-5">
                 {/* API URL — always a single combined row */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-xs text-semantic-text-muted tracking-[0.048px]">
+                  <span className="text-sm text-semantic-text-muted tracking-[0.048px]">
                     API URL
                   </span>
                   <div
                     className={cn(
                       "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
-                      "hover:border-semantic-border-input-focus",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
                     )}
@@ -10430,11 +11135,19 @@ export const CreateFunctionModal = React.forwardRef<
                           disabled && "opacity-50 cursor-not-allowed"
                         )}
                       />
-                      <VarPopup variables={filteredUrlVars} onSelect={handleUrlVarSelect} style={urlPopupStyle} />
+                      <VarPopup
+                        variables={filteredUrlVars}
+                        variableGroups={urlTrigger ? variableGroups : undefined}
+                        filterQuery={urlTrigger?.query ?? ""}
+                        onSelect={handleUrlVarSelect}
+                        onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                        onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
+                        style={urlPopupStyle}
+                      />
                     </div>
                   </div>
                   {urlError && (
-                    <p className="m-0 text-xs text-semantic-error-primary">{urlError}</p>
+                    <p className="m-0 text-sm text-semantic-error-primary">{urlError}</p>
                   )}
                 </div>
 
@@ -10474,6 +11187,9 @@ export const CreateFunctionModal = React.forwardRef<
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters."
                       sessionVariables={sessionVariables}
+                      variableGroups={variableGroups}
+                      onAddVariable={handleAddVariableClick}
+                      onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
                   )}
@@ -10493,12 +11209,15 @@ export const CreateFunctionModal = React.forwardRef<
                         };
                       }}
                       sessionVariables={sessionVariables}
+                      variableGroups={variableGroups}
+                      onAddVariable={handleAddVariableClick}
+                      onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
                   )}
                   {activeTab === "body" && (
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-xs text-semantic-text-muted">
+                      <span className="text-sm text-semantic-text-muted">
                         Body
                       </span>
                       <div className={cn("relative")}>
@@ -10528,13 +11247,21 @@ export const CreateFunctionModal = React.forwardRef<
                           rows={6}
                           className={cn(textareaCls, "pb-7")}
                         />
-                        <span className="absolute bottom-2 right-3 text-xs italic text-semantic-text-muted pointer-events-none">
+                        <span className="absolute bottom-2 right-3 text-sm text-semantic-text-muted pointer-events-none">
                           {body.length}/{BODY_MAX}
                         </span>
-                        <VarPopup variables={filteredBodyVars} onSelect={handleBodyVarSelect} style={bodyPopupStyle} />
+                        <VarPopup
+                          variables={filteredBodyVars}
+                          variableGroups={bodyTrigger ? variableGroups : undefined}
+                          filterQuery={bodyTrigger?.query ?? ""}
+                          onSelect={handleBodyVarSelect}
+                          onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                          onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
+                          style={bodyPopupStyle}
+                        />
                       </div>
                       {bodyError && (
-                        <p className="m-0 text-xs text-semantic-error-primary">{bodyError}</p>
+                        <p className="m-0 text-sm text-semantic-error-primary">{bodyError}</p>
                       )}
                     </div>
                   )}
@@ -10543,7 +11270,7 @@ export const CreateFunctionModal = React.forwardRef<
                 {/* Test Your API */}
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-semibold text-semantic-text-muted tracking-[0.048px]">
+                    <span className="text-sm font-semibold text-semantic-text-muted tracking-[0.048px]">
                       Test Your API
                     </span>
                     <div className="border-t border-semantic-border-layout" />
@@ -10552,12 +11279,12 @@ export const CreateFunctionModal = React.forwardRef<
                   {/* Variable test values — shown when URL/body/params contain {{variables}} */}
                   {testableVars.length > 0 && (
                     <div className="flex flex-col gap-2">
-                      <span className="text-xs text-semantic-text-muted">
+                      <span className="text-sm text-semantic-text-muted">
                         Variable values for testing
                       </span>
                       {testableVars.map((variable) => (
                         <div key={variable} className="flex items-center gap-3">
-                          <span className="text-xs text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
+                          <span className="text-sm text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
                             {variable}
                           </span>
                           <input
@@ -10587,7 +11314,7 @@ export const CreateFunctionModal = React.forwardRef<
                   </button>
 
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-xs text-semantic-text-muted">
+                    <span className="text-sm text-semantic-text-muted">
                       Response from API
                     </span>
                     <textarea
@@ -10645,6 +11372,15 @@ export const CreateFunctionModal = React.forwardRef<
           </div>
         </DialogContent>
       </Dialog>
+
+      <VariableFormModal
+        open={varModalOpen}
+        onOpenChange={setVarModalOpen}
+        mode={varModalMode}
+        initialData={varModalInitialData}
+        onSave={handleVariableSave}
+      />
+      </>
     );
   }
 );
@@ -10856,7 +11592,7 @@ const DEFAULT_LANGUAGE_OPTIONS: LanguageOption[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
+const BotIdentityCard = React.forwardRef(
   (
     {
       data,
@@ -10870,8 +11606,8 @@ const BotIdentityCard = React.forwardRef<HTMLDivElement, BotIdentityCardProps>(
       playingVoice,
       disabled,
       className,
-    },
-    ref
+    }: BotIdentityCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -11217,7 +11953,7 @@ function SectionCard({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
+const BotBehaviorCard = React.forwardRef(
   (
     {
       data,
@@ -11227,8 +11963,8 @@ const BotBehaviorCard = React.forwardRef<HTMLDivElement, BotBehaviorCardProps>(
       maxLength = 5000,
       disabled,
       className,
-    },
-    ref
+    }: BotBehaviorCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const prompt = data.systemPrompt ?? "";
     const MAX = maxLength;
@@ -11455,7 +12191,7 @@ const STATUS_CONFIG: Record<KnowledgeFileStatus, { label: string; variant: Badge
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProps>(
+const KnowledgeBaseCard = React.forwardRef(
   (
     {
       files,
@@ -11467,8 +12203,8 @@ const KnowledgeBaseCard = React.forwardRef<HTMLDivElement, KnowledgeBaseCardProp
       downloadDisabled,
       deleteDisabled,
       className,
-    },
-    ref
+    }: KnowledgeBaseCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -11620,8 +12356,8 @@ export interface FunctionsCardProps {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FunctionsCard = React.forwardRef<HTMLDivElement, FunctionsCardProps>(
-  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }, ref) => {
+const FunctionsCard = React.forwardRef(
+  ({ functions, onAddFunction, onEditFunction, onDeleteFunction, infoTooltip, disabled, editDisabled, deleteDisabled, className }: FunctionsCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}
@@ -11807,8 +12543,8 @@ function Field({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FrustrationHandoverCard = React.forwardRef<HTMLDivElement, FrustrationHandoverCardProps>(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }, ref) => {
+const FrustrationHandoverCard = React.forwardRef(
+  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     return (
       <div
         ref={ref}
@@ -11981,7 +12717,7 @@ function NumberSpinner({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCardProps>(
+const AdvancedSettingsCard = React.forwardRef(
   (
     {
       data,
@@ -11992,8 +12728,8 @@ const AdvancedSettingsCard = React.forwardRef<HTMLDivElement, AdvancedSettingsCa
       callEndThresholdMax = 10,
       disabled,
       className,
-    },
-    ref
+    }: AdvancedSettingsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -12159,10 +12895,7 @@ function PromptField({
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const FallbackPromptsCard = React.forwardRef<
-  HTMLDivElement,
-  FallbackPromptsCardProps
->(
+const FallbackPromptsCard = React.forwardRef(
   (
     {
       data,
@@ -12173,8 +12906,8 @@ const FallbackPromptsCard = React.forwardRef<
       disabled,
       defaultOpen = false,
       className,
-    },
-    ref
+    }: FallbackPromptsCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div
@@ -12253,6 +12986,35 @@ export interface KeyValuePair {
   value: string;
 }
 
+/** A single variable shown in the {{ autocomplete popup */
+export interface VariableItem {
+  /** Display name (e.g., "Order_id") */
+  name: string;
+  /** Value inserted into the input. Defaults to \`{{name}}\` if omitted */
+  value?: string;
+  /** When true, an edit icon is shown next to this variable */
+  editable?: boolean;
+  /** Description of what this variable represents */
+  description?: string;
+  /** Whether this variable is required */
+  required?: boolean;
+}
+
+/** Data shape for creating or editing a variable */
+export interface VariableFormData {
+  name: string;
+  description?: string;
+  required?: boolean;
+}
+
+/** A labelled group of variables in the autocomplete popup */
+export interface VariableGroup {
+  /** Group header text (e.g., "Function variables", "Session variables") */
+  label: string;
+  /** Variables in this group */
+  items: VariableItem[];
+}
+
 export interface FunctionItem {
   id: string;
   name: string;
@@ -12303,6 +13065,12 @@ export interface CreateFunctionModalProps {
   initialTab?: FunctionTabType;
   /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
   sessionVariables?: string[];
+  /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
+  variableGroups?: VariableGroup[];
+  /** Called when user saves a new variable from the autocomplete popup */
+  onAddVariable?: (data: VariableFormData) => void;
+  /** Called when user edits a variable from the autocomplete popup */
+  onEditVariable?: (originalName: string, data: VariableFormData) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
   className?: string;
@@ -12463,6 +13231,9 @@ export type {
   HttpMethod,
   FunctionTabType,
   SelectOption,
+  VariableItem,
+  VariableGroup,
+  VariableFormData,
 } from "./types";
 `, prefix),
         }
@@ -12532,7 +13303,7 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
  * />
  * \`\`\`
  */
-export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
+export const WalletTopup = React.forwardRef(
   (
     {
       title = "Instant wallet top-up",
@@ -12579,8 +13350,8 @@ export const WalletTopup = React.forwardRef<HTMLDivElement, WalletTopupProps>(
       open,
       onOpenChange,
       className,
-    },
-    ref
+    }: WalletTopupProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const isOpenControlled = open !== undefined;
 

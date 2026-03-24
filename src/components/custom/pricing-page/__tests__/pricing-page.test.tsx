@@ -258,7 +258,7 @@ describe("PricingPage", () => {
     expect(upgradeButtons[1]).not.toBeDisabled();
   });
 
-  it("expands only one Let us drive card when letUsDriveExpandMode is single", () => {
+  it("lets each Let us drive card expand independently", () => {
     const driveCardsWithDetails: LetUsDriveCardProps[] = [
       {
         title: "Onboarding",
@@ -286,94 +286,19 @@ describe("PricingPage", () => {
     render(
       <PricingPage
         letUsDriveCards={driveCardsWithDetails}
-        letUsDriveExpandMode="single"
       />
     );
+    // expand first card
     fireEvent.click(screen.getAllByText("Show details")[0]);
     expect(screen.getByText("Setup")).toBeInTheDocument();
     expect(screen.queryByText("Reviews")).not.toBeInTheDocument();
+    // expand second card — first stays open (independent)
     fireEvent.click(screen.getByText("Show details"));
-    expect(screen.getByText("Reviews")).toBeInTheDocument();
-    expect(screen.queryByText("Setup")).not.toBeInTheDocument();
-  });
-
-  it("expands all Let us drive cards when letUsDriveExpandMode is all", () => {
-    const driveCardsWithDetails: LetUsDriveCardProps[] = [
-      {
-        title: "Onboarding",
-        price: "20,000",
-        period: "/one-time",
-        description: "Cut adoption time.",
-        detailsContent: {
-          heading: "Includes:",
-          items: [{ title: "Setup", description: "Help with setup." }],
-        },
-        onCtaClick: vi.fn(),
-      },
-      {
-        title: "Account Manager",
-        price: "15,000",
-        period: "/month",
-        description: "One expert.",
-        detailsContent: {
-          heading: "Includes:",
-          items: [{ title: "Reviews", description: "Strategic reviews." }],
-        },
-        onCtaClick: vi.fn(),
-      },
-    ];
-    render(
-      <PricingPage
-        letUsDriveCards={driveCardsWithDetails}
-        letUsDriveExpandMode="all"
-      />
-    );
-    fireEvent.click(screen.getAllByText("Show details")[0]);
     expect(screen.getByText("Setup")).toBeInTheDocument();
     expect(screen.getByText("Reviews")).toBeInTheDocument();
-  });
-
-  it("collapses only the clicked card when Hide details is clicked in letUsDriveExpandMode all", () => {
-    const driveCardsWithDetails: LetUsDriveCardProps[] = [
-      {
-        title: "Onboarding",
-        price: "20,000",
-        period: "/one-time",
-        description: "Cut adoption time.",
-        detailsContent: {
-          heading: "Includes:",
-          items: [{ title: "Setup", description: "Help with setup." }],
-        },
-        onCtaClick: vi.fn(),
-      },
-      {
-        title: "Account Manager",
-        price: "15,000",
-        period: "/month",
-        description: "One expert.",
-        detailsContent: {
-          heading: "Includes:",
-          items: [{ title: "Reviews", description: "Strategic reviews." }],
-        },
-        onCtaClick: vi.fn(),
-      },
-    ];
-    render(
-      <PricingPage
-        letUsDriveCards={driveCardsWithDetails}
-        letUsDriveExpandMode="all"
-      />
-    );
-    // expand all by clicking any "Show details"
-    fireEvent.click(screen.getAllByText("Show details")[0]);
-    expect(screen.getByText("Setup")).toBeInTheDocument();
-    expect(screen.getByText("Reviews")).toBeInTheDocument();
-    // collapse only the first card
+    // collapse first card — second stays open
     fireEvent.click(screen.getAllByText("Hide details")[0]);
     expect(screen.queryByText("Setup")).not.toBeInTheDocument();
-    // second card should still be expanded
     expect(screen.getByText("Reviews")).toBeInTheDocument();
-    expect(screen.getAllByText("Show details")).toHaveLength(1);
-    expect(screen.getAllByText("Hide details")).toHaveLength(1);
   });
 });

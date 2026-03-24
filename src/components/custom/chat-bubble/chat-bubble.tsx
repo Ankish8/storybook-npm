@@ -93,7 +93,7 @@ function DeliveryFooter({
  * </ChatBubble>
  * ```
  */
-const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
+const ChatBubble = React.forwardRef(
   (
     {
       variant,
@@ -108,8 +108,8 @@ const ChatBubble = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       children,
       className,
       ...props
-    },
-    ref
+    }: ChatBubbleProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const hasMedia = !!media;
 

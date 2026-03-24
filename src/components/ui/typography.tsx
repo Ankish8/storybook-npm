@@ -133,7 +133,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
  * <Typography truncate>Very long text that will be truncated...</Typography>
  * ```
  */
-const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+const Typography = React.forwardRef(
   (
     {
       children,
@@ -146,8 +146,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       tag,
       htmlFor,
       ...props
-    },
-    ref
+    }: TypographyProps,
+    ref: React.Ref<HTMLElement>
   ) => {
     const key: Key = `${kind}-${variant}`;
     const Tag = (tag || mapTagName[key]) as React.ElementType;

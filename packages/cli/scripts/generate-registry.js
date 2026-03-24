@@ -45,6 +45,96 @@ if (!singleWordMatch) {
 const SINGLE_WORD_UTILITIES_LITERAL = singleWordMatch[1]
 
 /**
+ * Extract a function body from TypeScript source by name.
+ * Properly handles strings, template literals, and comments to track brace depth.
+ */
+function extractFunctionFromSource(source, funcName) {
+  const funcRegex = new RegExp(`(?:export )?function ${funcName}\\b`)
+  const match = funcRegex.exec(source)
+  if (!match) {
+    console.warn(`Warning: Could not find function ${funcName} in prefix-utils.ts`)
+    return ''
+  }
+
+  let depth = 0
+  let i = match.index
+  while (i < source.length) {
+    if (source[i] === '/' && source[i + 1] === '/') {
+      while (i < source.length && source[i] !== '\n') i++
+      continue
+    }
+    if (source[i] === '/' && source[i + 1] === '*') {
+      i += 2
+      while (i < source.length && !(source[i] === '*' && source[i + 1] === '/')) i++
+      i += 2
+      continue
+    }
+    // Handle regex literals: /pattern/flags
+    // A '/' is a regex start when preceded by certain tokens (not a division operator)
+    if (source[i] === '/' && source[i + 1] !== '/' && source[i + 1] !== '*') {
+      // Look back to determine if this is a regex or division
+      let j = i - 1
+      while (j >= 0 && /\s/.test(source[j])) j--
+      const prevChar = j >= 0 ? source[j] : ''
+      // After these chars/keywords, '/' starts a regex (not division)
+      if ('=([!&|?:,;{}>~^%*/+-'.includes(prevChar) || prevChar === '' ||
+          source.slice(Math.max(0, j - 5), j + 1).match(/\breturn$/)) {
+        i++ // skip opening /
+        while (i < source.length && source[i] !== '/') {
+          if (source[i] === '\\') i++ // skip escaped char
+          if (source[i] === '[') { // character class
+            i++
+            while (i < source.length && source[i] !== ']') { if (source[i] === '\\') i++; i++ }
+          }
+          i++
+        }
+        i++ // skip closing /
+        while (i < source.length && /[gimsuy]/.test(source[i])) i++ // skip flags
+        continue
+      }
+    }
+    if (source[i] === "'" || source[i] === '"') {
+      const quote = source[i]
+      i++
+      while (i < source.length && source[i] !== quote) { if (source[i] === '\\') i++; i++ }
+      i++
+      continue
+    }
+    if (source[i] === '`') {
+      i++
+      let tmplDepth = 0
+      while (i < source.length) {
+        if (source[i] === '\\') { i += 2; continue }
+        if (source[i] === '`' && tmplDepth === 0) { i++; break }
+        if (source[i] === '$' && source[i + 1] === '{') { tmplDepth++; i += 2; continue }
+        if (source[i] === '}' && tmplDepth > 0) { tmplDepth--; i++; continue }
+        i++
+      }
+      continue
+    }
+    if (source[i] === '{') depth++
+    else if (source[i] === '}') {
+      depth--
+      if (depth === 0) { i++; break }
+    }
+    i++
+  }
+
+  let code = source.slice(match.index, i)
+  code = code.replace(/^export /, '')
+  return code
+}
+
+// Extract Pattern 6 block and helper functions from prefix-utils.ts
+const pattern6Match = prefixUtilsSource.match(/\/\/ PATTERN-6-START\n([\s\S]*?)\/\/ PATTERN-6-END/)
+const PATTERN_6_CODE = pattern6Match ? pattern6Match[1].trimEnd() : ''
+
+const HELPER_FUNCTIONS = ['isAlreadyPrefixed', 'prefixStaticTemplatePart', 'prefixStringLiteralsInExpr', 'prefixClassNameExpression']
+  .map(name => extractFunctionFromSource(prefixUtilsSource, name))
+  .filter(Boolean)
+  .join('\n\n')
+
+/**
  * Load and parse components.yaml
  */
 function loadConfig() {
@@ -207,7 +297,7 @@ function escapeForTemplate(str) {
  * Generate the prefix utils code that gets embedded in each registry file
  */
 function getPrefixUtilsCode() {
-  return `/**
+  let code = `/**
  * Semantic token to fallback color mapping
  * Ensures components work even without semantic tokens defined in user's Tailwind config
  */
@@ -334,6 +424,9 @@ function transformSemanticClassesInContent(content: string): string {
   const cnRegex = /\\bcn\\s*\\(/g
   let cnMatch
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     result += content.slice(lastIndex, cnMatch.index)
     let depth = 1
     let i = cnMatch.index + cnMatch[0].length
@@ -466,9 +559,14 @@ function looksLikeTailwindClasses(str: string): boolean {
   })
 }
 
+// Regex to detect border-WIDTH classes (border, border-2, border-t, border-b-4, border-[3px], etc.)
+const BORDER_WIDTH_RE = /^border(-[trblxy])?(-[0248]|-\\[.+\\])?$/
+// Regex to detect border-STYLE classes
+const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
+
 // Helper to prefix a single class string
 function prefixClassString(classString: string, prefix: string): string {
-  return classString
+  const prefixed = classString
     .split(' ')
     .map((cls: string) => {
       if (!cls) return cls
@@ -546,7 +644,19 @@ function prefixClassString(classString: string, prefix: string): string {
       // Regular class (including arbitrary values like bg-[#343E55])
       return \`\${prefix}\${cls}\`
     })
-    .join(' ')
+
+  // Auto-inject border-solid when border-width classes are present without an explicit border-style.
+  // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
+  // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
+  // the border visible regardless of the host CSS environment.
+  const origClasses = classString.split(' ')
+  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
+  if (hasBorderWidth && !hasBorderStyle) {
+    prefixed.push(\`\${prefix}border-solid\`)
+  }
+
+  return prefixed.join(' ')
 }
 
 // Context-aware Tailwind class prefixing
@@ -575,6 +685,9 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   let cnMatch
 
   while ((cnMatch = cnRegex.exec(content)) !== null) {
+    // Skip nested cn() calls that fall inside an already-processed outer cn()
+    if (cnMatch.index < lastIndex) continue
+
     // Add everything before this cn(
     result += content.slice(lastIndex, cnMatch.index)
 
@@ -630,8 +743,32 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   // But be careful not to match non-class string values
   // IMPORTANT: [^"\\n]+ prevents matching across newlines to avoid greedy captures
 
-  // Skip keys that are definitely not class values (only when value is ambiguous)
-  const nonClassKeys = ['name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint']
+  // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
+  // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
+  // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
+  // position, background, top, left, right, bottom, gap, transform, transition, animation,
+  // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  const nonClassKeys = [
+    // HTML attributes
+    'name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint',
+    // CSS style properties (camelCase — safe because they can't be CVA variant keys)
+    'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
+    'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
+    'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+    'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'lineHeight', 'letterSpacing',
+    'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'borderRadius',
+    'zIndex', 'overflow', 'overflowX', 'overflowY', 'userSelect',
+    'transitionDuration', 'transitionProperty',
+    'boxShadow', 'textShadow', 'outlineOffset',
+    'rowGap', 'columnGap', 'gridTemplateColumns', 'gridTemplateRows',
+    'flexBasis', 'flexGrow', 'flexShrink', 'flexDirection', 'flexWrap',
+    'alignItems', 'alignSelf', 'justifyContent', 'justifyItems',
+    'textAlign', 'textDecoration', 'textTransform', 'whiteSpace', 'wordBreak', 'wordSpacing',
+    'aspectRatio', 'scrollbarWidth', 'scrollBehavior',
+    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
+    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
+    'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
+  ]
 
   // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
   function hasObviousTailwindPatterns(value: string): boolean {
@@ -728,6 +865,27 @@ function prefixTailwindClasses(content: string, prefix: string): string {
 
   return content
 }`
+
+  // Inject Pattern 6 (className={...} expression handling) from prefix-utils.ts
+  // Use function replacement to prevent $ pattern interpretation in String.replace
+  // IMPORTANT: Target the LAST 'return content\n}' (in prefixTailwindClasses),
+  // NOT the first one (in transformSemanticClassesInContent)
+  if (PATTERN_6_CODE) {
+    // Use a unique anchor from the end of Pattern 5 to avoid matching the wrong function
+    const anchor = `  )\n\n  return content\n}`
+    const anchorIndex = code.lastIndexOf(anchor)
+    if (anchorIndex !== -1) {
+      const insertPos = anchorIndex + '  )\n\n'.length
+      code = code.slice(0, insertPos) + PATTERN_6_CODE + '\n\n  return content\n}' + code.slice(anchorIndex + anchor.length)
+    }
+  }
+
+  // Append helper functions extracted from prefix-utils.ts
+  if (HELPER_FUNCTIONS) {
+    code += '\n\n' + HELPER_FUNCTIONS
+  }
+
+  return code
 }
 
 /**

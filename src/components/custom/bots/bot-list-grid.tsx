@@ -2,8 +2,8 @@ import * as React from "react";
 import { cn } from "../../../lib/utils";
 import type { BotListGridProps } from "./types";
 
-export const BotListGrid = React.forwardRef<HTMLDivElement, BotListGridProps>(
-  ({ children, className, ...props }, ref) => (
+export const BotListGrid = React.forwardRef(
+  ({ children, className, ...props }: BotListGridProps, ref: React.Ref<HTMLDivElement>) => (
     <div
       ref={ref}
       className={cn(

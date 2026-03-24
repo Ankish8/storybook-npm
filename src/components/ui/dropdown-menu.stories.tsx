@@ -150,16 +150,16 @@ export const Overview: Story = {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
+          <User className="h-4 w-4" />
           Profile
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
+          <Settings className="h-4 w-4" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="h-4 w-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -186,16 +186,16 @@ export const IconTrigger: Story = {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>
-          <Edit className="mr-2 h-4 w-4" />
+          <Edit className="h-4 w-4" />
           Edit
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Copy className="mr-2 h-4 w-4" />
+          <Copy className="h-4 w-4" />
           Duplicate
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-red-600">
-          <Trash className="mr-2 h-4 w-4" />
+          <Trash className="h-4 w-4" />
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -219,18 +219,18 @@ export const WithShortcuts: Story = {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Edit className="mr-2 h-4 w-4" />
+          <Edit className="h-4 w-4" />
           Edit
           <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Copy className="mr-2 h-4 w-4" />
+          <Copy className="h-4 w-4" />
           Copy
           <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-red-600">
-          <Trash className="mr-2 h-4 w-4" />
+          <Trash className="h-4 w-4" />
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>
@@ -403,33 +403,33 @@ export const Submenus: Story = {
         <DropdownMenuLabel>Team Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Users className="mr-2 h-4 w-4" />
+          <Users className="h-4 w-4" />
           Team Members
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <UserPlus className="mr-2 h-4 w-4" />
+            <UserPlus className="h-4 w-4" />
             Invite Users
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             <DropdownMenuItem>
-              <Mail className="mr-2 h-4 w-4" />
+              <Mail className="h-4 w-4" />
               Email Invite
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <MessageSquare className="mr-2 h-4 w-4" />
+              <MessageSquare className="h-4 w-4" />
               Message Invite
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <PlusCircle className="mr-2 h-4 w-4" />
+              <PlusCircle className="h-4 w-4" />
               More Options...
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           New Team
           <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
         </DropdownMenuItem>

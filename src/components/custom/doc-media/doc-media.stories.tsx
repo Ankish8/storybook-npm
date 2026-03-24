@@ -10,7 +10,7 @@ const meta: Meta<typeof DocMedia> = {
     docs: {
       description: {
         component: `
-A document media component for displaying documents in chat messages. Supports three variants: **preview** (full image thumbnail with gradient overlay showing filename and metadata), **download** (simple image thumbnail), and **file** (icon-centered preview with filetype badge and download button).
+A document media component for displaying documents in chat messages. Supports three variants: **preview** and **download** (both show full image thumbnail with gradient overlay, filename, and metadata — consistent appearance for agent and customer messages), and **file** (icon-centered preview with filetype badge and download button for documents without thumbnails).
 
 ### Installation
 
@@ -67,9 +67,12 @@ export const PDFPreview: Story = {
 export const ImageDownload: Story = {
   args: {
     variant: "download",
-    thumbnailUrl: "https://placehold.co/380x240/e2e8f0/64748b?text=Document+Image",
+    thumbnailUrl: "https://placehold.co/442x308/e2e8f0/64748b?text=Document+Image",
+    filename: "Invoice_Scan.pdf",
+    fileType: "PDF",
+    pageCount: 3,
+    fileSize: "1.8 MB",
     caption: "Invoice scan",
-    filename: "invoice_scan.jpg",
   },
 };
 
@@ -113,8 +116,11 @@ export const AllVariants: Story = {
         </p>
         <DocMedia
           variant="download"
-          thumbnailUrl="https://placehold.co/380x240/e2e8f0/64748b?text=Document+Image"
-          caption="Invoice scan"
+          thumbnailUrl="https://placehold.co/442x308/e2e8f0/64748b?text=Document+Image"
+          filename="Invoice_Scan.pdf"
+          fileType="PDF"
+          pageCount={3}
+          fileSize="1.8 MB"
         />
       </div>
       <div>

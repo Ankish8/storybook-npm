@@ -19,7 +19,7 @@ import type { PowerUpCardProps } from "./types";
  * />
  * ```
  */
-const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
+const PowerUpCard = React.forwardRef(
   (
     {
       icon,
@@ -30,8 +30,8 @@ const PowerUpCard = React.forwardRef<HTMLDivElement, PowerUpCardProps>(
       onCtaClick,
       className,
       ...props
-    },
-    ref
+    }: PowerUpCardProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     return (
       <div

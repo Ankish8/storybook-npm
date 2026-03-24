@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Clock, AlertTriangle, CheckCircle } from "lucide-react";
 import { Tag, TagGroup } from "./tag";
 
 const meta: Meta<typeof Tag> = {
@@ -160,6 +161,33 @@ export const AllSizes: Story = {
       <Tag size="sm">Small</Tag>
       <Tag size="default">Default</Tag>
       <Tag size="lg">Large</Tag>
+    </div>
+  ),
+};
+
+export const WithIcons: Story = {
+  name: "With Icons",
+  parameters: {
+    docs: {
+      description: {
+        story: "Tags can contain icons alongside text. The children span uses `inline-flex items-center gap-1` to keep icon and text on a single row.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-wrap items-center gap-4">
+      <Tag variant="warning" size="sm">
+        <Clock className="size-3 shrink-0" />
+        2h
+      </Tag>
+      <Tag variant="error" size="sm">
+        <AlertTriangle className="size-3 shrink-0" />
+        Overdue
+      </Tag>
+      <Tag variant="success" size="sm">
+        <CheckCircle className="size-3 shrink-0" />
+        Resolved
+      </Tag>
     </div>
   ),
 };

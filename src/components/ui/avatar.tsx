@@ -83,7 +83,7 @@ export interface AvatarProps
  * <Avatar initials="AS" size="xs" />
  * ```
  */
-const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+const Avatar = React.forwardRef(
   (
     {
       className,
@@ -96,8 +96,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       status,
       children,
       ...props
-    },
-    ref
+    }: AvatarProps,
+    ref: React.Ref<HTMLDivElement>
   ) => {
     const resolvedSize = size ?? "md";
     const displayInitials = initials ?? (name ? getInitials(name) : undefined);

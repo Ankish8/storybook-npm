@@ -4,8 +4,8 @@ interface PlanIconProps extends React.SVGAttributes<SVGElement> {
   className?: string;
 }
 
-const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const CompactCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -44,8 +44,8 @@ const CompactCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 CompactCarIcon.displayName = "CompactCarIcon";
 
-const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SedanCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
@@ -96,8 +96,8 @@ const SedanCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
 );
 SedanCarIcon.displayName = "SedanCarIcon";
 
-const SuvCarIcon = React.forwardRef<SVGSVGElement, PlanIconProps>(
-  ({ className, ...props }, ref) => (
+const SuvCarIcon = React.forwardRef(
+  ({ className, ...props }: PlanIconProps, ref: React.Ref<SVGSVGElement>) => (
     <svg
       ref={ref}
       className={className}
