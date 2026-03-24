@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 83 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 84 components across 7 categories.
 
 ## Quick Reference
 
@@ -49,6 +49,7 @@
 | CarouselMedia | custom | `npx myoperator-ui add carousel-media` |
 | ChatBubble | custom | `npx myoperator-ui add chat-bubble` |
 | ChatComposer | custom | `npx myoperator-ui add chat-composer` |
+| ChatListItem | custom | `npx myoperator-ui add chat-list-item` |
 | ChatTimelineDivider | custom | `npx myoperator-ui add chat-timeline-divider` |
 | DocMedia | custom | `npx myoperator-ui add doc-media` |
 | EventSelector | custom | `npx myoperator-ui add event-selector` |
@@ -688,6 +689,14 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add chat-composer`
 **Requires**: `button`, `reply-quote` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatListItem
+> A chat list item showing contact name, message preview, timestamp, delivery status, and channel badge
+
+**Install**: `npx myoperator-ui add chat-list-item`
 **Type**: Multi-file component
 
 ---
