@@ -180,7 +180,7 @@ async function readSingleFileComponent(componentName, meta) {
 /**
  * Read a multi-file component
  */
-async function readMultiFileComponent(componentName, meta) {
+async function readMultiFileComponent(componentName, meta, allComponents) {
   const componentDir = path.join(CUSTOM_COMPONENTS_DIR, meta.directory)
 
   if (!fs.existsSync(componentDir)) {
@@ -225,6 +225,44 @@ async function readMultiFileComponent(componentName, meta) {
       `from "${uiSiblingPrefix}/$1"`
     )
 
+    // For grouped components, also transform relative lib/utils paths
+    // Source custom components use ../../../lib/utils (3 levels: custom/component/ → src/)
+    // Grouped target uses ../../../../lib/utils (4 levels: ui/group/component/ → src/)
+    if (meta.group) {
+      content = content.replace(
+        /from\s*["']\.\.\/\.\.\/\.\.\/lib\/utils["']/g,
+        `from "../../../../lib/utils"`
+      )
+
+      // Transform sibling custom component imports for grouped components
+      // Source: ../sibling-component (works in custom/ where all are at same level)
+      // Target: must check if sibling is in the SAME group or not
+      //   Same group: ../sibling (correct, both under ui/group/)
+      //   Different/no group: ../../sibling (need to go up out of group/ first)
+      const sameGroupDirs = new Set()
+      if (allComponents) {
+        for (const [, compMeta] of Object.entries(allComponents)) {
+          if (compMeta.group === meta.group && compMeta.isMultiFile && compMeta.directory) {
+            sameGroupDirs.add(compMeta.directory)
+          }
+        }
+      }
+
+      content = content.replace(
+        /from\s*["']\.\.\/([^."'/][^"']*)["']/g,
+        (match, importPath) => {
+          // Extract the top-level directory from the import path (e.g. "chat-list-item" from "../chat-list-item")
+          const topDir = importPath.split('/')[0]
+          if (sameGroupDirs.has(topDir)) {
+            // Same group — keep as ../
+            return match
+          }
+          // Different group — needs ../../
+          return `from "../../${importPath}"`
+        }
+      )
+    }
+
     componentFiles.push({
       name: fileName,
       content,
@@ -257,7 +295,7 @@ async function readMultiFileComponent(componentName, meta) {
 async function readAllComponents(config) {
   const readPromises = Object.entries(config.components).map(async ([name, meta]) => {
     if (meta.isMultiFile) {
-      return readMultiFileComponent(name, meta)
+      return readMultiFileComponent(name, meta, config.components)
     }
     return readSingleFileComponent(name, meta)
   })

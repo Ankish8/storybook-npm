@@ -15613,12 +15613,12 @@ export type { ChatContextValue } from "./types"
         {
           name: "chat-sidebar.tsx",
           content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Button } from "../../button"
 import { TextField } from "../../text-field"
 import { Tabs, TabsList, TabsTrigger } from "../../tabs"
 import { Badge } from "../../badge"
-import { ChatListItem, type MessageType } from "../chat-list-item"
+import { ChatListItem, type MessageType } from "../../chat-list-item"
 import { useChatContext } from "../chat-provider"
 import type { Tab } from "../chat-types"
 import { Search, Plus, CircleAlert } from "lucide-react"
@@ -16326,7 +16326,7 @@ export type { ChatFilterPanelProps } from "./chat-filter-panel"
         {
           name: "chat-new-panel.tsx",
           content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Button } from "../../button"
 import { TextField } from "../../text-field"
 import {
@@ -16487,7 +16487,7 @@ export { ChatNewPanel }
         {
           name: "add-contact-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Button } from "../../button"
 import { TextField } from "../../text-field"
 import {
@@ -17028,7 +17028,7 @@ export {
         {
           name: "chat-message-list.tsx",
           content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Button } from "../../button"
 import {
   Tooltip,
@@ -17044,8 +17044,8 @@ import {
   File,
   ArrowDown,
 } from "lucide-react"
-import { ChatTimelineDivider } from "../chat-timeline-divider"
-import { DocMedia } from "../doc-media"
+import { ChatTimelineDivider } from "../../chat-timeline-divider"
+import { DocMedia } from "../../doc-media"
 import { useChatContext } from "../chat-provider"
 import type { ChatMessage } from "../chat-types"
 import {
@@ -17661,7 +17661,7 @@ export { AssignmentDropdown }
           name: "resolve-button.tsx",
           content: prefixTailwindClasses(`import { useState } from "react"
 import { Check } from "lucide-react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Button } from "../../button"
 import { useChatContext } from "../chat-provider"
 
@@ -18025,7 +18025,7 @@ import {
   TooltipTrigger,
   TooltipArrow,
 } from "../../tooltip"
-import { ChatComposer } from "../chat-composer"
+import { ChatComposer } from "../../chat-composer"
 import { ComposerAttachmentPreview } from "./composer-attachment-preview"
 import { CannedMessagesDropdown } from "./canned-messages"
 import { useChatContext } from "../chat-provider"
@@ -19692,7 +19692,7 @@ export function resolveVars(
         {
           name: "chat-app.tsx",
           content: prefixTailwindClasses(`import * as React from "react"
-import { cn } from "../../../lib/utils"
+import { cn } from "../../../../lib/utils"
 import { Button } from "../../button"
 import {
   TooltipProvider,
