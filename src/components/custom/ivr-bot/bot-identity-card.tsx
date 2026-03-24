@@ -144,7 +144,7 @@ function StyledInput({
       disabled={disabled}
       maxLength={maxLength}
       className={cn(
-        "w-full h-[42px] px-4 text-base rounded border",
+        "w-full h-[42px] px-4 text-base rounded border border-solid",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
@@ -221,12 +221,12 @@ const BotIdentityCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg",
           className
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
           <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
             Who The Bot Is
           </h2>

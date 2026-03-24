@@ -130,7 +130,7 @@ function VarPopup({
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
     >
       {variables.map((v) => (
         <button
@@ -165,11 +165,11 @@ function SectionCard({
   return (
     <div
       className={cn(
-        "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg",
+        "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg",
         className
       )}
     >
-      <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
         <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
           {title}
         </h2>
@@ -312,7 +312,7 @@ const BotBehaviorCard = React.forwardRef(
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
                 className={cn(
-                  "w-full px-4 py-2.5 text-base rounded border resize-none pb-10 pr-[4.5rem]",
+                  "w-full px-4 py-2.5 text-base rounded border border-solid resize-none pb-10 pr-[4.5rem]",
                   "border-semantic-border-input bg-semantic-bg-primary",
                   "text-semantic-text-primary placeholder:text-semantic-text-muted",
                   "outline-none hover:border-semantic-border-input-focus",

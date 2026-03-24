@@ -612,7 +612,7 @@ function VariableInput({
 
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
-  "w-full h-[42px] px-4 text-base rounded border",
+  "w-full h-[42px] px-4 text-base rounded border border-solid",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none",
@@ -621,7 +621,7 @@ const inputCls = cn(
 );
 
 const textareaCls = cn(
-  "w-full px-4 py-2.5 text-base rounded border resize-none",
+  "w-full px-4 py-2.5 text-base rounded border border-solid resize-none",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none",
@@ -691,10 +691,10 @@ function KeyValueTable({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm text-semantic-text-muted">{label}</span>
-      <div className="border border-semantic-border-layout rounded">
+      <div className="border border-solid border-semantic-border-layout rounded">
         {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
-        <div className="hidden sm:flex border-b border-semantic-border-layout rounded-t">
-          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+        <div className="hidden sm:flex border-b border-solid border-semantic-border-layout rounded-t">
+          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-solid border-semantic-border-layout">
             Key
           </div>
           <div className="flex-[2] min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted">
@@ -709,10 +709,10 @@ function KeyValueTable({
           return (
             <div
               key={row.id}
-              className="border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+              className="border-b border-solid border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
             >
               {/* Key column — border-r on column (not input) so it aligns with header */}
-              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
+              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-solid sm:border-semantic-border-layout">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
@@ -757,7 +757,7 @@ function KeyValueTable({
               </div>
 
               {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
-              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-semantic-border-layout sm:border-l-0">
+              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-solid border-semantic-border-layout sm:border-l-0">
                 <Button
                   type="button"
                   variant="ghost"
@@ -1131,7 +1131,7 @@ export const CreateFunctionModal = React.forwardRef(
           )}
         >
           {/* ── Header ── */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout shrink-0 sm:px-6">
+          <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout shrink-0 sm:px-6">
             <DialogTitle className="text-base font-semibold text-semantic-text-primary">
               {isEditing ? "Edit Function" : "Create Function"}
             </DialogTitle>
@@ -1213,13 +1213,13 @@ export const CreateFunctionModal = React.forwardRef(
                   </span>
                   <div
                     className={cn(
-                      "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
+                      "flex h-[42px] rounded border border-solid border-semantic-border-input overflow-visible bg-semantic-bg-primary",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
                     )}
                   >
                     {/* Method selector */}
-                    <div className="relative shrink-0 border-r border-semantic-border-layout">
+                    <div className="relative shrink-0 border-r border-solid border-semantic-border-layout">
                       <select
                         value={method}
                         disabled={disabled}
@@ -1294,7 +1294,7 @@ export const CreateFunctionModal = React.forwardRef(
                 <div className="flex flex-col gap-4">
                   <div
                     className={cn(
-                      "flex border-b border-semantic-border-layout",
+                      "flex border-b border-solid border-semantic-border-layout",
                       "overflow-x-auto",
                       "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     )}
@@ -1307,7 +1307,7 @@ export const CreateFunctionModal = React.forwardRef(
                         className={cn(
                           "px-3 py-2 text-sm font-semibold transition-colors whitespace-nowrap shrink-0",
                           activeTab === tab
-                            ? "text-semantic-text-secondary border-b-2 border-semantic-text-secondary -mb-px"
+                            ? "text-semantic-text-secondary border-b-2 border-solid border-semantic-text-secondary -mb-px"
                             : "text-semantic-text-muted hover:text-semantic-text-primary"
                         )}
                       >
@@ -1460,7 +1460,7 @@ export const CreateFunctionModal = React.forwardRef(
                       readOnly
                       value={apiResponse}
                       rows={4}
-                      className="w-full px-3 py-2.5 text-base rounded border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary resize-none outline-none"
+                      className="w-full px-3 py-2.5 text-base rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary resize-none outline-none"
                       placeholder=""
                     />
                   </div>
@@ -1470,7 +1470,7 @@ export const CreateFunctionModal = React.forwardRef(
           </div>
 
           {/* ── Footer ── */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-semantic-border-layout shrink-0 sm:px-6 sm:py-4">
+          <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-solid border-semantic-border-layout shrink-0 sm:px-6 sm:py-4">
             {step === 1 ? (
               <>
                 <Button

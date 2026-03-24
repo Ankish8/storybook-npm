@@ -74,13 +74,13 @@ const FrustrationHandoverCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
         <Accordion type="single">
           <AccordionItem value="frustration">
-            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+            <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
                 Frustration Handover
                 <Info className="size-3.5 text-semantic-text-muted shrink-0" />

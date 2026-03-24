@@ -9770,7 +9770,7 @@ export const IvrBotConfig = React.forwardRef(
           </div>
 
           {/* Right column — gray panel extending full height */}
-          <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[2] min-w-0 bg-semantic-bg-ui border-l border-semantic-border-layout">
+          <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[2] min-w-0 bg-semantic-bg-ui border-l border-solid border-semantic-border-layout">
             <KnowledgeBaseCard
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}
@@ -10103,7 +10103,7 @@ function VarPopup({
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
     >
       {/* Add new variable */}
       {onAddVariable && (
@@ -10116,7 +10116,7 @@ function VarPopup({
             <Plus className="size-3.5 shrink-0" />
             Add new variable
           </button>
-          <div className="border-t border-semantic-border-layout" />
+          <div className="border-t border-solid border-semantic-border-layout" />
         </>
       )}
 
@@ -10417,7 +10417,7 @@ function VariableInput({
             className={cn(
               "flex items-center gap-1 px-2",
               !isExpanded && "flex-1 min-w-0 overflow-hidden",
-              isExpanded && "flex-wrap bg-semantic-bg-primary border border-semantic-border-input rounded py-1.5 shadow-sm"
+              isExpanded && "flex-wrap bg-semantic-bg-primary border border-solid border-semantic-border-input rounded py-1.5 shadow-sm"
             )}
           >
             {segments.map((seg, i) =>
@@ -10478,7 +10478,7 @@ function VariableInput({
 
 // ── Shared input/textarea styles ──────────────────────────────────────────────
 const inputCls = cn(
-  "w-full h-[42px] px-4 text-base rounded border",
+  "w-full h-[42px] px-4 text-base rounded border border-solid",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none",
@@ -10487,7 +10487,7 @@ const inputCls = cn(
 );
 
 const textareaCls = cn(
-  "w-full px-4 py-2.5 text-base rounded border resize-none",
+  "w-full px-4 py-2.5 text-base rounded border border-solid resize-none",
   "border-semantic-border-input bg-semantic-bg-primary",
   "text-semantic-text-primary placeholder:text-semantic-text-muted",
   "outline-none",
@@ -10557,10 +10557,10 @@ function KeyValueTable({
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-sm text-semantic-text-muted">{label}</span>
-      <div className="border border-semantic-border-layout rounded">
+      <div className="border border-solid border-semantic-border-layout rounded">
         {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
-        <div className="hidden sm:flex border-b border-semantic-border-layout rounded-t">
-          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-semantic-border-layout">
+        <div className="hidden sm:flex border-b border-solid border-semantic-border-layout rounded-t">
+          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-solid border-semantic-border-layout">
             Key
           </div>
           <div className="flex-[2] min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted">
@@ -10575,10 +10575,10 @@ function KeyValueTable({
           return (
             <div
               key={row.id}
-              className="border-b border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+              className="border-b border-solid border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
             >
               {/* Key column — border-r on column (not input) so it aligns with header */}
-              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-semantic-border-layout">
+              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-solid sm:border-semantic-border-layout">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
@@ -10623,7 +10623,7 @@ function KeyValueTable({
               </div>
 
               {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
-              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-semantic-border-layout sm:border-l-0">
+              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-solid border-semantic-border-layout sm:border-l-0">
                 <Button
                   type="button"
                   variant="ghost"
@@ -10997,7 +10997,7 @@ export const CreateFunctionModal = React.forwardRef(
           )}
         >
           {/* ── Header ── */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout shrink-0 sm:px-6">
+          <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout shrink-0 sm:px-6">
             <DialogTitle className="text-base font-semibold text-semantic-text-primary">
               {isEditing ? "Edit Function" : "Create Function"}
             </DialogTitle>
@@ -11079,13 +11079,13 @@ export const CreateFunctionModal = React.forwardRef(
                   </span>
                   <div
                     className={cn(
-                      "flex h-[42px] rounded border border-semantic-border-input overflow-visible bg-semantic-bg-primary",
+                      "flex h-[42px] rounded border border-solid border-semantic-border-input overflow-visible bg-semantic-bg-primary",
                       "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
                       "transition-shadow"
                     )}
                   >
                     {/* Method selector */}
-                    <div className="relative shrink-0 border-r border-semantic-border-layout">
+                    <div className="relative shrink-0 border-r border-solid border-semantic-border-layout">
                       <select
                         value={method}
                         disabled={disabled}
@@ -11160,7 +11160,7 @@ export const CreateFunctionModal = React.forwardRef(
                 <div className="flex flex-col gap-4">
                   <div
                     className={cn(
-                      "flex border-b border-semantic-border-layout",
+                      "flex border-b border-solid border-semantic-border-layout",
                       "overflow-x-auto",
                       "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                     )}
@@ -11173,7 +11173,7 @@ export const CreateFunctionModal = React.forwardRef(
                         className={cn(
                           "px-3 py-2 text-sm font-semibold transition-colors whitespace-nowrap shrink-0",
                           activeTab === tab
-                            ? "text-semantic-text-secondary border-b-2 border-semantic-text-secondary -mb-px"
+                            ? "text-semantic-text-secondary border-b-2 border-solid border-semantic-text-secondary -mb-px"
                             : "text-semantic-text-muted hover:text-semantic-text-primary"
                         )}
                       >
@@ -11278,7 +11278,7 @@ export const CreateFunctionModal = React.forwardRef(
                     <span className="text-sm font-semibold text-semantic-text-muted tracking-[0.048px]">
                       Test Your API
                     </span>
-                    <div className="border-t border-semantic-border-layout" />
+                    <div className="border-t border-solid border-semantic-border-layout" />
                   </div>
 
                   {/* Variable test values — shown when URL/body/params contain {{variables}} */}
@@ -11326,7 +11326,7 @@ export const CreateFunctionModal = React.forwardRef(
                       readOnly
                       value={apiResponse}
                       rows={4}
-                      className="w-full px-3 py-2.5 text-base rounded border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary resize-none outline-none"
+                      className="w-full px-3 py-2.5 text-base rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary resize-none outline-none"
                       placeholder=""
                     />
                   </div>
@@ -11336,7 +11336,7 @@ export const CreateFunctionModal = React.forwardRef(
           </div>
 
           {/* ── Footer ── */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-semantic-border-layout shrink-0 sm:px-6 sm:py-4">
+          <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-solid border-semantic-border-layout shrink-0 sm:px-6 sm:py-4">
             {step === 1 ? (
               <>
                 <Button
@@ -11541,7 +11541,7 @@ function StyledInput({
       disabled={disabled}
       maxLength={maxLength}
       className={cn(
-        "w-full h-[42px] px-4 text-base rounded border",
+        "w-full h-[42px] px-4 text-base rounded border border-solid",
         "border-semantic-border-input bg-semantic-bg-primary",
         "text-semantic-text-primary placeholder:text-semantic-text-muted",
         "outline-none hover:border-semantic-border-input-focus",
@@ -11618,12 +11618,12 @@ const BotIdentityCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg",
           className
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
           <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
             Who The Bot Is
           </h2>
@@ -11907,7 +11907,7 @@ function VarPopup({
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
     >
       {variables.map((v) => (
         <button
@@ -11942,11 +11942,11 @@ function SectionCard({
   return (
     <div
       className={cn(
-        "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg",
+        "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg",
         className
       )}
     >
-      <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+      <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
         <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
           {title}
         </h2>
@@ -12089,7 +12089,7 @@ const BotBehaviorCard = React.forwardRef(
                 placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                 disabled={disabled}
                 className={cn(
-                  "w-full px-4 py-2.5 text-base rounded border resize-none pb-10 pr-[4.5rem]",
+                  "w-full px-4 py-2.5 text-base rounded border border-solid resize-none pb-10 pr-[4.5rem]",
                   "border-semantic-border-input bg-semantic-bg-primary",
                   "text-semantic-text-primary placeholder:text-semantic-text-muted",
                   "outline-none hover:border-semantic-border-input-focus",
@@ -12215,12 +12215,12 @@ const KnowledgeBaseCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+          <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
             <div className="flex items-center gap-1.5">
               <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
                 Knowledge Base
@@ -12367,12 +12367,12 @@ const FunctionsCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
           <div className="flex items-center gap-1.5">
             <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
               Functions
@@ -12411,7 +12411,7 @@ const FunctionsCard = React.forwardRef(
               {functions.map((fn) => (
                 <div
                   key={fn.id}
-                  className="flex items-center justify-between px-4 py-3 rounded border border-semantic-border-layout bg-semantic-bg-primary"
+                  className="flex items-center justify-between px-4 py-3 rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     {fn.tooltip ? (
@@ -12554,13 +12554,13 @@ const FrustrationHandoverCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
         <Accordion type="single">
           <AccordionItem value="frustration">
-            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+            <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
                 Frustration Handover
                 <Info className="size-3.5 text-semantic-text-muted shrink-0" />
@@ -12686,7 +12686,7 @@ function NumberSpinner({
   disabled?: boolean;
 }) {
   return (
-    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
+    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-solid border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
       <input
         type="number"
         value={value}
@@ -12740,13 +12740,13 @@ const AdvancedSettingsCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
         <Accordion type="single">
           <AccordionItem value="advanced">
-            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+            <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="text-base font-semibold text-semantic-text-primary">
                 Advanced Settings
               </span>
@@ -12754,7 +12754,7 @@ const AdvancedSettingsCard = React.forwardRef(
             <AccordionContent>
               <div className="flex flex-col">
                 {/* Number fields section */}
-                <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
+                <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-solid border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
                   <Field label="Silence Timeout (seconds)">
                     <NumberSpinner
                       value={data.silenceTimeout ?? 15}
@@ -12886,7 +12886,7 @@ function PromptField({
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onBlur?.(e.target.value)}
         className={cn(
-          "w-full resize-none rounded border border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
+          "w-full resize-none rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
           "focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
           disabled && "cursor-not-allowed opacity-50"
         )}
@@ -12918,7 +12918,7 @@ const FallbackPromptsCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
@@ -12927,7 +12927,7 @@ const FallbackPromptsCard = React.forwardRef(
           defaultValue={defaultOpen ? ["fallback"] : []}
         >
           <AccordionItem value="fallback">
-            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+            <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
                 Fallback Prompts
                 <Info className="size-3.5 text-semantic-text-muted shrink-0" />

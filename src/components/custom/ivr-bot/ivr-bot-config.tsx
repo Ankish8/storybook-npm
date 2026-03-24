@@ -198,7 +198,7 @@ export const IvrBotConfig = React.forwardRef(
           </div>
 
           {/* Right column — gray panel extending full height */}
-          <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[2] min-w-0 bg-semantic-bg-ui border-l border-semantic-border-layout">
+          <div className="flex flex-col gap-6 px-4 py-4 sm:px-6 sm:py-6 lg:flex-[2] min-w-0 bg-semantic-bg-ui border-l border-solid border-semantic-border-layout">
             <KnowledgeBaseCard
               files={data.knowledgeBaseFiles}
               onAdd={() => setUploadOpen(true)}

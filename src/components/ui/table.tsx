@@ -77,7 +77,7 @@ Table.displayName = "Table";
 const TableHeader = React.forwardRef(({ className, ...props }: React.HTMLAttributes<HTMLTableSectionElement>, ref: React.Ref<HTMLTableSectionElement>) => (
   <thead
     ref={ref}
-    className={cn("bg-[var(--color-neutral-100)] [&_tr]:border-b", className)}
+    className={cn("bg-[var(--color-neutral-100)] [&_tr]:border-b [&_tr]:border-solid", className)}
     {...props}
   />
 ));

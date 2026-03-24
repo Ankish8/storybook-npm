@@ -69,7 +69,7 @@ function NumberSpinner({
   disabled?: boolean;
 }) {
   return (
-    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
+    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-solid border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
       <input
         type="number"
         value={value}
@@ -123,13 +123,13 @@ const AdvancedSettingsCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
         <Accordion type="single">
           <AccordionItem value="advanced">
-            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+            <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="text-base font-semibold text-semantic-text-primary">
                 Advanced Settings
               </span>
@@ -137,7 +137,7 @@ const AdvancedSettingsCard = React.forwardRef(
             <AccordionContent>
               <div className="flex flex-col">
                 {/* Number fields section */}
-                <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
+                <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-solid border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
                   <Field label="Silence Timeout (seconds)">
                     <NumberSpinner
                       value={data.silenceTimeout ?? 15}

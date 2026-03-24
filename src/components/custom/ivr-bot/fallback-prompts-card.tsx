@@ -69,7 +69,7 @@ function PromptField({
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onBlur?.(e.target.value)}
         className={cn(
-          "w-full resize-none rounded border border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
+          "w-full resize-none rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
           "focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
           disabled && "cursor-not-allowed opacity-50"
         )}
@@ -101,7 +101,7 @@ const FallbackPromptsCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
@@ -110,7 +110,7 @@ const FallbackPromptsCard = React.forwardRef(
           defaultValue={defaultOpen ? ["fallback"] : []}
         >
           <AccordionItem value="fallback">
-            <AccordionTrigger className="px-4 py-4 border-b border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
+            <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
                 Fallback Prompts
                 <Info className="size-3.5 text-semantic-text-muted shrink-0" />

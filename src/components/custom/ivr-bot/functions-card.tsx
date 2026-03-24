@@ -47,12 +47,12 @@ const FunctionsCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
           className
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-semantic-border-layout sm:px-6">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
           <div className="flex items-center gap-1.5">
             <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
               Functions
@@ -91,7 +91,7 @@ const FunctionsCard = React.forwardRef(
               {functions.map((fn) => (
                 <div
                   key={fn.id}
-                  className="flex items-center justify-between px-4 py-3 rounded border border-semantic-border-layout bg-semantic-bg-primary"
+                  className="flex items-center justify-between px-4 py-3 rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     {fn.tooltip ? (
