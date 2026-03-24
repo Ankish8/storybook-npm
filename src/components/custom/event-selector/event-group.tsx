@@ -149,7 +149,7 @@ export const EventGroupComponent = React.forwardRef(
               </AccordionTrigger>
             </div>
             <AccordionContent>
-              <div className="border-t border-semantic-border-layout">
+              <div className="border-t border-solid border-semantic-border-layout">
                 {events.length > 0 ? (
                   events.map((event) => (
                     <EventItemComponent

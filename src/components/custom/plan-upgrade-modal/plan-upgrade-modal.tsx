@@ -7,11 +7,11 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../../ui/
 import type { BillingCycleOption, PlanUpgradeModalProps } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-6 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex flex-col gap-6 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
 );
 
 const billingCycleOptionVariants = cva(
-  "flex w-full items-center gap-2.5 rounded-lg border bg-semantic-bg-primary p-3 text-left transition-colors",
+  "flex w-full items-center gap-2.5 rounded-lg border border-solid bg-semantic-bg-primary p-3 text-left transition-colors",
   {
     variants: {
       selected: {

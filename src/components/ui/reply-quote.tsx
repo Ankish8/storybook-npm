@@ -44,7 +44,7 @@ const ReplyQuote = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "w-full bg-semantic-bg-ui border-l-[3px] border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
+          "w-full bg-semantic-bg-ui border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
           isInteractive && "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-1 focus-visible:outline-none",
           className
         )}

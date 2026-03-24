@@ -19,7 +19,7 @@ const buttonVariants = cva(
         success:
           "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
-          "border border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
+          "border border-solid border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
           "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
         ghost:

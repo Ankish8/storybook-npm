@@ -277,7 +277,7 @@ const FileUploadModal = React.forwardRef(
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-[42px] px-4 rounded border border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
+                  className="h-[42px] px-4 rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
                 >
                   {uploadButtonLabel}
                 </button>
@@ -309,7 +309,7 @@ const FileUploadModal = React.forwardRef(
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-semantic-bg-primary border border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
+                    className="bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex flex-col gap-0.5 flex-1 min-w-0">

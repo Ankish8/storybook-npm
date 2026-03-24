@@ -22,7 +22,7 @@ const badgeVariants = cva(
         // shadcn-style variants (new)
         secondary: "bg-semantic-bg-ui text-semantic-text-primary",
         outline:
-          "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+          "border border-solid border-semantic-border-layout bg-transparent text-semantic-text-primary",
         destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {

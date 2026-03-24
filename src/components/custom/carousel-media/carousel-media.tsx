@@ -43,7 +43,7 @@ const CarouselMedia = React.forwardRef(
           {cards?.map((card, i) => (
             <div
               key={i}
-              className="shrink-0 bg-white rounded border border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
+              className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
               style={{ width: cardWidth }}
             >
               <img
@@ -61,7 +61,7 @@ const CarouselMedia = React.forwardRef(
                 <button
                   key={j}
                   onClick={btn.onClick}
-                  className="flex items-center justify-center gap-2 w-full border-t border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                  className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                   style={{ height: 40 }}
                 >
                   {btn.icon === "reply" && <Reply className="size-4" />}

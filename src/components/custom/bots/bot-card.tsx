@@ -60,7 +60,7 @@ export const BotCard = React.forwardRef(
         onClick={onEdit ? handleCardClick : undefined}
         onKeyDown={onEdit ? handleCardKeyDown : undefined}
         className={cn(
-          "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
+          "relative bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
           "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
           "min-h-[180px] sm:min-h-[207px] h-full shrink-0",
           onEdit && "cursor-pointer",
@@ -130,7 +130,7 @@ export const BotCard = React.forwardRef(
         </p>
 
         {/* Divider */}
-        <div className="border-t border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />
+        <div className="border-t border-solid border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />
 
         {/* Last published */}
         <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0">

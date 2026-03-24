@@ -29,7 +29,7 @@ export const BotListSearch = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 border border-semantic-border-input rounded bg-semantic-bg-primary min-w-0 shrink-0",
+          "flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 border border-solid border-semantic-border-input rounded bg-semantic-bg-primary min-w-0 shrink-0",
           "hover:border-semantic-border-input-focus focus-within:border-semantic-border-input-focus",
           "focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] w-full max-w-full sm:max-w-[180px] md:max-w-[220px] sm:shrink-0",
           className

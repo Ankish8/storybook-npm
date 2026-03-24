@@ -13,11 +13,11 @@ import type {
 } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-8 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex flex-col gap-8 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
 );
 
 const summaryPanelVariants = cva(
-  "flex flex-col gap-5 rounded border border-semantic-border-layout bg-semantic-bg-ui p-4"
+  "flex flex-col gap-5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui p-4"
 );
 
 const statusTitleVariants = cva("m-0 text-sm font-semibold leading-5 tracking-[0.014px]", {
@@ -198,7 +198,7 @@ const PlanUpgradeSummaryModal = React.forwardRef(
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-6 border-t border-semantic-border-layout pt-3">
+              <div className="flex items-center justify-between gap-6 border-t border-solid border-semantic-border-layout pt-3">
                 <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-secondary">
                   {totalLabel}
                 </span>

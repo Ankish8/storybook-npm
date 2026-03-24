@@ -57,7 +57,7 @@ const Table = React.forwardRef(
     <div
       className={cn(
         "relative w-full overflow-auto",
-        !withoutBorder && "rounded-lg border border-semantic-border-layout"
+        !withoutBorder && "rounded-lg border border-solid border-semantic-border-layout"
       )}
     >
       <table
@@ -114,7 +114,7 @@ const TableFooter = React.forwardRef(({ className, ...props }: React.HTMLAttribu
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
+      "border-t border-solid bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -132,7 +132,7 @@ const TableRow = React.forwardRef(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-semantic-border-layout transition-colors",
+        "border-b border-solid border-semantic-border-layout transition-colors",
         highlighted
           ? "bg-semantic-info-surface"
           : "hover:bg-[var(--color-neutral-50)]/50 data-[state=selected]:bg-semantic-bg-ui",

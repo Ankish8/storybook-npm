@@ -102,6 +102,19 @@ categories:
       - wallet-topup
       - file-upload-modal
       - video-media
+      # Chat Template modules (group: "chat")
+      - chat-types
+      - chat-transport
+      - chat-provider
+      - chat-sidebar
+      - chat-filter-panel
+      - chat-new-panel
+      - chat-message-list
+      - chat-header
+      - chat-input
+      - chat-template-modal
+      - chat-contact-panel
+      - chat-template
 
 # =============================================================================
 # COMPONENT DEFINITIONS
@@ -1058,3 +1071,309 @@ components:
       - "index.ts"
     mainFile: "wallet-topup.tsx"
 
+  # ---------------------------------------------------------------------------
+  # CHAT TEMPLATE MODULES (group: "chat")
+  # ---------------------------------------------------------------------------
+  # Install all with: npx myoperator-ui add chat-template
+  # Each module installs under src/components/ui/chat/{module-name}/
+
+  chat-types:
+    description: "Shared TypeScript interfaces for the chat template"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    isMultiFile: true
+    directory: "chat-types"
+    files:
+      - "types.ts"
+      - "index.ts"
+    mainFile: "types.ts"
+
+  chat-transport:
+    description: "ChatTransport interface and MockTransport with realistic fake data"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - chat-types
+    isMultiFile: true
+    directory: "chat-transport"
+    files:
+      - "types.ts"
+      - "mock-transport.ts"
+      - "index.ts"
+    mainFile: "mock-transport.ts"
+
+  chat-provider:
+    description: "React context provider for chat state management with transport abstraction"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    internalDependencies:
+      - chat-types
+      - chat-transport
+    isMultiFile: true
+    directory: "chat-provider"
+    files:
+      - "types.ts"
+      - "chat-context.ts"
+      - "chat-provider.tsx"
+      - "index.ts"
+    mainFile: "chat-provider.tsx"
+
+  chat-sidebar:
+    description: "Chat inbox sidebar with search, tabs, and conversation list"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - text-field
+      - tabs
+      - badge
+      - chat-list-item
+    isMultiFile: true
+    directory: "chat-sidebar"
+    files:
+      - "chat-sidebar.tsx"
+      - "index.ts"
+    mainFile: "chat-sidebar.tsx"
+
+  chat-filter-panel:
+    description: "Assignee and channel filter panel with checkbox groups"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - text-field
+      - checkbox
+      - dialog
+    isMultiFile: true
+    directory: "chat-filter-panel"
+    files:
+      - "chat-filter-panel.tsx"
+      - "index.ts"
+    mainFile: "chat-filter-panel.tsx"
+
+  chat-new-panel:
+    description: "New chat panel with contact search and add-contact modal"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - text-field
+      - dialog
+      - avatar
+      - dropdown-menu
+    isMultiFile: true
+    directory: "chat-new-panel"
+    files:
+      - "chat-new-panel.tsx"
+      - "add-contact-modal.tsx"
+      - "index.ts"
+    mainFile: "chat-new-panel.tsx"
+
+  chat-message-list:
+    description: "Message list with all media renderers, delivery status, and reply functionality"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - tooltip
+      - spinner
+      - avatar
+      - tag
+      - dropdown-menu
+      - chat-timeline-divider
+      - doc-media
+    isMultiFile: true
+    directory: "chat-message-list"
+    files:
+      - "message-renderers.tsx"
+      - "chat-message-list.tsx"
+      - "index.ts"
+    mainFile: "chat-message-list.tsx"
+
+  chat-header:
+    description: "Chat window header with assignment dropdown and resolve button"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - badge
+      - tag
+      - avatar
+      - dropdown-menu
+      - tooltip
+    isMultiFile: true
+    directory: "chat-header"
+    files:
+      - "assignment-dropdown.tsx"
+      - "resolve-button.tsx"
+      - "chat-header.tsx"
+      - "index.ts"
+    mainFile: "chat-header.tsx"
+
+  chat-input:
+    description: "Chat composer with canned messages, attachments, and keyboard navigation"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - tooltip
+      - dropdown-menu
+      - confirmation-modal
+      - chat-composer
+    isMultiFile: true
+    directory: "chat-input"
+    files:
+      - "composer-attachment-preview.tsx"
+      - "canned-messages.tsx"
+      - "chat-input.tsx"
+      - "index.ts"
+    mainFile: "chat-input.tsx"
+
+  chat-template-modal:
+    description: "Template selection modal with variable mapping, media upload, and live preview"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - dialog
+      - select-field
+      - tabs
+      - text-field
+      - avatar
+      - spinner
+      - confirmation-modal
+    isMultiFile: true
+    directory: "chat-template-modal"
+    files:
+      - "template-helpers.tsx"
+      - "template-preview.tsx"
+      - "variables-tab.tsx"
+      - "media-tab.tsx"
+      - "chat-template-modal.tsx"
+      - "index.ts"
+    mainFile: "chat-template-modal.tsx"
+
+  chat-contact-panel:
+    description: "Contact details slide-out panel with view and edit modes"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - chat-types
+      - chat-provider
+      - button
+      - text-field
+      - switch
+      - tag
+      - dropdown-menu
+      - accordion
+      - confirmation-modal
+      - panel
+    isMultiFile: true
+    directory: "chat-contact-panel"
+    files:
+      - "chat-contact-panel.tsx"
+      - "index.ts"
+    mainFile: "chat-contact-panel.tsx"
+
+  chat-template:
+    description: "Complete chat application template — install this to get the full chat UI"
+    category: custom
+    group: "chat"
+    templateOnly: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+      - "lucide-react"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - chat-types
+      - chat-transport
+      - chat-provider
+      - chat-sidebar
+      - chat-filter-panel
+      - chat-new-panel
+      - chat-message-list
+      - chat-header
+      - chat-input
+      - chat-template-modal
+      - chat-contact-panel
+      - button
+      - tooltip
+    isMultiFile: true
+    directory: "chat-template"
+    files:
+      - "helpers.ts"
+      - "chat-app.tsx"
+      - "index.ts"
+    mainFile: "chat-app.tsx"

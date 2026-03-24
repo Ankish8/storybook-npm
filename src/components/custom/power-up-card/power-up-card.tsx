@@ -37,7 +37,7 @@ const PowerUpCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col justify-between gap-8 rounded-md border border-semantic-border-layout bg-card p-5",
+          "flex flex-col justify-between gap-8 rounded-md border border-solid border-semantic-border-layout bg-card p-5",
           className
         )}
         {...props}

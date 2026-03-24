@@ -10,13 +10,13 @@ const creatableMultiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input hover:border-semantic-border-input-focus",
+          "border border-solid border-semantic-border-input hover:border-semantic-border-input-focus",
         error:
-          "border border-semantic-error-primary/40 hover:border-semantic-error-primary",
+          "border border-solid border-semantic-error-primary/40 hover:border-semantic-error-primary",
         focused:
-          "border border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         "focused-error":
-          "border border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -229,15 +229,15 @@ const CreatableMultiSelect = React.forwardRef(
 
         {/* Dropdown panel */}
         {isOpen && (
-          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint — Enter key */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
                 {canAddCustom
                   ? `Press enter to add "${inputValue.trim()}"`
                   : creatableHint}
               </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>

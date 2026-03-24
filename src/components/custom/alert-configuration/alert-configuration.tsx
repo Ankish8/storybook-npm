@@ -43,7 +43,7 @@ export const AlertConfiguration = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg border border-semantic-border-layout bg-semantic-bg-primary",
+          "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
           className
         )}
       >
@@ -69,7 +69,7 @@ export const AlertConfiguration = React.forwardRef(
         </div>
 
         {/* Alert Values Section with Top Border */}
-        <div className="border-t border-semantic-border-layout px-4 py-4">
+        <div className="border-t border-solid border-semantic-border-layout px-4 py-4">
           <div className="flex items-start justify-between gap-4">
             {/* Minimum Balance */}
             <div className="flex flex-col gap-1.5 flex-1">

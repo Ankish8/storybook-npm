@@ -213,14 +213,14 @@ export const PaymentSummary = React.forwardRef(
         <div
           ref={ref}
           className={cn(
-            "rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-5",
+            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5",
             className
           )}
         >
           <div className="flex flex-col gap-4">
             {/* Header: title + wallet info badge */}
             {(title || headerInfo) && (
-              <div className="flex items-center justify-between border-b border-semantic-border-layout pb-4">
+              <div className="flex items-center justify-between border-b border-solid border-semantic-border-layout pb-4">
                 {title && (
                   <span className="text-base font-semibold text-semantic-text-primary">
                     {title}
@@ -250,7 +250,7 @@ export const PaymentSummary = React.forwardRef(
               <div
                 className={cn(
                   "flex flex-col gap-5",
-                  hasItemsBorder && "border-b border-semantic-border-layout pb-4"
+                  hasItemsBorder && "border-b border-solid border-semantic-border-layout pb-4"
                 )}
               >
                 {items.map((item, index) => (
@@ -273,13 +273,13 @@ export const PaymentSummary = React.forwardRef(
 
             {/* Breakdown card */}
             {breakdownCard && (
-              <div className="rounded-lg border border-semantic-border-layout bg-semantic-info-surface px-4 py-4 flex flex-col gap-2.5">
+              <div className="rounded-lg border border-solid border-semantic-border-layout bg-semantic-info-surface px-4 py-4 flex flex-col gap-2.5">
                 <div
                   className={cn(
                     "flex flex-col gap-2.5",
                     breakdownCard.bottomItems &&
                       breakdownCard.bottomItems.length > 0 &&
-                      "border-b border-semantic-border-layout pb-2.5"
+                      "border-b border-solid border-semantic-border-layout pb-2.5"
                   )}
                 >
                   {breakdownCard.topItems.map((item, index) => (
@@ -307,7 +307,7 @@ export const PaymentSummary = React.forwardRef(
 
             {/* Credit limit row */}
             {creditLimit && (
-              <div className="flex items-center justify-between border-t border-semantic-border-layout pt-3">
+              <div className="flex items-center justify-between border-t border-solid border-semantic-border-layout pt-3">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
                     Credit limit

@@ -76,8 +76,8 @@ export const BankDetails = React.forwardRef(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="border-t border-semantic-border-layout pt-4">
-                <div className="rounded-md border border-[var(--semantic-info-200,#e8f1fc)] bg-[var(--semantic-info-25,#f6f8fd)] p-3">
+              <div className="border-t border-solid border-semantic-border-layout pt-4">
+                <div className="rounded-md border border-solid border-[var(--semantic-info-200,#e8f1fc)] bg-[var(--semantic-info-25,#f6f8fd)] p-3">
                   <div className="flex flex-col gap-4">
                     {items.map((item, index) => (
                       <BankDetailRow

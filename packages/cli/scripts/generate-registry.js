@@ -245,6 +245,9 @@ async function readMultiFileComponent(componentName, meta) {
   if (meta.group) {
     result.group = meta.group
   }
+  if (meta.templateOnly) {
+    result.templateOnly = true
+  }
   return result
 }
 
@@ -649,10 +652,13 @@ function prefixClassString(classString: string, prefix: string): string {
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
   // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
   // the border visible regardless of the host CSS environment.
+  // Skip injection when the only border-width classes are zero-width (border-0, border-t-0, etc.)
+  // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
-  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
+  const hasNonZeroBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
   const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
-  if (hasBorderWidth && !hasBorderStyle) {
+  if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(\`\${prefix}border-solid\`)
   }
 
@@ -906,6 +912,7 @@ function generateCategoryFile(category, components) {
       }).join(',\n')
 
       const groupLine = comp.group ? `\n      group: ${JSON.stringify(comp.group)},` : ''
+      const templateOnlyLine = comp.templateOnly ? `\n      templateOnly: true,` : ''
       return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
@@ -913,7 +920,7 @@ function generateCategoryFile(category, components) {
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
-      directory: ${JSON.stringify(comp.directory)},${groupLine}
+      directory: ${JSON.stringify(comp.directory)},${groupLine}${templateOnlyLine}
       mainFile: ${JSON.stringify(comp.mainFile)},
       files: [
 ${filesArray}
@@ -980,6 +987,7 @@ export interface ComponentDefinition {
   directory?: string
   group?: string
   mainFile?: string
+  templateOnly?: boolean
 }
 
 export type Registry = Record<string, ComponentDefinition>
@@ -1120,6 +1128,7 @@ function generateLegacyRegistryFile(components) {
       }).join(',\n')
 
       const groupLine = comp.group ? `\n      group: ${JSON.stringify(comp.group)},` : ''
+      const templateOnlyLine = comp.templateOnly ? `\n      templateOnly: true,` : ''
       return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
@@ -1127,7 +1136,7 @@ function generateLegacyRegistryFile(components) {
       dependencies: ${deps},
       internalDependencies: ${internalDeps},
       isMultiFile: true,
-      directory: ${JSON.stringify(comp.directory)},${groupLine}
+      directory: ${JSON.stringify(comp.directory)},${groupLine}${templateOnlyLine}
       mainFile: ${JSON.stringify(comp.mainFile)},
       files: [
 ${filesArray}

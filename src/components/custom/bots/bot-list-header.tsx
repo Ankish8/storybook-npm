@@ -9,7 +9,7 @@ const botListHeaderVariants = cva("min-w-0", {
       default:
         "flex flex-col gap-1.5 shrink",
       withSearch:
-        "flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 shrink",
+        "flex flex-col gap-3 pb-4 mb-4 border-b border-solid border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 shrink",
     },
   },
   defaultVariants: {

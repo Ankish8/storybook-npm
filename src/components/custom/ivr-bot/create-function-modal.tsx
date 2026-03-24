@@ -188,7 +188,7 @@ function VarPopup({
       <div
         role="listbox"
         style={style}
-        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
+        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
       >
         {/* Add new variable */}
         {onAddVariable && (
@@ -237,7 +237,7 @@ function VarPopup({
     <div
       role="listbox"
       style={style}
-      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
     >
       {/* Add new variable */}
       {onAddVariable && (
@@ -250,7 +250,7 @@ function VarPopup({
             <Plus className="size-3.5 shrink-0" />
             Add new variable
           </button>
-          <div className="border-t border-semantic-border-layout" />
+          <div className="border-t border-solid border-semantic-border-layout" />
         </>
       )}
 
@@ -551,7 +551,7 @@ function VariableInput({
             className={cn(
               "flex items-center gap-1 px-2",
               !isExpanded && "flex-1 min-w-0 overflow-hidden",
-              isExpanded && "flex-wrap bg-semantic-bg-primary border border-semantic-border-input rounded py-1.5 shadow-sm"
+              isExpanded && "flex-wrap bg-semantic-bg-primary border border-solid border-semantic-border-input rounded py-1.5 shadow-sm"
             )}
           >
             {segments.map((seg, i) =>
@@ -1412,7 +1412,7 @@ export const CreateFunctionModal = React.forwardRef(
                     <span className="text-sm font-semibold text-semantic-text-muted tracking-[0.048px]">
                       Test Your API
                     </span>
-                    <div className="border-t border-semantic-border-layout" />
+                    <div className="border-t border-solid border-semantic-border-layout" />
                   </div>
 
                   {/* Variable test values — shown when URL/body/params contain {{variables}} */}

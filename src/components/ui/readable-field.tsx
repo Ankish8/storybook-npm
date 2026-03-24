@@ -132,7 +132,7 @@ export const ReadableField = React.forwardRef(
                 {headerAction.disabledTooltip && (
                   <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-semantic-primary px-2 py-1 text-xs text-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
                     {headerAction.disabledTooltip}
-                    <span className="absolute top-full right-2 border-4 border-transparent border-t-semantic-primary" />
+                    <span className="absolute top-full right-2 border-4 border-solid border-transparent border-t-semantic-primary" />
                   </span>
                 )}
               </span>
@@ -151,7 +151,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-11 items-center justify-between rounded border border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
+            "flex h-11 items-center justify-between rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
             inputClassName
           )}
         >

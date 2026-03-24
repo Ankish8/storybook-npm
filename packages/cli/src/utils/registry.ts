@@ -373,10 +373,13 @@ function prefixClassString(classString: string, prefix: string): string {
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
   // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
   // the border visible regardless of the host CSS environment.
+  // Skip injection when the only border-width classes are zero-width (border-0, border-t-0, etc.)
+  // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
-  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
+  const hasNonZeroBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
   const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
-  if (hasBorderWidth && !hasBorderStyle) {
+  if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(`${prefix}border-solid`)
   }
 
@@ -860,11 +863,11 @@ const avatarVariants = cva(
 );
 
 const statusDotSizeMap = {
-  xs: "size-2 border",
-  sm: "size-2.5 border-[1.5px]",
-  md: "size-3 border-2",
-  lg: "size-3.5 border-2",
-  xl: "size-4 border-2",
+  xs: "size-2 border border-solid",
+  sm: "size-2.5 border-[1.5px] border-solid",
+  md: "size-3 border-2 border-solid",
+  lg: "size-3.5 border-2 border-solid",
+  xl: "size-4 border-2 border-solid",
 } as const;
 
 const statusColorMap = {
@@ -1130,8 +1133,8 @@ const PhoneInput = React.forwardRef(
     return (
       <div
         className={cn(
-          "flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
-          disabled && "opacity-60",
+          "flex items-center border border-solid border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
+          disabled && "opacity-60 bg-semantic-bg-ui cursor-not-allowed",
           wrapperClassName
         )}
       >
@@ -1230,7 +1233,7 @@ const ReplyQuote = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "w-full bg-semantic-bg-ui border-l-[3px] border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
+          "w-full bg-semantic-bg-ui border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
           isInteractive && "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-1 focus-visible:outline-none",
           className
         )}
@@ -1409,7 +1412,7 @@ const buttonVariants = cva(
         success:
           "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
-          "border border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
+          "border border-solid border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
           "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
         ghost:
@@ -1546,7 +1549,7 @@ const badgeVariants = cva(
         // shadcn-style variants (new)
         secondary: "bg-semantic-bg-ui text-semantic-text-primary",
         outline:
-          "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+          "border border-solid border-semantic-border-layout bg-transparent text-semantic-text-primary",
         destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {
@@ -1985,9 +1988,9 @@ const inputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -2098,9 +2101,9 @@ const selectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -2217,7 +2220,7 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
       <SelectPrimitive.Content
         ref={ref}
         className={cn(
-          "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
+          "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -2331,7 +2334,7 @@ import { cn } from "../../lib/utils";
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 border-solid transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
   {
     variants: {
       size: {
@@ -2556,7 +2559,7 @@ import { cn } from "../../lib/utils";
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-bg-grey",
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-solid border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-bg-grey",
   {
     variants: {
       size: {
@@ -2718,9 +2721,9 @@ const textFieldContainerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
@@ -2743,9 +2746,9 @@ const textFieldInputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       size: {
         default: "h-[42px] px-4 py-2 text-base file:text-base",
@@ -3072,9 +3075,9 @@ const textareaVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       size: {
         default: "px-4 py-2.5 text-base",
@@ -3411,7 +3414,7 @@ export const ReadableField = React.forwardRef(
                 {headerAction.disabledTooltip && (
                   <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-semantic-primary px-2 py-1 text-xs text-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
                     {headerAction.disabledTooltip}
-                    <span className="absolute top-full right-2 border-4 border-transparent border-t-semantic-primary" />
+                    <span className="absolute top-full right-2 border-4 border-solid border-transparent border-t-semantic-primary" />
                   </span>
                 )}
               </span>
@@ -3430,7 +3433,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-11 items-center justify-between rounded border border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
+            "flex h-11 items-center justify-between rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
             inputClassName
           )}
         >
@@ -3755,7 +3758,7 @@ const SelectField = React.forwardRef(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
                 <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"
@@ -3870,9 +3873,9 @@ const multiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -4193,7 +4196,7 @@ const MultiSelect = React.forwardRef(
           <div
             id={listboxId}
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -4201,13 +4204,13 @@ const MultiSelect = React.forwardRef(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-semantic-border-layout">
+              <div className="p-2 border-b border-solid border-semantic-border-layout">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 px-3 text-sm border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -4258,7 +4261,7 @@ const MultiSelect = React.forwardRef(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-semantic-border-layout text-xs text-semantic-text-muted">
+              <div className="p-2 border-t border-solid border-semantic-border-layout text-xs text-semantic-text-muted">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}
@@ -4325,9 +4328,9 @@ const creatableSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -4559,13 +4562,13 @@ const CreatableSelect = React.forwardRef(
 
         {/* Dropdown */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
                 {creatableHint}
               </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
                 Enter ↵
               </kbd>
             </div>
@@ -4665,13 +4668,13 @@ const creatableMultiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input hover:border-semantic-border-input-focus",
+          "border border-solid border-semantic-border-input hover:border-semantic-border-input-focus",
         error:
-          "border border-semantic-error-primary/40 hover:border-semantic-error-primary",
+          "border border-solid border-semantic-error-primary/40 hover:border-semantic-error-primary",
         focused:
-          "border border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         "focused-error":
-          "border border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -4884,15 +4887,15 @@ const CreatableMultiSelect = React.forwardRef(
 
         {/* Dropdown panel */}
         {isOpen && (
-          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint — Enter key */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
                 {canAddCustom
                   ? \`Press enter to add "\${inputValue.trim()}"\`
                   : creatableHint}
               </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>
@@ -5028,7 +5031,7 @@ const Table = React.forwardRef(
     <div
       className={cn(
         "relative w-full overflow-auto",
-        !withoutBorder && "rounded-lg border border-semantic-border-layout"
+        !withoutBorder && "rounded-lg border border-solid border-semantic-border-layout"
       )}
     >
       <table
@@ -5085,7 +5088,7 @@ const TableFooter = React.forwardRef(({ className, ...props }: React.HTMLAttribu
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
+      "border-t border-solid bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -5103,7 +5106,7 @@ const TableRow = React.forwardRef(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-semantic-border-layout transition-colors",
+        "border-b border-solid border-semantic-border-layout transition-colors",
         highlighted
           ? "bg-semantic-info-surface"
           : "hover:bg-[var(--color-neutral-50)]/50 data-[state=selected]:bg-semantic-bg-ui",
@@ -5339,7 +5342,7 @@ const TabsList = React.forwardRef(({ className, fullWidth, ...props }: TabsListP
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex items-center border-b border-semantic-border-layout w-full",
+      "inline-flex items-center border-b border-solid border-semantic-border-layout w-full",
       fullWidth && "[&>*]:flex-1",
       className
     )}
@@ -5352,7 +5355,7 @@ const TabsTrigger = React.forwardRef(({ className, ...props }: React.ComponentPr
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 -mb-px cursor-pointer transition-colors",
+      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 border-solid -mb-px cursor-pointer transition-colors",
       "text-semantic-text-muted border-transparent hover:text-semantic-text-secondary",
       "data-[state=active]:text-semantic-text-primary data-[state=active]:border-semantic-primary",
       "focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
@@ -5423,7 +5426,7 @@ const DialogOverlay = React.forwardRef(({ className, ...props }: React.Component
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const dialogContentVariants = cva(
-  "fixed left-[50%] top-[50%] z-[9999] grid translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg",
+  "fixed left-[50%] top-[50%] z-[9999] grid translate-x-[-50%] translate-y-[-50%] gap-4 border border-solid border-border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg",
   {
     variants: {
       size: {
@@ -5626,7 +5629,7 @@ const DropdownMenuSubContent = React.forwardRef(({ className, ...props }: React.
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-[9999] min-w-[8rem] overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-[9999] min-w-[8rem] overflow-hidden rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className
     )}
     {...props}
@@ -5641,7 +5644,7 @@ const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...pr
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-[9999] min-w-[8rem] overflow-hidden rounded-md border border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md",
+        "z-[9999] min-w-[8rem] overflow-hidden rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
@@ -6531,7 +6534,7 @@ import { cn } from "../../lib/utils";
  * Colors are hardcoded for Bootstrap compatibility.
  */
 const alertVariants = cva(
-  "relative w-full rounded border p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
+  "relative w-full rounded border border-solid p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
   {
     variants: {
       variant: {
@@ -6764,7 +6767,7 @@ const ToastViewport = React.forwardRef(({ className, ...props }: React.Component
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-[5px] border p-3 shadow-md transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-[5px] border border-solid p-3 shadow-md transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
@@ -6801,7 +6804,7 @@ const ToastAction = React.forwardRef(({ className, ...props }: React.ComponentPr
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-semantic-border-layout bg-transparent px-3 text-sm font-medium transition-colors hover:bg-semantic-bg-ui focus:outline-none focus:ring-2 focus:ring-semantic-info-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded border border-solid border-semantic-border-layout bg-transparent px-3 text-sm font-medium transition-colors hover:bg-semantic-bg-ui focus:outline-none focus:ring-2 focus:ring-semantic-info-primary focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
       "group-[.success]:border-semantic-success-primary/30 group-[.success]:hover:border-semantic-success-primary/50 group-[.success]:hover:bg-semantic-success-primary/10",
       "group-[.error]:border-semantic-error-primary/30 group-[.error]:hover:border-semantic-error-primary/50 group-[.error]:hover:bg-semantic-error-primary/10",
       "group-[.warning]:border-semantic-warning-primary/30 group-[.warning]:hover:border-semantic-warning-primary/50 group-[.warning]:hover:bg-semantic-warning-primary/10",
@@ -7542,7 +7545,7 @@ const accordionVariants = cva("w-full", {
     variant: {
       default: "",
       bordered:
-        "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
+        "border border-solid border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {
@@ -8140,7 +8143,7 @@ const PageHeader = React.forwardRef(
           "flex w-full bg-semantic-bg-primary px-4",
           layoutClasses[layout],
           heightClasses[layout],
-          showBorder && "border-b border-semantic-border-layout",
+          showBorder && "border-b border-solid border-semantic-border-layout",
           className
         )}
         {...props}
@@ -8216,7 +8219,7 @@ import { Button } from "./button";
  * Panel root variants
  */
 const panelVariants = cva(
-  "border-l border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
+  "border-l border-solid border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
   {
     variants: {
       size: {
@@ -8320,7 +8323,7 @@ const Panel = React.forwardRef(
         >
           {/* Header */}
           {header ?? (
-            <div className="flex items-center gap-3 px-4 h-14 border-b border-semantic-border-layout shrink-0">
+            <div className="flex items-center gap-3 px-4 h-14 border-b border-solid border-semantic-border-layout shrink-0">
               {title && (
                 <span className="flex-1 text-base font-semibold text-semantic-text-primary truncate">
                   {title}
@@ -8346,7 +8349,7 @@ const Panel = React.forwardRef(
 
           {/* Footer */}
           {footer && (
-            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-semantic-border-layout">
+            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-solid border-semantic-border-layout">
               {footer}
             </div>
           )}
@@ -8820,10 +8823,10 @@ export const EventSelector = React.forwardRef(
             return (
               <div
                 key={category.id}
-                className="border border-semantic-border-layout rounded-lg overflow-hidden"
+                className="border border-solid border-semantic-border-layout rounded-lg overflow-hidden"
               >
                 {/* Category Header - no checkbox, just label */}
-                <div className="flex items-center justify-between p-4 bg-white border-b border-semantic-border-layout">
+                <div className="flex items-center justify-between p-4 bg-white border-b border-solid border-semantic-border-layout">
                   <div className="flex items-center gap-3">
                     {category.icon && (
                       <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-semantic-bg-ui">
@@ -8873,7 +8876,7 @@ export const EventSelector = React.forwardRef(
         </div>
 
         {/* Groups */}
-        <div className="border border-semantic-border-layout rounded-lg overflow-hidden divide-y divide-semantic-border-layout">
+        <div className="border border-solid border-semantic-border-layout rounded-lg overflow-hidden divide-y divide-semantic-border-layout">
           {renderCategories()}
         </div>
       </div>
@@ -9036,7 +9039,7 @@ export const EventGroupComponent = React.forwardRef(
               </AccordionTrigger>
             </div>
             <AccordionContent>
-              <div className="border-t border-semantic-border-layout">
+              <div className="border-t border-solid border-semantic-border-layout">
                 {events.length > 0 ? (
                   events.map((event) => (
                     <EventItemComponent
@@ -9755,7 +9758,7 @@ export const ApiFeatureCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-lg border border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] p-6 overflow-hidden",
+          "flex flex-col gap-6 rounded-lg border border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] p-6 overflow-hidden",
           className
         )}
         {...props}
@@ -9795,7 +9798,7 @@ export const ApiFeatureCard = React.forwardRef(
 
         {/* Capabilities Section */}
         {capabilities.length > 0 && (
-          <div className="flex flex-col gap-2.5 border-t border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--color-neutral-50,#FAFAFA)] -mx-6 -mb-6 p-6">
+          <div className="flex flex-col gap-2.5 border-t border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--color-neutral-50,#FAFAFA)] -mx-6 -mb-6 p-6">
             <span className="text-sm font-semibold uppercase tracking-[0.014px] text-[var(--color-neutral-400,#A4A7AE)]">
               {capabilitiesLabel}
             </span>
@@ -9985,7 +9988,7 @@ export const EndpointDetails = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-lg border border-semantic-border-layout p-6",
+          "flex flex-col gap-6 rounded-lg border border-solid border-semantic-border-layout p-6",
           className
         )}
         {...props}
@@ -10055,7 +10058,7 @@ export const EndpointDetails = React.forwardRef(
 
           {/* Revoke Section - only for calling variant */}
           {isCalling && showRevokeSection && (
-            <div className="flex items-center justify-between border-t border-semantic-border-layout pt-6">
+            <div className="flex items-center justify-between border-t border-solid border-semantic-border-layout pt-6">
               <div className="flex flex-col gap-1">
                 <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
                   {revokeTitle}
@@ -10156,7 +10159,7 @@ export const AlertConfiguration = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg border border-semantic-border-layout bg-semantic-bg-primary",
+          "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
           className
         )}
       >
@@ -10182,7 +10185,7 @@ export const AlertConfiguration = React.forwardRef(
         </div>
 
         {/* Alert Values Section with Top Border */}
-        <div className="border-t border-semantic-border-layout px-4 py-4">
+        <div className="border-t border-solid border-semantic-border-layout px-4 py-4">
           <div className="flex items-start justify-between gap-4">
             {/* Minimum Balance */}
             <div className="flex flex-col gap-1.5 flex-1">
@@ -10495,7 +10498,7 @@ export const AutoPaySetup = React.forwardRef(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="flex flex-col gap-4 border-t border-semantic-border-layout pt-4">
+              <div className="flex flex-col gap-4 border-t border-solid border-semantic-border-layout pt-4">
                 {/* Description */}
                 {bodyText && (
                   <div className="m-0 text-sm font-normal text-semantic-text-primary leading-5 tracking-[0.035px]">
@@ -10505,7 +10508,7 @@ export const AutoPaySetup = React.forwardRef(
 
                 {/* Note callout */}
                 {noteText && (
-                  <div className="rounded bg-[var(--semantic-info-25,#f0f7ff)] border border-[#BEDBFF] px-4 py-3">
+                  <div className="rounded bg-[var(--semantic-info-25,#f0f7ff)] border border-solid border-[#BEDBFF] px-4 py-3">
                     <p className="m-0 text-sm font-normal text-semantic-text-muted leading-5 tracking-[0.035px]">
                       {noteLabel && (
                         <span className="font-medium text-semantic-text-primary">
@@ -10699,8 +10702,8 @@ export const BankDetails = React.forwardRef(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="border-t border-semantic-border-layout pt-4">
-                <div className="rounded-md border border-[var(--semantic-info-200,#e8f1fc)] bg-[var(--semantic-info-25,#f6f8fd)] p-3">
+              <div className="border-t border-solid border-semantic-border-layout pt-4">
+                <div className="rounded-md border border-solid border-[var(--semantic-info-200,#e8f1fc)] bg-[var(--semantic-info-25,#f6f8fd)] p-3">
                   <div className="flex flex-col gap-4">
                     {items.map((item, index) => (
                       <BankDetailRow
@@ -11221,7 +11224,7 @@ function DateInput({
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border text-sm transition-colors outline-none",
+          "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border border-solid text-sm transition-colors outline-none",
           "border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary",
           "hover:border-semantic-border-input-focus/50",
           open && "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
@@ -11235,7 +11238,7 @@ function DateInput({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 z-50 mt-1 w-72 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary shadow-lg p-3">
+        <div className="absolute top-full left-0 z-50 mt-1 w-72 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg p-3">
           <Calendar
             value={value}
             onChange={(date) => {
@@ -11490,14 +11493,14 @@ export const PaymentSummary = React.forwardRef(
         <div
           ref={ref}
           className={cn(
-            "rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-5",
+            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5",
             className
           )}
         >
           <div className="flex flex-col gap-4">
             {/* Header: title + wallet info badge */}
             {(title || headerInfo) && (
-              <div className="flex items-center justify-between border-b border-semantic-border-layout pb-4">
+              <div className="flex items-center justify-between border-b border-solid border-semantic-border-layout pb-4">
                 {title && (
                   <span className="text-base font-semibold text-semantic-text-primary">
                     {title}
@@ -11527,7 +11530,7 @@ export const PaymentSummary = React.forwardRef(
               <div
                 className={cn(
                   "flex flex-col gap-5",
-                  hasItemsBorder && "border-b border-semantic-border-layout pb-4"
+                  hasItemsBorder && "border-b border-solid border-semantic-border-layout pb-4"
                 )}
               >
                 {items.map((item, index) => (
@@ -11550,13 +11553,13 @@ export const PaymentSummary = React.forwardRef(
 
             {/* Breakdown card */}
             {breakdownCard && (
-              <div className="rounded-lg border border-semantic-border-layout bg-semantic-info-surface px-4 py-4 flex flex-col gap-2.5">
+              <div className="rounded-lg border border-solid border-semantic-border-layout bg-semantic-info-surface px-4 py-4 flex flex-col gap-2.5">
                 <div
                   className={cn(
                     "flex flex-col gap-2.5",
                     breakdownCard.bottomItems &&
                       breakdownCard.bottomItems.length > 0 &&
-                      "border-b border-semantic-border-layout pb-2.5"
+                      "border-b border-solid border-semantic-border-layout pb-2.5"
                   )}
                 >
                   {breakdownCard.topItems.map((item, index) => (
@@ -11584,7 +11587,7 @@ export const PaymentSummary = React.forwardRef(
 
             {/* Credit limit row */}
             {creditLimit && (
-              <div className="flex items-center justify-between border-t border-semantic-border-layout pt-3">
+              <div className="flex items-center justify-between border-t border-solid border-semantic-border-layout pt-3">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm text-semantic-text-primary tracking-[0.035px]">
                     Credit limit
@@ -11713,7 +11716,7 @@ export const PaymentOptionCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "relative w-full rounded-lg bg-background border-b border-[#e4e4e4] p-6",
+          "relative w-full rounded-lg bg-background border-b border-solid border-[#e4e4e4] p-6",
           className
         )}
       >
@@ -11750,9 +11753,9 @@ export const PaymentOptionCard = React.forwardRef(
                   type="button"
                   onClick={() => handleSelect(option.id)}
                   className={cn(
-                    "flex items-center gap-2.5 w-full rounded-lg border p-3 text-left transition-colors cursor-pointer bg-transparent",
+                    "flex items-center gap-2.5 w-full rounded-lg border border-solid p-3 text-left transition-colors cursor-pointer bg-transparent",
                     isSelected
-                      ? "border-[var(--semantic-brand)]"
+                      ? "border-[var(--semantic-brand)] border-solid"
                       : "border-semantic-border-layout hover:border-[var(--semantic-brand-selected-hover)]"
                   )}
                 >
@@ -12013,7 +12016,7 @@ const PlanDetailModal = React.forwardRef(
             {...props}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-8 py-4 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-8 py-4 border-b border-solid border-semantic-border-layout">
               <DialogTitle className="text-lg font-semibold text-semantic-text-primary leading-none m-0">
                 {title}
               </DialogTitle>
@@ -12033,17 +12036,17 @@ const PlanDetailModal = React.forwardRef(
                 <p className="m-0 text-base font-semibold text-semantic-text-primary leading-none">
                   Features
                 </p>
-                <div className="w-full overflow-x-auto rounded border border-semantic-border-layout">
+                <div className="w-full overflow-x-auto rounded border border-solid border-semantic-border-layout">
                   <table className="w-full border-collapse text-sm">
                     <thead>
                       <tr className="bg-semantic-bg-ui">
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-semantic-border-layout w-[44%]">
+                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[44%]">
                           Feature
                         </th>
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-semantic-border-layout w-[28%]">
+                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[28%]">
                           Free
                         </th>
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-semantic-border-layout w-[28%]">
+                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[28%]">
                           Rate
                         </th>
                       </tr>
@@ -12058,13 +12061,13 @@ const PlanDetailModal = React.forwardRef(
                               : "bg-semantic-bg-ui"
                           )}
                         >
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-semantic-border-layout">
+                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
                             <p className="m-0 leading-none">{feature.name}</p>
                           </td>
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-semantic-border-layout">
+                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
                             <p className="m-0 leading-none">{feature.free}</p>
                           </td>
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-semantic-border-layout">
+                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
                             <p className="m-0 leading-none">{feature.rate}</p>
                           </td>
                         </tr>
@@ -12077,7 +12080,7 @@ const PlanDetailModal = React.forwardRef(
 
             {/* Footer */}
             {planPrice && (
-              <div className="flex items-center px-8 py-4 border-t border-semantic-border-layout">
+              <div className="flex items-center px-8 py-4 border-t border-solid border-semantic-border-layout">
                 <p className="m-0 text-base text-semantic-text-primary">
                   <span className="font-semibold">Plan price </span>
                   <span className="font-normal">{planPrice}</span>
@@ -12165,11 +12168,11 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../dialog
 import type { BillingCycleOption, PlanUpgradeModalProps } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-6 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex flex-col gap-6 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
 );
 
 const billingCycleOptionVariants = cva(
-  "flex w-full items-center gap-2.5 rounded-lg border bg-semantic-bg-primary p-3 text-left transition-colors",
+  "flex w-full items-center gap-2.5 rounded-lg border border-solid bg-semantic-bg-primary p-3 text-left transition-colors",
   {
     variants: {
       selected: {
@@ -12414,11 +12417,11 @@ import type {
 } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-8 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex flex-col gap-8 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
 );
 
 const summaryPanelVariants = cva(
-  "flex flex-col gap-5 rounded border border-semantic-border-layout bg-semantic-bg-ui p-4"
+  "flex flex-col gap-5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui p-4"
 );
 
 const statusTitleVariants = cva("m-0 text-sm font-semibold leading-5 tracking-[0.014px]", {
@@ -12599,7 +12602,7 @@ const PlanUpgradeSummaryModal = React.forwardRef(
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-6 border-t border-semantic-border-layout pt-3">
+              <div className="flex items-center justify-between gap-6 border-t border-solid border-semantic-border-layout pt-3">
                 <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-secondary">
                   {totalLabel}
                 </span>
@@ -12803,7 +12806,7 @@ const LetUsDriveCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
+          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-solid border-semantic-border-layout bg-card p-5 shadow-sm",
           className
         )}
         {...props}
@@ -12876,7 +12879,7 @@ const LetUsDriveCard = React.forwardRef(
           {hasExpandableDetails && expanded && (
             <>
               <div
-                className="flex min-h-0 flex-1 flex-col gap-3 w-full border-t border-semantic-border-layout pt-4"
+                className="flex min-h-0 flex-1 flex-col gap-3 w-full border-t border-solid border-semantic-border-layout pt-4"
                 data-testid="let-us-drive-details-block"
               >
                 <p className="text-sm font-semibold text-semantic-text-primary tracking-[0.014px] m-0">
@@ -13060,7 +13063,7 @@ const PowerUpCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col justify-between gap-8 rounded-md border border-semantic-border-layout bg-card p-5",
+          "flex flex-col justify-between gap-8 rounded-md border border-solid border-semantic-border-layout bg-card p-5",
           className
         )}
         {...props}
@@ -13220,7 +13223,7 @@ const PricingCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-t-xl rounded-b-lg border border-semantic-border-layout p-4",
+          "flex flex-col gap-6 rounded-t-xl rounded-b-lg border border-solid border-semantic-border-layout p-4",
           className
         )}
         {...props}
@@ -13341,7 +13344,7 @@ const PricingCard = React.forwardRef(
           <div className="mt-auto flex flex-col gap-6">
             {/* Addon */}
             {addon && (
-              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
+              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-solid border-[#f3f5f6] pl-4 py-2.5">
                 {addon.icon && (
                   <div className="size-5 shrink-0">{addon.icon}</div>
                 )}
@@ -13353,7 +13356,7 @@ const PricingCard = React.forwardRef(
 
             {/* Usage Details */}
             {usageDetails && usageDetails.length > 0 && (
-              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
+              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-solid border-[#f3f5f6] px-4 py-2.5">
                 {usageDetails.map((detail, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />
@@ -14401,7 +14404,7 @@ export const BotCard = React.forwardRef(
         onClick={onEdit ? handleCardClick : undefined}
         onKeyDown={onEdit ? handleCardKeyDown : undefined}
         className={cn(
-          "relative bg-semantic-bg-primary border border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
+          "relative bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
           "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
           "min-h-[180px] sm:min-h-[207px] h-full shrink-0",
           onEdit && "cursor-pointer",
@@ -14471,7 +14474,7 @@ export const BotCard = React.forwardRef(
         </p>
 
         {/* Divider */}
-        <div className="border-t border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />
+        <div className="border-t border-solid border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />
 
         {/* Last published */}
         <div className="flex flex-col gap-0.5 sm:gap-1 min-w-0">
@@ -14584,7 +14587,7 @@ export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, 
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter bot name"
               className={cn(
-                "w-full h-10 px-4 py-2.5 text-sm rounded border",
+                "w-full h-10 px-4 py-2.5 text-sm rounded border border-solid",
                 "border-semantic-border-input bg-semantic-bg-primary",
                 "text-semantic-text-primary placeholder:text-semantic-text-muted",
                 "outline-none hover:border-semantic-border-input-focus",
@@ -14607,7 +14610,7 @@ export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, 
                     type="button"
                     onClick={() => setSelectedType(id)}
                     className={cn(
-                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
+                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border border-solid text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
                       "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
                       isSelected
                         ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"
@@ -14880,7 +14883,7 @@ export const BotList = React.forwardRef(
           className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
           {...props}
         >
-          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
+          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-solid border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
             <BotListHeader title={title} subtitle={subtitle} />
             <BotListSearch
               value={searchQuery}
@@ -14930,7 +14933,7 @@ const botListHeaderVariants = cva("min-w-0", {
       default:
         "flex flex-col gap-1.5 shrink",
       withSearch:
-        "flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 shrink",
+        "flex flex-col gap-3 pb-4 mb-4 border-b border-solid border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 shrink",
     },
   },
   defaultVariants: {
@@ -15014,7 +15017,7 @@ export const BotListSearch = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 border border-semantic-border-input rounded bg-semantic-bg-primary min-w-0 shrink-0",
+          "flex items-center gap-2 h-9 sm:h-10 px-2.5 sm:px-3 border border-solid border-semantic-border-input rounded bg-semantic-bg-primary min-w-0 shrink-0",
           "hover:border-semantic-border-input-focus focus-within:border-semantic-border-input-focus",
           "focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] w-full max-w-full sm:max-w-[180px] md:max-w-[220px] sm:shrink-0",
           className
@@ -15604,7 +15607,7 @@ const FileUploadModal = React.forwardRef(
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-[42px] px-4 rounded border border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
+                  className="h-[42px] px-4 rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
                 >
                   {uploadButtonLabel}
                 </button>
@@ -15636,7 +15639,7 @@ const FileUploadModal = React.forwardRef(
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-semantic-bg-primary border border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
+                    className="bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex flex-col gap-0.5 flex-1 min-w-0">
@@ -15814,7 +15817,7 @@ const AttachmentPreview = React.forwardRef(
     return (
       <div
         ref={ref}
-        className={cn("relative border-b border-semantic-border-layout", className)}
+        className={cn("relative border-b border-solid border-semantic-border-layout", className)}
         {...props}
       >
         {/* Remove button */}
@@ -16212,7 +16215,7 @@ const CarouselMedia = React.forwardRef(
           {cards?.map((card, i) => (
             <div
               key={i}
-              className="shrink-0 bg-white rounded border border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
+              className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
               style={{ width: cardWidth }}
             >
               <img
@@ -16230,7 +16233,7 @@ const CarouselMedia = React.forwardRef(
                 <button
                   key={j}
                   onClick={btn.onClick}
-                  className="flex items-center justify-center gap-2 w-full border-t border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                  className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                   style={{ height: 40 }}
                 >
                   {btn.icon === "reply" && <Reply className="size-4" />}
@@ -16475,8 +16478,8 @@ const ChatBubble = React.forwardRef(
               "rounded overflow-hidden",
               !hasMedia && "px-3 pt-3 pb-1.5",
               variant === "sender"
-                ? "bg-semantic-info-surface border-[0.2px] border-semantic-border-layout text-semantic-text-primary"
-                : "bg-white border-[0.2px] border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+                ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
+                : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
             )}
           >
             {/* Media area (full-bleed) */}
@@ -16508,7 +16511,7 @@ const ChatBubble = React.forwardRef(
           </div>
         </div>
         {variant === "sender" && senderIndicator && (
-          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center">
+          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center">
             {senderIndicator}
           </div>
         )}
@@ -16606,9 +16609,9 @@ export interface ChatTimelineDividerProps
 const containerStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "",
   unread:
-    "bg-white px-2.5 py-0.5 rounded-full border border-semantic-border-layout shadow-sm",
+    "bg-white px-2.5 py-0.5 rounded-full border border-solid border-semantic-border-layout shadow-sm",
   system:
-    "bg-white px-2.5 py-1 rounded-full border border-semantic-border-layout shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]",
+    "bg-white px-2.5 py-1 rounded-full border border-solid border-semantic-border-layout shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]",
 };
 
 const textStyles: Record<ChatTimelineDividerVariant, string> = {
@@ -16844,7 +16847,7 @@ const ChatComposer = React.forwardRef(
             )}
 
             {/* Input area */}
-            <div className="flex-1 flex flex-col border border-semantic-border-layout rounded-lg bg-white overflow-hidden focus-within:border-semantic-border-focus transition-all">
+            <div className="flex-1 flex flex-col border border-solid border-semantic-border-layout rounded-lg bg-white overflow-hidden focus-within:border-semantic-border-focus transition-all">
               {attachment}
               <div className="flex items-end">
                 <textarea
@@ -17075,7 +17078,7 @@ const DocMedia = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "mx-2.5 mt-2.5 rounded overflow-hidden border border-semantic-border-layout",
+          "mx-2.5 mt-2.5 rounded overflow-hidden border border-solid border-semantic-border-layout",
           className
         )}
         {...props}
@@ -17944,7 +17947,7 @@ function VarPopup({
       <div
         role="listbox"
         style={style}
-        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
+        className="absolute z-[9999] min-w-[14rem] max-w-sm rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary py-1 text-semantic-text-primary shadow-md"
       >
         {/* Add new variable */}
         {onAddVariable && (
@@ -21445,7 +21448,7 @@ export const WalletTopup = React.forwardRef(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="flex flex-col gap-6 border-t border-semantic-border-layout pt-4">
+              <div className="flex flex-col gap-6 border-t border-solid border-semantic-border-layout pt-4">
                 {/* Amount Selection */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
@@ -21474,8 +21477,8 @@ export const WalletTopup = React.forwardRef(
                               ? "flex-col items-start gap-0.5 h-auto py-3"
                               : "items-center h-10 py-2.5",
                             isSelected
-                              ? "border border-[var(--semantic-brand)] shadow-sm"
-                              : "border border-semantic-border-input hover:border-semantic-text-muted"
+                              ? "border border-solid border-[var(--semantic-brand)] shadow-sm"
+                              : "border border-solid border-semantic-border-input hover:border-semantic-text-muted"
                           )}
                         >
                           <span
@@ -21538,7 +21541,7 @@ export const WalletTopup = React.forwardRef(
 
                 {/* Recharge Summary */}
                 {hasTax && effectiveRechargeAmount > 0 && (
-                  <div className="flex flex-col gap-2 rounded-lg bg-semantic-info-surface-subtle border border-semantic-info-surface px-4 py-3">
+                  <div className="flex flex-col gap-2 rounded-lg bg-semantic-info-surface-subtle border border-solid border-semantic-info-surface px-4 py-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-semantic-text-primary">
                         {rechargeAmountLabel}
@@ -21786,6 +21789,5902 @@ export interface WalletTopupProps {
           name: "index.ts",
           content: prefixTailwindClasses(`export { WalletTopup } from "./wallet-topup";
 export type { WalletTopupProps, AmountOption } from "./types";
+`, prefix),
+        }
+      ],
+    },
+    "chat-types": {
+      name: "chat-types",
+      description: "Shared TypeScript interfaces for the chat template",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [],
+      isMultiFile: true,
+      directory: "chat-types",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "types.ts",
+      files: [
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`export type Tab = "open" | "assigned" | "resolved"
+
+export type TabDef = { id: Tab; label: string; count: number }
+
+export type AssigneeItem = {
+  id: string
+  label: string
+  type: "all" | "unassigned" | "bot" | "agent"
+}
+
+export type ChannelItem = {
+  id: string
+  name: string
+  phone: string
+  badge: string
+}
+
+export type ChatItem = {
+  id: string
+  tab: Tab
+  name: string
+  message: string
+  timestamp: string
+  messageStatus?: "sent" | "delivered" | "read"
+  messageType?: "document" | "image" | "video" | "audio" | "text"
+  channel: string
+  agentName?: string
+  unreadCount?: number
+  slaTimer?: string
+  isBot?: boolean
+  isAgentDeleted?: boolean
+  isWindowExpired?: boolean
+  isFailed?: boolean
+}
+
+export type TemplateCategory = "all" | "marketing" | "utility" | "authentication"
+export type TemplateType = "text" | "image" | "carousel"
+
+export type TemplateCardDef = {
+  cardIndex: number
+  bodyVariables: string[]
+  buttonVariables: string[]
+}
+
+export type TemplateDef = {
+  id: string
+  name: string
+  category: "marketing" | "utility" | "authentication"
+  type: TemplateType
+  body: string
+  footer?: string
+  button?: string
+  bodyVariables: string[]
+  cards?: TemplateCardDef[]
+  cardImages?: string[]
+}
+
+export type VarMap = Record<string, string>
+export type CardVarMap = Record<number, { body: VarMap; button: VarMap }>
+
+export type MediaPayload = {
+  url: string
+  thumbnailUrl?: string
+  filename?: string
+  fileType?: string
+  fileSize?: string
+  pageCount?: number
+  duration?: string
+  caption?: string
+  images?: Array<{
+    url: string
+    title: string
+    buttons?: Array<{ label: string; icon?: string }>
+  }>
+}
+
+export type SentByType = "agent" | "bot" | "campaign" | "api"
+
+export type ChatMessage = {
+  id: string
+  text: string
+  time: string
+  sender: "customer" | "agent"
+  senderName?: string
+  type?:
+    | "text"
+    | "image"
+    | "video"
+    | "audio"
+    | "document"
+    | "docPreview"
+    | "carousel"
+    | "otherDoc"
+    | "loading"
+    | "system"
+  status?: "sent" | "delivered" | "read" | "failed"
+  replyTo?: { sender: string; text: string; messageId?: string }
+  media?: MediaPayload
+  error?: string
+  sentBy?: { type: SentByType; name?: string }
+}
+
+export type Contact = {
+  id: string
+  name: string
+  phone: string
+  channel?: string
+}
+
+export type ContactDetails = {
+  name: string
+  phone: string
+  email?: string
+  source?: string
+  marketingOptIn?: boolean
+  tags?: string[]
+  location?: string
+  secondaryPhone?: string
+  dob?: string
+}
+
+export type CannedMessage = {
+  id: string
+  shortcut: string
+  body: string
+}
+
+export type ChatFilters = {
+  assignees?: Set<string>
+  channels?: Set<string>
+}
+
+export type TemplateSendPayload = {
+  templateId: string
+  variables: VarMap
+  cardVariables?: CardVarMap
+}
+
+export type SendMessagePayload = {
+  text: string
+  attachment?: File
+  replyToMessageId?: string
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export * from "./types"
+`, prefix),
+        }
+      ],
+    },
+    "chat-transport": {
+      name: "chat-transport",
+      description: "ChatTransport interface and MockTransport with realistic fake data",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "chat-types"
+      ],
+      isMultiFile: true,
+      directory: "chat-transport",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "mock-transport.ts",
+      files: [
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import type {
+  Tab,
+  ChatItem,
+  ChatMessage,
+  Contact,
+  ContactDetails,
+  TemplateDef,
+  TemplateCategory,
+  ChatFilters,
+  SendMessagePayload,
+  TemplateSendPayload,
+  AssigneeItem,
+  ChannelItem,
+  TabDef,
+  CannedMessage,
+} from "../chat-types"
+
+export interface ChatTransport {
+  /** Fetch the list of tabs with counts */
+  fetchTabs(): Promise<TabDef[]>
+
+  /** Fetch assignees for filter panel */
+  fetchAssignees(): Promise<AssigneeItem[]>
+
+  /** Fetch channels */
+  fetchChannels(): Promise<ChannelItem[]>
+
+  /** Fetch chat list for a given tab, optionally filtered */
+  fetchChats(params: { tab: Tab; search?: string; filters?: ChatFilters }): Promise<ChatItem[]>
+
+  /** Fetch messages for a specific chat */
+  fetchMessages(chatId: string): Promise<ChatMessage[]>
+
+  /** Send a text/attachment message */
+  sendMessage(chatId: string, payload: SendMessagePayload): Promise<ChatMessage>
+
+  /** Send a template message */
+  sendTemplate(chatId: string, payload: TemplateSendPayload): Promise<void>
+
+  /** Assign a chat to an agent */
+  assignChat(chatId: string, agentId: string): Promise<void>
+
+  /** Resolve/close a chat */
+  resolveChat(chatId: string): Promise<void>
+
+  /** Fetch contacts for new chat panel */
+  fetchContacts(query?: string): Promise<Contact[]>
+
+  /** Create a new contact */
+  createContact(contact: { name: string; phone: string; channel: string }): Promise<Contact>
+
+  /** Fetch templates, optionally filtered by category */
+  fetchTemplates(category?: TemplateCategory): Promise<TemplateDef[]>
+
+  /** Fetch contact details for the details panel */
+  fetchContactDetails(chatId: string): Promise<ContactDetails>
+
+  /** Update contact details */
+  updateContactDetails(chatId: string, data: Partial<ContactDetails>): Promise<void>
+
+  /** Fetch canned/quick reply messages */
+  fetchCannedMessages(): Promise<CannedMessage[]>
+
+  /** Subscribe to new messages (real-time). Returns unsubscribe function. */
+  onNewMessage?(callback: (chatId: string, message: ChatMessage) => void): () => void
+}
+`, prefix),
+        },
+        {
+          name: "mock-transport.ts",
+          content: prefixTailwindClasses(`import type {
+  Tab,
+  TabDef,
+  AssigneeItem,
+  ChannelItem,
+  ChatItem,
+  ChatMessage,
+  Contact,
+  ContactDetails,
+  TemplateDef,
+  TemplateCategory,
+  ChatFilters,
+  SendMessagePayload,
+  TemplateSendPayload,
+  CannedMessage,
+} from "../chat-types"
+import type { ChatTransport } from "./types"
+
+/* ── Mock Data ── */
+
+const tabs: TabDef[] = [
+  { id: "open", label: "Open", count: 10 },
+  { id: "assigned", label: "Assigned", count: 2 },
+  { id: "resolved", label: "Resolved", count: 5 },
+]
+
+const assignees: AssigneeItem[] = [
+  { id: "all", label: "All", type: "all" },
+  { id: "unassigned", label: "Unassigned", type: "unassigned" },
+  { id: "ivr-voice-bot", label: "IVR voice bot", type: "bot" },
+  { id: "whatsapp-bot", label: "WhatsApp bot", type: "bot" },
+  { id: "support-bot", label: "Support bot", type: "bot" },
+  { id: "alex-smith", label: "Alex Smith", type: "agent" },
+  { id: "jane-doe", label: "Jane Doe", type: "agent" },
+  { id: "sam-lee", label: "Sam Lee", type: "agent" },
+  { id: "priya-sharma", label: "Priya Sharma", type: "agent" },
+  { id: "rahul-verma", label: "Rahul Verma", type: "agent" },
+  { id: "neha-gupta", label: "Neha Gupta", type: "agent" },
+  { id: "vikram-singh", label: "Vikram Singh", type: "agent" },
+  { id: "anita-desai", label: "Anita Desai", type: "agent" },
+  { id: "mohit-kumar", label: "Mohit Kumar", type: "agent" },
+  { id: "deepika-patel", label: "Deepika Patel", type: "agent" },
+  { id: "arjun-reddy", label: "Arjun Reddy", type: "agent" },
+  { id: "kavita-nair", label: "Kavita Nair", type: "agent" },
+]
+
+const channels: ChannelItem[] = [
+  { id: "my01", name: "MyOperator Sales", phone: "+91 9212992129", badge: "MY01" },
+  { id: "my02", name: "MyOperator", phone: "+91 8069200945", badge: "MY02" },
+  { id: "my03", name: "MyOperator", phone: "+91 9319358395", badge: "MY03" },
+  { id: "my04", name: "MyOperator Support", phone: "+91 9876543210", badge: "MY04" },
+  { id: "my05", name: "MyOperator Billing", phone: "+91 8765432109", badge: "MY05" },
+  { id: "my06", name: "Partner Channel", phone: "+91 7654321098", badge: "MY06" },
+  { id: "my07", name: "Enterprise Sales", phone: "+91 6543210987", badge: "MY07" },
+  { id: "my08", name: "APAC Support", phone: "+91 5432109876", badge: "MY08" },
+]
+
+const chatItems: ChatItem[] = [
+  {
+    id: "1",
+    tab: "open",
+    name: "Aditi Kumar",
+    message: "Have a look at this document",
+    timestamp: "2:30 PM",
+    messageStatus: "sent",
+    messageType: "document",
+    channel: "MY01",
+    agentName: "Alex Smith",
+  },
+  {
+    id: "2",
+    tab: "open",
+    name: "+91 98765 43210",
+    message: "Authentication message sent",
+    timestamp: "2:29 PM",
+    messageStatus: "read",
+    channel: "MY01",
+  },
+  {
+    id: "3",
+    tab: "open",
+    name: "Arsh Raj",
+    message: "Authentication message sent",
+    timestamp: "2:29 PM",
+    channel: "MY01",
+    isFailed: true,
+  },
+  {
+    id: "4",
+    tab: "open",
+    name: "Nitin Rajput",
+    message: "I am super excited",
+    timestamp: "Yesterday",
+    unreadCount: 1,
+    slaTimer: "2h",
+    channel: "MY01",
+    agentName: "IVR voice bot",
+    isBot: true,
+  },
+  {
+    id: "5",
+    tab: "open",
+    name: "Sushmit",
+    message: "Hi",
+    timestamp: "Yesterday",
+    unreadCount: 1,
+    slaTimer: "2h",
+    channel: "MY01",
+  },
+  {
+    id: "6",
+    tab: "open",
+    name: "Rohit Gupta",
+    message: "We get many food delivery orders. Can we...",
+    timestamp: "Yesterday",
+    unreadCount: 1,
+    slaTimer: "50m",
+    channel: "MY01",
+    agentName: "Deleted User",
+    isAgentDeleted: true,
+  },
+  {
+    id: "7",
+    tab: "open",
+    name: "Sushant Arya",
+    message: "I am super excited!",
+    timestamp: "Saturday",
+    unreadCount: 1,
+    channel: "MY01",
+    isWindowExpired: true,
+  },
+  {
+    id: "8",
+    tab: "assigned",
+    name: "Priya Sharma",
+    message: "When will my order be delivered?",
+    timestamp: "1:15 PM",
+    messageStatus: "sent",
+    channel: "MY02",
+    agentName: "Jane Doe",
+  },
+  {
+    id: "9",
+    tab: "assigned",
+    name: "Vikram Singh",
+    message: "Please share the invoice",
+    timestamp: "12:40 PM",
+    messageStatus: "delivered",
+    channel: "MY01",
+    agentName: "Alex Smith",
+  },
+  {
+    id: "10",
+    tab: "resolved",
+    name: "Deepika Patel",
+    message: "Thank you for your help!",
+    timestamp: "Monday",
+    messageStatus: "read",
+    channel: "MY01",
+    agentName: "Sam Lee",
+  },
+  {
+    id: "11",
+    tab: "resolved",
+    name: "Mohit Kumar",
+    message: "Issue resolved, thanks.",
+    timestamp: "Sunday",
+    messageStatus: "read",
+    channel: "MY03",
+    agentName: "Priya Sharma",
+  },
+  {
+    id: "12",
+    tab: "resolved",
+    name: "Anita Desai",
+    message: "Got it, will proceed.",
+    timestamp: "Saturday",
+    messageStatus: "read",
+    channel: "MY02",
+  },
+]
+
+const templateList: TemplateDef[] = [
+  {
+    id: "book-free-demo",
+    name: "Book Free Demo",
+    category: "marketing",
+    type: "text",
+    body: "Hi {{name}}! Book a free demo of our platform today and discover how MyOperator can transform your business.",
+    bodyVariables: ["{{name}}"],
+  },
+  {
+    id: "enterprise-plan",
+    name: "Enterprise Plan",
+    category: "marketing",
+    type: "text",
+    body: "Hi {{name}}! We have a special enterprise plan tailored for {{company}}. Get in touch today.",
+    bodyVariables: ["{{name}}", "{{company}}"],
+  },
+  {
+    id: "suv-plan",
+    name: "SUV Plan",
+    category: "utility",
+    type: "image",
+    body: "Hi {{name}}! Have a look at this document.",
+    bodyVariables: ["{{name}}"],
+    button: "Interested",
+  },
+  {
+    id: "carousel",
+    name: "Shopify Order Update",
+    category: "marketing",
+    type: "carousel",
+    body: "Hi {{customer_name}}! Your order {{order_id}} has been confirmed.",
+    footer: "MyOperator — Order Notifications",
+    bodyVariables: ["{{customer_name}}", "{{order_id}}"],
+    cardImages: [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=300&h=200&fit=crop",
+    ],
+    cards: [
+      {
+        cardIndex: 1,
+        bodyVariables: ["{{product_name}}", "{{quantity}}", "{{price}}"],
+        buttonVariables: ["{{tracking_url}}"],
+      },
+      {
+        cardIndex: 2,
+        bodyVariables: ["{{product_name}}", "{{quantity}}", "{{price}}"],
+        buttonVariables: ["{{tracking_url}}"],
+      },
+      {
+        cardIndex: 3,
+        bodyVariables: ["{{product_name}}", "{{quantity}}"],
+        buttonVariables: [],
+      },
+    ],
+  },
+  {
+    id: "option-5",
+    name: "Option 5",
+    category: "authentication",
+    type: "text",
+    body: "Your verification code is {{code}}. This code is valid for 10 minutes. Do not share it with anyone.",
+    bodyVariables: ["{{code}}"],
+  },
+]
+
+const chatMessages: Record<string, ChatMessage[]> = {
+  "1": [
+    { id: "m1", text: "Hi, I need help with my account settings", time: "2:15 PM", sender: "customer" },
+    { id: "m1b", text: "Assigned to **Alex Smith** by **Alex Smith**", time: "", sender: "agent", type: "system" },
+    {
+      id: "m2",
+      text: "Sure, I'd be happy to help!",
+      time: "2:16 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "read",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      replyTo: { sender: "Aditi Kumar", text: "Hi, I need help with my account settings", messageId: "m1" },
+    },
+    {
+      id: "m3",
+      text: "",
+      time: "2:18 PM",
+      sender: "customer",
+      type: "image",
+      media: {
+        url: "https://picsum.photos/seed/chat1/683/546",
+        caption: "Here is a screenshot of the issue I'm facing",
+      },
+    },
+    { id: "m4", text: "", time: "2:20 PM", sender: "customer", type: "audio", media: { url: "#", duration: "0:10" } },
+    {
+      id: "m5",
+      text: "",
+      time: "2:21 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      type: "audio",
+      media: { url: "#", duration: "1:35" },
+    },
+    {
+      id: "m6",
+      text: "",
+      time: "2:23 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      type: "video",
+      media: {
+        url: "https://picsum.photos/seed/vid1/683/400",
+        thumbnailUrl: "https://picsum.photos/seed/vid1/683/400",
+        duration: "3:45",
+        caption: "WhatsApp API Setup Tutorial",
+      },
+    },
+    {
+      id: "m7",
+      text: "Have a look at this document",
+      time: "2:30 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "failed",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      type: "docPreview",
+      media: {
+        url: "https://picsum.photos/seed/doc1/442/308",
+        thumbnailUrl: "https://picsum.photos/seed/doc1/442/308",
+        filename: "Introduction to Live Chat.pdf",
+        fileType: "PDF",
+        pageCount: 46,
+        fileSize: "5MB",
+      },
+    },
+    {
+      id: "m8",
+      text: "",
+      time: "2:27 PM",
+      sender: "customer",
+      type: "document",
+      media: {
+        url: "https://picsum.photos/seed/doc2/442/308",
+        thumbnailUrl: "https://picsum.photos/seed/doc2/442/308",
+        filename: "Monthly_Report_Feb.pdf",
+        fileType: "PDF",
+        pageCount: 12,
+        fileSize: "3.1MB",
+      },
+    },
+    {
+      id: "m9",
+      text: "Have a look at this document",
+      time: "2:28 PM",
+      sender: "customer",
+      type: "otherDoc",
+      media: { url: "#", filename: "Order_Data_Q4.xlsx", fileType: "XLS", pageCount: 46, fileSize: "2.3MB" },
+    },
+    {
+      id: "m10",
+      text: "Check out our latest products!",
+      time: "2:29 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "delivered",
+      sentBy: { type: "campaign" },
+      type: "carousel",
+      media: {
+        url: "#",
+        images: [
+          {
+            url: "https://picsum.photos/seed/c1/300/240",
+            title: "Product Catalog 2025",
+            buttons: [
+              { label: "View Details", icon: "link" },
+              { label: "Share", icon: "reply" },
+            ],
+          },
+          {
+            url: "https://picsum.photos/seed/c2/300/240",
+            title: "New Arrivals Collection",
+            buttons: [{ label: "Shop Now", icon: "link" }],
+          },
+          {
+            url: "https://picsum.photos/seed/c3/300/240",
+            title: "Special Offers & Deals",
+            buttons: [
+              { label: "Learn More", icon: "link" },
+              { label: "Share", icon: "reply" },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "m11",
+      text: "",
+      time: "2:30 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "sent",
+      sentBy: { type: "campaign" },
+      type: "loading",
+      error: "Template message could not be delivered. The message template has been rejected.",
+    },
+  ],
+  "2": [
+    { id: "m1", text: "Hello, I'd like to know about your enterprise plans", time: "2:10 PM", sender: "customer" },
+    {
+      id: "m2",
+      text: "Welcome! I'll share our enterprise pricing details with you.",
+      time: "2:15 PM",
+      sender: "agent",
+      status: "read",
+      sentBy: { type: "agent", name: "Kavita Nair" },
+    },
+    { id: "m3", text: "", time: "2:20 PM", sender: "customer", type: "audio", media: { url: "#", duration: "0:10" } },
+    {
+      id: "m4",
+      text: "",
+      time: "2:22 PM",
+      sender: "agent",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Kavita Nair" },
+      type: "audio",
+      media: { url: "#", duration: "1:35" },
+    },
+    {
+      id: "m5",
+      text: "Authentication message sent",
+      time: "2:29 PM",
+      sender: "agent",
+      status: "read",
+      sentBy: { type: "api" },
+    },
+  ],
+  "3": [
+    { id: "m1", text: "Can you help me set up the API integration?", time: "1:45 PM", sender: "customer" },
+    {
+      id: "m2",
+      text: "Of course! Here's a quick video tutorial.",
+      time: "1:50 PM",
+      sender: "agent",
+      status: "delivered",
+      sentBy: { type: "bot" },
+    },
+    {
+      id: "m3",
+      text: "",
+      time: "1:52 PM",
+      sender: "agent",
+      status: "delivered",
+      sentBy: { type: "bot" },
+      type: "video",
+      media: {
+        url: "https://picsum.photos/seed/vid1/683/400",
+        thumbnailUrl: "https://picsum.photos/seed/vid1/683/400",
+        duration: "3:45",
+        caption: "WhatsApp API Setup Tutorial",
+      },
+    },
+    { id: "m4", text: "The WhatsApp Business API", time: "2:00 PM", sender: "customer" },
+    {
+      id: "m5",
+      text: "Authentication message sent",
+      time: "2:29 PM",
+      sender: "agent",
+      status: "failed",
+      sentBy: { type: "api" },
+    },
+  ],
+  "4": [
+    { id: "m1", text: "I am super excited", time: "Yesterday", sender: "customer" },
+    {
+      id: "m2",
+      text: "",
+      time: "Yesterday",
+      sender: "customer",
+      type: "carousel",
+      media: {
+        url: "#",
+        images: [
+          {
+            url: "https://picsum.photos/seed/c1/300/240",
+            title: "Product Catalog 2025",
+            buttons: [
+              { label: "View Details", icon: "link" },
+              { label: "Share", icon: "reply" },
+            ],
+          },
+          {
+            url: "https://picsum.photos/seed/c2/300/240",
+            title: "New Arrivals Collection",
+            buttons: [{ label: "Shop Now", icon: "link" }],
+          },
+          {
+            url: "https://picsum.photos/seed/c3/300/240",
+            title: "Special Offers & Deals",
+            buttons: [
+              { label: "Learn More", icon: "link" },
+              { label: "Share", icon: "reply" },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+  "5": [
+    { id: "m1", text: "Hi, can you share the proposal?", time: "Yesterday", sender: "customer" },
+    {
+      id: "m2",
+      text: "Sure, here's the PDF.",
+      time: "Yesterday",
+      sender: "agent",
+      status: "read",
+      sentBy: { type: "agent", name: "Jane Doe" },
+    },
+    {
+      id: "m3",
+      text: "",
+      time: "Yesterday",
+      sender: "agent",
+      status: "read",
+      sentBy: { type: "agent", name: "Jane Doe" },
+      type: "docPreview",
+      media: {
+        url: "https://picsum.photos/seed/doc1/442/308",
+        thumbnailUrl: "https://picsum.photos/seed/doc1/442/308",
+        filename: "Project_Proposal_2025.pdf",
+        fileType: "PDF",
+        pageCount: 46,
+        fileSize: "5MB",
+      },
+    },
+  ],
+  "6": [
+    {
+      id: "m1",
+      text: "We get many food delivery orders. Can we set up an automated response for those?",
+      time: "Yesterday",
+      sender: "customer",
+    },
+    {
+      id: "m2",
+      text: "Here's the order data from last quarter",
+      time: "Yesterday",
+      sender: "customer",
+      type: "otherDoc",
+      media: { url: "#", filename: "Order_Data_Q4.xlsx", fileType: "XLS", pageCount: 12, fileSize: "2.3MB" },
+    },
+    {
+      id: "m3",
+      text: "",
+      time: "Yesterday",
+      sender: "agent",
+      status: "sent",
+      sentBy: { type: "campaign" },
+      type: "loading",
+      error: "Template message could not be delivered. The message template has been rejected.",
+    },
+  ],
+  "7": [
+    { id: "m1", text: "I am super excited!", time: "Saturday", sender: "customer" },
+    {
+      id: "m2",
+      text: "Here's the report you requested!",
+      time: "Saturday",
+      sender: "agent",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Alex Smith" },
+    },
+    {
+      id: "m3",
+      text: "",
+      time: "Saturday",
+      sender: "agent",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      type: "document",
+      media: {
+        url: "https://picsum.photos/seed/doc2/442/308",
+        thumbnailUrl: "https://picsum.photos/seed/doc2/442/308",
+        filename: "Monthly_Report_Feb.pdf",
+        fileType: "PDF",
+        pageCount: 12,
+        fileSize: "3.1MB",
+      },
+    },
+  ],
+}
+
+const contacts: Contact[] = [
+  { id: "c1", name: "Aditi Kumar", phone: "+91 98765 43210", channel: "MY01" },
+  { id: "c2", name: "Arsh Raj", phone: "+91 91234 56789", channel: "MY01" },
+  { id: "c3", name: "Deepika Patel", phone: "+91 87654 32109", channel: "MY01" },
+  { id: "c4", name: "Jane Doe", phone: "+91 76543 21098", channel: "MY02" },
+  { id: "c5", name: "Kavita Nair", phone: "+91 65432 10987", channel: "MY03" },
+  { id: "c6", name: "Mohit Kumar", phone: "+91 99887 76655", channel: "MY01" },
+  { id: "c7", name: "Neha Gupta", phone: "+91 88776 65544", channel: "MY02" },
+  { id: "c8", name: "Nitin Rajput", phone: "+91 77665 54433", channel: "MY01" },
+  { id: "c9", name: "Priya Sharma", phone: "+91 66554 43322", channel: "MY03" },
+  { id: "c10", name: "Rahul Verma", phone: "+91 55443 32211", channel: "MY01" },
+  { id: "c11", name: "Rohit Gupta", phone: "+91 44332 21100", channel: "MY02" },
+  { id: "c12", name: "Sam Lee", phone: "+91 93300 11122", channel: "MY01" },
+  { id: "c13", name: "Sushmit", phone: "+91 92200 33344", channel: "MY03" },
+  { id: "c14", name: "Sushant Arya", phone: "+91 91100 55566", channel: "MY01" },
+  { id: "c15", name: "Vikram Singh", phone: "+91 90000 77788", channel: "MY02" },
+]
+
+const cannedMessages: CannedMessage[] = [
+  { id: "1", shortcut: "Test", body: "Test" },
+  { id: "2", shortcut: "Greeting", body: "Hi, how can I help you today?" },
+]
+
+/* ── Helper ── */
+
+const delay = () => new Promise<void>((r) => setTimeout(r, 100))
+
+let messageCounter = 1000
+
+/* ── MockTransport ── */
+
+export class MockTransport implements ChatTransport {
+  async fetchTabs(): Promise<TabDef[]> {
+    await delay()
+    return [...tabs]
+  }
+
+  async fetchAssignees(): Promise<AssigneeItem[]> {
+    await delay()
+    return [...assignees]
+  }
+
+  async fetchChannels(): Promise<ChannelItem[]> {
+    await delay()
+    return [...channels]
+  }
+
+  async fetchChats(params: {
+    tab: Tab
+    search?: string
+    filters?: ChatFilters
+  }): Promise<ChatItem[]> {
+    await delay()
+    let items = chatItems.filter((c) => c.tab === params.tab)
+
+    if (params.search) {
+      const q = params.search.toLowerCase()
+      items = items.filter(
+        (c) => c.name.toLowerCase().includes(q) || c.message.toLowerCase().includes(q),
+      )
+    }
+
+    if (params.filters?.assignees && params.filters.assignees.size > 0) {
+      items = items.filter((c) => {
+        if (!c.agentName) return params.filters!.assignees!.has("unassigned")
+        return params.filters!.assignees!.has(
+          c.agentName.toLowerCase().replace(/\\s+/g, "-"),
+        )
+      })
+    }
+
+    if (params.filters?.channels && params.filters.channels.size > 0) {
+      items = items.filter((c) =>
+        params.filters!.channels!.has(c.channel.toLowerCase()),
+      )
+    }
+
+    return items
+  }
+
+  async fetchMessages(chatId: string): Promise<ChatMessage[]> {
+    await delay()
+    return [...(chatMessages[chatId] || [])]
+  }
+
+  async sendMessage(
+    chatId: string,
+    payload: SendMessagePayload,
+  ): Promise<ChatMessage> {
+    await delay()
+    const now = new Date()
+    const hours = now.getHours()
+    const minutes = now.getMinutes().toString().padStart(2, "0")
+    const ampm = hours >= 12 ? "PM" : "AM"
+    const h12 = hours % 12 || 12
+    const timeStr = \`\${h12}:\${minutes} \${ampm}\`
+
+    const msg: ChatMessage = {
+      id: \`m-sent-\${++messageCounter}\`,
+      text: payload.text,
+      time: timeStr,
+      sender: "agent",
+      senderName: "You",
+      status: "sent",
+      sentBy: { type: "agent", name: "You" },
+    }
+
+    if (payload.replyToMessageId) {
+      const thread = chatMessages[chatId]
+      const original = thread?.find((m) => m.id === payload.replyToMessageId)
+      if (original) {
+        msg.replyTo = {
+          sender: original.senderName || (original.sender === "customer" ? "Customer" : "Agent"),
+          text: original.text,
+          messageId: original.id,
+        }
+      }
+    }
+
+    // Append to local mock data so subsequent fetchMessages includes it
+    if (!chatMessages[chatId]) {
+      chatMessages[chatId] = []
+    }
+    chatMessages[chatId].push(msg)
+
+    return msg
+  }
+
+  async sendTemplate(
+    _chatId: string,
+    _payload: TemplateSendPayload,
+  ): Promise<void> {
+    await delay()
+  }
+
+  async assignChat(_chatId: string, _agentId: string): Promise<void> {
+    await delay()
+  }
+
+  async resolveChat(_chatId: string): Promise<void> {
+    await delay()
+  }
+
+  async fetchContacts(query?: string): Promise<Contact[]> {
+    await delay()
+    if (!query) return [...contacts]
+    const q = query.toLowerCase()
+    return contacts.filter(
+      (c) => c.name.toLowerCase().includes(q) || c.phone.includes(q),
+    )
+  }
+
+  async createContact(contact: {
+    name: string
+    phone: string
+    channel: string
+  }): Promise<Contact> {
+    await delay()
+    const newContact: Contact = {
+      id: \`c-new-\${Date.now()}\`,
+      name: contact.name,
+      phone: contact.phone,
+      channel: contact.channel,
+    }
+    contacts.push(newContact)
+    return newContact
+  }
+
+  async fetchTemplates(category?: TemplateCategory): Promise<TemplateDef[]> {
+    await delay()
+    if (!category || category === "all") return [...templateList]
+    return templateList.filter((t) => t.category === category)
+  }
+
+  async fetchContactDetails(chatId: string): Promise<ContactDetails> {
+    await delay()
+    const chat = chatItems.find((c) => c.id === chatId)
+    const contact = contacts.find(
+      (c) => c.name === chat?.name || c.phone === chat?.name,
+    )
+    return {
+      name: contact?.name || chat?.name || "Unknown",
+      phone: contact?.phone || "+91 00000 00000",
+      email: "contact@example.com",
+      source: "WhatsApp",
+      marketingOptIn: true,
+      tags: ["Customer"],
+      location: "India",
+    }
+  }
+
+  async updateContactDetails(
+    _chatId: string,
+    _data: Partial<ContactDetails>,
+  ): Promise<void> {
+    await delay()
+  }
+
+  async fetchCannedMessages(): Promise<CannedMessage[]> {
+    await delay()
+    return [...cannedMessages]
+  }
+
+  onNewMessage(
+    _callback: (chatId: string, message: ChatMessage) => void,
+  ): () => void {
+    // No-op for mock — real transport would set up WebSocket/SSE
+    return () => {}
+  }
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { MockTransport } from "./mock-transport"
+export type { ChatTransport } from "./types"
+`, prefix),
+        }
+      ],
+    },
+    "chat-provider": {
+      name: "chat-provider",
+      description: "React context provider for chat state management with transport abstraction",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-transport"
+      ],
+      isMultiFile: true,
+      directory: "chat-provider",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-provider.tsx",
+      files: [
+        {
+          name: "types.ts",
+          content: prefixTailwindClasses(`import type {
+  Tab,
+  ChatItem,
+  ChatMessage,
+  AssigneeItem,
+  ChannelItem,
+  TabDef,
+  Contact,
+  TemplateDef,
+  CannedMessage,
+  ChatFilters,
+} from "../chat-types"
+import type { ChatTransport } from "../chat-transport/types"
+
+export interface ChatContextValue {
+  // Transport
+  transport: ChatTransport
+
+  // Data
+  tabs: TabDef[]
+  assignees: AssigneeItem[]
+  channels: ChannelItem[]
+  chats: ChatItem[]
+  contacts: Contact[]
+  templates: TemplateDef[]
+  cannedMessages: CannedMessage[]
+
+  // Chat list state
+  activeTab: Tab
+  setActiveTab: (tab: Tab) => void
+  search: string
+  setSearch: (query: string) => void
+  selectedChatId: string | null
+  selectChat: (chatId: string | null) => void
+
+  // Messages for selected chat
+  messages: ChatMessage[]
+  isLoadingMessages: boolean
+
+  // Filters
+  appliedFilters: ChatFilters | null
+  applyFilters: (filters: ChatFilters | null) => void
+
+  // UI state toggles
+  showFilters: boolean
+  setShowFilters: (show: boolean) => void
+  showNewChat: boolean
+  setShowNewChat: (show: boolean) => void
+  showContactDetails: boolean
+  setShowContactDetails: (show: boolean) => void
+  showTemplateModal: boolean
+  setShowTemplateModal: (show: boolean) => void
+  showAddContact: boolean
+  setShowAddContact: (show: boolean) => void
+
+  // Actions
+  sendMessage: (text: string, attachment?: File, replyToMessageId?: string) => Promise<void>
+  sendTemplate: (templateId: string, variables: Record<string, string>, cardVariables?: Record<number, { body: Record<string, string>; button: Record<string, string> }>) => Promise<void>
+  assignChat: (agentId: string) => Promise<void>
+  resolveChat: () => Promise<void>
+  createContact: (contact: { name: string; phone: string; channel: string }) => Promise<void>
+
+  // Loading states
+  isLoading: boolean
+}
+`, prefix),
+        },
+        {
+          name: "chat-context.ts",
+          content: prefixTailwindClasses(`import * as React from "react"
+import type { ChatContextValue } from "./types"
+
+export const ChatContext = React.createContext<ChatContextValue | null>(null)
+
+export function useChatContext(): ChatContextValue {
+  const context = React.useContext(ChatContext)
+  if (!context) {
+    throw new Error("useChatContext must be used within a <ChatProvider>")
+  }
+  return context
+}
+`, prefix),
+        },
+        {
+          name: "chat-provider.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import type {
+  Tab,
+  ChatItem,
+  ChatMessage,
+  AssigneeItem,
+  ChannelItem,
+  TabDef,
+  Contact,
+  TemplateDef,
+  CannedMessage,
+  ChatFilters,
+  CardVarMap,
+} from "../chat-types"
+import type { ChatTransport } from "../chat-transport/types"
+import { ChatContext } from "./chat-context"
+
+export interface ChatProviderProps {
+  transport: ChatTransport
+  children: React.ReactNode
+}
+
+export function ChatProvider({ transport, children }: ChatProviderProps) {
+  // ── Lookup data ──────────────────────────────────────────────
+  const [tabs, setTabs] = React.useState<TabDef[]>([])
+  const [assignees, setAssignees] = React.useState<AssigneeItem[]>([])
+  const [channels, setChannels] = React.useState<ChannelItem[]>([])
+  const [contacts, setContacts] = React.useState<Contact[]>([])
+  const [templates, setTemplates] = React.useState<TemplateDef[]>([])
+  const [cannedMessages, setCannedMessages] = React.useState<CannedMessage[]>(
+    []
+  )
+
+  // ── Chat list state ──────────────────────────────────────────
+  const [chats, setChats] = React.useState<ChatItem[]>([])
+  const [activeTab, setActiveTab] = React.useState<Tab>("open")
+  const [search, setSearch] = React.useState("")
+  const [selectedChatId, setSelectedChatId] = React.useState<string | null>(
+    null
+  )
+
+  // ── Messages for selected chat ───────────────────────────────
+  const [messages, setMessages] = React.useState<ChatMessage[]>([])
+  const [isLoadingMessages, setIsLoadingMessages] = React.useState(false)
+
+  // ── Filters ──────────────────────────────────────────────────
+  const [appliedFilters, setAppliedFilters] =
+    React.useState<ChatFilters | null>(null)
+
+  // ── UI state toggles ────────────────────────────────────────
+  const [showFilters, setShowFilters] = React.useState(false)
+  const [showNewChat, setShowNewChat] = React.useState(false)
+  const [showContactDetails, setShowContactDetails] = React.useState(false)
+  const [showTemplateModal, setShowTemplateModal] = React.useState(false)
+  const [showAddContact, setShowAddContact] = React.useState(false)
+
+  // ── Loading ──────────────────────────────────────────────────
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  // ── Load initial lookup data on mount ────────────────────────
+  React.useEffect(() => {
+    let cancelled = false
+
+    async function loadInitialData() {
+      setIsLoading(true)
+      try {
+        const [
+          tabsData,
+          assigneesData,
+          channelsData,
+          contactsData,
+          templatesData,
+          cannedData,
+        ] = await Promise.all([
+          transport.fetchTabs(),
+          transport.fetchAssignees(),
+          transport.fetchChannels(),
+          transport.fetchContacts(),
+          transport.fetchTemplates(),
+          transport.fetchCannedMessages(),
+        ])
+
+        if (cancelled) return
+
+        setTabs(tabsData)
+        setAssignees(assigneesData)
+        setChannels(channelsData)
+        setContacts(contactsData)
+        setTemplates(templatesData)
+        setCannedMessages(cannedData)
+      } catch (err) {
+        console.error("[ChatProvider] Failed to load initial data:", err)
+      } finally {
+        if (!cancelled) setIsLoading(false)
+      }
+    }
+
+    loadInitialData()
+    return () => {
+      cancelled = true
+    }
+  }, [transport])
+
+  // ── Re-fetch chats when tab, search, or filters change ──────
+  React.useEffect(() => {
+    let cancelled = false
+
+    async function loadChats() {
+      try {
+        const data = await transport.fetchChats({
+          tab: activeTab,
+          search: search || undefined,
+          filters: appliedFilters ?? undefined,
+        })
+        if (!cancelled) setChats(data)
+      } catch (err) {
+        console.error("[ChatProvider] Failed to load chats:", err)
+      }
+    }
+
+    loadChats()
+    return () => {
+      cancelled = true
+    }
+  }, [transport, activeTab, search, appliedFilters])
+
+  // ── Fetch messages when selectedChatId changes ──────────────
+  React.useEffect(() => {
+    if (!selectedChatId) {
+      setMessages([])
+      return
+    }
+
+    let cancelled = false
+    setIsLoadingMessages(true)
+
+    async function loadMessages() {
+      try {
+        const data = await transport.fetchMessages(selectedChatId!)
+        if (!cancelled) setMessages(data)
+      } catch (err) {
+        console.error("[ChatProvider] Failed to load messages:", err)
+      } finally {
+        if (!cancelled) setIsLoadingMessages(false)
+      }
+    }
+
+    loadMessages()
+    return () => {
+      cancelled = true
+    }
+  }, [transport, selectedChatId])
+
+  // ── Subscribe to real-time messages ─────────────────────────
+  React.useEffect(() => {
+    if (!transport.onNewMessage) return
+
+    const unsubscribe = transport.onNewMessage((chatId, message) => {
+      if (chatId === selectedChatId) {
+        setMessages((prev) => [...prev, message])
+      }
+    })
+
+    return unsubscribe
+  }, [transport, selectedChatId])
+
+  // ── Actions ─────────────────────────────────────────────────
+  const selectChat = React.useCallback((chatId: string | null) => {
+    setSelectedChatId(chatId)
+  }, [])
+
+  const applyFilters = React.useCallback(
+    (filters: ChatFilters | null) => {
+      setAppliedFilters(filters)
+    },
+    []
+  )
+
+  const sendMessage = React.useCallback(
+    async (text: string, attachment?: File, replyToMessageId?: string) => {
+      if (!selectedChatId) return
+
+      const sent = await transport.sendMessage(selectedChatId, {
+        text,
+        attachment,
+        replyToMessageId,
+      })
+      setMessages((prev) => [...prev, sent])
+    },
+    [transport, selectedChatId]
+  )
+
+  const sendTemplate = React.useCallback(
+    async (
+      templateId: string,
+      variables: Record<string, string>,
+      cardVariables?: Record<
+        number,
+        { body: Record<string, string>; button: Record<string, string> }
+      >
+    ) => {
+      if (!selectedChatId) return
+
+      await transport.sendTemplate(selectedChatId, {
+        templateId,
+        variables,
+        cardVariables: cardVariables as CardVarMap | undefined,
+      })
+    },
+    [transport, selectedChatId]
+  )
+
+  const assignChat = React.useCallback(
+    async (agentId: string) => {
+      if (!selectedChatId) return
+      await transport.assignChat(selectedChatId, agentId)
+    },
+    [transport, selectedChatId]
+  )
+
+  const resolveChat = React.useCallback(async () => {
+    if (!selectedChatId) return
+    await transport.resolveChat(selectedChatId)
+  }, [transport, selectedChatId])
+
+  const createContact = React.useCallback(
+    async (contact: { name: string; phone: string; channel: string }) => {
+      await transport.createContact(contact)
+    },
+    [transport]
+  )
+
+  // ── Context value ───────────────────────────────────────────
+  const value = React.useMemo(
+    () => ({
+      transport,
+      tabs,
+      assignees,
+      channels,
+      chats,
+      contacts,
+      templates,
+      cannedMessages,
+      activeTab,
+      setActiveTab,
+      search,
+      setSearch,
+      selectedChatId,
+      selectChat,
+      messages,
+      isLoadingMessages,
+      appliedFilters,
+      applyFilters,
+      showFilters,
+      setShowFilters,
+      showNewChat,
+      setShowNewChat,
+      showContactDetails,
+      setShowContactDetails,
+      showTemplateModal,
+      setShowTemplateModal,
+      showAddContact,
+      setShowAddContact,
+      sendMessage,
+      sendTemplate,
+      assignChat,
+      resolveChat,
+      createContact,
+      isLoading,
+    }),
+    [
+      transport,
+      tabs,
+      assignees,
+      channels,
+      chats,
+      contacts,
+      templates,
+      cannedMessages,
+      activeTab,
+      search,
+      selectedChatId,
+      selectChat,
+      messages,
+      isLoadingMessages,
+      appliedFilters,
+      applyFilters,
+      showFilters,
+      showNewChat,
+      showContactDetails,
+      showTemplateModal,
+      showAddContact,
+      sendMessage,
+      sendTemplate,
+      assignChat,
+      resolveChat,
+      createContact,
+      isLoading,
+    ]
+  )
+
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatProvider } from "./chat-provider"
+export { ChatContext, useChatContext } from "./chat-context"
+export type { ChatContextValue } from "./types"
+`, prefix),
+        }
+      ],
+    },
+    "chat-sidebar": {
+      name: "chat-sidebar",
+      description: "Chat inbox sidebar with search, tabs, and conversation list",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "text-field",
+            "tabs",
+            "badge",
+            "chat-list-item"
+      ],
+      isMultiFile: true,
+      directory: "chat-sidebar",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-sidebar.tsx",
+      files: [
+        {
+          name: "chat-sidebar.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cn } from "../../../lib/utils"
+import { Button } from "../../button"
+import { TextField } from "../../text-field"
+import { Tabs, TabsList, TabsTrigger } from "../../tabs"
+import { Badge } from "../../badge"
+import { ChatListItem, type MessageType } from "../chat-list-item"
+import { useChatContext } from "../chat-provider"
+import type { Tab } from "../chat-types"
+import { Search, Plus, CircleAlert } from "lucide-react"
+
+/* ── Custom Icons ── */
+
+const FilterIcon = () => (
+  <svg
+    aria-hidden="true"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    className="text-semantic-text-primary"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+  >
+    <line x1="4" y1="7" x2="20" y2="7" />
+    <line x1="7" y1="12" x2="17" y2="12" />
+    <line x1="10" y1="17" x2="14" y2="17" />
+  </svg>
+)
+
+/* ── Helpers ── */
+
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return text
+  return (
+    <>
+      {text.slice(0, idx)}
+      <strong className="font-semibold text-semantic-text-primary">
+        {text.slice(idx, idx + query.length)}
+      </strong>
+      {text.slice(idx + query.length)}
+    </>
+  )
+}
+
+/* ── ChatSidebar ── */
+
+export interface ChatSidebarProps {
+  /** Swappable content — typically FilterPanel or NewChatPanel rendered by the parent */
+  children?: React.ReactNode
+  /** Ref forwarded to the chat area for focus management after selecting a chat */
+  chatAreaRef?: React.RefObject<HTMLDivElement | null>
+}
+
+function ChatSidebar({ children, chatAreaRef }: ChatSidebarProps) {
+  const {
+    tabs,
+    activeTab,
+    setActiveTab,
+    search,
+    setSearch,
+    chats,
+    selectedChatId,
+    selectChat,
+    showFilters,
+    setShowFilters,
+    showNewChat,
+    setShowNewChat,
+    appliedFilters,
+    setShowContactDetails,
+  } = useChatContext()
+
+  const hasActiveFilters =
+    (appliedFilters?.assignees != null && appliedFilters.assignees.size > 0) ||
+    (appliedFilters?.channels != null && appliedFilters.channels.size > 0)
+
+  const filteredChats = React.useMemo(() => {
+    return chats.filter((c) => {
+      if (c.tab !== activeTab) return false
+      if (search.trim()) {
+        const q = search.toLowerCase()
+        return (
+          c.name.toLowerCase().includes(q) ||
+          c.message.toLowerCase().includes(q)
+        )
+      }
+      return true
+    })
+  }, [chats, activeTab, search])
+
+  const openNewChat = React.useCallback(() => {
+    setShowFilters(false)
+    setSearch("")
+    setShowNewChat(true)
+  }, [setShowFilters, setSearch, setShowNewChat])
+
+  const openFilters = React.useCallback(() => {
+    setShowFilters(true)
+    setSearch("")
+  }, [setShowFilters, setSearch])
+
+  const handleSelectChat = React.useCallback(
+    (chatId: string) => {
+      selectChat(chatId)
+      setShowContactDetails(false)
+      requestAnimationFrame(() => chatAreaRef?.current?.focus())
+    },
+    [selectChat, setShowContactDetails, chatAreaRef]
+  )
+
+  // Determine if a swappable child panel is active
+  const showSwappableContent = showNewChat || showFilters
+
+  return (
+    <nav
+      aria-label="Inbox"
+      className="flex flex-col w-[356px] h-full bg-white shrink-0 border-r border-solid border-semantic-border-layout"
+    >
+      {showSwappableContent && children ? (
+        <div
+          key={showNewChat ? "newchat" : "filters"}
+          className="flex flex-col flex-1 min-h-0 animate-in slide-in-from-right-3 fade-in duration-200"
+        >
+          {children}
+        </div>
+      ) : (
+        <div
+          key="inbox"
+          className="flex flex-col flex-1 min-h-0 animate-in fade-in duration-150"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 h-[72px] shrink-0">
+            <h1 className="m-0 text-[24px] font-semibold text-semantic-text-primary leading-8">
+              Inbox
+            </h1>
+            <Button
+              variant="outline"
+              className="h-10"
+              leftIcon={<Plus className="size-5" />}
+              onClick={openNewChat}
+            >
+              New Chat
+            </Button>
+          </div>
+
+          {/* Search + Filter button */}
+          <div
+            role="search"
+            aria-label="Search conversations"
+            className="flex gap-2 px-4 shrink-0"
+          >
+            <TextField
+              placeholder="Search conversations"
+              aria-label="Search conversations"
+              leftIcon={<Search className="size-[18px]" />}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              clearable
+              onClear={() => setSearch("")}
+              wrapperClassName="flex-1"
+              size="default"
+            />
+            <Button
+              variant="outline"
+              size="icon-lg"
+              onClick={openFilters}
+              className={cn(
+                "relative",
+                hasActiveFilters &&
+                  "border-semantic-primary text-semantic-primary"
+              )}
+            >
+              <FilterIcon />
+              {hasActiveFilters && (
+                <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-semantic-border-accent animate-in zoom-in duration-200 ring-1 ring-semantic-border-layout" />
+              )}
+            </Button>
+          </div>
+
+          {/* Tabs */}
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v as Tab)}
+          >
+            <TabsList fullWidth className="shrink-0 mt-1">
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.id} value={tab.id}>
+                  {tab.label}
+                  <Badge
+                    variant={activeTab === tab.id ? "primary" : "default"}
+                    size="sm"
+                  >
+                    {tab.count}
+                  </Badge>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+
+          {/* Chat List */}
+          <div className="sr-only" aria-live="polite">
+            {\`\${filteredChats.length} conversations\`}
+          </div>
+          <div
+            key={activeTab}
+            className="flex-1 overflow-y-auto animate-in fade-in duration-150 ease-out"
+          >
+            {filteredChats.map((chat) => (
+              <div key={chat.id} className="relative">
+                <ChatListItem
+                  {...chat}
+                  messageType={chat.messageType as MessageType}
+                  message={
+                    search
+                      ? highlightMatch(chat.message, search)
+                      : chat.message
+                  }
+                  messageStatus={
+                    chat.isFailed ? undefined : chat.messageStatus
+                  }
+                  isSelected={selectedChatId === chat.id}
+                  onClick={() => handleSelectChat(chat.id)}
+                />
+                {chat.isFailed && (
+                  <div className="absolute top-5 right-4">
+                    <CircleAlert className="size-4 text-semantic-error-primary" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
+  )
+}
+
+ChatSidebar.displayName = "ChatSidebar"
+
+export { ChatSidebar }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatSidebar } from "./chat-sidebar"
+export type { ChatSidebarProps } from "./chat-sidebar"
+`, prefix),
+        }
+      ],
+    },
+    "chat-filter-panel": {
+      name: "chat-filter-panel",
+      description: "Assignee and channel filter panel with checkbox groups",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "text-field",
+            "checkbox",
+            "dialog"
+      ],
+      isMultiFile: true,
+      directory: "chat-filter-panel",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-filter-panel.tsx",
+      files: [
+        {
+          name: "chat-filter-panel.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { Button } from "../../button"
+import { TextField } from "../../text-field"
+import { Checkbox } from "../../checkbox"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../../dialog"
+import { useChatContext } from "../chat-provider"
+import {
+  Search,
+  ArrowLeft,
+  Users,
+  Radio,
+  Bot,
+} from "lucide-react"
+
+export interface ChatFilterPanelProps {
+  onClose: () => void
+  onApply: (assignees: Set<string>, channels: Set<string>) => void
+}
+
+const COLLAPSED_COUNT = 4
+
+export function ChatFilterPanel({ onClose, onApply }: ChatFilterPanelProps) {
+  const { assignees, channels } = useChatContext()
+
+  const [filterSearch, setFilterSearch] = React.useState("")
+  const [showAllBots, setShowAllBots] = React.useState(false)
+  const [showAllAgents, setShowAllAgents] = React.useState(false)
+  const [showDiscardDialog, setShowDiscardDialog] = React.useState(false)
+
+  const initialAssignees = React.useRef(
+    new Set(assignees.map((a) => a.id))
+  )
+  const initialChannels = React.useRef(
+    new Set(channels.map((c) => c.id))
+  )
+
+  const [selectedAssignees, setSelectedAssignees] = React.useState<Set<string>>(
+    () => new Set(assignees.map((a) => a.id))
+  )
+  const [selectedChannels, setSelectedChannels] = React.useState<Set<string>>(
+    () => new Set(channels.map((c) => c.id))
+  )
+
+  const isDirty = () => {
+    if (selectedAssignees.size !== initialAssignees.current.size) return true
+    if (selectedChannels.size !== initialChannels.current.size) return true
+    for (const id of selectedAssignees)
+      if (!initialAssignees.current.has(id)) return true
+    for (const id of selectedChannels)
+      if (!initialChannels.current.has(id)) return true
+    return false
+  }
+
+  const handleBack = () => {
+    if (isDirty()) {
+      setShowDiscardDialog(true)
+    } else {
+      onClose()
+    }
+  }
+
+  const bots = assignees.filter((a) => a.type === "bot")
+  const agents = assignees.filter((a) => a.type === "agent")
+  const topLevel = assignees.filter(
+    (a) => a.type === "all" || a.type === "unassigned"
+  )
+
+  const query = filterSearch.toLowerCase()
+  const filteredBots = bots.filter((b) =>
+    b.label.toLowerCase().includes(query)
+  )
+  const filteredAgents = agents.filter((a) =>
+    a.label.toLowerCase().includes(query)
+  )
+  const filteredChannels = channels.filter(
+    (c) =>
+      c.name.toLowerCase().includes(query) || c.phone.includes(filterSearch)
+  )
+
+  const toggleAssignee = (id: string) => {
+    setSelectedAssignees((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleChannel = (id: string) => {
+    setSelectedChannels((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Header — matches NewChat pattern */}
+      <div className="flex items-center justify-between px-3 py-3 border-b border-solid border-semantic-border-layout shrink-0">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={handleBack}>
+            <ArrowLeft className="size-5" />
+          </Button>
+          <span className="text-[16px] font-semibold text-semantic-text-primary">
+            Filters
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-sm"
+          onClick={() => {
+            setSelectedAssignees(new Set())
+            setSelectedChannels(new Set())
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+
+      {/* Search row */}
+      <div
+        role="search"
+        aria-label="Search filters"
+        className="flex items-center gap-2 px-3 py-2.5 border-b border-solid border-semantic-border-layout shrink-0"
+      >
+        <TextField
+          placeholder="Search filters..."
+          aria-label="Search filters"
+          value={filterSearch}
+          onChange={(e) => setFilterSearch(e.target.value)}
+          leftIcon={<Search className="size-4" />}
+          wrapperClassName="flex-1 min-w-0"
+          clearable
+          onClear={() => setFilterSearch("")}
+        />
+      </div>
+
+      {/* Scrollable filter sections */}
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        {/* ── Assignment Section ── */}
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="size-4 text-semantic-text-muted" />
+            <span className="text-[13px] font-semibold text-semantic-text-primary">
+              Assignment
+            </span>
+            <span className="text-[12px] text-semantic-text-muted tabular-nums">
+              {selectedAssignees.size}/{assignees.length}
+            </span>
+            <span className="flex-1" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-semantic-error-primary hover:bg-semantic-error-surface hover:text-semantic-error-primary"
+              onClick={() => setSelectedAssignees(new Set())}
+            >
+              Clear All
+            </Button>
+          </div>
+
+          <div className="border border-solid border-semantic-border-layout rounded-lg overflow-hidden">
+            {topLevel.map((item) => (
+              <label
+                key={item.id}
+                className="flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors border-b border-solid border-semantic-border-layout"
+              >
+                <Checkbox
+                  size="sm"
+                  checked={selectedAssignees.has(item.id)}
+                  onCheckedChange={() => toggleAssignee(item.id)}
+                />
+                <span className="text-[14px] text-semantic-text-primary">
+                  {item.label}
+                </span>
+              </label>
+            ))}
+
+            {filteredBots.length > 0 &&
+              (() => {
+                const isSearching = filterSearch.trim().length > 0
+                const visibleBots =
+                  isSearching || showAllBots
+                    ? filteredBots
+                    : filteredBots.slice(0, COLLAPSED_COUNT)
+                const hiddenCount = filteredBots.length - COLLAPSED_COUNT
+                return (
+                  <>
+                    <div className="px-3 py-2 bg-semantic-bg-ui border-b border-solid border-semantic-border-layout">
+                      <span className="text-[13px] font-semibold text-semantic-text-secondary">
+                        Bots ({bots.length})
+                      </span>
+                    </div>
+                    {visibleBots.map((bot) => (
+                      <label
+                        key={bot.id}
+                        className="flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors border-b border-solid border-semantic-border-layout"
+                      >
+                        <Checkbox
+                          size="sm"
+                          checked={selectedAssignees.has(bot.id)}
+                          onCheckedChange={() => toggleAssignee(bot.id)}
+                        />
+                        <span className="text-[14px] text-semantic-text-primary flex-1">
+                          {bot.label}
+                        </span>
+                        <Bot className="size-4 text-semantic-text-muted" />
+                      </label>
+                    ))}
+                    {!isSearching && hiddenCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllBots((p) => !p)}
+                        className="w-full px-3 py-2 text-[13px] font-medium text-semantic-text-link hover:bg-semantic-bg-hover transition-colors text-left border-b border-solid border-semantic-border-layout"
+                      >
+                        {showAllBots
+                          ? "Show less"
+                          : \`Show more (+\${hiddenCount})\`}
+                      </button>
+                    )}
+                  </>
+                )
+              })()}
+
+            {filteredAgents.length > 0 &&
+              (() => {
+                const isSearching = filterSearch.trim().length > 0
+                const visibleAgents =
+                  isSearching || showAllAgents
+                    ? filteredAgents
+                    : filteredAgents.slice(0, COLLAPSED_COUNT)
+                const hiddenCount = filteredAgents.length - COLLAPSED_COUNT
+                return (
+                  <>
+                    <div className="px-3 py-2 bg-semantic-bg-ui border-b border-solid border-semantic-border-layout">
+                      <span className="text-[13px] font-semibold text-semantic-text-secondary">
+                        Agents ({agents.length})
+                      </span>
+                    </div>
+                    {visibleAgents.map((agent, i) => (
+                      <label
+                        key={agent.id}
+                        className={\`flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors \${
+                          i < visibleAgents.length - 1 ||
+                          (!isSearching && hiddenCount > 0)
+                            ? "border-b border-solid border-semantic-border-layout"
+                            : ""
+                        }\`}
+                      >
+                        <Checkbox
+                          size="sm"
+                          checked={selectedAssignees.has(agent.id)}
+                          onCheckedChange={() => toggleAssignee(agent.id)}
+                        />
+                        <span className="text-[14px] text-semantic-text-primary">
+                          {agent.label}
+                        </span>
+                      </label>
+                    ))}
+                    {!isSearching && hiddenCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllAgents((p) => !p)}
+                        className="w-full px-3 py-2 text-[13px] font-medium text-semantic-text-link hover:bg-semantic-bg-hover transition-colors text-left"
+                      >
+                        {showAllAgents
+                          ? "Show less"
+                          : \`Show more (+\${hiddenCount})\`}
+                      </button>
+                    )}
+                  </>
+                )
+              })()}
+          </div>
+        </div>
+
+        {/* ── Channels Section ── */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Radio className="size-4 text-semantic-text-muted" />
+            <span className="text-[13px] font-semibold text-semantic-text-primary">
+              Channels
+            </span>
+            <span className="text-[12px] text-semantic-text-muted tabular-nums">
+              {selectedChannels.size}/{channels.length}
+            </span>
+            <span className="flex-1" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-sm text-semantic-error-primary hover:bg-semantic-error-surface hover:text-semantic-error-primary"
+              onClick={() => setSelectedChannels(new Set())}
+            >
+              Clear All
+            </Button>
+          </div>
+
+          <div className="border border-solid border-semantic-border-layout rounded-lg overflow-hidden">
+            {filteredChannels.map((ch, i) => (
+              <label
+                key={ch.id}
+                className={\`flex items-center gap-3 px-3 py-2.5 hover:bg-semantic-bg-hover cursor-pointer transition-colors \${
+                  i < filteredChannels.length - 1
+                    ? "border-b border-solid border-semantic-border-layout"
+                    : ""
+                }\`}
+              >
+                <Checkbox
+                  size="sm"
+                  checked={selectedChannels.has(ch.id)}
+                  onCheckedChange={() => toggleChannel(ch.id)}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] text-semantic-text-primary truncate">
+                      {ch.name}
+                    </span>
+                    <span className="shrink-0 text-[12px] font-semibold text-semantic-text-muted bg-semantic-bg-hover px-1.5 py-0.5 rounded">
+                      {ch.badge}
+                    </span>
+                  </div>
+                  <span className="text-[13px] text-semantic-text-muted">
+                    {ch.phone}
+                  </span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 border-t border-solid border-semantic-border-layout px-4 py-3">
+        <p className="m-0 text-[13px] text-semantic-text-muted mb-3 text-center">
+          Maximum selections allowed per category: 50
+        </p>
+        <div className="flex gap-3">
+          <Button variant="outline" className="flex-1" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            className="flex-1"
+            onClick={() => onApply(selectedAssignees, selectedChannels)}
+          >
+            Apply
+          </Button>
+        </div>
+      </div>
+
+      {/* Discard unsaved filters confirmation */}
+      {showDiscardDialog && (
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setShowDiscardDialog(false)
+          }}
+        >
+          <DialogContent size="default" className="w-[400px] max-w-[90vw]">
+            <DialogTitle>Discard filter changes?</DialogTitle>
+            <DialogDescription>
+              You have unsaved filter changes. Do you want to apply them or
+              discard?
+            </DialogDescription>
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowDiscardDialog(false)
+                  onClose()
+                }}
+              >
+                Discard
+              </Button>
+              <Button
+                className="flex-1"
+                onClick={() => {
+                  setShowDiscardDialog(false)
+                  onApply(selectedAssignees, selectedChannels)
+                }}
+              >
+                Apply Filters
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  )
+}
+
+ChatFilterPanel.displayName = "ChatFilterPanel"
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatFilterPanel } from "./chat-filter-panel"
+export type { ChatFilterPanelProps } from "./chat-filter-panel"
+`, prefix),
+        }
+      ],
+    },
+    "chat-new-panel": {
+      name: "chat-new-panel",
+      description: "New chat panel with contact search and add-contact modal",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "text-field",
+            "dialog",
+            "avatar",
+            "dropdown-menu"
+      ],
+      isMultiFile: true,
+      directory: "chat-new-panel",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-new-panel.tsx",
+      files: [
+        {
+          name: "chat-new-panel.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cn } from "../../../lib/utils"
+import { Button } from "../../button"
+import { TextField } from "../../text-field"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../../dropdown-menu"
+import { Avatar } from "../../avatar"
+import { useChatContext } from "../chat-provider"
+import { ArrowLeft, ChevronDown, Search, UserPlus } from "lucide-react"
+
+/* ── Helpers ── */
+
+/**
+ * Highlights the first occurrence of \`query\` within \`text\` by wrapping it
+ * in a <strong> tag. Returns the original text if no match is found.
+ */
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return text
+  return (
+    <>
+      {text.slice(0, idx)}
+      <strong className="font-semibold text-semantic-text-primary">{text.slice(idx, idx + query.length)}</strong>
+      {text.slice(idx + query.length)}
+    </>
+  )
+}
+
+/* ── Component ── */
+
+export interface ChatNewPanelProps {
+  /** Called when the user clicks the back button */
+  onBack: () => void
+  /** Called when the user wants to open the "Add new contact" modal */
+  onOpenAddContact: () => void
+}
+
+/**
+ * Panel that displays a searchable contact list for starting a new chat.
+ * Includes a header with back navigation and channel selector, a search bar
+ * with an "Add new contact" button, and a scrollable contact list with
+ * search-match highlighting.
+ *
+ * Data (contacts, channels) is read from \`useChatContext()\`.
+ */
+function ChatNewPanel({ onBack, onOpenAddContact }: ChatNewPanelProps) {
+  const { contacts, channels } = useChatContext()
+  const [contactSearch, setContactSearch] = React.useState("")
+  const [selectedChannel, setSelectedChannel] = React.useState(channels[0])
+
+  const filtered = contacts.filter(
+    (c) =>
+      c.name.toLowerCase().includes(contactSearch.toLowerCase()) ||
+      c.phone.includes(contactSearch)
+  )
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Header */}
+      <div className="flex items-center justify-between px-3 py-3 border-b border-solid border-semantic-border-layout shrink-0">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="size-5" />
+          </Button>
+          <span className="text-[16px] font-semibold text-semantic-text-primary">New Chat</span>
+        </div>
+
+        {/* Channel selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              {selectedChannel.badge}
+              <ChevronDown className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[280px]">
+            {channels.map((ch) => (
+              <DropdownMenuItem
+                key={ch.id}
+                onSelect={() => setSelectedChannel(channels.find((c) => c.id === ch.id)!)}
+                description={ch.phone}
+                suffix={ch.badge}
+                className={cn(selectedChannel.id === ch.id && "bg-semantic-primary-surface text-semantic-primary font-medium")}
+              >
+                {ch.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Search row */}
+      <div role="search" aria-label="Search contacts" className="flex items-center gap-2 px-3 py-2.5 border-b border-solid border-semantic-border-layout shrink-0">
+        <TextField
+          placeholder="Search contacts"
+          aria-label="Search contacts"
+          value={contactSearch}
+          onChange={(e) => setContactSearch(e.target.value)}
+          leftIcon={<Search className="size-4" />}
+          wrapperClassName="flex-1 min-w-0"
+          size="default"
+          clearable={!!contactSearch}
+          onClear={() => setContactSearch("")}
+        />
+        <Button variant="outline" size="icon-lg" onClick={onOpenAddContact} className="shrink-0" aria-label="Add new contact">
+          <UserPlus className="size-4" />
+        </Button>
+      </div>
+
+      {/* Contact list */}
+      <div className="flex-1 overflow-y-auto">
+        {filtered.length === 0 ? (
+          <div className="flex items-center justify-center h-24 text-[13px] text-semantic-text-muted">
+            No contacts found
+          </div>
+        ) : (
+          filtered.map((contact, i) => (
+            <button
+              type="button"
+              key={contact.id}
+              className={cn(
+                "flex items-center gap-3 px-3 py-3 hover:bg-semantic-bg-hover cursor-pointer transition-colors text-left w-full",
+                i < filtered.length - 1 && "border-b border-solid border-semantic-border-layout"
+              )}
+            >
+              <Avatar name={contact.name} size="sm" />
+              {/* Info */}
+              <div className="flex-1 flex items-center justify-between min-w-0">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[14px] font-medium text-semantic-text-primary leading-5 truncate">
+                    {contactSearch ? highlightMatch(contact.name, contactSearch) : contact.name}
+                  </span>
+                  <span className="text-[12px] text-semantic-text-muted">
+                    {contactSearch ? highlightMatch(contact.phone, contactSearch) : contact.phone}
+                  </span>
+                </div>
+                {contact.channel && (
+                  <span className="text-[12px] font-medium text-semantic-text-muted shrink-0 ml-2">
+                    {contact.channel}
+                  </span>
+                )}
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  )
+}
+ChatNewPanel.displayName = "ChatNewPanel"
+
+export { ChatNewPanel }
+`, prefix),
+        },
+        {
+          name: "add-contact-modal.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cn } from "../../../lib/utils"
+import { Button } from "../../button"
+import { TextField } from "../../text-field"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../../dialog"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../../dropdown-menu"
+import { useChatContext } from "../chat-provider"
+import type { ChannelItem } from "../chat-types"
+import { ChevronDown, X } from "lucide-react"
+
+export interface AddNewContactModalProps {
+  /** The default channel to pre-select */
+  defaultChannel: ChannelItem
+  /** Called when the modal should close */
+  onClose: () => void
+}
+
+/**
+ * Modal dialog for adding a new contact. Shows a channel selector,
+ * phone number input with country code prefix, and a name field.
+ * Calls \`createContact\` from ChatContext when "Start Conversation" is clicked.
+ */
+function AddNewContactModal({
+  defaultChannel,
+  onClose,
+}: AddNewContactModalProps) {
+  const { channels, createContact } = useChatContext()
+  const [phone, setPhone] = React.useState("")
+  const [name, setName] = React.useState("")
+  const [channel, setChannel] = React.useState(defaultChannel)
+
+  const handleStartConversation = async () => {
+    if (!phone.trim()) return
+    await createContact({ name: name.trim(), phone: phone.trim(), channel: channel.id })
+    onClose()
+  }
+
+  return (
+    <Dialog open onOpenChange={(open) => { if (!open) onClose() }}>
+      <DialogContent size="default" className="w-[480px] max-w-[90vw] p-0 gap-0" hideCloseButton>
+        <DialogDescription className="sr-only">Add a new contact to start a conversation</DialogDescription>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-4">
+          <DialogTitle>Add New Contact</DialogTitle>
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  {channel.badge}
+                  <ChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[280px]">
+                {channels.map((ch) => (
+                  <DropdownMenuItem
+                    key={ch.id}
+                    onSelect={() => setChannel(channels.find((c) => c.id === ch.id)!)}
+                    description={ch.phone}
+                    suffix={ch.badge}
+                    className={cn(channel.id === ch.id && "bg-semantic-primary-surface text-semantic-primary font-medium")}
+                  >
+                    {ch.name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="size-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Form */}
+        <div className="px-6 pb-6 flex flex-col gap-4">
+          {/* Phone */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="add-contact-phone" className="text-[14px] font-medium text-semantic-text-primary">
+              Phone<span className="text-semantic-error-primary">*</span>
+            </label>
+            <div className="flex items-center border border-solid border-semantic-border-layout rounded focus-within:border-semantic-border-focus transition-colors">
+              <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
+                <span className="text-[14px]">🇮🇳</span>
+                <span className="text-[14px] text-semantic-text-secondary">+91</span>
+              </div>
+              <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+              <input
+                id="add-contact-phone"
+                type="tel"
+                placeholder="Enter phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                aria-required="true"
+                className="flex-1 h-9 px-3 text-[14px] text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent"
+              />
+            </div>
+          </div>
+
+          {/* Save contact as */}
+          <TextField
+            label="Save contact as"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            size="sm"
+          />
+
+          {/* Start Conversation button */}
+          <div className="flex justify-end pt-2">
+            <Button onClick={handleStartConversation}>Start Conversation</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+AddNewContactModal.displayName = "AddNewContactModal"
+
+export { AddNewContactModal }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatNewPanel } from "./chat-new-panel"
+export { AddNewContactModal } from "./add-contact-modal"
+export type { ChatNewPanelProps } from "./chat-new-panel"
+export type { AddNewContactModalProps } from "./add-contact-modal"
+`, prefix),
+        }
+      ],
+    },
+    "chat-message-list": {
+      name: "chat-message-list",
+      description: "Message list with all media renderers, delivery status, and reply functionality",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "tooltip",
+            "spinner",
+            "avatar",
+            "tag",
+            "dropdown-menu",
+            "chat-timeline-divider",
+            "doc-media"
+      ],
+      isMultiFile: true,
+      directory: "chat-message-list",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-message-list.tsx",
+      files: [
+        {
+          name: "message-renderers.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+  Minimize,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Reply,
+  Bot,
+  Megaphone,
+  Code,
+} from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "../../dropdown-menu"
+import { Spinner } from "../../spinner"
+import type { MediaPayload, SentByType } from "../chat-types"
+
+/* ── Constants ── */
+
+const SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const
+
+/* ── Helper: getInitials ── */
+
+function getInitials(name: string): string {
+  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+}
+
+/* ── SenderIndicatorBadge ── */
+
+function SenderIndicatorBadge({ sentBy }: { sentBy: { type: SentByType; name?: string } }) {
+  const iconClass = "size-3.5 text-semantic-text-muted"
+  if (sentBy.type === "agent" && sentBy.name) {
+    return <span className="text-[10px] font-medium text-semantic-text-secondary leading-none">{getInitials(sentBy.name)}</span>
+  }
+  if (sentBy.type === "bot") return <Bot className={iconClass} />
+  if (sentBy.type === "campaign") return <Megaphone className={iconClass} />
+  return <Code className={iconClass} />
+}
+
+/* ── ImageMedia ── */
+
+function ImageMedia({ media }: { media: MediaPayload }) {
+  return (
+    <div className="relative">
+      <img
+        src={media.url}
+        alt={media.caption || "Image"}
+        className="w-full rounded-t object-cover max-h-[280px]"
+      />
+    </div>
+  )
+}
+
+/* ── VideoMedia ── */
+
+function VideoMedia({ media }: { media: MediaPayload }) {
+  const [playing, setPlaying] = React.useState(false)
+  const [muted, setMuted] = React.useState(false)
+  const [fullscreen, setFullscreen] = React.useState(false)
+  const [speed, setSpeed] = React.useState(1)
+  const [volume, setVolume] = React.useState(75)
+  return (
+    <div className="relative rounded-t overflow-hidden cursor-pointer group" onClick={() => setPlaying(!playing)}>
+      <img
+        src={media.thumbnailUrl || media.url}
+        alt="Video thumbnail"
+        className="w-full object-cover"
+        style={{ aspectRatio: "16/10" }}
+      />
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      {/* Center play/pause */}
+      <div className={\`absolute inset-0 flex items-center justify-center transition-opacity \${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}\`}>
+        <button type="button" aria-label={playing ? "Pause video" : "Play video"} className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors border-none cursor-pointer">
+          {playing ? (
+            <Pause className="size-7 text-white fill-white" />
+          ) : (
+            <Play className="size-7 text-white fill-white ml-0.5" />
+          )}
+        </button>
+      </div>
+      {/* Bottom controls */}
+      <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-8">
+        {/* Seek bar */}
+        <div className="flex items-center gap-2 mb-2">
+          <div
+            role="slider"
+            aria-label="Seek"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={15}
+            tabIndex={0}
+            className="relative flex-1 h-[3px] rounded-full bg-white/30"
+          >
+            <div className="absolute left-0 top-0 h-full w-[15%] rounded-full bg-white" />
+            <div className="absolute top-1/2 -translate-y-1/2 size-3 rounded-full bg-white shadow-md" style={{ left: "15%" }} />
+          </div>
+        </div>
+        {/* Controls row */}
+        <div className="flex items-center justify-between">
+          <span className="text-[12px] text-white tabular-nums">{media.duration || "0:00"}</span>
+          <div className="flex items-center gap-2.5">
+            {/* Speed dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label={\`Playback speed \${speed}x\`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[11px] font-semibold text-white bg-white/20 hover:bg-white/30 transition-colors px-2 py-0.5 rounded-full"
+                >
+                  {speed}x
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[160px]" onClick={(e) => e.stopPropagation()}>
+                <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+                <DropdownMenuRadioGroup value={String(speed)} onValueChange={(v) => setSpeed(Number(v))}>
+                  {SPEED_OPTIONS.map((s) => (
+                    <DropdownMenuRadioItem key={s} value={String(s)}>
+                      {s === 1 ? "1x (Normal)" : \`\${s}x\`}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* Volume control */}
+            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+              <button aria-label={muted || volume === 0 ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)} className="hover:opacity-70 transition-opacity">
+                {muted || volume === 0 ? <VolumeX className="size-4 text-white/50" /> : <Volume2 className="size-4 text-white" />}
+              </button>
+              <div
+                role="slider"
+                aria-label="Volume"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={muted ? 0 : volume}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+                    e.preventDefault(); e.stopPropagation(); setVolume(v => Math.min(100, v + 5)); setMuted(false)
+                  } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+                    e.preventDefault(); e.stopPropagation(); setVolume(v => Math.max(0, v - 5)); setMuted(false)
+                  }
+                }}
+                className="relative w-[60px] h-4 flex items-center cursor-pointer"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100)
+                  setVolume(Math.max(0, Math.min(100, pct)))
+                  setMuted(false)
+                }}
+              >
+                <div className="w-full h-[3px] rounded-full bg-white/30">
+                  <div className="h-full rounded-full bg-white" style={{ width: \`\${muted ? 0 : volume}%\` }} />
+                </div>
+                <div
+                  className="absolute top-1/2 size-2.5 rounded-full bg-white"
+                  style={{ left: \`\${muted ? 0 : volume}%\`, transform: "translate(-50%, -50%)" }}
+                />
+              </div>
+            </div>
+            <button aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
+              {fullscreen ? <Minimize className="size-4 text-white" /> : <Maximize className="size-4 text-white" />}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── AudioMedia ── */
+
+function AudioMedia({ media: _media }: { media: MediaPayload }) {
+  const [playing, setPlaying] = React.useState(false)
+  const [speed, setSpeed] = React.useState(1)
+
+  // Waveform bar heights (deterministic pseudo-random pattern)
+  const waveform = [
+    4, 8, 14, 6, 20, 10, 4, 16, 7, 24, 5, 12, 18, 6, 10, 4,
+    14, 22, 7, 5, 16, 10, 6, 19, 8, 4, 14, 7, 12, 5, 18, 9,
+    4, 14, 6, 10, 22, 5, 13, 7, 4, 16, 9, 6, 19, 5, 12, 7,
+    6, 14, 10, 4, 17, 7, 12,
+  ]
+  const barCount = 55
+  const playedBars = 11
+  const barW = 2
+  const gap = 1.5
+  const svgW = barCount * (barW + gap) - gap
+  const svgH = 32
+
+  return (
+    <div className="w-full" style={{ padding: "10px 14px 0 14px" }}>
+      <div className="flex items-center gap-3">
+        {/* Play / Pause */}
+        <button
+          aria-label={playing ? "Pause audio" : "Play audio"}
+          onClick={(e) => { e.stopPropagation(); setPlaying(!playing) }}
+          className="shrink-0 size-10 rounded-full bg-semantic-primary flex items-center justify-center hover:opacity-90 transition-opacity"
+        >
+          {playing ? (
+            <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+              <rect x="0" y="0" width="4" height="14" rx="1.2" fill="white" />
+              <rect x="8" y="0" width="4" height="14" rx="1.2" fill="white" />
+            </svg>
+          ) : (
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" style={{ marginLeft: 2 }}>
+              <path d="M1 1.87v12.26a1 1 0 001.5.86l10.5-6.13a1 1 0 000-1.72L2.5 1.01A1 1 0 001 1.87z" fill="white" />
+            </svg>
+          )}
+        </button>
+
+        {/* Waveform */}
+        <div className="flex-1 min-w-0" style={{ height: svgH }}>
+          <svg
+            aria-hidden="true"
+            viewBox={\`0 0 \${svgW} \${svgH}\`}
+            preserveAspectRatio="none"
+            width="100%"
+            height="100%"
+            style={{ overflow: "visible" }}
+          >
+            {waveform.slice(0, barCount).map((h, i) => (
+              <rect
+                key={i}
+                x={i * (barW + gap)}
+                y={(svgH - h) / 2}
+                width={barW}
+                height={h}
+                rx={1.5}
+                fill={i < playedBars ? "var(--semantic-brand-hover, #1F858F)" : "var(--semantic-text-muted, #C0C3CA)"}
+              />
+            ))}
+          </svg>
+        </div>
+
+        {/* Speed dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              aria-label={\`Playback speed \${speed}x\`}
+              onClick={(e) => e.stopPropagation()}
+              className="shrink-0 min-w-[34px] h-[22px] px-2 flex items-center justify-center rounded-full bg-black/40 hover:opacity-80 transition-opacity"
+            >
+              <span className="text-[11px] font-semibold text-white leading-none">{speed}x</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
+            <DropdownMenuRadioGroup value={String(speed)} onValueChange={(v) => setSpeed(Number(v))}>
+              {SPEED_OPTIONS.map((s) => (
+                <DropdownMenuRadioItem key={s} value={String(s)}>
+                  {s === 1 ? "1x (Normal)" : \`\${s}x\`}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  )
+}
+
+/* ── CarouselMedia ── */
+
+function CarouselMedia({ media }: { media: MediaPayload }) {
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false)
+  const [canScrollRight, setCanScrollRight] = React.useState((media.images?.length || 0) > 1)
+  const updateScrollState = () => {
+    const el = scrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 5)
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 5)
+  }
+  const scroll = (dir: "left" | "right") => (e: React.MouseEvent) => {
+    e.stopPropagation()
+    scrollRef.current?.scrollBy({ left: dir === "right" ? 272 : -272, behavior: "smooth" })
+    setTimeout(updateScrollState, 350)
+  }
+  return (
+    <div className="relative">
+      {/* Scrollable card row */}
+      <div ref={scrollRef} onScroll={updateScrollState} tabIndex={0} role="region" aria-label="Carousel" aria-roledescription="carousel" className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3" style={{ scrollbarWidth: "none" }}>
+        {media.images?.map((img, i) => (
+          <div key={i} className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]" style={{ width: 260 }}>
+            {/* Card image */}
+            <img
+              src={img.url}
+              alt={img.title}
+              className="w-full object-cover"
+              style={{ height: 200 }}
+            />
+            {/* Card title */}
+            <div className="px-3 pt-2.5 pb-2">
+              <p className="m-0 text-[14px] font-medium text-semantic-text-primary line-clamp-2">{img.title}</p>
+            </div>
+            {/* Card buttons */}
+            {img.buttons?.map((btn, j) => (
+              <button
+                key={j}
+                className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-normal text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
+                style={{ height: 40 }}
+              >
+                {btn.icon === "reply" && <Reply className="size-3.5" />}
+                {btn.icon === "link" && <ExternalLink className="size-3.5" />}
+                {btn.label}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* Navigation arrows */}
+      {canScrollLeft && (
+        <button aria-label="Scroll carousel left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+          <ChevronLeft className="size-4 text-semantic-text-primary" />
+        </button>
+      )}
+      {canScrollRight && (
+        <button aria-label="Scroll carousel right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+          <ChevronRight className="size-4 text-semantic-text-primary" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+/* ── LoadingMedia ── */
+
+function LoadingMedia({ error }: { error?: string }) {
+  return (
+    <div className="overflow-hidden">
+      {/* White preview area */}
+      <div className="bg-white flex items-center justify-center" style={{ aspectRatio: "442 / 308" }}>
+        <Spinner size="xl" variant="muted" />
+      </div>
+      {/* Error banner */}
+      {error && (
+        <div className="border-t border-solid border-semantic-error-primary bg-semantic-error-surface px-4 py-3">
+          <p className="m-0 text-[14px] leading-5 text-semantic-error-primary">
+            {error}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export {
+  SPEED_OPTIONS,
+  getInitials,
+  SenderIndicatorBadge,
+  ImageMedia,
+  VideoMedia,
+  AudioMedia,
+  CarouselMedia,
+  LoadingMedia,
+}
+`, prefix),
+        },
+        {
+          name: "chat-message-list.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cn } from "../../../lib/utils"
+import { Button } from "../../button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipArrow,
+} from "../../tooltip"
+import {
+  Check,
+  CheckCheck,
+  CircleAlert,
+  Reply,
+  File,
+  ArrowDown,
+} from "lucide-react"
+import { ChatTimelineDivider } from "../chat-timeline-divider"
+import { DocMedia } from "../doc-media"
+import { useChatContext } from "../chat-provider"
+import type { ChatMessage } from "../chat-types"
+import {
+  ImageMedia,
+  VideoMedia,
+  AudioMedia,
+  CarouselMedia,
+  LoadingMedia,
+  SenderIndicatorBadge,
+} from "./message-renderers"
+
+/* ── Types ── */
+
+export interface ReplyToPayload {
+  messageId: string
+  sender: string
+  text: string
+}
+
+export interface ChatMessageListProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Callback when the user clicks the reply button on a message */
+  onReplyTo?: (payload: ReplyToPayload) => void
+}
+
+/* ── Component ── */
+
+const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
+  ({ className, onReplyTo, ...props }, ref) => {
+    const { messages, selectedChatId, chats } = useChatContext()
+
+    const selectedChat = React.useMemo(
+      () => chats.find((c) => c.id === selectedChatId) ?? null,
+      [chats, selectedChatId]
+    )
+
+    if (!selectedChat || !selectedChatId) return null
+
+    return (
+      <div
+        ref={ref}
+        className={cn("flex-1 relative", className)}
+        {...props}
+      >
+        <div
+          key={selectedChatId}
+          className="absolute inset-0 overflow-y-auto bg-semantic-bg-ui px-6 py-4 animate-in fade-in duration-200 ease-out"
+        >
+          {/* Date Divider */}
+          <ChatTimelineDivider className="my-4" aria-label="Today">
+            Today
+          </ChatTimelineDivider>
+
+          {/* Messages */}
+          <div className="flex flex-col gap-4">
+            {messages.map((msg, msgIdx) => {
+              // Show unread separator before the last N messages (based on chat's unreadCount)
+              const unreadCount = selectedChat.unreadCount || 0
+              const unreadStartIdx = messages.length - unreadCount
+              const showUnreadSeparator =
+                unreadCount > 0 && msgIdx === unreadStartIdx
+              const hasMedia = msg.type && msg.type !== "text"
+              const mediaCaption = msg.media?.caption
+              const hasText = msg.text || mediaCaption
+              const isDocWithMeta = msg.type === "otherDoc" && msg.media
+
+              // Media types get different bubble widths
+              const bubbleWidth =
+                msg.type === "carousel"
+                  ? "max-w-[466px] w-full"
+                  : msg.type === "image" ||
+                      msg.type === "video" ||
+                      msg.type === "docPreview" ||
+                      msg.type === "document" ||
+                      msg.type === "otherDoc" ||
+                      msg.type === "loading"
+                    ? "max-w-[380px] w-full"
+                    : msg.type === "audio"
+                      ? "max-w-[340px] w-[340px]"
+                      : "max-w-[65%]"
+
+              // System messages (e.g., assignment actions)
+              if (msg.type === "system") {
+                return (
+                  <React.Fragment key={msg.id}>
+                    {showUnreadSeparator && (
+                      <ChatTimelineDivider
+                        variant="unread"
+                        aria-label={\`\${unreadCount} unread message\${unreadCount > 1 ? "s" : ""}\`}
+                      >
+                        {unreadCount} unread message
+                        {unreadCount > 1 ? "s" : ""}
+                      </ChatTimelineDivider>
+                    )}
+                    <ChatTimelineDivider variant="system">
+                      {msg.text
+                        .split(/(\\*\\*[^*]+\\*\\*)/)
+                        .map((part, i) =>
+                          part.startsWith("**") ? (
+                            <span
+                              key={i}
+                              className="text-semantic-text-link font-medium"
+                            >
+                              {part.slice(2, -2)}
+                            </span>
+                          ) : (
+                            part
+                          )
+                        )}
+                    </ChatTimelineDivider>
+                  </React.Fragment>
+                )
+              }
+
+              return (
+                <React.Fragment key={msg.id}>
+                  {showUnreadSeparator && (
+                    <ChatTimelineDivider
+                      variant="unread"
+                      aria-label={\`\${unreadCount} unread message\${unreadCount > 1 ? "s" : ""}\`}
+                    >
+                      {unreadCount} unread message
+                      {unreadCount > 1 ? "s" : ""}
+                    </ChatTimelineDivider>
+                  )}
+                  <div
+                    className={\`flex items-start gap-1.5 group/msg \${msg.sender === "agent" ? "justify-end" : "justify-start"}\`}
+                  >
+                    <div
+                      id={\`msg-\${msg.id}\`}
+                      className={\`flex flex-col \${bubbleWidth} \${
+                        msg.sender === "agent" ? "items-end" : "items-start"
+                      }\`}
+                    >
+                      {msg.senderName && (
+                        <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
+                          {msg.senderName}
+                        </span>
+                      )}
+                      <div
+                        className={\`rounded-lg overflow-hidden \${ hasMedia ? "" : "px-3 pt-3 pb-1.5" } \${ msg.type === "audio" || msg.type === "otherDoc" || msg.type === "carousel" || msg.type === "loading" ? "w-full" : "" } \${ msg.sender === "agent" ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary" : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]" }\`}
+                      >
+                        {/* Carousel: body text goes ABOVE cards */}
+                        {msg.type === "carousel" && hasText && (
+                          <div className="px-3 pt-3">
+                            <p className="text-[14px] leading-5 m-0">
+                              {msg.text || mediaCaption}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Media area (full-bleed) */}
+                        {msg.type === "image" && msg.media && (
+                          <ImageMedia media={msg.media} />
+                        )}
+                        {msg.type === "video" && msg.media && (
+                          <VideoMedia media={msg.media} />
+                        )}
+                        {msg.type === "audio" && msg.media && (
+                          <AudioMedia media={msg.media} />
+                        )}
+                        {msg.type === "docPreview" && msg.media && (
+                          <DocMedia
+                            variant="preview"
+                            thumbnailUrl={
+                              msg.media.thumbnailUrl || msg.media.url
+                            }
+                            filename={msg.media.filename}
+                            fileType={msg.media.fileType}
+                            pageCount={msg.media.pageCount}
+                            fileSize={msg.media.fileSize}
+                          />
+                        )}
+                        {msg.type === "document" && msg.media && (
+                          <DocMedia
+                            variant="download"
+                            thumbnailUrl={
+                              msg.media.thumbnailUrl || msg.media.url
+                            }
+                            filename={msg.media.filename}
+                            fileType={msg.media.fileType}
+                            pageCount={msg.media.pageCount}
+                            fileSize={msg.media.fileSize}
+                          />
+                        )}
+                        {msg.type === "otherDoc" && msg.media && (
+                          <DocMedia
+                            variant="file"
+                            filename={msg.media.filename}
+                            fileType={msg.media.fileType}
+                          />
+                        )}
+                        {msg.type === "carousel" && msg.media && (
+                          <CarouselMedia media={msg.media} />
+                        )}
+                        {msg.type === "loading" && (
+                          <LoadingMedia error={msg.error} />
+                        )}
+
+                        {/* Text + footer area (with padding) */}
+                        <div
+                          className={
+                            hasMedia
+                              ? \`px-3 pb-1.5 \${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" ? "pt-3 mt-1" : "pt-2"}\`
+                              : ""
+                          }
+                        >
+                          {msg.replyTo && (
+                            <ReplyQuoteButton replyTo={msg.replyTo} />
+                          )}
+                          {hasText && msg.type !== "carousel" && (
+                            <p className="text-[14px] leading-5 m-0">
+                              {msg.text || mediaCaption}
+                            </p>
+                          )}
+                          {/* File metadata row for download-type docs */}
+                          {isDocWithMeta && (
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <File className="size-3.5 text-semantic-text-muted" />
+                              <span className="text-[13px] text-semantic-text-muted">
+                                {[
+                                  msg.media!.fileType,
+                                  msg.media!.pageCount &&
+                                    \`\${msg.media!.pageCount} pages\`,
+                                  msg.media!.fileSize,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </span>
+                            </div>
+                          )}
+                          {/* Delivery footer */}
+                          <DeliveryFooter msg={msg} />
+                        </div>
+                      </div>
+                    </div>
+                    {/* Sender indicator for outbound messages */}
+                    {msg.sender === "agent" && msg.sentBy && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center cursor-default">
+                            <SenderIndicatorBadge sentBy={msg.sentBy} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="left">
+                          <p className="m-0">
+                            {msg.sentBy.type === "agent"
+                              ? msg.sentBy.name
+                              : msg.sentBy.type === "bot"
+                                ? (msg.sentBy.name || "Bot")
+                                : msg.sentBy.type === "campaign"
+                                  ? "Campaign"
+                                  : "API"}
+                          </p>
+                          <TooltipArrow />
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                    {msg.sender === "customer" && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() =>
+                              onReplyTo?.({
+                                messageId: msg.id,
+                                sender: selectedChat.name,
+                                text:
+                                  msg.text || msg.media?.caption || "",
+                              })
+                            }
+                            className="opacity-0 group-hover/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                          >
+                            <Reply className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="m-0">Reply</p>
+                          <TooltipArrow />
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </div>
+                </React.Fragment>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Scroll to bottom button */}
+        <Button
+          variant="outline"
+          size="icon-lg"
+          aria-label={
+            (selectedChat.unreadCount || 0) > 0
+              ? \`Scroll to bottom, \${selectedChat.unreadCount} unread messages\`
+              : "Scroll to bottom"
+          }
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 shadow-md bg-white"
+        >
+          <ArrowDown className="size-5" />
+          {(selectedChat.unreadCount || 0) > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center size-5 rounded-full bg-semantic-border-accent text-white text-[11px] font-semibold">
+              {selectedChat.unreadCount}
+            </span>
+          )}
+        </Button>
+        {/* New messages live region */}
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          {messages.length > 0
+            ? \`\${messages[messages.length - 1].sender === "customer" ? selectedChat.name : "Agent"}: \${messages[messages.length - 1].text || "sent media"}\`
+            : ""}
+        </div>
+      </div>
+    )
+  }
+)
+ChatMessageList.displayName = "ChatMessageList"
+
+/* ── ReplyQuoteButton (private) ── */
+
+function ReplyQuoteButton({
+  replyTo,
+}: {
+  replyTo: NonNullable<ChatMessage["replyTo"]>
+}) {
+  return (
+    <button
+      type="button"
+      className="w-full bg-white border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors text-left border-t-0 border-r-0 border-b-0"
+      aria-label={\`Jump to quoted message from \${replyTo.sender}\`}
+      onClick={() => {
+        if (replyTo.messageId) {
+          const prefersReducedMotion = window.matchMedia?.(
+            "(prefers-reduced-motion: reduce)"
+          ).matches
+          const el = document.getElementById(\`msg-\${replyTo.messageId}\`)
+          if (el) {
+            el.scrollIntoView({
+              behavior: prefersReducedMotion ? "auto" : "smooth",
+              block: "center",
+            })
+            el.style.outline = "2px solid var(--semantic-border-accent)"
+            el.style.outlineOffset = "2px"
+            el.style.transition = "outline-color 0.3s ease-out"
+            setTimeout(() => {
+              el.style.outlineColor = "transparent"
+              setTimeout(() => {
+                el.style.outline = ""
+                el.style.outlineOffset = ""
+                el.style.transition = ""
+              }, 300)
+            }, 1700)
+          }
+        }
+      }}
+    >
+      <p className="text-[14px] font-semibold text-semantic-text-primary truncate leading-5 tracking-[0.014px] m-0">
+        {replyTo.sender}
+      </p>
+      <p className="text-[14px] text-semantic-text-muted truncate m-0">
+        {replyTo.text}
+      </p>
+    </button>
+  )
+}
+
+/* ── DeliveryFooter (private) ── */
+
+function DeliveryFooter({ msg }: { msg: ChatMessage }) {
+  return (
+    <div
+      className={\`flex items-center mt-1.5 \${msg.type === "audio" ? "justify-between" : msg.sender === "agent" ? "justify-end gap-1.5" : "justify-start gap-1.5"}\`}
+      style={msg.type === "audio" ? { paddingLeft: 0 } : undefined}
+    >
+      {/* Audio duration on the left */}
+      {msg.type === "audio" && msg.media && (
+        <span
+          className="font-semibold text-semantic-text-muted tabular-nums"
+          style={{ fontSize: 12, letterSpacing: 0.05 }}
+        >
+          {msg.media.duration || "0:00"}
+        </span>
+      )}
+      {/* Delivery status + time */}
+      <div className="flex items-center gap-1.5">
+        {msg.sender === "agent" && msg.status && (
+          <>
+            {msg.status === "failed" ? (
+              <span role="alert" className="inline-flex items-center gap-1.5">
+                <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
+                <span className="text-[13px] text-semantic-error-primary font-medium">
+                  Failed
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                  }}
+                  className="text-[13px] font-semibold text-semantic-text-link underline hover:no-underline"
+                >
+                  Retry
+                </button>
+              </span>
+            ) : (
+              <>
+                {msg.status === "sent" ? (
+                  <Check className="size-4 text-semantic-text-muted shrink-0" />
+                ) : (
+                  <CheckCheck
+                    className={\`size-4 shrink-0 \${msg.status === "read" ? "text-semantic-text-link" : "text-semantic-text-muted"}\`}
+                  />
+                )}
+                <span
+                  style={{ fontSize: 12 }}
+                  className="text-semantic-text-muted"
+                >
+                  {msg.status === "sent"
+                    ? "Sent"
+                    : msg.status === "delivered"
+                      ? "Delivered"
+                      : "Read"}
+                </span>
+              </>
+            )}
+            <span
+              className="font-semibold text-semantic-text-muted"
+              style={{ fontSize: 10 }}
+            >
+              •
+            </span>
+          </>
+        )}
+        <span style={{ fontSize: 12 }} className="text-semantic-text-muted">
+          {msg.time}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export { ChatMessageList }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatMessageList } from "./chat-message-list"
+export type { ChatMessageListProps, ReplyToPayload } from "./chat-message-list"
+`, prefix),
+        }
+      ],
+    },
+    "chat-header": {
+      name: "chat-header",
+      description: "Chat window header with assignment dropdown and resolve button",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "badge",
+            "tag",
+            "avatar",
+            "dropdown-menu",
+            "tooltip"
+      ],
+      isMultiFile: true,
+      directory: "chat-header",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-header.tsx",
+      files: [
+        {
+          name: "assignment-dropdown.tsx",
+          content: prefixTailwindClasses(`import { useState } from "react"
+import { Search, ChevronDown, Bot, Users } from "lucide-react"
+import { Button } from "../../button"
+import { Avatar } from "../../avatar"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuGroup,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "../../dropdown-menu"
+import { useChatContext } from "../chat-provider"
+
+export interface AssignmentDropdownProps {
+  defaultAgent?: string
+}
+
+function AssignmentDropdown({ defaultAgent }: AssignmentDropdownProps) {
+  const { assignees, assignChat } = useChatContext()
+
+  // Resolve agent name to assignee id
+  const resolvedDefault = defaultAgent
+    ? assignees.find((a) => a.label === defaultAgent)?.id || "unassigned"
+    : "unassigned"
+  const [value, setValue] = useState(resolvedDefault)
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const bots = assignees.filter((a) => a.type === "bot")
+  const agents = assignees.filter((a) => a.type === "agent")
+
+  const q = searchQuery.toLowerCase()
+  const filteredBots = bots.filter((b) => b.label.toLowerCase().includes(q))
+  const filteredAgents = agents.filter((a) =>
+    a.label.toLowerCase().includes(q)
+  )
+
+  const handleValueChange = (newValue: string) => {
+    setValue(newValue)
+    assignChat(newValue)
+  }
+
+  return (
+    <DropdownMenu onOpenChange={() => setSearchQuery("")}>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">
+          <span className="truncate">
+            {value === "unassigned"
+              ? "Unassigned"
+              : assignees.find((a) => a.id === value)?.label || value}
+          </span>
+          <ChevronDown className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[240px]">
+        {/* Search */}
+        <div
+          className="flex items-center gap-2 px-3 py-1.5 border-b border-solid border-semantic-border-layout"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Search className="size-4 text-semantic-text-muted shrink-0" />
+          <input
+            type="text"
+            placeholder="Search..."
+            aria-label="Search agents"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-7 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
+            onKeyDown={(e) => e.stopPropagation()}
+          />
+        </div>
+        <DropdownMenuRadioGroup
+          value={value}
+          onValueChange={handleValueChange}
+          className="max-h-[240px] overflow-y-auto"
+        >
+          {/* Unassigned */}
+          <DropdownMenuRadioItem
+            value="unassigned"
+            disabled={value !== "unassigned"}
+          >
+            Unassigned
+          </DropdownMenuRadioItem>
+
+          {/* Bots */}
+          {filteredBots.length > 0 && (
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex items-center gap-1.5">
+                <Bot className="size-3.5" />
+                Bots
+              </DropdownMenuLabel>
+              {filteredBots.map((bot) => (
+                <DropdownMenuRadioItem key={bot.id} value={bot.id}>
+                  <div className="flex items-center gap-2">
+                    <div className="size-5 rounded-full bg-semantic-bg-ui flex items-center justify-center shrink-0">
+                      <Bot className="size-3 text-semantic-text-muted" />
+                    </div>
+                    {bot.label}
+                  </div>
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuGroup>
+          )}
+
+          {/* Agents */}
+          {filteredAgents.length > 0 && (
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="flex items-center gap-1.5">
+                <Users className="size-3.5" />
+                Agents
+              </DropdownMenuLabel>
+              {filteredAgents.map((agent) => (
+                <DropdownMenuRadioItem key={agent.id} value={agent.id}>
+                  <div className="flex items-center gap-2">
+                    <Avatar name={agent.label} size="xs" />
+                    {agent.label}
+                  </div>
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuGroup>
+          )}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+AssignmentDropdown.displayName = "AssignmentDropdown"
+
+export { AssignmentDropdown }
+`, prefix),
+        },
+        {
+          name: "resolve-button.tsx",
+          content: prefixTailwindClasses(`import { useState } from "react"
+import { Check } from "lucide-react"
+import { cn } from "../../../lib/utils"
+import { Button } from "../../button"
+import { useChatContext } from "../chat-provider"
+
+function ResolveButton() {
+  const { resolveChat } = useChatContext()
+  const [resolved, setResolved] = useState(false)
+
+  const handleClick = () => {
+    setResolved((prev) => !prev)
+    resolveChat()
+  }
+
+  return (
+    <Button
+      variant={resolved ? "success" : "default"}
+      leftIcon={
+        <Check
+          className={cn(
+            "size-[18px] transition-transform duration-200",
+            resolved && "scale-110"
+          )}
+        />
+      }
+      onClick={handleClick}
+      className="transition-all duration-200"
+    >
+      {resolved ? "Resolved" : "Resolve"}
+    </Button>
+  )
+}
+ResolveButton.displayName = "ResolveButton"
+
+export { ResolveButton }
+`, prefix),
+        },
+        {
+          name: "chat-header.tsx",
+          content: prefixTailwindClasses(`import { Clock } from "lucide-react"
+import { Badge } from "../../badge"
+import { Tag } from "../../tag"
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipArrow,
+} from "../../tooltip"
+import { useChatContext } from "../chat-provider"
+import { AssignmentDropdown } from "./assignment-dropdown"
+import { ResolveButton } from "./resolve-button"
+
+function ChatHeader() {
+  const {
+    chats,
+    selectedChatId,
+    channels,
+    showContactDetails,
+    setShowContactDetails,
+  } = useChatContext()
+
+  const selectedChat = chats.find((c) => c.id === selectedChatId)
+
+  if (!selectedChat) return null
+
+  return (
+    <div className="flex items-center justify-between px-4 h-[72px] bg-white border-b border-solid border-semantic-border-layout shrink-0">
+      <div className="flex items-center gap-3">
+        <button
+          aria-label={\`View contact details for \${selectedChat.name}\`}
+          onClick={() => setShowContactDetails(!showContactDetails)}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus focus-visible:outline-offset-2 rounded"
+        >
+          <span className="text-[18px] font-semibold text-semantic-text-primary">
+            {selectedChat.name}
+          </span>
+        </button>
+        {selectedChat.channel &&
+          (() => {
+            const ch = channels.find(
+              (c) => c.badge === selectedChat.channel
+            )
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" size="sm">
+                    {selectedChat.channel}
+                  </Badge>
+                </TooltipTrigger>
+                {ch && (
+                  <TooltipContent side="bottom">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-[13px] font-medium text-white">
+                        {ch.name}
+                      </span>
+                      <span className="text-[12px] text-semantic-text-muted">
+                        {ch.phone}
+                      </span>
+                    </div>
+                    <TooltipArrow />
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            )
+          })()}
+        {selectedChat.slaTimer && (
+          <Tag variant="warning" size="sm">
+            <Clock className="size-3 shrink-0" />
+            {selectedChat.slaTimer}
+          </Tag>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
+        {/* Assignment Dropdown */}
+        <AssignmentDropdown defaultAgent={selectedChat.agentName} />
+        {/* Resolve Button */}
+        <ResolveButton />
+      </div>
+    </div>
+  )
+}
+ChatHeader.displayName = "ChatHeader"
+
+export { ChatHeader }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatHeader } from "./chat-header"
+export { AssignmentDropdown } from "./assignment-dropdown"
+export { ResolveButton } from "./resolve-button"
+`, prefix),
+        }
+      ],
+    },
+    "chat-input": {
+      name: "chat-input",
+      description: "Chat composer with canned messages, attachments, and keyboard navigation",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "tooltip",
+            "dropdown-menu",
+            "confirmation-modal",
+            "chat-composer"
+      ],
+      isMultiFile: true,
+      directory: "chat-input",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-input.tsx",
+      files: [
+        {
+          name: "composer-attachment-preview.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { X, Play, File } from "lucide-react"
+import { ConfirmationModal } from "../../confirmation-modal"
+
+export interface ComposerAttachmentPreviewProps {
+  /** The file to preview before sending */
+  file: File
+  /** Called when the user confirms removal of the attachment */
+  onRemove: () => void
+}
+
+/**
+ * ComposerAttachmentPreview shows a preview of an attached file (image, video,
+ * audio, or document) inside the chat composer. Includes a remove button that
+ * triggers a confirmation modal before actually discarding the attachment.
+ */
+function ComposerAttachmentPreview({ file, onRemove }: ComposerAttachmentPreviewProps) {
+  const url = React.useMemo(() => URL.createObjectURL(file), [file])
+  const isImage = file.type.startsWith("image/")
+  const isVideo = file.type.startsWith("video/")
+  const isAudio = file.type.startsWith("audio/")
+  const [showConfirm, setShowConfirm] = React.useState(false)
+
+  React.useEffect(() => {
+    return () => URL.revokeObjectURL(url)
+  }, [url])
+
+  return (
+    <div className="relative border-b border-solid border-semantic-border-layout">
+      <button
+        aria-label="Remove attachment"
+        onClick={() => setShowConfirm(true)}
+        className="absolute top-2 right-2 z-10 size-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+      >
+        <X className="size-4 text-white" />
+      </button>
+      <ConfirmationModal
+        open={showConfirm}
+        onOpenChange={setShowConfirm}
+        title="Remove attachment?"
+        description={\`"\${file.name}" will be removed from this message.\`}
+        variant="destructive"
+        confirmButtonText="Remove"
+        onConfirm={() => {
+          onRemove()
+          setShowConfirm(false)
+        }}
+      />
+      {isImage ? (
+        <div className="h-[200px] bg-semantic-bg-ui">
+          <img src={url} alt={file.name} className="w-full h-full object-cover" />
+        </div>
+      ) : isVideo ? (
+        <div className="relative bg-black h-[200px]">
+          <video src={url} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+              <Play className="size-7 text-white fill-white ml-0.5" />
+            </div>
+          </div>
+        </div>
+      ) : isAudio ? (
+        <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3 h-[80px]">
+          <div className="size-10 rounded-full bg-semantic-primary flex items-center justify-center shrink-0">
+            <Play className="size-5 text-white fill-white ml-0.5" />
+          </div>
+          <div className="flex-1 h-1 bg-semantic-border-layout rounded-full">
+            <div className="w-0 h-full bg-semantic-primary rounded-full" />
+          </div>
+          <span className="text-[12px] text-semantic-text-muted tabular-nums shrink-0">0:00</span>
+        </div>
+      ) : (
+        /* PDF / other document preview */
+        <div className="bg-semantic-bg-ui flex flex-col items-center justify-center h-[200px]">
+          <div className="size-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-3">
+            <File className="size-8 text-semantic-text-muted" />
+          </div>
+          <p className="text-[14px] font-semibold text-semantic-text-primary truncate max-w-[80%] px-4 m-0">{file.name}</p>
+          <p className="text-[12px] text-semantic-text-muted mt-1 m-0">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export { ComposerAttachmentPreview }
+`, prefix),
+        },
+        {
+          name: "canned-messages.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import type { CannedMessage } from "../chat-types"
+
+export interface CannedMessagesDropdownProps {
+  /** The search query (text after the "/" trigger) */
+  query: string
+  /** Index of the keyboard-highlighted item (-1 = none) */
+  activeIndex: number
+  /** Called when the user selects a canned message (click or Enter) */
+  onSelect: (body: string) => void
+  /** The list of canned messages to filter and display */
+  cannedMessages: CannedMessage[]
+}
+
+/**
+ * Highlights the first occurrence of \`query\` within \`text\` using a bold span.
+ */
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query.trim()) return text
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return text
+  return (
+    <>
+      {text.slice(0, idx)}
+      <strong className="font-semibold text-semantic-text-primary">{text.slice(idx, idx + query.length)}</strong>
+      {text.slice(idx + query.length)}
+    </>
+  )
+}
+
+/**
+ * CannedMessagesDropdown renders a floating list of canned message suggestions
+ * above the chat composer. It filters messages by shortcut/body matching and
+ * supports keyboard navigation (highlighted via \`activeIndex\`).
+ *
+ * Shown when the composer text starts with "/".
+ */
+function CannedMessagesDropdown({
+  query,
+  activeIndex,
+  onSelect,
+  cannedMessages,
+}: CannedMessagesDropdownProps) {
+  const filtered = React.useMemo(
+    () =>
+      cannedMessages.filter(
+        (cm) =>
+          cm.shortcut.toLowerCase().includes(query.toLowerCase()) ||
+          cm.body.toLowerCase().includes(query.toLowerCase())
+      ),
+    [cannedMessages, query]
+  )
+
+  if (filtered.length === 0) {
+    return (
+      <div className="absolute bottom-full left-4 right-4 mb-1 bg-semantic-bg-primary rounded-lg shadow-[0px_4px_16px_0px_rgba(10,13,18,0.15)] border border-solid border-semantic-border-layout overflow-hidden z-10 animate-in fade-in slide-in-from-bottom-2 duration-150 ease-out">
+        <div className="px-4 py-3 text-[13px] text-semantic-text-muted text-center">
+          No canned messages found
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      id="canned-listbox"
+      role="listbox"
+      aria-label="Canned messages"
+      className="absolute bottom-full left-4 right-4 mb-1 bg-semantic-bg-primary rounded-lg shadow-[0px_4px_16px_0px_rgba(10,13,18,0.15)] border border-solid border-semantic-border-layout overflow-hidden z-10 animate-in fade-in slide-in-from-bottom-2 duration-150 ease-out"
+    >
+      {filtered.map((cm, i) => (
+        <button
+          type="button"
+          role="option"
+          id={\`canned-\${cm.id}\`}
+          aria-selected={activeIndex === i}
+          key={cm.id}
+          className={\`px-4 py-3 hover:bg-semantic-bg-ui cursor-pointer transition-colors text-left w-full \${activeIndex === i ? "bg-semantic-bg-ui" : ""} \${i < filtered.length - 1 ? "border-b border-solid border-semantic-border-layout" : ""}\`}
+          onClick={() => onSelect(cm.body)}
+        >
+          <p className="text-[13px] font-semibold text-semantic-text-primary m-0">
+            {highlightMatch(cm.shortcut, query)}
+          </p>
+          <p className="text-[13px] text-semantic-text-muted truncate m-0 mt-0.5">
+            {highlightMatch(cm.body, query)}
+          </p>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+export { CannedMessagesDropdown, highlightMatch }
+`, prefix),
+        },
+        {
+          name: "chat-input.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { Send, Paperclip, Smile, LayoutGrid, Image as LucideImage, Play, Music, FileText } from "lucide-react"
+import { Button } from "../../button"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+} from "../../dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipArrow,
+} from "../../tooltip"
+import { ChatComposer } from "../chat-composer"
+import { ComposerAttachmentPreview } from "./composer-attachment-preview"
+import { CannedMessagesDropdown } from "./canned-messages"
+import { useChatContext } from "../chat-provider"
+import type { CannedMessage } from "../chat-types"
+
+export interface ChatInputProps {
+  /** Whether the chat is expired / resolved (shows template prompt) */
+  expired?: boolean
+  /** Message shown in the expired state */
+  expiredMessage?: string
+}
+
+/**
+ * ChatInput is the full message input area that wraps ChatComposer with:
+ * - Canned message dropdown (triggered by typing "/")
+ * - Attachment upload (image, video, audio, document) via dropdown
+ * - Templates button
+ * - Emoji button
+ * - Reply-to bar with scroll-to-original
+ * - Attachment preview before sending
+ *
+ * It manages its own local state for composerText, cannedIndex, attachment,
+ * replyingTo, and the hidden file input ref.
+ */
+function ChatInput({ expired = false, expiredMessage }: ChatInputProps) {
+  const { sendMessage, cannedMessages, setShowTemplateModal } = useChatContext()
+
+  const [composerText, setComposerText] = React.useState("")
+  const [cannedIndex, setCannedIndex] = React.useState(-1)
+  const [composerAttachment, setComposerAttachment] = React.useState<File | null>(null)
+  const [replyingTo, setReplyingTo] = React.useState<{ messageId: string; sender: string; text: string } | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  /** Filter canned messages based on the current "/" query */
+  const cannedQuery = composerText.startsWith("/") ? composerText.slice(1).toLowerCase() : ""
+  const filteredCanned = React.useMemo(
+    () =>
+      cannedMessages.filter(
+        (cm: CannedMessage) =>
+          cm.shortcut.toLowerCase().includes(cannedQuery) ||
+          cm.body.toLowerCase().includes(cannedQuery)
+      ),
+    [cannedMessages, cannedQuery]
+  )
+
+  /** Handle keyboard events for canned messages and Enter-to-send */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Enter to send (when not in canned menu)
+    if (e.key === "Enter" && !e.shiftKey && !composerText.startsWith("/")) {
+      e.preventDefault()
+      if (composerText.trim()) {
+        sendMessage(composerText.trim(), composerAttachment ?? undefined, replyingTo?.messageId)
+        setComposerText("")
+        setComposerAttachment(null)
+        setReplyingTo(null)
+      }
+      return
+    }
+    // Canned message keyboard navigation
+    if (composerText.startsWith("/")) {
+      if (filteredCanned.length === 0) return
+      if (e.key === "ArrowDown") {
+        e.preventDefault()
+        setCannedIndex((prev) => (prev + 1) % filteredCanned.length)
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault()
+        setCannedIndex((prev) => (prev <= 0 ? filteredCanned.length - 1 : prev - 1))
+      } else if (e.key === "Enter" && cannedIndex >= 0 && cannedIndex < filteredCanned.length) {
+        e.preventDefault()
+        setComposerText(filteredCanned[cannedIndex].body)
+        setCannedIndex(-1)
+      } else if (e.key === "Escape") {
+        e.preventDefault()
+        setComposerText("")
+        setCannedIndex(-1)
+      }
+    }
+  }
+
+  /** Handle send action */
+  const handleSend = () => {
+    if (composerText.trim()) {
+      sendMessage(composerText.trim(), composerAttachment ?? undefined, replyingTo?.messageId)
+    }
+    setComposerText("")
+    setComposerAttachment(null)
+    setReplyingTo(null)
+    setCannedIndex(-1)
+  }
+
+  /** Scroll to and highlight the original message being replied to */
+  const handleReplyClick = () => {
+    if (replyingTo) {
+      const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      const el = document.getElementById(\`msg-\${replyingTo.messageId}\`)
+      if (el) {
+        el.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" })
+        el.classList.add("ring-2", "ring-semantic-border-accent", "ring-offset-2")
+        setTimeout(() => el.classList.remove("ring-2", "ring-semantic-border-accent", "ring-offset-2"), 2000)
+      }
+    }
+  }
+
+  const showCannedDropdown = composerText.startsWith("/") && !expired
+
+  return (
+    <div className="relative">
+      {/* Canned message count live region */}
+      <div className="sr-only" aria-live="polite">
+        {composerText.startsWith("/")
+          ? \`\${filteredCanned.length} canned message\${filteredCanned.length !== 1 ? "s" : ""} found\`
+          : ""}
+      </div>
+
+      {/* Canned messages dropdown (above composer) */}
+      {showCannedDropdown && (
+        <CannedMessagesDropdown
+          query={cannedQuery}
+          activeIndex={cannedIndex}
+          onSelect={(body) => {
+            setComposerText(body)
+            setCannedIndex(-1)
+          }}
+          cannedMessages={cannedMessages}
+        />
+      )}
+
+      <ChatComposer
+        sendLabel={<><Send className="size-4" />Send</>}
+        expired={expired}
+        expiredMessage={expiredMessage}
+        onTemplateClick={() => setShowTemplateModal(true)}
+        value={composerText}
+        onChange={(val) => {
+          setComposerText(val)
+          setCannedIndex(-1)
+        }}
+        onSend={handleSend}
+        onKeyDown={handleKeyDown}
+        placeholder="Type '/' for canned message"
+        reply={
+          replyingTo
+            ? {
+                sender: replyingTo.sender,
+                message: replyingTo.text,
+                messageId: replyingTo.messageId,
+              }
+            : undefined
+        }
+        onDismissReply={() => setReplyingTo(null)}
+        onReplyClick={handleReplyClick}
+        attachment={
+          composerAttachment ? (
+            <ComposerAttachmentPreview
+              file={composerAttachment}
+              onRemove={() => setComposerAttachment(null)}
+            />
+          ) : undefined
+        }
+        leftActions={
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm">
+                  <Paperclip className="size-[18px]" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start">
+                <DropdownMenuLabel>Attach Media</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.accept = "image/*"
+                      fileInputRef.current.click()
+                    }
+                  }}
+                >
+                  <LucideImage className="size-4" /> Image
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.accept = "video/*"
+                      fileInputRef.current.click()
+                    }
+                  }}
+                >
+                  <Play className="size-4" /> Video
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.accept = "audio/*"
+                      fileInputRef.current.click()
+                    }
+                  }}
+                >
+                  <Music className="size-4" /> Audio
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    if (fileInputRef.current) {
+                      fileInputRef.current.accept = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                      fileInputRef.current.click()
+                    }
+                  }}
+                >
+                  <FileText className="size-4" /> Document
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon-sm" onClick={() => setShowTemplateModal(true)}>
+                  <LayoutGrid className="size-[18px]" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="m-0">Templates</p>
+                <TooltipArrow />
+              </TooltipContent>
+            </Tooltip>
+          </>
+        }
+        rightActions={
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon-sm">
+                <Smile className="size-[18px]" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p className="m-0">Emoji</p>
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+        }
+      />
+
+      {/* Hidden file input for attachment uploads */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx"
+        className="sr-only"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) setComposerAttachment(file)
+          e.target.value = ""
+        }}
+      />
+    </div>
+  )
+}
+ChatInput.displayName = "ChatInput"
+
+export { ChatInput }
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatInput } from "./chat-input"
+export type { ChatInputProps } from "./chat-input"
+export { ComposerAttachmentPreview } from "./composer-attachment-preview"
+export type { ComposerAttachmentPreviewProps } from "./composer-attachment-preview"
+export { CannedMessagesDropdown } from "./canned-messages"
+export type { CannedMessagesDropdownProps } from "./canned-messages"
+`, prefix),
+        }
+      ],
+    },
+    "chat-template-modal": {
+      name: "chat-template-modal",
+      description: "Template selection modal with variable mapping, media upload, and live preview",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "dialog",
+            "select-field",
+            "tabs",
+            "text-field",
+            "avatar",
+            "spinner",
+            "confirmation-modal"
+      ],
+      isMultiFile: true,
+      directory: "chat-template-modal",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-template-modal.tsx",
+      files: [
+        {
+          name: "template-helpers.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { CheckCheck } from "lucide-react"
+import { Avatar } from "../../avatar"
+import { TextField } from "../../text-field"
+
+/* ── resolveVars ── */
+export function resolveVars(
+  text: string,
+  vars: Record<string, string>,
+): React.ReactNode {
+  const parts = text.split(/(\\{\\{[^}]+\\}\\})/g)
+  return parts.map((part, i) =>
+    /^\\{\\{[^}]+\\}\\}$/.test(part) ? (
+      <span key={i} className="text-semantic-text-link font-medium">
+        {vars[part] || part}
+      </span>
+    ) : (
+      part
+    ),
+  )
+}
+
+/* ── DeliveryRow ── */
+export function DeliveryRow() {
+  return (
+    <div className="flex items-center justify-end gap-1.5 mt-1.5">
+      <CheckCheck className="size-4 text-semantic-text-muted" />
+      <span className="text-[12px] text-semantic-text-muted">Delivered</span>
+      <span className="text-[10px] font-bold text-semantic-text-muted">
+        &bull;
+      </span>
+      <span className="text-[12px] text-semantic-text-muted">2:30 PM</span>
+      <Avatar initials="AS" size="xs" variant="filled" />
+    </div>
+  )
+}
+
+/* ── VarRow ── */
+export function VarRow({
+  varName,
+  value,
+  onChange,
+}: {
+  varName: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
+  return (
+    <div className="flex items-center gap-3 py-1.5">
+      <span className="text-[13px] text-semantic-text-secondary w-[148px] shrink-0 truncate font-mono">
+        {varName}
+      </span>
+      <TextField
+        wrapperClassName="flex-1"
+        placeholder="Enter value"
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  )
+}
+
+/* ── VarSectionLabel ── */
+export function VarSectionLabel({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <p className="m-0 text-[11px] font-semibold text-semantic-text-muted uppercase tracking-[0.4px] mt-4 mb-1">
+      {children}
+    </p>
+  )
+}
+`, prefix),
+        },
+        {
+          name: "template-preview.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import {
+  FileSpreadsheet,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Reply,
+} from "lucide-react"
+import type { TemplateDef, VarMap } from "../chat-types"
+import { resolveVars, DeliveryRow } from "./template-helpers"
+
+/* ── TemplatePreviewEmpty ── */
+export function TemplatePreviewEmpty({
+  illustrationSrc,
+}: {
+  illustrationSrc?: string
+}) {
+  return (
+    <div className="flex flex-col items-center gap-5 pt-20 pb-8 px-6">
+      {illustrationSrc ? (
+        <img src={illustrationSrc} alt="" className="size-[140px]" />
+      ) : (
+        <div className="size-[140px] rounded-2xl bg-semantic-bg-ui flex items-center justify-center">
+          <FileSpreadsheet className="size-16 text-semantic-text-muted" />
+        </div>
+      )}
+      <p className="m-0 text-[18px] font-semibold text-semantic-text-primary">
+        No template selected
+      </p>
+    </div>
+  )
+}
+
+/* ── TemplateCarouselPreview ── */
+export function TemplateCarouselPreview({
+  template,
+  varValues,
+}: {
+  template: TemplateDef
+  varValues: VarMap
+}) {
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false)
+  const [canScrollRight, setCanScrollRight] = React.useState(
+    (template.cards?.length || 0) > 1,
+  )
+
+  const updateScrollState = () => {
+    const el = scrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 5)
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 5)
+  }
+
+  const scroll =
+    (dir: "left" | "right") => (e: React.MouseEvent) => {
+      e.stopPropagation()
+      scrollRef.current?.scrollBy({
+        left: dir === "right" ? 272 : -272,
+        behavior: "smooth",
+      })
+      setTimeout(updateScrollState, 350)
+    }
+
+  return (
+    <div className="bg-semantic-info-surface border border-solid border-semantic-border-layout rounded overflow-hidden w-full max-w-[360px]">
+      {/* Body text */}
+      <div className="px-3 pt-3">
+        <p className="text-[14px] leading-5 text-semantic-text-primary m-0">
+          {resolveVars(template.body, varValues)}
+        </p>
+      </div>
+
+      {/* Cards */}
+      <div className="relative">
+        <div
+          ref={scrollRef}
+          onScroll={updateScrollState}
+          className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {(template.cards || []).map((card, i) => {
+            const imgUrl = template.cardImages?.[i]
+            return (
+              <div
+                key={card.cardIndex}
+                className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
+                style={{ width: 260 }}
+              >
+                {imgUrl ? (
+                  <img
+                    src={imgUrl}
+                    alt={\`Card \${card.cardIndex}\`}
+                    className="w-full object-cover"
+                    style={{ height: 200 }}
+                  />
+                ) : (
+                  <div
+                    className="w-full bg-semantic-bg-ui flex items-center justify-center"
+                    style={{ height: 200 }}
+                  >
+                    <FileSpreadsheet className="size-10 text-semantic-text-muted" />
+                  </div>
+                )}
+                <div className="px-3 pt-2.5 pb-2">
+                  <p className="text-[14px] font-semibold text-semantic-text-primary m-0">
+                    {card.bodyVariables.length > 0
+                      ? resolveVars(card.bodyVariables[0], varValues)
+                      : \`Card \${card.cardIndex}\`}
+                  </p>
+                  {card.bodyVariables.slice(1).map((v) => (
+                    <p
+                      key={v}
+                      className="text-[13px] text-semantic-text-muted m-0 mt-0.5"
+                    >
+                      {resolveVars(v, varValues)}
+                    </p>
+                  ))}
+                </div>
+                {card.buttonVariables.map((v, j) => (
+                  <button
+                    key={j}
+                    className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                    style={{ height: 40 }}
+                  >
+                    <ExternalLink className="size-4" />
+                    {resolveVars(v, varValues) || "View details"}
+                  </button>
+                ))}
+                {card.buttonVariables.length === 0 && (
+                  <button
+                    className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
+                    style={{ height: 40 }}
+                  >
+                    <Reply className="size-4" />
+                    Interested
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+        {canScrollLeft && (
+          <button
+            aria-label="Scroll template preview left"
+            onClick={scroll("left")}
+            className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-semantic-bg-hover transition-colors"
+          >
+            <ChevronLeft className="size-4 text-semantic-text-primary" />
+          </button>
+        )}
+        {canScrollRight && (
+          <button
+            aria-label="Scroll template preview right"
+            onClick={scroll("right")}
+            className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-semantic-bg-hover transition-colors"
+          >
+            <ChevronRight className="size-4 text-semantic-text-primary" />
+          </button>
+        )}
+      </div>
+
+      {/* Footer + delivery */}
+      <div className="px-3 pb-2">
+        {template.footer && (
+          <p className="text-[12px] text-semantic-text-muted m-0 mb-1">
+            {template.footer}
+          </p>
+        )}
+        <DeliveryRow />
+      </div>
+    </div>
+  )
+}
+
+/* ── TemplatePreviewBubble ── */
+export function TemplatePreviewBubble({
+  template,
+  varValues,
+}: {
+  template: TemplateDef
+  varValues: VarMap
+}) {
+  if (template.type === "text") {
+    return (
+      <div className="bg-semantic-info-surface rounded-lg px-3 pt-3 pb-2 max-w-[280px] w-full">
+        <p className="m-0 text-[14px] leading-[1.4] text-semantic-text-primary">
+          {resolveVars(template.body, varValues)}
+        </p>
+        {template.button && (
+          <div className="border-t border-solid border-semantic-border-layout mt-2 pt-2 flex items-center justify-center gap-1.5 text-semantic-text-primary text-[13px] font-semibold">
+            <Reply className="size-3.5" />
+            {template.button}
+          </div>
+        )}
+        <DeliveryRow />
+      </div>
+    )
+  }
+
+  if (template.type === "image") {
+    return (
+      <div className="bg-semantic-info-surface rounded-lg overflow-hidden max-w-[280px] w-full">
+        <img
+          src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=560&h=320&fit=crop"
+          alt="Template image"
+          className="w-full h-[160px] object-cover"
+        />
+        <div className="px-3 pt-2.5 pb-2">
+          <p className="m-0 text-[14px] leading-[1.4] text-semantic-text-primary">
+            {resolveVars(template.body, varValues)}
+          </p>
+          {template.button && (
+            <div className="border-t border-solid border-semantic-border-layout mt-2 pt-2 flex items-center justify-center gap-1.5 text-semantic-text-primary text-[13px] font-semibold">
+              <Reply className="size-3.5" />
+              {template.button}
+            </div>
+          )}
+          <DeliveryRow />
+        </div>
+      </div>
+    )
+  }
+
+  if (template.type === "carousel") {
+    return (
+      <TemplateCarouselPreview template={template} varValues={varValues} />
+    )
+  }
+
+  return null
+}
+`, prefix),
+        },
+        {
+          name: "variables-tab.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import type { TemplateDef, VarMap, CardVarMap } from "../chat-types"
+import { VarRow, VarSectionLabel } from "./template-helpers"
+
+export function VariablesTab({
+  template,
+  varValues,
+  setVarValues,
+  cardVarValues,
+  setCardVarValues,
+}: {
+  template: TemplateDef
+  varValues: VarMap
+  setVarValues: React.Dispatch<React.SetStateAction<VarMap>>
+  cardVarValues: CardVarMap
+  setCardVarValues: React.Dispatch<React.SetStateAction<CardVarMap>>
+}) {
+  const hasNoVars =
+    template.bodyVariables.length === 0 &&
+    (template.cards ?? []).every(
+      (c) => c.bodyVariables.length === 0 && c.buttonVariables.length === 0,
+    )
+
+  if (hasNoVars) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center gap-2 p-8 text-center">
+        <p className="m-0 text-[14px] font-semibold text-semantic-text-secondary">
+          No variables
+        </p>
+        <p className="m-0 text-[13px] text-semantic-text-muted">
+          This template has no dynamic variables to fill in.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-1 overflow-y-auto px-5 py-3">
+      {/* Top-level body variables */}
+      {template.bodyVariables.length > 0 && (
+        <>
+          <VarSectionLabel>Body variables</VarSectionLabel>
+          {template.bodyVariables.map((v) => (
+            <VarRow
+              key={v}
+              varName={v}
+              value={varValues[v] || ""}
+              onChange={(e) =>
+                setVarValues((p) => ({ ...p, [v]: e.target.value }))
+              }
+            />
+          ))}
+        </>
+      )}
+
+      {/* Per-card variables (carousel) */}
+      {template.cards?.map((card) => (
+        <div key={card.cardIndex}>
+          <div className="flex items-center gap-3 mt-5 mb-1">
+            <span className="text-[13px] font-semibold text-semantic-text-primary shrink-0">
+              Card {card.cardIndex}
+            </span>
+            <div className="flex-1 h-px bg-semantic-border-layout" />
+          </div>
+          {card.bodyVariables.length > 0 && (
+            <>
+              <VarSectionLabel>Body variables</VarSectionLabel>
+              {card.bodyVariables.map((v) => (
+                <VarRow
+                  key={v}
+                  varName={v}
+                  value={cardVarValues[card.cardIndex]?.body?.[v] || ""}
+                  onChange={(e) =>
+                    setCardVarValues((p) => ({
+                      ...p,
+                      [card.cardIndex]: {
+                        body: {
+                          ...(p[card.cardIndex]?.body || {}),
+                          [v]: e.target.value,
+                        },
+                        button: p[card.cardIndex]?.button || {},
+                      },
+                    }))
+                  }
+                />
+              ))}
+            </>
+          )}
+          {card.buttonVariables.length > 0 && (
+            <>
+              <VarSectionLabel>Button variables</VarSectionLabel>
+              {card.buttonVariables.map((v) => (
+                <VarRow
+                  key={v}
+                  varName={v}
+                  value={cardVarValues[card.cardIndex]?.button?.[v] || ""}
+                  onChange={(e) =>
+                    setCardVarValues((p) => ({
+                      ...p,
+                      [card.cardIndex]: {
+                        body: p[card.cardIndex]?.body || {},
+                        button: {
+                          ...(p[card.cardIndex]?.button || {}),
+                          [v]: e.target.value,
+                        },
+                      },
+                    }))
+                  }
+                />
+              ))}
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+`, prefix),
+        },
+        {
+          name: "media-tab.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { Trash2, Upload } from "lucide-react"
+import type { TemplateDef } from "../chat-types"
+import { Button } from "../../button"
+
+export function MediaTab({
+  template,
+  uploadedMedia,
+  setUploadedMedia,
+  onDeleteMedia,
+}: {
+  template: TemplateDef
+  uploadedMedia: Record<number, File | null>
+  setUploadedMedia: React.Dispatch<
+    React.SetStateAction<Record<number, File | null>>
+  >
+  onDeleteMedia: (cardIndex: number) => void
+}) {
+  const cards = template.cards || [
+    { cardIndex: 1, bodyVariables: [], buttonVariables: [] },
+  ]
+
+  return (
+    <div className="flex-1 overflow-y-auto px-4 py-3">
+      {cards.map((card) => (
+        <div key={card.cardIndex} className="mb-5">
+          {template.type === "carousel" && (
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[13px] font-semibold text-semantic-text-primary shrink-0">
+                Card {card.cardIndex}
+              </span>
+              <div className="flex-1 h-px bg-semantic-border-layout" />
+            </div>
+          )}
+          {uploadedMedia[card.cardIndex] ? (
+            <div className="flex items-center gap-3 px-3 py-2.5 border border-solid border-semantic-border-layout rounded">
+              <div className="size-10 shrink-0 rounded overflow-hidden bg-semantic-bg-ui flex items-center justify-center">
+                <img
+                  src={URL.createObjectURL(uploadedMedia[card.cardIndex]!)}
+                  alt=""
+                  className="size-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="m-0 text-[13px] font-semibold text-semantic-text-primary truncate">
+                  {uploadedMedia[card.cardIndex]!.name}
+                </p>
+                <p className="m-0 text-[12px] text-semantic-text-muted">
+                  {(
+                    uploadedMedia[card.cardIndex]!.size /
+                    (1024 * 1024)
+                  ).toFixed(1)}{" "}
+                  MB size
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => onDeleteMedia(card.cardIndex)}
+                className="shrink-0 hover:bg-semantic-error-surface text-semantic-error-primary"
+              >
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center gap-2 px-4 py-5 border border-dashed border-semantic-border-layout rounded cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+              <input
+                type="file"
+                accept="image/jpeg,image/png"
+                className="sr-only"
+                aria-label={\`Upload media for card \${card.cardIndex}\`}
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file)
+                    setUploadedMedia((p) => ({
+                      ...p,
+                      [card.cardIndex]: file,
+                    }))
+                }}
+              />
+              <div className="flex items-center gap-2 text-[14px] font-semibold text-semantic-text-primary">
+                <Upload className="size-4" />
+                Upload from device
+              </div>
+              <p className="m-0 text-[13px] text-semantic-text-muted">
+                or drag and drop file here
+              </p>
+              <p className="m-0 text-[11px] text-semantic-text-muted">
+                Supported file types: JPG/PNG with 5 MB size
+              </p>
+            </label>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+`, prefix),
+        },
+        {
+          name: "chat-template-modal.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { FileSpreadsheet, X, Send, Eye } from "lucide-react"
+import type {
+  TemplateDef,
+  TemplateCategory,
+  VarMap,
+  CardVarMap,
+} from "../chat-types"
+import { useChatContext } from "../chat-provider"
+import { Button } from "../../button"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "../../dialog"
+import { SelectField } from "../../select-field"
+import { Tabs, TabsList, TabsTrigger } from "../../tabs"
+import { ConfirmationModal } from "../../confirmation-modal"
+import { TemplatePreviewEmpty, TemplatePreviewBubble } from "./template-preview"
+import { VariablesTab } from "./variables-tab"
+import { MediaTab } from "./media-tab"
+
+const templateCategoryOptions: { id: TemplateCategory; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "marketing", label: "Marketing" },
+  { id: "utility", label: "Utility" },
+  { id: "authentication", label: "Authentication" },
+]
+
+export interface ChatTemplateModalProps {
+  /** Optional illustration image source for the empty preview state */
+  illustrationSrc?: string
+  /** Optional callback when "Create new" template link is clicked */
+  onCreateNew?: () => void
+}
+
+export function ChatTemplateModal({
+  illustrationSrc,
+  onCreateNew,
+}: ChatTemplateModalProps) {
+  const { templates, sendTemplate, setShowTemplateModal } = useChatContext()
+
+  const [selectedCategory, setSelectedCategory] =
+    React.useState<TemplateCategory>("all")
+  const [selectedTemplate, setSelectedTemplate] =
+    React.useState<TemplateDef | null>(null)
+  const [activeTab, setActiveTab] = React.useState<"variables" | "media">(
+    "variables",
+  )
+  const [tabSlideDir, setTabSlideDir] = React.useState<"left" | "right">(
+    "right",
+  )
+  const [varValues, setVarValues] = React.useState<VarMap>({})
+  const [cardVarValues, setCardVarValues] = React.useState<CardVarMap>({})
+  const [uploadedMedia, setUploadedMedia] = React.useState<
+    Record<number, File | null>
+  >({})
+  const [mediaDeleteIndex, setMediaDeleteIndex] = React.useState<number | null>(
+    null,
+  )
+
+  const handleSelectTemplate = (t: TemplateDef) => {
+    setSelectedTemplate(t)
+    setVarValues({})
+    setCardVarValues({})
+    setUploadedMedia({})
+    setActiveTab("variables")
+  }
+
+  const handleClose = () => setShowTemplateModal(false)
+
+  const handleSend = () => {
+    if (selectedTemplate) {
+      sendTemplate(selectedTemplate.id, varValues, cardVarValues)
+    }
+    handleClose()
+  }
+
+  return (
+    <>
+      <Dialog
+        open
+        onOpenChange={(open) => {
+          if (!open) handleClose()
+        }}
+      >
+        <DialogContent
+          size="xl"
+          className="max-w-[1100px] h-[88vh] max-h-[800px] p-0 gap-0 flex flex-col"
+          hideCloseButton
+        >
+          <DialogDescription className="sr-only">
+            Select from pre-approved message templates
+          </DialogDescription>
+
+          {/* ── Header: title + close ── */}
+          <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-solid border-semantic-border-layout shrink-0">
+            <div>
+              <DialogTitle>Select Template</DialogTitle>
+              <p className="text-[13px] text-semantic-text-muted mt-0.5 m-0">
+                Select from pre-approved message templates
+              </p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={handleClose}>
+              <X className="size-[18px]" />
+            </Button>
+          </div>
+
+          {/* ── Body: LEFT (selectors + variables) | RIGHT (preview) ── */}
+          <div className="flex flex-1 min-h-0 overflow-hidden">
+            {/* ── Left column ── */}
+            <div className="flex-[1.25] border-r border-solid border-semantic-border-layout flex flex-col min-h-0">
+              {/* Selectors section */}
+              <div className="px-5 pt-5 pb-4 border-b border-solid border-semantic-border-layout shrink-0">
+                <div className="flex items-start gap-3">
+                  {/* Category */}
+                  <div className="w-[160px] shrink-0">
+                    <SelectField
+                      label="Category"
+                      options={templateCategoryOptions.map((c) => ({
+                        value: c.id,
+                        label: c.label,
+                      }))}
+                      value={selectedCategory}
+                      onValueChange={(v) => {
+                        setSelectedCategory(v as TemplateCategory)
+                        setSelectedTemplate(null)
+                      }}
+                    />
+                  </div>
+
+                  {/* Template selector */}
+                  <div className="flex-1 min-w-0">
+                    <SelectField
+                      label="Template"
+                      required
+                      searchable
+                      searchPlaceholder="Search templates..."
+                      placeholder="Select a template"
+                      options={templates
+                        .filter(
+                          (t) =>
+                            selectedCategory === "all" ||
+                            t.category === selectedCategory,
+                        )
+                        .map((t) => ({ value: t.id, label: t.name }))}
+                      value={selectedTemplate?.id ?? ""}
+                      onValueChange={(id) => {
+                        const t = templates.find((tmpl) => tmpl.id === id)
+                        if (t) handleSelectTemplate(t)
+                      }}
+                    />
+                  </div>
+                </div>
+                <p className="m-0 text-[13px] text-semantic-text-muted mt-2">
+                  Template not found?{" "}
+                  <button
+                    type="button"
+                    className="text-semantic-text-link underline font-medium hover:text-semantic-text-link bg-transparent border-none p-0 cursor-pointer text-[13px]"
+                    onClick={onCreateNew}
+                  >
+                    Create new
+                  </button>
+                </p>
+              </div>
+
+              {/* Variables / Media section */}
+              {selectedTemplate ? (
+                <div className="flex flex-col flex-1 min-h-0">
+                  {/* Tabs */}
+                  <Tabs
+                    value={activeTab}
+                    onValueChange={(v) => {
+                      const tab = v as "variables" | "media"
+                      setTabSlideDir(tab === "media" ? "right" : "left")
+                      setActiveTab(tab)
+                    }}
+                  >
+                    <TabsList className="shrink-0 px-5">
+                      <TabsTrigger value="variables">
+                        Template variables
+                      </TabsTrigger>
+                      <TabsTrigger value="media">Media</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  <div
+                    key={activeTab}
+                    className={\`animate-in \${tabSlideDir === "right" ? "slide-in-from-right-3" : "slide-in-from-left-3"} fade-in duration-200 ease-out flex flex-col flex-1 min-h-0 overflow-hidden\`}
+                  >
+                    {activeTab === "variables" ? (
+                      <VariablesTab
+                        template={selectedTemplate}
+                        varValues={varValues}
+                        setVarValues={setVarValues}
+                        cardVarValues={cardVarValues}
+                        setCardVarValues={setCardVarValues}
+                      />
+                    ) : (
+                      <MediaTab
+                        template={selectedTemplate}
+                        uploadedMedia={uploadedMedia}
+                        setUploadedMedia={setUploadedMedia}
+                        onDeleteMedia={(cardIndex) =>
+                          setMediaDeleteIndex(cardIndex)
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center">
+                  <div className="size-14 rounded-xl bg-semantic-bg-ui flex items-center justify-center">
+                    <FileSpreadsheet className="size-7 text-semantic-text-muted" />
+                  </div>
+                  <div>
+                    <p className="m-0 text-[14px] font-semibold text-semantic-text-secondary">
+                      No template selected
+                    </p>
+                    <p className="m-0 text-[13px] text-semantic-text-muted mt-0.5">
+                      Choose a template above to map variables
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ── Right column: preview + send button ── */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="px-5 pt-5 pb-3 shrink-0 border-b border-solid border-semantic-border-layout flex items-center gap-2">
+                <Eye className="size-[14px] text-semantic-text-secondary" />
+                <p className="m-0 text-[12px] font-semibold tracking-wide uppercase text-semantic-text-secondary">
+                  Preview
+                </p>
+              </div>
+              <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start p-6 bg-semantic-bg-ui">
+                {selectedTemplate ? (
+                  <div className="w-full flex flex-col items-end">
+                    <TemplatePreviewBubble
+                      template={selectedTemplate}
+                      varValues={varValues}
+                    />
+                  </div>
+                ) : (
+                  <TemplatePreviewEmpty illustrationSrc={illustrationSrc} />
+                )}
+              </div>
+              <div className="px-5 py-4 shrink-0 border-t-2 border-solid border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)]">
+                <Button
+                  onClick={handleSend}
+                  disabled={!selectedTemplate}
+                  className="w-full gap-2"
+                >
+                  Send Template
+                  <Send className="size-[16px]" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <ConfirmationModal
+        open={mediaDeleteIndex !== null}
+        onOpenChange={(open) => {
+          if (!open) setMediaDeleteIndex(null)
+        }}
+        title="Remove uploaded media?"
+        description="This media file will be removed from the template."
+        variant="destructive"
+        confirmButtonText="Remove"
+        onConfirm={() => {
+          if (mediaDeleteIndex !== null) {
+            setUploadedMedia((p) => ({ ...p, [mediaDeleteIndex]: null }))
+          }
+          setMediaDeleteIndex(null)
+        }}
+      />
+    </>
+  )
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatTemplateModal } from "./chat-template-modal"
+export type { ChatTemplateModalProps } from "./chat-template-modal"
+`, prefix),
+        }
+      ],
+    },
+    "chat-contact-panel": {
+      name: "chat-contact-panel",
+      description: "Contact details slide-out panel with view and edit modes",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-provider",
+            "button",
+            "text-field",
+            "switch",
+            "tag",
+            "dropdown-menu",
+            "accordion",
+            "confirmation-modal",
+            "panel"
+      ],
+      isMultiFile: true,
+      directory: "chat-contact-panel",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-contact-panel.tsx",
+      files: [
+        {
+          name: "chat-contact-panel.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { Check, ChevronDown, Info, Pencil, User } from "lucide-react"
+import { Button } from "../../button"
+import { TextField } from "../../text-field"
+import { Switch } from "../../switch"
+import { Tag } from "../../tag"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../../dropdown-menu"
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "../../accordion"
+import { ConfirmationModal } from "../../confirmation-modal"
+import { Panel } from "../../panel"
+import { useChatContext } from "../chat-provider"
+import type { ContactDetails } from "../chat-types"
+
+/* ── ChatContactPanel ── */
+
+export interface ChatContactPanelProps {
+  /** Contact name to display (derived from selected chat by parent) */
+  name: string
+}
+
+export function ChatContactPanel({ name }: ChatContactPanelProps) {
+  const {
+    showContactDetails,
+    setShowContactDetails,
+    selectedChatId,
+    transport,
+  } = useChatContext()
+
+  const [isEditing, setIsEditing] = React.useState(false)
+  const [marketingOptIn, setMarketingOptIn] = React.useState(true)
+  const [showDiscardConfirm, setShowDiscardConfirm] = React.useState(false)
+  const [contactDetails, setContactDetails] =
+    React.useState<ContactDetails | null>(null)
+
+  // Fetch contact details when panel opens
+  React.useEffect(() => {
+    if (!showContactDetails || !selectedChatId) return
+
+    let cancelled = false
+
+    async function loadDetails() {
+      try {
+        const details = await transport.fetchContactDetails(selectedChatId!)
+        if (!cancelled) {
+          setContactDetails(details)
+          setMarketingOptIn(details.marketingOptIn ?? true)
+        }
+      } catch {
+        // silently ignore — panel shows placeholder data
+      }
+    }
+
+    loadDetails()
+    return () => {
+      cancelled = true
+    }
+  }, [showContactDetails, selectedChatId, transport])
+
+  // Reset editing state when panel closes
+  React.useEffect(() => {
+    if (!showContactDetails) {
+      setIsEditing(false)
+    }
+  }, [showContactDetails])
+
+  const handleClose = React.useCallback(() => {
+    setIsEditing(false)
+    setShowContactDetails(false)
+  }, [setShowContactDetails])
+
+  const displayName = contactDetails?.name ?? name
+  const phone = contactDetails?.phone ?? "98765 43210"
+  const email = contactDetails?.email ?? "email@example.com"
+  const source = contactDetails?.source ?? "Chat"
+  const tags = contactDetails?.tags ?? ["VIP Customer", "Enterprise"]
+  const location = contactDetails?.location ?? "XYZ, place"
+  const secondaryPhone = contactDetails?.secondaryPhone
+  const dob = contactDetails?.dob
+
+  const editFooter = (
+    <>
+      <Button
+        variant="outline"
+        className="flex-1"
+        onClick={() => setShowDiscardConfirm(true)}
+      >
+        Cancel
+      </Button>
+      <Button
+        className="flex-1"
+        leftIcon={<Check className="size-4" />}
+        onClick={() => setIsEditing(false)}
+      >
+        Save Details
+      </Button>
+    </>
+  )
+
+  return (
+    <>
+      <Panel
+        open={showContactDetails}
+        title={isEditing ? "Edit Details" : "Contact Details"}
+        onClose={handleClose}
+        footer={isEditing ? editFooter : undefined}
+      >
+        {isEditing ? (
+          /* ── Edit View ── */
+          <div key="edit" className="animate-in fade-in duration-200 ease-out">
+            {/* Name field */}
+            <div className="px-4 py-4 border-b border-solid border-semantic-border-layout">
+              <TextField
+                label="Name"
+                required
+                defaultValue={displayName}
+                leftIcon={<User className="size-[18px]" />}
+                size="sm"
+                autoFocus
+              />
+            </div>
+
+            <Accordion
+              type="multiple"
+              defaultValue={["basic", "custom"]}
+              variant="bordered"
+              className="rounded-none border-x-0"
+            >
+              {/* Basic Information */}
+              <AccordionItem value="basic">
+                <AccordionTrigger>
+                  <span className="text-sm font-semibold text-semantic-text-primary">
+                    Basic Information
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-4">
+                    {/* Phone */}
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="edit-phone"
+                        className="text-sm font-medium text-semantic-text-muted"
+                      >
+                        Phone
+                        <span className="text-semantic-error-primary ml-0.5">
+                          *
+                        </span>
+                      </label>
+                      <div className="flex items-center border border-solid border-semantic-border-layout rounded bg-semantic-bg-ui opacity-60 cursor-not-allowed">
+                        <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
+                          <span className="text-sm">🇮🇳</span>
+                          <span className="text-sm text-semantic-text-secondary">
+                            +91
+                          </span>
+                        </div>
+                        <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+                        <input
+                          id="edit-phone"
+                          type="tel"
+                          defaultValue={phone}
+                          disabled
+                          aria-required="true"
+                          className="flex-1 h-9 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent min-w-0"
+                        />
+                      </div>
+                    </div>
+                    <TextField
+                      label="Email"
+                      placeholder="Enter Email"
+                      defaultValue={email !== "email@example.com" ? email : ""}
+                      size="sm"
+                    />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm font-medium text-semantic-text-muted">
+                          Marketing Opt In
+                        </span>
+                        <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                      </div>
+                      <Switch
+                        checked={marketingOptIn}
+                        onCheckedChange={setMarketingOptIn}
+                      />
+                    </div>
+                    <TextField
+                      label="Source"
+                      value={source}
+                      disabled
+                      size="sm"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Custom Fields */}
+              <AccordionItem value="custom">
+                <AccordionTrigger>
+                  <span className="text-sm font-semibold text-semantic-text-primary">
+                    Custom Fields
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-semantic-text-muted">
+                        Tags
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-between"
+                          >
+                            <div className="flex gap-1.5 flex-1 min-w-0">
+                              {tags.map((tag) => (
+                                <Tag key={tag} variant="default" size="sm">
+                                  {tag}
+                                </Tag>
+                              ))}
+                            </div>
+                            <ChevronDown className="size-4 shrink-0" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="start"
+                          className="w-[--radix-dropdown-menu-trigger-width]"
+                        >
+                          <DropdownMenuItem>VIP Customer</DropdownMenuItem>
+                          <DropdownMenuItem>Enterprise</DropdownMenuItem>
+                          <DropdownMenuItem>New Lead</DropdownMenuItem>
+                          <DropdownMenuItem>Support</DropdownMenuItem>
+                          <DropdownMenuItem>Billing</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                    {[
+                      {
+                        label: "Location",
+                        placeholder: "Enter Location",
+                        defaultValue: location,
+                      },
+                      {
+                        label: "Secondary Phone",
+                        placeholder: "XXXXX XXXXX",
+                        defaultValue: secondaryPhone,
+                      },
+                      {
+                        label: "DOB",
+                        placeholder: "DD / MM / YYYY",
+                        defaultValue: dob,
+                      },
+                    ].map(({ label, placeholder, defaultValue }) => (
+                      <TextField
+                        key={label}
+                        label={label}
+                        placeholder={placeholder}
+                        defaultValue={defaultValue}
+                        size="sm"
+                      />
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        ) : (
+          /* ── View Mode (two-column layout) ── */
+          <div key="view" className="animate-in fade-in duration-200 ease-out">
+            {/* Name + Edit button */}
+            <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout">
+              <span className="text-base font-semibold text-semantic-text-primary">
+                {displayName}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsEditing(true)}
+              >
+                <Pencil className="size-4" />
+              </Button>
+            </div>
+
+            {/* Basic Information */}
+            <div className="px-4 pt-3 pb-2 border-t border-solid border-semantic-border-layout">
+              <span className="text-[13px] font-semibold text-semantic-text-primary">
+                Basic Information
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">
+                  Phone
+                </span>
+                <span className="text-sm text-semantic-text-primary flex-1">
+                  🇮🇳 +91 {phone}
+                </span>
+              </div>
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">
+                  Email
+                </span>
+                <span className="text-sm text-semantic-text-primary flex-1">
+                  {email}
+                </span>
+              </div>
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0 flex items-center gap-1">
+                  Marketing Opt In
+                  <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                </span>
+                <div className="flex-1">
+                  <Switch
+                    checked={marketingOptIn}
+                    onCheckedChange={setMarketingOptIn}
+                    size="sm"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">
+                  Source
+                </span>
+                <span className="text-sm text-semantic-text-primary flex-1">
+                  {source}
+                </span>
+              </div>
+            </div>
+
+            {/* Custom Fields */}
+            <div className="px-4 pt-3 pb-2 border-t border-solid border-semantic-border-layout">
+              <span className="text-[13px] font-semibold text-semantic-text-primary">
+                Custom Fields
+              </span>
+            </div>
+            <div className="flex flex-col pb-2 border-b border-solid border-semantic-border-layout">
+              <div className="flex items-start py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0 pt-0.5">
+                  Tags
+                </span>
+                <div className="flex flex-wrap gap-1.5 flex-1">
+                  {tags.map((tag) => (
+                    <Tag key={tag} variant="default" size="sm">
+                      {tag}
+                    </Tag>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">
+                  Location
+                </span>
+                <span className="text-sm text-semantic-text-primary flex-1">
+                  {location}
+                </span>
+              </div>
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">
+                  Secondary Phone
+                </span>
+                <span
+                  className={\`text-sm flex-1 \${secondaryPhone ? "text-semantic-text-primary" : "text-semantic-text-placeholder"}\`}
+                >
+                  {secondaryPhone || "XXXXX XXXXX"}
+                </span>
+              </div>
+              <div className="flex items-center py-2.5 px-4">
+                <span className="text-sm text-semantic-text-muted w-[120px] shrink-0">
+                  DOB
+                </span>
+                <span
+                  className={\`text-sm flex-1 \${dob ? "text-semantic-text-primary" : "text-semantic-text-placeholder"}\`}
+                >
+                  {dob || "DD / MM / YYYY"}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </Panel>
+      <ConfirmationModal
+        open={showDiscardConfirm}
+        onOpenChange={setShowDiscardConfirm}
+        title="Discard changes?"
+        description="Your unsaved edits will be lost."
+        variant="destructive"
+        confirmButtonText="Discard"
+        onConfirm={() => {
+          setIsEditing(false)
+          setShowDiscardConfirm(false)
+        }}
+      />
+    </>
+  )
+}
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`export { ChatContactPanel } from "./chat-contact-panel"
+export type { ChatContactPanelProps } from "./chat-contact-panel"
+`, prefix),
+        }
+      ],
+    },
+    "chat-template": {
+      name: "chat-template",
+      description: "Complete chat application template — install this to get the full chat UI",
+      category: "custom",
+      dependencies: [
+            "clsx",
+            "tailwind-merge",
+            "lucide-react",
+            "tailwindcss-animate"
+      ],
+      internalDependencies: [
+            "chat-types",
+            "chat-transport",
+            "chat-provider",
+            "chat-sidebar",
+            "chat-filter-panel",
+            "chat-new-panel",
+            "chat-message-list",
+            "chat-header",
+            "chat-input",
+            "chat-template-modal",
+            "chat-contact-panel",
+            "button",
+            "tooltip"
+      ],
+      isMultiFile: true,
+      directory: "chat-template",
+      group: "chat",
+      templateOnly: true,
+      mainFile: "chat-app.tsx",
+      files: [
+        {
+          name: "helpers.ts",
+          content: prefixTailwindClasses(`import * as React from "react"
+
+/**
+ * Highlight a substring match within text.
+ * Used for search result highlighting in chat list and contacts.
+ */
+export function highlightMatch(
+  text: string,
+  query: string
+): React.ReactNode {
+  if (!query.trim()) return text
+  const idx = text.toLowerCase().indexOf(query.toLowerCase())
+  if (idx === -1) return text
+  return React.createElement(
+    React.Fragment,
+    null,
+    text.slice(0, idx),
+    React.createElement(
+      "strong",
+      { className: "font-semibold text-semantic-text-primary" },
+      text.slice(idx, idx + query.length)
+    ),
+    text.slice(idx + query.length)
+  )
+}
+
+/**
+ * Extract initials from a name string.
+ * "Alex Smith" → "AS", "Jane" → "JA"
+ */
+export function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2)
+}
+
+/**
+ * Replace \`{{variable}}\` placeholders in text with provided values.
+ * Matched variables are rendered as highlighted spans.
+ */
+export function resolveVars(
+  text: string,
+  vars: Record<string, string>
+): React.ReactNode {
+  const parts = text.split(/(\\{\\{[^}]+\\}\\})/g)
+  return parts.map((part, i) =>
+    /^\\{\\{[^}]+\\}\\}$/.test(part)
+      ? React.createElement(
+          "span",
+          { key: i, className: "text-semantic-text-link font-medium" },
+          vars[part] || part
+        )
+      : part
+  )
+}
+`, prefix),
+        },
+        {
+          name: "chat-app.tsx",
+          content: prefixTailwindClasses(`import * as React from "react"
+import { cn } from "../../../lib/utils"
+import { Button } from "../../button"
+import {
+  TooltipProvider,
+} from "../../tooltip"
+import { Plus, MessageSquare, Upload, User } from "lucide-react"
+import { useChatContext } from "../chat-provider"
+import { ChatSidebar } from "../chat-sidebar"
+import { ChatFilterPanel } from "../chat-filter-panel"
+import { ChatNewPanel } from "../chat-new-panel"
+import { AddNewContactModal } from "../chat-new-panel"
+import { ChatHeader } from "../chat-header"
+import { ChatMessageList } from "../chat-message-list"
+import { ChatInput } from "../chat-input"
+import { ChatTemplateModal } from "../chat-template-modal"
+import { ChatContactPanel } from "../chat-contact-panel"
+
+/* ── ChatApp ── */
+
+export interface ChatAppProps {
+  /** Additional className for the outer container */
+  className?: string
+}
+
+/**
+ * The fully composed chat application.
+ * Wrap with \`<ChatProvider transport={...}>\` to use.
+ *
+ * @example
+ * \`\`\`tsx
+ * import { ChatApp, ChatProvider, MockTransport } from "./components/custom/chat-template"
+ *
+ * <ChatProvider transport={new MockTransport()}>
+ *   <ChatApp />
+ * </ChatProvider>
+ * \`\`\`
+ */
+export function ChatApp({ className }: ChatAppProps) {
+  const {
+    chats,
+    selectedChatId,
+    showFilters,
+    setShowFilters,
+    showNewChat,
+    setShowNewChat,
+    showAddContact,
+    setShowAddContact,
+    showTemplateModal,
+    showContactDetails,
+    setShowContactDetails,
+    applyFilters,
+    setSearch,
+    channels,
+  } = useChatContext()
+
+  const chatAreaRef = React.useRef<HTMLDivElement | null>(null)
+  const [isDragging, setIsDragging] = React.useState(false)
+
+  const selectedChat = React.useMemo(
+    () => chats.find((c) => c.id === selectedChatId) ?? null,
+    [chats, selectedChatId]
+  )
+
+  const openNewChat = React.useCallback(() => {
+    setShowFilters(false)
+    setSearch("")
+    setShowNewChat(true)
+  }, [setShowFilters, setSearch, setShowNewChat])
+
+  return (
+    <TooltipProvider delayDuration={200}>
+      <div className={cn("flex h-screen bg-semantic-bg-ui", className)}>
+        {/* ── Left Panel: Sidebar ── */}
+        <ChatSidebar chatAreaRef={chatAreaRef}>
+          {showNewChat ? (
+            <ChatNewPanel
+              onBack={() => setShowNewChat(false)}
+              onOpenAddContact={() => setShowAddContact(true)}
+            />
+          ) : showFilters ? (
+            <ChatFilterPanel
+              onClose={() => {
+                setShowFilters(false)
+                setSearch("")
+              }}
+              onApply={(assigneeSet, channelSet) => {
+                applyFilters({
+                  assignees: assigneeSet.size > 0 ? assigneeSet : undefined,
+                  channels: channelSet.size > 0 ? channelSet : undefined,
+                })
+                setShowFilters(false)
+                setSearch("")
+              }}
+            />
+          ) : null}
+        </ChatSidebar>
+
+        {/* ── Right Panel: Chat Window or Empty State ── */}
+        {selectedChat ? (
+          <main
+            className="flex-[1_0_0] min-h-0 min-w-0 flex"
+            ref={chatAreaRef}
+            tabIndex={-1}
+          >
+            {/* Chat Window */}
+            <div
+              className="flex-1 flex flex-col min-w-0 relative"
+              onDragOver={(e) => {
+                e.preventDefault()
+                setIsDragging(true)
+              }}
+              onDragLeave={(e) => {
+                if (
+                  e.currentTarget === e.target ||
+                  !e.currentTarget.contains(e.relatedTarget as Node)
+                )
+                  setIsDragging(false)
+              }}
+              onDrop={(e) => {
+                e.preventDefault()
+                setIsDragging(false)
+                // The ChatInput handles the attachment internally via context or props
+                // For drag-drop we'd need to integrate with ChatInput — for now this is a placeholder
+              }}
+            >
+              <h2 className="sr-only m-0">{selectedChat.name} — Chat</h2>
+              <div className="sr-only" aria-live="assertive">
+                {isDragging
+                  ? "Drop zone active. Release to attach file."
+                  : ""}
+              </div>
+
+              {/* Chat Header */}
+              <ChatHeader />
+
+              {/* Messages Area */}
+              <ChatMessageList />
+
+              {/* Message Input */}
+              <ChatInput
+                expired={
+                  selectedChat.isWindowExpired ||
+                  selectedChat.tab === "resolved"
+                }
+                expiredMessage={
+                  selectedChat.tab === "resolved"
+                    ? "This chat is closed. Send a template to continue."
+                    : "This chat has expired. Send a template to continue."
+                }
+              />
+
+              {/* Drag & drop overlay */}
+              {isDragging && (
+                <div
+                  role="region"
+                  aria-label="Drop zone — drop file to attach"
+                  className="absolute inset-0 z-50 bg-semantic-primary/5 backdrop-blur-[1px] flex items-center justify-center border-2 border-dashed border-semantic-primary rounded-lg animate-in fade-in duration-200 ease-out"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="size-10 text-semantic-primary" />
+                    <span className="text-[16px] font-semibold text-semantic-primary">
+                      Drop file to attach
+                    </span>
+                    <span className="text-[13px] text-semantic-text-muted">
+                      Images, videos, documents
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Contact Details Panel */}
+            <ChatContactPanel name={selectedChat.name} />
+
+            {/* Right Action Sidebar */}
+            <aside
+              aria-label="Actions"
+              className="w-[56px] bg-white border-l border-solid border-semantic-border-layout flex flex-col items-center py-2 gap-4 shrink-0"
+            >
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                aria-label="Contact details"
+                onClick={() => setShowContactDetails(!showContactDetails)}
+                className={cn(
+                  "transition-colors duration-200",
+                  showContactDetails &&
+                    "bg-semantic-bg-hover text-semantic-primary"
+                )}
+              >
+                <User className="size-6" />
+              </Button>
+            </aside>
+          </main>
+        ) : (
+          /* ── Empty State ── */
+          <div className="flex-[1_0_0] min-h-0 min-w-0 bg-semantic-bg-ui shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] flex flex-col items-center justify-center p-4">
+            {showNewChat ? (
+              <div className="flex flex-col items-center gap-5 w-[300px] shrink-0">
+                <div className="size-[100px] shrink-0 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center shadow-sm">
+                  <MessageSquare className="size-12 text-semantic-text-muted" />
+                </div>
+                <div className="flex flex-col items-center gap-[6px]">
+                  <h2 className="m-0 text-[24px] font-semibold text-semantic-text-primary leading-8">
+                    Start New Conversation
+                  </h2>
+                  <p className="text-[16px] text-semantic-text-muted text-center m-0">
+                    Select a contact or add new contact.
+                  </p>
+                </div>
+                <Button
+                  className="w-full h-12"
+                  leftIcon={<Plus className="w-6 h-6" />}
+                  onClick={() => setShowAddContact(true)}
+                >
+                  Add New Contact
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-5 w-[276px] shrink-0">
+                <div className="size-[100px] shrink-0 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center shadow-sm">
+                  <MessageSquare className="size-12 text-semantic-text-muted" />
+                </div>
+                <div className="flex flex-col items-center gap-[6px]">
+                  <h2 className="m-0 text-[24px] font-semibold text-semantic-text-primary leading-8">
+                    No conversation selected
+                  </h2>
+                  <p className="text-[16px] text-semantic-text-muted text-center m-0">
+                    Select a chat from inbox or start new chat
+                  </p>
+                </div>
+                <Button
+                  className="w-full h-12"
+                  leftIcon={<Plus className="w-6 h-6" />}
+                  onClick={openNewChat}
+                >
+                  Start New Chat
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Modals ── */}
+        {showAddContact && (
+          <AddNewContactModal
+            defaultChannel={channels[0]}
+            onClose={() => setShowAddContact(false)}
+          />
+        )}
+        {showTemplateModal && (
+          <ChatTemplateModal />
+        )}
+      </div>
+    </TooltipProvider>
+  )
+}
+
+ChatApp.displayName = "ChatApp"
+`, prefix),
+        },
+        {
+          name: "index.ts",
+          content: prefixTailwindClasses(`// ── Orchestrator ──
+export { ChatApp } from "./chat-app"
+export type { ChatAppProps } from "./chat-app"
+
+// ── Helpers ──
+export { highlightMatch, getInitials, resolveVars } from "./helpers"
+
+// ── Re-exports for convenience ──
+// Consumers can import everything from "chat-template" as a single entry point
+
+// Foundation
+export { ChatProvider, useChatContext } from "../chat-provider"
+export type { ChatContextValue } from "../chat-provider/types"
+export { MockTransport } from "../chat-transport"
+export type { ChatTransport } from "../chat-transport/types"
+
+// Types
+export type {
+  Tab,
+  TabDef,
+  AssigneeItem,
+  ChannelItem,
+  ChatItem,
+  ChatMessage,
+  Contact,
+  ContactDetails,
+  TemplateDef,
+  TemplateCategory,
+  TemplateType,
+  CannedMessage,
+  ChatFilters,
+  SendMessagePayload,
+  TemplateSendPayload,
+  VarMap,
+  CardVarMap,
+  MediaPayload,
+  SentByType,
+} from "../chat-types"
+
+// UI Modules (for advanced customization)
+export { ChatSidebar } from "../chat-sidebar"
+export { ChatFilterPanel } from "../chat-filter-panel"
+export { ChatNewPanel, AddNewContactModal } from "../chat-new-panel"
+export { ChatMessageList } from "../chat-message-list"
+export type { ReplyToPayload } from "../chat-message-list"
+export { ChatHeader, AssignmentDropdown, ResolveButton } from "../chat-header"
+export { ChatInput, ComposerAttachmentPreview } from "../chat-input"
+export { ChatTemplateModal } from "../chat-template-modal"
+export { ChatContactPanel } from "../chat-contact-panel"
 `, prefix),
         }
       ],

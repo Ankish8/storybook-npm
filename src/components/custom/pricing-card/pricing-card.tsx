@@ -63,7 +63,7 @@ const PricingCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-t-xl rounded-b-lg border border-semantic-border-layout p-4",
+          "flex flex-col gap-6 rounded-t-xl rounded-b-lg border border-solid border-semantic-border-layout p-4",
           className
         )}
         {...props}
@@ -184,7 +184,7 @@ const PricingCard = React.forwardRef(
           <div className="mt-auto flex flex-col gap-6">
             {/* Addon */}
             {addon && (
-              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] pl-4 py-2.5">
+              <div className="flex items-center gap-2.5 rounded-md bg-[var(--color-info-25)] border border-solid border-[#f3f5f6] pl-4 py-2.5">
                 {addon.icon && (
                   <div className="size-5 shrink-0">{addon.icon}</div>
                 )}
@@ -196,7 +196,7 @@ const PricingCard = React.forwardRef(
 
             {/* Usage Details */}
             {usageDetails && usageDetails.length > 0 && (
-              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-[#f3f5f6] px-4 py-2.5">
+              <div className="flex flex-col gap-2.5 rounded-md bg-[var(--color-info-25)] border border-solid border-[#f3f5f6] px-4 py-2.5">
                 {usageDetails.map((detail, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <span className="size-1.5 rounded-full bg-semantic-primary shrink-0 mt-[7px]" />

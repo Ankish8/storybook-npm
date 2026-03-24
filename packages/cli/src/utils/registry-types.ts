@@ -17,6 +17,7 @@ export interface ComponentDefinition {
   directory?: string
   group?: string
   mainFile?: string
+  templateOnly?: boolean
 }
 
 export type Registry = Record<string, ComponentDefinition>

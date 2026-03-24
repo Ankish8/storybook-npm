@@ -52,7 +52,7 @@ function DateInput({
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border text-sm transition-colors outline-none",
+          "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border border-solid text-sm transition-colors outline-none",
           "border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary",
           "hover:border-semantic-border-input-focus/50",
           open && "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
@@ -66,7 +66,7 @@ function DateInput({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 z-50 mt-1 w-72 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary shadow-lg p-3">
+        <div className="absolute top-full left-0 z-50 mt-1 w-72 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg p-3">
           <Calendar
             value={value}
             onChange={(date) => {

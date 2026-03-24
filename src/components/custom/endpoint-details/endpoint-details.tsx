@@ -135,7 +135,7 @@ export const EndpointDetails = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-lg border border-semantic-border-layout p-6",
+          "flex flex-col gap-6 rounded-lg border border-solid border-semantic-border-layout p-6",
           className
         )}
         {...props}
@@ -205,7 +205,7 @@ export const EndpointDetails = React.forwardRef(
 
           {/* Revoke Section - only for calling variant */}
           {isCalling && showRevokeSection && (
-            <div className="flex items-center justify-between border-t border-semantic-border-layout pt-6">
+            <div className="flex items-center justify-between border-t border-solid border-semantic-border-layout pt-6">
               <div className="flex flex-col gap-1">
                 <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
                   {revokeTitle}

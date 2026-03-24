@@ -137,7 +137,7 @@ const ChatComposer = React.forwardRef(
             )}
 
             {/* Input area */}
-            <div className="flex-1 flex flex-col border border-semantic-border-layout rounded-lg bg-white overflow-hidden focus-within:border-semantic-border-focus transition-all">
+            <div className="flex-1 flex flex-col border border-solid border-semantic-border-layout rounded-lg bg-white overflow-hidden focus-within:border-semantic-border-focus transition-all">
               {attachment}
               <div className="flex items-end">
                 <textarea

@@ -99,7 +99,7 @@ const DocMedia = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "mx-2.5 mt-2.5 rounded overflow-hidden border border-semantic-border-layout",
+          "mx-2.5 mt-2.5 rounded overflow-hidden border border-solid border-semantic-border-layout",
           className
         )}
         {...props}

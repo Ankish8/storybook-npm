@@ -356,10 +356,13 @@ function prefixClassString(classString: string, prefix: string): string {
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
   // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
   // the border visible regardless of the host CSS environment.
+  // Skip injection when the only border-width classes are zero-width (border-0, border-t-0, etc.)
+  // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
-  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
+  const hasNonZeroBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
   const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
-  if (hasBorderWidth && !hasBorderStyle) {
+  if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(`${prefix}border-solid`)
   }
 
@@ -855,7 +858,7 @@ const Table = React.forwardRef(
     <div
       className={cn(
         "relative w-full overflow-auto",
-        !withoutBorder && "rounded-lg border border-semantic-border-layout"
+        !withoutBorder && "rounded-lg border border-solid border-semantic-border-layout"
       )}
     >
       <table
@@ -912,7 +915,7 @@ const TableFooter = React.forwardRef(({ className, ...props }: React.HTMLAttribu
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
+      "border-t border-solid bg-[var(--color-neutral-100)] font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -930,7 +933,7 @@ const TableRow = React.forwardRef(
     <tr
       ref={ref}
       className={cn(
-        "border-b border-semantic-border-layout transition-colors",
+        "border-b border-solid border-semantic-border-layout transition-colors",
         highlighted
           ? "bg-semantic-info-surface"
           : "hover:bg-[var(--color-neutral-50)]/50 data-[state=selected]:bg-semantic-bg-ui",

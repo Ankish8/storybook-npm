@@ -43,11 +43,11 @@ const avatarVariants = cva(
 );
 
 const statusDotSizeMap = {
-  xs: "size-2 border",
-  sm: "size-2.5 border-[1.5px]",
-  md: "size-3 border-2",
-  lg: "size-3.5 border-2",
-  xl: "size-4 border-2",
+  xs: "size-2 border border-solid",
+  sm: "size-2.5 border-[1.5px] border-solid",
+  md: "size-3 border-2 border-solid",
+  lg: "size-3.5 border-2 border-solid",
+  xl: "size-4 border-2 border-solid",
 } as const;
 
 const statusColorMap = {

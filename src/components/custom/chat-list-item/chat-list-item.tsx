@@ -139,7 +139,7 @@ function ChannelPill({
     <div className="flex items-center gap-3">
       <span
         className={cn(
-          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-semantic-border-layout text-[12px]",
+          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-solid border-semantic-border-layout text-[12px]",
           textColor
         )}
       >
@@ -220,8 +220,8 @@ const ChatListItem = React.forwardRef(
         className={cn(
           "flex items-start px-4 py-5 w-full transition-colors cursor-pointer",
           isSelected
-            ? "bg-[var(--color-neutral-50)] border-l-4 border-l-semantic-border-accent border-b border-b-semantic-border-layout"
-            : "bg-white hover:bg-[var(--color-neutral-50)] border-b border-semantic-border-layout",
+            ? "bg-[var(--color-neutral-50)] border-l-4 border-solid border-l-semantic-border-accent border-b border-b-semantic-border-layout"
+            : "bg-white hover:bg-[var(--color-neutral-50)] border-b border-solid border-semantic-border-layout",
           className
         )}
         {...props}

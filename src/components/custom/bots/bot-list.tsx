@@ -77,7 +77,7 @@ export const BotList = React.forwardRef(
           className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
           {...props}
         >
-          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
+          <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-solid border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
             <BotListHeader title={title} subtitle={subtitle} />
             <BotListSearch
               value={searchQuery}

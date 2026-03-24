@@ -46,6 +46,7 @@ import { ChatListItem } from "@/components/custom/chat-list-item"
 import { ChatComposer } from "@/components/custom/chat-composer"
 import { ChatTimelineDivider } from "@/components/custom/chat-timeline-divider"
 import { DocMedia } from "@/components/custom/doc-media"
+import { ChatHeader } from "@/components/custom/chat-header"
 import {
   Search,
   Plus,
@@ -998,7 +999,7 @@ function NewChatPanel({
           onChange={(e) => setContactSearch(e.target.value)}
           leftIcon={<Search className="size-4" />}
           wrapperClassName="flex-1 min-w-0"
-          size="sm"
+          size="default"
           clearable={!!contactSearch}
           onClear={() => setContactSearch("")}
         />
@@ -1989,7 +1990,7 @@ function ContactDetailsPanel({ name, open, onClose }: { name: string; open: bool
                     <label htmlFor="edit-phone" className="text-sm font-medium text-semantic-text-muted">
                       Phone<span className="text-semantic-error-primary ml-0.5">*</span>
                     </label>
-                    <div className="flex items-center border border-semantic-border-layout rounded opacity-60">
+                    <div className="flex items-center border border-semantic-border-layout rounded bg-semantic-bg-ui opacity-60 cursor-not-allowed">
                       <div className="flex items-center gap-1.5 pl-3 pr-2 h-9 shrink-0">
                         <span className="text-sm">🇮🇳</span>
                         <span className="text-sm text-semantic-text-secondary">+91</span>
@@ -2141,112 +2142,7 @@ function ContactDetailsPanel({ name, open, onClose }: { name: string; open: bool
   )
 }
 
-/* ── Assignment Dropdown (2.1) ── */
-
-function AssignmentDropdown({ defaultAgent }: { defaultAgent?: string }) {
-  // Resolve agent name to assignee id
-  const resolvedDefault = defaultAgent
-    ? assignees.find((a) => a.label === defaultAgent)?.id || "unassigned"
-    : "unassigned"
-  const [value, setValue] = useState(resolvedDefault)
-  const [searchQuery, setSearchQuery] = useState("")
-
-  const bots = assignees.filter((a) => a.type === "bot")
-  const agents = assignees.filter((a) => a.type === "agent")
-
-  const q = searchQuery.toLowerCase()
-  const filteredBots = bots.filter((b) => b.label.toLowerCase().includes(q))
-  const filteredAgents = agents.filter((a) => a.label.toLowerCase().includes(q))
-
-  return (
-    <DropdownMenu onOpenChange={() => setSearchQuery("")}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          <span className="truncate">
-            {value === "unassigned" ? "Unassigned" : assignees.find((a) => a.id === value)?.label || value}
-          </span>
-          <ChevronDown className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[240px]">
-        {/* Search */}
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-semantic-border-layout" onClick={(e) => e.stopPropagation()}>
-          <Search className="size-4 text-semantic-text-muted shrink-0" />
-          <input
-            type="text"
-            placeholder="Search..."
-            aria-label="Search agents"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-7 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
-            onKeyDown={(e) => e.stopPropagation()}
-          />
-        </div>
-        <DropdownMenuRadioGroup value={value} onValueChange={setValue} className="max-h-[240px] overflow-y-auto">
-          {/* Unassigned */}
-          <DropdownMenuRadioItem value="unassigned" disabled={value !== "unassigned"}>
-            Unassigned
-          </DropdownMenuRadioItem>
-
-          {/* Bots */}
-          {filteredBots.length > 0 && (
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="flex items-center gap-1.5">
-                <Bot className="size-3.5" />
-                Bots
-              </DropdownMenuLabel>
-              {filteredBots.map((bot) => (
-                <DropdownMenuRadioItem key={bot.id} value={bot.id}>
-                  <div className="flex items-center gap-2">
-                    <div className="size-5 rounded-full bg-semantic-bg-ui flex items-center justify-center shrink-0">
-                      <Bot className="size-3 text-semantic-text-muted" />
-                    </div>
-                    {bot.label}
-                  </div>
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuGroup>
-          )}
-
-          {/* Agents */}
-          {filteredAgents.length > 0 && (
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="flex items-center gap-1.5">
-                <Users className="size-3.5" />
-                Agents
-              </DropdownMenuLabel>
-              {filteredAgents.map((agent) => (
-                <DropdownMenuRadioItem key={agent.id} value={agent.id}>
-                  <div className="flex items-center gap-2">
-                    <Avatar name={agent.label} size="xs" />
-                    {agent.label}
-                  </div>
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuGroup>
-          )}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-/* ── Resolve Button (2.3) ── */
-
-function ResolveButton() {
-  const [resolved, setResolved] = useState(false)
-
-  return (
-    <Button
-      variant={resolved ? "success" : "default"}
-      leftIcon={<Check className={cn("size-[18px] transition-transform duration-200", resolved && "scale-110")} />}
-      onClick={() => setResolved((prev) => !prev)}
-      className="transition-all duration-200"
-    >
-      {resolved ? "Resolved" : "Resolve"}
-    </Button>
-  )
-}
+/* ── Assignment Dropdown & Resolve Button — extracted to chat-header module ── */
 
 /* ── Composer Attachment Preview ── */
 
@@ -2433,7 +2329,7 @@ export default function App() {
                 clearable
                 onClear={() => setSearch("")}
                 wrapperClassName="flex-1"
-                size="sm"
+                size="default"
               />
               <Button
                 variant="outline"
@@ -2521,52 +2417,7 @@ export default function App() {
                 {isDragging ? "Drop zone active. Release to attach file." : ""}
               </div>
               {/* ── Chat Header ── */}
-              <div className="flex items-center justify-between px-4 h-[72px] bg-white border-b border-semantic-border-layout shrink-0">
-                <div className="flex items-center gap-3">
-                  <button
-                    aria-label={`View contact details for ${selectedChat.name}`}
-                    onClick={() => setShowContactDetails(!showContactDetails)}
-                    className="flex items-center gap-3 hover:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus focus-visible:outline-offset-2 rounded"
-                  >
-                    <span className="text-[18px] font-semibold text-semantic-text-primary">
-                      {selectedChat.name}
-                    </span>
-                  </button>
-                  {selectedChat.channel && (() => {
-                    const ch = channels.find((c) => c.badge === selectedChat.channel)
-                    return (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Badge variant="outline" size="sm">
-                              {selectedChat.channel}
-                            </Badge>
-                          </TooltipTrigger>
-                          {ch && (
-                            <TooltipContent side="bottom">
-                              <div className="flex flex-col gap-0.5">
-                                <span className="text-[13px] font-medium text-white">{ch.name}</span>
-                                <span className="text-[12px] text-semantic-text-muted">{ch.phone}</span>
-                              </div>
-                              <TooltipArrow />
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                    )
-                  })()}
-                  {selectedChat.slaTimer && (
-                    <Tag variant="warning" size="sm">
-                      <Clock className="size-3 shrink-0" />
-                      {selectedChat.slaTimer}
-                    </Tag>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  {/* Assignment Dropdown */}
-                  <AssignmentDropdown defaultAgent={selectedChat.agentName} />
-                  {/* Resolve Button */}
-                  <ResolveButton />
-                </div>
-              </div>
+              <ChatHeader />
 
               {/* ── Chat Messages Area ── */}
               <div className="flex-1 relative">

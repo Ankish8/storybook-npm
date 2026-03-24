@@ -356,10 +356,13 @@ function prefixClassString(classString: string, prefix: string): string {
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
   // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
   // the border visible regardless of the host CSS environment.
+  // Skip injection when the only border-width classes are zero-width (border-0, border-t-0, etc.)
+  // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
-  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
+  const hasNonZeroBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
   const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
-  if (hasBorderWidth && !hasBorderStyle) {
+  if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(`${prefix}border-solid`)
   }
 
@@ -811,9 +814,9 @@ const inputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -924,9 +927,9 @@ const selectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -1043,7 +1046,7 @@ const SelectContent = React.forwardRef(({ className, children, position = "poppe
       <SelectPrimitive.Content
         ref={ref}
         className={cn(
-          "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
+          "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -1157,7 +1160,7 @@ import { cn } from "../../lib/utils";
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  "peer inline-flex items-center justify-center shrink-0 rounded border-2 transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
+  "peer inline-flex items-center justify-center shrink-0 rounded border-2 border-solid transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=checked]:border-semantic-primary data-[state=checked]:text-semantic-text-inverted data-[state=indeterminate]:bg-semantic-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:text-semantic-text-inverted data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:hover:border-[var(--color-neutral-400)]",
   {
     variants: {
       size: {
@@ -1382,7 +1385,7 @@ import { cn } from "../../lib/utils";
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-bg-grey",
+  "peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-solid border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-bg-grey",
   {
     variants: {
       size: {
@@ -1544,9 +1547,9 @@ const textFieldContainerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
@@ -1569,9 +1572,9 @@ const textFieldInputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       size: {
         default: "h-[42px] px-4 py-2 text-base file:text-base",
@@ -1898,9 +1901,9 @@ const textareaVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
       size: {
         default: "px-4 py-2.5 text-base",
@@ -2237,7 +2240,7 @@ export const ReadableField = React.forwardRef(
                 {headerAction.disabledTooltip && (
                   <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-semantic-primary px-2 py-1 text-xs text-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
                     {headerAction.disabledTooltip}
-                    <span className="absolute top-full right-2 border-4 border-transparent border-t-semantic-primary" />
+                    <span className="absolute top-full right-2 border-4 border-solid border-transparent border-t-semantic-primary" />
                   </span>
                 )}
               </span>
@@ -2256,7 +2259,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-11 items-center justify-between rounded border border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
+            "flex h-11 items-center justify-between rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
             inputClassName
           )}
         >
@@ -2581,7 +2584,7 @@ const SelectField = React.forwardRef(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
                 <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"
@@ -2696,9 +2699,9 @@ const multiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -3019,7 +3022,7 @@ const MultiSelect = React.forwardRef(
           <div
             id={listboxId}
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -3027,13 +3030,13 @@ const MultiSelect = React.forwardRef(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-semantic-border-layout">
+              <div className="p-2 border-b border-solid border-semantic-border-layout">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 px-3 text-sm border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -3084,7 +3087,7 @@ const MultiSelect = React.forwardRef(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-semantic-border-layout text-xs text-semantic-text-muted">
+              <div className="p-2 border-t border-solid border-semantic-border-layout text-xs text-semantic-text-muted">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}
@@ -3151,9 +3154,9 @@ const creatableSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -3385,13 +3388,13 @@ const CreatableSelect = React.forwardRef(
 
         {/* Dropdown */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
                 {creatableHint}
               </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
                 Enter ↵
               </kbd>
             </div>
@@ -3491,13 +3494,13 @@ const creatableMultiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input hover:border-semantic-border-input-focus",
+          "border border-solid border-semantic-border-input hover:border-semantic-border-input-focus",
         error:
-          "border border-semantic-error-primary/40 hover:border-semantic-error-primary",
+          "border border-solid border-semantic-error-primary/40 hover:border-semantic-error-primary",
         focused:
-          "border border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-focus shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         "focused-error":
-          "border border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/60 shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -3710,15 +3713,15 @@ const CreatableMultiSelect = React.forwardRef(
 
         {/* Dropdown panel */}
         {isOpen && (
-          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint — Enter key */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
                 {canAddCustom
                   ? \`Press enter to add "\${inputValue.trim()}"\`
                   : creatableHint}
               </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
                 Enter ↵
               </kbd>
             </div>

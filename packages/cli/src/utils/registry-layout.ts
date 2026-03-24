@@ -356,10 +356,13 @@ function prefixClassString(classString: string, prefix: string): string {
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
   // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
   // the border visible regardless of the host CSS environment.
+  // Skip injection when the only border-width classes are zero-width (border-0, border-t-0, etc.)
+  // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
-  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
+  const hasNonZeroBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
   const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
-  if (hasBorderWidth && !hasBorderStyle) {
+  if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(`${prefix}border-solid`)
   }
 
@@ -811,7 +814,7 @@ const accordionVariants = cva("w-full", {
     variant: {
       default: "",
       bordered:
-        "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
+        "border border-solid border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {
@@ -1409,7 +1412,7 @@ const PageHeader = React.forwardRef(
           "flex w-full bg-semantic-bg-primary px-4",
           layoutClasses[layout],
           heightClasses[layout],
-          showBorder && "border-b border-semantic-border-layout",
+          showBorder && "border-b border-solid border-semantic-border-layout",
           className
         )}
         {...props}
@@ -1485,7 +1488,7 @@ import { Button } from "./button";
  * Panel root variants
  */
 const panelVariants = cva(
-  "border-l border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
+  "border-l border-solid border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
   {
     variants: {
       size: {
@@ -1589,7 +1592,7 @@ const Panel = React.forwardRef(
         >
           {/* Header */}
           {header ?? (
-            <div className="flex items-center gap-3 px-4 h-14 border-b border-semantic-border-layout shrink-0">
+            <div className="flex items-center gap-3 px-4 h-14 border-b border-solid border-semantic-border-layout shrink-0">
               {title && (
                 <span className="flex-1 text-base font-semibold text-semantic-text-primary truncate">
                   {title}
@@ -1615,7 +1618,7 @@ const Panel = React.forwardRef(
 
           {/* Footer */}
           {footer && (
-            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-semantic-border-layout">
+            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-solid border-semantic-border-layout">
               {footer}
             </div>
           )}

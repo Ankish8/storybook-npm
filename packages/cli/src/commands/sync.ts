@@ -29,9 +29,11 @@ export async function sync(options: SyncOptions) {
     console.log(chalk.blue(`\n  ℹ Applying Tailwind prefix: "${prefix}"\n`))
   }
 
-  // Get available components with prefix applied
+  // Get available components with prefix applied (exclude template-only components)
   const registry = await getRegistry(prefix)
-  const availableComponents = Object.keys(registry)
+  const availableComponents = Object.keys(registry).filter(
+    (name) => !registry[name].templateOnly
+  )
 
   console.log(chalk.blue(`  Scanning for ${availableComponents.length} components...\n`))
 

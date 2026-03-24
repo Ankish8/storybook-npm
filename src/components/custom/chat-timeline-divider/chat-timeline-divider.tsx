@@ -23,9 +23,9 @@ export interface ChatTimelineDividerProps
 const containerStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "",
   unread:
-    "bg-white px-2.5 py-0.5 rounded-full border border-semantic-border-layout shadow-sm",
+    "bg-white px-2.5 py-0.5 rounded-full border border-solid border-semantic-border-layout shadow-sm",
   system:
-    "bg-white px-2.5 py-1 rounded-full border border-semantic-border-layout shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]",
+    "bg-white px-2.5 py-1 rounded-full border border-solid border-semantic-border-layout shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]",
 };
 
 const textStyles: Record<ChatTimelineDividerVariant, string> = {

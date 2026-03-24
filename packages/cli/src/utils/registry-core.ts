@@ -356,10 +356,13 @@ function prefixClassString(classString: string, prefix: string): string {
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
   // border-width alone (e.g. tw-border) would render nothing. Adding tw-border-solid makes
   // the border visible regardless of the host CSS environment.
+  // Skip injection when the only border-width classes are zero-width (border-0, border-t-0, etc.)
+  // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
-  const hasBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c))
+  const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
+  const hasNonZeroBorderWidth = origClasses.some((c: string) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
   const hasBorderStyle = origClasses.some((c: string) => BORDER_STYLE_RE.test(c))
-  if (hasBorderWidth && !hasBorderStyle) {
+  if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(`${prefix}border-solid`)
   }
 
@@ -841,11 +844,11 @@ const avatarVariants = cva(
 );
 
 const statusDotSizeMap = {
-  xs: "size-2 border",
-  sm: "size-2.5 border-[1.5px]",
-  md: "size-3 border-2",
-  lg: "size-3.5 border-2",
-  xl: "size-4 border-2",
+  xs: "size-2 border border-solid",
+  sm: "size-2.5 border-[1.5px] border-solid",
+  md: "size-3 border-2 border-solid",
+  lg: "size-3.5 border-2 border-solid",
+  xl: "size-4 border-2 border-solid",
 } as const;
 
 const statusColorMap = {
@@ -1111,8 +1114,8 @@ const PhoneInput = React.forwardRef(
     return (
       <div
         className={cn(
-          "flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
-          disabled && "opacity-60",
+          "flex items-center border border-solid border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
+          disabled && "opacity-60 bg-semantic-bg-ui cursor-not-allowed",
           wrapperClassName
         )}
       >
@@ -1211,7 +1214,7 @@ const ReplyQuote = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "w-full bg-semantic-bg-ui border-l-[3px] border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
+          "w-full bg-semantic-bg-ui border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors",
           isInteractive && "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-1 focus-visible:outline-none",
           className
         )}
@@ -1390,7 +1393,7 @@ const buttonVariants = cva(
         success:
           "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
-          "border border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
+          "border border-solid border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
           "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
         ghost:
@@ -1527,7 +1530,7 @@ const badgeVariants = cva(
         // shadcn-style variants (new)
         secondary: "bg-semantic-bg-ui text-semantic-text-primary",
         outline:
-          "border border-semantic-border-layout bg-transparent text-semantic-text-primary",
+          "border border-solid border-semantic-border-layout bg-transparent text-semantic-text-primary",
         destructive: "bg-semantic-error-surface text-semantic-error-primary",
       },
       size: {
@@ -1983,7 +1986,7 @@ const TabsList = React.forwardRef(({ className, fullWidth, ...props }: TabsListP
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex items-center border-b border-semantic-border-layout w-full",
+      "inline-flex items-center border-b border-solid border-semantic-border-layout w-full",
       fullWidth && "[&>*]:flex-1",
       className
     )}
@@ -1996,7 +1999,7 @@ const TabsTrigger = React.forwardRef(({ className, ...props }: React.ComponentPr
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 -mb-px cursor-pointer transition-colors",
+      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 border-solid -mb-px cursor-pointer transition-colors",
       "text-semantic-text-muted border-transparent hover:text-semantic-text-secondary",
       "data-[state=active]:text-semantic-text-primary data-[state=active]:border-semantic-primary",
       "focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",

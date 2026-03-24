@@ -44,8 +44,8 @@ const PhoneInput = React.forwardRef(
     return (
       <div
         className={cn(
-          "flex items-center border border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
-          disabled && "opacity-60",
+          "flex items-center border border-solid border-semantic-border-layout rounded-lg focus-within:border-semantic-border-focus transition-colors",
+          disabled && "opacity-60 bg-semantic-bg-ui cursor-not-allowed",
           wrapperClassName
         )}
       >

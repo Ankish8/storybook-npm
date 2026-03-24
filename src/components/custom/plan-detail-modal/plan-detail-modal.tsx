@@ -49,7 +49,7 @@ const PlanDetailModal = React.forwardRef(
             {...props}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-8 py-4 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-8 py-4 border-b border-solid border-semantic-border-layout">
               <DialogTitle className="text-lg font-semibold text-semantic-text-primary leading-none m-0">
                 {title}
               </DialogTitle>
@@ -69,17 +69,17 @@ const PlanDetailModal = React.forwardRef(
                 <p className="m-0 text-base font-semibold text-semantic-text-primary leading-none">
                   Features
                 </p>
-                <div className="w-full overflow-x-auto rounded border border-semantic-border-layout">
+                <div className="w-full overflow-x-auto rounded border border-solid border-semantic-border-layout">
                   <table className="w-full border-collapse text-sm">
                     <thead>
                       <tr className="bg-semantic-bg-ui">
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-semantic-border-layout w-[44%]">
+                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[44%]">
                           Feature
                         </th>
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-semantic-border-layout w-[28%]">
+                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[28%]">
                           Free
                         </th>
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-semantic-border-layout w-[28%]">
+                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[28%]">
                           Rate
                         </th>
                       </tr>
@@ -94,13 +94,13 @@ const PlanDetailModal = React.forwardRef(
                               : "bg-semantic-bg-ui"
                           )}
                         >
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-semantic-border-layout">
+                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
                             <p className="m-0 leading-none">{feature.name}</p>
                           </td>
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-semantic-border-layout">
+                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
                             <p className="m-0 leading-none">{feature.free}</p>
                           </td>
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-semantic-border-layout">
+                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
                             <p className="m-0 leading-none">{feature.rate}</p>
                           </td>
                         </tr>
@@ -113,7 +113,7 @@ const PlanDetailModal = React.forwardRef(
 
             {/* Footer */}
             {planPrice && (
-              <div className="flex items-center px-8 py-4 border-t border-semantic-border-layout">
+              <div className="flex items-center px-8 py-4 border-t border-solid border-semantic-border-layout">
                 <p className="m-0 text-base text-semantic-text-primary">
                   <span className="font-semibold">Plan price </span>
                   <span className="font-normal">{planPrice}</span>

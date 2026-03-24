@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * Colors are hardcoded for Bootstrap compatibility.
  */
 const alertVariants = cva(
-  "relative w-full rounded border p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
+  "relative w-full rounded border border-solid p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
   {
     variants: {
       variant: {

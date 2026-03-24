@@ -246,7 +246,7 @@ const SelectField = React.forwardRef(
           <SelectContent>
             {/* Search input */}
             {searchable && (
-              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-semantic-border-layout">
+              <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
                 <Search className="size-4 text-semantic-text-muted shrink-0" />
                 <input
                   type="text"

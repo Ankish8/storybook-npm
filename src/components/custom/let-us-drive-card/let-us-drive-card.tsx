@@ -73,7 +73,7 @@ const LetUsDriveCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-semantic-border-layout bg-card p-5 shadow-sm",
+          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-solid border-semantic-border-layout bg-card p-5 shadow-sm",
           className
         )}
         {...props}
@@ -146,7 +146,7 @@ const LetUsDriveCard = React.forwardRef(
           {hasExpandableDetails && expanded && (
             <>
               <div
-                className="flex min-h-0 flex-1 flex-col gap-3 w-full border-t border-semantic-border-layout pt-4"
+                className="flex min-h-0 flex-1 flex-col gap-3 w-full border-t border-solid border-semantic-border-layout pt-4"
                 data-testid="let-us-drive-details-block"
               >
                 <p className="text-sm font-semibold text-semantic-text-primary tracking-[0.014px] m-0">

@@ -74,7 +74,7 @@ export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, 
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter bot name"
               className={cn(
-                "w-full h-10 px-4 py-2.5 text-sm rounded border",
+                "w-full h-10 px-4 py-2.5 text-sm rounded border border-solid",
                 "border-semantic-border-input bg-semantic-bg-primary",
                 "text-semantic-text-primary placeholder:text-semantic-text-muted",
                 "outline-none hover:border-semantic-border-input-focus",
@@ -97,7 +97,7 @@ export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, 
                     type="button"
                     onClick={() => setSelectedType(id)}
                     className={cn(
-                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
+                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border border-solid text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
                       "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
                       isSelected
                         ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"

@@ -18,7 +18,7 @@ const AttachmentPreview = React.forwardRef(
     return (
       <div
         ref={ref}
-        className={cn("relative border-b border-semantic-border-layout", className)}
+        className={cn("relative border-b border-solid border-semantic-border-layout", className)}
         {...props}
       >
         {/* Remove button */}

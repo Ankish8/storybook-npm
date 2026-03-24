@@ -255,7 +255,7 @@ const PageHeader = React.forwardRef(
           "flex w-full bg-semantic-bg-primary px-4",
           layoutClasses[layout],
           heightClasses[layout],
-          showBorder && "border-b border-semantic-border-layout",
+          showBorder && "border-b border-solid border-semantic-border-layout",
           className
         )}
         {...props}

@@ -12,7 +12,7 @@ const accordionVariants = cva("w-full", {
     variant: {
       default: "",
       bordered:
-        "border border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
+        "border border-solid border-semantic-border-layout rounded-lg divide-y divide-semantic-border-layout",
     },
   },
   defaultVariants: {

@@ -53,8 +53,11 @@ describe('Registry', () => {
         : component.files[0]
       const content = mainFile!.content
 
-      // Should have imports
-      expect(content).toContain('import')
+      // Should have imports (type-only files like chat-types may have no imports)
+      const isTypeOnlyFile = mainFile!.name.endsWith('.ts') && !mainFile!.name.endsWith('.tsx') && !content.includes('import')
+      if (!isTypeOnlyFile) {
+        expect(content).toContain('import')
+      }
 
       // Should have exports
       expect(content).toContain('export')
@@ -435,7 +438,12 @@ describe('Registry', () => {
 
         // Syntax should still be valid - original keywords preserved
         expect(content).toContain('export')
-        expect(content).toContain('import')
+        // Type-only files (e.g. chat-types) may have no imports
+        const mainFileName = component.files[0].name
+        const isTypeOnly = mainFileName.endsWith('.ts') && !mainFileName.endsWith('.tsx') && !content.includes('import')
+        if (!isTypeOnly) {
+          expect(content).toContain('import')
+        }
       }
     })
 

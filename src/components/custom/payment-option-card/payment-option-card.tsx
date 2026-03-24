@@ -56,7 +56,7 @@ export const PaymentOptionCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "relative w-full rounded-lg bg-background border-b border-[#e4e4e4] p-6",
+          "relative w-full rounded-lg bg-background border-b border-solid border-[#e4e4e4] p-6",
           className
         )}
       >
@@ -93,9 +93,9 @@ export const PaymentOptionCard = React.forwardRef(
                   type="button"
                   onClick={() => handleSelect(option.id)}
                   className={cn(
-                    "flex items-center gap-2.5 w-full rounded-lg border p-3 text-left transition-colors cursor-pointer bg-transparent",
+                    "flex items-center gap-2.5 w-full rounded-lg border border-solid p-3 text-left transition-colors cursor-pointer bg-transparent",
                     isSelected
-                      ? "border-[var(--semantic-brand)]"
+                      ? "border-[var(--semantic-brand)] border-solid"
                       : "border-semantic-border-layout hover:border-[var(--semantic-brand-selected-hover)]"
                   )}
                 >

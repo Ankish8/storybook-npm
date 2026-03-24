@@ -123,10 +123,10 @@ export const EventSelector = React.forwardRef(
             return (
               <div
                 key={category.id}
-                className="border border-semantic-border-layout rounded-lg overflow-hidden"
+                className="border border-solid border-semantic-border-layout rounded-lg overflow-hidden"
               >
                 {/* Category Header - no checkbox, just label */}
-                <div className="flex items-center justify-between p-4 bg-white border-b border-semantic-border-layout">
+                <div className="flex items-center justify-between p-4 bg-white border-b border-solid border-semantic-border-layout">
                   <div className="flex items-center gap-3">
                     {category.icon && (
                       <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-semantic-bg-ui">
@@ -176,7 +176,7 @@ export const EventSelector = React.forwardRef(
         </div>
 
         {/* Groups */}
-        <div className="border border-semantic-border-layout rounded-lg overflow-hidden divide-y divide-semantic-border-layout">
+        <div className="border border-solid border-semantic-border-layout rounded-lg overflow-hidden divide-y divide-semantic-border-layout">
           {renderCategories()}
         </div>
       </div>

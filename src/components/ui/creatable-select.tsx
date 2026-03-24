@@ -10,9 +10,9 @@ const creatableSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -244,13 +244,13 @@ const CreatableSelect = React.forwardRef(
 
         {/* Dropdown */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {/* Creatable hint */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-semantic-border-layout">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
               <span className="text-sm text-semantic-text-muted">
                 {creatableHint}
               </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
                 Enter ↵
               </kbd>
             </div>

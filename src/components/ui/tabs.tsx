@@ -30,7 +30,7 @@ const TabsList = React.forwardRef(({ className, fullWidth, ...props }: TabsListP
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex items-center border-b border-semantic-border-layout w-full",
+      "inline-flex items-center border-b border-solid border-semantic-border-layout w-full",
       fullWidth && "[&>*]:flex-1",
       className
     )}
@@ -43,7 +43,7 @@ const TabsTrigger = React.forwardRef(({ className, ...props }: React.ComponentPr
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 -mb-px cursor-pointer transition-colors",
+      "inline-flex items-center justify-center gap-2 whitespace-nowrap py-3 px-3 text-sm font-medium border-b-2 border-solid -mb-px cursor-pointer transition-colors",
       "text-semantic-text-muted border-transparent hover:text-semantic-text-secondary",
       "data-[state=active]:text-semantic-text-primary data-[state=active]:border-semantic-primary",
       "focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",

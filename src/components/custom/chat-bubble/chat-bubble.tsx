@@ -140,8 +140,8 @@ const ChatBubble = React.forwardRef(
               "rounded overflow-hidden",
               !hasMedia && "px-3 pt-3 pb-1.5",
               variant === "sender"
-                ? "bg-semantic-info-surface border-[0.2px] border-semantic-border-layout text-semantic-text-primary"
-                : "bg-white border-[0.2px] border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+                ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
+                : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
             )}
           >
             {/* Media area (full-bleed) */}
@@ -173,7 +173,7 @@ const ChatBubble = React.forwardRef(
           </div>
         </div>
         {variant === "sender" && senderIndicator && (
-          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-semantic-border-layout flex items-center justify-center">
+          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center">
             {senderIndicator}
           </div>
         )}

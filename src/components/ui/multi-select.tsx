@@ -13,9 +13,9 @@ const multiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -336,7 +336,7 @@ const MultiSelect = React.forwardRef(
           <div
             id={listboxId}
             className={cn(
-              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-semantic-border-layout shadow-md",
+              "absolute z-50 mt-1 w-full rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
               "top-full"
             )}
             role="listbox"
@@ -344,13 +344,13 @@ const MultiSelect = React.forwardRef(
           >
             {/* Search input */}
             {searchable && (
-              <div className="p-2 border-b border-semantic-border-layout">
+              <div className="p-2 border-b border-solid border-semantic-border-layout">
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                  className="w-full h-8 px-3 text-sm border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -401,7 +401,7 @@ const MultiSelect = React.forwardRef(
 
             {/* Footer with count */}
             {maxSelections && (
-              <div className="p-2 border-t border-semantic-border-layout text-xs text-semantic-text-muted">
+              <div className="p-2 border-t border-solid border-semantic-border-layout text-xs text-semantic-text-muted">
                 {selectedValues.length} / {maxSelections} selected
               </div>
             )}

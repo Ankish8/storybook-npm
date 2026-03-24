@@ -113,9 +113,11 @@ export async function update(components: string[], options: UpdateOptions) {
     console.log(chalk.blue(`\n  ℹ Using Tailwind prefix: "${prefix}"\n`))
   }
 
-  // Get available components with prefix applied
+  // Get available components with prefix applied (exclude template-only components)
   const registry = await getRegistry(prefix)
-  const availableComponents = Object.keys(registry)
+  const availableComponents = Object.keys(registry).filter(
+    (name) => !registry[name].templateOnly
+  )
 
   // Get components directory
   const componentsDir = path.join(cwd, options.path)

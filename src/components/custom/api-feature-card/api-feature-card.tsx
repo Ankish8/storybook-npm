@@ -67,7 +67,7 @@ export const ApiFeatureCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-6 rounded-lg border border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] p-6 overflow-hidden",
+          "flex flex-col gap-6 rounded-lg border border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] p-6 overflow-hidden",
           className
         )}
         {...props}
@@ -107,7 +107,7 @@ export const ApiFeatureCard = React.forwardRef(
 
         {/* Capabilities Section */}
         {capabilities.length > 0 && (
-          <div className="flex flex-col gap-2.5 border-t border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--color-neutral-50,#FAFAFA)] -mx-6 -mb-6 p-6">
+          <div className="flex flex-col gap-2.5 border-t border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--color-neutral-50,#FAFAFA)] -mx-6 -mb-6 p-6">
             <span className="text-sm font-semibold uppercase tracking-[0.014px] text-[var(--color-neutral-400,#A4A7AE)]">
               {capabilitiesLabel}
             </span>

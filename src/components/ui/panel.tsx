@@ -10,7 +10,7 @@ import { Button } from "./button";
  * Panel root variants
  */
 const panelVariants = cva(
-  "border-l border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
+  "border-l border-solid border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
   {
     variants: {
       size: {
@@ -114,7 +114,7 @@ const Panel = React.forwardRef(
         >
           {/* Header */}
           {header ?? (
-            <div className="flex items-center gap-3 px-4 h-14 border-b border-semantic-border-layout shrink-0">
+            <div className="flex items-center gap-3 px-4 h-14 border-b border-solid border-semantic-border-layout shrink-0">
               {title && (
                 <span className="flex-1 text-base font-semibold text-semantic-text-primary truncate">
                   {title}
@@ -140,7 +140,7 @@ const Panel = React.forwardRef(
 
           {/* Footer */}
           {footer && (
-            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-semantic-border-layout">
+            <div className="flex gap-3 px-4 py-3 shrink-0 border-t border-solid border-semantic-border-layout">
               {footer}
             </div>
           )}

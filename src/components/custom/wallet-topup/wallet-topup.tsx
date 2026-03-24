@@ -289,7 +289,7 @@ export const WalletTopup = React.forwardRef(
             </AccordionTrigger>
 
             <AccordionContent>
-              <div className="flex flex-col gap-6 border-t border-semantic-border-layout pt-4">
+              <div className="flex flex-col gap-6 border-t border-solid border-semantic-border-layout pt-4">
                 {/* Amount Selection */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-normal text-semantic-text-muted tracking-[0.048px]">
@@ -318,8 +318,8 @@ export const WalletTopup = React.forwardRef(
                               ? "flex-col items-start gap-0.5 h-auto py-3"
                               : "items-center h-10 py-2.5",
                             isSelected
-                              ? "border border-[var(--semantic-brand)] shadow-sm"
-                              : "border border-semantic-border-input hover:border-semantic-text-muted"
+                              ? "border border-solid border-[var(--semantic-brand)] shadow-sm"
+                              : "border border-solid border-semantic-border-input hover:border-semantic-text-muted"
                           )}
                         >
                           <span
@@ -382,7 +382,7 @@ export const WalletTopup = React.forwardRef(
 
                 {/* Recharge Summary */}
                 {hasTax && effectiveRechargeAmount > 0 && (
-                  <div className="flex flex-col gap-2 rounded-lg bg-semantic-info-surface-subtle border border-semantic-info-surface px-4 py-3">
+                  <div className="flex flex-col gap-2 rounded-lg bg-semantic-info-surface-subtle border border-solid border-semantic-info-surface px-4 py-3">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-semantic-text-primary">
                         {rechargeAmountLabel}
