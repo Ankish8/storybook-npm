@@ -47,7 +47,7 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
     },
     promptMaxLength: {
       control: { type: "number" },
-      description: "Maximum character length for the prompt field (default: 5000)",
+      description: "Maximum character length for the prompt field (default: 1000)",
     },
     initialStep: {
       control: { type: "radio" },
@@ -62,6 +62,16 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
     onOpenChange: { action: "openChange" },
     onSubmit: { action: "submit" },
     onTestApi: { action: "testApi" },
+    onAddVariable: { action: "addVariable" },
+    onEditVariable: { action: "editVariable" },
+    isEditing: {
+      control: "boolean",
+      description: 'When true, title shows "Edit Function"',
+    },
+    disabled: {
+      control: "boolean",
+      description: "View mode: fields disabled, Next stays enabled for navigation",
+    },
   },
   decorators: [
     (Story) => (
@@ -139,7 +149,7 @@ export const Step1NameAndPrompt: Story = {
     docs: {
       description: {
         story:
-          "The first step collects the **function name** (max 30 chars) and a **prompt** description. The **Next** button stays disabled until both fields have content.",
+          "The first step collects the **function name** (max 100 chars) and a **prompt** description (default max 1000 chars). The **Next** button stays disabled until the name is valid and the prompt meets `promptMinLength` (default 100).",
       },
     },
   },
@@ -208,7 +218,7 @@ export const Step2BodyTab: Story = {
     docs: {
       description: {
         story:
-          "Step 2 with the **Body** tab active. The Body tab is only visible when the HTTP method is **POST**, **PUT**, or **PATCH**. A textarea accepts JSON, XML or any text payload. Character counter shows usage against the 4 000-char limit.",
+          "Step 2 with the **Body** tab active. The Body tab is always visible regardless of HTTP method. The textarea accepts JSON, XML or any text payload. Character counter shows usage against the 4 000-char body limit.",
       },
     },
   },

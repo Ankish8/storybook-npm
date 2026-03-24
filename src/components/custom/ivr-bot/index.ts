@@ -23,6 +23,7 @@ export type {
   IvrBotConfigProps,
   IvrBotConfigData,
   CreateFunctionData,
+  CreateFunctionTestValues,
   CreateFunctionStep1Data,
   CreateFunctionStep2Data,
   FunctionItem,

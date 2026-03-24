@@ -18830,7 +18830,7 @@ export const CreateFunctionModal = React.forwardRef(
           queryParams: queryParams.map((q) => ({ ...q, value: substituteVars(q.value) })),
           body: substituteVars(body),
         };
-        const response = await onTestApi(step2);
+        const response = await onTestApi(step2, { ...testVarValues });
         setApiResponse(response);
       } finally {
         setIsTesting(false);
@@ -20976,11 +20976,20 @@ export interface CreateFunctionData
   extends CreateFunctionStep1Data,
     CreateFunctionStep2Data {}
 
+/**
+ * Test values for "Test Your API": keys are full placeholders as in the form
+ * (e.g. \`"{{Caller number}}"\`), values are the strings the user entered.
+ */
+export type CreateFunctionTestValues = Record<string, string>;
+
 export interface CreateFunctionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
-  onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  onTestApi?: (
+    step2: CreateFunctionStep2Data,
+    testValues?: CreateFunctionTestValues
+  ) => Promise<string>;
   /** Pre-fills all fields — use when opening the modal to edit an existing function */
   initialData?: Partial<CreateFunctionData>;
   /** When true, changes the modal title to "Edit Function" */
@@ -21060,7 +21069,10 @@ export interface IvrBotConfigProps {
   functionEditDisabled?: boolean;
   /** Independently disables the function delete button */
   functionDeleteDisabled?: boolean;
-  onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  onTestApi?: (
+    step2: CreateFunctionStep2Data,
+    testValues?: CreateFunctionTestValues
+  ) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
   /** Hover text for the info icon in the Knowledge Base card header */
@@ -21152,6 +21164,7 @@ export type {
   IvrBotConfigProps,
   IvrBotConfigData,
   CreateFunctionData,
+  CreateFunctionTestValues,
   CreateFunctionStep1Data,
   CreateFunctionStep2Data,
   FunctionItem,

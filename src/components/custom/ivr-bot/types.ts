@@ -79,11 +79,20 @@ export interface CreateFunctionData
   extends CreateFunctionStep1Data,
     CreateFunctionStep2Data {}
 
+/**
+ * Test values for "Test Your API": keys are full placeholders as in the form
+ * (e.g. `"{{Caller number}}"`), values are the strings the user entered.
+ */
+export type CreateFunctionTestValues = Record<string, string>;
+
 export interface CreateFunctionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (data: CreateFunctionData) => void;
-  onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  onTestApi?: (
+    step2: CreateFunctionStep2Data,
+    testValues?: CreateFunctionTestValues
+  ) => Promise<string>;
   /** Pre-fills all fields — use when opening the modal to edit an existing function */
   initialData?: Partial<CreateFunctionData>;
   /** When true, changes the modal title to "Edit Function" */
@@ -100,7 +109,12 @@ export interface CreateFunctionModalProps {
   sessionVariables?: string[];
   /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
   variableGroups?: VariableGroup[];
-  /** Called when user saves a new variable from the autocomplete popup */
+  /**
+   * Called when user saves a new variable from the autocomplete popup.
+   * The modal replaces the open `{{…` fragment in the focused field with `{{name}}`.
+   * When using `variableGroups`, merge the new item into the matching group in your state
+   * so it appears in the dropdown on the next open.
+   */
   onAddVariable?: (data: VariableFormData) => void;
   /** Called when user edits a variable from the autocomplete popup */
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
@@ -163,7 +177,10 @@ export interface IvrBotConfigProps {
   functionEditDisabled?: boolean;
   /** Independently disables the function delete button */
   functionDeleteDisabled?: boolean;
-  onTestApi?: (step2: CreateFunctionStep2Data) => Promise<string>;
+  onTestApi?: (
+    step2: CreateFunctionStep2Data,
+    testValues?: CreateFunctionTestValues
+  ) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
   /** Hover text for the info icon in the Knowledge Base card header */

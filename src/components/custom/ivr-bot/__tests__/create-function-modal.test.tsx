@@ -18,6 +18,23 @@ describe("CreateFunctionModal", () => {
     expect(screen.queryByText("Create Function")).not.toBeInTheDocument();
   });
 
+  it('shows "Edit Function" when isEditing is true', () => {
+    render(<CreateFunctionModal open onOpenChange={noop} isEditing />);
+    expect(screen.getByText("Edit Function")).toBeInTheDocument();
+  });
+
+  it("pre-fills step 1 from initialData when open", () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        initialData={{ name: "PrefilledFunc", prompt: VALID_PROMPT }}
+      />
+    );
+    expect(screen.getByLabelText(/Function Name/i)).toHaveValue("PrefilledFunc");
+    expect(screen.getByLabelText(/Prompt/i)).toHaveValue(VALID_PROMPT);
+  });
+
   it("renders step 1 when open", () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     expect(screen.getByText("Create Function")).toBeInTheDocument();
@@ -90,13 +107,11 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText("Body")).toBeInTheDocument();
   });
 
-  it("shows Body textarea when Body tab is clicked (POST method)", async () => {
+  it("shows Body textarea when Body tab is clicked", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
-    // Switch to POST to reveal Body tab
-    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
     await user.click(screen.getByText("Body"));
     expect(screen.getByPlaceholderText(/Enter request body/i)).toBeInTheDocument();
     expect(screen.getByText(/0\/4000/)).toBeInTheDocument();
@@ -152,5 +167,31 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText("API URL is required")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it("replaces open {{ trigger with {{name}} after Create new variable saves", async () => {
+    const onAddVariable = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onAddVariable={onAddVariable} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const valueInput = screen.getByPlaceholderText("Type {{ to add variables");
+    await user.click(valueInput);
+    // user-event: `{` must be doubled to type a literal brace
+    await user.type(valueInput, "{{{{");
+
+    await user.click(screen.getByRole("button", { name: /Add new variable/i }));
+
+    await user.type(screen.getByPlaceholderText("e.g., customer_name"), "order_id");
+    await user.click(screen.getByRole("button", { name: /^Save$/ }));
+
+    expect(onAddVariable).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "order_id" })
+    );
+    expect(valueInput).toHaveValue("{{order_id}}");
   });
 });

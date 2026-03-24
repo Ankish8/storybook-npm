@@ -70,6 +70,13 @@ interface TriggerState {
   to: number;
 }
 
+/** Where to insert `{{name}}` after the user saves "Create new variable" */
+type VarInsertContext =
+  | { kind: "url"; from: number; to: number }
+  | { kind: "body"; from: number; to: number }
+  | { kind: "header"; rowId: string; from: number; to: number }
+  | { kind: "query"; rowId: string; from: number; to: number };
+
 function detectVarTrigger(value: string, cursor: number): TriggerState | null {
   const before = value.slice(0, cursor);
   const match = /\{\{([^}]*)$/.exec(before);
@@ -439,7 +446,7 @@ function VariableInput({
   onChange: (v: string) => void;
   sessionVariables: string[];
   variableGroups?: VariableGroup[];
-  onAddVariable?: () => void;
+  onAddVariable?: (range: { from: number; to: number }) => void;
   onEditVariable?: (variable: string) => void;
   placeholder?: string;
   maxLength?: number;
@@ -602,7 +609,11 @@ function VariableInput({
         variableGroups={trigger ? variableGroups : undefined}
         filterQuery={trigger?.query ?? ""}
         onSelect={handleSelect}
-        onAddVariable={onAddVariable}
+        onAddVariable={
+          onAddVariable && trigger
+            ? () => onAddVariable({ from: trigger.from, to: trigger.to })
+            : undefined
+        }
         onEditVariable={onEditVariable}
         style={popupStyle}
       />
@@ -657,7 +668,7 @@ function KeyValueTable({
   keyRegexError?: string;
   sessionVariables?: string[];
   variableGroups?: VariableGroup[];
-  onAddVariable?: () => void;
+  onAddVariable?: (ctx: { rowId: string; from: number; to: number }) => void;
   onEditVariable?: (variable: string) => void;
   disabled?: boolean;
 }) {
@@ -742,7 +753,11 @@ function KeyValueTable({
                   onChange={(v) => update(row.id, { value: v })}
                   sessionVariables={sessionVariables}
                   variableGroups={variableGroups}
-                  onAddVariable={onAddVariable}
+                  onAddVariable={
+                    onAddVariable
+                      ? (range) => onAddVariable({ rowId: row.id, ...range })
+                      : undefined
+                  }
                   onEditVariable={onEditVariable}
                   placeholder="Type {{ to add variables"
                   maxLength={valueMaxLength}
@@ -861,14 +876,38 @@ export const CreateFunctionModal = React.forwardRef(
     const [varModalOpen, setVarModalOpen] = React.useState(false);
     const [varModalMode, setVarModalMode] = React.useState<"create" | "edit">("create");
     const [varModalInitialData, setVarModalInitialData] = React.useState<VariableItem | undefined>();
+    /** Field + `{{…` range to replace with `{{name}}` after create saves */
+    const [varInsertContext, setVarInsertContext] = React.useState<VarInsertContext | null>(null);
 
-    const handleAddVariableClick = () => {
+    const openVariableCreateModal = React.useCallback(() => {
       setVarModalMode("create");
       setVarModalInitialData(undefined);
       setVarModalOpen(true);
-    };
+    }, []);
+
+    const handleVarModalOpenChange = React.useCallback((next: boolean) => {
+      setVarModalOpen(next);
+      if (!next) setVarInsertContext(null);
+    }, []);
+
+    const handleAddVariableFromHeader = React.useCallback(
+      (ctx: { rowId: string; from: number; to: number }) => {
+        setVarInsertContext({ kind: "header", ...ctx });
+        openVariableCreateModal();
+      },
+      [openVariableCreateModal]
+    );
+
+    const handleAddVariableFromQuery = React.useCallback(
+      (ctx: { rowId: string; from: number; to: number }) => {
+        setVarInsertContext({ kind: "query", ...ctx });
+        openVariableCreateModal();
+      },
+      [openVariableCreateModal]
+    );
 
     const handleEditVariableClick = (variableName: string) => {
+      setVarInsertContext(null);
       const variable = variableGroups
         ?.flatMap((g) => g.items)
         .find((item) => item.name === variableName);
@@ -878,6 +917,35 @@ export const CreateFunctionModal = React.forwardRef(
     };
 
     const handleVariableSave = (data: VariableFormData) => {
+      const trimmedName = data.name.trim();
+      const insertToken = `{{${trimmedName}}}`;
+
+      if (varModalMode === "create" && varInsertContext) {
+        const ctx = varInsertContext;
+        if (ctx.kind === "url") {
+          setUrl((u) => insertVar(u, insertToken, ctx.from, ctx.to));
+        } else if (ctx.kind === "body") {
+          setBody((b) => insertVar(b, insertToken, ctx.from, ctx.to));
+        } else if (ctx.kind === "header") {
+          setHeaders((rows) =>
+            rows.map((r) =>
+              r.id === ctx.rowId
+                ? { ...r, value: insertVar(r.value, insertToken, ctx.from, ctx.to) }
+                : r
+            )
+          );
+        } else if (ctx.kind === "query") {
+          setQueryParams((rows) =>
+            rows.map((r) =>
+              r.id === ctx.rowId
+                ? { ...r, value: insertVar(r.value, insertToken, ctx.from, ctx.to) }
+                : r
+            )
+          );
+        }
+        setVarInsertContext(null);
+      }
+
       if (varModalMode === "create") {
         onAddVariable?.(data);
       } else {
@@ -900,6 +968,28 @@ export const CreateFunctionModal = React.forwardRef(
     const filteredBodyVars = bodyTrigger
       ? sessionVariables.filter((v) => v.toLowerCase().includes(bodyTrigger.query))
       : [];
+
+    const handleAddVariableFromUrl = React.useCallback(() => {
+      if (urlTrigger) {
+        setVarInsertContext({
+          kind: "url",
+          from: urlTrigger.from,
+          to: urlTrigger.to,
+        });
+      }
+      openVariableCreateModal();
+    }, [urlTrigger, openVariableCreateModal]);
+
+    const handleAddVariableFromBody = React.useCallback(() => {
+      if (bodyTrigger) {
+        setVarInsertContext({
+          kind: "body",
+          from: bodyTrigger.from,
+          to: bodyTrigger.to,
+        });
+      }
+      openVariableCreateModal();
+    }, [bodyTrigger, openVariableCreateModal]);
 
     const computePopupStyle = (
       el: HTMLTextAreaElement | HTMLInputElement,
@@ -948,6 +1038,7 @@ export const CreateFunctionModal = React.forwardRef(
         setUrlPopupStyle(undefined);
         setBodyPopupStyle(undefined);
         setTestVarValues({});
+        setVarInsertContext(null);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -973,6 +1064,7 @@ export const CreateFunctionModal = React.forwardRef(
       setUrlPopupStyle(undefined);
       setBodyPopupStyle(undefined);
       setTestVarValues({});
+      setVarInsertContext(null);
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -1046,7 +1138,7 @@ export const CreateFunctionModal = React.forwardRef(
           queryParams: queryParams.map((q) => ({ ...q, value: substituteVars(q.value) })),
           body: substituteVars(body),
         };
-        const response = await onTestApi(step2);
+        const response = await onTestApi(step2, { ...testVarValues });
         setApiResponse(response);
       } finally {
         setIsTesting(false);
@@ -1269,7 +1361,7 @@ export const CreateFunctionModal = React.forwardRef(
                         variableGroups={urlTrigger ? variableGroups : undefined}
                         filterQuery={urlTrigger?.query ?? ""}
                         onSelect={handleUrlVarSelect}
-                        onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                        onAddVariable={onAddVariable ? handleAddVariableFromUrl : undefined}
                         onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
                         style={urlPopupStyle}
                       />
@@ -1329,7 +1421,7 @@ export const CreateFunctionModal = React.forwardRef(
                       }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
-                      onAddVariable={handleAddVariableClick}
+                      onAddVariable={handleAddVariableFromHeader}
                       onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
@@ -1351,7 +1443,7 @@ export const CreateFunctionModal = React.forwardRef(
                       }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
-                      onAddVariable={handleAddVariableClick}
+                      onAddVariable={handleAddVariableFromQuery}
                       onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
@@ -1398,7 +1490,7 @@ export const CreateFunctionModal = React.forwardRef(
                           variableGroups={bodyTrigger ? variableGroups : undefined}
                           filterQuery={bodyTrigger?.query ?? ""}
                           onSelect={handleBodyVarSelect}
-                          onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                          onAddVariable={onAddVariable ? handleAddVariableFromBody : undefined}
                           onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
                           style={bodyPopupStyle}
                         />
@@ -1521,7 +1613,7 @@ export const CreateFunctionModal = React.forwardRef(
 
       <VariableFormModal
         open={varModalOpen}
-        onOpenChange={setVarModalOpen}
+        onOpenChange={handleVarModalOpenChange}
         mode={varModalMode}
         initialData={varModalInitialData}
         onSave={handleVariableSave}
