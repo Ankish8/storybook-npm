@@ -21,6 +21,20 @@ import type {
   VariableItem,
   VariableFormData,
 } from "./types";
+import {
+  HEADER_KEY_INVALID_MESSAGE,
+  HEADER_KEY_REGEX,
+  QUERY_PARAM_KEY_MAX,
+  QUERY_PARAM_VALUE_MAX,
+  getBodyJsonValidationError,
+  getHeaderRowSubmitErrors,
+  getUrlBlurValidationError,
+  getUrlSubmitValidationError,
+  headerRowsHaveSubmitErrors,
+  queryParamsHaveErrors,
+  validateQueryParamKey,
+  validateQueryParamValue,
+} from "./create-function-validation";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const FUNCTION_NAME_MAX = 100;
@@ -37,31 +51,12 @@ function normalizeFunctionNameInput(value: string): string {
 }
 const VARIABLE_NAME_MAX = 30;
 const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
-const URL_REGEX = /^https?:\/\//;
-const HEADER_KEY_REGEX = /^[!#$%&'*+\-.^_`|~0-9a-zA-Z]+$/;
-// Query parameter validation (aligned with apiIntegrationSchema.queryParams)
-const QUERY_PARAM_KEY_MAX = 512;
-const QUERY_PARAM_VALUE_MAX = 2048;
-const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\-~]+$/;
 
 const DEFAULT_SESSION_VARIABLES = [
   "{{Caller number}}",
   "{{Time}}",
   "{{Contact Details}}",
 ];
-
-function validateQueryParamKey(key: string): string | undefined {
-  if (!key.trim()) return "Query param key is required";
-  if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
-  if (!QUERY_PARAM_KEY_PATTERN.test(key)) return "Invalid query parameter key.";
-  return undefined;
-}
-
-function validateQueryParamValue(value: string): string | undefined {
-  if (!value.trim()) return "Query param value is required";
-  if (value.length > QUERY_PARAM_VALUE_MAX) return "value cannot exceed 2048 characters.";
-  return undefined;
-}
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -996,45 +991,33 @@ export const CreateFunctionModal = React.forwardRef(
     };
 
     const validateUrl = (value: string) => {
-      if (value.trim() && !URL_REGEX.test(value.trim())) {
-        setUrlError("URL must start with http:// or https://");
-      } else {
-        setUrlError("");
-      }
+      setUrlError(getUrlBlurValidationError(value));
     };
 
     const validateBody = (value: string) => {
-      if (value.trim()) {
-        try {
-          JSON.parse(value.trim());
-          setBodyError("");
-        } catch {
-          setBodyError("Body must be valid JSON");
-        }
-      } else {
-        setBodyError("");
-      }
+      setBodyError(getBodyJsonValidationError(value));
     };
 
     const handleNext = () => {
       if (disabled || (name.trim() && prompt.trim().length >= promptMinLength)) setStep(2);
     };
 
-    const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
-      rows.some((row) => {
-        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
-        if (!hasInput) return false;
-        return (
-          validateQueryParamKey(row.key) !== undefined ||
-          validateQueryParamValue(row.value) !== undefined
-        );
-      });
-
     const handleSubmit = () => {
-      if (step === 2) {
-        setStep2SubmitAttempted(true);
-        if (queryParamsHaveErrors(queryParams)) return;
-      }
+      if (step !== 2) return;
+
+      setStep2SubmitAttempted(true);
+
+      const urlErr = getUrlSubmitValidationError(url);
+      setUrlError(urlErr);
+
+      const bodyErr = getBodyJsonValidationError(body);
+      setBodyError(bodyErr);
+
+      if (queryParamsHaveErrors(queryParams)) return;
+      if (urlErr || bodyErr) return;
+
+      if (headerRowsHaveSubmitErrors(headers)) return;
+
       const data: CreateFunctionData = {
         name: name.trim(),
         prompt: prompt.trim(),
@@ -1102,17 +1085,10 @@ export const CreateFunctionModal = React.forwardRef(
       });
     };
 
-    const headersHaveKeyErrors = headers.some(
-      (row) => row.key.trim() && HEADER_KEY_REGEX && !HEADER_KEY_REGEX.test(row.key)
-    );
-
     const isStep1Valid =
       name.trim().length > 0 &&
       FUNCTION_NAME_REGEX.test(name.trim()) &&
       prompt.trim().length >= promptMinLength;
-
-    const isStep2Valid =
-      !urlError && !bodyError && !headersHaveKeyErrors && !queryParamsHaveErrors(queryParams);
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: `Header (${headers.length})`,
@@ -1221,11 +1197,13 @@ export const CreateFunctionModal = React.forwardRef(
                   <span className="text-sm text-semantic-text-muted tracking-[0.048px]">
                     API URL
                   </span>
-                  <div
+                    <div
                     className={cn(
-                      "flex h-[42px] rounded border border-solid border-semantic-border-input overflow-visible bg-semantic-bg-primary",
-                      "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-                      "transition-shadow"
+                      "flex h-[42px] rounded border border-solid overflow-visible bg-semantic-bg-primary",
+                      "transition-shadow",
+                      urlError
+                        ? "border-semantic-error-primary focus-within:border-semantic-error-primary"
+                        : "border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                     )}
                   >
                     {/* Method selector */}
@@ -1279,6 +1257,8 @@ export const CreateFunctionModal = React.forwardRef(
                           setUrlPopupStyle(undefined);
                         }}
                         placeholder="Enter URL or Type {{ to add variables"
+                        aria-invalid={Boolean(urlError)}
+                        aria-describedby={urlError ? "fn-api-url-error" : undefined}
                         className={cn(
                           "h-full w-full px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none",
                           disabled && "opacity-50 cursor-not-allowed"
@@ -1296,7 +1276,9 @@ export const CreateFunctionModal = React.forwardRef(
                     </div>
                   </div>
                   {urlError && (
-                    <p className="m-0 text-sm text-semantic-error-primary">{urlError}</p>
+                    <p id="fn-api-url-error" className="m-0 text-sm text-semantic-error-primary">
+                      {urlError}
+                    </p>
                   )}
                 </div>
 
@@ -1334,7 +1316,17 @@ export const CreateFunctionModal = React.forwardRef(
                       keyMaxLength={HEADER_KEY_MAX}
                       valueMaxLength={HEADER_VALUE_MAX}
                       keyRegex={HEADER_KEY_REGEX}
-                      keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters."
+                      keyRegexError={HEADER_KEY_INVALID_MESSAGE}
+                      getRowErrors={(row) => {
+                        if (!step2SubmitAttempted) {
+                          const errors: RowErrors = {};
+                          if (row.key.trim() && !HEADER_KEY_REGEX.test(row.key)) {
+                            errors.key = HEADER_KEY_INVALID_MESSAGE;
+                          }
+                          return errors;
+                        }
+                        return getHeaderRowSubmitErrors(row);
+                      }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
                       onAddVariable={handleAddVariableClick}
@@ -1375,6 +1367,8 @@ export const CreateFunctionModal = React.forwardRef(
                           value={body}
                           maxLength={BODY_MAX}
                           disabled={disabled}
+                          aria-invalid={Boolean(bodyError)}
+                          aria-describedby={bodyError ? "fn-body-error" : undefined}
                           onChange={(e) => {
                             setBody(e.target.value);
                             if (bodyError) validateBody(e.target.value);
@@ -1410,7 +1404,9 @@ export const CreateFunctionModal = React.forwardRef(
                         />
                       </div>
                       {bodyError && (
-                        <p className="m-0 text-sm text-semantic-error-primary">{bodyError}</p>
+                        <p id="fn-body-error" className="m-0 text-sm text-semantic-error-primary">
+                          {bodyError}
+                        </p>
                       )}
                     </div>
                   )}
@@ -1509,10 +1505,11 @@ export const CreateFunctionModal = React.forwardRef(
                   Back
                 </Button>
                 <Button
+                  type="button"
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
-                  disabled={!isStep2Valid || disabled}
+                  disabled={disabled}
                 >
                   Submit
                 </Button>

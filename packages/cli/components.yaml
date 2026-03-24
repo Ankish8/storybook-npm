@@ -1040,6 +1040,7 @@ components:
     directory: "ivr-bot"
     files:
       - "ivr-bot-config.tsx"
+      - "create-function-validation.ts"
       - "create-function-modal.tsx"
       - "bot-identity-card.tsx"
       - "bot-behavior-card.tsx"

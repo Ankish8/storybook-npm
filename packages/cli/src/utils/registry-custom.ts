@@ -573,76 +573,6 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
-  // 6. Handle className={...} JSX expression bindings
-  // Covers template literals, ternaries, and any other expression patterns
-  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
-  // e.g., className={active ? "border-b-2" : "text-muted"}
-  {
-    let jsxResult = ''
-    let jsxLastIndex = 0
-    const jsxRegex = /className\s*=\s*\{/g
-    let jsxMatch
-
-    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
-      if (jsxMatch.index < jsxLastIndex) continue
-
-      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
-
-      // Find the matching closing } by tracking brace depth
-      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
-      let depth = 1
-      let pos = bracePos + 1
-
-      while (pos < content.length && depth > 0) {
-        const ch = content[pos]
-        if (ch === '{') { depth++; pos++; continue }
-        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
-        if (ch === '"') {
-          pos++
-          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
-          pos++; continue
-        }
-        if (ch === "'") {
-          pos++
-          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
-          pos++; continue
-        }
-        if (ch === '`') {
-          pos++
-          let tDepth = 0
-          while (pos < content.length) {
-            if (content[pos] === '\\') { pos += 2; continue }
-            if (content[pos] === '`' && tDepth === 0) { pos++; break }
-            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
-            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
-            pos++
-          }
-          continue
-        }
-        pos++
-      }
-
-      // Extract expression between { and }
-      const expr = content.slice(bracePos + 1, pos - 1)
-
-      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
-      const exprTrimmed = expr.trimStart()
-      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
-        jsxResult += content.slice(jsxMatch.index, pos)
-        jsxLastIndex = pos
-        continue
-      }
-
-      // Prefix the expression using the className expression handler
-      const prefixedExpr = prefixClassNameExpression(expr, prefix)
-
-      jsxResult += jsxMatch[0] + prefixedExpr + '}'
-      jsxLastIndex = pos
-    }
-    jsxResult += content.slice(jsxLastIndex)
-    content = jsxResult
-  }
-
   return content
 }
 
@@ -9863,6 +9793,101 @@ IvrBotConfig.displayName = "IvrBotConfig";
 `, prefix),
         },
         {
+          name: "create-function-validation.ts",
+          content: prefixTailwindClasses(`import type { KeyValuePair } from "./types";
+
+/** HTTP(S) URL prefix check — used for Create Function API URL field. */
+export const URL_REGEX = /^https?:\\/\\//;
+
+export const HEADER_KEY_REGEX = /^[!#$%&'*+\\-.^_\`|~0-9a-zA-Z]+$/;
+
+/** Single message for invalid header keys (KeyValueTable + submit validation). */
+export const HEADER_KEY_INVALID_MESSAGE =
+  "Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters.";
+
+// Query parameter validation (aligned with apiIntegrationSchema.queryParams)
+export const QUERY_PARAM_KEY_MAX = 512;
+export const QUERY_PARAM_VALUE_MAX = 2048;
+export const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\\-~]+$/;
+
+export function validateQueryParamKey(key: string): string | undefined {
+  if (!key.trim()) return "Query param key is required";
+  if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
+  if (!QUERY_PARAM_KEY_PATTERN.test(key)) return "Invalid query parameter key.";
+  return undefined;
+}
+
+export function validateQueryParamValue(value: string): string | undefined {
+  if (!value.trim()) return "Query param value is required";
+  if (value.length > QUERY_PARAM_VALUE_MAX) return "value cannot exceed 2048 characters.";
+  return undefined;
+}
+
+export function queryParamsHaveErrors(rows: KeyValuePair[]): boolean {
+  return rows.some((row) => {
+    const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+    if (!hasInput) return false;
+    return (
+      validateQueryParamKey(row.key) !== undefined ||
+      validateQueryParamValue(row.value) !== undefined
+    );
+  });
+}
+
+export const URL_REQUIRED_MESSAGE = "API URL is required";
+export const URL_FORMAT_MESSAGE = "URL must start with http:// or https://";
+
+/** On save: URL is required and must start with http:// or https:// */
+export function getUrlSubmitValidationError(value: string): string {
+  const t = value.trim();
+  if (!t) return URL_REQUIRED_MESSAGE;
+  if (!URL_REGEX.test(t)) return URL_FORMAT_MESSAGE;
+  return "";
+}
+
+/** On blur while typing: empty clears; non-empty must match URL_REGEX. */
+export function getUrlBlurValidationError(value: string): string {
+  if (value.trim() && !URL_REGEX.test(value.trim())) return URL_FORMAT_MESSAGE;
+  return "";
+}
+
+export const BODY_JSON_ERROR_MESSAGE = "Body must be valid JSON";
+
+/** Empty body is valid; non-empty must parse as JSON. */
+export function getBodyJsonValidationError(value: string): string {
+  if (!value.trim()) return "";
+  try {
+    JSON.parse(value.trim());
+    return "";
+  } catch {
+    return BODY_JSON_ERROR_MESSAGE;
+  }
+}
+
+export type HeaderRowFieldErrors = { key?: string; value?: string };
+
+/** When either key or value has text, both are required; key must match HEADER_KEY_REGEX. */
+export function getHeaderRowSubmitErrors(row: KeyValuePair): HeaderRowFieldErrors {
+  const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
+  if (!hasInput) return {};
+  const errors: HeaderRowFieldErrors = {};
+  if (!row.key.trim()) errors.key = "Header key is required";
+  else if (!HEADER_KEY_REGEX.test(row.key)) {
+    errors.key = HEADER_KEY_INVALID_MESSAGE;
+  }
+  if (!row.value.trim()) errors.value = "Header value is required";
+  return errors;
+}
+
+export function headerRowsHaveSubmitErrors(rows: KeyValuePair[]): boolean {
+  return rows.some((row) => {
+    const e = getHeaderRowSubmitErrors(row);
+    return Boolean(e.key || e.value);
+  });
+}
+`, prefix),
+        },
+        {
           name: "create-function-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
 import { Trash2, ChevronDown, X, Plus, Pencil } from "lucide-react";
@@ -9887,6 +9912,20 @@ import type {
   VariableItem,
   VariableFormData,
 } from "./types";
+import {
+  HEADER_KEY_INVALID_MESSAGE,
+  HEADER_KEY_REGEX,
+  QUERY_PARAM_KEY_MAX,
+  QUERY_PARAM_VALUE_MAX,
+  getBodyJsonValidationError,
+  getHeaderRowSubmitErrors,
+  getUrlBlurValidationError,
+  getUrlSubmitValidationError,
+  headerRowsHaveSubmitErrors,
+  queryParamsHaveErrors,
+  validateQueryParamKey,
+  validateQueryParamValue,
+} from "./create-function-validation";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 const FUNCTION_NAME_MAX = 100;
@@ -9896,33 +9935,19 @@ const HEADER_KEY_MAX = 512;
 const HEADER_VALUE_MAX = 2048;
 
 const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+
+/** Spaces → underscores so users can type natural phrases without invalid-name errors. */
+function normalizeFunctionNameInput(value: string): string {
+  return value.replace(/ /g, "_");
+}
 const VARIABLE_NAME_MAX = 30;
 const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
-const URL_REGEX = /^https?:\\/\\//;
-const HEADER_KEY_REGEX = /^[!#$%&'*+\\-.^_\`|~0-9a-zA-Z]+$/;
-// Query parameter validation (aligned with apiIntegrationSchema.queryParams)
-const QUERY_PARAM_KEY_MAX = 512;
-const QUERY_PARAM_VALUE_MAX = 2048;
-const QUERY_PARAM_KEY_PATTERN = /^[a-zA-Z0-9_.\\-~]+$/;
 
 const DEFAULT_SESSION_VARIABLES = [
   "{{Caller number}}",
   "{{Time}}",
   "{{Contact Details}}",
 ];
-
-function validateQueryParamKey(key: string): string | undefined {
-  if (!key.trim()) return "Query param key is required";
-  if (key.length > QUERY_PARAM_KEY_MAX) return "key cannot exceed 512 characters.";
-  if (!QUERY_PARAM_KEY_PATTERN.test(key)) return "Invalid query parameter key.";
-  return undefined;
-}
-
-function validateQueryParamValue(value: string): string | undefined {
-  if (!value.trim()) return "Query param value is required";
-  if (value.length > QUERY_PARAM_VALUE_MAX) return "value cannot exceed 2048 characters.";
-  return undefined;
-}
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -10857,45 +10882,33 @@ export const CreateFunctionModal = React.forwardRef(
     };
 
     const validateUrl = (value: string) => {
-      if (value.trim() && !URL_REGEX.test(value.trim())) {
-        setUrlError("URL must start with http:// or https://");
-      } else {
-        setUrlError("");
-      }
+      setUrlError(getUrlBlurValidationError(value));
     };
 
     const validateBody = (value: string) => {
-      if (value.trim()) {
-        try {
-          JSON.parse(value.trim());
-          setBodyError("");
-        } catch {
-          setBodyError("Body must be valid JSON");
-        }
-      } else {
-        setBodyError("");
-      }
+      setBodyError(getBodyJsonValidationError(value));
     };
 
     const handleNext = () => {
       if (disabled || (name.trim() && prompt.trim().length >= promptMinLength)) setStep(2);
     };
 
-    const queryParamsHaveErrors = (rows: KeyValuePair[]): boolean =>
-      rows.some((row) => {
-        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
-        if (!hasInput) return false;
-        return (
-          validateQueryParamKey(row.key) !== undefined ||
-          validateQueryParamValue(row.value) !== undefined
-        );
-      });
-
     const handleSubmit = () => {
-      if (step === 2) {
-        setStep2SubmitAttempted(true);
-        if (queryParamsHaveErrors(queryParams)) return;
-      }
+      if (step !== 2) return;
+
+      setStep2SubmitAttempted(true);
+
+      const urlErr = getUrlSubmitValidationError(url);
+      setUrlError(urlErr);
+
+      const bodyErr = getBodyJsonValidationError(body);
+      setBodyError(bodyErr);
+
+      if (queryParamsHaveErrors(queryParams)) return;
+      if (urlErr || bodyErr) return;
+
+      if (headerRowsHaveSubmitErrors(headers)) return;
+
       const data: CreateFunctionData = {
         name: name.trim(),
         prompt: prompt.trim(),
@@ -10963,17 +10976,10 @@ export const CreateFunctionModal = React.forwardRef(
       });
     };
 
-    const headersHaveKeyErrors = headers.some(
-      (row) => row.key.trim() && HEADER_KEY_REGEX && !HEADER_KEY_REGEX.test(row.key)
-    );
-
     const isStep1Valid =
       name.trim().length > 0 &&
       FUNCTION_NAME_REGEX.test(name.trim()) &&
       prompt.trim().length >= promptMinLength;
-
-    const isStep2Valid =
-      !urlError && !bodyError && !headersHaveKeyErrors && !queryParamsHaveErrors(queryParams);
 
     const tabLabels: Record<FunctionTabType, string> = {
       header: \`Header (\${headers.length})\`,
@@ -11032,10 +11038,15 @@ export const CreateFunctionModal = React.forwardRef(
                       maxLength={FUNCTION_NAME_MAX}
                       disabled={disabled}
                       onChange={(e) => {
-                        setName(e.target.value);
-                        if (nameError) validateName(e.target.value);
+                        const normalized = normalizeFunctionNameInput(
+                          e.target.value
+                        );
+                        setName(normalized);
+                        if (nameError) validateName(normalized);
                       }}
-                      onBlur={(e) => validateName(e.target.value)}
+                      onBlur={(e) =>
+                        validateName(normalizeFunctionNameInput(e.target.value))
+                      }
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
@@ -11077,11 +11088,13 @@ export const CreateFunctionModal = React.forwardRef(
                   <span className="text-sm text-semantic-text-muted tracking-[0.048px]">
                     API URL
                   </span>
-                  <div
+                    <div
                     className={cn(
-                      "flex h-[42px] rounded border border-solid border-semantic-border-input overflow-visible bg-semantic-bg-primary",
-                      "focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-                      "transition-shadow"
+                      "flex h-[42px] rounded border border-solid overflow-visible bg-semantic-bg-primary",
+                      "transition-shadow",
+                      urlError
+                        ? "border-semantic-error-primary focus-within:border-semantic-error-primary"
+                        : "border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                     )}
                   >
                     {/* Method selector */}
@@ -11135,6 +11148,8 @@ export const CreateFunctionModal = React.forwardRef(
                           setUrlPopupStyle(undefined);
                         }}
                         placeholder="Enter URL or Type {{ to add variables"
+                        aria-invalid={Boolean(urlError)}
+                        aria-describedby={urlError ? "fn-api-url-error" : undefined}
                         className={cn(
                           "h-full w-full px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-transparent outline-none",
                           disabled && "opacity-50 cursor-not-allowed"
@@ -11152,7 +11167,9 @@ export const CreateFunctionModal = React.forwardRef(
                     </div>
                   </div>
                   {urlError && (
-                    <p className="m-0 text-sm text-semantic-error-primary">{urlError}</p>
+                    <p id="fn-api-url-error" className="m-0 text-sm text-semantic-error-primary">
+                      {urlError}
+                    </p>
                   )}
                 </div>
 
@@ -11190,7 +11207,17 @@ export const CreateFunctionModal = React.forwardRef(
                       keyMaxLength={HEADER_KEY_MAX}
                       valueMaxLength={HEADER_VALUE_MAX}
                       keyRegex={HEADER_KEY_REGEX}
-                      keyRegexError="Invalid header key. Use only alphanumeric and !#$%&'*+-.^_\`|~ characters."
+                      keyRegexError={HEADER_KEY_INVALID_MESSAGE}
+                      getRowErrors={(row) => {
+                        if (!step2SubmitAttempted) {
+                          const errors: RowErrors = {};
+                          if (row.key.trim() && !HEADER_KEY_REGEX.test(row.key)) {
+                            errors.key = HEADER_KEY_INVALID_MESSAGE;
+                          }
+                          return errors;
+                        }
+                        return getHeaderRowSubmitErrors(row);
+                      }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
                       onAddVariable={handleAddVariableClick}
@@ -11231,6 +11258,8 @@ export const CreateFunctionModal = React.forwardRef(
                           value={body}
                           maxLength={BODY_MAX}
                           disabled={disabled}
+                          aria-invalid={Boolean(bodyError)}
+                          aria-describedby={bodyError ? "fn-body-error" : undefined}
                           onChange={(e) => {
                             setBody(e.target.value);
                             if (bodyError) validateBody(e.target.value);
@@ -11266,7 +11295,9 @@ export const CreateFunctionModal = React.forwardRef(
                         />
                       </div>
                       {bodyError && (
-                        <p className="m-0 text-sm text-semantic-error-primary">{bodyError}</p>
+                        <p id="fn-body-error" className="m-0 text-sm text-semantic-error-primary">
+                          {bodyError}
+                        </p>
                       )}
                     </div>
                   )}
@@ -11365,10 +11396,11 @@ export const CreateFunctionModal = React.forwardRef(
                   Back
                 </Button>
                 <Button
+                  type="button"
                   variant="default"
                   className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
-                  disabled={!isStep2Valid || disabled}
+                  disabled={disabled}
                 >
                   Submit
                 </Button>

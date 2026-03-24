@@ -110,9 +110,15 @@ describe("CreateFunctionModal", () => {
     await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
+    const urlInput = screen.getByPlaceholderText(/Enter URL or Type/i);
+    await user.type(urlInput, "https://api.example.com/test");
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "MyFunc", prompt: VALID_PROMPT })
+      expect.objectContaining({
+        name: "MyFunc",
+        prompt: VALID_PROMPT,
+        url: "https://api.example.com/test",
+      })
     );
   });
 
@@ -125,7 +131,26 @@ describe("CreateFunctionModal", () => {
     await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("does not submit or close when API URL is empty on Submit", async () => {
+    const onSubmit = vi.fn();
+    const onOpenChange = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={onOpenChange} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(screen.getByText("API URL is required")).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 });
