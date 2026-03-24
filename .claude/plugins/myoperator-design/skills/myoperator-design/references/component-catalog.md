@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 71 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 83 components across 7 categories.
 
 ## Quick Reference
 
@@ -72,6 +72,18 @@
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
 | FileUploadModal | custom | `npx myoperator-ui add file-upload-modal` |
 | VideoMedia | custom | `npx myoperator-ui add video-media` |
+| ChatTypes | custom | `npx myoperator-ui add chat-types` |
+| ChatTransport | custom | `npx myoperator-ui add chat-transport` |
+| ChatProvider | custom | `npx myoperator-ui add chat-provider` |
+| ChatSidebar | custom | `npx myoperator-ui add chat-sidebar` |
+| ChatFilterPanel | custom | `npx myoperator-ui add chat-filter-panel` |
+| ChatNewPanel | custom | `npx myoperator-ui add chat-new-panel` |
+| ChatMessageList | custom | `npx myoperator-ui add chat-message-list` |
+| ChatHeader | custom | `npx myoperator-ui add chat-header` |
+| ChatInput | custom | `npx myoperator-ui add chat-input` |
+| ChatTemplateModal | custom | `npx myoperator-ui add chat-template-modal` |
+| ChatContactPanel | custom | `npx myoperator-ui add chat-contact-panel` |
+| ChatTemplate | custom | `npx myoperator-ui add chat-template` |
 
 ## Core — Essential UI primitives
 
@@ -881,6 +893,113 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add video-media`
 **Requires**: `dropdown-menu` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatTypes
+> Shared TypeScript interfaces for the chat template
+
+**Install**: `npx myoperator-ui add chat-types`
+**Type**: Multi-file component
+
+---
+
+### ChatTransport
+> ChatTransport interface and MockTransport with realistic fake data
+
+**Install**: `npx myoperator-ui add chat-transport`
+**Requires**: `chat-types` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatProvider
+> React context provider for chat state management with transport abstraction
+
+**Install**: `npx myoperator-ui add chat-provider`
+**Requires**: `chat-types`, `chat-transport` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatSidebar
+> Chat inbox sidebar with search, tabs, and conversation list
+
+**Install**: `npx myoperator-ui add chat-sidebar`
+**Requires**: `chat-types`, `chat-provider`, `button`, `text-field`, `tabs`, `badge`, `chat-list-item` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatFilterPanel
+> Assignee and channel filter panel with checkbox groups
+
+**Install**: `npx myoperator-ui add chat-filter-panel`
+**Requires**: `chat-types`, `chat-provider`, `button`, `text-field`, `checkbox`, `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatNewPanel
+> New chat panel with contact search and add-contact modal
+
+**Install**: `npx myoperator-ui add chat-new-panel`
+**Requires**: `chat-types`, `chat-provider`, `button`, `text-field`, `dialog`, `avatar`, `dropdown-menu` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatMessageList
+> Message list with all media renderers, delivery status, and reply functionality
+
+**Install**: `npx myoperator-ui add chat-message-list`
+**Requires**: `chat-types`, `chat-provider`, `button`, `tooltip`, `spinner`, `avatar`, `tag`, `dropdown-menu`, `chat-timeline-divider`, `doc-media` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatHeader
+> Chat window header with assignment dropdown and resolve button
+
+**Install**: `npx myoperator-ui add chat-header`
+**Requires**: `chat-types`, `chat-provider`, `button`, `badge`, `tag`, `avatar`, `dropdown-menu`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatInput
+> Chat composer with canned messages, attachments, and keyboard navigation
+
+**Install**: `npx myoperator-ui add chat-input`
+**Requires**: `chat-types`, `chat-provider`, `button`, `tooltip`, `dropdown-menu`, `confirmation-modal`, `chat-composer` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatTemplateModal
+> Template selection modal with variable mapping, media upload, and live preview
+
+**Install**: `npx myoperator-ui add chat-template-modal`
+**Requires**: `chat-types`, `chat-provider`, `button`, `dialog`, `select-field`, `tabs`, `text-field`, `avatar`, `spinner`, `confirmation-modal` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatContactPanel
+> Contact details slide-out panel with view and edit modes
+
+**Install**: `npx myoperator-ui add chat-contact-panel`
+**Requires**: `chat-types`, `chat-provider`, `button`, `text-field`, `switch`, `tag`, `dropdown-menu`, `accordion`, `confirmation-modal`, `panel` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ChatTemplate
+> Complete chat application template — install this to get the full chat UI
+
+**Install**: `npx myoperator-ui add chat-template`
+**Requires**: `chat-types`, `chat-transport`, `chat-provider`, `chat-sidebar`, `chat-filter-panel`, `chat-new-panel`, `chat-message-list`, `chat-header`, `chat-input`, `chat-template-modal`, `chat-contact-panel`, `button`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
