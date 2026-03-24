@@ -79,6 +79,7 @@ categories:
       - carousel-media
       - chat-bubble
       - chat-composer
+      - chat-timeline-divider
       - doc-media
       - event-selector
       - key-value-input
@@ -936,6 +937,19 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "chat-bubble.tsx"
+
+  chat-timeline-divider:
+    description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge"
+    isMultiFile: true
+    directory: "chat-timeline-divider"
+    files:
+      - "chat-timeline-divider.tsx"
+      - "index.ts"
+    mainFile: "chat-timeline-divider.tsx"
 
   chat-composer:
     description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button"

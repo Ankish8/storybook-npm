@@ -1,12 +1,12 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import {
+  Bot,
   Check,
   CheckCheck,
   Clock,
   FileText,
   Image as ImageIcon,
-  Sparkles,
 } from "lucide-react";
 
 /* ── Types ── */
@@ -17,10 +17,10 @@ export type MessageType = "text" | "document" | "image";
 
 export interface ChatListItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
-  /** Contact or customer name */
-  name: string;
-  /** Last message preview text */
-  message: string;
+  /** Contact or customer name (supports ReactNode for highlighted search matches) */
+  name: React.ReactNode;
+  /** Last message preview text (supports ReactNode for highlighted search matches) */
+  message: React.ReactNode;
   /** Timestamp display string (e.g. "2:30 PM", "Yesterday") */
   timestamp: string;
   /**
@@ -55,7 +55,7 @@ export interface ChatListItemProps
   agentName?: string;
   /** Whether the assigned agent's account has been deleted — renders in error color */
   isAgentDeleted?: boolean;
-  /** Whether the conversation is handled by an AI/IVR bot — shows sparkle icon */
+  /** Whether the conversation is handled by an AI/IVR bot — shows bot icon */
   isBot?: boolean;
   /** Whether this item is currently selected/active in the inbox */
   isSelected?: boolean;
@@ -91,7 +91,7 @@ function StatusIndicator({ status }: { status: MessageStatus }) {
 function UnreadBadge({ count }: { count: number }) {
   return (
     <span
-      className="shrink-0 inline-flex items-center justify-center rounded-full bg-semantic-brand-selected font-semibold text-semantic-primary"
+      className="shrink-0 inline-flex items-center justify-center rounded-full bg-semantic-border-accent font-semibold text-white"
       style={{ width: 18, height: 18, fontSize: 10, lineHeight: 1 }}
       aria-label={`${count > 99 ? "99+" : count} unread messages`}
     >
@@ -150,8 +150,8 @@ function ChannelPill({
             <span className="truncate">{agentName}</span>
           </>
         )}
+        {isBot && <Bot className="size-[14px] text-semantic-text-primary" aria-hidden="true" />}
       </span>
-      {isBot && <Sparkles className="size-[14px] text-[#47b5bc]" aria-hidden="true" />}
     </div>
   );
 }
@@ -199,7 +199,9 @@ const ChatListItem = React.forwardRef(
     }: ChatListItemProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const defaultAriaLabel = `${name}. ${message}. ${timestamp}${unreadCount ? `. ${unreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
+    const nameText = typeof name === "string" ? name : "";
+    const messageText = typeof message === "string" ? message : "";
+    const defaultAriaLabel = `${nameText}. ${messageText}. ${timestamp}${unreadCount ? `. ${unreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
 
     return (
       <div
@@ -228,7 +230,7 @@ const ChatListItem = React.forwardRef(
           {/* Row 1: Name + SLA Timer + Status/Unread Badge */}
           <div className="flex items-center gap-[6px]">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <span className="text-[14px] text-semantic-text-primary truncate shrink-0">
+              <span className="text-[14px] text-semantic-text-primary truncate">
                 {name}
               </span>
               {slaTimer && <SlaTag timer={slaTimer} />}

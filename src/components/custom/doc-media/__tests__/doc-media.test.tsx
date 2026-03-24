@@ -24,18 +24,26 @@ describe("DocMedia", () => {
     expect(screen.getByText(/2\.4 MB/)).toBeInTheDocument();
   });
 
-  it("renders download variant with image", () => {
-    render(
+  it("renders download variant with image, overlay, and metadata", () => {
+    const { container } = render(
       <DocMedia
         variant="download"
         thumbnailUrl="https://example.com/doc.jpg"
+        filename="Report.pdf"
+        fileType="PDF"
+        pageCount={8}
+        fileSize="1.5 MB"
         caption="A nice document"
       />
     );
     const img = screen.getByAltText("A nice document");
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute("src", "https://example.com/doc.jpg");
-    expect(img).toHaveClass("max-h-[280px]");
+    // Has gradient overlay like preview variant
+    const gradient = container.querySelector(".bg-gradient-to-t");
+    expect(gradient).toBeInTheDocument();
+    expect(screen.getByText("Report.pdf")).toBeInTheDocument();
+    expect(screen.getByText(/PDF/)).toBeInTheDocument();
   });
 
   it("renders file variant with icon and filetype badge", () => {

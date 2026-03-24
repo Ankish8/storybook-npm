@@ -185,6 +185,27 @@ export const Selected: Story = {
   },
 };
 
+export const HighlightedSearch: Story = {
+  name: "Search Highlight",
+  args: {
+    name: (
+      <>
+        Adi<strong className="font-semibold text-semantic-text-primary">ti</strong> Kumar
+      </>
+    ),
+    message: (
+      <>
+        Have a look at <strong className="font-semibold text-semantic-text-primary">this</strong> document
+      </>
+    ),
+    timestamp: "2:30 PM",
+    messageStatus: "sent",
+    messageType: "document",
+    channel: "MY01",
+    agentName: "Alex Smith",
+  },
+};
+
 /* ── Full Inbox Example ── */
 
 const chatData = [

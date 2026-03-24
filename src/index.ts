@@ -351,6 +351,10 @@ export type { DateRangeModalProps } from "./components/custom/date-range-modal/i
 export { ChatListItem } from "./components/custom/chat-list-item";
 export type { ChatListItemProps, MessageStatus, MessageType } from "./components/custom/chat-list-item";
 
+// ChatTimelineDivider (Custom)
+export { ChatTimelineDivider } from "./components/custom/chat-timeline-divider";
+export type { ChatTimelineDividerProps, ChatTimelineDividerVariant } from "./components/custom/chat-timeline-divider";
+
 // Bots (Custom)
 export {
   BotCard,

@@ -57,7 +57,7 @@ const Tag = React.forwardRef(
         {...props}
       >
         {label && <span className="font-semibold mr-1">{label}</span>}
-        <span className="font-normal">{children}</span>
+        <span className="font-normal inline-flex items-center gap-1">{children}</span>
       </span>
     );
   }
