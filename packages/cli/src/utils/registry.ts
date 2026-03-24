@@ -590,6 +590,76 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
+  // 6. Handle className={...} JSX expression bindings
+  // Covers template literals, ternaries, and any other expression patterns
+  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
+  // e.g., className={active ? "border-b-2" : "text-muted"}
+  {
+    let jsxResult = ''
+    let jsxLastIndex = 0
+    const jsxRegex = /className\s*=\s*\{/g
+    let jsxMatch
+
+    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
+      if (jsxMatch.index < jsxLastIndex) continue
+
+      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
+
+      // Find the matching closing } by tracking brace depth
+      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
+      let depth = 1
+      let pos = bracePos + 1
+
+      while (pos < content.length && depth > 0) {
+        const ch = content[pos]
+        if (ch === '{') { depth++; pos++; continue }
+        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '"') {
+          pos++
+          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === "'") {
+          pos++
+          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
+          pos++; continue
+        }
+        if (ch === '`') {
+          pos++
+          let tDepth = 0
+          while (pos < content.length) {
+            if (content[pos] === '\\') { pos += 2; continue }
+            if (content[pos] === '`' && tDepth === 0) { pos++; break }
+            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
+            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            pos++
+          }
+          continue
+        }
+        pos++
+      }
+
+      // Extract expression between { and }
+      const expr = content.slice(bracePos + 1, pos - 1)
+
+      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
+      const exprTrimmed = expr.trimStart()
+      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
+        jsxResult += content.slice(jsxMatch.index, pos)
+        jsxLastIndex = pos
+        continue
+      }
+
+      // Prefix the expression using the className expression handler
+      const prefixedExpr = prefixClassNameExpression(expr, prefix)
+
+      jsxResult += jsxMatch[0] + prefixedExpr + '}'
+      jsxLastIndex = pos
+    }
+    jsxResult += content.slice(jsxLastIndex)
+    content = jsxResult
+  }
+
   return content
 }
 
@@ -17854,6 +17924,13 @@ interface TriggerState {
   to: number;
 }
 
+/** Where to insert \`{{name}}\` after the user saves "Create new variable" */
+type VarInsertContext =
+  | { kind: "url"; from: number; to: number }
+  | { kind: "body"; from: number; to: number }
+  | { kind: "header"; rowId: string; from: number; to: number }
+  | { kind: "query"; rowId: string; from: number; to: number };
+
 function detectVarTrigger(value: string, cursor: number): TriggerState | null {
   const before = value.slice(0, cursor);
   const match = /\\{\\{([^}]*)$/.exec(before);
@@ -18223,7 +18300,7 @@ function VariableInput({
   onChange: (v: string) => void;
   sessionVariables: string[];
   variableGroups?: VariableGroup[];
-  onAddVariable?: () => void;
+  onAddVariable?: (range: { from: number; to: number }) => void;
   onEditVariable?: (variable: string) => void;
   placeholder?: string;
   maxLength?: number;
@@ -18386,7 +18463,11 @@ function VariableInput({
         variableGroups={trigger ? variableGroups : undefined}
         filterQuery={trigger?.query ?? ""}
         onSelect={handleSelect}
-        onAddVariable={onAddVariable}
+        onAddVariable={
+          onAddVariable && trigger
+            ? () => onAddVariable({ from: trigger.from, to: trigger.to })
+            : undefined
+        }
         onEditVariable={onEditVariable}
         style={popupStyle}
       />
@@ -18441,7 +18522,7 @@ function KeyValueTable({
   keyRegexError?: string;
   sessionVariables?: string[];
   variableGroups?: VariableGroup[];
-  onAddVariable?: () => void;
+  onAddVariable?: (ctx: { rowId: string; from: number; to: number }) => void;
   onEditVariable?: (variable: string) => void;
   disabled?: boolean;
 }) {
@@ -18526,7 +18607,11 @@ function KeyValueTable({
                   onChange={(v) => update(row.id, { value: v })}
                   sessionVariables={sessionVariables}
                   variableGroups={variableGroups}
-                  onAddVariable={onAddVariable}
+                  onAddVariable={
+                    onAddVariable
+                      ? (range) => onAddVariable({ rowId: row.id, ...range })
+                      : undefined
+                  }
                   onEditVariable={onEditVariable}
                   placeholder="Type {{ to add variables"
                   maxLength={valueMaxLength}
@@ -18645,14 +18730,38 @@ export const CreateFunctionModal = React.forwardRef(
     const [varModalOpen, setVarModalOpen] = React.useState(false);
     const [varModalMode, setVarModalMode] = React.useState<"create" | "edit">("create");
     const [varModalInitialData, setVarModalInitialData] = React.useState<VariableItem | undefined>();
+    /** Field + \`{{…\` range to replace with \`{{name}}\` after create saves */
+    const [varInsertContext, setVarInsertContext] = React.useState<VarInsertContext | null>(null);
 
-    const handleAddVariableClick = () => {
+    const openVariableCreateModal = React.useCallback(() => {
       setVarModalMode("create");
       setVarModalInitialData(undefined);
       setVarModalOpen(true);
-    };
+    }, []);
+
+    const handleVarModalOpenChange = React.useCallback((next: boolean) => {
+      setVarModalOpen(next);
+      if (!next) setVarInsertContext(null);
+    }, []);
+
+    const handleAddVariableFromHeader = React.useCallback(
+      (ctx: { rowId: string; from: number; to: number }) => {
+        setVarInsertContext({ kind: "header", ...ctx });
+        openVariableCreateModal();
+      },
+      [openVariableCreateModal]
+    );
+
+    const handleAddVariableFromQuery = React.useCallback(
+      (ctx: { rowId: string; from: number; to: number }) => {
+        setVarInsertContext({ kind: "query", ...ctx });
+        openVariableCreateModal();
+      },
+      [openVariableCreateModal]
+    );
 
     const handleEditVariableClick = (variableName: string) => {
+      setVarInsertContext(null);
       const variable = variableGroups
         ?.flatMap((g) => g.items)
         .find((item) => item.name === variableName);
@@ -18662,6 +18771,35 @@ export const CreateFunctionModal = React.forwardRef(
     };
 
     const handleVariableSave = (data: VariableFormData) => {
+      const trimmedName = data.name.trim();
+      const insertToken = \`{{\${trimmedName}}}\`;
+
+      if (varModalMode === "create" && varInsertContext) {
+        const ctx = varInsertContext;
+        if (ctx.kind === "url") {
+          setUrl((u) => insertVar(u, insertToken, ctx.from, ctx.to));
+        } else if (ctx.kind === "body") {
+          setBody((b) => insertVar(b, insertToken, ctx.from, ctx.to));
+        } else if (ctx.kind === "header") {
+          setHeaders((rows) =>
+            rows.map((r) =>
+              r.id === ctx.rowId
+                ? { ...r, value: insertVar(r.value, insertToken, ctx.from, ctx.to) }
+                : r
+            )
+          );
+        } else if (ctx.kind === "query") {
+          setQueryParams((rows) =>
+            rows.map((r) =>
+              r.id === ctx.rowId
+                ? { ...r, value: insertVar(r.value, insertToken, ctx.from, ctx.to) }
+                : r
+            )
+          );
+        }
+        setVarInsertContext(null);
+      }
+
       if (varModalMode === "create") {
         onAddVariable?.(data);
       } else {
@@ -18684,6 +18822,28 @@ export const CreateFunctionModal = React.forwardRef(
     const filteredBodyVars = bodyTrigger
       ? sessionVariables.filter((v) => v.toLowerCase().includes(bodyTrigger.query))
       : [];
+
+    const handleAddVariableFromUrl = React.useCallback(() => {
+      if (urlTrigger) {
+        setVarInsertContext({
+          kind: "url",
+          from: urlTrigger.from,
+          to: urlTrigger.to,
+        });
+      }
+      openVariableCreateModal();
+    }, [urlTrigger, openVariableCreateModal]);
+
+    const handleAddVariableFromBody = React.useCallback(() => {
+      if (bodyTrigger) {
+        setVarInsertContext({
+          kind: "body",
+          from: bodyTrigger.from,
+          to: bodyTrigger.to,
+        });
+      }
+      openVariableCreateModal();
+    }, [bodyTrigger, openVariableCreateModal]);
 
     const computePopupStyle = (
       el: HTMLTextAreaElement | HTMLInputElement,
@@ -18732,6 +18892,7 @@ export const CreateFunctionModal = React.forwardRef(
         setUrlPopupStyle(undefined);
         setBodyPopupStyle(undefined);
         setTestVarValues({});
+        setVarInsertContext(null);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -18757,6 +18918,7 @@ export const CreateFunctionModal = React.forwardRef(
       setUrlPopupStyle(undefined);
       setBodyPopupStyle(undefined);
       setTestVarValues({});
+      setVarInsertContext(null);
     }, [initialData, initialStep, initialTab]);
 
     const handleClose = React.useCallback(() => {
@@ -19053,7 +19215,7 @@ export const CreateFunctionModal = React.forwardRef(
                         variableGroups={urlTrigger ? variableGroups : undefined}
                         filterQuery={urlTrigger?.query ?? ""}
                         onSelect={handleUrlVarSelect}
-                        onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                        onAddVariable={onAddVariable ? handleAddVariableFromUrl : undefined}
                         onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
                         style={urlPopupStyle}
                       />
@@ -19113,7 +19275,7 @@ export const CreateFunctionModal = React.forwardRef(
                       }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
-                      onAddVariable={handleAddVariableClick}
+                      onAddVariable={handleAddVariableFromHeader}
                       onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
@@ -19135,7 +19297,7 @@ export const CreateFunctionModal = React.forwardRef(
                       }}
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
-                      onAddVariable={handleAddVariableClick}
+                      onAddVariable={handleAddVariableFromQuery}
                       onEditVariable={handleEditVariableClick}
                       disabled={disabled}
                     />
@@ -19182,7 +19344,7 @@ export const CreateFunctionModal = React.forwardRef(
                           variableGroups={bodyTrigger ? variableGroups : undefined}
                           filterQuery={bodyTrigger?.query ?? ""}
                           onSelect={handleBodyVarSelect}
-                          onAddVariable={onAddVariable ? handleAddVariableClick : undefined}
+                          onAddVariable={onAddVariable ? handleAddVariableFromBody : undefined}
                           onEditVariable={onEditVariable ? handleEditVariableClick : undefined}
                           style={bodyPopupStyle}
                         />
@@ -19305,7 +19467,7 @@ export const CreateFunctionModal = React.forwardRef(
 
       <VariableFormModal
         open={varModalOpen}
-        onOpenChange={setVarModalOpen}
+        onOpenChange={handleVarModalOpenChange}
         mode={varModalMode}
         initialData={varModalInitialData}
         onSave={handleVariableSave}
@@ -21006,7 +21168,12 @@ export interface CreateFunctionModalProps {
   sessionVariables?: string[];
   /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
   variableGroups?: VariableGroup[];
-  /** Called when user saves a new variable from the autocomplete popup */
+  /**
+   * Called when user saves a new variable from the autocomplete popup.
+   * The modal replaces the open \`{{…\` fragment in the focused field with \`{{name}}\`.
+   * When using \`variableGroups\`, merge the new item into the matching group in your state
+   * so it appears in the dropdown on the next open.
+   */
   onAddVariable?: (data: VariableFormData) => void;
   /** Called when user edits a variable from the autocomplete popup */
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
