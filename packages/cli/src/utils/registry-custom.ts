@@ -10530,7 +10530,7 @@ function VarPopup({
               {group.label}
             </p>
             {group.items.map((item) => {
-              const insertValue = item.value ?? \`{{\${item.name}}}\`;
+              const insertValue = item.value ?? \`{{function.\${item.name}}}\`;
               return (
                 <div key={item.name} className="flex items-center rounded-sm transition-colors hover:bg-semantic-bg-ui">
                   <button
@@ -10540,7 +10540,7 @@ function VarPopup({
                     onMouseDown={(e) => { e.preventDefault(); onSelect(insertValue); }}
                     className="relative flex flex-1 min-w-0 cursor-pointer select-none items-center px-2 py-1.5 text-sm outline-none"
                   >
-                    {\`{{\${item.name}}}\`}
+                    {\`{{function.\${item.name}}}\`}
                   </button>
                   {item.editable && onEditVariable && (
                     <button
@@ -11169,17 +11169,18 @@ export const CreateFunctionModal = React.forwardRef(
 
     const handleEditVariableClick = (variableName: string) => {
       setVarInsertContext(null);
+      const rawName = variableName.startsWith("function.") ? variableName.slice(9) : variableName;
       const variable = variableGroups
         ?.flatMap((g) => g.items)
-        .find((item) => item.name === variableName);
+        .find((item) => item.name === rawName);
       setVarModalMode("edit");
-      setVarModalInitialData(variable ?? { name: variableName, editable: true });
+      setVarModalInitialData(variable ?? { name: rawName, editable: true });
       setVarModalOpen(true);
     };
 
     const handleVariableSave = (data: VariableFormData) => {
       const trimmedName = data.name.trim();
-      const insertToken = \`{{\${trimmedName}}}\`;
+      const insertToken = \`{{function.\${trimmedName}}}\`;
 
       if (varModalMode === "create" && varInsertContext) {
         const ctx = varInsertContext;

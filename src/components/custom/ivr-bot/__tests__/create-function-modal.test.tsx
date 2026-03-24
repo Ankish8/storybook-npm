@@ -192,6 +192,6 @@ describe("CreateFunctionModal", () => {
     expect(onAddVariable).toHaveBeenCalledWith(
       expect.objectContaining({ name: "order_id" })
     );
-    expect(valueInput).toHaveValue("{{order_id}}");
+    expect(valueInput).toHaveValue("{{function.order_id}}");
   });
 });
