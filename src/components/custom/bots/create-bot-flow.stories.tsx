@@ -38,7 +38,6 @@ export const Default: Story = {
 };
 
 export const CustomLabel: Story = {
-  name: "Custom Label",
   args: {
     createCardLabel: "Add your first bot",
     onSubmit: fn(),

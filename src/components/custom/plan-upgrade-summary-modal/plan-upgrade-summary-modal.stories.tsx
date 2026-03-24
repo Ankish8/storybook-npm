@@ -146,22 +146,18 @@ function ModalPreview(
 }
 
 export const Default: Story = {
-  name: "Default",
   render: (args) => <ModalPreview {...args} />,
 };
 
 export const UpgradeState: Story = {
-  name: "Upgrade State",
   render: (args) => <ModalPreview mode="upgrade" {...args} />,
 };
 
 export const DowngradeState: Story = {
-  name: "Downgrade State",
   render: (args) => <ModalPreview mode="downgrade" {...args} />,
 };
 
 export const CustomAmounts: Story = {
-  name: "Custom Amounts",
   args: {
     title: "Plan upgrade, Sedan ₹ 11,000.00/month",
     status: {
@@ -181,11 +177,9 @@ export const CustomAmounts: Story = {
 };
 
 export const Loading: Story = {
-  name: "Loading",
   render: (args) => <ModalPreview loading {...args} />,
 };
 
 export const Disabled: Story = {
-  name: "Disabled",
   render: (args) => <ModalPreview disabled {...args} />,
 };

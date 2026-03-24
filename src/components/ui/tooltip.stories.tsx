@@ -395,7 +395,6 @@ export const IconButtons: Story = {
 };
 
 export const LongContent: Story = {
-  name: "Long Content",
   render: () => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -451,7 +450,6 @@ export const WrappingText: Story = {
 };
 
 export const RichContent: Story = {
-  name: "Rich Content",
   render: () => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -535,7 +533,6 @@ export const DisabledButton: Story = {
 };
 
 export const TextTrigger: Story = {
-  name: "Text Trigger",
   render: () => (
     <p className="text-sm">
       This is some text with a{" "}

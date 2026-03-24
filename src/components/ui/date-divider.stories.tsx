@@ -97,14 +97,12 @@ export const Today: Story = {
 };
 
 export const FullDate: Story = {
-  name: "Full Date",
   args: {
     children: "March 20, 2026",
   },
 };
 
 export const InTimeline: Story = {
-  name: "In Timeline",
   render: () => (
     <div className="flex flex-col gap-2 max-w-md mx-auto">
       <div className="rounded-lg bg-semantic-bg-ui p-3">

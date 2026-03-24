@@ -150,7 +150,6 @@ export const WithActions: Story = {
 /* ── Expired State ── */
 
 export const ExpiredState: Story = {
-  name: "Expired State",
   args: {
     expired: true,
   },
@@ -216,7 +215,6 @@ function FullExampleComposer() {
 }
 
 export const FullExample: Story = {
-  name: "Full Example",
   render: () => <FullExampleComposer />,
 };
 
@@ -300,7 +298,6 @@ function AutoResizeComposer() {
 }
 
 export const AutoResize: Story = {
-  name: "Auto Resize",
   render: () => <AutoResizeComposer />,
   parameters: {
     docs: {
@@ -314,7 +311,6 @@ export const AutoResize: Story = {
 /* ── With Send Dropdown ── */
 
 export const WithSendDropdown: Story = {
-  name: "With Send Dropdown",
   args: {
     placeholder: "Type a message",
     showSendDropdown: true,

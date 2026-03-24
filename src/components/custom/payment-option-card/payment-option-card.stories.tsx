@@ -240,7 +240,6 @@ export const NoSelection: Story = {
 };
 
 export const WithoutCloseButton: Story = {
-  name: "Without Close Button",
   args: {
     options: defaultOptions,
     defaultSelectedOptionId: "upi",
@@ -259,7 +258,6 @@ export const CustomTitle: Story = {
 };
 
 export const FewOptions: Story = {
-  name: "Few Options",
   args: {
     options: [
       {

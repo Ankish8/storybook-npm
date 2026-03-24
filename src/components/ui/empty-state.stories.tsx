@@ -113,7 +113,6 @@ export const Overview: Story = {
 };
 
 export const WithIcon: Story = {
-  name: "With Icon",
   render: () => (
     <EmptyState
       icon={<PhoneCallIcon className="size-10" />}
@@ -175,7 +174,6 @@ export const InboxEmpty: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   parameters: {
     layout: "padded",
   },

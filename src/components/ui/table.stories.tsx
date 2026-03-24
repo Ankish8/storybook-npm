@@ -311,7 +311,6 @@ export const Overview: Story = {
 };
 
 export const Sizes: Story = {
-  name: "Sizes",
   parameters: {
     docs: {
       description: {
@@ -390,7 +389,6 @@ export const Sizes: Story = {
 };
 
 export const Borders: Story = {
-  name: "Borders",
   parameters: {
     docs: {
       description: {
@@ -464,7 +462,6 @@ export const Borders: Story = {
 };
 
 export const ContentWrapping: Story = {
-  name: "Content Wrapping",
   parameters: {
     docs: {
       description: {
@@ -589,7 +586,6 @@ export const HeaderFunctionality: Story = {
 };
 
 export const Loading: Story = {
-  name: "Loading",
   parameters: {
     docs: {
       description: {
@@ -706,7 +702,6 @@ const PaginationLoadingTable = () => {
 };
 
 export const PaginationLoading: Story = {
-  name: "Pagination Loading",
   parameters: {
     docs: {
       description: {
@@ -719,7 +714,6 @@ export const PaginationLoading: Story = {
 };
 
 export const EmptyState: Story = {
-  name: "Empty State",
   tags: ["!dev"],
   render: () => (
     <Table>
@@ -896,7 +890,6 @@ export const StickyColumn: Story = {
 };
 
 export const Scroll: Story = {
-  name: "Scroll",
   parameters: {
     docs: {
       description: {
@@ -1007,7 +1000,6 @@ export const Scroll: Story = {
 };
 
 export const VirtualizedScroll: Story = {
-  name: "Virtualized Scroll",
   parameters: {
     docs: {
       description: {
@@ -1464,7 +1456,6 @@ const StackedTagsTable = ({
 };
 
 export const WithStackedTags: Story = {
-  name: "With Stacked Tags",
   parameters: {
     docs: {
       description: {

@@ -62,14 +62,12 @@ export const Overview: Story = {
 };
 
 export const DateSeparator: Story = {
-  name: "Date Separator",
   args: {
     children: "Today",
   },
 };
 
 export const UnreadCount: Story = {
-  name: "Unread Count",
   args: {
     variant: "unread",
     children: "3 unread messages",
@@ -77,7 +75,6 @@ export const UnreadCount: Story = {
 };
 
 export const SystemEvent: Story = {
-  name: "System Event",
   render: () => (
     <ChatTimelineDivider variant="system">
       Assigned to{" "}
@@ -89,7 +86,6 @@ export const SystemEvent: Story = {
 };
 
 export const ConversationResolved: Story = {
-  name: "Conversation Resolved",
   render: () => (
     <ChatTimelineDivider variant="system">
       Conversation resolved by{" "}
@@ -101,7 +97,6 @@ export const ConversationResolved: Story = {
 /* ── All Variants ── */
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex flex-col gap-6">
       <div>
@@ -128,7 +123,6 @@ export const AllVariants: Story = {
 /* ── In Context ── */
 
 export const InChatTimeline: Story = {
-  name: "In Chat Timeline",
   parameters: {
     docs: {
       description: {

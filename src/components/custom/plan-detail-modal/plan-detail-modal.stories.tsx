@@ -88,7 +88,6 @@ const defaultFeatures: PlanFeature[] = [
 ];
 
 export const Default: Story = {
-  name: "Default",
   render: () => {
     const [open, setOpen] = useState(false);
     return (
@@ -130,7 +129,6 @@ export const WithoutPrice: Story = {
 };
 
 export const FewFeatures: Story = {
-  name: "Few Features",
   render: () => {
     const [open, setOpen] = useState(false);
     const features: PlanFeature[] = [
@@ -156,7 +154,6 @@ export const FewFeatures: Story = {
 };
 
 export const CustomTitle: Story = {
-  name: "Custom Title",
   render: () => {
     const [open, setOpen] = useState(false);
     return (

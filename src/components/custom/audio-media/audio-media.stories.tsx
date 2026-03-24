@@ -64,7 +64,6 @@ export const Overview: Story = {
 };
 
 export const PartiallyPlayed: Story = {
-  name: "Partially Played",
   args: {
     playedBars: 20,
     duration: "1:15",
@@ -72,7 +71,6 @@ export const PartiallyPlayed: Story = {
 };
 
 export const CustomWaveform: Story = {
-  name: "Custom Waveform",
   args: {
     waveform: [
       24, 18, 6, 20, 10, 4, 16, 28, 7, 12, 5, 22, 14, 8, 20, 6, 10, 4, 18,
@@ -85,7 +83,6 @@ export const CustomWaveform: Story = {
 };
 
 export const WithDuration: Story = {
-  name: "With Duration",
   args: {
     duration: "3:22",
     playedBars: 0,

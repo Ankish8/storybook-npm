@@ -62,7 +62,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  name: "Default",
   args: {
     title: "AI Bot",
     subtitle: "Create & manage AI bots",
@@ -71,7 +70,6 @@ export const Default: Story = {
 };
 
 export const WithSearch: Story = {
-  name: "With Search",
   args: {
     title: "AI Bot",
     subtitle: "Create & manage AI bots",
@@ -91,7 +89,6 @@ export const WithSearch: Story = {
 };
 
 export const TitleOnly: Story = {
-  name: "Title Only",
   args: {
     title: "AI Bot",
     variant: "default",
@@ -99,7 +96,6 @@ export const TitleOnly: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex flex-col gap-8 w-full max-w-2xl">
       <div>

@@ -84,21 +84,18 @@ export const Overview: Story = {
 };
 
 export const SingleMessage: Story = {
-  name: "Single Message",
   args: {
     count: 1,
   },
 };
 
 export const MultipleMessages: Story = {
-  name: "Multiple Messages",
   args: {
     count: 12,
   },
 };
 
 export const CustomLabel: Story = {
-  name: "Custom Label",
   args: {
     count: 5,
     label: "5 new messages since you left",

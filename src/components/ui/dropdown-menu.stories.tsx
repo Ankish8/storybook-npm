@@ -240,7 +240,6 @@ export const WithShortcuts: Story = {
 };
 
 export const DisabledItems: Story = {
-  name: "Disabled Items",
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

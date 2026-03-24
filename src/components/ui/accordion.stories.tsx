@@ -176,7 +176,6 @@ export const Default: Story = {
 };
 
 export const SingleMode: Story = {
-  name: "Single Mode",
   render: () => (
     <div className="w-[400px]">
       <Accordion type="single" defaultValue={["item-1"]}>
@@ -220,7 +219,6 @@ export const SingleMode: Story = {
 };
 
 export const MultipleMode: Story = {
-  name: "Multiple Mode",
   render: () => (
     <div className="w-[400px]">
       <Accordion type="multiple" defaultValue={["item-1", "item-2"]}>
@@ -296,7 +294,6 @@ export const Bordered: Story = {
 };
 
 export const WithDisabledItem: Story = {
-  name: "With Disabled Item",
   render: () => (
     <div className="w-[400px]">
       <Accordion variant="bordered">
@@ -420,7 +417,6 @@ export const Controlled: Story = {
 };
 
 export const CustomContent: Story = {
-  name: "Custom Content",
   render: () => (
     <div className="w-[400px]">
       <Accordion variant="bordered">

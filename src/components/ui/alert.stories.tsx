@@ -318,7 +318,6 @@ export const ComplexExample: Story = {
 };
 
 export const ScreenshotReference: Story = {
-  name: "Screenshot Reference",
   render: () => (
     <div className="space-y-4">
       <Alert variant="error" closable>

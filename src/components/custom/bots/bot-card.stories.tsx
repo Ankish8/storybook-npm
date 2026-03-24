@@ -57,7 +57,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const VoicebotCard: Story = {
-  name: "Voicebot Card",
   args: {
     bot: sampleBots[0],
     typeLabels: undefined,
@@ -73,7 +72,6 @@ export const VoicebotCard: Story = {
 };
 
 export const ChatbotCard: Story = {
-  name: "Chatbot Card",
   args: {
     bot: sampleBots[1],
     typeLabels: undefined,
@@ -89,7 +87,6 @@ export const ChatbotCard: Story = {
 };
 
 export const CardWithoutPublishInfo: Story = {
-  name: "Card Without Publish Info",
   args: {
     bot: {
       id: "bot-draft",
@@ -157,7 +154,6 @@ export const CardWithLongName: Story = {
 };
 
 export const CardWithCustomTypeLabels: Story = {
-  name: "Card With Custom Type Labels",
   args: {
     bot: sampleBots[0],
     typeLabels: { voicebot: "Voice", chatbot: "Chat" },

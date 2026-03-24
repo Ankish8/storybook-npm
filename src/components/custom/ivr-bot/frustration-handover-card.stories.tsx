@@ -67,7 +67,6 @@ export const Disabled: Story = {
 
 /** Custom department options from API or config. */
 export const CustomDepartments: Story = {
-  name: "Custom Departments",
   render: function Render() {
     const [data, setData] = useState<Partial<FrustrationHandoverData>>({
       frustrationHandoverEnabled: true,

@@ -589,7 +589,6 @@ export const GoAIFirst: Story = {
 // ─── Category Toggle Hidden ─────────────────────────────────────────────────────
 
 export const CategoryToggleHidden: Story = {
-  name: "Category Toggle Hidden",
   args: {
     tabs,
     activeTab: "team",
@@ -606,7 +605,6 @@ export const CategoryToggleHidden: Story = {
 // ─── Plans Only (No Power-ups / Drive) ────────────────────────────────────────
 
 export const PlansOnly: Story = {
-  name: "Plans Only",
   args: {
     tabs,
     activeTab: "team",
@@ -620,7 +618,6 @@ export const PlansOnly: Story = {
 // ─── Without Header Actions ───────────────────────────────────────────────────
 
 export const WithoutHeaderActions: Story = {
-  name: "Without Header Actions",
   args: {
     tabs,
     activeTab: "team",
@@ -635,7 +632,6 @@ export const WithoutHeaderActions: Story = {
 // ─── Single Tab (No Toggle) ──────────────────────────────────────────────────
 
 export const SingleTab: Story = {
-  name: "Single Tab",
   args: {
     tabs: [{ label: "All Plans", value: "all" }],
     activeTab: "all",
@@ -673,7 +669,6 @@ export const PlanCardCtaStates: Story = {
 // ─── Full page with Let Us Drive details ─────────────────────────────────────
 
 export const FullPageWithLetUsDriveDetails: Story = {
-  name: "Full Page With Let Us Drive Details",
   parameters: {
     docs: {
       description: {

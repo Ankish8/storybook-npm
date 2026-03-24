@@ -59,7 +59,6 @@ export const Overview: Story = {
 };
 
 export const WithDuration: Story = {
-  name: "With Duration",
   args: {
     thumbnailUrl:
       "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=375&fit=crop",
@@ -69,7 +68,6 @@ export const WithDuration: Story = {
 };
 
 export const CustomSpeedOptions: Story = {
-  name: "Custom Speed Options",
   args: {
     thumbnailUrl:
       "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=375&fit=crop",

@@ -173,7 +173,6 @@ export const Loading: Story = {
 };
 
 export const WithDefaultDates: Story = {
-  name: "With Default Dates",
   parameters: {
     docs: {
       description: {

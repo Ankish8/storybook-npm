@@ -122,7 +122,6 @@ export const Overview: Story = {
 };
 
 export const AllShapes: Story = {
-  name: "All Shapes",
   render: () => (
     <div className="flex items-start gap-8">
       <div className="flex flex-col items-center gap-2">
@@ -144,7 +143,6 @@ export const AllShapes: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex flex-col gap-4" style={{ width: 300 }}>
       <div className="flex flex-col gap-2">
@@ -164,7 +162,6 @@ export const AllVariants: Story = {
 };
 
 export const TextBlock: Story = {
-  name: "Text Block",
   render: () => (
     <div className="flex flex-col gap-3" style={{ width: 300 }}>
       <Skeleton shape="line" />
@@ -175,7 +172,6 @@ export const TextBlock: Story = {
 };
 
 export const CardSkeleton: Story = {
-  name: "Card Skeleton",
   render: () => (
     <div
       className="flex flex-col gap-4 rounded border border-semantic-border-layout p-4"
@@ -192,7 +188,6 @@ export const CardSkeleton: Story = {
 };
 
 export const UserProfileSkeleton: Story = {
-  name: "User Profile Skeleton",
   render: () => (
     <div className="flex items-center gap-4">
       <Skeleton shape="circle" width={48} height={48} />
@@ -205,7 +200,6 @@ export const UserProfileSkeleton: Story = {
 };
 
 export const TableRowSkeleton: Story = {
-  name: "Table Row Skeleton",
   render: () => (
     <div className="flex flex-col gap-3" style={{ width: 500 }}>
       {[1, 2, 3].map((row) => (

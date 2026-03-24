@@ -104,7 +104,6 @@ export const Default: Story = {
 
 /** With sample file download link. */
 export const WithSampleDownload: Story = {
-  name: "With Sample Download",
   args: {
     onSampleDownload: fn(),
   },
@@ -143,7 +142,6 @@ export const RealUpload: Story = {
 
 /** Shows how upload errors are displayed. */
 export const UploadError: Story = {
-  name: "Upload Error",
   render: (args) => {
     const [open, setOpen] = useState(false);
     return (

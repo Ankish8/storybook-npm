@@ -112,7 +112,6 @@ export const DollarCurrency: Story = {
 };
 
 export const CustomVoucherIcon: Story = {
-  name: "Custom Voucher Icon",
   args: {
     icon: <CreditCard className="size-5 text-semantic-primary" />,
     amounts: [500, 1000, 5000, 10000],
@@ -194,7 +193,6 @@ export const VoucherWithCustomValidator: Story = {
 };
 
 export const CustomVoucherLabels: Story = {
-  name: "Custom Voucher Labels",
   args: {
     icon: <CreditCard className="size-5 text-semantic-primary" />,
     amounts: [500, 1000, 5000, 10000],
@@ -236,7 +234,6 @@ export const ControlledVoucherInput: Story = {
 };
 
 export const WithStaticTax: Story = {
-  name: "With Static Tax",
   args: {
     icon: <CreditCard className="size-5 text-semantic-primary" />,
     amounts: [500, 1000, 5000, 10000],
@@ -269,7 +266,6 @@ export const WithMultipleTaxes: Story = {
 };
 
 export const WithOutstandingAmount: Story = {
-  name: "With Outstanding Amount",
   args: {
     icon: <CreditCard className="size-5 text-semantic-primary" />,
     amounts: [1000, 5000, 10000],

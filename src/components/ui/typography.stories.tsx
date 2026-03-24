@@ -142,7 +142,6 @@ export const Colors: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex flex-col gap-6 max-w-lg">
       {(["display", "headline", "title", "label", "body"] as Kind[]).map((kind) => (

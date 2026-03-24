@@ -226,7 +226,6 @@ export const Default: Story = {
 // ─── Dedicated Onboarding ─────────────────────────────────────────────────
 
 export const DedicatedOnboarding: Story = {
-  name: "Dedicated Onboarding",
   decorators: [singleCardDecorator],
   args: {
     title: "Dedicated Onboarding",
@@ -274,7 +273,6 @@ export const FreeState: Story = {
 // ─── Without Show Details ────────────────────────────────────────────────
 
 export const WithoutShowDetails: Story = {
-  name: "Without Show Details",
   decorators: [singleCardDecorator],
   args: {
     title: "Account Manager",

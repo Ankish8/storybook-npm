@@ -430,7 +430,6 @@ const SelectAllExample = () => {
 };
 
 export const SelectAllPattern: Story = {
-  name: "Select All Pattern",
   render: () => <SelectAllExample />,
   parameters: {
     docs: {
@@ -532,7 +531,6 @@ const SeparateLabelExample = () => {
 };
 
 export const SeparateLabelMode: Story = {
-  name: "Separate Label Mode",
   render: () => <SeparateLabelExample />,
   parameters: {
     docs: {
@@ -584,7 +582,6 @@ export const AccessibilityExample: Story = {
  * Shows checkboxClassName and labelClassName usage.
  */
 export const CustomStyling: Story = {
-  name: "Custom Styling",
   render: () => (
     <div className="flex flex-col gap-4">
       <Checkbox
@@ -665,7 +662,6 @@ const FormExample = () => {
 };
 
 export const FormIntegration: Story = {
-  name: "Form Integration",
   render: () => <FormExample />,
   parameters: {
     docs: {

@@ -24,11 +24,9 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      // Allow exporting variants alongside components (shadcn/ui pattern)
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      // Disabled: this is a component library that exports variants alongside
+      // components by design (shadcn/ui pattern). Fast refresh is app-only.
+      "react-refresh/only-export-components": "off",
       // Allow unused vars with underscore prefix (common pattern)
       "@typescript-eslint/no-unused-vars": [
         "error",

@@ -227,7 +227,6 @@ export const ExclusiveAccordion: Story = {
 };
 
 export const ActiveSubscription: Story = {
-  name: "Active Subscription",
   args: {
     icon: <RefreshCw className="size-5 text-semantic-primary" />,
     title: "Recurring payment setup",

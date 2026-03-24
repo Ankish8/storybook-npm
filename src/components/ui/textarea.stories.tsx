@@ -317,7 +317,6 @@ export const SmallSize: Story = {
 
 // Resizable
 export const Resizable: Story = {
-  name: "Resizable",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <Textarea
@@ -332,7 +331,6 @@ export const Resizable: Story = {
 
 // Required
 export const Required: Story = {
-  name: "Required",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <Textarea
@@ -352,7 +350,6 @@ export const Required: Story = {
 
 // Disabled
 export const Disabled: Story = {
-  name: "Disabled",
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <Textarea

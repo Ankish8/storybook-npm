@@ -84,14 +84,12 @@ export const Overview: Story = {
 };
 
 export const SingleCard: Story = {
-  name: "Single Card",
   args: {
     cards: [sampleCards[0]],
   },
 };
 
 export const ManyCards: Story = {
-  name: "Many Cards",
   args: {
     cards: [
       ...sampleCards,
@@ -122,7 +120,6 @@ export const ManyCards: Story = {
 };
 
 export const WithoutButtons: Story = {
-  name: "Without Buttons",
   args: {
     cards: [
       {
@@ -142,7 +139,6 @@ export const WithoutButtons: Story = {
 };
 
 export const CustomSize: Story = {
-  name: "Custom Size",
   args: {
     cards: sampleCards,
     cardWidth: 200,

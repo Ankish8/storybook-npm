@@ -128,7 +128,6 @@ export const Default: Story = {
 };
 
 export const UpcomingBillingSelected: Story = {
-  name: "Upcoming Billing Selected",
   args: {
     defaultSelectedOptionId: "upcoming-billing-cycle",
   },
@@ -136,7 +135,6 @@ export const UpcomingBillingSelected: Story = {
 };
 
 export const Loading: Story = {
-  name: "Loading",
   args: {
     defaultSelectedOptionId: "current-billing-cycle",
   },
@@ -168,7 +166,6 @@ export const Loading: Story = {
 };
 
 export const CustomCopy: Story = {
-  name: "Custom Copy",
   args: {
     title: "Plan upgrade, SUV ₹ 18,000.00/month",
     description: "Choose when to activate your updated monthly subscription.",

@@ -164,7 +164,6 @@ export const Overview: Story = {
 
 // WithFooter - panel with action buttons in footer
 export const WithFooter: Story = {
-  name: "With Footer",
   args: {
     open: true,
     title: "Edit Contact",
@@ -193,7 +192,6 @@ export const WithFooter: Story = {
 
 // WithCustomHeader - uses header prop with custom content
 export const WithCustomHeader: Story = {
-  name: "With Custom Header",
   args: {
     open: true,
     size: "default",
@@ -234,7 +232,6 @@ export const WithCustomHeader: Story = {
 
 // Sizes - shows sm, default, lg side by side
 export const Sizes: Story = {
-  name: "Sizes",
   decorators: [
     (Story) => (
       <div style={{ height: 500 }} className="flex justify-end gap-4 bg-gray-50 p-4">
@@ -268,7 +265,6 @@ export const Sizes: Story = {
 
 // Collapsed - open=false to show collapsed state
 export const Collapsed: Story = {
-  name: "Collapsed",
   args: {
     open: false,
     title: "Contact Details",

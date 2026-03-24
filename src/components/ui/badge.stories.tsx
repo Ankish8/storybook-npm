@@ -191,7 +191,6 @@ export const Default: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active">Active</Badge>
@@ -207,7 +206,6 @@ export const AllVariants: Story = {
 };
 
 export const AllSizes: Story = {
-  name: "All Sizes",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active" size="sm">
@@ -224,7 +222,6 @@ export const AllSizes: Story = {
 };
 
 export const WithIcons: Story = {
-  name: "With Icons",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active" leftIcon={<Check />}>
@@ -244,7 +241,6 @@ export const WithIcons: Story = {
 };
 
 export const WithRightIcon: Story = {
-  name: "With Right Icon",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active" rightIcon={<Check />}>
@@ -258,7 +254,6 @@ export const WithRightIcon: Story = {
 };
 
 export const StatusExamples: Story = {
-  name: "Status Examples",
   render: () => (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">

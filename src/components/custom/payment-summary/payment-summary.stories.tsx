@@ -274,7 +274,6 @@ export const Default: Story = {
  * Amount due is ₹0.00 shown in green.
  */
 export const ZeroBalance: Story = {
-  name: "Zero Balance",
   args: {
     title: "Detailed Bill Breakdown",
     headerInfo: {
@@ -322,7 +321,6 @@ export const ZeroBalance: Story = {
  * Amount due is ₹0.00 (green) with a hint showing the remaining prepaid balance.
  */
 export const CreditRemaining: Story = {
-  name: "Credit Remaining",
   args: {
     title: "Detailed Bill Breakdown",
     headerInfo: {

@@ -307,7 +307,6 @@ export const Default: Story = {
 // ─── Current Plan ────────────────────────────────────────────────────────
 
 export const CurrentPlan: Story = {
-  name: "Current Plan",
   decorators: [singleCardDecorator],
   args: {
     planName: "Compact",
@@ -371,7 +370,6 @@ export const CtaDisabled: Story = {
 // ─── With Info Text ─────────────────────────────────────────────────────
 
 export const WithInfoText: Story = {
-  name: "With Info Text",
   decorators: [singleCardDecorator],
   args: {
     planName: "Compact",
@@ -435,7 +433,6 @@ export const MostPopular: Story = {
 // ─── AIO ─────────────────────────────────────────────────────────────────
 
 export const AIO: Story = {
-  name: "AIO",
   decorators: [singleCardDecorator],
   args: {
     planName: "AIO",
@@ -454,7 +451,6 @@ export const AIO: Story = {
 // ─── Enterprise AI ──────────────────────────────────────────────────────
 
 export const EnterpriseAI: Story = {
-  name: "Enterprise AI",
   decorators: [singleCardDecorator],
   args: {
     planName: "Enterprise AI",
@@ -472,7 +468,6 @@ export const EnterpriseAI: Story = {
 // ─── Traditional Plans (Compact, Sedan, SUV) ────────────────────────────
 
 export const TraditionalPlans: Story = {
-  name: "Traditional Plans",
   parameters: { layout: "padded" },
   render: () => (
     <div className="flex gap-6 items-start" style={{ width: "1080px" }}>
@@ -525,7 +520,6 @@ export const TraditionalPlans: Story = {
 // ─── AI Plans (AIO, Enterprise AI) ──────────────────────────────────────
 
 export const AIPlans: Story = {
-  name: "AI Plans",
   parameters: { layout: "padded" },
   render: () => (
     <div className="flex gap-6 items-start" style={{ width: "720px" }}>
@@ -559,7 +553,6 @@ export const AIPlans: Story = {
 // ─── Without Features ────────────────────────────────────────────────────
 
 export const WithoutFeatures: Story = {
-  name: "Without Features",
   decorators: [singleCardDecorator],
   args: {
     planName: "Compact",
@@ -578,7 +571,6 @@ export const WithoutFeatures: Story = {
 // ─── Without Addon ───────────────────────────────────────────────────────
 
 export const WithoutAddon: Story = {
-  name: "Without Addon",
   decorators: [singleCardDecorator],
   args: {
     planName: "Sedan",

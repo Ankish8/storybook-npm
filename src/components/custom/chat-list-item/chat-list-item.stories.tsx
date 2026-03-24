@@ -145,7 +145,6 @@ export const WithDeletedAgent: Story = {
 };
 
 export const DocumentMessage: Story = {
-  name: "Document Message",
   args: {
     name: "Aditi Kumar",
     message: "Have a look at this document",
@@ -158,7 +157,6 @@ export const DocumentMessage: Story = {
 };
 
 export const ImageMessage: Story = {
-  name: "Image Message",
   args: {
     name: "Priya Nair",
     message: "Sent you a photo",

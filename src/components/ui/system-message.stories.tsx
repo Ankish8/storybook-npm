@@ -77,21 +77,18 @@ export const Overview: Story = {
 };
 
 export const AssignmentMessage: Story = {
-  name: "Assignment Message",
   args: {
     children: "Assigned to **Alex Smith** by **Admin**",
   },
 };
 
 export const PlainText: Story = {
-  name: "Plain Text",
   args: {
     children: "Chat was closed",
   },
 };
 
 export const MultipleBold: Story = {
-  name: "Multiple Bold",
   args: {
     children:
       "**John Doe** transferred this chat from **Sales** to **Support**",
@@ -99,7 +96,6 @@ export const MultipleBold: Story = {
 };
 
 export const InTimeline: Story = {
-  name: "In Timeline",
   render: () => (
     <div className="flex flex-col gap-2 w-[400px]">
       <div className="flex justify-center">

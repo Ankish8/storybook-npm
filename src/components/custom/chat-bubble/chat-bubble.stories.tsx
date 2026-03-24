@@ -72,7 +72,6 @@ export const ReceiverMessage: Story = {
 };
 
 export const WithSenderName: Story = {
-  name: "With Sender Name",
   args: {
     variant: "sender",
     timestamp: "2:15 PM",
@@ -145,7 +144,6 @@ export const AllStatuses: Story = {
 };
 
 export const FailedMessage: Story = {
-  name: "Failed Message",
   args: {
     variant: "sender",
     timestamp: "2:20 PM",
@@ -155,7 +153,6 @@ export const FailedMessage: Story = {
 };
 
 export const Conversation: Story = {
-  name: "Conversation",
   render: () => (
     <div className="flex flex-col gap-3">
       <ChatBubble variant="receiver" timestamp="2:10 PM">

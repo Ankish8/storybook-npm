@@ -189,7 +189,6 @@ export const BothDisabled: Story = {
 
 /** Hover over the info icons to see tooltips — header tooltip via `infoTooltip` prop, per-function tooltips via `FunctionItem.tooltip`. */
 export const WithTooltips: Story = {
-  name: "With Tooltips",
   args: {
     functions: [
       { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true, tooltip: "Transfers the call to a specific extension number" },

@@ -359,7 +359,6 @@ export const LongTitle: Story = {
 
 // All Variations Showcase - hidden from sidebar, shown in docs
 export const AllVariations: Story = {
-  name: "All Variations",
   tags: ["!dev"],
   render: () => (
     <div className="flex flex-col divide-y">
@@ -412,7 +411,6 @@ export const AllVariations: Story = {
 
 // Usage guide - hidden from sidebar, shown in docs
 export const Usage: Story = {
-  name: "Usage",
   tags: ["!dev"],
   parameters: {
     docs: {
@@ -595,7 +593,6 @@ export const DosAndDonts: Story = {
 
 // Accessibility - hidden from sidebar, shown in docs
 export const Accessibility: Story = {
-  name: "Accessibility",
   tags: ["!dev"],
   parameters: {
     docs: {

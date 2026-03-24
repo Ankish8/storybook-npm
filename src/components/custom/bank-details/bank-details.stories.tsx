@@ -169,7 +169,6 @@ export const Default: Story = {
 };
 
 export const WithoutIcon: Story = {
-  name: "Without Icon",
   args: {
     items: [
       { label: "Account holder's name", value: "MyOperator" },
@@ -197,7 +196,6 @@ export const CustomTitleSubtitle: Story = {
 };
 
 export const NoCopyButtons: Story = {
-  name: "No Copy Buttons",
   args: {
     icon: <Landmark className="size-5 text-semantic-primary" />,
     items: [
@@ -210,7 +208,6 @@ export const NoCopyButtons: Story = {
 };
 
 export const AllCopyable: Story = {
-  name: "All Copyable",
   args: {
     icon: <Landmark className="size-5 text-semantic-primary" />,
     items: [
@@ -237,7 +234,6 @@ export const CollapsedByDefault: Story = {
 };
 
 export const MinimalItems: Story = {
-  name: "Minimal Items",
   args: {
     icon: <Landmark className="size-5 text-semantic-primary" />,
     items: [

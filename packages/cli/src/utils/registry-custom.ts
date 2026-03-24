@@ -10072,6 +10072,7 @@ function VarPopup({
               key={v}
               type="button"
               role="option"
+              aria-selected={false}
               onMouseDown={(e) => { e.preventDefault(); onSelect(v); }}
               className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui"
             >
@@ -10130,6 +10131,7 @@ function VarPopup({
                   <button
                     type="button"
                     role="option"
+                    aria-selected={false}
                     onMouseDown={(e) => { e.preventDefault(); onSelect(insertValue); }}
                     className="relative flex flex-1 min-w-0 cursor-pointer select-none items-center px-2 py-1.5 text-sm outline-none"
                   >

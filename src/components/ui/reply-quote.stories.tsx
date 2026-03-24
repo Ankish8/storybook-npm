@@ -114,7 +114,6 @@ export const Overview: Story = {
 };
 
 export const WithClickHandler: Story = {
-  name: "With Click Handler",
   args: {
     sender: "Jane Smith",
     message: "Sure, I will take a look at it now.",
@@ -122,7 +121,6 @@ export const WithClickHandler: Story = {
 };
 
 export const LongText: Story = {
-  name: "Long Text",
   args: {
     sender: "A Very Long Sender Name That Should Be Truncated Automatically",
     message:
@@ -131,7 +129,6 @@ export const LongText: Story = {
 };
 
 export const InChatContext: Story = {
-  name: "In Chat Context",
   render: () => (
     <div className="flex flex-col gap-2 rounded-lg border border-semantic-border-layout p-4 bg-white">
       <ReplyQuote

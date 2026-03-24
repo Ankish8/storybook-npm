@@ -122,7 +122,6 @@ export const Overview: Story = {
 };
 
 export const AllSizes: Story = {
-  name: "All Sizes",
   render: () => (
     <div className="flex items-center gap-6">
       <div className="flex flex-col items-center gap-2">
@@ -146,7 +145,6 @@ export const AllSizes: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex items-center gap-6">
       <div className="flex flex-col items-center gap-2">
@@ -192,7 +190,6 @@ export const InlineWithText: Story = {
 };
 
 export const InButton: Story = {
-  name: "In Button",
   render: () => (
     <div className="flex gap-4">
       <button className="inline-flex items-center gap-2 rounded bg-semantic-primary px-4 py-2 text-sm font-medium text-white">
@@ -208,7 +205,6 @@ export const InButton: Story = {
 };
 
 export const CenteredLoading: Story = {
-  name: "Centered Loading",
   render: () => (
     <div className="flex h-48 w-80 items-center justify-center rounded border border-semantic-border-layout">
       <div className="flex flex-col items-center gap-3">

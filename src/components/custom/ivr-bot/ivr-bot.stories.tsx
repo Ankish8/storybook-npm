@@ -123,7 +123,6 @@ export const Overview: Story = {
 };
 
 export const EmptyState: Story = {
-  name: "Empty State",
   args: {
     botTitle: "New Voicebot",
     botType: "Voicebot",
@@ -164,7 +163,6 @@ export const WithErrorFile: Story = {
 
 /** Demonstrates overriding all dropdown options — voices, languages, departments, session variables. */
 export const CustomDropdownOptions: Story = {
-  name: "Custom Dropdown Options",
   render: function Render() {
     const [playingVoice, setPlayingVoice] = useState<string | undefined>();
     return (

@@ -134,7 +134,6 @@ export const Default: Story = {
 
 // With default values
 export const WithDefaultValues: Story = {
-  name: "With Default Values",
   args: {
     title: "Headers",
     description:
@@ -225,7 +224,6 @@ export const WithValidation: Story = {
 
 // Query Parameters use case
 export const QueryParameters: Story = {
-  name: "Query Parameters",
   args: {
     title: "Query Parameters",
     description:
@@ -242,7 +240,6 @@ export const QueryParameters: Story = {
 
 // Empty state
 export const EmptyState: Story = {
-  name: "Empty State",
   args: {
     title: "Headers",
     description:
@@ -253,7 +250,6 @@ export const EmptyState: Story = {
 
 // Value optional (only key required)
 export const ValueOptional: Story = {
-  name: "Value Optional",
   args: {
     title: "Environment Variables",
     description:
@@ -307,7 +303,6 @@ const RealWorldExample = () => {
 };
 
 export const RealWorldUsage: Story = {
-  name: "Real World Usage",
   render: () => <RealWorldExample />,
   parameters: {
     docs: {

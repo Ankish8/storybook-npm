@@ -335,7 +335,6 @@ export const AdjacentButtons: Story = {
 
 // Usage
 export const Usage: Story = {
-  name: "Usage",
   parameters: {
     docs: {
       description: {
@@ -441,7 +440,6 @@ export const Usage: Story = {
 
 // Accessibility
 export const Accessibility: Story = {
-  name: "Accessibility",
   parameters: {
     docs: {
       description: {

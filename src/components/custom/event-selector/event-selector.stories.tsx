@@ -225,7 +225,6 @@ export const Default: Story = {
 
 // With pre-selected events
 export const WithDefaultSelection: Story = {
-  name: "With Default Selection",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
@@ -356,7 +355,6 @@ const CustomEmptyStateExample = () => {
 };
 
 export const CustomEmptyState: Story = {
-  name: "Custom Empty State",
   render: () => <CustomEmptyStateExample />,
   parameters: {
     docs: {
@@ -391,7 +389,6 @@ export const PartialSelection: Story = {
 
 // Full selection
 export const FullSelection: Story = {
-  name: "Full Selection",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
@@ -404,7 +401,6 @@ export const FullSelection: Story = {
 
 // Custom title and description
 export const CustomLabels: Story = {
-  name: "Custom Labels",
   args: {
     events: sampleEvents,
     groups: sampleGroups,
@@ -491,7 +487,6 @@ const RealWorldExample = () => {
 };
 
 export const RealWorldUsage: Story = {
-  name: "Real World Usage",
   render: () => <RealWorldExample />,
   parameters: {
     docs: {

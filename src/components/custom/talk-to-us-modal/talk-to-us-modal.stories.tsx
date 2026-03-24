@@ -156,7 +156,6 @@ export const PrimaryCtaLoading: Story = {
 // ─── Custom Content ──────────────────────────────────────────────────────────
 
 export const CustomContent: Story = {
-  name: "Custom Content",
   args: {
     open: true,
     title: "Need Help Choosing?",
@@ -172,7 +171,6 @@ export const CustomContent: Story = {
 // ─── Custom Icon ─────────────────────────────────────────────────────────────
 
 export const CustomIcon: Story = {
-  name: "Custom Icon",
   args: {
     open: true,
     icon: (

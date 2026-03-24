@@ -122,7 +122,6 @@ export const Overview: Story = {
 };
 
 export const WithLabel: Story = {
-  name: "With Label",
   args: {
     label: "In Call Event:",
     children: "Start of call, Bridge, Call ended",
@@ -131,7 +130,6 @@ export const WithLabel: Story = {
 };
 
 export const SimpleTag: Story = {
-  name: "Simple Tag",
   args: {
     children: "After Call Event",
     variant: "default",
@@ -139,7 +137,6 @@ export const SimpleTag: Story = {
 };
 
 export const AllVariants: Story = {
-  name: "All Variants",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Tag variant="default">Default</Tag>
@@ -155,7 +152,6 @@ export const AllVariants: Story = {
 };
 
 export const AllSizes: Story = {
-  name: "All Sizes",
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Tag size="sm">Small</Tag>
@@ -166,7 +162,6 @@ export const AllSizes: Story = {
 };
 
 export const WithIcons: Story = {
-  name: "With Icons",
   parameters: {
     docs: {
       description: {
@@ -193,7 +188,6 @@ export const WithIcons: Story = {
 };
 
 export const EventTags: Story = {
-  name: "Event Tags",
   parameters: {
     docs: {
       description: {

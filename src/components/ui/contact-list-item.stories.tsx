@@ -131,7 +131,6 @@ export const Default: Story = {
 };
 
 export const WithoutSubtitle: Story = {
-  name: "Without Subtitle",
   args: {
     name: "Aditi Kumar",
     trailing: "MY01",
@@ -139,7 +138,6 @@ export const WithoutSubtitle: Story = {
 };
 
 export const WithoutTrailing: Story = {
-  name: "Without Trailing",
   args: {
     name: "Aditi Kumar",
     subtitle: "+91 98765 43210",
@@ -147,7 +145,6 @@ export const WithoutTrailing: Story = {
 };
 
 export const Selected: Story = {
-  name: "Selected",
   args: {
     name: "Aditi Kumar",
     subtitle: "+91 98765 43210",
@@ -157,7 +154,6 @@ export const Selected: Story = {
 };
 
 export const WithImage: Story = {
-  name: "With Image",
   args: {
     name: "Aditi Kumar",
     subtitle: "+91 98765 43210",

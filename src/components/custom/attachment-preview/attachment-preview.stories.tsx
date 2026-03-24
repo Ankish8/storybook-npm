@@ -71,28 +71,24 @@ export default meta;
 type Story = StoryObj<typeof AttachmentPreview>;
 
 export const ImagePreview: Story = {
-  name: "Image Preview",
   args: {
     file: createMockFile("vacation-photo.jpg", "image/jpeg", 1024 * 1024 * 2),
   },
 };
 
 export const VideoPreview: Story = {
-  name: "Video Preview",
   args: {
     file: createMockFile("meeting-recording.mp4", "video/mp4", 1024 * 1024 * 15),
   },
 };
 
 export const AudioPreview: Story = {
-  name: "Audio Preview",
   args: {
     file: createMockFile("voice-note.mp3", "audio/mpeg", 1024 * 1024 * 1),
   },
 };
 
 export const DocumentPreview: Story = {
-  name: "Document Preview",
   args: {
     file: createMockFile("quarterly-report.pdf", "application/pdf", 1024 * 1024 * 3),
   },

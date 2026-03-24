@@ -192,7 +192,6 @@ export const AutoDialer: Story = {
 // ─── Without Icon ───────────────────────────────────────────────────────
 
 export const WithoutIcon: Story = {
-  name: "Without Icon",
   decorators: [singleCardDecorator],
   args: {
     title: "Custom Integration",
