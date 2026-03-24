@@ -48,6 +48,18 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText(/5\/100/)).toBeInTheDocument();
   });
 
+  it("replaces spaces in function name with underscores and does not show format error", async () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const input = screen.getByLabelText(/Function Name/i);
+    await user.type(input, "my test func");
+    expect(input).toHaveValue("my_test_func");
+    expect(
+      screen.queryByText(
+        /Must start with a letter and contain only letters, numbers, and underscores/i
+      )
+    ).not.toBeInTheDocument();
+  });
+
   it("advances to step 2 on Next click", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");

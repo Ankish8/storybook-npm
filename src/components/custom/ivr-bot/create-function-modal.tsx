@@ -30,6 +30,11 @@ const HEADER_KEY_MAX = 512;
 const HEADER_VALUE_MAX = 2048;
 
 const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
+
+/** Spaces → underscores so users can type natural phrases without invalid-name errors. */
+function normalizeFunctionNameInput(value: string): string {
+  return value.replace(/ /g, "_");
+}
 const VARIABLE_NAME_MAX = 30;
 const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 const URL_REGEX = /^https?:\/\//;
@@ -1166,10 +1171,15 @@ export const CreateFunctionModal = React.forwardRef(
                       maxLength={FUNCTION_NAME_MAX}
                       disabled={disabled}
                       onChange={(e) => {
-                        setName(e.target.value);
-                        if (nameError) validateName(e.target.value);
+                        const normalized = normalizeFunctionNameInput(
+                          e.target.value
+                        );
+                        setName(normalized);
+                        if (nameError) validateName(normalized);
                       }}
-                      onBlur={(e) => validateName(e.target.value)}
+                      onBlur={(e) =>
+                        validateName(normalizeFunctionNameInput(e.target.value))
+                      }
                       placeholder="Enter name of the function"
                       className={cn(inputCls, "pr-16")}
                     />
