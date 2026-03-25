@@ -116,7 +116,11 @@ export interface CreateFunctionModalProps {
    * so it appears in the dropdown on the next open.
    */
   onAddVariable?: (data: VariableFormData) => void;
-  /** Called when user edits a variable from the autocomplete popup */
+  /**
+   * Called when the user saves "Edit variable". The modal already renames
+   * `{{function.name}}` / `{{name}}` across URL, body, headers, query params, and test values.
+   * Update your `variableGroups` (and persist to your backend) using `originalName` → `data.name`.
+   */
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;

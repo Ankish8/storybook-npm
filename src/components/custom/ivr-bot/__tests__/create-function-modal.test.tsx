@@ -194,4 +194,77 @@ describe("CreateFunctionModal", () => {
     );
     expect(valueInput).toHaveValue("{{function.order_id}}");
   });
+
+  it("renames {{function.*}} placeholders across the function form when a variable is edited", async () => {
+    const onEditVariable = vi.fn();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onEditVariable={onEditVariable}
+        variableGroups={[
+          {
+            label: "Function variables",
+            items: [{ name: "yogesh", editable: true }],
+          },
+        ]}
+        initialStep={2}
+        initialTab="header"
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/{{function.yogesh}}",
+          headers: [{ id: "h1", key: "Authorization", value: "{{function.yogesh}}" }],
+          queryParams: [],
+          body: '{"x":"{{function.yogesh}}"}',
+        }}
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: /Edit variable function\.yogesh/i })
+    );
+    const varNameInput = screen.getByPlaceholderText("e.g., customer_name");
+    await user.clear(varNameInput);
+    await user.type(varNameInput, "yogesh2");
+    await user.click(screen.getByRole("button", { name: /Save Changes/i }));
+
+    expect(screen.getByPlaceholderText(/Enter URL or Type/i)).toHaveValue(
+      "https://api.example.com/{{function.yogesh2}}"
+    );
+    expect(screen.getByPlaceholderText("Type {{ to add variables")).toHaveValue(
+      "{{function.yogesh2}}"
+    );
+    await user.click(screen.getByText("Body"));
+    expect(screen.getByPlaceholderText(/Enter request body/i)).toHaveValue(
+      '{"x":"{{function.yogesh2}}"}'
+    );
+    expect(onEditVariable).toHaveBeenCalledWith(
+      "yogesh",
+      expect.objectContaining({ name: "yogesh2" })
+    );
+  });
+
+  it('shows "Value is required for this key" when Required is Yes and Save is clicked with empty variable name', async () => {
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onAddVariable={noop} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const valueInput = screen.getByPlaceholderText("Type {{ to add variables");
+    await user.click(valueInput);
+    await user.type(valueInput, "{{{{");
+    await user.click(screen.getByRole("button", { name: /Add new variable/i }));
+
+    await user.click(screen.getByRole("radio", { name: /^Yes$/i }));
+    await user.click(screen.getByRole("button", { name: /^Save$/ }));
+
+    expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
+    const nameField = screen.getByPlaceholderText("e.g., customer_name");
+    expect(nameField).toHaveAttribute("aria-invalid", "true");
+  });
 });

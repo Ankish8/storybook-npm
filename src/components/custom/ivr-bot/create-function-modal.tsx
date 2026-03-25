@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trash2, ChevronDown, X, Plus, Pencil } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -92,6 +92,45 @@ function extractVarRefs(texts: string[]): string[] {
   const pattern = /\{\{[^}]+\}\}/g;
   const all = texts.flatMap((t) => t.match(pattern) ?? []);
   return Array.from(new Set(all));
+}
+
+/** Whether a `{{…}}` placeholder is marked required in variable metadata (session / unknown → false). */
+function isPlaceholderRequiredInTest(
+  placeholder: string,
+  variableGroups?: VariableGroup[]
+): boolean {
+  if (!variableGroups?.length) return false;
+  for (const g of variableGroups) {
+    for (const item of g.items) {
+      const asDisplayed = `{{${item.name}}}`;
+      const asFunction = `{{function.${item.name}}}`;
+      const asValue = item.value;
+      if (
+        placeholder === asDisplayed ||
+        placeholder === asFunction ||
+        (asValue && placeholder === asValue)
+      ) {
+        return Boolean(item.required);
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Rewrites `{{function.oldRaw}}` and `{{oldRaw}}` to the new name everywhere in a string.
+ * Used when saving "Edit variable" so URL, body, headers, and query params stay in sync.
+ */
+function renameVariableRefsInString(
+  text: string,
+  oldRaw: string,
+  newRaw: string
+): string {
+  const prev = oldRaw.trim();
+  const next = newRaw.trim();
+  if (!prev || prev === next) return text;
+  const withFunction = text.split(`{{function.${prev}}}`).join(`{{function.${next}}}`);
+  return withFunction.split(`{{${prev}}}`).join(`{{${next}}}`);
 }
 
 // ── Value segment parser — splits "text {{var}} text" into typed segments ─────
@@ -349,13 +388,23 @@ function VariableFormModal({
   };
 
   const handleSave = () => {
+    if (!name.trim()) {
+      setNameError(
+        required
+          ? "Value is required for this key"
+          : "Variable name is required"
+      );
+      return;
+    }
     const error = validateName(name);
-    if (error || !name.trim()) {
-      setNameError(error || "Variable name is required");
+    if (error) {
+      setNameError(error);
       return;
     }
     onSave({ name: name.trim(), description: description.trim() || undefined, required });
   };
+
+  const hasInvalidFormat = Boolean(name.trim() && validateName(name));
 
   return (
     <FormModal
@@ -363,7 +412,7 @@ function VariableFormModal({
       onOpenChange={onOpenChange}
       title={mode === "create" ? "Create new variable" : "Edit variable"}
       saveButtonText={mode === "create" ? "Save" : "Save Changes"}
-      disableSave={!name.trim() || !!nameError}
+      disableSave={hasInvalidFormat}
       onSave={handleSave}
       size="default"
     >
@@ -380,15 +429,28 @@ function VariableFormModal({
               onChange={handleNameChange}
               placeholder="e.g., customer_name"
               maxLength={VARIABLE_NAME_MAX}
-              className={cn(inputCls, "pr-16")}
+              aria-invalid={Boolean(nameError)}
+              className={cn(
+                inputCls,
+                "pr-16",
+                nameError && "border-semantic-error-primary"
+              )}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
               {name.length}/{VARIABLE_NAME_MAX}
             </span>
           </div>
-          <span className={cn("text-sm", nameError ? "text-semantic-error-primary" : "text-semantic-text-muted")}>
-            {nameError || "Variable name should start with alphabet; Cannot have special characters except underscore (_)"}
-          </span>
+          {nameError ? (
+            <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary">
+              <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
+              <span>{nameError}</span>
+            </p>
+          ) : (
+            <span className="text-sm text-semantic-text-muted">
+              Variable name should start with alphabet; Cannot have special characters except
+              underscore (_)
+            </span>
+          )}
         </div>
         <TextField
           label="Description (optional)"
@@ -573,6 +635,7 @@ function VariableInput({
                   {onEditVariable && (
                     <button
                       type="button"
+                      aria-label={`Edit variable ${seg.name}`}
                       onMouseDown={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -950,7 +1013,31 @@ export const CreateFunctionModal = React.forwardRef(
       if (varModalMode === "create") {
         onAddVariable?.(data);
       } else {
-        onEditVariable?.(varModalInitialData?.name ?? "", data);
+        const prevRaw = (varModalInitialData?.name ?? "").trim();
+        if (prevRaw && prevRaw !== trimmedName) {
+          setUrl((u) => renameVariableRefsInString(u, prevRaw, trimmedName));
+          setBody((b) => renameVariableRefsInString(b, prevRaw, trimmedName));
+          setHeaders((rows) =>
+            rows.map((r) => ({
+              ...r,
+              value: renameVariableRefsInString(r.value, prevRaw, trimmedName),
+            }))
+          );
+          setQueryParams((rows) =>
+            rows.map((r) => ({
+              ...r,
+              value: renameVariableRefsInString(r.value, prevRaw, trimmedName),
+            }))
+          );
+          setTestVarValues((prev) => {
+            const next: Record<string, string> = {};
+            for (const [k, v] of Object.entries(prev)) {
+              next[renameVariableRefsInString(k, prevRaw, trimmedName)] = v;
+            }
+            return next;
+          });
+        }
+        onEditVariable?.(prevRaw, data);
       }
       setVarModalOpen(false);
     };
@@ -1103,6 +1190,15 @@ export const CreateFunctionModal = React.forwardRef(
 
       setStep2SubmitAttempted(true);
 
+      const requiredTestVars = testableVars.filter((v) =>
+        isPlaceholderRequiredInTest(v, variableGroups)
+      );
+      if (requiredTestVars.length > 0) {
+        setTestVarSubmitAttempted(true);
+        const hasEmpty = requiredTestVars.some((v) => !testVarValues[v]?.trim());
+        if (hasEmpty) return;
+      }
+
       const urlErr = getUrlSubmitValidationError(url);
       setUrlError(urlErr);
 
@@ -1132,14 +1228,17 @@ export const CreateFunctionModal = React.forwardRef(
       text.replace(/\{\{[^}]+\}\}/g, (match) => testVarValues[match] ?? match);
 
     const handleTestApi = async () => {
-      if (!onTestApi) return;
-
-      // Validate all test variable values are filled
-      if (testableVars.length > 0) {
+      // Validate all test variable values are filled (always runs, regardless of onTestApi)
+      const requiredTestVars = testableVars.filter((v) =>
+        isPlaceholderRequiredInTest(v, variableGroups)
+      );
+      if (requiredTestVars.length > 0) {
         setTestVarSubmitAttempted(true);
-        const hasEmpty = testableVars.some((v) => !testVarValues[v]?.trim());
+        const hasEmpty = requiredTestVars.some((v) => !testVarValues[v]?.trim());
         if (hasEmpty) return;
       }
+
+      if (!onTestApi) return;
 
       setIsTesting(true);
       try {
@@ -1532,7 +1631,11 @@ export const CreateFunctionModal = React.forwardRef(
                         Variable values for testing
                       </span>
                       {testableVars.map((variable) => {
-                        const isEmpty = testVarSubmitAttempted && !testVarValues[variable]?.trim();
+                        const mustFill = isPlaceholderRequiredInTest(variable, variableGroups);
+                        const isEmpty =
+                          mustFill &&
+                          testVarSubmitAttempted &&
+                          !testVarValues[variable]?.trim();
                         return (
                         <div key={variable} className="flex flex-col gap-1">
                           <div className="flex items-center gap-3">
@@ -1554,8 +1657,9 @@ export const CreateFunctionModal = React.forwardRef(
                           />
                           </div>
                           {isEmpty && (
-                            <p className="m-0 text-sm text-semantic-error-primary pl-[132px]">
-                              Test value is required
+                            <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary pl-[132px]">
+                              <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
+                              <span>Value is required for this key</span>
                             </p>
                           )}
                         </div>

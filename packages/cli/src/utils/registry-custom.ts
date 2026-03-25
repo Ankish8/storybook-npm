@@ -11393,14 +11393,17 @@ export const CreateFunctionModal = React.forwardRef(
       text.replace(/\\{\\{[^}]+\\}\\}/g, (match) => testVarValues[match] ?? match);
 
     const handleTestApi = async () => {
-      if (!onTestApi) return;
-
-      // Validate all test variable values are filled
-      if (testableVars.length > 0) {
+      // Validate all test variable values are filled (always runs, regardless of onTestApi)
+      const requiredTestVars = testableVars.filter((v) =>
+        isPlaceholderRequiredInTest(v, variableGroups)
+      );
+      if (requiredTestVars.length > 0) {
         setTestVarSubmitAttempted(true);
-        const hasEmpty = testableVars.some((v) => !testVarValues[v]?.trim());
+        const hasEmpty = requiredTestVars.some((v) => !testVarValues[v]?.trim());
         if (hasEmpty) return;
       }
+
+      if (!onTestApi) return;
 
       setIsTesting(true);
       try {
