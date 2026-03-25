@@ -228,14 +228,14 @@ const FileUploadModal = React.forwardRef(
           size="default"
           hideCloseButton
           className={cn(
-            "max-w-[min(660px,calc(100vw-2rem))] rounded-xl p-4 gap-0 sm:p-6",
+            "max-w-[min(660px,calc(100vw-2rem))] min-w-0 rounded-xl p-4 gap-0 sm:p-6 overflow-x-hidden",
             className
           )}
           {...props}
         >
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <DialogTitle className="m-0 text-base font-semibold text-semantic-text-primary">
+          <div className="flex items-center justify-between gap-3 mb-6 min-w-0">
+            <DialogTitle className="m-0 text-base font-semibold text-semantic-text-primary truncate min-w-0 pr-2">
               {title}
             </DialogTitle>
             <DialogDescription className="sr-only">
@@ -244,20 +244,20 @@ const FileUploadModal = React.forwardRef(
             <button
               type="button"
               onClick={handleClose}
-              className="rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-semantic-text-primary"
+              className="shrink-0 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-semantic-text-primary"
               aria-label="Close dialog"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Body */}
-          <div className="flex flex-col gap-4 items-end w-full">
+          {/* Body — stretch so children respect modal width; long filenames need min-w-0 chain */}
+          <div className="flex flex-col gap-4 items-stretch w-full min-w-0 max-w-full">
             {shouldShowSampleDownload && (
               <button
                 type="button"
                 onClick={onSampleDownload}
-                className="flex items-center gap-1.5 text-sm font-semibold text-semantic-text-link hover:opacity-80 transition-opacity"
+                className="self-end flex items-center gap-1.5 text-sm font-semibold text-semantic-text-link hover:opacity-80 transition-opacity"
               >
                 <Download className="size-3.5" />
                 {sampleDownloadLabel}
@@ -266,14 +266,14 @@ const FileUploadModal = React.forwardRef(
 
             {/* Drop zone */}
             <div
-              className="w-full border border-dashed border-semantic-border-layout bg-semantic-bg-ui rounded p-4"
+              className="w-full min-w-0 max-w-full border border-dashed border-semantic-border-layout bg-semantic-bg-ui rounded p-4"
               onDrop={(e) => {
                 e.preventDefault();
                 addFiles(e.dataTransfer.files);
               }}
               onDragOver={(e) => e.preventDefault()}
             >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 min-w-0">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -281,11 +281,11 @@ const FileUploadModal = React.forwardRef(
                 >
                   {uploadButtonLabel}
                 </button>
-                <div className="flex flex-col gap-1">
-                  <p className="m-0 text-sm text-semantic-text-secondary tracking-[0.035px]">
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
+                  <p className="m-0 text-sm text-semantic-text-secondary tracking-[0.035px] break-words">
                     {dropDescription}
                   </p>
-                  <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
+                  <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px] break-words">
                     {formatDescription}
                   </p>
                 </div>
@@ -305,15 +305,18 @@ const FileUploadModal = React.forwardRef(
 
             {/* Upload item list */}
             {items.length > 0 && (
-              <div className="flex flex-col gap-2.5 w-full">
+              <div className="flex flex-col gap-2.5 w-full min-w-0 max-w-full">
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2"
+                    className="bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded px-4 py-3 flex flex-col gap-2 min-w-0 max-w-full overflow-hidden"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                        <p className="m-0 text-sm text-semantic-text-primary tracking-[0.035px] truncate">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <div className="flex flex-col gap-0.5 flex-1 min-w-0 overflow-hidden">
+                        <p
+                          className="m-0 text-sm text-semantic-text-primary tracking-[0.035px] truncate max-w-full"
+                          title={item.file.name}
+                        >
                           {item.status === "uploading"
                             ? "Uploading..."
                             : item.file.name}

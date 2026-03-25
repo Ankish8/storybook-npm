@@ -87,4 +87,24 @@ describe("FileUploadModal", () => {
     render(<FileUploadModal open={true} onOpenChange={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Close dialog" })).toBeInTheDocument();
   });
+
+  it("sets title on file name row for full name on hover", async () => {
+    const user = userEvent.setup();
+    const longName =
+      "Apple_Developer_Program_License_Agreement_CQ4PWZ329Z676678678678687687897897897897897897897897.pdf";
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={vi.fn().mockResolvedValue(undefined)}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const file = new File(["x"], longName, { type: "application/pdf" });
+    await user.upload(input, file);
+    const nameRow = await screen.findByText(longName);
+    expect(nameRow).toHaveAttribute("title", longName);
+  });
 });
