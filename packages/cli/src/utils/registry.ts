@@ -19158,6 +19158,7 @@ export const CreateFunctionModal = React.forwardRef(
 
     // Test variable values — filled by user before clicking Test API
     const [testVarValues, setTestVarValues] = React.useState<Record<string, string>>({});
+    const [testVarSubmitAttempted, setTestVarSubmitAttempted] = React.useState(false);
 
     // Unique {{variable}} refs found across url, body, headers, queryParams
     const testableVars = React.useMemo(
@@ -19185,6 +19186,7 @@ export const CreateFunctionModal = React.forwardRef(
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
+        setTestVarSubmitAttempted(false);
         setNameError("");
         setUrlError("");
         setBodyError("");
@@ -19211,6 +19213,7 @@ export const CreateFunctionModal = React.forwardRef(
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
+      setTestVarSubmitAttempted(false);
       setNameError("");
       setUrlError("");
       setBodyError("");
@@ -19284,6 +19287,14 @@ export const CreateFunctionModal = React.forwardRef(
 
     const handleTestApi = async () => {
       if (!onTestApi) return;
+
+      // Validate all test variable values are filled
+      if (testableVars.length > 0) {
+        setTestVarSubmitAttempted(true);
+        const hasEmpty = testableVars.some((v) => !testVarValues[v]?.trim());
+        if (hasEmpty) return;
+      }
+
       setIsTesting(true);
       try {
         const step2: CreateFunctionStep2Data = {
@@ -19674,8 +19685,11 @@ export const CreateFunctionModal = React.forwardRef(
                       <span className="text-sm text-semantic-text-muted">
                         Variable values for testing
                       </span>
-                      {testableVars.map((variable) => (
-                        <div key={variable} className="flex items-center gap-3">
+                      {testableVars.map((variable) => {
+                        const isEmpty = testVarSubmitAttempted && !testVarValues[variable]?.trim();
+                        return (
+                        <div key={variable} className="flex flex-col gap-1">
+                          <div className="flex items-center gap-3">
                           <span className="text-sm text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
                             {variable}
                           </span>
@@ -19689,10 +19703,18 @@ export const CreateFunctionModal = React.forwardRef(
                               }))
                             }
                             placeholder="Enter test value"
-                            className={cn(inputCls, "flex-1 h-9 text-sm")}
+                            className={cn(inputCls, "flex-1 h-9 text-sm", isEmpty && "border-semantic-error-primary")}
+                            aria-invalid={isEmpty}
                           />
+                          </div>
+                          {isEmpty && (
+                            <p className="m-0 text-sm text-semantic-error-primary pl-[132px]">
+                              Test value is required
+                            </p>
+                          )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 
