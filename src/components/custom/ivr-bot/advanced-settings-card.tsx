@@ -8,28 +8,60 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "../../ui/accordion";
+import {
+  defaultAdvancedSettingsNumericBounds,
+  type AdvancedSettingsNumericBounds,
+} from "./advanced-settings-bounds";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface AdvancedSettingsData {
-  silenceTimeout: number;
-  callEndThreshold: number;
+  silenceTimeout?: number;
+  callEndThreshold?: number;
   interruptionHandling: boolean;
+}
+
+/** Payload when a numeric advanced field finishes a blur validation pass. */
+export interface AdvancedSettingsNumericFieldBlurDetail {
+  /** Value committed to form state (`undefined` if empty after blur). */
+  value: number | undefined;
+  /** `false` when the field shows a validation error after blur. */
+  valid: boolean;
 }
 
 export interface AdvancedSettingsCardProps {
   /** Current form data */
   data: Partial<AdvancedSettingsData>;
-  /** Callback when any field changes */
+  /** Callback when any field in this card changes */
   onChange: (patch: Partial<AdvancedSettingsData>) => void;
-  /** Min value for silence timeout spinner (default: 1) */
+  /**
+   * Shorthand min/max for both numeric fields. Overridden by explicit
+   * `silenceTimeoutMin`, `silenceTimeoutMax`, `callEndThresholdMin`, or `callEndThresholdMax`
+   * when those are passed.
+   */
+  numericBounds?: Partial<AdvancedSettingsNumericBounds>;
+  /** Min value for silence timeout spinner */
   silenceTimeoutMin?: number;
-  /** Max value for silence timeout spinner (default: 60) */
+  /** Max value for silence timeout spinner */
   silenceTimeoutMax?: number;
-  /** Min value for call end threshold spinner (default: 1) */
+  /** Min value for call end threshold spinner */
   callEndThresholdMin?: number;
-  /** Max value for call end threshold spinner (default: 10) */
+  /** Max value for call end threshold spinner */
   callEndThresholdMax?: number;
+  /** When true, an empty value shows a validation error on blur (default: true) */
+  silenceTimeoutRequired?: boolean;
+  /** When true, an empty value shows a validation error on blur (default: true) */
+  callEndThresholdRequired?: boolean;
+  /** Fires after each successful `onChange` from this card (including stepper and switch). */
+  onAdvancedSettingsChange?: (patch: Partial<AdvancedSettingsData>) => void;
+  /** Fires when silence timeout input blurs after validation. */
+  onSilenceTimeoutBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
+  /** Fires when call end threshold input blurs after validation. */
+  onCallEndThresholdBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Additional className */
@@ -55,52 +87,192 @@ function Field({
   );
 }
 
-function NumberSpinner({
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, n));
+}
+
+function ValidatedNumberSpinner({
+  id,
   value,
   onChange,
-  min = 0,
-  max = 999,
+  min,
+  max,
+  required,
   disabled,
+  onBlurCommit,
 }: {
-  value: number;
-  onChange: (v: number) => void;
-  min?: number;
-  max?: number;
+  id: string;
+  value: number | undefined;
+  onChange: (v: number | undefined) => void;
+  min: number;
+  max: number;
+  required: boolean;
   disabled?: boolean;
+  onBlurCommit?: (detail: AdvancedSettingsNumericFieldBlurDetail) => void;
 }) {
+  const [inputStr, setInputStr] = React.useState(() =>
+    value === undefined ? "" : String(value)
+  );
+  const [error, setError] = React.useState<string | null>(null);
+  const focusedRef = React.useRef(false);
+  const prevValueRef = React.useRef(value);
+
+  React.useEffect(() => {
+    if (prevValueRef.current !== value) {
+      prevValueRef.current = value;
+      if (!focusedRef.current) {
+        setInputStr(value === undefined ? "" : String(value));
+        setError(null);
+      }
+    }
+  }, [value]);
+
+  const stepBase = (): number | null => {
+    const t = inputStr.trim();
+    if (t !== "") {
+      const n = Number(t);
+      if (Number.isFinite(n)) return n;
+    }
+    if (value !== undefined) return value;
+    return null;
+  };
+
+  const canIncrement = (): boolean => {
+    const b = stepBase();
+    if (b === null) return true;
+    return b < max;
+  };
+
+  const canDecrement = (): boolean => {
+    const b = stepBase();
+    if (b === null) return false;
+    return b > min;
+  };
+
+  const applyStep = (delta: 1 | -1) => {
+    let n = stepBase();
+    if (n === null) {
+      if (delta > 0) n = min - 1;
+      else return;
+    }
+    const next = clamp(n + delta, min, max);
+    setInputStr(String(next));
+    setError(null);
+    onChange(next);
+  };
+
+  const handleBlur = () => {
+    focusedRef.current = false;
+    const trimmed = inputStr.trim();
+    if (trimmed === "") {
+      onChange(undefined);
+      if (required) {
+        setError("This field is required");
+        onBlurCommit?.({ value: undefined, valid: false });
+      } else {
+        setError(null);
+        onBlurCommit?.({ value: undefined, valid: true });
+      }
+      return;
+    }
+    const num = Number(trimmed);
+    if (!Number.isFinite(num)) {
+      setError("Enter a valid number");
+      onBlurCommit?.({ value, valid: false });
+      return;
+    }
+    if (num < min || num > max) {
+      setError(`Value must be between ${min} and ${max}`);
+      onBlurCommit?.({ value, valid: false });
+      return;
+    }
+    setError(null);
+    onChange(num);
+    onBlurCommit?.({ value: num, valid: true });
+  };
+
+  const errorId = error ? `${id}-error` : undefined;
+
   return (
-    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-solid border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
-      <input
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        disabled={disabled}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed"
-      />
-      <div className="flex flex-col items-center shrink-0 gap-0.5">
-        <button
-          type="button"
-          onClick={() => onChange(Math.min(max, value + 1))}
+    <div className="flex flex-col gap-1">
+      <div
+        className={cn(
+          "flex w-full items-center gap-2.5 px-4 py-2.5 border border-solid bg-semantic-bg-primary rounded",
+          error
+            ? "border-semantic-error-primary"
+            : "border-semantic-border-layout",
+          disabled && "opacity-50 cursor-not-allowed"
+        )}
+      >
+        <input
+          id={id}
+          type="text"
+          inputMode="numeric"
+          value={inputStr}
           disabled={disabled}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
-          aria-label="Increase"
-        >
-          <ChevronUp className="size-3" />
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange(Math.max(min, value - 1))}
-          disabled={disabled}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
-          aria-label="Decrease"
-        >
-          <ChevronDown className="size-3" />
-        </button>
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
+          onFocus={() => {
+            focusedRef.current = true;
+            setError(null);
+          }}
+          onBlur={handleBlur}
+          onChange={(e) => setInputStr(e.target.value)}
+          className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none disabled:cursor-not-allowed"
+        />
+        <div className="flex flex-col items-center shrink-0 gap-0.5">
+          <button
+            type="button"
+            onClick={() => applyStep(1)}
+            disabled={disabled || !canIncrement()}
+            className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Increase"
+          >
+            <ChevronUp className="size-3" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyStep(-1)}
+            disabled={disabled || !canDecrement()}
+            className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Decrease"
+          >
+            <ChevronDown className="size-3" />
+          </button>
+        </div>
       </div>
+      {error ? (
+        <p
+          id={errorId}
+          role="alert"
+          className="m-0 text-xs text-semantic-error-primary"
+        >
+          {error}
+        </p>
+      ) : null}
     </div>
   );
+}
+
+function useCorrectOutOfRangeNumeric(
+  raw: number | undefined,
+  min: number,
+  max: number,
+  disabled: boolean | undefined,
+  patchKey: "silenceTimeout" | "callEndThreshold",
+  onChange: (patch: Partial<AdvancedSettingsData>) => void
+) {
+  const onChangeRef = React.useRef(onChange);
+  onChangeRef.current = onChange;
+
+  React.useEffect(() => {
+    if (disabled || raw === undefined) return;
+    if (raw < min || raw > max) {
+      onChangeRef.current({
+        [patchKey]: clamp(raw, min, max),
+      } as Partial<AdvancedSettingsData>);
+    }
+  }, [raw, min, max, disabled, patchKey]);
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -110,15 +282,63 @@ const AdvancedSettingsCard = React.forwardRef(
     {
       data,
       onChange,
-      silenceTimeoutMin = 1,
-      silenceTimeoutMax = 60,
-      callEndThresholdMin = 1,
-      callEndThresholdMax = 10,
+      numericBounds,
+      silenceTimeoutMin: silenceTimeoutMinProp,
+      silenceTimeoutMax: silenceTimeoutMaxProp,
+      callEndThresholdMin: callEndThresholdMinProp,
+      callEndThresholdMax: callEndThresholdMaxProp,
+      silenceTimeoutRequired = true,
+      callEndThresholdRequired = true,
+      onAdvancedSettingsChange,
+      onSilenceTimeoutBlur,
+      onCallEndThresholdBlur,
       disabled,
       className,
     }: AdvancedSettingsCardProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const silenceTimeoutMin =
+      silenceTimeoutMinProp ??
+      numericBounds?.silenceTimeoutMin ??
+      defaultAdvancedSettingsNumericBounds.silenceTimeoutMin;
+    const silenceTimeoutMax =
+      silenceTimeoutMaxProp ??
+      numericBounds?.silenceTimeoutMax ??
+      defaultAdvancedSettingsNumericBounds.silenceTimeoutMax;
+    const callEndThresholdMin =
+      callEndThresholdMinProp ??
+      numericBounds?.callEndThresholdMin ??
+      defaultAdvancedSettingsNumericBounds.callEndThresholdMin;
+    const callEndThresholdMax =
+      callEndThresholdMaxProp ??
+      numericBounds?.callEndThresholdMax ??
+      defaultAdvancedSettingsNumericBounds.callEndThresholdMax;
+
+    const emitPatch = React.useCallback(
+      (patch: Partial<AdvancedSettingsData>) => {
+        onChange(patch);
+        onAdvancedSettingsChange?.(patch);
+      },
+      [onChange, onAdvancedSettingsChange]
+    );
+
+    useCorrectOutOfRangeNumeric(
+      data.silenceTimeout,
+      silenceTimeoutMin,
+      silenceTimeoutMax,
+      disabled,
+      "silenceTimeout",
+      emitPatch
+    );
+    useCorrectOutOfRangeNumeric(
+      data.callEndThreshold,
+      callEndThresholdMin,
+      callEndThresholdMax,
+      disabled,
+      "callEndThreshold",
+      emitPatch
+    );
+
     return (
       <div
         ref={ref}
@@ -139,28 +359,31 @@ const AdvancedSettingsCard = React.forwardRef(
                 {/* Number fields section */}
                 <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-solid border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
                   <Field label="Silence Timeout (seconds)">
-                    <NumberSpinner
-                      value={data.silenceTimeout ?? 15}
-                      onChange={(v) => onChange({ silenceTimeout: v })}
+                    <ValidatedNumberSpinner
+                      id="advanced-silence-timeout"
+                      value={data.silenceTimeout}
+                      onChange={(v) => emitPatch({ silenceTimeout: v })}
                       min={silenceTimeoutMin}
                       max={silenceTimeoutMax}
+                      required={silenceTimeoutRequired}
                       disabled={disabled}
+                      onBlurCommit={onSilenceTimeoutBlur}
                     />
-                    <p className="m-0 text-xs text-semantic-text-muted">
-                      Default: 15 seconds
-                    </p>
                   </Field>
 
                   <Field label="Call End Threshold">
-                    <NumberSpinner
-                      value={data.callEndThreshold ?? 3}
-                      onChange={(v) => onChange({ callEndThreshold: v })}
+                    <ValidatedNumberSpinner
+                      id="advanced-call-end-threshold"
+                      value={data.callEndThreshold}
+                      onChange={(v) => emitPatch({ callEndThreshold: v })}
                       min={callEndThresholdMin}
                       max={callEndThresholdMax}
+                      required={callEndThresholdRequired}
                       disabled={disabled}
+                      onBlurCommit={onCallEndThresholdBlur}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
-                      Drop call after n consecutive silences. Default: 3
+                      Drop call after n consecutive silences.
                     </p>
                   </Field>
                 </div>
@@ -178,7 +401,7 @@ const AdvancedSettingsCard = React.forwardRef(
                   <Switch
                     checked={data.interruptionHandling ?? true}
                     onCheckedChange={(v) =>
-                      onChange({ interruptionHandling: v })
+                      emitPatch({ interruptionHandling: v })
                     }
                     disabled={disabled}
                   />

@@ -369,6 +369,7 @@ export {
 export type {
   BotCardProps,
   CreateBotModalProps,
+  CreateBotModalTypeOptionsProps,
   BotListProps,
   BotListHeaderProps,
   BotListSearchProps,
@@ -380,7 +381,7 @@ export type {
 } from "./components/custom/bots";
 
 // IvrBot (Custom)
-export { BotIdentityCard, BotBehaviorCard, KnowledgeBaseCard, FunctionsCard, FrustrationHandoverCard, AdvancedSettingsCard, IvrBotConfig, CreateFunctionModal } from "./components/custom/ivr-bot";
+export { BotIdentityCard, BotBehaviorCard, KnowledgeBaseCard, FunctionsCard, FrustrationHandoverCard, AdvancedSettingsCard, IvrBotConfig, CreateFunctionModal, defaultAdvancedSettingsNumericBounds } from "./components/custom/ivr-bot";
 export type {
   BotIdentityCardProps,
   BotIdentityData,
@@ -407,6 +408,9 @@ export type {
   KeyValuePair as IvrBotKeyValuePair,
   HttpMethod,
   FunctionTabType,
+  DefaultAdvancedSettingsNumericBounds,
+  AdvancedSettingsNumericBounds,
+  AdvancedSettingsNumericFieldBlurDetail,
 } from "./components/custom/ivr-bot";
 
 // ReplyQuote

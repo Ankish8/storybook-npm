@@ -169,6 +169,117 @@ describe("CreateFunctionModal", () => {
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 
+  const requiredFnVarGroups = [
+    {
+      label: "Function variables",
+      items: [{ name: "test_yogesh124", required: true, editable: true }],
+    },
+  ] as const;
+
+  it("shows required test variable error when parent omits variableGroups but user saved Required Yes on new variable", async () => {
+    const onTestApi = vi.fn();
+    render(<CreateFunctionModal open onOpenChange={noop} onTestApi={onTestApi} />);
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
+    await user.type(screen.getByPlaceholderText(/Enter URL or Type/i), "https://api.example.com/");
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const valueInput = screen.getByPlaceholderText("Type {{ to add variables");
+    await user.click(valueInput);
+    await user.type(valueInput, "{{{{");
+    await user.click(screen.getByRole("button", { name: /Add new variable/i }));
+
+    await user.type(screen.getByPlaceholderText("e.g., customer_name"), "order_id");
+    await user.click(screen.getByRole("radio", { name: /^Yes$/i }));
+    await user.click(screen.getByRole("button", { name: /^Save$/ }));
+
+    await user.click(screen.getByRole("button", { name: /Test API/i }));
+    expect(onTestApi).not.toHaveBeenCalled();
+    expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
+  });
+
+  it("shows required test variable error when Test API is clicked with empty value", async () => {
+    const onTestApi = vi.fn();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onTestApi={onTestApi}
+        variableGroups={[...requiredFnVarGroups]}
+        initialStep={2}
+        initialTab="header"
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/{{function.test_yogesh124}}",
+          headers: [],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /Test API/i }));
+    expect(onTestApi).not.toHaveBeenCalled();
+    expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
+  });
+
+  it("treats {{name}} placeholder as required when variableGroups marks name required", async () => {
+    const onTestApi = vi.fn();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onTestApi={onTestApi}
+        variableGroups={[...requiredFnVarGroups]}
+        initialStep={2}
+        initialTab="header"
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/{{test_yogesh124}}",
+          headers: [],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /Test API/i }));
+    expect(onTestApi).not.toHaveBeenCalled();
+    expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
+  });
+
+  it("does not require test variable values on Submit — validation runs on Test API only", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onSubmit={onSubmit}
+        variableGroups={[...requiredFnVarGroups]}
+        initialStep={2}
+        initialTab="header"
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/{{function.test_yogesh124}}",
+          headers: [],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).toHaveBeenCalled();
+    expect(screen.queryByText("Value is required for this key")).not.toBeInTheDocument();
+  });
+
   it("replaces open {{ trigger with {{name}} after Create new variable saves", async () => {
     const onAddVariable = vi.fn();
     render(

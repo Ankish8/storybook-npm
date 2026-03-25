@@ -494,7 +494,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: "custom",
     dependencies: ["clsx","tailwind-merge","lucide-react"],
     category: "custom",
-    internalDependencies: ["badge","button","dialog","dropdown-menu"],
+    internalDependencies: ["badge","button","dialog","dropdown-menu","tooltip"],
   },
   "file-upload-modal": {
     name: "file-upload-modal",

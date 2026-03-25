@@ -855,6 +855,7 @@ components:
       - button
       - dialog
       - dropdown-menu
+      - tooltip
     isMultiFile: true
     directory: "bots"
     files:

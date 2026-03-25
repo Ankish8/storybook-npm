@@ -590,76 +590,6 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
-  // 6. Handle className={...} JSX expression bindings
-  // Covers template literals, ternaries, and any other expression patterns
-  // e.g., className={`flex ${active ? "bg-primary" : "bg-gray"}`}
-  // e.g., className={active ? "border-b-2" : "text-muted"}
-  {
-    let jsxResult = ''
-    let jsxLastIndex = 0
-    const jsxRegex = /className\s*=\s*\{/g
-    let jsxMatch
-
-    while ((jsxMatch = jsxRegex.exec(content)) !== null) {
-      if (jsxMatch.index < jsxLastIndex) continue
-
-      jsxResult += content.slice(jsxLastIndex, jsxMatch.index)
-
-      // Find the matching closing } by tracking brace depth
-      const bracePos = jsxMatch.index + jsxMatch[0].length - 1
-      let depth = 1
-      let pos = bracePos + 1
-
-      while (pos < content.length && depth > 0) {
-        const ch = content[pos]
-        if (ch === '{') { depth++; pos++; continue }
-        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
-        if (ch === '"') {
-          pos++
-          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
-          pos++; continue
-        }
-        if (ch === "'") {
-          pos++
-          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
-          pos++; continue
-        }
-        if (ch === '`') {
-          pos++
-          let tDepth = 0
-          while (pos < content.length) {
-            if (content[pos] === '\\') { pos += 2; continue }
-            if (content[pos] === '`' && tDepth === 0) { pos++; break }
-            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
-            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
-            pos++
-          }
-          continue
-        }
-        pos++
-      }
-
-      // Extract expression between { and }
-      const expr = content.slice(bracePos + 1, pos - 1)
-
-      // Skip expressions already handled by earlier patterns (cn, cva, etc.)
-      const exprTrimmed = expr.trimStart()
-      if (/^(cn|cva)\s*\(/.test(exprTrimmed)) {
-        jsxResult += content.slice(jsxMatch.index, pos)
-        jsxLastIndex = pos
-        continue
-      }
-
-      // Prefix the expression using the className expression handler
-      const prefixedExpr = prefixClassNameExpression(expr, prefix)
-
-      jsxResult += jsxMatch[0] + prefixedExpr + '}'
-      jsxLastIndex = pos
-    }
-    jsxResult += content.slice(jsxLastIndex)
-    content = jsxResult
-  }
-
   return content
 }
 
@@ -14334,7 +14264,8 @@ export type { BrandIconProps } from "./icon";
             "badge",
             "button",
             "dialog",
-            "dropdown-menu"
+            "dropdown-menu",
+            "tooltip"
       ],
       isMultiFile: true,
       directory: "bots",
@@ -14521,6 +14452,12 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Button } from "../button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../tooltip";
 import { BOT_TYPE, type CreateBotModalProps, type BotType } from "./types";
 
 interface BotTypeOption {
@@ -14542,137 +14479,230 @@ const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   },
 ];
 
-export const CreateBotModal = React.forwardRef(({ open, onOpenChange, onSubmit, isLoading, className }: CreateBotModalProps, ref: React.Ref<HTMLDivElement>) => {
-  const [name, setName] = React.useState("");
-  const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
+function getFirstEnabledBotType(
+  chatbotDisabled: boolean,
+  voicebotDisabled: boolean
+): BotType {
+  if (!chatbotDisabled) return "chatbot";
+  if (!voicebotDisabled) return "voicebot";
+  return "chatbot";
+}
 
-  React.useEffect(() => {
-    if (!open) {
-      setName("");
-      setSelectedType("chatbot");
-    }
-  }, [open]);
-
-  const handleSubmit = () => {
-    if (!name.trim()) return;
-    const typeValue = selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
-    onSubmit?.({ name: name.trim(), type: typeValue });
-  };
-
-  const handleClose = () => {
-    onOpenChange(false);
-  };
-
+function isBotTypeDisabled(
+  type: BotType,
+  chatbotDisabled: boolean,
+  voicebotDisabled: boolean
+): boolean {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent ref={ref} size="sm" className={cn("mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full", className)}>
-        <DialogHeader>
-          <DialogTitle>Create AI bot</DialogTitle>
-        </DialogHeader>
-
-        <div className="flex flex-col gap-4 sm:gap-6">
-          {/* Name field */}
-          <div className="flex flex-col gap-1.5">
-            <label
-              htmlFor="bot-name"
-              className="flex items-center gap-0.5 text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
-            >
-              Name
-              <span className="text-xs text-semantic-error-primary">*</span>
-            </label>
-            <input
-              id="bot-name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter bot name"
-              className={cn(
-                "w-full h-10 px-4 py-2.5 text-sm rounded border border-solid",
-                "border-semantic-border-input bg-semantic-bg-primary",
-                "text-semantic-text-primary placeholder:text-semantic-text-muted",
-                "outline-none hover:border-semantic-border-input-focus",
-                "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
-              )}
-            />
-          </div>
-
-          {/* Bot type selection */}
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-              Select Bot Type
-            </span>
-            <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
-              {BOT_TYPE_OPTIONS.map(({ id, label, description }) => {
-                const isSelected = selectedType === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setSelectedType(id)}
-                    className={cn(
-                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border border-solid text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0",
-                      "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
-                      isSelected
-                        ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"
-                        : "bg-semantic-bg-primary border-semantic-border-layout hover:bg-semantic-bg-hover"
-                    )}
-                    aria-pressed={isSelected}
-                  >
-                    <div
-                      className={cn(
-                        "flex items-center justify-center size-[34px] rounded-lg",
-                        isSelected
-                          ? "bg-semantic-bg-primary"
-                          : "bg-semantic-info-surface-subtle"
-                      )}
-                    >
-                      {id === "chatbot" ? (
-                        <MessageSquare className="size-5 text-semantic-text-secondary" />
-                      ) : (
-                        <Phone className="size-5 text-semantic-text-secondary" />
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <p className="m-0 text-sm font-semibold text-semantic-text-primary tracking-[0.014px]">
-                        {label}
-                      </p>
-                      <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
-                        {description}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Helper text */}
-            <div className="flex items-center gap-1.5 px-3 py-2.5 rounded bg-semantic-bg-ui">
-              <Info className="size-4 text-semantic-text-secondary shrink-0" />
-              <p className="m-0 text-xs text-semantic-text-secondary">
-                This setting cannot be changed once selected.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer actions */}
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4 justify-end mt-2">
-          <Button variant="outline" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="default"
-            onClick={handleSubmit}
-            disabled={!name.trim() || isLoading}
-            loading={isLoading}
-          >
-            Create
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    (type === "chatbot" && chatbotDisabled) ||
+    (type === "voicebot" && voicebotDisabled)
   );
-});
+}
+
+export const CreateBotModal = React.forwardRef(
+  (
+    {
+      open,
+      onOpenChange,
+      onSubmit,
+      isLoading,
+      chatbotDisabled = false,
+      voicebotDisabled = false,
+      chatbotDisabledTooltip,
+      voicebotDisabledTooltip,
+      className,
+    }: CreateBotModalProps,
+    ref: React.Ref<HTMLDivElement>
+  ) => {
+    const [name, setName] = React.useState("");
+    const [selectedType, setSelectedType] = React.useState<BotType>("chatbot");
+
+    const chatD = Boolean(chatbotDisabled);
+    const voiceD = Boolean(voicebotDisabled);
+
+    React.useEffect(() => {
+      if (!open) {
+        setName("");
+        setSelectedType(getFirstEnabledBotType(chatD, voiceD));
+        return;
+      }
+      setSelectedType((prev) => {
+        if (!isBotTypeDisabled(prev, chatD, voiceD)) return prev;
+        return getFirstEnabledBotType(chatD, voiceD);
+      });
+    }, [open, chatD, voiceD]);
+
+    const selectedTypeBlocked = isBotTypeDisabled(selectedType, chatD, voiceD);
+
+    const handleSubmit = () => {
+      if (!name.trim() || selectedTypeBlocked) return;
+      const typeValue =
+        selectedType === "chatbot" ? BOT_TYPE.CHAT : BOT_TYPE.VOICE;
+      onSubmit?.({ name: name.trim(), type: typeValue });
+    };
+
+    const handleClose = () => {
+      onOpenChange(false);
+    };
+
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          ref={ref}
+          size="sm"
+          className={cn(
+            "mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full",
+            className
+          )}
+        >
+          <DialogHeader>
+            <DialogTitle>Create AI bot</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 sm:gap-6">
+            {/* Name field */}
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="bot-name"
+                className="flex items-center gap-0.5 text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
+              >
+                Name
+                <span className="text-xs text-semantic-error-primary">*</span>
+              </label>
+              <input
+                id="bot-name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter bot name"
+                className={cn(
+                  "w-full h-10 px-4 py-2.5 text-sm rounded border border-solid",
+                  "border-semantic-border-input bg-semantic-bg-primary",
+                  "text-semantic-text-primary placeholder:text-semantic-text-muted",
+                  "outline-none hover:border-semantic-border-input-focus",
+                  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+                )}
+              />
+            </div>
+
+            {/* Bot type selection */}
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
+                Select Bot Type
+              </span>
+              <TooltipProvider delayDuration={200}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
+                  {BOT_TYPE_OPTIONS.map(({ id, label, description }) => {
+                    const optionDisabled = isBotTypeDisabled(id, chatD, voiceD);
+                    const isSelected = selectedType === id && !optionDisabled;
+                    const disabledTooltip =
+                      id === "chatbot"
+                        ? chatbotDisabledTooltip
+                        : voicebotDisabledTooltip;
+                    const showTooltip =
+                      optionDisabled &&
+                      disabledTooltip != null &&
+                      disabledTooltip.trim() !== "";
+
+                    const baseButtonClass = cn(
+                      "flex flex-col items-start gap-2 sm:gap-2.5 p-3 rounded-lg border border-solid text-left flex-1 min-h-[100px] sm:h-[134px] justify-center min-w-0 w-full",
+                      "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus",
+                      optionDisabled
+                        ? "cursor-not-allowed opacity-50 pointer-events-none bg-semantic-bg-primary border-semantic-border-layout"
+                        : isSelected
+                          ? "bg-semantic-brand-surface border-semantic-brand shadow-sm"
+                          : "bg-semantic-bg-primary border-semantic-border-layout hover:bg-semantic-bg-hover"
+                    );
+
+                    const button = (
+                      <button
+                        type="button"
+                        disabled={optionDisabled}
+                        onClick={() => {
+                          if (!optionDisabled) setSelectedType(id);
+                        }}
+                        className={baseButtonClass}
+                        aria-pressed={isSelected}
+                        aria-disabled={optionDisabled}
+                      >
+                        <div
+                          className={cn(
+                            "flex items-center justify-center size-[34px] rounded-lg",
+                            isSelected
+                              ? "bg-semantic-bg-primary"
+                              : "bg-semantic-info-surface-subtle"
+                          )}
+                        >
+                          {id === "chatbot" ? (
+                            <MessageSquare className="size-5 text-semantic-text-secondary" />
+                          ) : (
+                            <Phone className="size-5 text-semantic-text-secondary" />
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <p className="m-0 text-sm font-semibold text-semantic-text-primary tracking-[0.014px]">
+                            {label}
+                          </p>
+                          <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
+                            {description}
+                          </p>
+                        </div>
+                      </button>
+                    );
+
+                    if (showTooltip) {
+                      return (
+                        <Tooltip key={id}>
+                          <TooltipTrigger asChild>
+                            <span className="flex flex-1 min-w-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus">
+                              {button}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <p className="m-0">{disabledTooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    }
+
+                    return (
+                      <React.Fragment key={id}>
+                        {button}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </TooltipProvider>
+
+              {/* Helper text */}
+              <div className="flex items-center gap-1.5 px-3 py-2.5 rounded bg-semantic-bg-ui">
+                <Info className="size-4 text-semantic-text-secondary shrink-0" />
+                <p className="m-0 text-xs text-semantic-text-secondary">
+                  This setting cannot be changed once selected.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer actions */}
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4 justify-end mt-2">
+            <Button variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleSubmit}
+              disabled={!name.trim() || isLoading || selectedTypeBlocked}
+              loading={isLoading}
+            >
+              Create
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+);
 
 CreateBotModal.displayName = "CreateBotModal";
 `, prefix),
@@ -14695,6 +14725,10 @@ export const CreateBotFlow = React.forwardRef(
     {
       createCardLabel = "Create new bot",
       onSubmit,
+      chatbotDisabled,
+      voicebotDisabled,
+      chatbotDisabledTooltip,
+      voicebotDisabledTooltip,
       className,
       ...props
     }: CreateBotFlowProps,
@@ -14722,6 +14756,10 @@ export const CreateBotFlow = React.forwardRef(
         <CreateBotModal
           open={modalOpen}
           onOpenChange={setModalOpen}
+          chatbotDisabled={chatbotDisabled}
+          voicebotDisabled={voicebotDisabled}
+          chatbotDisabledTooltip={chatbotDisabledTooltip}
+          voicebotDisabledTooltip={voicebotDisabledTooltip}
           onSubmit={(data) => {
             onSubmit?.(data);
             setModalOpen(false);
@@ -14752,6 +14790,10 @@ export function EditBotFlow({
   searchPlaceholder = "Search bot...",
   createCardLabel = "Create new bot",
   typeLabels,
+  chatbotDisabled,
+  voicebotDisabled,
+  chatbotDisabledTooltip,
+  voicebotDisabledTooltip,
   onBotDelete,
   onCreateBotSubmit,
   onSearch,
@@ -14791,6 +14833,10 @@ export function EditBotFlow({
         searchPlaceholder={searchPlaceholder}
         createCardLabel={createCardLabel}
         typeLabels={typeLabels}
+        chatbotDisabled={chatbotDisabled}
+        voicebotDisabled={voicebotDisabled}
+        chatbotDisabledTooltip={chatbotDisabledTooltip}
+        voicebotDisabledTooltip={voicebotDisabledTooltip}
         onBotEdit={handleEdit}
         onBotDelete={onBotDelete}
         onCreateBotSubmit={onCreateBotSubmit}
@@ -14828,6 +14874,10 @@ export const BotList = React.forwardRef(
       subtitle = "Create & manage AI bots",
       searchPlaceholder = "Search bot...",
       createCardLabel = "Create new bot",
+      chatbotDisabled,
+      voicebotDisabled,
+      chatbotDisabledTooltip,
+      voicebotDisabledTooltip,
       className,
       ...props
     }: BotListProps,
@@ -14867,6 +14917,10 @@ export const BotList = React.forwardRef(
           <CreateBotModal
             open={createModalOpen}
             onOpenChange={setCreateModalOpen}
+            chatbotDisabled={chatbotDisabled}
+            voicebotDisabled={voicebotDisabled}
+            chatbotDisabledTooltip={chatbotDisabledTooltip}
+            voicebotDisabledTooltip={voicebotDisabledTooltip}
             onSubmit={(data) => {
               onCreateBotSubmit?.(data);
               setCreateModalOpen(false);
@@ -14907,6 +14961,10 @@ export const BotList = React.forwardRef(
         <CreateBotModal
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
+          chatbotDisabled={chatbotDisabled}
+          voicebotDisabled={voicebotDisabled}
+          chatbotDisabledTooltip={chatbotDisabledTooltip}
+          voicebotDisabledTooltip={voicebotDisabledTooltip}
           onSubmit={(data) => {
             onCreateBotSubmit?.(data);
             setCreateModalOpen(false);
@@ -15177,6 +15235,18 @@ export interface CreateBotModalProps {
   onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
   /** Shows loading spinner on Create button and disables it (e.g. while API call is in flight) */
   isLoading?: boolean;
+  /** When true, Chat bot type cannot be selected */
+  chatbotDisabled?: boolean;
+  /** When true, Voice bot type cannot be selected */
+  voicebotDisabled?: boolean;
+  /**
+   * Shown on hover/focus when Chat bot is disabled. Tooltip is not rendered when omitted or empty.
+   */
+  chatbotDisabledTooltip?: string;
+  /**
+   * Shown on hover/focus when Voice bot is disabled. Tooltip is not rendered when omitted or empty.
+   */
+  voicebotDisabledTooltip?: string;
   className?: string;
 }
 
@@ -15215,9 +15285,19 @@ export interface BotListGridProps
   children: React.ReactNode;
 }
 
+/** Props forwarded to CreateBotModal for bot-type gating (optional). */
+export type CreateBotModalTypeOptionsProps = Pick<
+  CreateBotModalProps,
+  | "chatbotDisabled"
+  | "voicebotDisabled"
+  | "chatbotDisabledTooltip"
+  | "voicebotDisabledTooltip"
+>;
+
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit">,
+    CreateBotModalTypeOptionsProps {
   /** Create new bot card label */
   createCardLabel?: string;
   /** Called when Create Bot modal is submitted with { name, type } */
@@ -15225,7 +15305,7 @@ export interface CreateBotFlowProps
 }
 
 /** Props for EditBotFlow: bot list + config view when Edit is clicked. */
-export interface EditBotFlowProps {
+export interface EditBotFlowProps extends CreateBotModalTypeOptionsProps {
   /** Bots to show in the list (e.g. first 2 for demo) */
   bots: Bot[];
   /** Page title */
@@ -15253,7 +15333,8 @@ export interface EditBotFlowProps {
 }
 
 export interface BotListProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children">,
+    CreateBotModalTypeOptionsProps {
   /** List of bots to display */
   bots?: Bot[];
   /** Override type badge labels for all cards (e.g. { chatbot: "Chat", voicebot: "Voice" }). Per-bot bot.typeLabel still wins. */
@@ -15287,7 +15368,12 @@ export type { BotCardProps } from "./types";
 export { CreateBotModal } from "./create-bot-modal";
 export { CreateBotFlow } from "./create-bot-flow";
 export { EditBotFlow } from "./edit-bot-flow";
-export type { CreateBotModalProps, CreateBotFlowProps, EditBotFlowProps } from "./types";
+export type {
+  CreateBotModalProps,
+  CreateBotModalTypeOptionsProps,
+  CreateBotFlowProps,
+  EditBotFlowProps,
+} from "./types";
 
 export { BotList } from "./bot-list";
 export { BotListHeader } from "./bot-list-header";
@@ -17848,11 +17934,18 @@ export const IvrBotConfig = React.forwardRef(
       voiceOptions,
       languageOptions,
       sessionVariables,
+      functionVariableGroups,
+      onAddFunctionVariable,
+      onEditFunctionVariable,
       escalationDepartmentOptions,
+      advancedSettingsNumericBounds,
       silenceTimeoutMin,
       silenceTimeoutMax,
       callEndThresholdMin,
       callEndThresholdMax,
+      onAdvancedSettingsChange,
+      onSilenceTimeoutBlur,
+      onCallEndThresholdBlur,
       className,
     }: IvrBotConfigProps,
     ref: React.Ref<HTMLDivElement>
@@ -18005,10 +18098,14 @@ export const IvrBotConfig = React.forwardRef(
             <AdvancedSettingsCard
               data={data}
               onChange={update}
+              numericBounds={advancedSettingsNumericBounds}
               silenceTimeoutMin={silenceTimeoutMin}
               silenceTimeoutMax={silenceTimeoutMax}
               callEndThresholdMin={callEndThresholdMin}
               callEndThresholdMax={callEndThresholdMax}
+              onAdvancedSettingsChange={onAdvancedSettingsChange}
+              onSilenceTimeoutBlur={onSilenceTimeoutBlur}
+              onCallEndThresholdBlur={onCallEndThresholdBlur}
               disabled={disabled}
             />
           </div>
@@ -18023,6 +18120,9 @@ export const IvrBotConfig = React.forwardRef(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           sessionVariables={sessionVariables}
+          variableGroups={functionVariableGroups}
+          onAddVariable={onAddFunctionVariable}
+          onEditVariable={onEditFunctionVariable}
         />
 
         {/* Edit Function Modal */}
@@ -18036,6 +18136,9 @@ export const IvrBotConfig = React.forwardRef(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           sessionVariables={sessionVariables}
+          variableGroups={functionVariableGroups}
+          onAddVariable={onAddFunctionVariable}
+          onEditVariable={onEditFunctionVariable}
           disabled={disabled}
         />
 
@@ -18153,7 +18256,7 @@ export function headerRowsHaveSubmitErrors(rows: KeyValuePair[]): boolean {
         {
           name: "create-function-modal.tsx",
           content: prefixTailwindClasses(`import * as React from "react";
-import { Trash2, ChevronDown, X, Plus, Pencil } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -18246,6 +18349,105 @@ function extractVarRefs(texts: string[]): string[] {
   const pattern = /\\{\\{[^}]+\\}\\}/g;
   const all = texts.flatMap((t) => t.match(pattern) ?? []);
   return Array.from(new Set(all));
+}
+
+/** True if a \`{{…}}\` token in the form matches this variable item (handles \`{{name}}\` vs \`{{function.name}}\` and legacy \`item.name\` with \`function.\` prefix). */
+function placeholderMatchesVariableItem(placeholder: string, item: VariableItem): boolean {
+  if (item.value && placeholder === item.value) return true;
+  const asDisplayed = \`{{\${item.name}}}\`;
+  const asFunction = \`{{function.\${item.name}}}\`;
+  if (placeholder === asDisplayed || placeholder === asFunction) return true;
+
+  const m = /^\\{\\{([^}]+)\\}\\}$/.exec(placeholder);
+  if (!m) return false;
+  const inner = m[1].trim();
+  if (inner === item.name) return true;
+
+  const bareName = item.name.startsWith("function.") ? item.name.slice("function.".length) : item.name;
+  return inner === bareName || inner === \`function.\${bareName}\`;
+}
+
+/** Aliases for the inner text of \`{{…}}\` (e.g. \`function.foo\` ↔ \`foo\`). */
+function placeholderInnerAliases(inner: string): string[] {
+  const trimmed = inner.trim();
+  if (!trimmed) return [];
+  const out = new Set<string>([trimmed]);
+  const bare = trimmed.startsWith("function.") ? trimmed.slice("function.".length) : trimmed;
+  out.add(bare);
+  if (!trimmed.startsWith("function.")) {
+    out.add(\`function.\${bare}\`);
+  }
+  return Array.from(out);
+}
+
+/** Keys used to store Test API "required" for a function variable name from the form (bare id, no \`{{}}\`). */
+function placeholderInnerAliasesForBareName(bareName: string): string[] {
+  const trimmed = bareName.trim();
+  if (!trimmed) return [];
+  return placeholderInnerAliases(trimmed);
+}
+
+function buildFnVarRequiredMapFromGroups(groups?: VariableGroup[]): Record<string, boolean> {
+  const seeded: Record<string, boolean> = {};
+  for (const g of groups ?? []) {
+    for (const item of g.items) {
+      if (!item.required) continue;
+      const n = item.name.trim();
+      const bare = n.startsWith("function.") ? n.slice("function.".length) : n;
+      for (const key of placeholderInnerAliasesForBareName(bare)) {
+        seeded[key] = true;
+      }
+    }
+  }
+  return seeded;
+}
+
+/**
+ * Whether a \`{{…}}\` placeholder is required for Test API.
+ * \`localFnVarRequired\` merges Required from \`variableGroups\` (on open) plus Create/Edit variable saves
+ * so validation works when the parent omits \`variableGroups\` or has not updated it yet after \`onAddVariable\`.
+ */
+function isPlaceholderRequiredInTest(
+  placeholder: string,
+  variableGroups?: VariableGroup[],
+  localFnVarRequired?: Record<string, boolean>
+): boolean {
+  if (localFnVarRequired && Object.keys(localFnVarRequired).length > 0) {
+    const m = /^\\{\\{([^}]+)\\}\\}$/.exec(placeholder.trim());
+    if (m) {
+      for (const alias of placeholderInnerAliases(m[1])) {
+        if (Object.prototype.hasOwnProperty.call(localFnVarRequired, alias)) {
+          return Boolean(localFnVarRequired[alias]);
+        }
+      }
+    }
+  }
+
+  if (!variableGroups?.length) return false;
+  for (const g of variableGroups) {
+    for (const item of g.items) {
+      if (placeholderMatchesVariableItem(placeholder, item)) {
+        return Boolean(item.required);
+      }
+    }
+  }
+  return false;
+}
+
+/**
+ * Rewrites \`{{function.oldRaw}}\` and \`{{oldRaw}}\` to the new name everywhere in a string.
+ * Used when saving "Edit variable" so URL, body, headers, and query params stay in sync.
+ */
+function renameVariableRefsInString(
+  text: string,
+  oldRaw: string,
+  newRaw: string
+): string {
+  const prev = oldRaw.trim();
+  const next = newRaw.trim();
+  if (!prev || prev === next) return text;
+  const withFunction = text.split(\`{{function.\${prev}}}\`).join(\`{{function.\${next}}}\`);
+  return withFunction.split(\`{{\${prev}}}\`).join(\`{{\${next}}}\`);
 }
 
 // ── Value segment parser — splits "text {{var}} text" into typed segments ─────
@@ -18503,13 +18705,23 @@ function VariableFormModal({
   };
 
   const handleSave = () => {
+    if (!name.trim()) {
+      setNameError(
+        required
+          ? "Value is required for this key"
+          : "Variable name is required"
+      );
+      return;
+    }
     const error = validateName(name);
-    if (error || !name.trim()) {
-      setNameError(error || "Variable name is required");
+    if (error) {
+      setNameError(error);
       return;
     }
     onSave({ name: name.trim(), description: description.trim() || undefined, required });
   };
+
+  const hasInvalidFormat = Boolean(name.trim() && validateName(name));
 
   return (
     <FormModal
@@ -18517,7 +18729,7 @@ function VariableFormModal({
       onOpenChange={onOpenChange}
       title={mode === "create" ? "Create new variable" : "Edit variable"}
       saveButtonText={mode === "create" ? "Save" : "Save Changes"}
-      disableSave={!name.trim() || !!nameError}
+      disableSave={hasInvalidFormat}
       onSave={handleSave}
       size="default"
     >
@@ -18534,15 +18746,28 @@ function VariableFormModal({
               onChange={handleNameChange}
               placeholder="e.g., customer_name"
               maxLength={VARIABLE_NAME_MAX}
-              className={cn(inputCls, "pr-16")}
+              aria-invalid={Boolean(nameError)}
+              className={cn(
+                inputCls,
+                "pr-16",
+                nameError && "border-semantic-error-primary"
+              )}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
               {name.length}/{VARIABLE_NAME_MAX}
             </span>
           </div>
-          <span className={cn("text-sm", nameError ? "text-semantic-error-primary" : "text-semantic-text-muted")}>
-            {nameError || "Variable name should start with alphabet; Cannot have special characters except underscore (_)"}
-          </span>
+          {nameError ? (
+            <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary">
+              <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
+              <span>{nameError}</span>
+            </p>
+          ) : (
+            <span className="text-sm text-semantic-text-muted">
+              Variable name should start with alphabet; Cannot have special characters except
+              underscore (_)
+            </span>
+          )}
         </div>
         <TextField
           label="Description (optional)"
@@ -18727,6 +18952,7 @@ function VariableInput({
                   {onEditVariable && (
                     <button
                       type="button"
+                      aria-label={\`Edit variable \${seg.name}\`}
                       onMouseDown={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -19033,6 +19259,14 @@ export const CreateFunctionModal = React.forwardRef(
     /** Field + \`{{…\` range to replace with \`{{name}}\` after create saves */
     const [varInsertContext, setVarInsertContext] = React.useState<VarInsertContext | null>(null);
 
+    /**
+     * Required flags for function variables for Test API: seeded from \`variableGroups\` on open, then
+     * updated when the user saves Create/Edit variable (covers missing/stale parent props).
+     */
+    const [localFnVarRequiredByBareName, setLocalFnVarRequiredByBareName] = React.useState<
+      Record<string, boolean>
+    >({});
+
     const openVariableCreateModal = React.useCallback(() => {
       setVarModalMode("create");
       setVarModalInitialData(undefined);
@@ -19101,10 +19335,59 @@ export const CreateFunctionModal = React.forwardRef(
         setVarInsertContext(null);
       }
 
+      const requiredFlag = Boolean(data.required);
+
+      const applyRequiredToLocalMap = (bareName: string, required: boolean) => {
+        setLocalFnVarRequiredByBareName((prev) => {
+          const next = { ...prev };
+          for (const key of placeholderInnerAliasesForBareName(bareName)) {
+            next[key] = required;
+          }
+          return next;
+        });
+      };
+
       if (varModalMode === "create") {
         onAddVariable?.(data);
+        applyRequiredToLocalMap(trimmedName, requiredFlag);
       } else {
-        onEditVariable?.(varModalInitialData?.name ?? "", data);
+        const prevRaw = (varModalInitialData?.name ?? "").trim();
+        if (prevRaw && prevRaw !== trimmedName) {
+          setUrl((u) => renameVariableRefsInString(u, prevRaw, trimmedName));
+          setBody((b) => renameVariableRefsInString(b, prevRaw, trimmedName));
+          setHeaders((rows) =>
+            rows.map((r) => ({
+              ...r,
+              value: renameVariableRefsInString(r.value, prevRaw, trimmedName),
+            }))
+          );
+          setQueryParams((rows) =>
+            rows.map((r) => ({
+              ...r,
+              value: renameVariableRefsInString(r.value, prevRaw, trimmedName),
+            }))
+          );
+          setTestVarValues((prev) => {
+            const next: Record<string, string> = {};
+            for (const [k, v] of Object.entries(prev)) {
+              next[renameVariableRefsInString(k, prevRaw, trimmedName)] = v;
+            }
+            return next;
+          });
+          setLocalFnVarRequiredByBareName((prev) => {
+            const next = { ...prev };
+            for (const key of placeholderInnerAliasesForBareName(prevRaw)) {
+              delete next[key];
+            }
+            for (const key of placeholderInnerAliasesForBareName(trimmedName)) {
+              next[key] = requiredFlag;
+            }
+            return next;
+          });
+        } else {
+          applyRequiredToLocalMap(trimmedName, requiredFlag);
+        }
+        onEditVariable?.(prevRaw, data);
       }
       setVarModalOpen(false);
     };
@@ -19158,7 +19441,8 @@ export const CreateFunctionModal = React.forwardRef(
 
     // Test variable values — filled by user before clicking Test API
     const [testVarValues, setTestVarValues] = React.useState<Record<string, string>>({});
-    const [testVarSubmitAttempted, setTestVarSubmitAttempted] = React.useState(false);
+    /** Set when user clicks Test API — drives inline errors for empty required variable values only (not Submit). */
+    const [testApiRequiredAttempted, setTestApiRequiredAttempted] = React.useState(false);
 
     // Unique {{variable}} refs found across url, body, headers, queryParams
     const testableVars = React.useMemo(
@@ -19186,7 +19470,7 @@ export const CreateFunctionModal = React.forwardRef(
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
-        setTestVarSubmitAttempted(false);
+        setTestApiRequiredAttempted(false);
         setNameError("");
         setUrlError("");
         setBodyError("");
@@ -19195,6 +19479,7 @@ export const CreateFunctionModal = React.forwardRef(
         setUrlPopupStyle(undefined);
         setBodyPopupStyle(undefined);
         setTestVarValues({});
+        setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
         setVarInsertContext(null);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
@@ -19213,7 +19498,7 @@ export const CreateFunctionModal = React.forwardRef(
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
-      setTestVarSubmitAttempted(false);
+      setTestApiRequiredAttempted(false);
       setNameError("");
       setUrlError("");
       setBodyError("");
@@ -19222,8 +19507,9 @@ export const CreateFunctionModal = React.forwardRef(
       setUrlPopupStyle(undefined);
       setBodyPopupStyle(undefined);
       setTestVarValues({});
+      setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
       setVarInsertContext(null);
-    }, [initialData, initialStep, initialTab]);
+    }, [initialData, initialStep, initialTab, variableGroups]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -19286,14 +19572,17 @@ export const CreateFunctionModal = React.forwardRef(
       text.replace(/\\{\\{[^}]+\\}\\}/g, (match) => testVarValues[match] ?? match);
 
     const handleTestApi = async () => {
-      if (!onTestApi) return;
-
-      // Validate all test variable values are filled
-      if (testableVars.length > 0) {
-        setTestVarSubmitAttempted(true);
-        const hasEmpty = testableVars.some((v) => !testVarValues[v]?.trim());
+      // Validate all test variable values are filled (always runs, regardless of onTestApi)
+      const requiredTestVars = testableVars.filter((v) =>
+        isPlaceholderRequiredInTest(v, variableGroups, localFnVarRequiredByBareName)
+      );
+      if (requiredTestVars.length > 0) {
+        setTestApiRequiredAttempted(true);
+        const hasEmpty = requiredTestVars.some((v) => !testVarValues[v]?.trim());
         if (hasEmpty) return;
       }
+
+      if (!onTestApi) return;
 
       setIsTesting(true);
       try {
@@ -19685,33 +19974,59 @@ export const CreateFunctionModal = React.forwardRef(
                       <span className="text-sm text-semantic-text-muted">
                         Variable values for testing
                       </span>
-                      {testableVars.map((variable) => {
-                        const isEmpty = testVarSubmitAttempted && !testVarValues[variable]?.trim();
+                      {testableVars.map((variable, varIndex) => {
+                        const mustFill = isPlaceholderRequiredInTest(
+                          variable,
+                          variableGroups,
+                          localFnVarRequiredByBareName
+                        );
+                        const isEmpty =
+                          mustFill &&
+                          testApiRequiredAttempted &&
+                          !testVarValues[variable]?.trim();
+                        const testVarErrId = \`fn-test-var-err-\${varIndex}\`;
                         return (
                         <div key={variable} className="flex flex-col gap-1">
-                          <div className="flex items-center gap-3">
-                          <span className="text-sm text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
-                            {variable}
-                          </span>
-                          <input
-                            type="text"
-                            value={testVarValues[variable] ?? ""}
-                            onChange={(e) =>
-                              setTestVarValues((prev) => ({
-                                ...prev,
-                                [variable]: e.target.value,
-                              }))
-                            }
-                            placeholder="Enter test value"
-                            className={cn(inputCls, "flex-1 h-9 text-sm", isEmpty && "border-semantic-error-primary")}
-                            aria-invalid={isEmpty}
-                          />
+                          <div className="flex items-start gap-3">
+                            <span className="m-0 inline-flex shrink-0 items-center rounded-md bg-semantic-bg-ui px-2.5 py-1.5 text-sm font-mono text-semantic-text-secondary">
+                              {variable}
+                            </span>
+                            <div className="flex min-w-0 flex-1 flex-col gap-1">
+                              <input
+                                type="text"
+                                value={testVarValues[variable] ?? ""}
+                                onChange={(e) =>
+                                  setTestVarValues((prev) => ({
+                                    ...prev,
+                                    [variable]: e.target.value,
+                                  }))
+                                }
+                                placeholder="Value"
+                                className={cn(
+                                  inputCls,
+                                  "h-9 text-sm",
+                                  isEmpty &&
+                                    "border-semantic-error-primary focus:border-semantic-error-primary focus:shadow-none"
+                                )}
+                                aria-invalid={isEmpty}
+                                aria-describedby={isEmpty ? testVarErrId : undefined}
+                              />
+                              {isEmpty && (
+                                <p
+                                  id={testVarErrId}
+                                  className="m-0 flex items-center gap-1.5 text-xs text-semantic-error-primary"
+                                >
+                                  <span
+                                    className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-semantic-error-primary text-[10px] font-bold leading-none text-semantic-text-inverted"
+                                    aria-hidden
+                                  >
+                                    !
+                                  </span>
+                                  <span>Value is required for this key</span>
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          {isEmpty && (
-                            <p className="m-0 text-sm text-semantic-error-primary pl-[132px]">
-                              Test value is required
-                            </p>
-                          )}
                         </div>
                         );
                       })}
@@ -21035,28 +21350,60 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "../accordion";
+import {
+  defaultAdvancedSettingsNumericBounds,
+  type AdvancedSettingsNumericBounds,
+} from "./advanced-settings-bounds";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface AdvancedSettingsData {
-  silenceTimeout: number;
-  callEndThreshold: number;
+  silenceTimeout?: number;
+  callEndThreshold?: number;
   interruptionHandling: boolean;
+}
+
+/** Payload when a numeric advanced field finishes a blur validation pass. */
+export interface AdvancedSettingsNumericFieldBlurDetail {
+  /** Value committed to form state (\`undefined\` if empty after blur). */
+  value: number | undefined;
+  /** \`false\` when the field shows a validation error after blur. */
+  valid: boolean;
 }
 
 export interface AdvancedSettingsCardProps {
   /** Current form data */
   data: Partial<AdvancedSettingsData>;
-  /** Callback when any field changes */
+  /** Callback when any field in this card changes */
   onChange: (patch: Partial<AdvancedSettingsData>) => void;
-  /** Min value for silence timeout spinner (default: 1) */
+  /**
+   * Shorthand min/max for both numeric fields. Overridden by explicit
+   * \`silenceTimeoutMin\`, \`silenceTimeoutMax\`, \`callEndThresholdMin\`, or \`callEndThresholdMax\`
+   * when those are passed.
+   */
+  numericBounds?: Partial<AdvancedSettingsNumericBounds>;
+  /** Min value for silence timeout spinner */
   silenceTimeoutMin?: number;
-  /** Max value for silence timeout spinner (default: 60) */
+  /** Max value for silence timeout spinner */
   silenceTimeoutMax?: number;
-  /** Min value for call end threshold spinner (default: 1) */
+  /** Min value for call end threshold spinner */
   callEndThresholdMin?: number;
-  /** Max value for call end threshold spinner (default: 10) */
+  /** Max value for call end threshold spinner */
   callEndThresholdMax?: number;
+  /** When true, an empty value shows a validation error on blur (default: true) */
+  silenceTimeoutRequired?: boolean;
+  /** When true, an empty value shows a validation error on blur (default: true) */
+  callEndThresholdRequired?: boolean;
+  /** Fires after each successful \`onChange\` from this card (including stepper and switch). */
+  onAdvancedSettingsChange?: (patch: Partial<AdvancedSettingsData>) => void;
+  /** Fires when silence timeout input blurs after validation. */
+  onSilenceTimeoutBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
+  /** Fires when call end threshold input blurs after validation. */
+  onCallEndThresholdBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Additional className */
@@ -21082,52 +21429,192 @@ function Field({
   );
 }
 
-function NumberSpinner({
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, n));
+}
+
+function ValidatedNumberSpinner({
+  id,
   value,
   onChange,
-  min = 0,
-  max = 999,
+  min,
+  max,
+  required,
   disabled,
+  onBlurCommit,
 }: {
-  value: number;
-  onChange: (v: number) => void;
-  min?: number;
-  max?: number;
+  id: string;
+  value: number | undefined;
+  onChange: (v: number | undefined) => void;
+  min: number;
+  max: number;
+  required: boolean;
   disabled?: boolean;
+  onBlurCommit?: (detail: AdvancedSettingsNumericFieldBlurDetail) => void;
 }) {
+  const [inputStr, setInputStr] = React.useState(() =>
+    value === undefined ? "" : String(value)
+  );
+  const [error, setError] = React.useState<string | null>(null);
+  const focusedRef = React.useRef(false);
+  const prevValueRef = React.useRef(value);
+
+  React.useEffect(() => {
+    if (prevValueRef.current !== value) {
+      prevValueRef.current = value;
+      if (!focusedRef.current) {
+        setInputStr(value === undefined ? "" : String(value));
+        setError(null);
+      }
+    }
+  }, [value]);
+
+  const stepBase = (): number | null => {
+    const t = inputStr.trim();
+    if (t !== "") {
+      const n = Number(t);
+      if (Number.isFinite(n)) return n;
+    }
+    if (value !== undefined) return value;
+    return null;
+  };
+
+  const canIncrement = (): boolean => {
+    const b = stepBase();
+    if (b === null) return true;
+    return b < max;
+  };
+
+  const canDecrement = (): boolean => {
+    const b = stepBase();
+    if (b === null) return false;
+    return b > min;
+  };
+
+  const applyStep = (delta: 1 | -1) => {
+    let n = stepBase();
+    if (n === null) {
+      if (delta > 0) n = min - 1;
+      else return;
+    }
+    const next = clamp(n + delta, min, max);
+    setInputStr(String(next));
+    setError(null);
+    onChange(next);
+  };
+
+  const handleBlur = () => {
+    focusedRef.current = false;
+    const trimmed = inputStr.trim();
+    if (trimmed === "") {
+      onChange(undefined);
+      if (required) {
+        setError("This field is required");
+        onBlurCommit?.({ value: undefined, valid: false });
+      } else {
+        setError(null);
+        onBlurCommit?.({ value: undefined, valid: true });
+      }
+      return;
+    }
+    const num = Number(trimmed);
+    if (!Number.isFinite(num)) {
+      setError("Enter a valid number");
+      onBlurCommit?.({ value, valid: false });
+      return;
+    }
+    if (num < min || num > max) {
+      setError(\`Value must be between \${min} and \${max}\`);
+      onBlurCommit?.({ value, valid: false });
+      return;
+    }
+    setError(null);
+    onChange(num);
+    onBlurCommit?.({ value: num, valid: true });
+  };
+
+  const errorId = error ? \`\${id}-error\` : undefined;
+
   return (
-    <div className={cn("flex w-full items-center gap-2.5 px-4 py-2.5 border border-solid border-semantic-border-layout bg-semantic-bg-primary rounded", disabled && "opacity-50 cursor-not-allowed")}>
-      <input
-        type="number"
-        value={value}
-        min={min}
-        max={max}
-        disabled={disabled}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none disabled:cursor-not-allowed"
-      />
-      <div className="flex flex-col items-center shrink-0 gap-0.5">
-        <button
-          type="button"
-          onClick={() => onChange(Math.min(max, value + 1))}
+    <div className="flex flex-col gap-1">
+      <div
+        className={cn(
+          "flex w-full items-center gap-2.5 px-4 py-2.5 border border-solid bg-semantic-bg-primary rounded",
+          error
+            ? "border-semantic-error-primary"
+            : "border-semantic-border-layout",
+          disabled && "opacity-50 cursor-not-allowed"
+        )}
+      >
+        <input
+          id={id}
+          type="text"
+          inputMode="numeric"
+          value={inputStr}
           disabled={disabled}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
-          aria-label="Increase"
-        >
-          <ChevronUp className="size-3" />
-        </button>
-        <button
-          type="button"
-          onClick={() => onChange(Math.max(min, value - 1))}
-          disabled={disabled}
-          className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed"
-          aria-label="Decrease"
-        >
-          <ChevronDown className="size-3" />
-        </button>
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
+          onFocus={() => {
+            focusedRef.current = true;
+            setError(null);
+          }}
+          onBlur={handleBlur}
+          onChange={(e) => setInputStr(e.target.value)}
+          className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none disabled:cursor-not-allowed"
+        />
+        <div className="flex flex-col items-center shrink-0 gap-0.5">
+          <button
+            type="button"
+            onClick={() => applyStep(1)}
+            disabled={disabled || !canIncrement()}
+            className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Increase"
+          >
+            <ChevronUp className="size-3" />
+          </button>
+          <button
+            type="button"
+            onClick={() => applyStep(-1)}
+            disabled={disabled || !canDecrement()}
+            className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="Decrease"
+          >
+            <ChevronDown className="size-3" />
+          </button>
+        </div>
       </div>
+      {error ? (
+        <p
+          id={errorId}
+          role="alert"
+          className="m-0 text-xs text-semantic-error-primary"
+        >
+          {error}
+        </p>
+      ) : null}
     </div>
   );
+}
+
+function useCorrectOutOfRangeNumeric(
+  raw: number | undefined,
+  min: number,
+  max: number,
+  disabled: boolean | undefined,
+  patchKey: "silenceTimeout" | "callEndThreshold",
+  onChange: (patch: Partial<AdvancedSettingsData>) => void
+) {
+  const onChangeRef = React.useRef(onChange);
+  onChangeRef.current = onChange;
+
+  React.useEffect(() => {
+    if (disabled || raw === undefined) return;
+    if (raw < min || raw > max) {
+      onChangeRef.current({
+        [patchKey]: clamp(raw, min, max),
+      } as Partial<AdvancedSettingsData>);
+    }
+  }, [raw, min, max, disabled, patchKey]);
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -21137,15 +21624,63 @@ const AdvancedSettingsCard = React.forwardRef(
     {
       data,
       onChange,
-      silenceTimeoutMin = 1,
-      silenceTimeoutMax = 60,
-      callEndThresholdMin = 1,
-      callEndThresholdMax = 10,
+      numericBounds,
+      silenceTimeoutMin: silenceTimeoutMinProp,
+      silenceTimeoutMax: silenceTimeoutMaxProp,
+      callEndThresholdMin: callEndThresholdMinProp,
+      callEndThresholdMax: callEndThresholdMaxProp,
+      silenceTimeoutRequired = true,
+      callEndThresholdRequired = true,
+      onAdvancedSettingsChange,
+      onSilenceTimeoutBlur,
+      onCallEndThresholdBlur,
       disabled,
       className,
     }: AdvancedSettingsCardProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const silenceTimeoutMin =
+      silenceTimeoutMinProp ??
+      numericBounds?.silenceTimeoutMin ??
+      defaultAdvancedSettingsNumericBounds.silenceTimeoutMin;
+    const silenceTimeoutMax =
+      silenceTimeoutMaxProp ??
+      numericBounds?.silenceTimeoutMax ??
+      defaultAdvancedSettingsNumericBounds.silenceTimeoutMax;
+    const callEndThresholdMin =
+      callEndThresholdMinProp ??
+      numericBounds?.callEndThresholdMin ??
+      defaultAdvancedSettingsNumericBounds.callEndThresholdMin;
+    const callEndThresholdMax =
+      callEndThresholdMaxProp ??
+      numericBounds?.callEndThresholdMax ??
+      defaultAdvancedSettingsNumericBounds.callEndThresholdMax;
+
+    const emitPatch = React.useCallback(
+      (patch: Partial<AdvancedSettingsData>) => {
+        onChange(patch);
+        onAdvancedSettingsChange?.(patch);
+      },
+      [onChange, onAdvancedSettingsChange]
+    );
+
+    useCorrectOutOfRangeNumeric(
+      data.silenceTimeout,
+      silenceTimeoutMin,
+      silenceTimeoutMax,
+      disabled,
+      "silenceTimeout",
+      emitPatch
+    );
+    useCorrectOutOfRangeNumeric(
+      data.callEndThreshold,
+      callEndThresholdMin,
+      callEndThresholdMax,
+      disabled,
+      "callEndThreshold",
+      emitPatch
+    );
+
     return (
       <div
         ref={ref}
@@ -21166,28 +21701,31 @@ const AdvancedSettingsCard = React.forwardRef(
                 {/* Number fields section */}
                 <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-solid border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
                   <Field label="Silence Timeout (seconds)">
-                    <NumberSpinner
-                      value={data.silenceTimeout ?? 15}
-                      onChange={(v) => onChange({ silenceTimeout: v })}
+                    <ValidatedNumberSpinner
+                      id="advanced-silence-timeout"
+                      value={data.silenceTimeout}
+                      onChange={(v) => emitPatch({ silenceTimeout: v })}
                       min={silenceTimeoutMin}
                       max={silenceTimeoutMax}
+                      required={silenceTimeoutRequired}
                       disabled={disabled}
+                      onBlurCommit={onSilenceTimeoutBlur}
                     />
-                    <p className="m-0 text-xs text-semantic-text-muted">
-                      Default: 15 seconds
-                    </p>
                   </Field>
 
                   <Field label="Call End Threshold">
-                    <NumberSpinner
-                      value={data.callEndThreshold ?? 3}
-                      onChange={(v) => onChange({ callEndThreshold: v })}
+                    <ValidatedNumberSpinner
+                      id="advanced-call-end-threshold"
+                      value={data.callEndThreshold}
+                      onChange={(v) => emitPatch({ callEndThreshold: v })}
                       min={callEndThresholdMin}
                       max={callEndThresholdMax}
+                      required={callEndThresholdRequired}
                       disabled={disabled}
+                      onBlurCommit={onCallEndThresholdBlur}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
-                      Drop call after n consecutive silences. Default: 3
+                      Drop call after n consecutive silences.
                     </p>
                   </Field>
                 </div>
@@ -21205,7 +21743,7 @@ const AdvancedSettingsCard = React.forwardRef(
                   <Switch
                     checked={data.interruptionHandling ?? true}
                     onCheckedChange={(v) =>
-                      onChange({ interruptionHandling: v })
+                      emitPatch({ interruptionHandling: v })
                     }
                     disabled={disabled}
                   />
@@ -21381,6 +21919,11 @@ export { FallbackPromptsCard };
         {
           name: "types.ts",
           content: prefixTailwindClasses(`import type { UploadProgressHandlers } from "../file-upload-modal";
+import type { AdvancedSettingsNumericBounds } from "./advanced-settings-bounds";
+import type {
+  AdvancedSettingsData,
+  AdvancedSettingsNumericFieldBlurDetail,
+} from "./advanced-settings-card";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -21489,7 +22032,10 @@ export interface CreateFunctionModalProps {
   initialTab?: FunctionTabType;
   /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
   sessionVariables?: string[];
-  /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
+  /**
+   * Grouped variables for the {{ autocomplete popup (overrides flat list display when provided).
+   * Items with \`required: true\` are validated when the user clicks Test API (inline errors under each empty field).
+   */
   variableGroups?: VariableGroup[];
   /**
    * Called when user saves a new variable from the autocomplete popup.
@@ -21498,7 +22044,11 @@ export interface CreateFunctionModalProps {
    * so it appears in the dropdown on the next open.
    */
   onAddVariable?: (data: VariableFormData) => void;
-  /** Called when user edits a variable from the autocomplete popup */
+  /**
+   * Called when the user saves "Edit variable". The modal already renames
+   * \`{{function.name}}\` / \`{{name}}\` across URL, body, headers, query params, and test values.
+   * Update your \`variableGroups\` (and persist to your backend) using \`originalName\` → \`data.name\`.
+   */
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
@@ -21518,8 +22068,10 @@ export interface IvrBotConfigData {
   functions: FunctionItem[];
   frustrationHandoverEnabled: boolean;
   escalationDepartment: string;
-  silenceTimeout: number;
-  callEndThreshold: number;
+  /** Undefined when the field was cleared; validate before save/publish. */
+  silenceTimeout?: number;
+  /** Undefined when the field was cleared; validate before save/publish. */
+  callEndThreshold?: number;
   interruptionHandling: boolean;
 }
 
@@ -21606,16 +22158,48 @@ export interface IvrBotConfigProps {
   languageOptions?: SelectOption[];
   /** Override session variable chips for BotBehaviorCard */
   sessionVariables?: string[];
+  /**
+   * Function-scoped variables for Create / Edit Function modal (\`{{\` autocomplete; \`required\` applies to Test API validation only).
+   * Pass the same groups your app persists; items with \`required: true\` block Test API until test values are filled for placeholders used in the request.
+   */
+  functionVariableGroups?: VariableGroup[];
+  /** When set with \`functionVariableGroups\`, called after the user saves a new variable from the modal. */
+  onAddFunctionVariable?: (data: VariableFormData) => void;
+  /** When set with \`functionVariableGroups\`, called after the user saves an edited variable. */
+  onEditFunctionVariable?: (originalName: string, data: VariableFormData) => void;
   /** Override escalation department options for FrustrationHandoverCard */
   escalationDepartmentOptions?: SelectOption[];
-  /** Override silence timeout bounds */
+  /**
+   * Shorthand min/max for Advanced Settings numeric fields. Individual
+   * \`silenceTimeoutMin\` / \`silenceTimeoutMax\` / \`callEndThresholdMin\` / \`callEndThresholdMax\`
+   * override corresponding entries when set.
+   */
+  advancedSettingsNumericBounds?: Partial<AdvancedSettingsNumericBounds>;
+  /** Override silence timeout min (after \`advancedSettingsNumericBounds\`) */
   silenceTimeoutMin?: number;
+  /** Override silence timeout max (after \`advancedSettingsNumericBounds\`) */
   silenceTimeoutMax?: number;
-  /** Override call end threshold bounds */
+  /** Override call end threshold min (after \`advancedSettingsNumericBounds\`) */
   callEndThresholdMin?: number;
+  /** Override call end threshold max (after \`advancedSettingsNumericBounds\`) */
   callEndThresholdMax?: number;
+  /**
+   * Fires when any Advanced Settings field changes (numeric commit, stepper, interruption toggle).
+   */
+  onAdvancedSettingsChange?: (patch: Partial<AdvancedSettingsData>) => void;
+  /** Fires when silence timeout blurs after validation (see \`AdvancedSettingsNumericFieldBlurDetail\`). */
+  onSilenceTimeoutBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
+  /** Fires when call end threshold blurs after validation. */
+  onCallEndThresholdBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
   className?: string;
 }
+
+export type { AdvancedSettingsNumericBounds } from "./advanced-settings-bounds";
+export type { AdvancedSettingsNumericFieldBlurDetail } from "./advanced-settings-card";
 
 // ─── File Upload Modal (re-exported from shared module) ─────────────────────
 
@@ -21635,6 +22219,11 @@ export { KnowledgeBaseCard } from "./knowledge-base-card";
 export { FunctionsCard } from "./functions-card";
 export { FrustrationHandoverCard } from "./frustration-handover-card";
 export { AdvancedSettingsCard } from "./advanced-settings-card";
+export {
+  defaultAdvancedSettingsNumericBounds,
+  type AdvancedSettingsNumericBounds,
+  type DefaultAdvancedSettingsNumericBounds,
+} from "./advanced-settings-bounds";
 export { FallbackPromptsCard } from "./fallback-prompts-card";
 export type {
   FallbackPromptsData,
@@ -21667,6 +22256,8 @@ export type {
   VariableItem,
   VariableGroup,
   VariableFormData,
+  AdvancedSettingsNumericBounds,
+  AdvancedSettingsNumericFieldBlurDetail,
 } from "./types";
 `, prefix),
         }

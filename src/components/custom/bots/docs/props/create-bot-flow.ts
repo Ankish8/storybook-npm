@@ -10,6 +10,10 @@ export const events = ["onSubmit"] as const;
 export const argTypes = {
   createCardLabel: { control: "text", description: "Create new bot card label" },
   onSubmit: { action: "onSubmit", description: "When Create Bot modal is submitted with { name, type }" },
+  chatbotDisabled: { control: "boolean", description: "Forwarded to CreateBotModal" },
+  voicebotDisabled: { control: "boolean", description: "Forwarded to CreateBotModal" },
+  chatbotDisabledTooltip: { control: "text", description: "Forwarded to CreateBotModal" },
+  voicebotDisabledTooltip: { control: "text", description: "Forwarded to CreateBotModal" },
 } as const;
 
 export const propsTable = `
@@ -17,6 +21,10 @@ export const propsTable = `
 |------|------|----------|---------|-------------|
 | createCardLabel | string | No | "Create new bot" | Create card label |
 | onSubmit | (data: { name: string; type: BOT_TYPE }) => void | No | — | When Create Bot modal is submitted |
+| chatbotDisabled | boolean | No | false | CreateBotModal: disables Chat bot type |
+| voicebotDisabled | boolean | No | false | CreateBotModal: disables Voice bot type |
+| chatbotDisabledTooltip | string | No | — | CreateBotModal: tooltip when Chat bot disabled |
+| voicebotDisabledTooltip | string | No | — | CreateBotModal: tooltip when Voice bot disabled |
 | className | string | No | — | Root className |
 | ...props | HTMLDivElement | — | — | Other div props |
 `;

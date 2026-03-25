@@ -14,6 +14,10 @@ export const CreateBotFlow = React.forwardRef(
     {
       createCardLabel = "Create new bot",
       onSubmit,
+      chatbotDisabled,
+      voicebotDisabled,
+      chatbotDisabledTooltip,
+      voicebotDisabledTooltip,
       className,
       ...props
     }: CreateBotFlowProps,
@@ -41,6 +45,10 @@ export const CreateBotFlow = React.forwardRef(
         <CreateBotModal
           open={modalOpen}
           onOpenChange={setModalOpen}
+          chatbotDisabled={chatbotDisabled}
+          voicebotDisabled={voicebotDisabled}
+          chatbotDisabledTooltip={chatbotDisabledTooltip}
+          voicebotDisabledTooltip={voicebotDisabledTooltip}
           onSubmit={(data) => {
             onSubmit?.(data);
             setModalOpen(false);

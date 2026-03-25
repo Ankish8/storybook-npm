@@ -13,6 +13,10 @@ export function EditBotFlow({
   searchPlaceholder = "Search bot...",
   createCardLabel = "Create new bot",
   typeLabels,
+  chatbotDisabled,
+  voicebotDisabled,
+  chatbotDisabledTooltip,
+  voicebotDisabledTooltip,
   onBotDelete,
   onCreateBotSubmit,
   onSearch,
@@ -52,6 +56,10 @@ export function EditBotFlow({
         searchPlaceholder={searchPlaceholder}
         createCardLabel={createCardLabel}
         typeLabels={typeLabels}
+        chatbotDisabled={chatbotDisabled}
+        voicebotDisabled={voicebotDisabled}
+        chatbotDisabledTooltip={chatbotDisabledTooltip}
+        voicebotDisabledTooltip={voicebotDisabledTooltip}
         onBotEdit={handleEdit}
         onBotDelete={onBotDelete}
         onCreateBotSubmit={onCreateBotSubmit}

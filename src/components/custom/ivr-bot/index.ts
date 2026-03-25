@@ -4,6 +4,12 @@ export { KnowledgeBaseCard } from "./knowledge-base-card";
 export { FunctionsCard } from "./functions-card";
 export { FrustrationHandoverCard } from "./frustration-handover-card";
 export { AdvancedSettingsCard } from "./advanced-settings-card";
+export {
+  defaultAdvancedSettingsNumericBounds,
+  type AdvancedSettingsNumericBounds,
+  type DefaultAdvancedSettingsNumericBounds,
+} from "./advanced-settings-bounds";
+export type { AdvancedSettingsNumericFieldBlurDetail } from "./advanced-settings-card";
 export { FallbackPromptsCard } from "./fallback-prompts-card";
 export type {
   FallbackPromptsData,

@@ -27,6 +27,10 @@ export const argTypes = {
   onBotEdit: { action: "onBotEdit", description: "Called with bot id when Edit is selected on a bot" },
   onBotDelete: { action: "onBotDelete", description: "Called with bot id when Delete is selected on a bot" },
   onSearch: { action: "onSearch", description: "Called with the current search query" },
+  chatbotDisabled: { control: "boolean", description: "Forwarded to CreateBotModal — disables Chat bot type" },
+  voicebotDisabled: { control: "boolean", description: "Forwarded to CreateBotModal — disables Voice bot type" },
+  chatbotDisabledTooltip: { control: "text", description: "Forwarded to CreateBotModal" },
+  voicebotDisabledTooltip: { control: "text", description: "Forwarded to CreateBotModal" },
 } as const;
 
 export const propsTable = `
@@ -40,4 +44,8 @@ export const propsTable = `
 | onBotEdit | (botId: string) => void | No | — | When Edit is selected on a bot (card click or menu) |
 | onBotDelete | (botId: string) => void | No | — | When Delete is selected on a bot |
 | onSearch | (query: string) => void | No | — | When search query changes |
+| chatbotDisabled | boolean | No | false | CreateBotModal: disables Chat bot type |
+| voicebotDisabled | boolean | No | false | CreateBotModal: disables Voice bot type |
+| chatbotDisabledTooltip | string | No | — | CreateBotModal: tooltip when Chat bot disabled |
+| voicebotDisabledTooltip | string | No | — | CreateBotModal: tooltip when Voice bot disabled |
 `;

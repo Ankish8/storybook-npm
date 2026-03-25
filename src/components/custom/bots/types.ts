@@ -48,6 +48,18 @@ export interface CreateBotModalProps {
   onSubmit?: (data: { name: string; type: BOT_TYPE }) => void;
   /** Shows loading spinner on Create button and disables it (e.g. while API call is in flight) */
   isLoading?: boolean;
+  /** When true, Chat bot type cannot be selected */
+  chatbotDisabled?: boolean;
+  /** When true, Voice bot type cannot be selected */
+  voicebotDisabled?: boolean;
+  /**
+   * Shown on hover/focus when Chat bot is disabled. Tooltip is not rendered when omitted or empty.
+   */
+  chatbotDisabledTooltip?: string;
+  /**
+   * Shown on hover/focus when Voice bot is disabled. Tooltip is not rendered when omitted or empty.
+   */
+  voicebotDisabledTooltip?: string;
   className?: string;
 }
 
@@ -86,9 +98,19 @@ export interface BotListGridProps
   children: React.ReactNode;
 }
 
+/** Props forwarded to CreateBotModal for bot-type gating (optional). */
+export type CreateBotModalTypeOptionsProps = Pick<
+  CreateBotModalProps,
+  | "chatbotDisabled"
+  | "voicebotDisabled"
+  | "chatbotDisabledTooltip"
+  | "voicebotDisabledTooltip"
+>;
+
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit"> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit">,
+    CreateBotModalTypeOptionsProps {
   /** Create new bot card label */
   createCardLabel?: string;
   /** Called when Create Bot modal is submitted with { name, type } */
@@ -96,7 +118,7 @@ export interface CreateBotFlowProps
 }
 
 /** Props for EditBotFlow: bot list + config view when Edit is clicked. */
-export interface EditBotFlowProps {
+export interface EditBotFlowProps extends CreateBotModalTypeOptionsProps {
   /** Bots to show in the list (e.g. first 2 for demo) */
   bots: Bot[];
   /** Page title */
@@ -124,7 +146,8 @@ export interface EditBotFlowProps {
 }
 
 export interface BotListProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children">,
+    CreateBotModalTypeOptionsProps {
   /** List of bots to display */
   bots?: Bot[];
   /** Override type badge labels for all cards (e.g. { chatbot: "Chat", voicebot: "Voice" }). Per-bot bot.typeLabel still wins. */

@@ -87,3 +87,24 @@ export const ChatbotPreselected: Story = {
     );
   },
 };
+
+export const VoiceOnlyWithChatbotTooltip: Story = {
+  name: "Create Bot Modal — Chatbot disabled + tooltip",
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div className="flex flex-col items-center gap-4 p-8">
+        <Button variant="default" onClick={() => setOpen(true)}>
+          Open (Chatbot disabled)
+        </Button>
+        <CreateBotModal
+          open={open}
+          onOpenChange={setOpen}
+          onSubmit={fn()}
+          chatbotDisabled
+          chatbotDisabledTooltip="Your plan does not include chat bots."
+        />
+      </div>
+    );
+  },
+};

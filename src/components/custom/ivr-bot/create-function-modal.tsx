@@ -94,22 +94,82 @@ function extractVarRefs(texts: string[]): string[] {
   return Array.from(new Set(all));
 }
 
-/** Whether a `{{…}}` placeholder is marked required in variable metadata (session / unknown → false). */
+/** True if a `{{…}}` token in the form matches this variable item (handles `{{name}}` vs `{{function.name}}` and legacy `item.name` with `function.` prefix). */
+function placeholderMatchesVariableItem(placeholder: string, item: VariableItem): boolean {
+  if (item.value && placeholder === item.value) return true;
+  const asDisplayed = `{{${item.name}}}`;
+  const asFunction = `{{function.${item.name}}}`;
+  if (placeholder === asDisplayed || placeholder === asFunction) return true;
+
+  const m = /^\{\{([^}]+)\}\}$/.exec(placeholder);
+  if (!m) return false;
+  const inner = m[1].trim();
+  if (inner === item.name) return true;
+
+  const bareName = item.name.startsWith("function.") ? item.name.slice("function.".length) : item.name;
+  return inner === bareName || inner === `function.${bareName}`;
+}
+
+/** Aliases for the inner text of `{{…}}` (e.g. `function.foo` ↔ `foo`). */
+function placeholderInnerAliases(inner: string): string[] {
+  const trimmed = inner.trim();
+  if (!trimmed) return [];
+  const out = new Set<string>([trimmed]);
+  const bare = trimmed.startsWith("function.") ? trimmed.slice("function.".length) : trimmed;
+  out.add(bare);
+  if (!trimmed.startsWith("function.")) {
+    out.add(`function.${bare}`);
+  }
+  return Array.from(out);
+}
+
+/** Keys used to store Test API "required" for a function variable name from the form (bare id, no `{{}}`). */
+function placeholderInnerAliasesForBareName(bareName: string): string[] {
+  const trimmed = bareName.trim();
+  if (!trimmed) return [];
+  return placeholderInnerAliases(trimmed);
+}
+
+function buildFnVarRequiredMapFromGroups(groups?: VariableGroup[]): Record<string, boolean> {
+  const seeded: Record<string, boolean> = {};
+  for (const g of groups ?? []) {
+    for (const item of g.items) {
+      if (!item.required) continue;
+      const n = item.name.trim();
+      const bare = n.startsWith("function.") ? n.slice("function.".length) : n;
+      for (const key of placeholderInnerAliasesForBareName(bare)) {
+        seeded[key] = true;
+      }
+    }
+  }
+  return seeded;
+}
+
+/**
+ * Whether a `{{…}}` placeholder is required for Test API.
+ * `localFnVarRequired` merges Required from `variableGroups` (on open) plus Create/Edit variable saves
+ * so validation works when the parent omits `variableGroups` or has not updated it yet after `onAddVariable`.
+ */
 function isPlaceholderRequiredInTest(
   placeholder: string,
-  variableGroups?: VariableGroup[]
+  variableGroups?: VariableGroup[],
+  localFnVarRequired?: Record<string, boolean>
 ): boolean {
+  if (localFnVarRequired && Object.keys(localFnVarRequired).length > 0) {
+    const m = /^\{\{([^}]+)\}\}$/.exec(placeholder.trim());
+    if (m) {
+      for (const alias of placeholderInnerAliases(m[1])) {
+        if (Object.prototype.hasOwnProperty.call(localFnVarRequired, alias)) {
+          return Boolean(localFnVarRequired[alias]);
+        }
+      }
+    }
+  }
+
   if (!variableGroups?.length) return false;
   for (const g of variableGroups) {
     for (const item of g.items) {
-      const asDisplayed = `{{${item.name}}}`;
-      const asFunction = `{{function.${item.name}}}`;
-      const asValue = item.value;
-      if (
-        placeholder === asDisplayed ||
-        placeholder === asFunction ||
-        (asValue && placeholder === asValue)
-      ) {
+      if (placeholderMatchesVariableItem(placeholder, item)) {
         return Boolean(item.required);
       }
     }
@@ -942,6 +1002,14 @@ export const CreateFunctionModal = React.forwardRef(
     /** Field + `{{…` range to replace with `{{name}}` after create saves */
     const [varInsertContext, setVarInsertContext] = React.useState<VarInsertContext | null>(null);
 
+    /**
+     * Required flags for function variables for Test API: seeded from `variableGroups` on open, then
+     * updated when the user saves Create/Edit variable (covers missing/stale parent props).
+     */
+    const [localFnVarRequiredByBareName, setLocalFnVarRequiredByBareName] = React.useState<
+      Record<string, boolean>
+    >({});
+
     const openVariableCreateModal = React.useCallback(() => {
       setVarModalMode("create");
       setVarModalInitialData(undefined);
@@ -1010,8 +1078,21 @@ export const CreateFunctionModal = React.forwardRef(
         setVarInsertContext(null);
       }
 
+      const requiredFlag = Boolean(data.required);
+
+      const applyRequiredToLocalMap = (bareName: string, required: boolean) => {
+        setLocalFnVarRequiredByBareName((prev) => {
+          const next = { ...prev };
+          for (const key of placeholderInnerAliasesForBareName(bareName)) {
+            next[key] = required;
+          }
+          return next;
+        });
+      };
+
       if (varModalMode === "create") {
         onAddVariable?.(data);
+        applyRequiredToLocalMap(trimmedName, requiredFlag);
       } else {
         const prevRaw = (varModalInitialData?.name ?? "").trim();
         if (prevRaw && prevRaw !== trimmedName) {
@@ -1036,6 +1117,18 @@ export const CreateFunctionModal = React.forwardRef(
             }
             return next;
           });
+          setLocalFnVarRequiredByBareName((prev) => {
+            const next = { ...prev };
+            for (const key of placeholderInnerAliasesForBareName(prevRaw)) {
+              delete next[key];
+            }
+            for (const key of placeholderInnerAliasesForBareName(trimmedName)) {
+              next[key] = requiredFlag;
+            }
+            return next;
+          });
+        } else {
+          applyRequiredToLocalMap(trimmedName, requiredFlag);
         }
         onEditVariable?.(prevRaw, data);
       }
@@ -1091,7 +1184,8 @@ export const CreateFunctionModal = React.forwardRef(
 
     // Test variable values — filled by user before clicking Test API
     const [testVarValues, setTestVarValues] = React.useState<Record<string, string>>({});
-    const [testVarSubmitAttempted, setTestVarSubmitAttempted] = React.useState(false);
+    /** Set when user clicks Test API — drives inline errors for empty required variable values only (not Submit). */
+    const [testApiRequiredAttempted, setTestApiRequiredAttempted] = React.useState(false);
 
     // Unique {{variable}} refs found across url, body, headers, queryParams
     const testableVars = React.useMemo(
@@ -1119,7 +1213,7 @@ export const CreateFunctionModal = React.forwardRef(
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
-        setTestVarSubmitAttempted(false);
+        setTestApiRequiredAttempted(false);
         setNameError("");
         setUrlError("");
         setBodyError("");
@@ -1128,6 +1222,7 @@ export const CreateFunctionModal = React.forwardRef(
         setUrlPopupStyle(undefined);
         setBodyPopupStyle(undefined);
         setTestVarValues({});
+        setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
         setVarInsertContext(null);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
@@ -1146,7 +1241,7 @@ export const CreateFunctionModal = React.forwardRef(
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
-      setTestVarSubmitAttempted(false);
+      setTestApiRequiredAttempted(false);
       setNameError("");
       setUrlError("");
       setBodyError("");
@@ -1155,8 +1250,9 @@ export const CreateFunctionModal = React.forwardRef(
       setUrlPopupStyle(undefined);
       setBodyPopupStyle(undefined);
       setTestVarValues({});
+      setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
       setVarInsertContext(null);
-    }, [initialData, initialStep, initialTab]);
+    }, [initialData, initialStep, initialTab, variableGroups]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -1190,15 +1286,6 @@ export const CreateFunctionModal = React.forwardRef(
 
       setStep2SubmitAttempted(true);
 
-      const requiredTestVars = testableVars.filter((v) =>
-        isPlaceholderRequiredInTest(v, variableGroups)
-      );
-      if (requiredTestVars.length > 0) {
-        setTestVarSubmitAttempted(true);
-        const hasEmpty = requiredTestVars.some((v) => !testVarValues[v]?.trim());
-        if (hasEmpty) return;
-      }
-
       const urlErr = getUrlSubmitValidationError(url);
       setUrlError(urlErr);
 
@@ -1230,10 +1317,10 @@ export const CreateFunctionModal = React.forwardRef(
     const handleTestApi = async () => {
       // Validate all test variable values are filled (always runs, regardless of onTestApi)
       const requiredTestVars = testableVars.filter((v) =>
-        isPlaceholderRequiredInTest(v, variableGroups)
+        isPlaceholderRequiredInTest(v, variableGroups, localFnVarRequiredByBareName)
       );
       if (requiredTestVars.length > 0) {
-        setTestVarSubmitAttempted(true);
+        setTestApiRequiredAttempted(true);
         const hasEmpty = requiredTestVars.some((v) => !testVarValues[v]?.trim());
         if (hasEmpty) return;
       }
@@ -1630,38 +1717,59 @@ export const CreateFunctionModal = React.forwardRef(
                       <span className="text-sm text-semantic-text-muted">
                         Variable values for testing
                       </span>
-                      {testableVars.map((variable) => {
-                        const mustFill = isPlaceholderRequiredInTest(variable, variableGroups);
+                      {testableVars.map((variable, varIndex) => {
+                        const mustFill = isPlaceholderRequiredInTest(
+                          variable,
+                          variableGroups,
+                          localFnVarRequiredByBareName
+                        );
                         const isEmpty =
                           mustFill &&
-                          testVarSubmitAttempted &&
+                          testApiRequiredAttempted &&
                           !testVarValues[variable]?.trim();
+                        const testVarErrId = `fn-test-var-err-${varIndex}`;
                         return (
                         <div key={variable} className="flex flex-col gap-1">
-                          <div className="flex items-center gap-3">
-                          <span className="text-sm text-semantic-text-muted font-mono shrink-0 min-w-[120px]">
-                            {variable}
-                          </span>
-                          <input
-                            type="text"
-                            value={testVarValues[variable] ?? ""}
-                            onChange={(e) =>
-                              setTestVarValues((prev) => ({
-                                ...prev,
-                                [variable]: e.target.value,
-                              }))
-                            }
-                            placeholder="Enter test value"
-                            className={cn(inputCls, "flex-1 h-9 text-sm", isEmpty && "border-semantic-error-primary")}
-                            aria-invalid={isEmpty}
-                          />
+                          <div className="flex items-start gap-3">
+                            <span className="m-0 inline-flex shrink-0 items-center rounded-md bg-semantic-bg-ui px-2.5 py-1.5 text-sm font-mono text-semantic-text-secondary">
+                              {variable}
+                            </span>
+                            <div className="flex min-w-0 flex-1 flex-col gap-1">
+                              <input
+                                type="text"
+                                value={testVarValues[variable] ?? ""}
+                                onChange={(e) =>
+                                  setTestVarValues((prev) => ({
+                                    ...prev,
+                                    [variable]: e.target.value,
+                                  }))
+                                }
+                                placeholder="Value"
+                                className={cn(
+                                  inputCls,
+                                  "h-9 text-sm",
+                                  isEmpty &&
+                                    "border-semantic-error-primary focus:border-semantic-error-primary focus:shadow-none"
+                                )}
+                                aria-invalid={isEmpty}
+                                aria-describedby={isEmpty ? testVarErrId : undefined}
+                              />
+                              {isEmpty && (
+                                <p
+                                  id={testVarErrId}
+                                  className="m-0 flex items-center gap-1.5 text-xs text-semantic-error-primary"
+                                >
+                                  <span
+                                    className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-semantic-error-primary text-[10px] font-bold leading-none text-semantic-text-inverted"
+                                    aria-hidden
+                                  >
+                                    !
+                                  </span>
+                                  <span>Value is required for this key</span>
+                                </p>
+                              )}
+                            </div>
                           </div>
-                          {isEmpty && (
-                            <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary pl-[132px]">
-                              <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
-                              <span>Value is required for this key</span>
-                            </p>
-                          )}
                         </div>
                         );
                       })}

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { CreateBotModal } from "../create-bot-modal";
 import { BOT_TYPE } from "../types";
 
@@ -131,4 +132,81 @@ describe("CreateBotModal", () => {
     fireEvent.click(screen.getByText("Create"));
     expect(handleSubmit).not.toHaveBeenCalled();
   });
+
+  it("disables Chat bot option when chatbotDisabled is true", () => {
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
+    );
+    expect(screen.getByText("Chat bot").closest("button")).toBeDisabled();
+    expect(screen.getByText("Voice bot").closest("button")).not.toBeDisabled();
+  });
+
+  it("selects Voice bot when Chat bot is disabled", () => {
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
+    );
+    expect(screen.getByText("Voice bot").closest("button")).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+  });
+
+  it("does not call onSubmit with Chat type when Chat bot is disabled", () => {
+    const handleSubmit = vi.fn();
+    render(
+      <CreateBotModal
+        open
+        onOpenChange={vi.fn()}
+        onSubmit={handleSubmit}
+        chatbotDisabled
+      />
+    );
+    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+      target: { value: "My Bot" },
+    });
+    fireEvent.click(screen.getByText("Create"));
+    expect(handleSubmit).toHaveBeenCalledWith({
+      name: "My Bot",
+      type: BOT_TYPE.VOICE,
+    });
+  });
+
+  it("disables Create when both bot types are disabled", () => {
+    render(
+      <CreateBotModal
+        open
+        onOpenChange={vi.fn()}
+        chatbotDisabled
+        voicebotDisabled
+      />
+    );
+    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+      target: { value: "My Bot" },
+    });
+    expect(screen.getByText("Create").closest("button")).toBeDisabled();
+  });
+
+  it("shows tooltip on hover when disabled option has tooltip text", async () => {
+    const user = userEvent.setup();
+    render(
+      <CreateBotModal
+        open
+        onOpenChange={vi.fn()}
+        chatbotDisabled
+        chatbotDisabledTooltip="Chat bots are unavailable."
+      />
+    );
+    const trigger = screen.getByText("Chat bot").closest("span");
+    expect(trigger).toBeTruthy();
+    await user.hover(trigger!);
+    await waitFor(
+      () => {
+        expect(screen.getByRole("tooltip")).toHaveTextContent(
+          "Chat bots are unavailable."
+        );
+      },
+      { timeout: 1500 }
+    );
+  });
+
 });

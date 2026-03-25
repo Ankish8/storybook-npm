@@ -83,11 +83,18 @@ export const IvrBotConfig = React.forwardRef(
       voiceOptions,
       languageOptions,
       sessionVariables,
+      functionVariableGroups,
+      onAddFunctionVariable,
+      onEditFunctionVariable,
       escalationDepartmentOptions,
+      advancedSettingsNumericBounds,
       silenceTimeoutMin,
       silenceTimeoutMax,
       callEndThresholdMin,
       callEndThresholdMax,
+      onAdvancedSettingsChange,
+      onSilenceTimeoutBlur,
+      onCallEndThresholdBlur,
       className,
     }: IvrBotConfigProps,
     ref: React.Ref<HTMLDivElement>
@@ -240,10 +247,14 @@ export const IvrBotConfig = React.forwardRef(
             <AdvancedSettingsCard
               data={data}
               onChange={update}
+              numericBounds={advancedSettingsNumericBounds}
               silenceTimeoutMin={silenceTimeoutMin}
               silenceTimeoutMax={silenceTimeoutMax}
               callEndThresholdMin={callEndThresholdMin}
               callEndThresholdMax={callEndThresholdMax}
+              onAdvancedSettingsChange={onAdvancedSettingsChange}
+              onSilenceTimeoutBlur={onSilenceTimeoutBlur}
+              onCallEndThresholdBlur={onCallEndThresholdBlur}
               disabled={disabled}
             />
           </div>
@@ -258,6 +269,9 @@ export const IvrBotConfig = React.forwardRef(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           sessionVariables={sessionVariables}
+          variableGroups={functionVariableGroups}
+          onAddVariable={onAddFunctionVariable}
+          onEditVariable={onEditFunctionVariable}
         />
 
         {/* Edit Function Modal */}
@@ -271,6 +285,9 @@ export const IvrBotConfig = React.forwardRef(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           sessionVariables={sessionVariables}
+          variableGroups={functionVariableGroups}
+          onAddVariable={onAddFunctionVariable}
+          onEditVariable={onEditFunctionVariable}
           disabled={disabled}
         />
 

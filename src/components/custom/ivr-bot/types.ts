@@ -1,4 +1,9 @@
 import type { UploadProgressHandlers } from "../file-upload-modal";
+import type { AdvancedSettingsNumericBounds } from "./advanced-settings-bounds";
+import type {
+  AdvancedSettingsData,
+  AdvancedSettingsNumericFieldBlurDetail,
+} from "./advanced-settings-card";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
@@ -107,7 +112,10 @@ export interface CreateFunctionModalProps {
   initialTab?: FunctionTabType;
   /** Session variables available for {{ autocomplete in URL, body, header values, and query param values */
   sessionVariables?: string[];
-  /** Grouped variables shown in the {{ autocomplete popup (overrides flat list display when provided) */
+  /**
+   * Grouped variables for the {{ autocomplete popup (overrides flat list display when provided).
+   * Items with `required: true` are validated when the user clicks Test API (inline errors under each empty field).
+   */
   variableGroups?: VariableGroup[];
   /**
    * Called when user saves a new variable from the autocomplete popup.
@@ -140,8 +148,10 @@ export interface IvrBotConfigData {
   functions: FunctionItem[];
   frustrationHandoverEnabled: boolean;
   escalationDepartment: string;
-  silenceTimeout: number;
-  callEndThreshold: number;
+  /** Undefined when the field was cleared; validate before save/publish. */
+  silenceTimeout?: number;
+  /** Undefined when the field was cleared; validate before save/publish. */
+  callEndThreshold?: number;
   interruptionHandling: boolean;
 }
 
@@ -228,16 +238,48 @@ export interface IvrBotConfigProps {
   languageOptions?: SelectOption[];
   /** Override session variable chips for BotBehaviorCard */
   sessionVariables?: string[];
+  /**
+   * Function-scoped variables for Create / Edit Function modal (`{{` autocomplete; `required` applies to Test API validation only).
+   * Pass the same groups your app persists; items with `required: true` block Test API until test values are filled for placeholders used in the request.
+   */
+  functionVariableGroups?: VariableGroup[];
+  /** When set with `functionVariableGroups`, called after the user saves a new variable from the modal. */
+  onAddFunctionVariable?: (data: VariableFormData) => void;
+  /** When set with `functionVariableGroups`, called after the user saves an edited variable. */
+  onEditFunctionVariable?: (originalName: string, data: VariableFormData) => void;
   /** Override escalation department options for FrustrationHandoverCard */
   escalationDepartmentOptions?: SelectOption[];
-  /** Override silence timeout bounds */
+  /**
+   * Shorthand min/max for Advanced Settings numeric fields. Individual
+   * `silenceTimeoutMin` / `silenceTimeoutMax` / `callEndThresholdMin` / `callEndThresholdMax`
+   * override corresponding entries when set.
+   */
+  advancedSettingsNumericBounds?: Partial<AdvancedSettingsNumericBounds>;
+  /** Override silence timeout min (after `advancedSettingsNumericBounds`) */
   silenceTimeoutMin?: number;
+  /** Override silence timeout max (after `advancedSettingsNumericBounds`) */
   silenceTimeoutMax?: number;
-  /** Override call end threshold bounds */
+  /** Override call end threshold min (after `advancedSettingsNumericBounds`) */
   callEndThresholdMin?: number;
+  /** Override call end threshold max (after `advancedSettingsNumericBounds`) */
   callEndThresholdMax?: number;
+  /**
+   * Fires when any Advanced Settings field changes (numeric commit, stepper, interruption toggle).
+   */
+  onAdvancedSettingsChange?: (patch: Partial<AdvancedSettingsData>) => void;
+  /** Fires when silence timeout blurs after validation (see `AdvancedSettingsNumericFieldBlurDetail`). */
+  onSilenceTimeoutBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
+  /** Fires when call end threshold blurs after validation. */
+  onCallEndThresholdBlur?: (
+    detail: AdvancedSettingsNumericFieldBlurDetail
+  ) => void;
   className?: string;
 }
+
+export type { AdvancedSettingsNumericBounds } from "./advanced-settings-bounds";
+export type { AdvancedSettingsNumericFieldBlurDetail } from "./advanced-settings-card";
 
 // ─── File Upload Modal (re-exported from shared module) ─────────────────────
 

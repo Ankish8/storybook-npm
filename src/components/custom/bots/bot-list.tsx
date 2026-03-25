@@ -22,6 +22,10 @@ export const BotList = React.forwardRef(
       subtitle = "Create & manage AI bots",
       searchPlaceholder = "Search bot...",
       createCardLabel = "Create new bot",
+      chatbotDisabled,
+      voicebotDisabled,
+      chatbotDisabledTooltip,
+      voicebotDisabledTooltip,
       className,
       ...props
     }: BotListProps,
@@ -61,6 +65,10 @@ export const BotList = React.forwardRef(
           <CreateBotModal
             open={createModalOpen}
             onOpenChange={setCreateModalOpen}
+            chatbotDisabled={chatbotDisabled}
+            voicebotDisabled={voicebotDisabled}
+            chatbotDisabledTooltip={chatbotDisabledTooltip}
+            voicebotDisabledTooltip={voicebotDisabledTooltip}
             onSubmit={(data) => {
               onCreateBotSubmit?.(data);
               setCreateModalOpen(false);
@@ -101,6 +109,10 @@ export const BotList = React.forwardRef(
         <CreateBotModal
           open={createModalOpen}
           onOpenChange={setCreateModalOpen}
+          chatbotDisabled={chatbotDisabled}
+          voicebotDisabled={voicebotDisabled}
+          chatbotDisabledTooltip={chatbotDisabledTooltip}
+          voicebotDisabledTooltip={voicebotDisabledTooltip}
           onSubmit={(data) => {
             onCreateBotSubmit?.(data);
             setCreateModalOpen(false);
