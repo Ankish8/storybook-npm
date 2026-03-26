@@ -1064,6 +1064,7 @@ components:
       - "functions-card.tsx"
       - "frustration-handover-card.tsx"
       - "advanced-settings-card.tsx"
+      - "advanced-settings-bounds.ts"
       - "fallback-prompts-card.tsx"
       - "types.ts"
       - "index.ts"

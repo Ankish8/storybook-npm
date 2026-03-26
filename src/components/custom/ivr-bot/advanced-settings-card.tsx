@@ -263,7 +263,9 @@ function useCorrectOutOfRangeNumeric(
   onChange: (patch: Partial<AdvancedSettingsData>) => void
 ) {
   const onChangeRef = React.useRef(onChange);
-  onChangeRef.current = onChange;
+  React.useEffect(() => {
+    onChangeRef.current = onChange;
+  });
 
   React.useEffect(() => {
     if (disabled || raw === undefined) return;
