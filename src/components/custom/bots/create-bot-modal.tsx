@@ -107,7 +107,8 @@ export const CreateBotModal = React.forwardRef(
           ref={ref}
           size="sm"
           className={cn(
-            "mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full",
+            // Do not use horizontal margin here — it breaks left-1/2 + -translate-x-1/2 centering on DialogContent.
+            "max-h-[90vh] overflow-y-auto w-[min(100%,calc(100vw-1.5rem))]",
             className
           )}
         >

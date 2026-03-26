@@ -261,7 +261,12 @@ const PageHeader = React.forwardRef(
         {...props}
       >
         {/* Top Row: Icon/Back + Title + Description */}
-        <div className="flex items-start sm:items-center flex-1 min-w-0">
+        <div
+          className={cn(
+            "flex flex-1 min-w-0",
+            description ? "items-start sm:items-center" : "items-center"
+          )}
+        >
           {/* Left Section: Icon or Back Button */}
           {leftElement && (
             <div className="flex-shrink-0 mr-4">{leftElement}</div>
@@ -269,8 +274,8 @@ const PageHeader = React.forwardRef(
 
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="m-0 text-lg font-semibold text-semantic-text-primary truncate">
+            <div className="flex min-h-10 items-center gap-2">
+              <h1 className="m-0 text-lg font-semibold leading-none text-semantic-text-primary truncate">
                 {title}
               </h1>
               {badge && (
