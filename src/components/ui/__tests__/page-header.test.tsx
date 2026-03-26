@@ -242,9 +242,11 @@ describe("PageHeader", () => {
       render(
         <PageHeader title="Title" layout="horizontal" data-testid="header" />
       );
-      expect(screen.getByTestId("header")).toHaveClass("flex-row");
-      expect(screen.getByTestId("header")).toHaveClass("items-center");
-      expect(screen.getByTestId("header")).toHaveClass("h-[76px]");
+      expect(screen.getByTestId("header")).toHaveClass("flex-col");
+      expect(screen.getByTestId("header")).toHaveClass("sm:flex-row");
+      expect(screen.getByTestId("header")).toHaveClass("sm:items-center");
+      expect(screen.getByTestId("header")).toHaveClass("min-h-[76px]");
+      expect(screen.getByTestId("header")).toHaveClass("lg:h-[76px]");
     });
 
     it("applies vertical layout when specified", () => {
@@ -264,10 +266,8 @@ describe("PageHeader", () => {
           actions={<button data-testid="action">Action</button>}
         />
       );
-      // Horizontal layout: actions container has ml-4
-      expect(
-        screen.getByTestId("action").closest(".flex.items-center.gap-2")
-      ).toHaveClass("ml-4");
+      const desktopAction = screen.getAllByTestId("action")[0];
+      expect(desktopAction.parentElement).toHaveClass("ml-6");
     });
 
     it("applies correct action spacing for vertical layout", () => {
