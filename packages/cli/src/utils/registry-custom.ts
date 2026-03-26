@@ -12548,6 +12548,7 @@ const BotIdentityCard = React.forwardRef(
 
             <Field
               label="Primary Role"
+              helperText="Defines what the bot does. Choose from the list or type a custom role."
               characterCount={{
                 current: (data.primaryRole ?? "").length,
                 max: PRIMARY_ROLE_MAX_LENGTH,

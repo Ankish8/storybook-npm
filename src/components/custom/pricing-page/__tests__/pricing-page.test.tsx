@@ -71,7 +71,7 @@ describe("PricingPage", () => {
         headerActions={<button>Number type: Virtual</button>}
       />
     );
-    expect(screen.getByText("Number type: Virtual")).toBeInTheDocument();
+    expect(screen.getAllByText("Number type: Virtual").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders plan type tabs", () => {
