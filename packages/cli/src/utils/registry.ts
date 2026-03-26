@@ -8149,7 +8149,12 @@ const PageHeader = React.forwardRef(
         {...props}
       >
         {/* Top Row: Icon/Back + Title + Description */}
-        <div className="flex items-start sm:items-center flex-1 min-w-0">
+        <div
+          className={cn(
+            "flex flex-1 min-w-0",
+            description ? "items-start sm:items-center" : "items-center"
+          )}
+        >
           {/* Left Section: Icon or Back Button */}
           {leftElement && (
             <div className="flex-shrink-0 mr-4">{leftElement}</div>
@@ -8157,8 +8162,8 @@ const PageHeader = React.forwardRef(
 
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h1 className="m-0 text-lg font-semibold text-semantic-text-primary truncate">
+            <div className="flex min-h-10 items-center gap-2">
+              <h1 className="m-0 text-lg font-semibold leading-none text-semantic-text-primary truncate">
                 {title}
               </h1>
               {badge && (
@@ -14621,7 +14626,8 @@ export const CreateBotModal = React.forwardRef(
           ref={ref}
           size="sm"
           className={cn(
-            "mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full",
+            // Do not use horizontal margin here — it breaks left-1/2 + -translate-x-1/2 centering on DialogContent.
+            "max-h-[90vh] overflow-y-auto w-[min(100%,calc(100vw-1.5rem))]",
             className
           )}
         >
@@ -15556,14 +15562,6 @@ function useFakeProgress() {
   return { start, cancel, cancelAll };
 }
 
-function getTimeRemaining(progress: number) {
-  const steps = Math.ceil((100 - progress) / 15);
-  const secs = steps * 3;
-  return secs > 60
-    ? \`\${Math.ceil(secs / 60)} minutes remaining\`
-    : \`\${secs} seconds remaining\`;
-}
-
 const FileUploadModal = React.forwardRef(
   (
     {
@@ -15809,8 +15807,7 @@ const FileUploadModal = React.forwardRef(
                         </p>
                         {item.status === "uploading" && (
                           <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
-                            {item.progress}%&nbsp;&bull;&nbsp;
-                            {getTimeRemaining(item.progress)}
+                            {item.progress}%
                           </p>
                         )}
                         {item.status === "error" && (

@@ -6728,7 +6728,8 @@ export const CreateBotModal = React.forwardRef(
           ref={ref}
           size="sm"
           className={cn(
-            "mx-3 max-h-[90vh] overflow-y-auto w-[calc(100%-1.5rem)] sm:mx-auto sm:w-full",
+            // Do not use horizontal margin here — it breaks left-1/2 + -translate-x-1/2 centering on DialogContent.
+            "max-h-[90vh] overflow-y-auto w-[min(100%,calc(100vw-1.5rem))]",
             className
           )}
         >
@@ -7663,14 +7664,6 @@ function useFakeProgress() {
   return { start, cancel, cancelAll };
 }
 
-function getTimeRemaining(progress: number) {
-  const steps = Math.ceil((100 - progress) / 15);
-  const secs = steps * 3;
-  return secs > 60
-    ? \`\${Math.ceil(secs / 60)} minutes remaining\`
-    : \`\${secs} seconds remaining\`;
-}
-
 const FileUploadModal = React.forwardRef(
   (
     {
@@ -7916,8 +7909,7 @@ const FileUploadModal = React.forwardRef(
                         </p>
                         {item.status === "uploading" && (
                           <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
-                            {item.progress}%&nbsp;&bull;&nbsp;
-                            {getTimeRemaining(item.progress)}
+                            {item.progress}%
                           </p>
                         )}
                         {item.status === "error" && (
