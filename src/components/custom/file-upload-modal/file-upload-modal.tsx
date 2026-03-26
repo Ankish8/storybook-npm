@@ -70,14 +70,6 @@ function useFakeProgress() {
   return { start, cancel, cancelAll };
 }
 
-function getTimeRemaining(progress: number) {
-  const steps = Math.ceil((100 - progress) / 15);
-  const secs = steps * 3;
-  return secs > 60
-    ? `${Math.ceil(secs / 60)} minutes remaining`
-    : `${secs} seconds remaining`;
-}
-
 const FileUploadModal = React.forwardRef(
   (
     {
@@ -323,8 +315,7 @@ const FileUploadModal = React.forwardRef(
                         </p>
                         {item.status === "uploading" && (
                           <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px]">
-                            {item.progress}%&nbsp;&bull;&nbsp;
-                            {getTimeRemaining(item.progress)}
+                            {item.progress}%
                           </p>
                         )}
                         {item.status === "error" && (
