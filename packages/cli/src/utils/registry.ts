@@ -7956,7 +7956,7 @@ export interface PageHeaderProps
   actions?: React.ReactNode;
   /** Show bottom border (default: true) */
   showBorder?: boolean;
-  /** Layout mode: 'horizontal' (single row), 'vertical' (stacked), 'responsive' (auto based on screen size, default) */
+  /** Layout mode: 'horizontal' (row on sm+, stacked on narrow), 'vertical' (stacked), 'responsive' (same as horizontal, default) */
   layout?: "horizontal" | "vertical" | "responsive";
   /** Max actions to show on mobile before overflow (default: 2) */
   mobileOverflowLimit?: number;
@@ -8036,13 +8036,13 @@ const PageHeader = React.forwardRef(
 
     // Layout classes based on prop
     const layoutClasses = {
-      horizontal: "flex-row items-center",
+      horizontal: "flex-col sm:flex-row sm:items-center",
       vertical: "flex-col",
       responsive: "flex-col sm:flex-row sm:items-center",
     };
 
     const heightClasses = {
-      horizontal: "h-[76px]",
+      horizontal: "min-h-[76px] py-4 lg:py-0 lg:h-[76px]",
       vertical: "min-h-[76px] py-4",
       responsive: "min-h-[76px] py-4 lg:py-0 lg:h-[76px]",
     };
@@ -8105,27 +8105,14 @@ const PageHeader = React.forwardRef(
       );
     };
 
-    // For horizontal layout, always show all actions inline
-    const renderHorizontalActions = () => (
-      <div className="flex items-center gap-2 ml-4">
-        {actionsArray.map((action, index) => (
-          <React.Fragment key={index}>{action}</React.Fragment>
-        ))}
-      </div>
-    );
-
     const renderActions = () => {
       if (!actions) return null;
-
-      if (layout === "horizontal") {
-        return renderHorizontalActions();
-      }
 
       if (layout === "vertical") {
         return renderExpandableActions("mt-3");
       }
 
-      // Responsive: render both, CSS handles visibility
+      // horizontal + responsive: stack actions below title on small screens
       return (
         <>
           {renderDesktopActions()}
@@ -8162,7 +8149,7 @@ const PageHeader = React.forwardRef(
 
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
-            <div className="flex min-h-10 items-center gap-2">
+            <div className="flex h-auto items-center gap-2 sm:min-h-10">
               <h1 className="m-0 text-lg font-semibold leading-none text-semantic-text-primary truncate">
                 {title}
               </h1>
@@ -20446,6 +20433,7 @@ const BotIdentityCard = React.forwardRef(
 
             <Field
               label="Primary Role"
+              helperText="Defines what the bot does. Choose from the list or type a custom role."
               characterCount={{
                 current: (data.primaryRole ?? "").length,
                 max: PRIMARY_ROLE_MAX_LENGTH,
