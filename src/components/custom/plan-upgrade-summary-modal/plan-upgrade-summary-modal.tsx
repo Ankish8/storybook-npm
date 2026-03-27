@@ -13,11 +13,11 @@ import type {
 } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-8 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex max-h-[min(90vh,calc(100dvh-2rem))] flex-col gap-4 overflow-y-auto rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 sm:gap-6 sm:p-6 md:gap-8 md:p-9"
 );
 
 const summaryPanelVariants = cva(
-  "flex flex-col gap-5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui p-4"
+  "flex flex-col gap-4 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui p-3 sm:gap-5 sm:p-4"
 );
 
 const statusTitleVariants = cva("m-0 text-sm font-semibold leading-5 tracking-[0.014px]", {
@@ -145,12 +145,12 @@ const PlanUpgradeSummaryModal = React.forwardRef(
         <DialogContent
           size="default"
           hideCloseButton
-          className="w-full max-w-[660px] border-none bg-transparent p-0 shadow-none"
+          className="min-w-0 w-full max-w-[min(41.25rem,calc(100vw-2rem))] border-none bg-transparent p-0 shadow-none"
         >
           <div ref={ref} className={cn(modalRootVariants(), className)} {...props}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col gap-2">
-                <DialogTitle className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <DialogTitle className="m-0 text-base font-semibold leading-normal text-semantic-text-primary sm:text-lg">
                   {resolvedTitle}
                 </DialogTitle>
                 <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
@@ -160,7 +160,7 @@ const PlanUpgradeSummaryModal = React.forwardRef(
               <button
                 type="button"
                 onClick={handleClose}
-                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary"
+                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2"
                 aria-label={closeAriaLabel}
               >
                 <X className="size-6" />
@@ -168,9 +168,9 @@ const PlanUpgradeSummaryModal = React.forwardRef(
             </div>
 
             <div className={summaryPanelVariants()}>
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
                 <span className="shrink-0">{getStatusIcon(resolvedTone)}</span>
-                <div className="flex flex-col gap-1">
+                <div className="flex min-w-0 flex-col gap-1">
                   <p className={statusTitleVariants({ tone: resolvedTone })}>
                     {resolvedStatus.title}
                   </p>
@@ -186,33 +186,43 @@ const PlanUpgradeSummaryModal = React.forwardRef(
                 {resolvedRows.map((row) => (
                   <div
                     key={`${row.label}-${row.value}`}
-                    className="flex items-center justify-between gap-6"
+                    className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
                   >
-                    <span className="text-sm tracking-[0.035px] text-semantic-text-secondary">
+                    <span className="min-w-0 text-sm tracking-[0.035px] text-semantic-text-secondary">
                       {row.label}
                     </span>
-                    <span className="text-sm tracking-[0.035px] text-semantic-text-primary">
+                    <span className="min-w-0 shrink-0 text-left text-sm tracking-[0.035px] text-semantic-text-primary sm:text-right">
                       {row.value}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-6 border-t border-solid border-semantic-border-layout pt-3">
+              <div className="flex flex-col gap-1 border-t border-solid border-semantic-border-layout pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-secondary">
                   {totalLabel}
                 </span>
-                <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-primary">
+                <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-primary sm:text-right">
                   {resolvedTotalValue}
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5">
-              <Button variant="outline" onClick={handleCancel}>
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2.5">
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                className="w-full sm:w-auto"
+              >
                 {cancelLabel}
               </Button>
-              <Button variant="primary" onClick={onPrimaryAction} loading={loading} disabled={disabled}>
+              <Button
+                variant="primary"
+                onClick={onPrimaryAction}
+                loading={loading}
+                disabled={disabled}
+                className="w-full sm:w-auto"
+              >
                 {resolvedPrimaryActionLabel}
               </Button>
             </div>
