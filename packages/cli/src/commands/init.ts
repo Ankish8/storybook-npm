@@ -320,22 +320,53 @@ const CSS_VARIABLES_V3 = `@import "./lib/myoperator-ui-theme.css";
 `
 
 // Tailwind CSS v3 format for Bootstrap projects
-// Bootstrap imports load FIRST so Tailwind's preflight overrides Bootstrap's reboot.
-// important: true in tailwind.config ensures tw- utilities always win.
-// The CLI preserves existing Bootstrap imports and places them before Tailwind directives.
+// Preflight is OFF to prevent Tailwind's global * reset from breaking Bootstrap elements.
+// Scoped reset targets only [class*="tw-"] elements and their descendants.
 const CSS_VARIABLES_V3_BOOTSTRAP = `/* myOperator UI theme + Tailwind AFTER Bootstrap */
 @import "./lib/myoperator-ui-theme.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Scoped preflight: only resets elements within Tailwind component trees */
+[class*="tw-"],
+[class*="tw-"] *,
+[class*="tw-"] *::before,
+[class*="tw-"] *::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: transparent;
+  box-sizing: border-box;
+}
+
+/* Reset browser defaults on buttons/inputs in Tailwind trees */
+button[class*="tw-"],
+[class*="tw-"] button,
+input[class*="tw-"],
+[class*="tw-"] input,
+select[class*="tw-"],
+[class*="tw-"] select,
+textarea[class*="tw-"],
+[class*="tw-"] textarea {
+  background-color: transparent;
+  font-family: inherit;
+  font-size: 100%;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
 `
 
 export const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean = false) => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
   prefix: "${prefix}",${hasBootstrap ? `
-  important: true,  // Required to override Bootstrap styles` : ''}
+  important: true,  // Required to override Bootstrap styles
+  corePlugins: {
+    preflight: false,  // Disable global reset - scoped reset in App.scss handles tw- elements
+  },` : ''}
   content: [
     "./src/components/ui/**/*.{js,ts,jsx,tsx}",
     "./src/components/custom/**/*.{js,ts,jsx,tsx}",
@@ -824,8 +855,8 @@ export function cn(...inputs: ClassValue[]) {
       const existingCss = await fs.readFile(globalCssPath, 'utf-8')
       const hasThemeImport = existingCss.includes('myoperator-ui-theme.css')
 
-      // Check if Bootstrap project needs import reordering (Bootstrap BEFORE Tailwind)
-      const needsBootstrapReorder = hasBootstrap && !existingCss.includes('/* myOperator UI theme + Tailwind AFTER Bootstrap */')
+      // Check if Bootstrap project needs updating (missing scoped preflight reset or import reorder)
+      const needsBootstrapReorder = hasBootstrap && !existingCss.includes('Scoped preflight')
 
       if (needsBootstrapReorder) {
         // Extract existing @import/@use lines (Bootstrap, legacy styles, etc.)
@@ -890,11 +921,13 @@ export function cn(...inputs: ClassValue[]) {
         const hasLegacyColors = existingConfig.includes('hsl(var(--destructive))') || existingConfig.includes('hsl(var(--ring))')
         const hasSemanticColors = existingConfig.includes('semantic-text-primary')
 
-        // Fix: remove stale preflight: false if present (was added by earlier CLI versions)
-        const hasStalePreflightDisable = existingConfig.includes('preflight')
+        // For Bootstrap projects: ensure preflight: false is present
+        // For non-Bootstrap projects that somehow have it: remove it
+        const hasPreflight = existingConfig.includes('preflight')
+        const needsPreflightUpdate = hasBootstrap ? !hasPreflight : hasPreflight
 
-        if (hasStalePreflightDisable) {
-          // Config has preflight: false from a previous CLI version — rewrite to remove it
+        if (needsPreflightUpdate) {
+          // Rewrite config to add or remove preflight setting
           await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
           tailwindUpdated = true
         } else if (!hasLegacyColors && !hasSemanticColors) {
