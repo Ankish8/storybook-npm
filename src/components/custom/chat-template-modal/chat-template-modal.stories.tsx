@@ -102,7 +102,6 @@ type Story = StoryObj<typeof ChatTemplateModal>;
  * Close it with the × button in the top-right corner.
  */
 export const Docs: Story = {
-  name: "Docs",
   render: () => <TemplateModalWithTrigger />,
   parameters: {
     layout: "centered",

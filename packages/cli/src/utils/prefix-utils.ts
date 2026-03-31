@@ -240,6 +240,7 @@ export function looksLikeTailwindClasses(str: string): boolean {
 
   // Skip strings with non-ASCII characters (currency symbols, unicode, etc.)
   // Tailwind classes are always ASCII — ₹, €, £, ¥ etc. are display text, not classes
+  // eslint-disable-next-line no-control-regex
   if (/[^\x00-\x7F]/.test(str)) return false
 
   // Skip obvious non-class values (common prop values)
