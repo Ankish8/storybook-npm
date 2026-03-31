@@ -18,6 +18,7 @@ export const CreateBotFlow = React.forwardRef(
       voicebotDisabled,
       chatbotDisabledTooltip,
       voicebotDisabledTooltip,
+      botNameMaxLength,
       className,
       ...props
     }: CreateBotFlowProps,
@@ -49,6 +50,7 @@ export const CreateBotFlow = React.forwardRef(
           voicebotDisabled={voicebotDisabled}
           chatbotDisabledTooltip={chatbotDisabledTooltip}
           voicebotDisabledTooltip={voicebotDisabledTooltip}
+          botNameMaxLength={botNameMaxLength}
           onSubmit={(data) => {
             onSubmit?.(data);
             setModalOpen(false);

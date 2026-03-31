@@ -66,6 +66,7 @@ export const CreateBotModal = React.forwardRef(
       voicebotDisabled = false,
       chatbotDisabledTooltip,
       voicebotDisabledTooltip,
+      botNameMaxLength,
       className,
     }: CreateBotModalProps,
     ref: React.Ref<HTMLDivElement>
@@ -131,6 +132,7 @@ export const CreateBotModal = React.forwardRef(
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                maxLength={botNameMaxLength}
                 placeholder="Enter bot name"
                 className={cn(
                   "w-full h-10 px-4 py-2.5 text-sm rounded border border-solid",

@@ -26,6 +26,7 @@ export const BotList = React.forwardRef(
       voicebotDisabled,
       chatbotDisabledTooltip,
       voicebotDisabledTooltip,
+      botNameMaxLength,
       className,
       ...props
     }: BotListProps,
@@ -69,6 +70,7 @@ export const BotList = React.forwardRef(
             voicebotDisabled={voicebotDisabled}
             chatbotDisabledTooltip={chatbotDisabledTooltip}
             voicebotDisabledTooltip={voicebotDisabledTooltip}
+            botNameMaxLength={botNameMaxLength}
             onSubmit={(data) => {
               onCreateBotSubmit?.(data);
               setCreateModalOpen(false);
@@ -113,6 +115,7 @@ export const BotList = React.forwardRef(
           voicebotDisabled={voicebotDisabled}
           chatbotDisabledTooltip={chatbotDisabledTooltip}
           voicebotDisabledTooltip={voicebotDisabledTooltip}
+          botNameMaxLength={botNameMaxLength}
           onSubmit={(data) => {
             onCreateBotSubmit?.(data);
             setCreateModalOpen(false);

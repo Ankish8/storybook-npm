@@ -31,6 +31,7 @@ export const argTypes = {
   voicebotDisabled: { control: "boolean", description: "Forwarded to CreateBotModal — disables Voice bot type" },
   chatbotDisabledTooltip: { control: "text", description: "Forwarded to CreateBotModal" },
   voicebotDisabledTooltip: { control: "text", description: "Forwarded to CreateBotModal" },
+  botNameMaxLength: { control: "number", description: "Forwarded to CreateBotModal — max length for bot name" },
 } as const;
 
 export const propsTable = `
@@ -48,4 +49,5 @@ export const propsTable = `
 | voicebotDisabled | boolean | No | false | CreateBotModal: disables Voice bot type |
 | chatbotDisabledTooltip | string | No | — | CreateBotModal: tooltip when Chat bot disabled |
 | voicebotDisabledTooltip | string | No | — | CreateBotModal: tooltip when Voice bot disabled |
+| botNameMaxLength | number | No | — | CreateBotModal: max length for bot name |
 `;

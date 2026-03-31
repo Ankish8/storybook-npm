@@ -111,6 +111,16 @@ describe("CreateBotModal", () => {
     expect(screen.getByText("*")).toBeInTheDocument();
   });
 
+  it("sets maxLength on bot name input when botNameMaxLength is provided", () => {
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} botNameMaxLength={64} />
+    );
+    expect(screen.getByPlaceholderText("Enter bot name")).toHaveAttribute(
+      "maxLength",
+      "64"
+    );
+  });
+
   it("disables Create button when isLoading is true even with a name", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} isLoading />

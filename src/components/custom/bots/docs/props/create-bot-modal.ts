@@ -17,6 +17,7 @@ export const argTypes = {
   voicebotDisabled: { control: "boolean", description: "Disables Voice bot type option" },
   chatbotDisabledTooltip: { control: "text", description: "Tooltip when Chat bot is disabled (shown only if non-empty)" },
   voicebotDisabledTooltip: { control: "text", description: "Tooltip when Voice bot is disabled (shown only if non-empty)" },
+  botNameMaxLength: { control: "number", description: "Maximum length for the bot name input (HTML maxLength); omit for no limit" },
 } as const;
 
 export const propsTable = `
@@ -30,5 +31,6 @@ export const propsTable = `
 | voicebotDisabled | boolean | No | false | Disables Voice bot type option |
 | chatbotDisabledTooltip | string | No | — | Tooltip when Chat bot is disabled (only if non-empty) |
 | voicebotDisabledTooltip | string | No | — | Tooltip when Voice bot is disabled (only if non-empty) |
+| botNameMaxLength | number | No | — | Max length for bot name (HTML \`maxLength\`); omit for no limit |
 | className | string | No | — | Content className |
 `;
