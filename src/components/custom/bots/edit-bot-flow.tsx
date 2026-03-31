@@ -17,6 +17,7 @@ export function EditBotFlow({
   voicebotDisabled,
   chatbotDisabledTooltip,
   voicebotDisabledTooltip,
+  botNameMaxLength,
   onBotDelete,
   onCreateBotSubmit,
   onSearch,
@@ -60,6 +61,7 @@ export function EditBotFlow({
         voicebotDisabled={voicebotDisabled}
         chatbotDisabledTooltip={chatbotDisabledTooltip}
         voicebotDisabledTooltip={voicebotDisabledTooltip}
+        botNameMaxLength={botNameMaxLength}
         onBotEdit={handleEdit}
         onBotDelete={onBotDelete}
         onCreateBotSubmit={onCreateBotSubmit}

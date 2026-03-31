@@ -60,6 +60,10 @@ export interface CreateBotModalProps {
    * Shown on hover/focus when Voice bot is disabled. Tooltip is not rendered when omitted or empty.
    */
   voicebotDisabledTooltip?: string;
+  /**
+   * Maximum length for the bot name field (sets `maxLength` on the input). Omit for no browser limit.
+   */
+  botNameMaxLength?: number;
   className?: string;
 }
 
@@ -105,6 +109,7 @@ export type CreateBotModalTypeOptionsProps = Pick<
   | "voicebotDisabled"
   | "chatbotDisabledTooltip"
   | "voicebotDisabledTooltip"
+  | "botNameMaxLength"
 >;
 
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
