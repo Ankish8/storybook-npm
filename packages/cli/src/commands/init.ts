@@ -323,7 +323,10 @@ export const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean 
 export default {
   darkMode: ["class"],
   prefix: "${prefix}",${hasBootstrap ? `
-  important: true,  // Required to override Bootstrap styles` : ''}
+  important: true,  // Required to override Bootstrap styles
+  corePlugins: {
+    preflight: false,  // Disable Tailwind's CSS reset - Bootstrap handles base styles
+  },` : ''}
   content: [
     "./src/components/ui/**/*.{js,ts,jsx,tsx}",
     "./src/components/custom/**/*.{js,ts,jsx,tsx}",
