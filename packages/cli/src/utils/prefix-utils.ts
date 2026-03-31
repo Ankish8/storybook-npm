@@ -238,6 +238,10 @@ export function looksLikeTailwindClasses(str: string): boolean {
   // Skip empty strings
   if (!str || !str.trim()) return false
 
+  // Skip strings with non-ASCII characters (currency symbols, unicode, etc.)
+  // Tailwind classes are always ASCII — ₹, €, £, ¥ etc. are display text, not classes
+  if (/[^\x00-\x7F]/.test(str)) return false
+
   // Skip obvious non-class values (common prop values)
   const nonClassValues = [
     'button', 'submit', 'reset', 'text', 'email', 'password', 'number', 'tel', 'url', 'search',

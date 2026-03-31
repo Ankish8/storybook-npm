@@ -319,14 +319,23 @@ const CSS_VARIABLES_V3 = `@import "./lib/myoperator-ui-theme.css";
 }
 `
 
+// Tailwind CSS v3 format for Bootstrap projects
+// Bootstrap imports load FIRST so Tailwind's preflight overrides Bootstrap's reboot.
+// important: true in tailwind.config ensures tw- utilities always win.
+// The CLI preserves existing Bootstrap imports and places them before Tailwind directives.
+const CSS_VARIABLES_V3_BOOTSTRAP = `/* myOperator UI theme + Tailwind AFTER Bootstrap */
+@import "./lib/myoperator-ui-theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`
+
 export const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean = false) => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
   prefix: "${prefix}",${hasBootstrap ? `
-  important: true,  // Required to override Bootstrap styles
-  corePlugins: {
-    preflight: false,  // Disable Tailwind's CSS reset - Bootstrap handles base styles
-  },` : ''}
+  important: true,  // Required to override Bootstrap styles` : ''}
   content: [
     "./src/components/ui/**/*.{js,ts,jsx,tsx}",
     "./src/components/custom/**/*.{js,ts,jsx,tsx}",
@@ -803,7 +812,7 @@ export function cn(...inputs: ClassValue[]) {
     if (tailwindVersion === 'v4') {
       cssContent = hasBootstrap ? CSS_VARIABLES_V4_BOOTSTRAP : CSS_VARIABLES_V4
     } else {
-      cssContent = CSS_VARIABLES_V3
+      cssContent = hasBootstrap ? CSS_VARIABLES_V3_BOOTSTRAP : CSS_VARIABLES_V3
     }
     let cssUpdated = false
     if (!(await fs.pathExists(globalCssPath))) {
@@ -815,7 +824,30 @@ export function cn(...inputs: ClassValue[]) {
       const existingCss = await fs.readFile(globalCssPath, 'utf-8')
       const hasThemeImport = existingCss.includes('myoperator-ui-theme.css')
 
-      if (!hasThemeImport) {
+      // Check if Bootstrap project needs import reordering (Bootstrap BEFORE Tailwind)
+      const needsBootstrapReorder = hasBootstrap && !existingCss.includes('/* myOperator UI theme + Tailwind AFTER Bootstrap */')
+
+      if (needsBootstrapReorder) {
+        // Extract existing @import/@use lines (Bootstrap, legacy styles, etc.)
+        const lines = existingCss.split('\n')
+        const customLines = lines.filter(line => {
+          const trimmed = line.trim()
+          if (!trimmed || trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('//')) return false
+          if (trimmed.startsWith('@tailwind')) return false
+          if (trimmed.startsWith('@import') && trimmed.includes('myoperator-ui-theme')) return false
+          if (trimmed.startsWith('@import') || trimmed.startsWith('@use')) return true
+          return false
+        })
+        const bootstrapImports = customLines.join('\n')
+
+        // Place Bootstrap imports BEFORE Tailwind content so preflight overrides reboot
+        if (bootstrapImports) {
+          await fs.writeFile(globalCssPath, '/* Bootstrap & legacy styles first */\n' + bootstrapImports + '\n\n' + cssContent)
+        } else {
+          await fs.writeFile(globalCssPath, cssContent)
+        }
+        cssUpdated = true
+      } else if (!hasThemeImport) {
         // Theme import missing - need to update
         spinner.stop()
         const result = await prompts({
@@ -858,10 +890,14 @@ export function cn(...inputs: ClassValue[]) {
         const hasLegacyColors = existingConfig.includes('hsl(var(--destructive))') || existingConfig.includes('hsl(var(--ring))')
         const hasSemanticColors = existingConfig.includes('semantic-text-primary')
 
-        // Check if Bootstrap settings are missing (e.g. corePlugins: { preflight: false })
-        const needsBootstrapUpdate = hasBootstrap && !existingConfig.includes('preflight')
+        // Fix: remove stale preflight: false if present (was added by earlier CLI versions)
+        const hasStalePreflightDisable = existingConfig.includes('preflight')
 
-        if (!hasLegacyColors && !hasSemanticColors) {
+        if (hasStalePreflightDisable) {
+          // Config has preflight: false from a previous CLI version — rewrite to remove it
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
+          tailwindUpdated = true
+        } else if (!hasLegacyColors && !hasSemanticColors) {
           // Config missing both - auto-update for v3
           await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
           tailwindUpdated = true
@@ -880,10 +916,6 @@ export function cn(...inputs: ClassValue[]) {
             await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
             tailwindUpdated = true
           }
-        } else if (needsBootstrapUpdate) {
-          // Has colors but missing Bootstrap-specific settings
-          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
-          tailwindUpdated = true
         }
       }
     }
