@@ -12000,80 +12000,88 @@ const PlanDetailModal = React.forwardRef(
         <DialogContent
           size="lg"
           hideCloseButton
-          className="p-0 gap-0 overflow-hidden"
+          className={cn(
+            "flex max-h-[min(90vh,calc(100dvh-2rem))] min-w-0 flex-col gap-0 overflow-hidden rounded-xl",
+            "w-full max-w-[min(42rem,calc(100vw-2rem))] p-3 sm:p-4 md:p-6"
+          )}
         >
+          <DialogDescription className="sr-only">
+            Plan features, free allowances, and rates for this subscription.
+          </DialogDescription>
           <div
             ref={ref}
-            className={cn("flex flex-col", className)}
+            className={cn("flex min-h-0 flex-1 flex-col", className)}
             {...props}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-8 py-4 border-b border-solid border-semantic-border-layout">
-              <DialogTitle className="text-lg font-semibold text-semantic-text-primary leading-none m-0">
+            {/* Header — matches other custom modals (e.g. plan-upgrade-summary) */}
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-solid border-semantic-border-layout pb-3 sm:gap-4 sm:pb-4">
+              <DialogTitle className="m-0 min-w-0 flex-1 pr-2 text-base font-semibold leading-normal text-semantic-text-primary sm:text-lg">
                 {title}
               </DialogTitle>
               <button
                 type="button"
                 onClick={handleClose}
                 aria-label="Close"
-                className="flex items-center justify-center size-6 rounded text-semantic-text-muted hover:text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
+                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2"
               >
-                <X className="size-3" aria-hidden="true" />
+                <X className="size-6" aria-hidden="true" />
               </button>
             </div>
 
-            {/* Body */}
-            <DialogDescription asChild>
-              <div className="flex flex-col gap-2.5 px-8 py-5 overflow-y-auto max-h-[70vh]">
-                <p className="m-0 text-base font-semibold text-semantic-text-primary leading-none">
-                  Features
-                </p>
-                <div className="w-full overflow-x-auto rounded border border-solid border-semantic-border-layout">
-                  <table className="w-full border-collapse text-sm">
-                    <thead>
-                      <tr className="bg-semantic-bg-ui">
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[44%]">
-                          Feature
-                        </th>
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[28%]">
-                          Free
-                        </th>
-                        <th className="px-3 py-[11px] text-left font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout w-[28%]">
-                          Rate
-                        </th>
+            {/* Features label fixed; only the table region scrolls */}
+            <div className="flex min-h-0 flex-1 flex-col gap-2 pt-3 sm:gap-2.5 sm:pt-4">
+              <p className="m-0 shrink-0 text-sm font-semibold leading-none text-semantic-text-primary sm:text-base">
+                Features
+              </p>
+              <div className="min-h-0 flex-1 overflow-y-auto overflow-x-auto rounded border border-solid border-semantic-border-layout">
+                <table className="w-full min-w-0 border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-semantic-bg-ui">
+                      <th className="w-[40%] px-2 py-2 text-left text-xs font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout sm:w-[44%] sm:px-3 sm:py-[11px] sm:text-sm">
+                        Feature
+                      </th>
+                      <th className="w-[30%] px-2 py-2 text-left text-xs font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout sm:w-[28%] sm:px-3 sm:py-[11px] sm:text-sm">
+                        Free
+                      </th>
+                      <th className="w-[30%] px-2 py-2 text-left text-xs font-semibold text-semantic-text-primary border-b border-solid border-semantic-border-layout sm:w-[28%] sm:px-3 sm:py-[11px] sm:text-sm">
+                        Rate
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {features.map((feature, index) => (
+                      <tr
+                        key={feature.name}
+                        className={cn(
+                          index % 2 === 0
+                            ? "bg-semantic-bg-primary"
+                            : "bg-semantic-bg-ui"
+                        )}
+                      >
+                        <td className="px-2 py-2 text-xs text-semantic-text-secondary border-b border-solid border-semantic-border-layout sm:px-3 sm:py-[11px] sm:text-sm">
+                          <p className="m-0 leading-snug sm:leading-none">{feature.name}</p>
+                        </td>
+                        <td className="px-2 py-2 text-xs text-semantic-text-secondary border-b border-solid border-semantic-border-layout sm:px-3 sm:py-[11px] sm:text-sm">
+                          <p className="m-0 leading-snug sm:leading-none">{feature.free}</p>
+                        </td>
+                        <td className="px-2 py-2 text-xs text-semantic-text-secondary border-b border-solid border-semantic-border-layout sm:px-3 sm:py-[11px] sm:text-sm">
+                          <p className="m-0 leading-snug sm:leading-none">{feature.rate}</p>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {features.map((feature, index) => (
-                        <tr
-                          key={feature.name}
-                          className={cn(
-                            index % 2 === 0
-                              ? "bg-semantic-bg-primary"
-                              : "bg-semantic-bg-ui"
-                          )}
-                        >
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
-                            <p className="m-0 leading-none">{feature.name}</p>
-                          </td>
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
-                            <p className="m-0 leading-none">{feature.free}</p>
-                          </td>
-                          <td className="px-3 py-[11px] text-semantic-text-secondary border-b border-solid border-semantic-border-layout">
-                            <p className="m-0 leading-none">{feature.rate}</p>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </DialogDescription>
+            </div>
 
             {/* Footer */}
             {planPrice && (
-              <div className="flex items-center px-8 py-4 border-t border-solid border-semantic-border-layout">
-                <p className="m-0 text-base text-semantic-text-primary">
+              <div
+                className={cn(
+                  "flex shrink-0 items-center border-t border-solid border-semantic-border-layout pt-3 sm:pt-4"
+                )}
+              >
+                <p className="m-0 text-sm text-semantic-text-primary sm:text-base">
                   <span className="font-semibold">Plan price </span>
                   <span className="font-normal">{planPrice}</span>
                 </p>
@@ -12160,11 +12168,11 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "../dialog
 import type { BillingCycleOption, PlanUpgradeModalProps } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-6 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex min-h-0 max-h-[min(90vh,calc(100dvh-2rem))] flex-col gap-4 overflow-y-auto overflow-x-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:gap-6 sm:p-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] md:gap-8 md:p-9 md:pb-[calc(2.25rem+env(safe-area-inset-bottom,0px))]"
 );
 
 const billingCycleOptionVariants = cva(
-  "flex w-full items-center gap-2.5 rounded-lg border border-solid bg-semantic-bg-primary p-3 text-left transition-colors",
+  "flex w-full min-h-[44px] items-center gap-2.5 rounded-lg border border-solid bg-semantic-bg-primary p-3 text-left transition-colors sm:min-h-0",
   {
     variants: {
       selected: {
@@ -12254,12 +12262,12 @@ const PlanUpgradeModal = React.forwardRef(
         <DialogContent
           size="default"
           hideCloseButton
-          className="w-full max-w-[480px] border-none bg-transparent p-0 shadow-none"
+          className="min-w-0 w-full max-w-[min(30rem,calc(100vw-1rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px)))] border-none bg-transparent p-0 shadow-none sm:max-w-[min(30rem,calc(100vw-2rem-env(safe-area-inset-left,0px)-env(safe-area-inset-right,0px)))]"
         >
           <div ref={ref} className={cn(modalRootVariants(), className)} {...props}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col gap-2">
-                <DialogTitle className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <DialogTitle className="m-0 break-words text-base font-semibold leading-normal text-semantic-text-primary sm:text-lg">
                   {title}
                 </DialogTitle>
                 <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
@@ -12269,10 +12277,10 @@ const PlanUpgradeModal = React.forwardRef(
               <button
                 type="button"
                 onClick={handleClose}
-                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary"
+                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2"
                 aria-label="Close plan upgrade modal"
               >
-                <X className="size-5" />
+                <X className="size-6" aria-hidden="true" />
               </button>
             </div>
 
@@ -12288,7 +12296,7 @@ const PlanUpgradeModal = React.forwardRef(
                     aria-pressed={isSelected}
                   >
                     <span className={iconContainerVariants()}>{renderOptionIcon(option.icon)}</span>
-                    <span className="text-sm leading-normal tracking-[0.035px] text-semantic-text-primary">
+                    <span className="min-w-0 flex-1 text-left text-sm leading-normal tracking-[0.035px] text-semantic-text-primary">
                       {option.label}
                     </span>
                   </button>
@@ -12296,13 +12304,13 @@ const PlanUpgradeModal = React.forwardRef(
               })}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-stretch sm:justify-end">
               <Button
                 variant="default"
                 onClick={handleNext}
                 disabled={!activeOptionId}
                 loading={loading}
-                className="min-w-[95px]"
+                className="w-full min-w-0 sm:w-auto sm:min-w-[95px]"
               >
                 {nextLabel}
               </Button>
@@ -12409,11 +12417,11 @@ import type {
 } from "./types";
 
 const modalRootVariants = cva(
-  "flex flex-col gap-8 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-9"
+  "flex max-h-[min(90vh,calc(100dvh-2rem))] flex-col gap-4 overflow-y-auto rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 sm:gap-6 sm:p-6 md:gap-8 md:p-9"
 );
 
 const summaryPanelVariants = cva(
-  "flex flex-col gap-5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui p-4"
+  "flex flex-col gap-4 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui p-3 sm:gap-5 sm:p-4"
 );
 
 const statusTitleVariants = cva("m-0 text-sm font-semibold leading-5 tracking-[0.014px]", {
@@ -12541,12 +12549,12 @@ const PlanUpgradeSummaryModal = React.forwardRef(
         <DialogContent
           size="default"
           hideCloseButton
-          className="w-full max-w-[660px] border-none bg-transparent p-0 shadow-none"
+          className="min-w-0 w-full max-w-[min(41.25rem,calc(100vw-2rem))] border-none bg-transparent p-0 shadow-none"
         >
           <div ref={ref} className={cn(modalRootVariants(), className)} {...props}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-col gap-2">
-                <DialogTitle className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary">
+            <div className="flex items-start justify-between gap-3 sm:gap-4">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <DialogTitle className="m-0 text-base font-semibold leading-normal text-semantic-text-primary sm:text-lg">
                   {resolvedTitle}
                 </DialogTitle>
                 <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
@@ -12556,7 +12564,7 @@ const PlanUpgradeSummaryModal = React.forwardRef(
               <button
                 type="button"
                 onClick={handleClose}
-                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary"
+                className="shrink-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2"
                 aria-label={closeAriaLabel}
               >
                 <X className="size-6" />
@@ -12564,9 +12572,9 @@ const PlanUpgradeSummaryModal = React.forwardRef(
             </div>
 
             <div className={summaryPanelVariants()}>
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
                 <span className="shrink-0">{getStatusIcon(resolvedTone)}</span>
-                <div className="flex flex-col gap-1">
+                <div className="flex min-w-0 flex-col gap-1">
                   <p className={statusTitleVariants({ tone: resolvedTone })}>
                     {resolvedStatus.title}
                   </p>
@@ -12582,33 +12590,43 @@ const PlanUpgradeSummaryModal = React.forwardRef(
                 {resolvedRows.map((row) => (
                   <div
                     key={\`\${row.label}-\${row.value}\`}
-                    className="flex items-center justify-between gap-6"
+                    className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
                   >
-                    <span className="text-sm tracking-[0.035px] text-semantic-text-secondary">
+                    <span className="min-w-0 text-sm tracking-[0.035px] text-semantic-text-secondary">
                       {row.label}
                     </span>
-                    <span className="text-sm tracking-[0.035px] text-semantic-text-primary">
+                    <span className="min-w-0 shrink-0 text-left text-sm tracking-[0.035px] text-semantic-text-primary sm:text-right">
                       {row.value}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="flex items-center justify-between gap-6 border-t border-solid border-semantic-border-layout pt-3">
+              <div className="flex flex-col gap-1 border-t border-solid border-semantic-border-layout pt-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-secondary">
                   {totalLabel}
                 </span>
-                <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-primary">
+                <span className="text-sm font-semibold tracking-[0.014px] text-semantic-text-primary sm:text-right">
                   {resolvedTotalValue}
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5">
-              <Button variant="outline" onClick={handleCancel}>
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2.5">
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                className="w-full sm:w-auto"
+              >
                 {cancelLabel}
               </Button>
-              <Button variant="primary" onClick={onPrimaryAction} loading={loading} disabled={disabled}>
+              <Button
+                variant="primary"
+                onClick={onPrimaryAction}
+                loading={loading}
+                disabled={disabled}
+                className="w-full sm:w-auto"
+              >
                 {resolvedPrimaryActionLabel}
               </Button>
             </div>

@@ -323,7 +323,10 @@ export const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean 
 export default {
   darkMode: ["class"],
   prefix: "${prefix}",${hasBootstrap ? `
-  important: true,  // Required to override Bootstrap styles` : ''}
+  important: true,  // Required to override Bootstrap styles
+  corePlugins: {
+    preflight: false,  // Disable Tailwind's CSS reset - Bootstrap handles base styles
+  },` : ''}
   content: [
     "./src/components/ui/**/*.{js,ts,jsx,tsx}",
     "./src/components/custom/**/*.{js,ts,jsx,tsx}",
@@ -855,6 +858,9 @@ export function cn(...inputs: ClassValue[]) {
         const hasLegacyColors = existingConfig.includes('hsl(var(--destructive))') || existingConfig.includes('hsl(var(--ring))')
         const hasSemanticColors = existingConfig.includes('semantic-text-primary')
 
+        // Check if Bootstrap settings are missing (e.g. corePlugins: { preflight: false })
+        const needsBootstrapUpdate = hasBootstrap && !existingConfig.includes('preflight')
+
         if (!hasLegacyColors && !hasSemanticColors) {
           // Config missing both - auto-update for v3
           await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
@@ -874,6 +880,10 @@ export function cn(...inputs: ClassValue[]) {
             await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
             tailwindUpdated = true
           }
+        } else if (needsBootstrapUpdate) {
+          // Has colors but missing Bootstrap-specific settings
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
+          tailwindUpdated = true
         }
       }
     }
