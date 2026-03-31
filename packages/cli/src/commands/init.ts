@@ -329,17 +329,6 @@ const CSS_VARIABLES_V3_BOOTSTRAP = `/* myOperator UI theme + Tailwind AFTER Boot
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Reset Bootstrap button styles for myOperator UI components */
-@layer components {
-  .inline-flex[class*="rounded"],
-  button.bg-\\[\\#343E55\\],
-  button.bg-\\[\\#E8EAED\\],
-  button.bg-transparent {
-    border: none;
-    box-shadow: none;
-  }
-}
 `
 
 export const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean = false) => `/** @type {import('tailwindcss').Config} */
@@ -901,7 +890,14 @@ export function cn(...inputs: ClassValue[]) {
         const hasLegacyColors = existingConfig.includes('hsl(var(--destructive))') || existingConfig.includes('hsl(var(--ring))')
         const hasSemanticColors = existingConfig.includes('semantic-text-primary')
 
-        if (!hasLegacyColors && !hasSemanticColors) {
+        // Fix: remove stale preflight: false if present (was added by earlier CLI versions)
+        const hasStalePreflightDisable = existingConfig.includes('preflight')
+
+        if (hasStalePreflightDisable) {
+          // Config has preflight: false from a previous CLI version — rewrite to remove it
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
+          tailwindUpdated = true
+        } else if (!hasLegacyColors && !hasSemanticColors) {
           // Config missing both - auto-update for v3
           await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
           tailwindUpdated = true
