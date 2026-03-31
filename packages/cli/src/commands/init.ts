@@ -858,7 +858,23 @@ export function cn(...inputs: ClassValue[]) {
 
       if (needsScopedPreflight) {
         // Bootstrap detected but CSS is missing the scoped preflight reset
-        await fs.writeFile(globalCssPath, cssContent)
+        // Preserve any custom imports (Bootstrap, theme, etc.) from the existing file
+        const lines = existingCss.split('\n')
+        const customLines = lines.filter(line => {
+          const trimmed = line.trim()
+          if (!trimmed || trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('//')) return false
+          if (trimmed.startsWith('@tailwind')) return false
+          if (trimmed.startsWith('@import') && trimmed.includes('myoperator-ui-theme')) return false
+          if (trimmed.startsWith('@import') || trimmed.startsWith('@use')) return true
+          return false
+        })
+        const importsToKeep = customLines.join('\n')
+
+        if (importsToKeep) {
+          await fs.writeFile(globalCssPath, cssContent + '\n' + importsToKeep + '\n')
+        } else {
+          await fs.writeFile(globalCssPath, cssContent)
+        }
         cssUpdated = true
       } else if (!hasThemeImport) {
         // Theme import missing - need to update
