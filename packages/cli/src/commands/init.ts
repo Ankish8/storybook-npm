@@ -319,11 +319,52 @@ const CSS_VARIABLES_V3 = `@import "./lib/myoperator-ui-theme.css";
 }
 `
 
+// Tailwind CSS v3 format for Bootstrap projects
+// Preflight is disabled in tailwind.config to avoid breaking Bootstrap.
+// The scoped [class*="tw-"] reset restores the border reset ONLY for
+// Tailwind-prefixed elements so tw-border utilities work correctly.
+const CSS_VARIABLES_V3_BOOTSTRAP = `@import "./lib/myoperator-ui-theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Scoped preflight for Tailwind components (tw- prefix).
+ * Since preflight is disabled to avoid breaking Bootstrap,
+ * we manually apply the essential border reset for elements
+ * that use tw-border utilities.
+ */
+[class*="tw-"] {
+  &,
+  &::before,
+  &::after {
+    border-width: 0;
+    border-style: solid;
+    border-color: theme("colors.border", currentColor);
+  }
+}
+
+/* Reset Bootstrap button styles for myOperator UI components */
+@layer components {
+  .inline-flex[class*="rounded"],
+  button.bg-\\[\\#343E55\\],
+  button.bg-\\[\\#E8EAED\\],
+  button.bg-transparent {
+    border: none;
+    box-shadow: none;
+  }
+}
+`
+
 export const getTailwindConfig = (prefix: string = 'tw-', hasBootstrap: boolean = false) => `/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
   prefix: "${prefix}",${hasBootstrap ? `
-  important: true,  // Required to override Bootstrap styles` : ''}
+  important: true,  // Required to override Bootstrap styles
+  corePlugins: {
+    preflight: false,  // Disable Tailwind's CSS reset - Bootstrap handles base styles
+  },` : ''}
   content: [
     "./src/components/ui/**/*.{js,ts,jsx,tsx}",
     "./src/components/custom/**/*.{js,ts,jsx,tsx}",
@@ -800,7 +841,7 @@ export function cn(...inputs: ClassValue[]) {
     if (tailwindVersion === 'v4') {
       cssContent = hasBootstrap ? CSS_VARIABLES_V4_BOOTSTRAP : CSS_VARIABLES_V4
     } else {
-      cssContent = CSS_VARIABLES_V3
+      cssContent = hasBootstrap ? CSS_VARIABLES_V3_BOOTSTRAP : CSS_VARIABLES_V3
     }
     let cssUpdated = false
     if (!(await fs.pathExists(globalCssPath))) {
@@ -812,7 +853,14 @@ export function cn(...inputs: ClassValue[]) {
       const existingCss = await fs.readFile(globalCssPath, 'utf-8')
       const hasThemeImport = existingCss.includes('myoperator-ui-theme.css')
 
-      if (!hasThemeImport) {
+      // Check if Bootstrap project is missing the scoped preflight reset
+      const needsScopedPreflight = hasBootstrap && !existingCss.includes('[class*="tw-"]')
+
+      if (needsScopedPreflight) {
+        // Bootstrap detected but CSS is missing the scoped preflight reset
+        await fs.writeFile(globalCssPath, cssContent)
+        cssUpdated = true
+      } else if (!hasThemeImport) {
         // Theme import missing - need to update
         spinner.stop()
         const result = await prompts({
@@ -855,6 +903,9 @@ export function cn(...inputs: ClassValue[]) {
         const hasLegacyColors = existingConfig.includes('hsl(var(--destructive))') || existingConfig.includes('hsl(var(--ring))')
         const hasSemanticColors = existingConfig.includes('semantic-text-primary')
 
+        // Check if Bootstrap-specific settings are missing
+        const needsBootstrapUpdate = hasBootstrap && !existingConfig.includes('preflight')
+
         if (!hasLegacyColors && !hasSemanticColors) {
           // Config missing both - auto-update for v3
           await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
@@ -874,6 +925,10 @@ export function cn(...inputs: ClassValue[]) {
             await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
             tailwindUpdated = true
           }
+        } else if (needsBootstrapUpdate) {
+          // Has colors but missing Bootstrap-specific settings (preflight: false)
+          await fs.writeFile(tailwindConfigPath, getTailwindConfig(userPrefix, hasBootstrap))
+          tailwindUpdated = true
         }
       }
     }
