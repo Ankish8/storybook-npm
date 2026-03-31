@@ -1,8 +1,28 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useEffect } from "react";
+import { fn } from "storybook/test";
 import { ChatProvider, useChatContext } from "../chat-provider";
 import { MockTransport } from "../chat-transport";
 import { ChatTemplateModal } from "./chat-template-modal";
+import { Button } from "../../ui/button";
+
+/* ── Wrapper with button trigger (open/close) ── */
+function TemplateModalWithTrigger() {
+  const { selectChat, showTemplateModal, setShowTemplateModal } =
+    useChatContext();
+
+  const handleOpen = () => {
+    selectChat("1");
+    setShowTemplateModal(true);
+  };
+
+  return (
+    <>
+      <Button onClick={handleOpen}>Select Template</Button>
+      {showTemplateModal && <ChatTemplateModal />}
+    </>
+  );
+}
 
 /* ── Wrapper that auto-opens the template modal ── */
 function TemplateModalWrapper() {
@@ -37,6 +57,59 @@ npx myoperator-ui add chat-template
 \`\`\`tsx
 import { ChatTemplateModal } from "@/components/custom/chat-template-modal"
 \`\`\`
+        `,
+      },
+    },
+  },
+  tags: ["autodocs"],
+  args: {
+    onCreateNew: fn(),
+  },
+  argTypes: {
+    illustrationSrc: {
+      control: "text",
+      description:
+        "URL of a custom illustration image shown in the empty preview state (right panel) when no template is selected.",
+      table: {
+        type: { summary: "string" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    onCreateNew: {
+      control: false,
+      description:
+        'Callback fired when the user clicks the **"Create new"** link below the template selector. Use this to navigate to your template creation flow.',
+      table: {
+        type: { summary: "() => void" },
+        defaultValue: { summary: "undefined" },
+      },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <ChatProvider transport={transport}>
+        <Story />
+      </ChatProvider>
+    ),
+  ],
+};
+
+export default meta;
+type Story = StoryObj<typeof ChatTemplateModal>;
+
+/**
+ * Click the **Select Template** button to open the modal.
+ * Close it with the × button in the top-right corner.
+ */
+export const Docs: Story = {
+  name: "Docs",
+  render: () => <TemplateModalWithTrigger />,
+  parameters: {
+    layout: "centered",
+    docs: {
+      description: {
+        story: `
+Click **Select Template** to open the modal. Dismiss it with the × close button.
 
 ### Design Tokens
 
@@ -85,29 +158,16 @@ Reads \`templates\`, \`sendTemplate\`, \`setShowTemplateModal\` from \`useChatCo
       },
     },
   },
-  tags: ["autodocs"],
-  decorators: [
-    (Story) => (
-      <ChatProvider transport={transport}>
-        <Story />
-      </ChatProvider>
-    ),
-  ],
 };
 
-export default meta;
-type Story = StoryObj<typeof ChatTemplateModal>;
-
-/* ── Default (Empty State) ── */
+/* ── Empty State (auto-open, hidden from docs page) ── */
 
 export const DefaultEmpty: Story = {
   name: "Empty State",
   render: () => <TemplateModalWrapper />,
   parameters: {
     docs: {
-      description: {
-        story: 'The modal opens with no template selected. The left side shows "No template selected — Choose a template above to map variables" with a file icon. The right side shows the empty preview illustration with "No template selected".',
-      },
+      disable: true,
     },
   },
 };
