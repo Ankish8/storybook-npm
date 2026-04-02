@@ -1,6 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CreateFunctionModal } from "../create-function-modal";
+import { HEADER_MAX_ROWS } from "../create-function-validation";
 
 const noop = () => {};
 // A prompt string ≥ 100 chars for meeting the default promptMinLength
@@ -62,7 +63,7 @@ describe("CreateFunctionModal", () => {
   it("shows character counter for function name", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "Hello");
-    expect(screen.getByText(/5\/100/)).toBeInTheDocument();
+    expect(screen.getByText(/5\/30/)).toBeInTheDocument();
   });
 
   it("replaces spaces in function name with underscores and does not show format error", async () => {
@@ -94,6 +95,67 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Back/i }));
     expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
+  });
+
+  it("disables header Add row at maximum header count and clamps initial headers", async () => {
+    const manyHeaders = Array.from({ length: HEADER_MAX_ROWS + 4 }, (_, i) => ({
+      id: `h${i}`,
+      key: `K${i}`,
+      value: `V${i}`,
+    }));
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        initialStep={2}
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/",
+          headers: manyHeaders,
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+
+    expect(screen.getByText(new RegExp(`Header \\(${HEADER_MAX_ROWS}\\)`))).toBeInTheDocument();
+    const addRow = screen.getByRole("button", { name: /Add row/i });
+    expect(addRow).toBeDisabled();
+    expect(addRow).toHaveAttribute("title", `Maximum ${HEADER_MAX_ROWS} headers`);
+  });
+
+  it("respects maxQueryParamRows for query tab Add row and clamps initial rows", async () => {
+    const maxQ = 5;
+    const manyQ = Array.from({ length: maxQ + 3 }, (_, i) => ({
+      id: `q${i}`,
+      key: `K${i}`,
+      value: `V${i}`,
+    }));
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        initialStep={2}
+        initialTab="queryParams"
+        maxQueryParamRows={maxQ}
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/",
+          headers: [],
+          queryParams: manyQ,
+          body: "",
+        }}
+      />
+    );
+
+    expect(screen.getByText(new RegExp(`Query params \\(${maxQ}\\)`))).toBeInTheDocument();
+    const addRow = screen.getByRole("button", { name: /Add row/i });
+    expect(addRow).toBeDisabled();
+    expect(addRow).toHaveAttribute("title", `Maximum ${maxQ} query parameters`);
   });
 
   it("renders tab navigation in step 2 (Body tab always visible)", async () => {
@@ -194,12 +256,12 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("radio", { name: /^Yes$/i }));
     await user.click(screen.getByRole("button", { name: /^Save$/ }));
 
-    await user.click(screen.getByRole("button", { name: /Test API/i }));
+    await user.click(screen.getByRole("button", { name: /^Test$/i }));
     expect(onTestApi).not.toHaveBeenCalled();
     expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
   });
 
-  it("shows required test variable error when Test API is clicked with empty value", async () => {
+  it("shows required test variable error when Test is clicked with empty value", async () => {
     const onTestApi = vi.fn();
     render(
       <CreateFunctionModal
@@ -221,7 +283,7 @@ describe("CreateFunctionModal", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: /Test API/i }));
+    await user.click(screen.getByRole("button", { name: /^Test$/i }));
     expect(onTestApi).not.toHaveBeenCalled();
     expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
   });
@@ -248,12 +310,12 @@ describe("CreateFunctionModal", () => {
       />
     );
 
-    await user.click(screen.getByRole("button", { name: /Test API/i }));
+    await user.click(screen.getByRole("button", { name: /^Test$/i }));
     expect(onTestApi).not.toHaveBeenCalled();
     expect(screen.getByText("Value is required for this key")).toBeInTheDocument();
   });
 
-  it("does not require test variable values on Submit — validation runs on Test API only", async () => {
+  it("does not require test variable values on Submit — validation runs on Test only", async () => {
     const onSubmit = vi.fn();
     render(
       <CreateFunctionModal
@@ -278,6 +340,33 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).toHaveBeenCalled();
     expect(screen.queryByText("Value is required for this key")).not.toBeInTheDocument();
+  });
+
+  it("shows description character count and blocks save when description exceeds 2000 characters", async () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const valueInput = screen.getByPlaceholderText("Type {{ to add variables");
+    await user.click(valueInput);
+    await user.type(valueInput, "{{{{");
+    await user.click(screen.getByRole("button", { name: /Add new variable/i }));
+
+    const desc = screen.getByLabelText(/Description \(optional\)/i);
+    expect(screen.getByText("0/2000")).toBeInTheDocument();
+
+    const long = "x".repeat(2001);
+    await act(() => {
+      fireEvent.change(desc, { target: { value: long } });
+    });
+
+    expect(screen.getByText("2001/2000")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Description cannot exceed 2000 characters/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Save$/ })).toBeDisabled();
   });
 
   it("replaces open {{ trigger with {{name}} after Create new variable saves", async () => {

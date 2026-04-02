@@ -67,6 +67,7 @@ export const IvrBotConfig = React.forwardRef(
       functionsInfoTooltip,
       knowledgeBaseInfoTooltip,
       functionPromptMinLength,
+      functionNameMaxLength,
       functionPromptMaxLength,
       functionEditData,
       systemPromptMaxLength,
@@ -268,6 +269,7 @@ export const IvrBotConfig = React.forwardRef(
           onTestApi={onTestApi}
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          nameMaxLength={functionNameMaxLength}
           sessionVariables={sessionVariables}
           variableGroups={functionVariableGroups}
           onAddVariable={onAddFunctionVariable}
@@ -284,6 +286,7 @@ export const IvrBotConfig = React.forwardRef(
           isEditing
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
+          nameMaxLength={functionNameMaxLength}
           sessionVariables={sessionVariables}
           variableGroups={functionVariableGroups}
           onAddVariable={onAddFunctionVariable}

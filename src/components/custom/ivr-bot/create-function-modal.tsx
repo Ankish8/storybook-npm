@@ -8,7 +8,6 @@ import {
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { FormModal } from "../../ui/form-modal";
-import { TextField } from "../../ui/text-field";
 import { Textarea } from "../../ui/textarea";
 import type {
   CreateFunctionModalProps,
@@ -24,8 +23,10 @@ import type {
 import {
   HEADER_KEY_INVALID_MESSAGE,
   HEADER_KEY_REGEX,
+  HEADER_MAX_ROWS,
   QUERY_PARAM_KEY_MAX,
   QUERY_PARAM_VALUE_MAX,
+  clampKeyValueRows,
   getBodyJsonValidationError,
   getHeaderRowSubmitErrors,
   getUrlBlurValidationError,
@@ -37,7 +38,6 @@ import {
 } from "./create-function-validation";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-const FUNCTION_NAME_MAX = 100;
 const BODY_MAX = 4000;
 const URL_MAX = 500;
 const HEADER_KEY_MAX = 512;
@@ -50,6 +50,8 @@ function normalizeFunctionNameInput(value: string): string {
   return value.replace(/ /g, "_");
 }
 const VARIABLE_NAME_MAX = 30;
+/** Aligned with Chat Bot and other product modules that cap free-text descriptions at 2000 characters. */
+const VARIABLE_DESCRIPTION_MAX = 2000;
 const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 
 const DEFAULT_SESSION_VARIABLES = [
@@ -422,6 +424,7 @@ function VariableFormModal({
   const [description, setDescription] = React.useState("");
   const [required, setRequired] = React.useState(false);
   const [nameError, setNameError] = React.useState("");
+  const descriptionFieldId = React.useId();
 
   // Reset form when modal opens
   React.useEffect(() => {
@@ -461,10 +464,14 @@ function VariableFormModal({
       setNameError(error);
       return;
     }
+    if (description.length > VARIABLE_DESCRIPTION_MAX) {
+      return;
+    }
     onSave({ name: name.trim(), description: description.trim() || undefined, required });
   };
 
   const hasInvalidFormat = Boolean(name.trim() && validateName(name));
+  const descriptionTooLong = description.length > VARIABLE_DESCRIPTION_MAX;
 
   return (
     <FormModal
@@ -472,7 +479,7 @@ function VariableFormModal({
       onOpenChange={onOpenChange}
       title={mode === "create" ? "Create new variable" : "Edit variable"}
       saveButtonText={mode === "create" ? "Save" : "Save Changes"}
-      disableSave={hasInvalidFormat}
+      disableSave={hasInvalidFormat || descriptionTooLong}
       onSave={handleSave}
       size="default"
     >
@@ -512,12 +519,48 @@ function VariableFormModal({
             </span>
           )}
         </div>
-        <TextField
-          label="Description (optional)"
-          placeholder="What this variable represents"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor={descriptionFieldId}
+            className="text-sm font-medium text-semantic-text-muted"
+          >
+            Description (optional)
+          </label>
+          <div className="relative">
+            <textarea
+              id={descriptionFieldId}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What this variable represents"
+              rows={3}
+              aria-invalid={descriptionTooLong}
+              className={cn(
+                textareaCls,
+                "resize-y min-h-[90px] pb-10 pr-[4.5rem]",
+                descriptionTooLong && "border-semantic-error-primary"
+              )}
+            />
+            <span
+              className={cn(
+                "absolute bottom-3 right-4 text-sm pointer-events-none",
+                descriptionTooLong
+                  ? "text-semantic-error-primary"
+                  : "text-semantic-text-muted"
+              )}
+              aria-live="polite"
+            >
+              {description.length}/{VARIABLE_DESCRIPTION_MAX}
+            </span>
+          </div>
+          {descriptionTooLong ? (
+            <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary">
+              <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
+              <span>
+                Description cannot exceed {VARIABLE_DESCRIPTION_MAX} characters
+              </span>
+            </p>
+          ) : null}
+        </div>
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-semantic-text-muted">Required</span>
           <div className="flex items-center gap-6">
@@ -780,6 +823,8 @@ function KeyValueTable({
   onAddVariable,
   onEditVariable,
   disabled = false,
+  maxRows,
+  maxRowsItemLabel = "rows",
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
@@ -794,7 +839,12 @@ function KeyValueTable({
   onAddVariable?: (ctx: { rowId: string; from: number; to: number }) => void;
   onEditVariable?: (variable: string) => void;
   disabled?: boolean;
+  maxRows?: number;
+  /** Noun for the row-limit tooltip, e.g. "headers" or "query parameters". */
+  maxRowsItemLabel?: string;
 }) {
+  const atRowLimit = maxRows !== undefined && rows.length >= maxRows;
+
   const update = (id: string, patch: Partial<KeyValuePair>) => {
     // Replace spaces with hyphens in key values
     if (patch.key !== undefined) {
@@ -805,8 +855,10 @@ function KeyValueTable({
 
   const remove = (id: string) => onChange(rows.filter((r) => r.id !== id));
 
-  const add = () =>
+  const add = () => {
+    if (atRowLimit) return;
     onChange([...rows, { id: generateId(), key: "", value: "" }]);
+  };
 
   const getErrors = (row: KeyValuePair): RowErrors => {
     if (getRowErrors) return getRowErrors(row);
@@ -826,27 +878,27 @@ function KeyValueTable({
     <div className="flex flex-col gap-1.5">
       <span className="text-sm text-semantic-text-muted">{label}</span>
       <div className="border border-solid border-semantic-border-layout rounded">
-        {/* Column headers — desktop only; border-r on Key cell defines column boundary */}
-        <div className="hidden sm:flex border-b border-solid border-semantic-border-layout rounded-t">
-          <div className="flex-1 min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-solid border-semantic-border-layout">
+        {/* Column headers — desktop only; grid tracks match data rows so Key | Value borders align */}
+        <div className="hidden sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_2.5rem] border-b border-solid border-semantic-border-layout rounded-t">
+          <div className="min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted border-r border-solid border-semantic-border-layout">
             Key
           </div>
-          <div className="flex-[2] min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted">
+          <div className="min-w-0 px-3 py-2 text-sm font-semibold text-semantic-text-muted">
             Value
           </div>
-          <div className="w-10 shrink-0" aria-hidden="true" />
+          <div className="min-w-0" aria-hidden="true" />
         </div>
 
-        {/* Filled rows — same flex ratio (flex-1 / flex-2 / w-10) so middle border aligns with header */}
+        {/* Filled rows — same grid template as header (1fr : 2fr : 2.5rem) */}
         {rows.map((row) => {
           const errors = getErrors(row);
           return (
             <div
               key={row.id}
-              className="border-b border-solid border-semantic-border-layout last:border-b-0 flex items-center min-h-0"
+              className="border-b border-solid border-semantic-border-layout last:border-b-0 flex min-h-0 sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_2.5rem] items-stretch"
             >
               {/* Key column — border-r on column (not input) so it aligns with header */}
-              <div className="flex-1 flex flex-col min-w-0 sm:border-r sm:border-solid sm:border-semantic-border-layout">
+              <div className="flex flex-1 flex-col min-w-0 sm:flex-none sm:border-r sm:border-solid sm:border-semantic-border-layout">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Key
                 </span>
@@ -867,7 +919,7 @@ function KeyValueTable({
               </div>
 
               {/* Value column — uses VariableInput for {{ autocomplete */}
-              <div className="flex-[2] flex flex-col min-w-0">
+              <div className="flex flex-[2] flex-col min-w-0 sm:flex-none">
                 <span className="sm:hidden px-3 pt-2.5 pb-0.5 text-sm font-semibold text-semantic-text-muted uppercase tracking-wide">
                   Value
                 </span>
@@ -894,8 +946,8 @@ function KeyValueTable({
                 />
               </div>
 
-              {/* Action column — delete aligned with row (same as KeyValueRow / knowledge-base-card) */}
-              <div className="w-10 sm:w-10 flex items-center justify-center shrink-0 self-stretch border-l border-solid border-semantic-border-layout sm:border-l-0">
+              {/* Action column — fixed 2.5rem track matches header spacer */}
+              <div className="flex w-10 shrink-0 items-center justify-center self-stretch border-l border-solid border-semantic-border-layout sm:w-auto sm:border-l-0">
                 <Button
                   type="button"
                   variant="ghost"
@@ -916,10 +968,11 @@ function KeyValueTable({
         <button
           type="button"
           onClick={add}
-          disabled={disabled}
+          disabled={disabled || atRowLimit}
+          title={atRowLimit ? `Maximum ${maxRows} ${maxRowsItemLabel}` : undefined}
           className={cn(
             "w-full flex items-center gap-2 px-3 py-2.5 text-sm text-semantic-text-muted hover:bg-semantic-bg-ui transition-colors",
-            disabled && "opacity-50 cursor-not-allowed"
+            (disabled || atRowLimit) && "opacity-50 cursor-not-allowed"
           )}
         >
           <Plus className="size-3.5 shrink-0" />
@@ -963,8 +1016,9 @@ export const CreateFunctionModal = React.forwardRef(
       onTestApi,
       initialData,
       isEditing = false,
+      nameMaxLength = 30,
       promptMinLength = 100,
-      promptMaxLength = 1000,
+      promptMaxLength = 2000,
       initialStep = 1,
       initialTab = "header",
       sessionVariables = DEFAULT_SESSION_VARIABLES,
@@ -972,6 +1026,8 @@ export const CreateFunctionModal = React.forwardRef(
       onAddVariable,
       onEditVariable,
       disabled = false,
+      maxHeaderRows = HEADER_MAX_ROWS,
+      maxQueryParamRows = HEADER_MAX_ROWS,
       className,
     }: CreateFunctionModalProps,
     ref: React.Ref<HTMLDivElement>
@@ -985,8 +1041,12 @@ export const CreateFunctionModal = React.forwardRef(
     const [url, setUrl] = React.useState(initialData?.url ?? "");
     const [activeTab, setActiveTab] =
       React.useState<FunctionTabType>(initialTab);
-    const [headers, setHeaders] = React.useState<KeyValuePair[]>(initialData?.headers ?? []);
-    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>(initialData?.queryParams ?? []);
+    const [headers, setHeaders] = React.useState<KeyValuePair[]>(() =>
+      clampKeyValueRows(initialData?.headers ?? [], maxHeaderRows)
+    );
+    const [queryParams, setQueryParams] = React.useState<KeyValuePair[]>(() =>
+      clampKeyValueRows(initialData?.queryParams ?? [], maxQueryParamRows)
+    );
     const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
@@ -1208,8 +1268,8 @@ export const CreateFunctionModal = React.forwardRef(
         setMethod(initialData?.method ?? "GET");
         setUrl(initialData?.url ?? "");
         setActiveTab(initialTab);
-        setHeaders(initialData?.headers ?? []);
-        setQueryParams(initialData?.queryParams ?? []);
+        setHeaders(clampKeyValueRows(initialData?.headers ?? [], maxHeaderRows));
+        setQueryParams(clampKeyValueRows(initialData?.queryParams ?? [], maxQueryParamRows));
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
@@ -1236,8 +1296,8 @@ export const CreateFunctionModal = React.forwardRef(
       setMethod(initialData?.method ?? "GET");
       setUrl(initialData?.url ?? "");
       setActiveTab(initialTab);
-      setHeaders(initialData?.headers ?? []);
-      setQueryParams(initialData?.queryParams ?? []);
+      setHeaders(clampKeyValueRows(initialData?.headers ?? [], maxHeaderRows));
+      setQueryParams(clampKeyValueRows(initialData?.queryParams ?? [], maxQueryParamRows));
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
@@ -1252,7 +1312,14 @@ export const CreateFunctionModal = React.forwardRef(
       setTestVarValues({});
       setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
       setVarInsertContext(null);
-    }, [initialData, initialStep, initialTab, variableGroups]);
+    }, [
+      initialData,
+      initialStep,
+      initialTab,
+      variableGroups,
+      maxHeaderRows,
+      maxQueryParamRows,
+    ]);
 
     const handleClose = React.useCallback(() => {
       reset();
@@ -1434,7 +1501,7 @@ export const CreateFunctionModal = React.forwardRef(
                       id="fn-name"
                       type="text"
                       value={name}
-                      maxLength={FUNCTION_NAME_MAX}
+                      maxLength={nameMaxLength}
                       disabled={disabled}
                       onChange={(e) => {
                         const normalized = normalizeFunctionNameInput(
@@ -1450,7 +1517,7 @@ export const CreateFunctionModal = React.forwardRef(
                       className={cn(inputCls, "pr-16")}
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
-                      {name.length}/{FUNCTION_NAME_MAX}
+                      {name.length}/{nameMaxLength}
                     </span>
                   </div>
                   {nameError && (
@@ -1601,8 +1668,10 @@ export const CreateFunctionModal = React.forwardRef(
                   {activeTab === "header" && (
                     <KeyValueTable
                       rows={headers}
-                      onChange={setHeaders}
+                      onChange={(rows) => setHeaders(clampKeyValueRows(rows, maxHeaderRows))}
                       label="Header"
+                      maxRows={maxHeaderRows}
+                      maxRowsItemLabel="headers"
                       keyMaxLength={HEADER_KEY_MAX}
                       valueMaxLength={HEADER_VALUE_MAX}
                       keyRegex={HEADER_KEY_REGEX}
@@ -1627,8 +1696,10 @@ export const CreateFunctionModal = React.forwardRef(
                   {activeTab === "queryParams" && (
                     <KeyValueTable
                       rows={queryParams}
-                      onChange={setQueryParams}
+                      onChange={(rows) => setQueryParams(clampKeyValueRows(rows, maxQueryParamRows))}
                       label="Query parameter"
+                      maxRows={maxQueryParamRows}
+                      maxRowsItemLabel="query parameters"
                       keyMaxLength={QUERY_PARAM_KEY_MAX}
                       valueMaxLength={QUERY_PARAM_VALUE_MAX}
                       getRowErrors={(row) => {
@@ -1782,7 +1853,7 @@ export const CreateFunctionModal = React.forwardRef(
                     disabled={isTesting || !url.trim()}
                     className="w-full h-[42px] rounded text-sm font-semibold text-semantic-text-secondary bg-semantic-primary-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-semantic-primary-surface/80 sm:w-auto sm:px-6 sm:self-end sm:ml-auto flex items-center justify-center"
                   >
-                    {isTesting ? "Testing..." : "Test API"}
+                    {isTesting ? "Testing..." : "Test"}
                   </button>
 
                   <div className="flex flex-col gap-1.5">
@@ -1803,19 +1874,14 @@ export const CreateFunctionModal = React.forwardRef(
           </div>
 
           {/* ── Footer ── */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 border-t border-solid border-semantic-border-layout shrink-0 sm:px-6 sm:py-4">
+          <div className="flex items-center justify-end gap-3 px-4 py-3 border-t border-solid border-semantic-border-layout shrink-0 sm:px-6 sm:py-4">
             {step === 1 ? (
               <>
-                <Button
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                  onClick={handleClose}
-                >
+                <Button variant="outline" onClick={handleClose}>
                   Cancel
                 </Button>
                 <Button
                   variant="default"
-                  className="flex-1 sm:flex-none"
                   onClick={handleNext}
                   disabled={!disabled && !isStep1Valid}
                 >
@@ -1824,17 +1890,12 @@ export const CreateFunctionModal = React.forwardRef(
               </>
             ) : (
               <>
-                <Button
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                  onClick={() => setStep(1)}
-                >
+                <Button variant="outline" onClick={() => setStep(1)}>
                   Back
                 </Button>
                 <Button
                   type="button"
                   variant="default"
-                  className="flex-1 sm:flex-none"
                   onClick={handleSubmit}
                   disabled={disabled}
                 >
