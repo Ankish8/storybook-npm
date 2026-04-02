@@ -158,23 +158,29 @@ describe("CreateFunctionModal", () => {
     expect(addRow).toHaveAttribute("title", `Maximum ${maxQ} query parameters`);
   });
 
-  it("renders tab navigation in step 2 (Body tab always visible)", async () => {
+  it("hides Body tab for GET and DELETE; shows Body tab for POST, PUT, and PATCH", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
     expect(screen.getByText(/Header \(0\)/)).toBeInTheDocument();
     expect(screen.getByText(/Query params \(0\)/)).toBeInTheDocument();
-    // Body tab is always visible regardless of HTTP method
-    expect(screen.getByText("Body")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Body$/ })).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "DELETE");
+    expect(screen.queryByRole("button", { name: /^Body$/ })).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
+    expect(screen.getByRole("button", { name: /^Body$/ })).toBeInTheDocument();
   });
 
-  it("shows Body textarea when Body tab is clicked", async () => {
+  it("shows Body textarea when Body tab is clicked (POST)", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
-    await user.click(screen.getByText("Body"));
+    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
+    await user.click(screen.getByRole("button", { name: /^Body$/ }));
     expect(screen.getByPlaceholderText(/Enter request body/i)).toBeInTheDocument();
     expect(screen.getByText(/0\/4000/)).toBeInTheDocument();
   });
@@ -413,7 +419,7 @@ describe("CreateFunctionModal", () => {
         initialData={{
           name: "MyFunc",
           prompt: VALID_PROMPT,
-          method: "GET",
+          method: "POST",
           url: "https://api.example.com/{{function.yogesh}}",
           headers: [{ id: "h1", key: "Authorization", value: "{{function.yogesh}}" }],
           queryParams: [],
@@ -436,7 +442,7 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByPlaceholderText("Type {{ to add variables")).toHaveValue(
       "{{function.yogesh2}}"
     );
-    await user.click(screen.getByText("Body"));
+    await user.click(screen.getByRole("button", { name: /^Body$/ }));
     expect(screen.getByPlaceholderText(/Enter request body/i)).toHaveValue(
       '{"x":"{{function.yogesh2}}"}'
     );

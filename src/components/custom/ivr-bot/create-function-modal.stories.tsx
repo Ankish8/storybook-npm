@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import * as React from "react";
 import { CreateFunctionModal } from "./create-function-modal";
-import type { VariableGroup, VariableFormData } from "./types";
+import type { CreateFunctionData, VariableGroup, VariableFormData } from "./types";
 
 const meta: Meta<typeof CreateFunctionModal> = {
   title: "Custom/AI Bot/Create Function",
@@ -11,7 +11,7 @@ const meta: Meta<typeof CreateFunctionModal> = {
     layout: "centered",
     docs: {
       description: {
-        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name and prompt. Step 2 configures the API endpoint with headers, query parameters, and body.
+        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name and prompt. Step 2 configures the API endpoint with headers, query parameters, and an optional request body. The body editor appears only for **POST**, **PUT**, and **PATCH**; **GET** and **DELETE** do not show a body tab.
 
 **Install**
 \`\`\`bash
@@ -61,7 +61,8 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
     initialTab: {
       control: { type: "radio" },
       options: ["header", "queryParams", "body"],
-      description: "Active tab when initialStep = 2",
+      description:
+        "Active tab when initialStep = 2. If `initialTab` is `body`, use a body-capable HTTP method in `initialData.method` (POST, PUT, or PATCH) or the UI falls back to the Header tab.",
     },
     onOpenChange: { action: "openChange" },
     onSubmit: { action: "submit" },
@@ -104,6 +105,7 @@ function ModalTrigger({
   label,
   initialStep,
   initialTab,
+  initialData,
   variableGroups,
   onAddVariable,
   onEditVariable,
@@ -112,6 +114,7 @@ function ModalTrigger({
   label?: string;
   initialStep?: 1 | 2;
   initialTab?: "header" | "queryParams" | "body";
+  initialData?: Partial<CreateFunctionData>;
   variableGroups?: VariableGroup[];
   onAddVariable?: (data: VariableFormData) => void;
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
@@ -132,6 +135,7 @@ function ModalTrigger({
         onOpenChange={setOpen}
         initialStep={initialStep}
         initialTab={initialTab}
+        initialData={initialData}
         variableGroups={variableGroups}
         onAddVariable={onAddVariable}
         onEditVariable={onEditVariable}
@@ -223,6 +227,7 @@ export const Step2BodyTab: Story = {
       label="Open Step 2 — Body"
       initialStep={2}
       initialTab="body"
+      initialData={{ method: "POST" }}
       variableGroups={sampleVariableGroups}
       onAddVariable={(data) => console.log("Add variable:", data)}
       onEditVariable={(name, data) => console.log("Edit variable:", name, data)}
@@ -232,7 +237,7 @@ export const Step2BodyTab: Story = {
     docs: {
       description: {
         story:
-          "Step 2 with the **Body** tab active. The Body tab is always visible regardless of HTTP method. The textarea accepts JSON, XML or any text payload. Character counter shows usage against the 4 000-char body limit.",
+          "Step 2 with the **Body** tab active. The Body tab is shown only when the HTTP method is **POST**, **PUT**, or **PATCH** (this story uses POST). The textarea accepts JSON, XML or any text payload. Character counter shows usage against the 4 000-char body limit.",
       },
     },
   },
@@ -272,7 +277,7 @@ export const Interactive: Story = {
     docs: {
       description: {
         story:
-          "Use the **Controls** panel to change `initialStep` and `initialTab` before opening the modal to preview any step/tab combination.",
+          "Use the **Controls** panel to change `initialStep` and `initialTab` before opening the modal. For `initialTab: body`, set `initialData.method` to POST, PUT, or PATCH (or the Body tab is hidden and the active tab falls back to Header).",
       },
     },
   },

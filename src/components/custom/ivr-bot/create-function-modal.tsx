@@ -38,6 +38,17 @@ import {
 } from "./create-function-validation";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+
+/** GET/DELETE are rendered without a request body; POST, PUT, and PATCH show the body editor. */
+function methodSupportsRequestBody(m: HttpMethod): boolean {
+  return m === "POST" || m === "PUT" || m === "PATCH";
+}
+
+function resolveStep2TabForMethod(tab: FunctionTabType, method: HttpMethod): FunctionTabType {
+  if (tab === "body" && !methodSupportsRequestBody(method)) return "header";
+  return tab;
+}
+
 const BODY_MAX = 4000;
 const URL_MAX = 500;
 const HEADER_KEY_MAX = 512;
@@ -1075,8 +1086,9 @@ export const CreateFunctionModal = React.forwardRef(
 
     const [method, setMethod] = React.useState<HttpMethod>(initialData?.method ?? "GET");
     const [url, setUrl] = React.useState(initialData?.url ?? "");
-    const [activeTab, setActiveTab] =
-      React.useState<FunctionTabType>(initialTab);
+    const [activeTab, setActiveTab] = React.useState<FunctionTabType>(() =>
+      resolveStep2TabForMethod(initialTab, initialData?.method ?? "GET")
+    );
     const [headers, setHeaders] = React.useState<KeyValuePair[]>(() =>
       clampKeyValueRows(initialData?.headers ?? [], maxHeaderRows)
     );
@@ -1283,17 +1295,16 @@ export const CreateFunctionModal = React.forwardRef(
     /** Set when user clicks Test API — drives inline errors for empty required variable values only (not Submit). */
     const [testApiRequiredAttempted, setTestApiRequiredAttempted] = React.useState(false);
 
-    // Unique {{variable}} refs found across url, body, headers, queryParams
-    const testableVars = React.useMemo(
-      () =>
-        extractVarRefs([
-          url,
-          body,
-          ...headers.map((h) => h.value),
-          ...queryParams.map((q) => q.value),
-        ]),
-      [url, body, headers, queryParams]
-    );
+    // Unique {{variable}} refs across url, optional body, headers, queryParams
+    const testableVars = React.useMemo(() => {
+      const texts = [
+        url,
+        ...(methodSupportsRequestBody(method) ? [body] : []),
+        ...headers.map((h) => h.value),
+        ...queryParams.map((q) => q.value),
+      ];
+      return extractVarRefs(texts);
+    }, [url, body, method, headers, queryParams]);
 
     // Sync form state from initialData each time the modal opens
     React.useEffect(() => {
@@ -1303,7 +1314,7 @@ export const CreateFunctionModal = React.forwardRef(
         setPrompt(initialData?.prompt ?? "");
         setMethod(initialData?.method ?? "GET");
         setUrl(initialData?.url ?? "");
-        setActiveTab(initialTab);
+        setActiveTab(resolveStep2TabForMethod(initialTab, initialData?.method ?? "GET"));
         setHeaders(clampKeyValueRows(initialData?.headers ?? [], maxHeaderRows));
         setQueryParams(clampKeyValueRows(initialData?.queryParams ?? [], maxQueryParamRows));
         setBody(initialData?.body ?? "");
@@ -1331,7 +1342,7 @@ export const CreateFunctionModal = React.forwardRef(
       setPrompt(initialData?.prompt ?? "");
       setMethod(initialData?.method ?? "GET");
       setUrl(initialData?.url ?? "");
-      setActiveTab(initialTab);
+      setActiveTab(resolveStep2TabForMethod(initialTab, initialData?.method ?? "GET"));
       setHeaders(clampKeyValueRows(initialData?.headers ?? [], maxHeaderRows));
       setQueryParams(clampKeyValueRows(initialData?.queryParams ?? [], maxQueryParamRows));
       setBody(initialData?.body ?? "");
@@ -1362,7 +1373,11 @@ export const CreateFunctionModal = React.forwardRef(
       onOpenChange(false);
     }, [reset, onOpenChange]);
 
-    // Body tab is always visible regardless of HTTP method
+    React.useEffect(() => {
+      setActiveTab((tab) =>
+        !methodSupportsRequestBody(method) && tab === "body" ? "header" : tab
+      );
+    }, [method]);
 
     const validateName = (value: string) => {
       if (value.trim() && !FUNCTION_NAME_REGEX.test(value.trim())) {
@@ -1392,8 +1407,13 @@ export const CreateFunctionModal = React.forwardRef(
       const urlErr = getUrlSubmitValidationError(url);
       setUrlError(urlErr);
 
-      const bodyErr = getBodyJsonValidationError(body);
-      setBodyError(bodyErr);
+      let bodyErr = "";
+      if (methodSupportsRequestBody(method)) {
+        bodyErr = getBodyJsonValidationError(body);
+        setBodyError(bodyErr);
+      } else {
+        setBodyError("");
+      }
 
       if (queryParamsHaveErrors(queryParams)) return;
       if (urlErr || bodyErr) return;
@@ -1407,7 +1427,7 @@ export const CreateFunctionModal = React.forwardRef(
         url: url.trim(),
         headers,
         queryParams,
-        body,
+        body: methodSupportsRequestBody(method) ? body : "",
       };
       onSubmit?.(data);
       handleClose();
@@ -1437,7 +1457,7 @@ export const CreateFunctionModal = React.forwardRef(
           url: substituteVars(url),
           headers: headers.map((h) => ({ ...h, value: substituteVars(h.value) })),
           queryParams: queryParams.map((q) => ({ ...q, value: substituteVars(q.value) })),
-          body: substituteVars(body),
+          body: methodSupportsRequestBody(method) ? substituteVars(body) : "",
         };
         const response = await onTestApi(step2, { ...testVarValues });
         setApiResponse(response);
@@ -1489,7 +1509,9 @@ export const CreateFunctionModal = React.forwardRef(
       body: "Body",
     };
 
-    const visibleTabs: FunctionTabType[] = ["header", "queryParams", "body"];
+    const visibleTabs: FunctionTabType[] = methodSupportsRequestBody(method)
+      ? ["header", "queryParams", "body"]
+      : ["header", "queryParams"];
 
     return (
       <>
@@ -1604,9 +1626,15 @@ export const CreateFunctionModal = React.forwardRef(
                       <select
                         value={method}
                         disabled={disabled}
-                        onChange={(e) =>
-                          setMethod(e.target.value as HttpMethod)
-                        }
+                        onChange={(e) => {
+                          const next = e.target.value as HttpMethod;
+                          setMethod(next);
+                          if (!methodSupportsRequestBody(next)) {
+                            setBodyError("");
+                            setBodyTrigger(null);
+                            setBodyPopupStyle(undefined);
+                          }
+                        }}
                         className={cn(
                           "h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]",
                           disabled && "opacity-50 cursor-not-allowed"
@@ -1818,7 +1846,7 @@ export const CreateFunctionModal = React.forwardRef(
                     <div className="border-t border-solid border-semantic-border-layout" />
                   </div>
 
-                  {/* Variable test values — shown when URL/body/params contain {{variables}} */}
+                  {/* Variable test values — shown when URL, body (if applicable), or params contain {{variables}} */}
                   {testableVars.length > 0 && (
                     <div className="flex flex-col gap-2">
                       <span className="text-sm text-semantic-text-muted">
