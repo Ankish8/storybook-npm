@@ -54,6 +54,23 @@ const VARIABLE_NAME_MAX = 30;
 const VARIABLE_DESCRIPTION_MAX = 2000;
 const VARIABLE_NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 
+/**
+ * Resolves `maxLength` for variable modal fields.
+ * - `undefined` (omitted): use `defaultMax`
+ * - `null`: no limit (omit `maxLength` in the DOM)
+ * - finite number ≥ 0: use that cap
+ */
+function resolveVariableFieldMaxLength(
+  prop: number | null | undefined,
+  defaultMax: number
+): number | undefined {
+  if (prop === null) return undefined;
+  if (typeof prop === "number" && Number.isFinite(prop) && prop >= 0) {
+    return Math.floor(prop);
+  }
+  return defaultMax;
+}
+
 const DEFAULT_SESSION_VARIABLES = [
   "{{Caller number}}",
   "{{Time}}",
@@ -413,18 +430,31 @@ function VariableFormModal({
   mode,
   initialData,
   onSave,
+  variableNameMaxLimit,
+  descriptionMaxLimit,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
   initialData?: VariableItem;
   onSave: (data: VariableFormData) => void;
+  variableNameMaxLimit?: number | null;
+  descriptionMaxLimit?: number | null;
 }) {
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [required, setRequired] = React.useState(false);
   const [nameError, setNameError] = React.useState("");
   const descriptionFieldId = React.useId();
+
+  const nameMaxLen = resolveVariableFieldMaxLength(
+    variableNameMaxLimit,
+    VARIABLE_NAME_MAX
+  );
+  const descMaxLen = resolveVariableFieldMaxLength(
+    descriptionMaxLimit,
+    VARIABLE_DESCRIPTION_MAX
+  );
 
   // Reset form when modal opens
   React.useEffect(() => {
@@ -464,14 +494,15 @@ function VariableFormModal({
       setNameError(error);
       return;
     }
-    if (description.length > VARIABLE_DESCRIPTION_MAX) {
+    if (descMaxLen != null && description.length > descMaxLen) {
       return;
     }
     onSave({ name: name.trim(), description: description.trim() || undefined, required });
   };
 
   const hasInvalidFormat = Boolean(name.trim() && validateName(name));
-  const descriptionTooLong = description.length > VARIABLE_DESCRIPTION_MAX;
+  const descriptionTooLong =
+    descMaxLen != null && description.length > descMaxLen;
 
   return (
     <FormModal
@@ -495,7 +526,7 @@ function VariableFormModal({
               value={name}
               onChange={handleNameChange}
               placeholder="e.g., customer_name"
-              maxLength={VARIABLE_NAME_MAX}
+              maxLength={nameMaxLen}
               aria-invalid={Boolean(nameError)}
               className={cn(
                 inputCls,
@@ -504,7 +535,8 @@ function VariableFormModal({
               )}
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
-              {name.length}/{VARIABLE_NAME_MAX}
+              {name.length}
+              {nameMaxLen != null ? `/${nameMaxLen}` : ""}
             </span>
           </div>
           {nameError ? (
@@ -533,6 +565,7 @@ function VariableFormModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What this variable represents"
               rows={3}
+              maxLength={descMaxLen}
               aria-invalid={descriptionTooLong}
               className={cn(
                 textareaCls,
@@ -549,14 +582,15 @@ function VariableFormModal({
               )}
               aria-live="polite"
             >
-              {description.length}/{VARIABLE_DESCRIPTION_MAX}
+              {description.length}
+              {descMaxLen != null ? `/${descMaxLen}` : ""}
             </span>
           </div>
-          {descriptionTooLong ? (
+          {descriptionTooLong && descMaxLen != null ? (
             <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary">
               <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
               <span>
-                Description cannot exceed {VARIABLE_DESCRIPTION_MAX} characters
+                Description cannot exceed {descMaxLen} characters
               </span>
             </p>
           ) : null}
@@ -1029,6 +1063,8 @@ export const CreateFunctionModal = React.forwardRef(
       maxHeaderRows = HEADER_MAX_ROWS,
       maxQueryParamRows = HEADER_MAX_ROWS,
       className,
+      variableNameMaxLimit,
+      descriptionMaxLimit,
     }: CreateFunctionModalProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
@@ -1913,6 +1949,8 @@ export const CreateFunctionModal = React.forwardRef(
         mode={varModalMode}
         initialData={varModalInitialData}
         onSave={handleVariableSave}
+        variableNameMaxLimit={variableNameMaxLimit}
+        descriptionMaxLimit={descriptionMaxLimit}
       />
       </>
     );

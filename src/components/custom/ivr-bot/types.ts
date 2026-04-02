@@ -145,6 +145,16 @@ export interface CreateFunctionModalProps {
    */
   maxQueryParamRows?: number;
   className?: string;
+  /**
+   * Max length for the variable name in the Create/Edit variable modal.
+   * Omit for default (30). Pass `null` for no limit.
+   */
+  variableNameMaxLimit?: number | null;
+  /**
+   * Max length for the variable description in the Create/Edit variable modal.
+   * Omit for default (2000). Pass `null` for no limit.
+   */
+  descriptionMaxLimit?: number | null;
 }
 
 export interface IvrBotConfigData {
