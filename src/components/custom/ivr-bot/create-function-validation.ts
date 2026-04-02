@@ -5,6 +5,22 @@ export const URL_REGEX = /^https?:\/\//;
 
 export const HEADER_KEY_REGEX = /^[!#$%&'*+\-.^_`|~0-9a-zA-Z]+$/;
 
+/**
+ * Default max rows for headers and query params on CreateFunctionModal when the parent
+ * omits `maxHeaderRows` / `maxQueryParamRows`.
+ */
+export const HEADER_MAX_ROWS = 20;
+
+/** Clamp key/value rows to a maximum length (used for headers and query params). */
+export function clampKeyValueRows(rows: KeyValuePair[], maxRows: number): KeyValuePair[] {
+  const max =
+    typeof maxRows === "number" && Number.isFinite(maxRows) && maxRows >= 1
+      ? Math.floor(maxRows)
+      : HEADER_MAX_ROWS;
+  if (rows.length <= max) return rows;
+  return rows.slice(0, max);
+}
+
 /** Single message for invalid header keys (KeyValueTable + submit validation). */
 export const HEADER_KEY_INVALID_MESSAGE =
   "Invalid header key. Use only alphanumeric and !#$%&'*+-.^_`|~ characters.";
@@ -39,9 +55,10 @@ export function queryParamsHaveErrors(rows: KeyValuePair[]): boolean {
 }
 
 export const URL_REQUIRED_MESSAGE = "API URL is required";
-export const URL_FORMAT_MESSAGE = "URL must start with http:// or https://";
+export const URL_FORMAT_MESSAGE =
+  "Invalid API endpoint. Please enter a valid URL.";
 
-/** On save: URL is required and must start with http:// or https:// */
+/** On save: URL is required and must match URL_REGEX (http/https). */
 export function getUrlSubmitValidationError(value: string): string {
   const t = value.trim();
   if (!t) return URL_REQUIRED_MESSAGE;

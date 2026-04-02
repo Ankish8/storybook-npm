@@ -102,9 +102,11 @@ export interface CreateFunctionModalProps {
   initialData?: Partial<CreateFunctionData>;
   /** When true, changes the modal title to "Edit Function" */
   isEditing?: boolean;
+  /** Maximum character length for the function name (default: 30) */
+  nameMaxLength?: number;
   /** Minimum character length for the prompt field (default: 100) */
   promptMinLength?: number;
-  /** Maximum character length for the prompt field (default: 1000) */
+  /** Maximum character length for the prompt field (default: 2000) */
   promptMaxLength?: number;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
@@ -132,7 +134,27 @@ export interface CreateFunctionModalProps {
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
+  /**
+   * Maximum header rows; the Add row control is disabled at this count.
+   * Defaults to 20 when omitted.
+   */
+  maxHeaderRows?: number;
+  /**
+   * Maximum query parameter rows; the Add row control is disabled at this count.
+   * Defaults to 20 when omitted.
+   */
+  maxQueryParamRows?: number;
   className?: string;
+  /**
+   * Max length for the variable name in the Create/Edit variable modal.
+   * Omit for default (30). Pass `null` for no limit.
+   */
+  variableNameMaxLimit?: number | null;
+  /**
+   * Max length for the variable description in the Create/Edit variable modal.
+   * Omit for default (2000). Pass `null` for no limit.
+   */
+  descriptionMaxLimit?: number | null;
 }
 
 export interface IvrBotConfigData {
@@ -201,7 +223,9 @@ export interface IvrBotConfigProps {
   knowledgeBaseInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
-  /** Maximum character length for the function prompt (default: 1000) */
+  /** Maximum character length for the function name in Create/Edit Function (default: 30) */
+  functionNameMaxLength?: number;
+  /** Maximum character length for the function prompt (default: 2000) */
   functionPromptMaxLength?: number;
   /**
    * Pre-filled data shown when the edit function modal opens.

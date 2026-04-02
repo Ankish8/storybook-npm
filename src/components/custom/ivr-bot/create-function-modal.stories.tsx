@@ -41,13 +41,17 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
   },
   argTypes: {
     open: { control: "boolean", description: "Controls modal visibility" },
+    nameMaxLength: {
+      control: { type: "number" },
+      description: "Maximum character length for the function name (default: 30)",
+    },
     promptMinLength: {
       control: { type: "number" },
       description: "Minimum character length for the prompt field (default: 100)",
     },
     promptMaxLength: {
       control: { type: "number" },
-      description: "Maximum character length for the prompt field (default: 1000)",
+      description: "Maximum character length for the prompt field (default: 2000)",
     },
     initialStep: {
       control: { type: "radio" },
@@ -71,6 +75,16 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
     disabled: {
       control: "boolean",
       description: "View mode: fields disabled, Next stays enabled for navigation",
+    },
+    maxHeaderRows: {
+      control: { type: "number" },
+      description:
+        "Max HTTP header rows; Add row disables at this count (default: 20)",
+    },
+    maxQueryParamRows: {
+      control: { type: "number" },
+      description:
+        "Max query parameter rows; Add row disables at this count (default: 20)",
     },
   },
   decorators: [
@@ -149,7 +163,7 @@ export const Step1NameAndPrompt: Story = {
     docs: {
       description: {
         story:
-          "The first step collects the **function name** (max 100 chars) and a **prompt** description (default max 1000 chars). The **Next** button stays disabled until the name is valid and the prompt meets `promptMinLength` (default 100).",
+          "The first step collects the **function name** (default max 30 chars, override with `nameMaxLength`) and a **prompt** description (default max 2000 chars, override with `promptMaxLength`). The **Next** button stays disabled until the name is valid and the prompt meets `promptMinLength` (default 100).",
       },
     },
   },
