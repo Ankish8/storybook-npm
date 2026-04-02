@@ -1016,8 +1016,8 @@ export function cn(...inputs: ClassValue[]) {
     // Install required dependencies automatically
     spinner.text = 'Installing dependencies...'
     const deps = tailwindVersion === 'v4'
-      ? 'clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react'
-      : 'clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react tailwindcss-animate tailwindcss@^3.4.0 autoprefixer'
+      ? 'clsx tailwind-merge@^2.6.0 class-variance-authority @radix-ui/react-slot lucide-react'
+      : 'clsx tailwind-merge@^2.6.0 class-variance-authority @radix-ui/react-slot lucide-react tailwindcss-animate tailwindcss@^3.4.0 autoprefixer'
 
     try {
       execSync(`npm install ${deps}`, { cwd, stdio: 'pipe' })

@@ -721,7 +721,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     })
 
     execSync(
-      'npm install clsx tailwind-merge class-variance-authority @radix-ui/react-slot lucide-react --legacy-peer-deps',
+      'npm install clsx tailwind-merge@^2.6.0 class-variance-authority @radix-ui/react-slot lucide-react --legacy-peer-deps',
       { cwd: tempDir, stdio: 'pipe', timeout: 60_000 }
     )
 
