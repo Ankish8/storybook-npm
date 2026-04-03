@@ -1,9 +1,25 @@
-export { BotIdentityCard } from "./bot-identity-card";
+export {
+  BotIdentityCard,
+  defaultBotNameIdentityTooltip,
+  defaultPrimaryRoleTooltip,
+  defaultToneTooltip,
+  defaultHowItSoundsTooltip,
+  defaultLanguageModeTooltip,
+} from "./bot-identity-card";
 export { BotBehaviorCard } from "./bot-behavior-card";
-export { KnowledgeBaseCard } from "./knowledge-base-card";
+export {
+  KnowledgeBaseCard,
+  defaultKnowledgeBaseInfoTooltip,
+} from "./knowledge-base-card";
 export { FunctionsCard } from "./functions-card";
 export { FrustrationHandoverCard } from "./frustration-handover-card";
-export { AdvancedSettingsCard } from "./advanced-settings-card";
+export {
+  AdvancedSettingsCard,
+  defaultSilenceWaitDurationTooltip,
+  defaultMaximumSilenceRetriesTooltip,
+  defaultMaximumSilenceRetriesHelpText,
+  defaultInterruptionHandlingHelpText,
+} from "./advanced-settings-card";
 export {
   defaultAdvancedSettingsNumericBounds,
   type AdvancedSettingsNumericBounds,

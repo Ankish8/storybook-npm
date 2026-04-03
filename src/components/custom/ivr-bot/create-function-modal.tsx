@@ -1768,7 +1768,7 @@ export const CreateFunctionModal = React.forwardRef(
                       valueMaxLength={QUERY_PARAM_VALUE_MAX}
                       getRowErrors={(row) => {
                         const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
-                        if (!hasInput && !step2SubmitAttempted) return {};
+                        if (!hasInput) return {};
                         return {
                           key: validateQueryParamKey(row.key),
                           value: validateQueryParamValue(row.value),

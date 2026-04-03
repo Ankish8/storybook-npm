@@ -12,7 +12,7 @@ const meta: Meta<typeof AdvancedSettingsCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for advanced bot settings: silence timeout, call end threshold, and interruption handling toggle.
+        component: `Accordion card for advanced bot settings: silence wait duration, maximum silence retries, and interruption handling toggle. Numeric fields show an **info icon** next to the label (hover for tooltip), matching Knowledge Base / Functions cards. Override copy via \`silenceWaitDurationTooltip\`, \`maximumSilenceRetriesTooltip\`, \`maximumSilenceRetriesHelpText\`, and \`interruptionHandlingHelpText\`.
 
 **Install**
 \`\`\`bash

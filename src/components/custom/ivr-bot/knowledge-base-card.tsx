@@ -11,6 +11,10 @@ import {
 import { BOT_KNOWLEDGE_STATUS } from "./types";
 import type { KnowledgeBaseFile, KnowledgeFileStatus } from "./types";
 
+/** Default hover text for the info icon next to the "Knowledge Base" title */
+export const defaultKnowledgeBaseInfoTooltip =
+  "Upload files to give your bot reference material, eg. product catalogs, FAQs, policies, etc. The bot uses this information to answer caller queries more accurately.";
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface KnowledgeBaseCardProps {
@@ -28,7 +32,10 @@ export interface KnowledgeBaseCardProps {
    * When omitted, the delete button is **not rendered**.
    */
   onDelete?: (id: string) => void;
-  /** Hover text shown on the info icon next to the "Knowledge Base" title */
+  /**
+   * Hover text shown on the info icon next to the "Knowledge Base" title.
+   * When omitted, {@link defaultKnowledgeBaseInfoTooltip} is used. Pass an empty string to show a non-interactive icon only.
+   */
   infoTooltip?: string;
   /** Disables the "+ Files" button and other form-level interactions (view mode) */
   disabled?: boolean;
@@ -67,6 +74,9 @@ const KnowledgeBaseCard = React.forwardRef(
     }: KnowledgeBaseCardProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const resolvedInfoTooltip =
+      infoTooltip === undefined ? defaultKnowledgeBaseInfoTooltip : infoTooltip;
+
     return (
       <div
         ref={ref}
@@ -81,13 +91,16 @@ const KnowledgeBaseCard = React.forwardRef(
               <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
                 Knowledge Base
               </h2>
-              {infoTooltip ? (
+              {resolvedInfoTooltip ? (
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                      <Info
+                        className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                        aria-label="Knowledge Base: more information"
+                      />
                     </TooltipTrigger>
-                    <TooltipContent>{infoTooltip}</TooltipContent>
+                    <TooltipContent>{resolvedInfoTooltip}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               ) : (

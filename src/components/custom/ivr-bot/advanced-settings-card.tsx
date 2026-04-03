@@ -1,7 +1,13 @@
 import * as React from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Switch } from "../../ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 import {
   Accordion,
   AccordionItem,
@@ -12,6 +18,22 @@ import {
   defaultAdvancedSettingsNumericBounds,
   type AdvancedSettingsNumericBounds,
 } from "./advanced-settings-bounds";
+
+/** Default hover text for the Silence Wait Duration info icon */
+export const defaultSilenceWaitDurationTooltip =
+  "How long the bot waits after a caller stops speaking before responding again.";
+
+/** Default hover text for the Maximum Silence Retries info icon */
+export const defaultMaximumSilenceRetriesTooltip =
+  "The number of consecutive silences after which the bot automatically ends the call.";
+
+/** Default muted helper line under Maximum Silence Retries (below the input) */
+export const defaultMaximumSilenceRetriesHelpText =
+  "Drop call after n consecutive silences.";
+
+/** Default muted helper line under Interruption Handling */
+export const defaultInterruptionHandlingHelpText =
+  "Allow user to interrupt the bot mid-sentence.";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -64,6 +86,14 @@ export interface AdvancedSettingsCardProps {
   ) => void;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
+  /** Hover text on the info icon next to the Silence Wait Duration label */
+  silenceWaitDurationTooltip?: string;
+  /** Hover text on the info icon next to the Maximum Silence Retries label */
+  maximumSilenceRetriesTooltip?: string;
+  /** Muted helper line under the Maximum Silence Retries input */
+  maximumSilenceRetriesHelpText?: string;
+  /** Muted helper text under the Interruption Handling title */
+  interruptionHandlingHelpText?: string;
   /** Additional className */
   className?: string;
 }
@@ -72,16 +102,34 @@ export interface AdvancedSettingsCardProps {
 
 function Field({
   label,
+  labelTooltip,
   children,
 }: {
   label: string;
+  /** When set, shows an info icon beside the label (same pattern as Knowledge Base / Functions cards). */
+  labelTooltip?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-        {label}
-      </label>
+      <div className="flex items-center gap-1.5 min-w-0">
+        <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
+          {label}
+        </span>
+        {labelTooltip ? (
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info
+                  className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                  aria-label={`${label}: more information`}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{labelTooltip}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
+      </div>
       {children}
     </div>
   );
@@ -295,6 +343,10 @@ const AdvancedSettingsCard = React.forwardRef(
       onSilenceTimeoutBlur,
       onCallEndThresholdBlur,
       disabled,
+      silenceWaitDurationTooltip = defaultSilenceWaitDurationTooltip,
+      maximumSilenceRetriesTooltip = defaultMaximumSilenceRetriesTooltip,
+      maximumSilenceRetriesHelpText = defaultMaximumSilenceRetriesHelpText,
+      interruptionHandlingHelpText = defaultInterruptionHandlingHelpText,
       className,
     }: AdvancedSettingsCardProps,
     ref: React.Ref<HTMLDivElement>
@@ -360,7 +412,10 @@ const AdvancedSettingsCard = React.forwardRef(
               <div className="flex flex-col">
                 {/* Number fields section */}
                 <div className="px-4 pt-4 pb-4 flex flex-col gap-5 border-b border-solid border-semantic-border-layout sm:px-6 sm:pt-5 sm:pb-6">
-                  <Field label="Silence Timeout (seconds)">
+                  <Field
+                    label="Silence Wait Duration"
+                    labelTooltip={silenceWaitDurationTooltip}
+                  >
                     <ValidatedNumberSpinner
                       id="advanced-silence-timeout"
                       value={data.silenceTimeout}
@@ -373,7 +428,10 @@ const AdvancedSettingsCard = React.forwardRef(
                     />
                   </Field>
 
-                  <Field label="Call End Threshold">
+                  <Field
+                    label="Maximum Silence Retries"
+                    labelTooltip={maximumSilenceRetriesTooltip}
+                  >
                     <ValidatedNumberSpinner
                       id="advanced-call-end-threshold"
                       value={data.callEndThreshold}
@@ -385,7 +443,7 @@ const AdvancedSettingsCard = React.forwardRef(
                       onBlurCommit={onCallEndThresholdBlur}
                     />
                     <p className="m-0 text-xs text-semantic-text-muted">
-                      Drop call after n consecutive silences.
+                      {maximumSilenceRetriesHelpText}
                     </p>
                   </Field>
                 </div>
@@ -397,7 +455,7 @@ const AdvancedSettingsCard = React.forwardRef(
                       Interruption Handling
                     </span>
                     <p className="m-0 text-xs text-semantic-text-muted">
-                      Allow user to interrupt the bot mid-sentence
+                      {interruptionHandlingHelpText}
                     </p>
                   </div>
                   <Switch

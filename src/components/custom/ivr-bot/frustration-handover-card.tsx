@@ -82,7 +82,7 @@ const FrustrationHandoverCard = React.forwardRef(
           <AccordionItem value="frustration">
             <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
               <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
-                Frustration Handover
+                Escalate to Human
                 <Info className="size-3.5 text-semantic-text-muted shrink-0" />
               </span>
             </AccordionTrigger>
@@ -90,7 +90,7 @@ const FrustrationHandoverCard = React.forwardRef(
               <div className="flex flex-col gap-6 pt-0 pb-2">
                 <div className="flex items-center justify-between px-4 py-2.5 sm:px-6">
                   <span className="text-sm text-semantic-text-primary">
-                    Enable frustration-based escalation
+                    Automatically escalate frustrated callers
                   </span>
                   <Switch
                     checked={data.frustrationHandoverEnabled ?? false}
@@ -101,7 +101,7 @@ const FrustrationHandoverCard = React.forwardRef(
                   />
                 </div>
                 <div className="px-4 pb-2 sm:px-6">
-                  <Field label="Escalation Department">
+                  <Field label="Transfer to department">
                     <Select
                       value={data.escalationDepartment || undefined}
                       onValueChange={(v) => onChange({ escalationDepartment: v })}

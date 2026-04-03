@@ -53,10 +53,10 @@ describe("IvrBotConfig", () => {
     expect(functionHeadings.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("renders accordion sections: Fallback Prompts, Frustration Handover, Advanced Settings", () => {
+  it("renders accordion sections: Fallback Prompts, Escalate to Human, Advanced Settings", () => {
     render(<IvrBotConfig />);
     expect(screen.getByText("Fallback Prompts")).toBeInTheDocument();
-    expect(screen.getByText("Frustration Handover")).toBeInTheDocument();
+    expect(screen.getByText("Escalate to Human")).toBeInTheDocument();
     expect(screen.getByText("Advanced Settings")).toBeInTheDocument();
   });
 
@@ -113,8 +113,8 @@ describe("IvrBotConfig", () => {
   it("frustration handover toggle enables department select", async () => {
     const user = userEvent.setup();
     render(<IvrBotConfig />);
-    // Open the Frustration Handover accordion first
-    await user.click(screen.getByText("Frustration Handover"));
+    // Open the Escalate to Human accordion first
+    await user.click(screen.getByText("Escalate to Human"));
     // The escalation department select is disabled before toggle
     const allSelects = screen.getAllByRole("combobox");
     const disabledSelect = allSelects.find((el) => (el as HTMLSelectElement).disabled);

@@ -66,6 +66,11 @@ export const IvrBotConfig = React.forwardRef(
       onTestApi,
       functionsInfoTooltip,
       knowledgeBaseInfoTooltip,
+      botNameIdentityTooltip,
+      primaryRoleTooltip,
+      toneTooltip,
+      howItSoundsTooltip,
+      languageModeTooltip,
       functionPromptMinLength,
       functionNameMaxLength,
       functionPromptMaxLength,
@@ -96,6 +101,10 @@ export const IvrBotConfig = React.forwardRef(
       onAdvancedSettingsChange,
       onSilenceTimeoutBlur,
       onCallEndThresholdBlur,
+      silenceWaitDurationTooltip,
+      maximumSilenceRetriesTooltip,
+      maximumSilenceRetriesHelpText,
+      interruptionHandlingHelpText,
       className,
     }: IvrBotConfigProps,
     ref: React.Ref<HTMLDivElement>
@@ -179,6 +188,11 @@ export const IvrBotConfig = React.forwardRef(
               voiceOptions={voiceOptions}
               languageOptions={languageOptions}
               disabled={disabled}
+              botNameIdentityTooltip={botNameIdentityTooltip}
+              primaryRoleTooltip={primaryRoleTooltip}
+              toneTooltip={toneTooltip}
+              howItSoundsTooltip={howItSoundsTooltip}
+              languageModeTooltip={languageModeTooltip}
             />
             <BotBehaviorCard
               data={data}
@@ -256,6 +270,10 @@ export const IvrBotConfig = React.forwardRef(
               onAdvancedSettingsChange={onAdvancedSettingsChange}
               onSilenceTimeoutBlur={onSilenceTimeoutBlur}
               onCallEndThresholdBlur={onCallEndThresholdBlur}
+              silenceWaitDurationTooltip={silenceWaitDurationTooltip}
+              maximumSilenceRetriesTooltip={maximumSilenceRetriesTooltip}
+              maximumSilenceRetriesHelpText={maximumSilenceRetriesHelpText}
+              interruptionHandlingHelpText={interruptionHandlingHelpText}
               disabled={disabled}
             />
           </div>

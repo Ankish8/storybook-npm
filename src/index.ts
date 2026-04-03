@@ -381,7 +381,23 @@ export type {
 } from "./components/custom/bots";
 
 // IvrBot (Custom)
-export { BotIdentityCard, BotBehaviorCard, KnowledgeBaseCard, FunctionsCard, FrustrationHandoverCard, AdvancedSettingsCard, IvrBotConfig, CreateFunctionModal, defaultAdvancedSettingsNumericBounds } from "./components/custom/ivr-bot";
+export {
+  BotIdentityCard,
+  BotBehaviorCard,
+  KnowledgeBaseCard,
+  FunctionsCard,
+  FrustrationHandoverCard,
+  AdvancedSettingsCard,
+  IvrBotConfig,
+  CreateFunctionModal,
+  defaultAdvancedSettingsNumericBounds,
+  defaultBotNameIdentityTooltip,
+  defaultPrimaryRoleTooltip,
+  defaultToneTooltip,
+  defaultHowItSoundsTooltip,
+  defaultLanguageModeTooltip,
+  defaultKnowledgeBaseInfoTooltip,
+} from "./components/custom/ivr-bot";
 export type {
   BotIdentityCardProps,
   BotIdentityData,

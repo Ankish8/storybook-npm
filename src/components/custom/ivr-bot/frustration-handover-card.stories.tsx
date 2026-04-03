@@ -6,13 +6,13 @@ import {
 } from "./frustration-handover-card";
 
 const meta: Meta<typeof FrustrationHandoverCard> = {
-  title: "Custom/AI Bot/Frustration Handover Card",
+  title: "Custom/AI Bot/Escalate to Human Card",
   component: FrustrationHandoverCard,
   parameters: {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for configuring frustration-based escalation. Toggle to enable, then select an escalation department.
+        component: `Accordion card for human escalation when callers are frustrated. Toggle **Automatically escalate frustrated callers**, then choose **Transfer to department**.
 
 **Install**
 \`\`\`bash

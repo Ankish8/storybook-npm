@@ -27,7 +27,7 @@ The **IvrBotConfig** is the full-page configuration view for an IVR/Voicebot. It
 - **Functions** — Built-in & custom function list
 
 **Right column (accordion)**
-- **Frustration Handover** — Enable toggle + escalation dept selector
+- **Escalate to Human** — Auto-escalation toggle + transfer department selector
 - **Advanced Settings** — Silence timeout, call-end threshold, interruption handling
 
 ### Install
@@ -134,7 +134,7 @@ export const EmptyState: Story = {
 };
 
 export const FrustrationHandoverEnabled: Story = {
-  name: "Frustration Handover — Enabled",
+  name: "Escalate to Human — Enabled",
   args: {
     botTitle: "Support Bot",
     botType: "Voicebot",

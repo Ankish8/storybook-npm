@@ -219,8 +219,21 @@ export interface IvrBotConfigProps {
   ) => Promise<string>;
   /** Hover text for the info icon in the Functions card header */
   functionsInfoTooltip?: string;
-  /** Hover text for the info icon in the Knowledge Base card header */
+  /**
+   * Override Knowledge Base header info tooltip.
+   * When omitted, the card uses its built-in default copy. Pass `""` to show a non-interactive icon only.
+   */
   knowledgeBaseInfoTooltip?: string;
+  /** Passed to BotIdentityCard — hover text on the info icon next to Bot Name & Identity */
+  botNameIdentityTooltip?: string;
+  /** Passed to BotIdentityCard — hover text on the info icon next to Primary Role */
+  primaryRoleTooltip?: string;
+  /** Passed to BotIdentityCard — hover text on the info icon next to Tone */
+  toneTooltip?: string;
+  /** Passed to BotIdentityCard — hover text on the info icon next to How It Sounds */
+  howItSoundsTooltip?: string;
+  /** Passed to BotIdentityCard — hover text on the info icon next to What Language It Speaks */
+  languageModeTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function name in Create/Edit Function (default: 30) */
@@ -299,6 +312,14 @@ export interface IvrBotConfigProps {
   onCallEndThresholdBlur?: (
     detail: AdvancedSettingsNumericFieldBlurDetail
   ) => void;
+  /** Passed to Advanced Settings — hover text on the info icon next to Silence Wait Duration */
+  silenceWaitDurationTooltip?: string;
+  /** Passed to Advanced Settings — hover text on the info icon next to Maximum Silence Retries */
+  maximumSilenceRetriesTooltip?: string;
+  /** Passed to Advanced Settings — muted helper line under the Maximum Silence Retries input */
+  maximumSilenceRetriesHelpText?: string;
+  /** Passed to Advanced Settings — muted helper line under Interruption Handling */
+  interruptionHandlingHelpText?: string;
   className?: string;
 }
 

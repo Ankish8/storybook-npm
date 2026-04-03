@@ -55,7 +55,7 @@ const CreatableSelect = React.forwardRef(
       onValueChange,
       options = [],
       placeholder = "Select an option",
-      creatableHint = "Type to create a custom option",
+      creatableHint = 'Press Enter to add "Conversational" ↵',
       disabled = false,
       maxLength,
       ...props

@@ -65,7 +65,7 @@ const CreatableMultiSelect = React.forwardRef(
       placeholder = "Enter or select",
       disabled = false,
       state = "default",
-      creatableHint = "Type to create a custom option",
+      creatableHint = 'Press Enter to add "Conversational" ↵',
       helperText,
       maxItems,
       maxLengthPerItem,

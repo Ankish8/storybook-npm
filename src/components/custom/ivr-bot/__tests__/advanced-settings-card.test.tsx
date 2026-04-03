@@ -1,6 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { AdvancedSettingsCard } from "../advanced-settings-card";
+import {
+  AdvancedSettingsCard,
+  defaultMaximumSilenceRetriesHelpText,
+} from "../advanced-settings-card";
 
 function expandAdvanced() {
   fireEvent.click(screen.getByRole("button", { name: /advanced settings/i }));
@@ -11,6 +14,14 @@ describe("AdvancedSettingsCard", () => {
     render(<AdvancedSettingsCard data={{}} onChange={() => {}} />);
     expect(
       screen.getByRole("button", { name: /advanced settings/i })
+    ).toBeInTheDocument();
+  });
+
+  it("shows muted helper text under Maximum Silence Retries when expanded", () => {
+    render(<AdvancedSettingsCard data={{}} onChange={() => {}} />);
+    expandAdvanced();
+    expect(
+      screen.getByText(defaultMaximumSilenceRetriesHelpText)
     ).toBeInTheDocument();
   });
 

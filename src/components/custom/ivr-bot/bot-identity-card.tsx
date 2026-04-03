@@ -10,6 +10,12 @@ import {
 } from "../../ui/select";
 import { CreatableSelect } from "../../ui/creatable-select";
 import { CreatableMultiSelect } from "../../ui/creatable-multi-select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -41,6 +47,26 @@ export interface BotIdentityData {
   language: string;
 }
 
+/** Default hover text for the info icon next to "Bot Name & Identity" */
+export const defaultBotNameIdentityTooltip =
+  "The name the bot uses to introduce itself during calls. This is different from the bot's system name set at creation.";
+
+/** Default hover text for the info icon next to "Primary Role" */
+export const defaultPrimaryRoleTooltip =
+  "Defines what the bot does. Choose from the list or type a custom role. Only one role can be active at a time.";
+
+/** Default hover text for the info icon next to "Tone" */
+export const defaultToneTooltip =
+  "Sets how the bot communicates. You can pick up to 5 tones from the list or add your own.";
+
+/** Default hover text for the info icon next to "How It Sounds" */
+export const defaultHowItSoundsTooltip =
+  "Select the voice profile the bot speaks in.";
+
+/** Default hover text for the info icon next to "What Language It Speaks" */
+export const defaultLanguageModeTooltip =
+  "Sets the language mode for the bot's conversations.";
+
 export interface BotIdentityCardProps {
   /** Current form data */
   data: Partial<BotIdentityData>;
@@ -62,6 +88,16 @@ export interface BotIdentityCardProps {
   playingVoice?: string;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
+  /** Hover text on the info icon next to "Bot Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
+  botNameIdentityTooltip?: string;
+  /** Hover text on the info icon next to "Primary Role" (default: {@link defaultPrimaryRoleTooltip}) */
+  primaryRoleTooltip?: string;
+  /** Hover text on the info icon next to "Tone" (default: {@link defaultToneTooltip}) */
+  toneTooltip?: string;
+  /** Hover text on the info icon next to "How It Sounds" (default: {@link defaultHowItSoundsTooltip}) */
+  howItSoundsTooltip?: string;
+  /** Hover text on the info icon next to "What Language It Speaks" (default: {@link defaultLanguageModeTooltip}) */
+  languageModeTooltip?: string;
   /** Additional className for the card */
   className?: string;
 }
@@ -73,6 +109,7 @@ function Field({
   required,
   helperText,
   characterCount,
+  labelTooltip,
   children,
 }: {
   label: string;
@@ -80,16 +117,42 @@ function Field({
   helperText?: string;
   /** e.g. { current: 0, max: 50 } to show "0/50" below right */
   characterCount?: { current: number; max: number };
+  /** Info icon beside label; hover shows tooltip (same pattern as Functions card). */
+  labelTooltip?: string;
   children: React.ReactNode;
 }) {
+  const labelClasses =
+    "text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]";
+
+  const labelBody = (
+    <>
+      {label}
+      {required && (
+        <span className="text-semantic-error-primary ml-0.5">*</span>
+      )}
+    </>
+  );
+
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-        {label}
-        {required && (
-          <span className="text-semantic-error-primary ml-0.5">*</span>
-        )}
-      </label>
+      {labelTooltip ? (
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className={labelClasses}>{labelBody}</span>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info
+                  className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                  aria-label={`${label}: more information`}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{labelTooltip}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      ) : (
+        <label className={labelClasses}>{labelBody}</label>
+      )}
       {children}
       {(helperText || characterCount) && (
         <div className="flex items-center justify-between gap-2">
@@ -213,6 +276,11 @@ const BotIdentityCard = React.forwardRef(
       onPauseVoice,
       playingVoice,
       disabled,
+      botNameIdentityTooltip = defaultBotNameIdentityTooltip,
+      primaryRoleTooltip = defaultPrimaryRoleTooltip,
+      toneTooltip = defaultToneTooltip,
+      howItSoundsTooltip = defaultHowItSoundsTooltip,
+      languageModeTooltip = defaultLanguageModeTooltip,
       className,
     }: BotIdentityCardProps,
     ref: React.Ref<HTMLDivElement>
@@ -237,7 +305,7 @@ const BotIdentityCard = React.forwardRef(
           <div className="flex flex-col gap-5">
             <Field
               label="Bot Name & Identity"
-              helperText="This is the name the bot will use to refer to itself during conversations."
+              labelTooltip={botNameIdentityTooltip}
               characterCount={{
                 current: (data.botName ?? "").length,
                 max: BOT_NAME_MAX_LENGTH,
@@ -254,7 +322,7 @@ const BotIdentityCard = React.forwardRef(
 
             <Field
               label="Primary Role"
-              helperText="Defines what the bot does. Choose from the list or type a custom role."
+              labelTooltip={primaryRoleTooltip}
               characterCount={{
                 current: (data.primaryRole ?? "").length,
                 max: PRIMARY_ROLE_MAX_LENGTH,
@@ -273,7 +341,7 @@ const BotIdentityCard = React.forwardRef(
               />
             </Field>
 
-            <Field label="Tone">
+            <Field label="Tone" labelTooltip={toneTooltip}>
               <CreatableMultiSelect
                 value={(Array.isArray(data.tone) ? data.tone : []).slice(0, TONE_MAX_ITEMS)}
                 onValueChange={(v) =>
@@ -281,7 +349,6 @@ const BotIdentityCard = React.forwardRef(
                 }
                 options={toneOptions}
                 placeholder="Enter or select tone"
-                creatableHint='Press Enter to add "Conversational" ↵'
                 disabled={disabled}
                 maxItems={TONE_MAX_ITEMS}
                 maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}
@@ -289,7 +356,7 @@ const BotIdentityCard = React.forwardRef(
             </Field>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="How It Sounds">
+              <Field label="How It Sounds" labelTooltip={howItSoundsTooltip}>
                 <Select
                   value={data.voice || undefined}
                   onValueChange={(v) => {
@@ -347,7 +414,10 @@ const BotIdentityCard = React.forwardRef(
                 </Select>
               </Field>
 
-              <Field label="What Language It Speaks">
+              <Field
+                label="What Language It Speaks"
+                labelTooltip={languageModeTooltip}
+              >
                 <Select
                   value={data.language || undefined}
                   onValueChange={(v) => onChange({ language: v })}
