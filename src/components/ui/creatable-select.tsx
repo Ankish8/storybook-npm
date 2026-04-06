@@ -38,7 +38,10 @@ export interface CreatableSelectProps
   options?: CreatableSelectOption[]
   /** Placeholder when no value selected */
   placeholder?: string
-  /** Hint text shown above options when dropdown is open */
+  /**
+   * Optional hint shown above the options when the dropdown is open.
+   * When omitted, no hint row is shown.
+   */
   creatableHint?: string
   /** Whether the select is disabled */
   disabled?: boolean
@@ -55,7 +58,7 @@ const CreatableSelect = React.forwardRef(
       onValueChange,
       options = [],
       placeholder = "Select an option",
-      creatableHint = 'Press Enter to add "Conversational" ↵',
+      creatableHint,
       disabled = false,
       maxLength,
       ...props
@@ -245,15 +248,16 @@ const CreatableSelect = React.forwardRef(
         {/* Dropdown */}
         {open && (
           <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
-            {/* Creatable hint */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
-              <span className="text-sm text-semantic-text-muted">
-                {creatableHint}
-              </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
-                Enter ↵
-              </kbd>
-            </div>
+            {creatableHint ? (
+              <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
+                <span className="text-sm text-semantic-text-muted">
+                  {creatableHint}
+                </span>
+                <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+                  Enter ↵
+                </kbd>
+              </div>
+            ) : null}
 
             {/* Options list */}
             <div

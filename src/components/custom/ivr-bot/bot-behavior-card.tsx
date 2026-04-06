@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus, Info } from "lucide-react";
+import { Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { tagVariants } from "../../ui/tag";
 
@@ -16,7 +16,7 @@ export interface BotBehaviorCardProps {
   onChange: (patch: Partial<BotBehaviorData>) => void;
   /**
    * Called when focus leaves the **entire** prompt section (textarea + session
-   * variable chips). Clicking a chip or the instruction text does NOT trigger
+   * variable chips). Clicking a chip does NOT trigger
    * this — only clicking outside the whole section does.
    *
    * Use this to persist the system prompt (e.g. fire an API call) once the
@@ -302,38 +302,36 @@ const BotBehaviorCard = React.forwardRef(
             <p className="m-0 text-sm text-semantic-text-muted">
               Define workflows, conditions and handover logic (System prompt)
             </p>
-            <div className="relative">
-              <textarea
-                ref={textareaRef}
-                value={prompt}
-                rows={6}
-                onChange={handlePromptChange}
-                onKeyDown={handlePromptKeyDown}
-                placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
-                disabled={disabled}
-                className={cn(
-                  "w-full px-4 py-2.5 text-base rounded border border-solid resize-none pb-10 pr-[4.5rem]",
-                  "border-semantic-border-input bg-semantic-bg-primary",
-                  "text-semantic-text-primary placeholder:text-semantic-text-muted",
-                  "outline-none hover:border-semantic-border-input-focus",
-                  "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-                  disabled && "opacity-50 cursor-not-allowed"
-                )}
-              />
+            <div className="flex flex-col gap-1">
+              <div className="relative">
+                <textarea
+                  ref={textareaRef}
+                  value={prompt}
+                  rows={6}
+                  onChange={handlePromptChange}
+                  onKeyDown={handlePromptKeyDown}
+                  placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
+                  disabled={disabled}
+                  className={cn(
+                    "w-full px-4 py-2.5 text-base rounded border border-solid resize-none",
+                    "border-semantic-border-input bg-semantic-bg-primary",
+                    "text-semantic-text-primary placeholder:text-semantic-text-muted",
+                    "outline-none hover:border-semantic-border-input-focus",
+                    "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+                    disabled && "opacity-50 cursor-not-allowed"
+                  )}
+                />
+                <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
+              </div>
               <span
-                className="absolute bottom-3 right-4 text-sm text-semantic-text-muted pointer-events-none"
+                className="self-end text-sm text-semantic-text-muted"
                 aria-live="polite"
                 aria-label={`${prompt.length} of ${MAX} characters`}
               >
                 {prompt.length}/{MAX}
               </span>
-              <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
             </div>
             <div className="flex flex-col gap-3">
-              <p className="m-0 flex items-center gap-1.5 text-sm text-semantic-text-muted">
-                <Info className="size-4 shrink-0 text-semantic-text-muted" aria-hidden />
-                Type {'{{'} to enable dropdown or use the below chips to input variables.
-              </p>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-semantic-text-secondary">
                   Session variables:

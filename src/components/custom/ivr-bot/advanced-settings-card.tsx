@@ -27,9 +27,8 @@ export const defaultSilenceWaitDurationTooltip =
 export const defaultMaximumSilenceRetriesTooltip =
   "The number of consecutive silences after which the bot automatically ends the call.";
 
-/** Default muted helper line under Maximum Silence Retries (below the input) */
-export const defaultMaximumSilenceRetriesHelpText =
-  "Drop call after n consecutive silences.";
+/** Default muted helper line under Maximum Silence Retries (below the input); empty = none shown */
+export const defaultMaximumSilenceRetriesHelpText = "";
 
 /** Default muted helper line under Interruption Handling */
 export const defaultInterruptionHandlingHelpText =
@@ -442,9 +441,11 @@ const AdvancedSettingsCard = React.forwardRef(
                       disabled={disabled}
                       onBlurCommit={onCallEndThresholdBlur}
                     />
-                    <p className="m-0 text-xs text-semantic-text-muted">
-                      {maximumSilenceRetriesHelpText}
-                    </p>
+                    {maximumSilenceRetriesHelpText ? (
+                      <p className="m-0 text-xs text-semantic-text-muted">
+                        {maximumSilenceRetriesHelpText}
+                      </p>
+                    ) : null}
                   </Field>
                 </div>
 

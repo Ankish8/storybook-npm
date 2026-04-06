@@ -29,12 +29,16 @@ import {
   clampKeyValueRows,
   getBodyJsonValidationError,
   getHeaderRowSubmitErrors,
+  getQueryParamRowSubmitErrors,
   getUrlBlurValidationError,
   getUrlSubmitValidationError,
+  HEADER_OR_QUERY_PAIR_REQUIRED_MESSAGE,
+  hasAtLeastOneCompleteKeyValueRow,
   headerRowsHaveSubmitErrors,
   queryParamsHaveErrors,
   validateQueryParamKey,
   validateQueryParamValue,
+  VARIABLE_DESCRIPTION_REQUIRED_MESSAGE,
 } from "./create-function-validation";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
@@ -456,6 +460,7 @@ function VariableFormModal({
   const [description, setDescription] = React.useState("");
   const [required, setRequired] = React.useState(false);
   const [nameError, setNameError] = React.useState("");
+  const [descriptionError, setDescriptionError] = React.useState("");
   const descriptionFieldId = React.useId();
 
   const nameMaxLen = resolveVariableFieldMaxLength(
@@ -474,6 +479,7 @@ function VariableFormModal({
       setDescription(initialData?.description ?? "");
       setRequired(initialData?.required ?? false);
       setNameError("");
+      setDescriptionError("");
     }
   }, [open, initialData]);
 
@@ -505,15 +511,22 @@ function VariableFormModal({
       setNameError(error);
       return;
     }
+    const descTrimmed = description.trim();
+    if (!descTrimmed) {
+      setDescriptionError(VARIABLE_DESCRIPTION_REQUIRED_MESSAGE);
+      return;
+    }
     if (descMaxLen != null && description.length > descMaxLen) {
       return;
     }
-    onSave({ name: name.trim(), description: description.trim() || undefined, required });
+    setDescriptionError("");
+    onSave({ name: name.trim(), description: descTrimmed, required });
   };
 
   const hasInvalidFormat = Boolean(name.trim() && validateName(name));
   const descriptionTooLong =
     descMaxLen != null && description.length > descMaxLen;
+  const descriptionInvalid = Boolean(descriptionError) || descriptionTooLong;
 
   return (
     <FormModal
@@ -567,27 +580,31 @@ function VariableFormModal({
             htmlFor={descriptionFieldId}
             className="text-sm font-medium text-semantic-text-muted"
           >
-            Description (optional)
+            Description{" "}
+            <span className="text-semantic-error-primary">*</span>
           </label>
           <div className="relative">
             <textarea
               id={descriptionFieldId}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                setDescriptionError("");
+              }}
               placeholder="What this variable represents"
               rows={3}
               maxLength={descMaxLen}
-              aria-invalid={descriptionTooLong}
+              aria-invalid={descriptionInvalid}
               className={cn(
                 textareaCls,
                 "resize-y min-h-[90px] pb-10 pr-[4.5rem]",
-                descriptionTooLong && "border-semantic-error-primary"
+                descriptionInvalid && "border-semantic-error-primary"
               )}
             />
             <span
               className={cn(
                 "absolute bottom-3 right-4 text-sm pointer-events-none",
-                descriptionTooLong
+                descriptionInvalid
                   ? "text-semantic-error-primary"
                   : "text-semantic-text-muted"
               )}
@@ -597,7 +614,12 @@ function VariableFormModal({
               {descMaxLen != null ? `/${descMaxLen}` : ""}
             </span>
           </div>
-          {descriptionTooLong && descMaxLen != null ? (
+          {descriptionError ? (
+            <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary">
+              <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
+              <span>{descriptionError}</span>
+            </p>
+          ) : descriptionTooLong && descMaxLen != null ? (
             <p className="m-0 flex items-start gap-1.5 text-sm text-semantic-error-primary">
               <CircleAlert className="size-4 shrink-0 mt-0.5" aria-hidden />
               <span>
@@ -650,6 +672,7 @@ function VariableInput({
   className,
   inputRef: externalInputRef,
   disabled,
+  onBlur: onBlurProp,
   ...inputProps
 }: {
   value: string;
@@ -663,6 +686,7 @@ function VariableInput({
   className?: string;
   inputRef?: React.RefObject<HTMLInputElement>;
   disabled?: boolean;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
   [k: string]: unknown;
 }) {
   const internalRef = React.useRef<HTMLInputElement>(null);
@@ -742,10 +766,11 @@ function VariableInput({
           if (e.key === "Escape") clearTrigger();
         }}
         onFocus={() => setIsEditing(true)}
-        onBlur={() => {
+        onBlur={(e) => {
           clearTrigger();
           setIsEditing(false);
           setIsExpanded(false);
+          onBlurProp?.(e);
         }}
         {...inputProps}
       />
@@ -867,6 +892,8 @@ function KeyValueTable({
   variableGroups,
   onAddVariable,
   onEditVariable,
+  onKeyBlur,
+  onValueBlur,
   disabled = false,
   maxRows,
   maxRowsItemLabel = "rows",
@@ -883,6 +910,8 @@ function KeyValueTable({
   variableGroups?: VariableGroup[];
   onAddVariable?: (ctx: { rowId: string; from: number; to: number }) => void;
   onEditVariable?: (variable: string) => void;
+  onKeyBlur?: (rowId: string) => void;
+  onValueBlur?: (rowId: string) => void;
   disabled?: boolean;
   maxRows?: number;
   /** Noun for the row-limit tooltip, e.g. "headers" or "query parameters". */
@@ -951,6 +980,7 @@ function KeyValueTable({
                   type="text"
                   value={row.key}
                   onChange={(e) => update(row.id, { key: e.target.value })}
+                  onBlur={() => onKeyBlur?.(row.id)}
                   placeholder="Key"
                   maxLength={keyMaxLength}
                   disabled={disabled}
@@ -988,6 +1018,7 @@ function KeyValueTable({
                     errors.value && "text-semantic-error-primary"
                   )}
                   aria-invalid={Boolean(errors.value)}
+                  onBlur={() => onValueBlur?.(row.id)}
                 />
               </div>
 
@@ -1025,24 +1056,24 @@ function KeyValueTable({
         </button>
       </div>
 
-      {/* Collected row errors — shown below the table */}
+      {/* Row errors — below the table (matches query/header validation UX) */}
       {(() => {
         const allErrors = rows
-          .map((row) => {
+          .flatMap((row) => {
             const errs = getErrors(row);
             const msgs: string[] = [];
             if (errs.key) msgs.push(errs.key);
             if (errs.value) msgs.push(errs.value);
             return msgs;
-          })
-          .flat();
+          });
         if (allErrors.length === 0) return null;
-        // Deduplicate
         const unique = Array.from(new Set(allErrors));
         return (
           <div className="flex flex-col gap-0.5">
             {unique.map((msg) => (
-              <p key={msg} className="m-0 text-sm text-semantic-error-primary">{msg}</p>
+              <p key={msg} className="m-0 text-sm text-semantic-error-primary">
+                {msg}
+              </p>
             ))}
           </div>
         );
@@ -1073,6 +1104,7 @@ export const CreateFunctionModal = React.forwardRef(
       disabled = false,
       maxHeaderRows = HEADER_MAX_ROWS,
       maxQueryParamRows = HEADER_MAX_ROWS,
+      requireHeaderOrQueryPair = true,
       className,
       variableNameMaxLimit,
       descriptionMaxLimit,
@@ -1099,9 +1131,14 @@ export const CreateFunctionModal = React.forwardRef(
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
     const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
+    const [queryParamFieldTouched, setQueryParamFieldTouched] = React.useState<
+      Record<string, { key?: boolean; value?: boolean }>
+    >({});
     const [nameError, setNameError] = React.useState("");
     const [urlError, setUrlError] = React.useState("");
     const [bodyError, setBodyError] = React.useState("");
+    /** Set on Step 2 Submit when headers and query params have no complete key/value row. */
+    const [headerQueryPairError, setHeaderQueryPairError] = React.useState("");
 
     // Variable modal state
     const [varModalOpen, setVarModalOpen] = React.useState(false);
@@ -1320,10 +1357,12 @@ export const CreateFunctionModal = React.forwardRef(
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
+        setQueryParamFieldTouched({});
         setTestApiRequiredAttempted(false);
         setNameError("");
         setUrlError("");
         setBodyError("");
+        setHeaderQueryPairError("");
         setUrlTrigger(null);
         setBodyTrigger(null);
         setUrlPopupStyle(undefined);
@@ -1348,10 +1387,12 @@ export const CreateFunctionModal = React.forwardRef(
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
+      setQueryParamFieldTouched({});
       setTestApiRequiredAttempted(false);
       setNameError("");
       setUrlError("");
       setBodyError("");
+      setHeaderQueryPairError("");
       setUrlTrigger(null);
       setBodyTrigger(null);
       setUrlPopupStyle(undefined);
@@ -1403,6 +1444,7 @@ export const CreateFunctionModal = React.forwardRef(
       if (step !== 2) return;
 
       setStep2SubmitAttempted(true);
+      setHeaderQueryPairError("");
 
       const urlErr = getUrlSubmitValidationError(url);
       setUrlError(urlErr);
@@ -1419,6 +1461,14 @@ export const CreateFunctionModal = React.forwardRef(
       if (urlErr || bodyErr) return;
 
       if (headerRowsHaveSubmitErrors(headers)) return;
+
+      if (
+        requireHeaderOrQueryPair &&
+        !hasAtLeastOneCompleteKeyValueRow(headers, queryParams)
+      ) {
+        setHeaderQueryPairError(HEADER_OR_QUERY_PAIR_REQUIRED_MESSAGE);
+        return;
+      }
 
       const data: CreateFunctionData = {
         name: name.trim(),
@@ -1728,6 +1778,14 @@ export const CreateFunctionModal = React.forwardRef(
                       </button>
                     ))}
                   </div>
+                  {headerQueryPairError && (
+                    <p
+                      id="fn-header-query-pair-error"
+                      className="m-0 text-sm text-semantic-error-primary"
+                    >
+                      {headerQueryPairError}
+                    </p>
+                  )}
 
                   {activeTab === "header" && (
                     <KeyValueTable
@@ -1742,10 +1800,15 @@ export const CreateFunctionModal = React.forwardRef(
                       keyRegexError={HEADER_KEY_INVALID_MESSAGE}
                       getRowErrors={(row) => {
                         if (!step2SubmitAttempted) {
+                          const keyT = row.key.trim();
+                          const valT = row.value.trim();
+                          if (!keyT && !valT) return {};
                           const errors: RowErrors = {};
-                          if (row.key.trim() && !HEADER_KEY_REGEX.test(row.key)) {
+                          if (!keyT) errors.key = "Header key is required";
+                          else if (!HEADER_KEY_REGEX.test(row.key)) {
                             errors.key = HEADER_KEY_INVALID_MESSAGE;
                           }
+                          if (!valT) errors.value = "Header value is required";
                           return errors;
                         }
                         return getHeaderRowSubmitErrors(row);
@@ -1767,13 +1830,37 @@ export const CreateFunctionModal = React.forwardRef(
                       keyMaxLength={QUERY_PARAM_KEY_MAX}
                       valueMaxLength={QUERY_PARAM_VALUE_MAX}
                       getRowErrors={(row) => {
-                        const hasInput = row.key.trim() !== "" || row.value.trim() !== "";
-                        if (!hasInput) return {};
-                        return {
-                          key: validateQueryParamKey(row.key),
-                          value: validateQueryParamValue(row.value),
-                        };
+                        if (step2SubmitAttempted) {
+                          return getQueryParamRowSubmitErrors(row);
+                        }
+                        const keyT = row.key.trim();
+                        const valT = row.value.trim();
+                        const touched = queryParamFieldTouched[row.id] ?? {};
+                        // Before any Submit: ignore fully empty rows until blur/touched.
+                        if (!keyT && !valT) return {};
+                        const errors: RowErrors = {};
+                        if (touched.key) {
+                          const k = validateQueryParamKey(row.key);
+                          if (k) errors.key = k;
+                        }
+                        if (touched.value) {
+                          const v = validateQueryParamValue(row.value);
+                          if (v) errors.value = v;
+                        }
+                        return errors;
                       }}
+                      onKeyBlur={(rowId) =>
+                        setQueryParamFieldTouched((prev) => ({
+                          ...prev,
+                          [rowId]: { ...prev[rowId], key: true },
+                        }))
+                      }
+                      onValueBlur={(rowId) =>
+                        setQueryParamFieldTouched((prev) => ({
+                          ...prev,
+                          [rowId]: { ...prev[rowId], value: true },
+                        }))
+                      }
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
                       onAddVariable={handleAddVariableFromQuery}

@@ -31,7 +31,7 @@ const meta: Meta<typeof BotCard> = {
     docs: {
       description: {
         component: `
-An individual bot card showing the bot's type badge, icon, name, conversation count, and last published info. Used inside **BotList** but can also be used standalone.
+An individual bot card showing the bot's type badge, icon, name, and last published info. Used inside **BotList** but can also be used standalone.
 
 ## Installation
 

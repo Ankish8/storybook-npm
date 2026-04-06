@@ -1,9 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import {
-  AdvancedSettingsCard,
-  defaultMaximumSilenceRetriesHelpText,
-} from "../advanced-settings-card";
+import { AdvancedSettingsCard } from "../advanced-settings-card";
 
 function expandAdvanced() {
   fireEvent.click(screen.getByRole("button", { name: /advanced settings/i }));
@@ -17,12 +14,24 @@ describe("AdvancedSettingsCard", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows muted helper text under Maximum Silence Retries when expanded", () => {
+  it("does not show helper text under Maximum Silence Retries by default when expanded", () => {
     render(<AdvancedSettingsCard data={{}} onChange={() => {}} />);
     expandAdvanced();
     expect(
-      screen.getByText(defaultMaximumSilenceRetriesHelpText)
-    ).toBeInTheDocument();
+      screen.queryByText("Drop call after n consecutive silences.")
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows custom maximumSilenceRetriesHelpText when provided", () => {
+    render(
+      <AdvancedSettingsCard
+        data={{}}
+        onChange={() => {}}
+        maximumSilenceRetriesHelpText="Custom retry hint."
+      />
+    );
+    expandAdvanced();
+    expect(screen.getByText("Custom retry hint.")).toBeInTheDocument();
   });
 
   it("forwards ref to the root element", () => {

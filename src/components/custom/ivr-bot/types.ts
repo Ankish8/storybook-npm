@@ -41,7 +41,8 @@ export interface VariableItem {
 /** Data shape for creating or editing a variable */
 export interface VariableFormData {
   name: string;
-  description?: string;
+  /** Required for API-backed function variables (trimmed). */
+  description: string;
   required?: boolean;
 }
 
@@ -144,6 +145,11 @@ export interface CreateFunctionModalProps {
    * Defaults to 20 when omitted.
    */
   maxQueryParamRows?: number;
+  /**
+   * When true (default), Step 2 Submit requires at least one header or query row with both key and value filled.
+   * Set to false to allow saving with only a URL (empty headers and query params).
+   */
+  requireHeaderOrQueryPair?: boolean;
   className?: string;
   /**
    * Max length for the variable name in the Create/Edit variable modal.

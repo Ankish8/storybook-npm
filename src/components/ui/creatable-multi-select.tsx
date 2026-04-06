@@ -45,8 +45,6 @@ export interface CreatableMultiSelectProps
   disabled?: boolean
   /** Error state */
   state?: "default" | "error"
-  /** Hint text shown at top of dropdown when open */
-  creatableHint?: string
   /** Helper text shown below the trigger */
   helperText?: string
   /** Max number of items that can be selected (default: unlimited) */
@@ -65,7 +63,6 @@ const CreatableMultiSelect = React.forwardRef(
       placeholder = "Enter or select",
       disabled = false,
       state = "default",
-      creatableHint = 'Press Enter to add "Conversational" ↵',
       helperText,
       maxItems,
       maxLengthPerItem,
@@ -140,9 +137,6 @@ const CreatableMultiSelect = React.forwardRef(
           o.label.toLowerCase().includes(inputValue.trim().toLowerCase())
         )
       : availablePresets
-    const canAddCustom =
-      Boolean(inputValue.trim()) && !value.includes(inputValue.trim())
-
     const triggerState = isOpen
       ? state === "error"
         ? "focused-error"
@@ -230,18 +224,6 @@ const CreatableMultiSelect = React.forwardRef(
         {/* Dropdown panel */}
         {isOpen && (
           <div id={listboxId} role="listbox" className="absolute z-[9999] top-full mt-1 w-full bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
-            {/* Creatable hint — Enter key */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
-              <span className="text-sm text-semantic-text-muted">
-                {canAddCustom
-                  ? `Press enter to add "${inputValue.trim()}"`
-                  : creatableHint}
-              </span>
-              <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium shrink-0">
-                Enter ↵
-              </kbd>
-            </div>
-
             {/* Preset option chips */}
             {filteredPresets.length > 0 && (
               <div className="px-2.5 py-2 flex flex-wrap gap-1.5">
@@ -267,15 +249,7 @@ const CreatableMultiSelect = React.forwardRef(
 
         {/* Helper row below trigger: when maxLengthPerItem show dynamic hint + counter (Figma); else optional static helperText */}
         {maxLengthPerItem != null ? (
-          <div className="flex items-center justify-between gap-2 mt-1.5">
-            <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
-              <Info className="size-3.5 shrink-0 text-semantic-text-muted" />
-              <p className="m-0 truncate">
-                {inputValue.trim()
-                  ? `Press Enter to add "${inputValue.trim()}" ↵`
-                  : creatableHint}
-              </p>
-            </div>
+          <div className="flex items-center justify-end gap-2 mt-1.5">
             <span className="text-sm text-semantic-text-muted shrink-0">
               {inputValue.length}/{maxLengthPerItem}
             </span>

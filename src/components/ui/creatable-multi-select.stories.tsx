@@ -60,7 +60,7 @@ export const Overview: Story = {
           onValueChange={setValue}
           options={TONE_OPTIONS}
           placeholder="Enter or select tone"
-          helperText='Press Enter to add "Conversational" ↵'
+          helperText="Shown when the dropdown is closed (optional)."
         />
       </div>
     )

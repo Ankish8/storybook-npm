@@ -87,6 +87,11 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
       description:
         "Max query parameter rows; Add row disables at this count (default: 20)",
     },
+    requireHeaderOrQueryPair: {
+      control: "boolean",
+      description:
+        "When true (default), Submit requires at least one complete header or query row. False allows URL-only saves.",
+    },
   },
   decorators: [
     (Story) => (
@@ -272,6 +277,7 @@ export const Interactive: Story = {
     open: false,
     initialStep: 1,
     initialTab: "header",
+    requireHeaderOrQueryPair: true,
   },
   parameters: {
     docs: {

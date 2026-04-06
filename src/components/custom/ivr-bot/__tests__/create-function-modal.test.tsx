@@ -185,6 +185,72 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText(/0\/4000/)).toBeInTheDocument();
   });
 
+  it("blocks submit and shows errors when a header row is added but left empty", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText(/Header key is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/Header value is required/i)).toBeInTheDocument();
+  });
+
+  it("blocks submit and shows errors when a query param row is added but left empty", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Query params/i }));
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText(/Query param key is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+  });
+
+  it("shows query param validation on new empty rows after a failed submit (same as header rows)", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Query params/i }));
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keyInputs = screen.getAllByPlaceholderText("Key");
+    await user.type(keyInputs[0]!, "foo");
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keysAfterSecondAdd = screen.getAllByPlaceholderText("Key");
+    expect(keysAfterSecondAdd).toHaveLength(2);
+    expect(screen.getByText(/Query param key is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+  });
+
   it("calls onSubmit with complete data", async () => {
     const onSubmit = vi.fn();
     render(
@@ -195,6 +261,11 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Next/i }));
     const urlInput = screen.getByPlaceholderText(/Enter URL or Type/i);
     await user.type(urlInput, "https://api.example.com/test");
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keyInputs = screen.getAllByPlaceholderText("Key");
+    await user.type(keyInputs[0]!, "X-Api-Key");
+    const valueInputs = screen.getAllByPlaceholderText("Type {{ to add variables");
+    await user.type(valueInputs[0]!, "secret");
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -218,6 +289,11 @@ describe("CreateFunctionModal", () => {
       screen.getByPlaceholderText(/Enter URL or Type/i),
       "https://api.example.com/"
     );
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keyInputs = screen.getAllByPlaceholderText("Key");
+    await user.type(keyInputs[0]!, "X-Custom");
+    const valueInputs = screen.getAllByPlaceholderText("Type {{ to add variables");
+    await user.type(valueInputs[0]!, "1");
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
@@ -235,6 +311,57 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText("API URL is required")).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
+  });
+
+  it("blocks submit when URL is valid but no header or query row has both key and value", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(
+      screen.getByText(/Add at least one header or query parameter with both a key and a value/i)
+    ).toBeInTheDocument();
+  });
+
+  it("allows URL-only submit when requireHeaderOrQueryPair is false", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onSubmit={onSubmit}
+        requireHeaderOrQueryPair={false}
+      />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/test"
+    );
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "MyFunc",
+        prompt: VALID_PROMPT,
+        url: "https://api.example.com/test",
+        headers: [],
+        queryParams: [],
+      })
+    );
+    expect(
+      screen.queryByText(/Add at least one header or query parameter with both a key and a value/i)
+    ).not.toBeInTheDocument();
   });
 
   const requiredFnVarGroups = [
@@ -259,6 +386,10 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Add new variable/i }));
 
     await user.type(screen.getByPlaceholderText("e.g., customer_name"), "order_id");
+    await user.type(
+      screen.getByPlaceholderText("What this variable represents"),
+      "API order identifier"
+    );
     await user.click(screen.getByRole("radio", { name: /^Yes$/i }));
     await user.click(screen.getByRole("button", { name: /^Save$/ }));
 
@@ -336,7 +467,7 @@ describe("CreateFunctionModal", () => {
           prompt: VALID_PROMPT,
           method: "GET",
           url: "https://api.example.com/{{function.test_yogesh124}}",
-          headers: [],
+          headers: [{ id: "h1", key: "X-Test", value: "1" }],
           queryParams: [],
           body: "",
         }}
@@ -360,7 +491,7 @@ describe("CreateFunctionModal", () => {
     await user.type(valueInput, "{{{{");
     await user.click(screen.getByRole("button", { name: /Add new variable/i }));
 
-    const desc = screen.getByLabelText(/Description \(optional\)/i);
+    const desc = screen.getByPlaceholderText("What this variable represents");
     expect(screen.getByText("0/2000")).toBeInTheDocument();
 
     const long = "x".repeat(2001);
@@ -393,10 +524,14 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Add new variable/i }));
 
     await user.type(screen.getByPlaceholderText("e.g., customer_name"), "order_id");
+    await user.type(
+      screen.getByPlaceholderText("What this variable represents"),
+      "External order id"
+    );
     await user.click(screen.getByRole("button", { name: /^Save$/ }));
 
     expect(onAddVariable).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "order_id" })
+      expect.objectContaining({ name: "order_id", description: "External order id" })
     );
     expect(valueInput).toHaveValue("{{function.order_id}}");
   });
@@ -434,6 +569,10 @@ describe("CreateFunctionModal", () => {
     const varNameInput = screen.getByPlaceholderText("e.g., customer_name");
     await user.clear(varNameInput);
     await user.type(varNameInput, "yogesh2");
+    await user.type(
+      screen.getByPlaceholderText("What this variable represents"),
+      "Yogesh placeholder"
+    );
     await user.click(screen.getByRole("button", { name: /Save Changes/i }));
 
     expect(screen.getByPlaceholderText(/Enter URL or Type/i)).toHaveValue(
@@ -448,7 +587,31 @@ describe("CreateFunctionModal", () => {
     );
     expect(onEditVariable).toHaveBeenCalledWith(
       "yogesh",
-      expect.objectContaining({ name: "yogesh2" })
+      expect.objectContaining({ name: "yogesh2", description: "Yogesh placeholder" })
+    );
+  });
+
+  it('shows "Description is required" when Save is clicked with empty description', async () => {
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onAddVariable={noop} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const valueInput = screen.getByPlaceholderText("Type {{ to add variables");
+    await user.click(valueInput);
+    await user.type(valueInput, "{{{{");
+    await user.click(screen.getByRole("button", { name: /Add new variable/i }));
+
+    await user.type(screen.getByPlaceholderText("e.g., customer_name"), "order_id");
+    await user.click(screen.getByRole("button", { name: /^Save$/ }));
+
+    expect(screen.getByText("Description is required")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("What this variable represents")).toHaveAttribute(
+      "aria-invalid",
+      "true"
     );
   });
 

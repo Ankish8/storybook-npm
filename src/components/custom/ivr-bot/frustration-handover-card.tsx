@@ -90,7 +90,7 @@ const FrustrationHandoverCard = React.forwardRef(
               <div className="flex flex-col gap-6 pt-0 pb-2">
                 <div className="flex items-center justify-between px-4 py-2.5 sm:px-6">
                   <span className="text-sm text-semantic-text-primary">
-                    Automatically escalate frustrated callers
+                    Escalate when caller is unhappy
                   </span>
                   <Switch
                     checked={data.frustrationHandoverEnabled ?? false}

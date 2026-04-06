@@ -12,7 +12,7 @@ const meta: Meta<typeof FrustrationHandoverCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for human escalation when callers are frustrated. Toggle **Automatically escalate frustrated callers**, then choose **Transfer to department**.
+        component: `Accordion card for human escalation when callers are frustrated. Toggle **Escalate when caller is unhappy**, then choose **Transfer to department**.
 
 **Install**
 \`\`\`bash
