@@ -45,6 +45,13 @@ describe("IvrBotConfig", () => {
     expect(screen.getByText("How It Behaves")).toBeInTheDocument();
   });
 
+  it("shows How It Behaves section info icon with accessible name", () => {
+    render(<IvrBotConfig />);
+    expect(
+      screen.getByLabelText("How It Behaves: more information")
+    ).toBeInTheDocument();
+  });
+
   it("renders always-open sections: Knowledge Base, Functions", () => {
     render(<IvrBotConfig />);
     expect(screen.getByText("Knowledge Base")).toBeInTheDocument();

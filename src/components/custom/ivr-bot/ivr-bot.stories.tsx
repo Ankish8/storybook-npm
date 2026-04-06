@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { defaultHowItBehavesTooltip } from "./bot-behavior-card";
+import {
+  defaultAgentBusyPromptTooltip,
+  defaultNoExtensionFoundPromptTooltip,
+} from "./fallback-prompts-card";
 import { IvrBotConfig } from "./ivr-bot-config";
 import { BOT_KNOWLEDGE_STATUS } from "./types";
 
@@ -17,10 +22,10 @@ The **IvrBotConfig** is the full-page configuration view for an IVR/Voicebot. It
 
 **Left column (always open)**
 - **Who The Bot Is** — Bot name, primary role, tone, voice, language
-- **How It Behaves** — System prompt with session variable chips
+- **How It Behaves** — System prompt with session variable chips (info tooltip on section title via \`howItBehavesTooltip\`)
 
 **Left column (accordion)**
-- **Fallback Prompts** — Agent busy prompt & no-extension fallback
+- **Fallback Prompts** — Agent busy prompt & no-extension fallback (info tooltips on each field via \`agentBusyPromptTooltip\`, \`noExtensionFoundPromptTooltip\`)
 
 **Right column (always open)**
 - **Knowledge Base** — File list with training status
@@ -40,6 +45,16 @@ npx myoperator-ui add ivr-bot
 import { IvrBotConfig } from "@/components/custom/ivr-bot";
 \`\`\`
 
+### Tooltip props (\`IvrBotConfig\`)
+
+| Prop | Target |
+|------|--------|
+| \`howItBehavesTooltip\` | Info icon next to **How It Behaves** |
+| \`agentBusyPromptTooltip\` | Info icon next to **Agent Busy Prompt** |
+| \`noExtensionFoundPromptTooltip\` | Info icon next to **No Extension Found** |
+
+Omit a prop to use the built-in default copy. Pass an empty string (\`""\`) to hide that info icon.
+
 ### Design Tokens
 
 | Token | Purpose |
@@ -56,6 +71,11 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
         `,
       },
     },
+  },
+  args: {
+    howItBehavesTooltip: defaultHowItBehavesTooltip,
+    agentBusyPromptTooltip: defaultAgentBusyPromptTooltip,
+    noExtensionFoundPromptTooltip: defaultNoExtensionFoundPromptTooltip,
   },
   argTypes: {
     botTitle: { control: "text", description: "Page title shown in header" },
@@ -74,6 +94,21 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
     onBack: { action: "back" },
     onPlayVoice: { action: "playVoice" },
     onPauseVoice: { action: "pauseVoice" },
+    howItBehavesTooltip: {
+      control: "text",
+      description:
+        "Tooltip for the How It Behaves section info icon. Use \"\" to hide the icon; omit (reset) for built-in default.",
+    },
+    agentBusyPromptTooltip: {
+      control: "text",
+      description:
+        "Tooltip for the Agent Busy Prompt label. Use \"\" to hide; omit for built-in default.",
+    },
+    noExtensionFoundPromptTooltip: {
+      control: "text",
+      description:
+        "Tooltip for the No Extension Found label. Use \"\" to hide; omit for built-in default.",
+    },
   },
 };
 
@@ -81,7 +116,7 @@ export default ivrBotMeta;
 type Story = StoryObj<typeof IvrBotConfig>;
 
 export const Overview: Story = {
-  render: function Render() {
+  render: function Render(args) {
     const [playingVoice, setPlayingVoice] = useState<string | undefined>();
     return (
       <IvrBotConfig
@@ -90,6 +125,9 @@ export const Overview: Story = {
         playingVoice={playingVoice}
         onPlayVoice={(v) => setPlayingVoice(v)}
         onPauseVoice={() => setPlayingVoice(undefined)}
+        howItBehavesTooltip={args.howItBehavesTooltip}
+        agentBusyPromptTooltip={args.agentBusyPromptTooltip}
+        noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         initialData={{
           botName: "Rhea",
           primaryRole: "customer-support",
@@ -163,7 +201,7 @@ export const WithErrorFile: Story = {
 
 /** Demonstrates overriding all dropdown options — voices, languages, departments, session variables. */
 export const CustomDropdownOptions: Story = {
-  render: function Render() {
+  render: function Render(args) {
     const [playingVoice, setPlayingVoice] = useState<string | undefined>();
     return (
       <IvrBotConfig
@@ -172,6 +210,9 @@ export const CustomDropdownOptions: Story = {
         playingVoice={playingVoice}
         onPlayVoice={(v) => setPlayingVoice(v)}
         onPauseVoice={() => setPlayingVoice(undefined)}
+        howItBehavesTooltip={args.howItBehavesTooltip}
+        agentBusyPromptTooltip={args.agentBusyPromptTooltip}
+        noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         voiceOptions={[
           { value: "emma-us", label: "Emma - US Female" },
           { value: "james-us", label: "James - US Male" },

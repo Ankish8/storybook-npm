@@ -240,6 +240,21 @@ export interface IvrBotConfigProps {
   howItSoundsTooltip?: string;
   /** Passed to BotIdentityCard — hover text on the info icon next to What Language It Speaks */
   languageModeTooltip?: string;
+  /**
+   * Passed to BotBehaviorCard — hover text on the info icon next to How It Behaves.
+   * When omitted, the card uses its built-in default. Pass `""` to hide the icon.
+   */
+  howItBehavesTooltip?: string;
+  /**
+   * Passed to FallbackPromptsCard — hover text on the info icon next to Agent Busy Prompt.
+   * When omitted, the card uses its built-in default. Pass `""` to hide the icon.
+   */
+  agentBusyPromptTooltip?: string;
+  /**
+   * Passed to FallbackPromptsCard — hover text on the info icon next to No Extension Found.
+   * When omitted, the card uses its built-in default. Pass `""` to hide the icon.
+   */
+  noExtensionFoundPromptTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function name in Create/Edit Function (default: 30) */

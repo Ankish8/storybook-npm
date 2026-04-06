@@ -7,6 +7,12 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "../../ui/accordion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -14,6 +20,14 @@ export interface FallbackPromptsData {
   agentBusyPrompt: string;
   noExtensionFoundPrompt: string;
 }
+
+/** Default hover text for the info icon next to "Agent Busy Prompt" */
+export const defaultAgentBusyPromptTooltip =
+  "Message the bot uses when the person or extension is busy. Tell callers what to expect while they wait.";
+
+/** Default hover text for the info icon next to "No Extension Found" */
+export const defaultNoExtensionFoundPromptTooltip =
+  "Message when the requested extension does not exist or cannot be reached. Use it to recover the conversation helpfully.";
 
 export interface FallbackPromptsCardProps {
   /** Current prompt text values */
@@ -30,6 +44,16 @@ export interface FallbackPromptsCardProps {
   disabled?: boolean;
   /** Opens the accordion by default (default: false) */
   defaultOpen?: boolean;
+  /**
+   * Hover text on the info icon next to "Agent Busy Prompt".
+   * When omitted, {@link defaultAgentBusyPromptTooltip} is used. Pass `""` to hide the icon.
+   */
+  agentBusyPromptTooltip?: string;
+  /**
+   * Hover text on the info icon next to "No Extension Found".
+   * When omitted, {@link defaultNoExtensionFoundPromptTooltip} is used. Pass `""` to hide the icon.
+   */
+  noExtensionFoundPromptTooltip?: string;
   /** Additional className */
   className?: string;
 }
@@ -38,6 +62,7 @@ export interface FallbackPromptsCardProps {
 
 function PromptField({
   label,
+  labelTooltip,
   value,
   placeholder,
   maxLength,
@@ -47,6 +72,8 @@ function PromptField({
   rows = 2,
 }: {
   label: string;
+  /** When set, info icon beside label; hover shows tooltip */
+  labelTooltip?: string;
   value: string;
   placeholder?: string;
   maxLength: number;
@@ -55,11 +82,29 @@ function PromptField({
   onBlur?: (value: string) => void;
   rows?: number;
 }) {
+  const labelClasses =
+    "text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]";
+
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-        {label}
-      </label>
+      {labelTooltip ? (
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className={labelClasses}>{label}</span>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info
+                  className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                  aria-label={`${label}: more information`}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{labelTooltip}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      ) : (
+        <label className={labelClasses}>{label}</label>
+      )}
       <textarea
         value={value}
         placeholder={placeholder}
@@ -93,10 +138,21 @@ const FallbackPromptsCard = React.forwardRef(
       maxLength = 25000,
       disabled,
       defaultOpen = false,
+      agentBusyPromptTooltip,
+      noExtensionFoundPromptTooltip,
       className,
     }: FallbackPromptsCardProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const resolvedAgentBusyTooltip =
+      agentBusyPromptTooltip === undefined
+        ? defaultAgentBusyPromptTooltip
+        : agentBusyPromptTooltip;
+    const resolvedNoExtensionTooltip =
+      noExtensionFoundPromptTooltip === undefined
+        ? defaultNoExtensionFoundPromptTooltip
+        : noExtensionFoundPromptTooltip;
+
     return (
       <div
         ref={ref}
@@ -120,6 +176,7 @@ const FallbackPromptsCard = React.forwardRef(
               <div className="flex flex-col gap-6 px-4 pt-4 sm:px-6 sm:pt-5">
                 <PromptField
                   label="Agent Busy Prompt"
+                  labelTooltip={resolvedAgentBusyTooltip || undefined}
                   value={data.agentBusyPrompt ?? ""}
                   placeholder="Executives are busy at the moment, we will connect you soon."
                   maxLength={maxLength}
@@ -130,6 +187,7 @@ const FallbackPromptsCard = React.forwardRef(
                 />
                 <PromptField
                   label="No Extension Found"
+                  labelTooltip={resolvedNoExtensionTooltip || undefined}
                   value={data.noExtensionFoundPrompt ?? ""}
                   placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
                   maxLength={maxLength}

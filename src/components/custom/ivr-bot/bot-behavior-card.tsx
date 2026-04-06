@@ -1,13 +1,23 @@
 import * as React from "react";
-import { Plus } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { tagVariants } from "../../ui/tag";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface BotBehaviorData {
   systemPrompt: string;
 }
+
+/** Default hover text for the info icon next to "How It Behaves" */
+export const defaultHowItBehavesTooltip =
+  "Defines workflows, conditions, and handover logic using the system prompt. Use session variables to insert caller-specific context.";
 
 export interface BotBehaviorCardProps {
   /** Current form data */
@@ -29,6 +39,11 @@ export interface BotBehaviorCardProps {
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
+  /**
+   * Hover text on the info icon next to "How It Behaves".
+   * When omitted, {@link defaultHowItBehavesTooltip} is used. Pass `""` to hide the icon.
+   */
+  howItBehavesTooltip?: string;
   /** Additional className for the card */
   className?: string;
 }
@@ -155,10 +170,13 @@ function VarPopup({
 
 function SectionCard({
   title,
+  titleTooltip,
   children,
   className,
 }: {
   title: string;
+  /** When set, shows an info icon beside the title (hover for tooltip). */
+  titleTooltip?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -170,9 +188,24 @@ function SectionCard({
       )}
     >
       <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
-        <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
-          {title}
-        </h2>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
+            {title}
+          </h2>
+          {titleTooltip ? (
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info
+                    className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                    aria-label={`${title}: more information`}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>{titleTooltip}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : null}
+        </div>
       </div>
       <div className="px-4 py-4 sm:px-6 sm:py-5">{children}</div>
     </div>
@@ -190,6 +223,7 @@ const BotBehaviorCard = React.forwardRef(
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       maxLength = 5000,
       disabled,
+      howItBehavesTooltip,
       className,
     }: BotBehaviorCardProps,
     ref: React.Ref<HTMLDivElement>
@@ -209,6 +243,11 @@ const BotBehaviorCard = React.forwardRef(
           v.toLowerCase().includes(varTrigger.query)
         )
       : [];
+
+    const resolvedHowItBehavesTooltip =
+      howItBehavesTooltip === undefined
+        ? defaultHowItBehavesTooltip
+        : howItBehavesTooltip;
 
     /** Compute popup pixel position anchored to the cursor, clamped within the textarea. */
     const updatePopupPos = (el: HTMLTextAreaElement, cursor: number) => {
@@ -290,7 +329,10 @@ const BotBehaviorCard = React.forwardRef(
 
     return (
       <div ref={ref} className={className}>
-        <SectionCard title="How It Behaves">
+        <SectionCard
+          title="How It Behaves"
+          titleTooltip={resolvedHowItBehavesTooltip || undefined}
+        >
           {/* onBlur is on this wrapper so clicking chips / instruction text
               does NOT fire the callback — only clicking outside fires it. */}
           <div

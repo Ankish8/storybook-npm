@@ -71,6 +71,9 @@ export const IvrBotConfig = React.forwardRef(
       toneTooltip,
       howItSoundsTooltip,
       languageModeTooltip,
+      howItBehavesTooltip,
+      agentBusyPromptTooltip,
+      noExtensionFoundPromptTooltip,
       functionPromptMinLength,
       functionNameMaxLength,
       functionPromptMaxLength,
@@ -201,6 +204,7 @@ export const IvrBotConfig = React.forwardRef(
               sessionVariables={sessionVariables}
               maxLength={systemPromptMaxLength}
               disabled={disabled}
+              howItBehavesTooltip={howItBehavesTooltip}
             />
             <FallbackPromptsCard
               data={{
@@ -216,6 +220,8 @@ export const IvrBotConfig = React.forwardRef(
               onAgentBusyPromptBlur={onAgentBusyPromptBlur}
               onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur}
               disabled={disabled}
+              agentBusyPromptTooltip={agentBusyPromptTooltip}
+              noExtensionFoundPromptTooltip={noExtensionFoundPromptTooltip}
             />
           </div>
 

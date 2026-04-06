@@ -9,7 +9,7 @@ const meta: Meta<typeof BotBehaviorCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips.
+        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it.
 
 ### onSystemPromptBlur — section-level blur
 

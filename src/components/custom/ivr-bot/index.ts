@@ -6,7 +6,10 @@ export {
   defaultHowItSoundsTooltip,
   defaultLanguageModeTooltip,
 } from "./bot-identity-card";
-export { BotBehaviorCard } from "./bot-behavior-card";
+export {
+  BotBehaviorCard,
+  defaultHowItBehavesTooltip,
+} from "./bot-behavior-card";
 export {
   KnowledgeBaseCard,
   defaultKnowledgeBaseInfoTooltip,
@@ -26,7 +29,11 @@ export {
   type DefaultAdvancedSettingsNumericBounds,
 } from "./advanced-settings-bounds";
 export type { AdvancedSettingsNumericFieldBlurDetail } from "./advanced-settings-card";
-export { FallbackPromptsCard } from "./fallback-prompts-card";
+export {
+  FallbackPromptsCard,
+  defaultAgentBusyPromptTooltip,
+  defaultNoExtensionFoundPromptTooltip,
+} from "./fallback-prompts-card";
 export type {
   FallbackPromptsData,
   FallbackPromptsCardProps,

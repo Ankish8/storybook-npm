@@ -20,6 +20,34 @@ describe("FallbackPromptsCard", () => {
     expect(screen.getByText("No Extension Found")).toBeInTheDocument();
   });
 
+  it("shows info icons beside field labels with accessible names when expanded", () => {
+    render(<FallbackPromptsCard data={{}} onChange={() => {}} defaultOpen />);
+    expect(
+      screen.getByLabelText("Agent Busy Prompt: more information")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("No Extension Found: more information")
+    ).toBeInTheDocument();
+  });
+
+  it("hides field label info icons when tooltip props are empty strings", () => {
+    render(
+      <FallbackPromptsCard
+        data={{}}
+        onChange={() => {}}
+        defaultOpen
+        agentBusyPromptTooltip=""
+        noExtensionFoundPromptTooltip=""
+      />
+    );
+    expect(
+      screen.queryByLabelText("Agent Busy Prompt: more information")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("No Extension Found: more information")
+    ).not.toBeInTheDocument();
+  });
+
   it("expands when accordion trigger is clicked", () => {
     render(<FallbackPromptsCard data={{}} onChange={() => {}} />);
     const trigger = screen.getByRole("button");
