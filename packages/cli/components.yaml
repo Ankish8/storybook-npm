@@ -74,6 +74,8 @@ categories:
   custom:
     description: "Multi-file complex components"
     components:
+      - add-integration
+      - setup-integration
       - attachment-preview
       - audio-media
       - carousel-media
@@ -568,6 +570,27 @@ components:
       - "endpoint-details.tsx"
       - "index.ts"
     mainFile: "endpoint-details.tsx"
+
+  add-integration:
+    description: "Multi-step integration wizard for connecting Composio toolkits with account management"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - input
+      - spinner
+      - dialog
+    isMultiFile: true
+    directory: "add-integration"
+    files:
+      - "types.ts"
+      - "step-header.tsx"
+      - "toolkit-card.tsx"
+      - "connected-account-card.tsx"
+      - "add-integration.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
 
   alert-configuration:
     description: "A configuration card for alert settings with inline editing modal"
@@ -1395,3 +1418,22 @@ components:
       - "chat-app.tsx"
       - "index.ts"
     mainFile: "chat-app.tsx"
+
+  setup-integration:
+    description: "AI chat interface for setting up, testing, and publishing integrations after successful connection"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - spinner
+      - dialog
+      - confirmation-modal
+    isMultiFile: true
+    directory: "setup-integration"
+    files:
+      - "types.ts"
+      - "chat-message.tsx"
+      - "chat-input.tsx"
+      - "setup-integration.tsx"
+      - "index.ts"
+    mainFile: "index.ts"

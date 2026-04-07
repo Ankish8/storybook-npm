@@ -220,6 +220,27 @@ export type {
 export { EmptyState } from "./components/ui/empty-state";
 export type { EmptyStateProps } from "./components/ui/empty-state";
 
+// AddIntegration (Custom)
+export { AddIntegration } from "./components/custom/add-integration"
+export type {
+  AddIntegrationProps,
+  ComposioToolkit,
+  ComposioConnectedAccount,
+  ConnectionStatus,
+  ConnectionErrorVariant,
+  AddIntegrationStep,
+} from "./components/custom/add-integration"
+
+// SetupIntegration (Custom)
+export { SetupIntegration, ChatMessageBubble, ChatInput } from "./components/custom/setup-integration"
+export type {
+  SetupIntegrationProps,
+  ChatMessage,
+  SetupIntegrationAction,
+  ChatMessageProps,
+  ChatInputProps,
+} from "./components/custom/setup-integration"
+
 // EventSelector (Custom - NOT available via CLI)
 export { EventSelector } from "./components/custom/event-selector";
 export type {

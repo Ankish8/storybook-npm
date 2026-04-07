@@ -146,10 +146,16 @@
   --semantic-primary: #343E55;
   --semantic-primary-hover: #2F384D;
   --semantic-primary-selected: #777E8D;
+  --semantic-primary-selected-hover: #5D6577;
+  --semantic-primary-highlighted: #252C3C;
   --semantic-primary-surface: #EBECEE;
   --semantic-brand: #2BBCCA;
   --semantic-brand-hover: #1F858F;
+  --semantic-brand-selected: #71D2DB;
+  --semantic-brand-selected-hover: #27ABB8;
+  --semantic-brand-highlighted: #27ABB8;
   --semantic-brand-surface: #EAF8FA;
+  --semantic-brand-text: #18676F;
 }
 
 /**
@@ -161,7 +167,8 @@
   --semantic-bg-secondary: #0C0F12;
   --semantic-bg-ui: #F5F5F5;
   --semantic-bg-grey: #E9EAEB;
-  --semantic-bg-hover: #D5D7DA;
+  --semantic-bg-grey-hover: #A4A7AE;
+  --semantic-bg-hover: #F5F5F5;
   --semantic-bg-inverted: #000000;
 }
 
@@ -184,6 +191,7 @@
  */
 :root {
   --semantic-border-primary: #343E55;
+  --semantic-border-secondary: #777E8D;
   --semantic-border-layout: #E9EAEB;
   --semantic-border-input: #E9EAEB;
   --semantic-border-input-focus: #2BBCCA;
@@ -238,7 +246,7 @@
   --semantic-info-hover: #3C6AC3;
   --semantic-info-surface: #ECF1FB;
   --semantic-info-surface-subtle: #F6F8FD;
-  --semantic-info-text: #3C6AC3;
+  --semantic-info-text: #2F5398;
   --semantic-info-border: #A8C0EC;
 }
 

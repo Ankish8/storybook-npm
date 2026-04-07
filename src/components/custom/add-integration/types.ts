@@ -1,0 +1,119 @@
+import * as React from "react"
+
+/** Represents a toolkit/app from Composio API */
+export interface ComposioToolkit {
+  /** Unique identifier (e.g., "googlesheets", "slack") */
+  slug: string
+  /** Display name (e.g., "Google Sheets") */
+  name: string
+  /** Logo image URL from Composio */
+  logo: string
+  /** Short description of the toolkit */
+  description: string
+}
+
+/** Represents a connected account from Composio API */
+export interface ComposioConnectedAccount {
+  /** Account identifier (e.g., "acc_89xv2m9") */
+  id: string
+  /** Display label for the account */
+  label: string
+  /** Name of the user who created the connection */
+  createdBy: string
+  /** Formatted creation date (e.g., "Jan 12, 2026") */
+  createdAt: string
+}
+
+/** Connection status during the auth flow */
+export type ConnectionStatus = "idle" | "connecting" | "success" | "error"
+
+/** Visual variant for auth connection errors */
+export type ConnectionErrorVariant = "platform" | "redirect"
+
+/** Wizard step identifiers */
+export type AddIntegrationStep =
+  | "select-toolkit"
+  | "connect-account"
+  | "success"
+
+export interface AddIntegrationProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  /** Whether the modal is open */
+  open: boolean
+  /** Callback when modal open state changes */
+  onOpenChange: (open: boolean) => void
+  /** List of available toolkits fetched from Composio */
+  toolkits: ComposioToolkit[]
+  /** Existing connected accounts for the selected toolkit */
+  connectedAccounts?: ComposioConnectedAccount[]
+  /** Current wizard step */
+  step?: AddIntegrationStep
+  /** Total number of steps to display (e.g., 4 for new, 3 for existing) */
+  totalSteps?: number
+  /** Current step number for display */
+  currentStepNumber?: number
+  /** Auth connection status */
+  connectionStatus?: ConnectionStatus
+  /** Visual variant for connection errors: "platform" shows inline on connect page, "redirect" shows standalone centered */
+  connectionErrorVariant?: ConnectionErrorVariant
+  /** Currently selected toolkit */
+  selectedToolkit?: ComposioToolkit | null
+  /** Integration name input value */
+  integrationName?: string
+  /** Search query for filtering toolkits */
+  searchQuery?: string
+  /** Whether toolkits are loading */
+  isLoadingToolkits?: boolean
+  /** Whether toolkit loading failed */
+  isToolkitLoadError?: boolean
+  /** Error message for integration name (e.g., "Name already exists") */
+  integrationNameError?: string
+  /** Callback when close (X) is clicked */
+  onClose?: () => void
+  /** Callback when Next is clicked on Step 1 */
+  onNext?: (data: {
+    integrationName: string
+    selectedToolkit: ComposioToolkit
+  }) => void
+  /** Callback when Back arrow is clicked */
+  onBack?: () => void
+  /** Callback when a toolkit card is selected */
+  onToolkitSelect?: (toolkit: ComposioToolkit) => void
+  /** Callback when integration name changes */
+  onIntegrationNameChange?: (name: string) => void
+  /** Callback when search input changes */
+  onSearchChange?: (search: string) => void
+  /** Callback when "+ Connect a New Account" is clicked */
+  onConnectNewAccount?: () => void
+  /** Callback when "Use this" is clicked on an existing account */
+  onUseExistingAccount?: (account: ComposioConnectedAccount) => void
+  /** Callback when delete icon is clicked on an existing account */
+  onDeleteAccount?: (account: ComposioConnectedAccount) => void
+  /** Callback when "Please Try Again" is clicked after toolkit load failure */
+  onRetryLoadToolkits?: () => void
+  /** Callback when "Please Try Again" is clicked after auth connection failure */
+  onRetryConnection?: () => void
+}
+
+/** Props for the internal ToolkitCard sub-component */
+export interface ToolkitCardProps {
+  toolkit: ComposioToolkit
+  isSelected: boolean
+  onClick: (toolkit: ComposioToolkit) => void
+}
+
+/** Props for the internal ConnectedAccountCard sub-component */
+export interface ConnectedAccountCardProps {
+  account: ComposioConnectedAccount
+  onUse: (account: ComposioConnectedAccount) => void
+  onDelete: (account: ComposioConnectedAccount) => void
+}
+
+/** Props for the internal StepHeader sub-component */
+export interface StepHeaderProps {
+  title: string
+  subtitle: string
+  showBack?: boolean
+  onBack?: () => void
+  onClose?: () => void
+}
