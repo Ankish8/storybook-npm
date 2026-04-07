@@ -368,6 +368,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["readable-field"],
   },
+  "add-integration": {
+    name: "add-integration",
+    description: "Multi-step integration wizard for connecting Composio toolkits with account management",
+      category: "custom",
+    dependencies: ["lucide-react"],
+    category: "custom",
+    internalDependencies: ["button","input","spinner","dialog"],
+  },
   "alert-configuration": {
     name: "alert-configuration",
     description: "A configuration card for alert settings with inline editing modal",
@@ -687,6 +695,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-transport","chat-provider","chat-sidebar","chat-filter-panel","chat-new-panel","chat-message-list","chat-header","chat-input","chat-template-modal","chat-contact-panel","button","tooltip"],
+  },
+  "setup-integration": {
+    name: "setup-integration",
+    description: "AI chat interface for setting up, testing, and publishing integrations after successful connection",
+      category: "custom",
+    dependencies: ["lucide-react"],
+    category: "custom",
+    internalDependencies: ["spinner","dialog","confirmation-modal"],
   }
 }
 

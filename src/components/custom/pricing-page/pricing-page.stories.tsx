@@ -10,25 +10,15 @@ import {
   SelectContent,
   SelectItem,
 } from "../../ui/select";
-import {
-  CompactCarIcon,
-  SedanCarIcon,
-  SuvCarIcon,
-} from "../pricing-card/plan-icons";
 import type { PricingCardProps } from "../pricing-card/types";
 import type { PowerUpCardProps } from "../power-up-card/types";
 import type { LetUsDriveCardProps } from "../let-us-drive-card/types";
 
 // ─── Shared Data ──────────────────────────────────────────────────────────────
 
-const tabs = [
-  { label: "Team-Led Plans", value: "team" },
-  { label: "Go-AI First", value: "ai" },
-];
-
 const defaultAddon = {
   icon: <Bot className="size-5 text-semantic-text-muted" />,
-  text: "Add AI Agents @ \u20B910,000/agent",
+  text: "Add AI Agents @₹10,000/agent",
 };
 
 const NumberTypeSelect = () => (
@@ -51,17 +41,13 @@ const NumberTypeSelect = () => (
 
 // ─── Team-Led Plan Cards ──────────────────────────────────────────────────────
 
-const teamMonthlyCards: PricingCardProps[] = [
+const teamCards: PricingCardProps[] = [
   {
     planName: "Compact",
-    price: "2,5000",
-    planDetails: "3 Users | 12 Month plan",
+    price: "2,500",
+    planDetails: "10 Users",
     description:
-      "For small teams that need a WhatsApp-first plan with missed call automation",
-
-    planIcon: (
-      <CompactCarIcon className="size-[30px] text-semantic-text-primary" />
-    ),
+      "For small teams that need WhatsApp Business API & missed calls.",
     features: [
       "WhatsApp Campaigns (up to 5K audience)",
       "Missed Call Tracking & Alerts",
@@ -70,22 +56,17 @@ const teamMonthlyCards: PricingCardProps[] = [
       "Basic performance reports",
       "1 virtual number + channel line",
     ],
-    isCurrentPlan: true,
     onFeatureDetails: fn(),
     addon: defaultAddon,
   },
   {
     planName: "Sedan",
     price: "5,000",
-    planDetails: "3 Users | 12 Month plan",
+    planDetails: "10 Users",
     description:
-      "For growing businesses that need scalable calling, WhatsApp campaigns, and smarter team routing.",
-
-    planIcon: (
-      <SedanCarIcon className="size-[30px] text-semantic-text-primary" />
-    ),
+      "For growing businesses that need more users & unlimited IVR+ calling.",
     features: [
-      "Everything in Compact",
+      { text: "Everything in Compact", bold: true },
       "Scalable inbound & outbound calling",
       "IVR call handling + call recording",
       "Smart call routing + sticky agent logic",
@@ -94,7 +75,7 @@ const teamMonthlyCards: PricingCardProps[] = [
       "Agent availability & shift controls",
       "Shopify integration",
     ],
-    ctaText: "Upgrade plan",
+    showPopularBadge: true,
     onCtaClick: fn(),
     onFeatureDetails: fn(),
     addon: defaultAddon,
@@ -102,15 +83,11 @@ const teamMonthlyCards: PricingCardProps[] = [
   {
     planName: "SUV",
     price: "15,000",
-    planDetails: "3 Users | 12 Month plan",
+    planDetails: "10 Users",
     description:
-      "For teams that need everything in Sedan plus advanced IVR, analytics, and deep integrations.",
-
-    planIcon: (
-      <SuvCarIcon className="size-[30px] text-semantic-text-primary" />
-    ),
+      "For teams that also need performance analytics and integrations.",
     features: [
-      "Everything in Sedan",
+      { text: "Everything in Sedan", bold: true },
       "Advanced IVR (multi-level, time & location-based)",
       "CRM integrations (Zoho, Freshsales, Pipedrive, etc.)",
       "Real-time dashboards & operational analytics",
@@ -121,20 +98,11 @@ const teamMonthlyCards: PricingCardProps[] = [
       "Audit logs & call governance tools",
       "Premium support",
     ],
-    showPopularBadge: true,
-    ctaText: "Upgrade plan",
     onCtaClick: fn(),
     onFeatureDetails: fn(),
     addon: defaultAddon,
   },
 ];
-
-const teamYearlyCards: PricingCardProps[] = teamMonthlyCards.map((card) => ({
-  ...card,
-  isCurrentPlan: false,
-  ctaText: "Select plan",
-  onCtaClick: fn(),
-}));
 
 // ─── Go-AI First Plan Cards ───────────────────────────────────────────────────
 
@@ -142,10 +110,9 @@ const aiCards: PricingCardProps[] = [
   {
     planName: "AIO",
     price: "10,000",
-    planDetails: "3 Users | 12 Month plan",
+    planDetails: "10 Users",
     description:
       "For teams that want a self-learning AI system to run WhatsApp, Calls, and workflows end-to-end.",
-
     features: [
       "AI chatbot for WhatsApp conversations",
       "AI voicebot for inbound calls",
@@ -167,10 +134,9 @@ const aiCards: PricingCardProps[] = [
   {
     planName: "Enterprise AI",
     price: "55,000",
-    planDetails: "3 Users | 12 Month plan",
+    planDetails: "10 Users",
     description:
       "For large organisations that need AI at scale with custom deployment and governance.",
-
     features: [
       { text: "Everything in AIO", bold: true },
       "Custom AI setup & architecture",
@@ -216,7 +182,7 @@ const powerUpCards: PowerUpCardProps[] = [
 
 // ─── Let Us Drive Cards ───────────────────────────────────────────────────────
 
-const letUsDriveMonthly: LetUsDriveCardProps[] = [
+const letUsDriveCards: LetUsDriveCardProps[] = [
   {
     title: "Dedicated Onboarding",
     price: "20,000",
@@ -246,20 +212,6 @@ const letUsDriveMonthly: LetUsDriveCardProps[] = [
     onShowDetails: fn(),
     onCtaClick: fn(),
   },
-];
-
-const letUsDriveYearly: LetUsDriveCardProps[] = [
-  {
-    title: "Dedicated Onboarding",
-    price: "20,000",
-    period: "/one-time fee",
-    freeLabel: "FREE",
-    description: "Cut adoption time. Start seeing ROI faster.",
-    onShowDetails: fn(),
-    onCtaClick: fn(),
-  },
-  letUsDriveMonthly[1],
-  letUsDriveMonthly[2],
 ];
 
 const onboardingDetailsContent = {
@@ -337,19 +289,19 @@ const managedServicesDetailsContent = {
 
 const letUsDriveCardsWithDetails: LetUsDriveCardProps[] = [
   {
-    ...letUsDriveMonthly[0],
+    ...letUsDriveCards[0],
     detailsContent: onboardingDetailsContent,
     onShowDetails: fn(),
     onCtaClick: fn(),
   },
   {
-    ...letUsDriveMonthly[1],
+    ...letUsDriveCards[1],
     detailsContent: accountManagerDetailsContent,
     onShowDetails: fn(),
     onCtaClick: fn(),
   },
   {
-    ...letUsDriveMonthly[2],
+    ...letUsDriveCards[2],
     detailsContent: managedServicesDetailsContent,
     onShowDetails: fn(),
     onCtaClick: fn(),
@@ -366,12 +318,9 @@ const meta: Meta<typeof PricingPage> = {
     docs: {
       description: {
         component: `
-Full pricing page layout that composes PricingToggle, PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
+Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
 
-Supports three states:
-- **Team-Led Plans + Monthly** — 3 pricing cards with current-plan state
-- **Team-Led Plans + Yearly** — 3 pricing cards with yearly pricing; onboarding shows FREE
-- **Go-AI First** — 2 wider AI plan cards with usage details
+Displays pricing cards in a responsive grid with power-ups and let-us-drive sections below.
 
 ## Installation
 
@@ -428,12 +377,6 @@ import type { PricingPageProps } from "@/components/custom/pricing-page"
       <td style="padding: 12px 16px;">Header bottom border</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #E9EAEB; border-radius: 6px; border: 1px solid #D5D7DA;"></div></td>
     </tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;">
-      <td style="padding: 12px 16px;">Brand</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-brand</code></td>
-      <td style="padding: 12px 16px;">Active tab pill</td>
-      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #2BBCCA; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
-    </tr>
   </tbody>
 </table>
 
@@ -443,19 +386,7 @@ import type { PricingPageProps } from "@/components/custom/pricing-page"
 import { PricingPage } from "@/components/custom/pricing-page";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
-const [activeTab, setActiveTab] = useState("team");
-const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
-
 <PricingPage
-  tabs={[
-    { label: "Team-Led Plans", value: "team" },
-    { label: "Go-AI First", value: "ai" },
-  ]}
-  activeTab={activeTab}
-  onTabChange={setActiveTab}
-  showBillingToggle={activeTab === "team"}
-  billingPeriod={billing}
-  onBillingPeriodChange={setBilling}
   headerActions={
     <Select defaultValue="virtual">
       <SelectTrigger className="h-9 w-[140px]">
@@ -467,7 +398,7 @@ const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
       </SelectContent>
     </Select>
   }
-  planCards={activeTab === "team" ? teamCards : aiCards}
+  planCards={teamCards}
   planCardCtaStates={[
     { disabled: true },
     { loading: false },
@@ -496,109 +427,28 @@ const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// ─── Interactive (Default) ────────────────────────────────────────────────────
-
-const InteractiveDemo = () => {
-  const [activeTab, setActiveTab] = React.useState("team");
-  const [billing, setBilling] = React.useState<"monthly" | "yearly">(
-    "monthly"
-  );
-
-  const isTeam = activeTab === "team";
-  const isYearly = billing === "yearly";
-
-  const planCards = isTeam
-    ? isYearly
-      ? teamYearlyCards
-      : teamMonthlyCards
-    : aiCards;
-
-  const driveCards = isTeam && isYearly ? letUsDriveYearly : letUsDriveMonthly;
-
-  return (
-    <PricingPage
-      tabs={tabs}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-      showBillingToggle={isTeam}
-      billingPeriod={billing}
-      onBillingPeriodChange={setBilling}
-      headerActions={<NumberTypeSelect />}
-      planCards={planCards}
-      powerUpCards={powerUpCards}
-      onFeatureComparisonClick={fn()}
-      letUsDriveCards={driveCards}
-    />
-  );
-};
+// ─── Default ──────────────────────────────────────────────────────────────────
 
 export const Default: Story = {
-  render: () => <InteractiveDemo />,
-};
-
-// ─── Team-Led Monthly ─────────────────────────────────────────────────────────
-
-export const TeamLedMonthly: Story = {
-  name: "Team-Led Plans (Monthly)",
   args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
     headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
+    planCards: teamCards,
     powerUpCards,
     onFeatureComparisonClick: fn(),
-    letUsDriveCards: letUsDriveMonthly,
+    letUsDriveCards: letUsDriveCards,
   },
 };
 
-// ─── Team-Led Yearly ──────────────────────────────────────────────────────────
-
-export const TeamLedYearly: Story = {
-  name: "Team-Led Plans (Yearly)",
-  args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "yearly",
-    headerActions: <NumberTypeSelect />,
-    planCards: teamYearlyCards,
-    powerUpCards,
-    onFeatureComparisonClick: fn(),
-    letUsDriveCards: letUsDriveYearly,
-  },
-};
-
-// ─── Go-AI First ──────────────────────────────────────────────────────────────
+// ─── Go-AI First Cards ───────────────────────────────────────────────────────
 
 export const GoAIFirst: Story = {
   name: "Go-AI First",
   args: {
-    tabs,
-    activeTab: "ai",
-    showBillingToggle: false,
     headerActions: <NumberTypeSelect />,
     planCards: aiCards,
     powerUpCards,
     onFeatureComparisonClick: fn(),
-    letUsDriveCards: letUsDriveMonthly,
-  },
-};
-
-// ─── Category Toggle Hidden ─────────────────────────────────────────────────────
-
-export const CategoryToggleHidden: Story = {
-  args: {
-    tabs,
-    activeTab: "team",
-    showCategoryToggle: false,
-    showBillingToggle: true,
-    billingPeriod: "monthly",
-    headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
-    powerUpCards,
-    onFeatureComparisonClick: fn(),
+    letUsDriveCards: letUsDriveCards,
   },
 };
 
@@ -606,12 +456,8 @@ export const CategoryToggleHidden: Story = {
 
 export const PlansOnly: Story = {
   args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
     headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
+    planCards: teamCards,
   },
 };
 
@@ -619,28 +465,9 @@ export const PlansOnly: Story = {
 
 export const WithoutHeaderActions: Story = {
   args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
-    planCards: teamMonthlyCards,
+    planCards: teamCards,
     powerUpCards,
-    letUsDriveCards: letUsDriveMonthly,
-  },
-};
-
-// ─── Single Tab (No Toggle) ──────────────────────────────────────────────────
-
-export const SingleTab: Story = {
-  args: {
-    tabs: [{ label: "All Plans", value: "all" }],
-    activeTab: "all",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
-    headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
-    powerUpCards,
-    letUsDriveCards: letUsDriveMonthly,
+    letUsDriveCards: letUsDriveCards,
   },
 };
 
@@ -649,12 +476,8 @@ export const SingleTab: Story = {
 export const PlanCardCtaStates: Story = {
   name: "Plan Card CTAs: Loading & Disabled",
   args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
     headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
+    planCards: teamCards,
     planCardCtaStates: [
       { disabled: true },
       { loading: true },
@@ -662,7 +485,7 @@ export const PlanCardCtaStates: Story = {
     ],
     powerUpCards,
     onFeatureComparisonClick: fn(),
-    letUsDriveCards: letUsDriveMonthly,
+    letUsDriveCards: letUsDriveCards,
   },
 };
 
@@ -678,12 +501,8 @@ export const FullPageWithLetUsDriveDetails: Story = {
     },
   },
   args: {
-    tabs,
-    activeTab: "team",
-    showBillingToggle: true,
-    billingPeriod: "monthly",
     headerActions: <NumberTypeSelect />,
-    planCards: teamMonthlyCards,
+    planCards: teamCards,
     powerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveCardsWithDetails,

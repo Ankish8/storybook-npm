@@ -2,7 +2,6 @@ import * as React from "react";
 import { cn } from "../../../lib/utils";
 import { PageHeader } from "../../ui/page-header";
 import { Button } from "../../ui/button";
-import { PricingToggle } from "../pricing-toggle/pricing-toggle";
 import { PricingCard } from "../pricing-card/pricing-card";
 import { PowerUpCard } from "../power-up-card/power-up-card";
 import { LetUsDriveCard } from "../let-us-drive-card/let-us-drive-card";
@@ -32,7 +31,7 @@ import type { PricingPageProps } from "./types";
 const PricingPage = React.forwardRef(
   (
     {
-      title = "Select business plan",
+      title = "Select Business Plan",
       headerActions,
       tabs = [],
       showCategoryToggle = true,
@@ -54,26 +53,6 @@ const PricingPage = React.forwardRef(
     }: PricingPageProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
-    // Internal state for uncontrolled mode
-    const [internalTab, setInternalTab] = React.useState(
-      tabs[0]?.value ?? ""
-    );
-    const [internalBilling, setInternalBilling] = React.useState<
-      "monthly" | "yearly"
-    >("monthly");
-    const currentTab = controlledTab ?? internalTab;
-    const currentBilling = controlledBilling ?? internalBilling;
-
-    const handleTabChange = (value: string) => {
-      if (!controlledTab) setInternalTab(value);
-      onTabChange?.(value);
-    };
-
-    const handleBillingChange = (period: "monthly" | "yearly") => {
-      if (!controlledBilling) setInternalBilling(period);
-      onBillingPeriodChange?.(period);
-    };
-
     const hasPowerUps = powerUpCards.length > 0;
     const hasLetUsDrive = letUsDriveCards.length > 0;
 
@@ -91,24 +70,12 @@ const PricingPage = React.forwardRef(
         />
 
         {/* ───── Plan Selection Area ───── */}
-        <div className="flex flex-col gap-6 px-6 py-6">
-          {/* Tabs + billing toggle */}
-          {tabs.length > 0 && showCategoryToggle && (
-            <PricingToggle
-              tabs={tabs}
-              activeTab={currentTab}
-              onTabChange={handleTabChange}
-              showBillingToggle={showBillingToggle}
-              billingPeriod={currentBilling}
-              onBillingPeriodChange={handleBillingChange}
-            />
-          )}
-
+        <div className="flex flex-col items-center gap-12 px-6 py-12">
           {/* Plan cards grid */}
           {planCards.length > 0 && (
             <div
               className={cn(
-                "grid gap-6 justify-center",
+                "grid gap-8 justify-center",
                 planCards.length <= 2
                   ? "grid-cols-1 md:grid-cols-2 max-w-[960px] mx-auto"
                   : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"

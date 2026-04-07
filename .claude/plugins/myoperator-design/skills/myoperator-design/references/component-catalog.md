@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 84 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 86 components across 7 categories.
 
 ## Quick Reference
 
@@ -44,6 +44,8 @@
 | PageHeader | layout | `npx myoperator-ui add page-header` |
 | Panel | layout | `npx myoperator-ui add panel` |
 | Pagination | layout | `npx myoperator-ui add pagination` |
+| AddIntegration | custom | `npx myoperator-ui add add-integration` |
+| SetupIntegration | custom | `npx myoperator-ui add setup-integration` |
 | AttachmentPreview | custom | `npx myoperator-ui add attachment-preview` |
 | AudioMedia | custom | `npx myoperator-ui add audio-media` |
 | CarouselMedia | custom | `npx myoperator-ui add carousel-media` |
@@ -649,6 +651,24 @@ import { Mail } from "lucide-react"
 ---
 
 ## Custom — Multi-file complex components
+
+### AddIntegration
+> Multi-step integration wizard for connecting Composio toolkits with account management
+
+**Install**: `npx myoperator-ui add add-integration`
+**Requires**: `button`, `input`, `spinner`, `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### SetupIntegration
+> AI chat interface for setting up, testing, and publishing integrations after successful connection
+
+**Install**: `npx myoperator-ui add setup-integration`
+**Requires**: `spinner`, `dialog`, `confirmation-modal` (auto-installed)
+**Type**: Multi-file component
+
+---
 
 ### AttachmentPreview
 > A file attachment preview for chat composers with image, video, audio, and document previews
