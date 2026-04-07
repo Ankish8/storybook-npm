@@ -52,6 +52,11 @@ export interface CreatableSelectProps
    * If the raw value differs from the sanitized value, `onInvalidCharacters` is called.
    */
   sanitizeInput?: (raw: string) => string
+  /**
+   * Applied after `sanitizeInput` on the combobox value (e.g. collapse spaces).
+   * Does not affect invalid-character detection, which compares `raw` to `sanitizeInput(raw)` only.
+   */
+  normalizeComboboxInput?: (sanitized: string) => string
   /** Fired when `sanitizeInput` removed one or more characters from the raw input. */
   onInvalidCharacters?: () => void
   /**
@@ -74,6 +79,7 @@ const CreatableSelect = React.forwardRef(
       disabled = false,
       maxLength,
       sanitizeInput,
+      normalizeComboboxInput,
       onInvalidCharacters,
       onValidInput,
       ...props
@@ -124,14 +130,24 @@ const CreatableSelect = React.forwardRef(
     )
 
     const handleCreate = React.useCallback(() => {
-      const trimmed = search.trim()
+      const afterSanitize = sanitizeInput ? sanitizeInput(search) : search
+      const normalized = normalizeComboboxInput
+        ? normalizeComboboxInput(afterSanitize)
+        : afterSanitize
+      const trimmed = normalized.trim()
       if (trimmed) {
         const value = maxLength != null ? trimmed.slice(0, maxLength) : trimmed
         onValueChange?.(value)
         setOpen(false)
         setSearch("")
       }
-    }, [search, onValueChange, maxLength])
+    }, [
+      search,
+      onValueChange,
+      maxLength,
+      sanitizeInput,
+      normalizeComboboxInput,
+    ])
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -226,8 +242,11 @@ const CreatableSelect = React.forwardRef(
                   if (raw !== sanitized) onInvalidCharacters?.()
                   else onValidInput?.()
                 }
+                const next = normalizeComboboxInput
+                  ? normalizeComboboxInput(sanitized)
+                  : sanitized
                 setSearch(
-                  maxLength != null ? sanitized.slice(0, maxLength) : sanitized
+                  maxLength != null ? next.slice(0, maxLength) : next
                 )
               }}
               maxLength={maxLength}

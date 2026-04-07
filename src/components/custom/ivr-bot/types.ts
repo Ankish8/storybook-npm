@@ -151,8 +151,10 @@ export interface CreateFunctionModalProps {
    */
   maxQueryParamRows?: number;
   /**
-   * When true (default), Step 2 Submit requires at least one header or query row with both key and value filled.
-   * Set to false to allow saving with only a URL (empty headers and query params).
+   * When false (default), Step 2 Submit allows URL-only saves (no header/query rows).
+   * Row-level validation still runs: any added header or query row must have both key and value filled.
+   * Set to true to require at least one complete header or query pair even when no rows were added
+   * (legacy / stricter product rule).
    */
   requireHeaderOrQueryPair?: boolean;
   className?: string;

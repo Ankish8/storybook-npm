@@ -1139,7 +1139,7 @@ export const CreateFunctionModal = React.forwardRef(
       submitLoading = false,
       maxHeaderRows = HEADER_MAX_ROWS,
       maxQueryParamRows = HEADER_MAX_ROWS,
-      requireHeaderOrQueryPair = true,
+      requireHeaderOrQueryPair = false,
       className,
       variableNameMaxLimit,
       descriptionMaxLimit,
@@ -1545,8 +1545,9 @@ export const CreateFunctionModal = React.forwardRef(
       setIsSubmitting(true);
       try {
         await Promise.resolve(onSubmit?.(data));
-        handleClose();
       } catch {
+        return;
+      } finally {
         setIsSubmitting(false);
       }
     };

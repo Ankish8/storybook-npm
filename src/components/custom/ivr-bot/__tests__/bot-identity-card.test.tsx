@@ -28,4 +28,40 @@ describe("BotIdentityCard", () => {
     expect(input).toHaveValue("A");
     expect(screen.getByText(BOT_IDENTITY_INVALID_CHARS_MESSAGE)).toBeInTheDocument();
   });
+
+  it("collapses multiple spaces in bot name and does not count trailing spaces in counter", async () => {
+    const user = userEvent.setup();
+    function Controlled() {
+      const [data, setData] = React.useState({ botName: "" });
+      return (
+        <BotIdentityCard
+          data={data}
+          onChange={(patch) => setData((d) => ({ ...d, ...patch }))}
+        />
+      );
+    }
+    render(<Controlled />);
+    const input = screen.getByPlaceholderText("e.g., Rhea from XYZ");
+    await user.type(input, "Rhea   ");
+    expect(input).toHaveValue("Rhea ");
+    expect(screen.getByText("4/50")).toBeInTheDocument();
+  });
+
+  it("trims bot name on blur", async () => {
+    const user = userEvent.setup();
+    function Controlled() {
+      const [data, setData] = React.useState({ botName: "Rhea " });
+      return (
+        <BotIdentityCard
+          data={data}
+          onChange={(patch) => setData((d) => ({ ...d, ...patch }))}
+        />
+      );
+    }
+    render(<Controlled />);
+    const input = screen.getByPlaceholderText("e.g., Rhea from XYZ");
+    await user.click(input);
+    await user.tab();
+    expect(input).toHaveValue("Rhea");
+  });
 });

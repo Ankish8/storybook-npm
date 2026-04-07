@@ -19,8 +19,12 @@ import {
 import { formFieldLabelClassName } from "./form-field-label";
 import {
   BOT_IDENTITY_INVALID_CHARS_MESSAGE,
+  botIdentityEffectiveValueLength,
   filterBotIdentityText,
+  finalizeBotIdentityFieldValue,
   hadInvalidBotIdentityChars,
+  normalizeFilteredBotIdentityTyping,
+  sanitizeBotIdentityFieldTyping,
 } from "./bot-identity-text";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -195,6 +199,7 @@ function StyledInput({
   placeholder,
   value,
   onChange,
+  onBlur,
   disabled,
   maxLength,
   invalid,
@@ -203,6 +208,7 @@ function StyledInput({
   placeholder?: string;
   value?: string;
   onChange?: (v: string) => void;
+  onBlur?: () => void;
   disabled?: boolean;
   maxLength?: number;
   invalid?: boolean;
@@ -216,6 +222,7 @@ function StyledInput({
         const v = e.target.value;
         onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
       }}
+      onBlur={onBlur}
       placeholder={placeholder}
       disabled={disabled}
       maxLength={maxLength}
@@ -308,15 +315,46 @@ const BotIdentityCard = React.forwardRef(
 
     const handleBotNameChange = React.useCallback(
       (raw: string) => {
-        const sanitized = filterBotIdentityText(raw);
-        if (hadInvalidBotIdentityChars(raw, sanitized)) {
+        const filtered = filterBotIdentityText(raw);
+        if (hadInvalidBotIdentityChars(raw, filtered)) {
           setBotNameError(BOT_IDENTITY_INVALID_CHARS_MESSAGE);
         } else {
           setBotNameError(null);
         }
-        onChange({ botName: sanitized });
+        onChange({
+          botName: sanitizeBotIdentityFieldTyping(raw, BOT_NAME_MAX_LENGTH),
+        });
       },
       [onChange]
+    );
+
+    const handleBotNameBlur = React.useCallback(() => {
+      const cur = data.botName ?? "";
+      const trimmed = cur.trim();
+      if (trimmed !== cur) onChange({ botName: trimmed });
+    }, [data.botName, onChange]);
+
+    const primaryRoleDisplayLabel =
+      roleOptions.find((o) => o.value === data.primaryRole)?.label ??
+      (data.primaryRole ?? "");
+
+    const handlePrimaryRoleValueChange = React.useCallback(
+      (v: string) => {
+        setPrimaryRoleError(null);
+        const raw = v ?? "";
+        const t = raw.trim();
+        let out: string;
+        if (roleOptions.some((o) => o.value === t)) {
+          out = t;
+        } else {
+          out = finalizeBotIdentityFieldValue(raw);
+          if (out.length > PRIMARY_ROLE_MAX_LENGTH) {
+            out = out.slice(0, PRIMARY_ROLE_MAX_LENGTH);
+          }
+        }
+        onChange({ primaryRole: out });
+      },
+      [onChange, roleOptions]
     );
 
     return (
@@ -342,7 +380,7 @@ const BotIdentityCard = React.forwardRef(
               labelTooltip={botNameIdentityTooltip}
               errorText={botNameError ?? undefined}
               characterCount={{
-                current: (data.botName ?? "").length,
+                current: botIdentityEffectiveValueLength(data.botName ?? ""),
                 max: BOT_NAME_MAX_LENGTH,
               }}
             >
@@ -350,8 +388,8 @@ const BotIdentityCard = React.forwardRef(
                 placeholder="e.g., Rhea from XYZ"
                 value={data.botName}
                 onChange={handleBotNameChange}
+                onBlur={handleBotNameBlur}
                 disabled={disabled}
-                maxLength={BOT_NAME_MAX_LENGTH}
                 invalid={Boolean(botNameError)}
               />
             </Field>
@@ -361,24 +399,24 @@ const BotIdentityCard = React.forwardRef(
               labelTooltip={primaryRoleTooltip}
               errorText={primaryRoleError ?? undefined}
               characterCount={{
-                current: (data.primaryRole ?? "").length,
+                current: botIdentityEffectiveValueLength(primaryRoleDisplayLabel),
                 max: PRIMARY_ROLE_MAX_LENGTH,
               }}
             >
               <CreatableSelect
-                value={(data.primaryRole ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH)}
-                onValueChange={(v) => {
-                  setPrimaryRoleError(null);
-                  onChange({
-                    primaryRole: (v ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH),
-                  });
-                }}
+                value={data.primaryRole ?? ""}
+                onValueChange={handlePrimaryRoleValueChange}
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
                 disabled={disabled}
-                maxLength={PRIMARY_ROLE_MAX_LENGTH}
                 sanitizeInput={filterBotIdentityText}
+                normalizeComboboxInput={(sanitized) =>
+                  normalizeFilteredBotIdentityTyping(
+                    sanitized,
+                    PRIMARY_ROLE_MAX_LENGTH
+                  )
+                }
                 onInvalidCharacters={() =>
                   setPrimaryRoleError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
                 }

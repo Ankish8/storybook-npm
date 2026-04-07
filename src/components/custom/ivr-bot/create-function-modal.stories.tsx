@@ -98,7 +98,7 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
     requireHeaderOrQueryPair: {
       control: "boolean",
       description:
-        "When true (default), Submit requires at least one complete header or query row. False allows URL-only saves.",
+        "When false (default), URL-only submit is allowed. True enforces at least one complete header or query row. Added rows are always validated (empty rows show field errors).",
     },
   },
   decorators: [
@@ -339,7 +339,7 @@ export const Interactive: Story = {
     open: false,
     initialStep: 1,
     initialTab: "header",
-    requireHeaderOrQueryPair: true,
+    requireHeaderOrQueryPair: false,
   },
   parameters: {
     docs: {

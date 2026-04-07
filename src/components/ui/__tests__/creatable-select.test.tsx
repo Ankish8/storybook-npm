@@ -89,4 +89,22 @@ describe("CreatableSelect", () => {
     await user.type(input, "y");
     expect(onValid).toHaveBeenCalled();
   });
+
+  it("applies normalizeComboboxInput after sanitize without affecting invalid detection", async () => {
+    const user = userEvent.setup();
+    const sanitize = (raw: string) => raw.replace(/[^A-Za-z ]/g, "");
+    const normalize = (s: string) => s.replace(/ +/g, " ").replace(/^\s+/, "");
+    render(
+      <CreatableSelect
+        options={OPTIONS}
+        placeholder="Pick one"
+        sanitizeInput={sanitize}
+        normalizeComboboxInput={normalize}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: /Pick one/i }));
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.type(input, "a  b");
+    expect(input.value).toBe("a b");
+  });
 });

@@ -138,6 +138,22 @@ function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
 }
 
+/** Keeps only 0–9 so Advanced Settings fields cannot accept letters or symbols. */
+function digitsOnly(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
+/**
+ * If the digit-only string parses above `max`, returns `String(max)` so the field
+ * cannot hold an out-of-range value while typing or pasting.
+ */
+function capDigitStringAtMax(digits: string, max: number): string {
+  if (digits === "") return "";
+  const n = Number(digits);
+  if (!Number.isFinite(n) || n > max) return String(max);
+  return digits;
+}
+
 function ValidatedNumberSpinner({
   id,
   value,
@@ -264,7 +280,9 @@ function ValidatedNumberSpinner({
             setError(null);
           }}
           onBlur={handleBlur}
-          onChange={(e) => setInputStr(e.target.value)}
+          onChange={(e) =>
+            setInputStr(capDigitStringAtMax(digitsOnly(e.target.value), max))
+          }
           className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none disabled:cursor-not-allowed"
         />
         <div className="flex flex-col items-center shrink-0 gap-0.5">

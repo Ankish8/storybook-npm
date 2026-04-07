@@ -51,6 +51,23 @@ describe("AdvancedSettingsCard", () => {
     expect(container.firstChild).toHaveClass("my-advanced-card");
   });
 
+  it("strips non-numeric characters while typing", () => {
+    render(
+      <AdvancedSettingsCard
+        data={{ silenceTimeout: 15 }}
+        onChange={() => {}}
+        silenceTimeoutMin={1}
+        silenceTimeoutMax={99999999}
+      />
+    );
+    expandAdvanced();
+    const input = document.getElementById(
+      "advanced-silence-timeout"
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "15123233gfdfgfd" } });
+    expect(input).toHaveValue("15123233");
+  });
+
   it("does not call onChange while typing; commits valid value on blur", () => {
     const onChange = vi.fn();
     render(
@@ -114,7 +131,7 @@ describe("AdvancedSettingsCard", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("shows range error on blur when value is above max", () => {
+  it("clamps typed value to max and commits that value on blur", () => {
     const onChange = vi.fn();
     render(
       <AdvancedSettingsCard
@@ -129,11 +146,26 @@ describe("AdvancedSettingsCard", () => {
       "advanced-silence-timeout"
     ) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "61" } });
+    expect(input).toHaveValue("60");
     fireEvent.blur(input);
+    expect(onChange).toHaveBeenCalledWith({ silenceTimeout: 60 });
     expect(
-      screen.getByText("Value must be between 1 and 60")
-    ).toBeInTheDocument();
-    expect(onChange).not.toHaveBeenCalled();
+      screen.queryByText("Value must be between 1 and 60")
+    ).not.toBeInTheDocument();
+  });
+
+  it("clamps a long digit string to default silence max while typing", () => {
+    render(
+      <AdvancedSettingsCard data={{ silenceTimeout: 3 }} onChange={() => {}} />
+    );
+    expandAdvanced();
+    const input = document.getElementById(
+      "advanced-silence-timeout"
+    ) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { value: "15123234321232122" },
+    });
+    expect(input).toHaveValue("15");
   });
 
   it("does not show required error when field is optional and left empty", () => {

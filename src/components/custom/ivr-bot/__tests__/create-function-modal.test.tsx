@@ -303,7 +303,7 @@ describe("CreateFunctionModal", () => {
     );
   });
 
-  it("calls onOpenChange when closed after submit", async () => {
+  it("does not call onOpenChange on submit — parent closes from onSubmit if needed", async () => {
     const onOpenChange = vi.fn();
     render(
       <CreateFunctionModal open onOpenChange={onOpenChange} />
@@ -322,7 +322,7 @@ describe("CreateFunctionModal", () => {
     const valueInputs = screen.getAllByPlaceholderText("Type {{ to add variables");
     await user.type(valueInputs[0]!, "1");
     await user.click(screen.getByRole("button", { name: /Submit/i }));
-    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 
   it("does not submit or close when API URL is empty on Submit", async () => {
@@ -340,34 +340,10 @@ describe("CreateFunctionModal", () => {
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 
-  it("blocks submit when URL is valid but no header or query row has both key and value", async () => {
+  it("submits with URL only when no header or query rows are added (default)", async () => {
     const onSubmit = vi.fn();
     render(
       <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
-    );
-    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
-    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
-    await user.click(screen.getByRole("button", { name: /Next/i }));
-    await user.type(
-      screen.getByPlaceholderText(/Enter URL or Type/i),
-      "https://api.example.com/"
-    );
-    await user.click(screen.getByRole("button", { name: /Submit/i }));
-    expect(onSubmit).not.toHaveBeenCalled();
-    expect(
-      screen.getByText(/Add at least one header or query parameter with both a key and a value/i)
-    ).toBeInTheDocument();
-  });
-
-  it("allows URL-only submit when requireHeaderOrQueryPair is false", async () => {
-    const onSubmit = vi.fn();
-    render(
-      <CreateFunctionModal
-        open
-        onOpenChange={noop}
-        onSubmit={onSubmit}
-        requireHeaderOrQueryPair={false}
-      />
     );
     await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
@@ -389,6 +365,30 @@ describe("CreateFunctionModal", () => {
     expect(
       screen.queryByText(/Add at least one header or query parameter with both a key and a value/i)
     ).not.toBeInTheDocument();
+  });
+
+  it("blocks URL-only submit when requireHeaderOrQueryPair is true", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        onSubmit={onSubmit}
+        requireHeaderOrQueryPair={true}
+      />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/test"
+    );
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(
+      screen.getByText(/Add at least one header or query parameter with both a key and a value/i)
+    ).toBeInTheDocument();
   });
 
   const requiredFnVarGroups = [

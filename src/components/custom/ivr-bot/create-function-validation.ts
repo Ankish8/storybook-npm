@@ -123,7 +123,10 @@ export function headerRowsHaveSubmitErrors(rows: KeyValuePair[]): boolean {
   });
 }
 
-/** Shown under API tabs on Submit when URL/body row checks pass but no pair is complete. */
+/**
+ * Shown under API tabs on Submit when `requireHeaderOrQueryPair` is enabled, URL/body checks pass,
+ * and there is no header or query row with both key and value filled (including when both lists are empty).
+ */
 export const HEADER_OR_QUERY_PAIR_REQUIRED_MESSAGE =
   "Add at least one header or query parameter with both a key and a value.";
 
