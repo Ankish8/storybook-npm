@@ -67,6 +67,16 @@ describe("IvrBotConfig", () => {
     expect(screen.getByText("Advanced Settings")).toBeInTheDocument();
   });
 
+  it("shows Fallback Prompts and Escalate to Human accordion title info icons with accessible names", () => {
+    render(<IvrBotConfig />);
+    expect(
+      screen.getByLabelText("Fallback Prompts: more information")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Escalate to Human: more information")
+    ).toBeInTheDocument();
+  });
+
   it("renders built-in functions from default data", () => {
     render(<IvrBotConfig />);
     expect(screen.getByText(/transfer_to_extension/)).toBeInTheDocument();

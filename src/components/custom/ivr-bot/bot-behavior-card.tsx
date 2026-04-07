@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import { FormFieldLabel } from "./form-field-label";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -232,6 +233,8 @@ const BotBehaviorCard = React.forwardRef(
     const MAX = maxLength;
     const sectionRef = React.useRef<HTMLDivElement>(null);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    /** Last known textarea selection — used when chips are clicked (textarea may blur before onClick). */
+    const caretRef = React.useRef({ start: 0, end: 0 });
     /** Tracks whether the section has been focused at least once (prevents firing blur on initial render). */
     const hasFocusedRef = React.useRef(false);
 
@@ -264,8 +267,38 @@ const BotBehaviorCard = React.forwardRef(
       setPopupStyle(undefined);
     };
 
+    const syncCaretFromTextarea = (el: HTMLTextAreaElement) => {
+      caretRef.current = {
+        start: el.selectionStart,
+        end: el.selectionEnd,
+      };
+    };
+
+    /** Insert at current caret / selection (chips and keyboard); falls back to last synced caret if textarea blurred. */
     const insertVariable = (variable: string) => {
-      onChange({ systemPrompt: prompt + variable });
+      const el = textareaRef.current;
+      let start: number;
+      let end: number;
+      if (el && document.activeElement === el) {
+        start = el.selectionStart;
+        end = el.selectionEnd;
+      } else {
+        const len = prompt.length;
+        start = Math.min(caretRef.current.start, len);
+        end = Math.min(caretRef.current.end, len);
+      }
+      if (start > end) [start, end] = [end, start];
+      const newVal = prompt.slice(0, start) + variable + prompt.slice(end);
+      if (newVal.length > MAX) return;
+      onChange({ systemPrompt: newVal });
+      const newPos = start + variable.length;
+      requestAnimationFrame(() => {
+        if (el) {
+          el.focus();
+          el.setSelectionRange(newPos, newPos);
+        }
+        caretRef.current = { start: newPos, end: newPos };
+      });
     };
 
     const handleVarSelect = (variable: string) => {
@@ -280,6 +313,7 @@ const BotBehaviorCard = React.forwardRef(
           const pos = varTrigger.from + variable.length;
           el.focus();
           el.setSelectionRange(pos, pos);
+          caretRef.current = { start: pos, end: pos };
         }
       });
     };
@@ -288,6 +322,7 @@ const BotBehaviorCard = React.forwardRef(
       const v = e.target.value;
       if (v.length <= MAX) {
         onChange({ systemPrompt: v });
+        syncCaretFromTextarea(e.target);
         const trigger = detectVarTrigger(v, e.target.selectionStart);
         setVarTrigger(trigger);
         if (trigger) updatePopupPos(e.target, e.target.selectionStart);
@@ -341,9 +376,9 @@ const BotBehaviorCard = React.forwardRef(
             onFocus={handleSectionFocus}
             onBlur={handleSectionBlur}
           >
-            <p className="m-0 text-sm text-semantic-text-muted">
+            <FormFieldLabel>
               Define workflows, conditions and handover logic (System prompt)
-            </p>
+            </FormFieldLabel>
             <div className="flex flex-col gap-1">
               <div className="relative">
                 <textarea
@@ -351,6 +386,11 @@ const BotBehaviorCard = React.forwardRef(
                   value={prompt}
                   rows={6}
                   onChange={handlePromptChange}
+                  onSelect={(e) => syncCaretFromTextarea(e.currentTarget)}
+                  onClick={(e) => syncCaretFromTextarea(e.currentTarget)}
+                  onKeyUp={(e) => syncCaretFromTextarea(e.currentTarget)}
+                  onBlur={(e) => syncCaretFromTextarea(e.currentTarget)}
+                  onFocus={(e) => syncCaretFromTextarea(e.currentTarget)}
                   onKeyDown={handlePromptKeyDown}
                   placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
                   disabled={disabled}
@@ -382,7 +422,10 @@ const BotBehaviorCard = React.forwardRef(
                   <button
                     key={v}
                     type="button"
-                    onClick={() => insertVariable(v)}
+                    onClick={() => {
+                      if (disabled) return;
+                      insertVariable(v);
+                    }}
                     disabled={disabled}
                     className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
                   >

@@ -66,4 +66,27 @@ describe("CreatableSelect", () => {
     render(<CreatableSelect ref={ref} options={OPTIONS} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
+
+  it("sanitizes combobox input and notifies invalid vs valid input", async () => {
+    const user = userEvent.setup();
+    const onInvalid = vi.fn();
+    const onValid = vi.fn();
+    const sanitize = (raw: string) => raw.replace(/[^A-Za-z ]/g, "");
+    render(
+      <CreatableSelect
+        options={OPTIONS}
+        placeholder="Pick one"
+        sanitizeInput={sanitize}
+        onInvalidCharacters={onInvalid}
+        onValidInput={onValid}
+        maxLength={20}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: /Pick one/i }));
+    const input = screen.getByRole("combobox");
+    await user.type(input, "x@");
+    expect(onInvalid).toHaveBeenCalled();
+    await user.type(input, "y");
+    expect(onValid).toHaveBeenCalled();
+  });
 });

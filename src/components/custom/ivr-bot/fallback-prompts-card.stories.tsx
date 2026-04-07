@@ -12,7 +12,7 @@ const meta: Meta<typeof FallbackPromptsCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for configuring voicebot fallback prompts. Contains editable textarea fields for "Agent Busy" and "No Extension Found" scenarios, each with a live character counter and an **info icon** next to the label (hover for tooltip). Override copy via \`agentBusyPromptTooltip\` and \`noExtensionFoundPromptTooltip\` (pass \`""\` to hide the icons).
+        component: `Accordion card for configuring voicebot fallback prompts. The **Fallback Prompts** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Inside the section, "Agent Busy" and "No Extension Found" fields each have an info icon next to the label; override via \`agentBusyPromptTooltip\` and \`noExtensionFoundPromptTooltip\` (pass \`""\` to hide those icons).
 
 **Install**
 \`\`\`bash

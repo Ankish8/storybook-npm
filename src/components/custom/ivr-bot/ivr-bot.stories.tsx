@@ -4,7 +4,9 @@ import { defaultHowItBehavesTooltip } from "./bot-behavior-card";
 import {
   defaultAgentBusyPromptTooltip,
   defaultNoExtensionFoundPromptTooltip,
+  defaultFallbackPromptsInfoTooltip,
 } from "./fallback-prompts-card";
+import { defaultEscalateToHumanInfoTooltip } from "./frustration-handover-card";
 import { IvrBotConfig } from "./ivr-bot-config";
 import { BOT_KNOWLEDGE_STATUS } from "./types";
 
@@ -25,14 +27,14 @@ The **IvrBotConfig** is the full-page configuration view for an IVR/Voicebot. It
 - **How It Behaves** — System prompt with session variable chips (info tooltip on section title via \`howItBehavesTooltip\`)
 
 **Left column (accordion)**
-- **Fallback Prompts** — Agent busy prompt & no-extension fallback (info tooltips on each field via \`agentBusyPromptTooltip\`, \`noExtensionFoundPromptTooltip\`)
+- **Fallback Prompts** — Section title info via \`fallbackPromptsInfoTooltip\`; field tooltips via \`agentBusyPromptTooltip\`, \`noExtensionFoundPromptTooltip\`
 
 **Right column (always open)**
 - **Knowledge Base** — File list with training status
 - **Functions** — Built-in & custom function list
 
 **Right column (accordion)**
-- **Escalate to Human** — Auto-escalation toggle + transfer department selector
+- **Escalate to Human** — Section title info via \`escalateToHumanInfoTooltip\`; auto-escalation toggle + transfer department selector
 - **Advanced Settings** — Silence timeout, call-end threshold, interruption handling
 
 ### Install
@@ -50,10 +52,12 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | Prop | Target |
 |------|--------|
 | \`howItBehavesTooltip\` | Info icon next to **How It Behaves** |
+| \`fallbackPromptsInfoTooltip\` | Info icon next to **Fallback Prompts** (accordion title) |
 | \`agentBusyPromptTooltip\` | Info icon next to **Agent Busy Prompt** |
 | \`noExtensionFoundPromptTooltip\` | Info icon next to **No Extension Found** |
+| \`escalateToHumanInfoTooltip\` | Info icon next to **Escalate to Human** (accordion title) |
 
-Omit a prop to use the built-in default copy. Pass an empty string (\`""\`) to hide that info icon.
+Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field’s info icon, or (for section titles) to show a non-interactive icon only—same pattern as Knowledge Base.
 
 ### Design Tokens
 
@@ -74,8 +78,10 @@ Omit a prop to use the built-in default copy. Pass an empty string (\`""\`) to h
   },
   args: {
     howItBehavesTooltip: defaultHowItBehavesTooltip,
+    fallbackPromptsInfoTooltip: defaultFallbackPromptsInfoTooltip,
     agentBusyPromptTooltip: defaultAgentBusyPromptTooltip,
     noExtensionFoundPromptTooltip: defaultNoExtensionFoundPromptTooltip,
+    escalateToHumanInfoTooltip: defaultEscalateToHumanInfoTooltip,
   },
   argTypes: {
     botTitle: { control: "text", description: "Page title shown in header" },
@@ -109,6 +115,16 @@ Omit a prop to use the built-in default copy. Pass an empty string (\`""\`) to h
       description:
         "Tooltip for the No Extension Found label. Use \"\" to hide; omit for built-in default.",
     },
+    fallbackPromptsInfoTooltip: {
+      control: "text",
+      description:
+        "Tooltip for the Fallback Prompts accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
+    },
+    escalateToHumanInfoTooltip: {
+      control: "text",
+      description:
+        "Tooltip for the Escalate to Human accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
+    },
   },
 };
 
@@ -126,8 +142,10 @@ export const Overview: Story = {
         onPlayVoice={(v) => setPlayingVoice(v)}
         onPauseVoice={() => setPlayingVoice(undefined)}
         howItBehavesTooltip={args.howItBehavesTooltip}
+        fallbackPromptsInfoTooltip={args.fallbackPromptsInfoTooltip}
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
+        escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
         initialData={{
           botName: "Rhea",
           primaryRole: "customer-support",
@@ -211,8 +229,10 @@ export const CustomDropdownOptions: Story = {
         onPlayVoice={(v) => setPlayingVoice(v)}
         onPauseVoice={() => setPlayingVoice(undefined)}
         howItBehavesTooltip={args.howItBehavesTooltip}
+        fallbackPromptsInfoTooltip={args.fallbackPromptsInfoTooltip}
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
+        escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
         voiceOptions={[
           { value: "emma-us", label: "Emma - US Female" },
           { value: "james-us", label: "James - US Male" },

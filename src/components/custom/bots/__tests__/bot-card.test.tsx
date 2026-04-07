@@ -28,8 +28,13 @@ describe("BotCard", () => {
     expect(screen.getByText("Lead validation bot")).toBeInTheDocument();
   });
 
-  it("does not render conversation count but keeps spacing row", () => {
-    const { container } = render(<BotCard bot={chatbot} />);
+  it("renders conversation count for chatbot", () => {
+    render(<BotCard bot={chatbot} />);
+    expect(screen.getByText("342 Conversations")).toBeInTheDocument();
+  });
+
+  it("does not render conversation line for voicebot but keeps spacing row", () => {
+    const { container } = render(<BotCard bot={voicebot} />);
     expect(screen.queryByText(/Conversations/)).not.toBeInTheDocument();
     const root = container.firstElementChild as HTMLElement;
     const spacer = root.children[2] as HTMLElement;
@@ -171,10 +176,9 @@ describe("BotCard", () => {
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 
-  it("does not surface conversation count for large values", () => {
+  it("formats large conversation counts for chatbot", () => {
     const bot: Bot = { ...chatbot, conversationCount: 1000 };
     render(<BotCard bot={bot} />);
-    expect(screen.queryByText(/1,000/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Conversations/)).not.toBeInTheDocument();
+    expect(screen.getByText("1,000 Conversations")).toBeInTheDocument();
   });
 });

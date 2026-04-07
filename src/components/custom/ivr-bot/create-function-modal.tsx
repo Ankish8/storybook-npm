@@ -1082,6 +1082,40 @@ function KeyValueTable({
   );
 }
 
+// ── Step 2 footer (Back + Submit) — single place for submit busy UX via Button.loading ──
+function CreateFunctionModalStep2Footer({
+  disabled,
+  submitBusy,
+  onBack,
+  onSubmit,
+}: {
+  disabled?: boolean;
+  submitBusy: boolean;
+  onBack: () => void;
+  onSubmit: () => void | Promise<void>;
+}) {
+  return (
+    <>
+      <Button
+        variant="outline"
+        onClick={onBack}
+        disabled={Boolean(disabled) || submitBusy}
+      >
+        Back
+      </Button>
+      <Button
+        type="button"
+        variant="default"
+        onClick={() => void onSubmit()}
+        disabled={Boolean(disabled)}
+        loading={submitBusy}
+      >
+        Submit
+      </Button>
+    </>
+  );
+}
+
 // ── Modal ─────────────────────────────────────────────────────────────────────
 export const CreateFunctionModal = React.forwardRef(
   (
@@ -1102,6 +1136,7 @@ export const CreateFunctionModal = React.forwardRef(
       onAddVariable,
       onEditVariable,
       disabled = false,
+      submitLoading = false,
       maxHeaderRows = HEADER_MAX_ROWS,
       maxQueryParamRows = HEADER_MAX_ROWS,
       requireHeaderOrQueryPair = true,
@@ -1130,8 +1165,25 @@ export const CreateFunctionModal = React.forwardRef(
     const [body, setBody] = React.useState(initialData?.body ?? "");
     const [apiResponse, setApiResponse] = React.useState("");
     const [isTesting, setIsTesting] = React.useState(false);
+    const [isSubmitting, setIsSubmitting] = React.useState(false);
+    const submitBusy = Boolean(submitLoading) || isSubmitting;
     const [step2SubmitAttempted, setStep2SubmitAttempted] = React.useState(false);
+    /**
+     * Row IDs present when Submit was last clicked. Submit-time key/value errors apply only to
+     * these rows so newly added rows after a failed submit stay clean until the next Submit.
+     * Stored in state (not refs) so the snapshot always aligns with the same render as
+     * `step2SubmitAttempted` after batched updates.
+     */
+    const [headerRowIdsAtLastSubmitAttempt, setHeaderRowIdsAtLastSubmitAttempt] = React.useState<
+      string[]
+    >([]);
+    const [queryRowIdsAtLastSubmitAttempt, setQueryRowIdsAtLastSubmitAttempt] = React.useState<
+      string[]
+    >([]);
     const [queryParamFieldTouched, setQueryParamFieldTouched] = React.useState<
+      Record<string, { key?: boolean; value?: boolean }>
+    >({});
+    const [headerFieldTouched, setHeaderFieldTouched] = React.useState<
       Record<string, { key?: boolean; value?: boolean }>
     >({});
     const [nameError, setNameError] = React.useState("");
@@ -1357,7 +1409,10 @@ export const CreateFunctionModal = React.forwardRef(
         setBody(initialData?.body ?? "");
         setApiResponse("");
         setStep2SubmitAttempted(false);
+        setHeaderRowIdsAtLastSubmitAttempt([]);
+        setQueryRowIdsAtLastSubmitAttempt([]);
         setQueryParamFieldTouched({});
+        setHeaderFieldTouched({});
         setTestApiRequiredAttempted(false);
         setNameError("");
         setUrlError("");
@@ -1370,6 +1425,7 @@ export const CreateFunctionModal = React.forwardRef(
         setTestVarValues({});
         setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
         setVarInsertContext(null);
+        setIsSubmitting(false);
       }
     // Re-run only when modal opens; intentionally exclude deep deps to avoid mid-session resets
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1387,7 +1443,10 @@ export const CreateFunctionModal = React.forwardRef(
       setBody(initialData?.body ?? "");
       setApiResponse("");
       setStep2SubmitAttempted(false);
+      setHeaderRowIdsAtLastSubmitAttempt([]);
+      setQueryRowIdsAtLastSubmitAttempt([]);
       setQueryParamFieldTouched({});
+      setHeaderFieldTouched({});
       setTestApiRequiredAttempted(false);
       setNameError("");
       setUrlError("");
@@ -1400,6 +1459,7 @@ export const CreateFunctionModal = React.forwardRef(
       setTestVarValues({});
       setLocalFnVarRequiredByBareName(buildFnVarRequiredMapFromGroups(variableGroups));
       setVarInsertContext(null);
+      setIsSubmitting(false);
     }, [
       initialData,
       initialStep,
@@ -1440,9 +1500,11 @@ export const CreateFunctionModal = React.forwardRef(
       if (disabled || (name.trim() && prompt.trim().length >= promptMinLength)) setStep(2);
     };
 
-    const handleSubmit = () => {
-      if (step !== 2) return;
+    const handleSubmit = async () => {
+      if (step !== 2 || submitBusy) return;
 
+      setHeaderRowIdsAtLastSubmitAttempt(headers.map((h) => h.id));
+      setQueryRowIdsAtLastSubmitAttempt(queryParams.map((q) => q.id));
       setStep2SubmitAttempted(true);
       setHeaderQueryPairError("");
 
@@ -1479,8 +1541,14 @@ export const CreateFunctionModal = React.forwardRef(
         queryParams,
         body: methodSupportsRequestBody(method) ? body : "",
       };
-      onSubmit?.(data);
-      handleClose();
+
+      setIsSubmitting(true);
+      try {
+        await Promise.resolve(onSubmit?.(data));
+        handleClose();
+      } catch {
+        setIsSubmitting(false);
+      }
     };
 
     // Substitute {{variable}} references with user-provided test values before calling onTestApi
@@ -1799,20 +1867,40 @@ export const CreateFunctionModal = React.forwardRef(
                       keyRegex={HEADER_KEY_REGEX}
                       keyRegexError={HEADER_KEY_INVALID_MESSAGE}
                       getRowErrors={(row) => {
-                        if (!step2SubmitAttempted) {
-                          const keyT = row.key.trim();
-                          const valT = row.value.trim();
-                          if (!keyT && !valT) return {};
-                          const errors: RowErrors = {};
+                        const useSubmitRowErrors =
+                          step2SubmitAttempted &&
+                          headerRowIdsAtLastSubmitAttempt.includes(row.id);
+                        if (useSubmitRowErrors) {
+                          return getHeaderRowSubmitErrors(row);
+                        }
+                        const keyT = row.key.trim();
+                        const valT = row.value.trim();
+                        const touched = headerFieldTouched[row.id] ?? {};
+                        if (!keyT && !valT) return {};
+                        const errors: RowErrors = {};
+                        if (touched.key) {
                           if (!keyT) errors.key = "Header key is required";
                           else if (!HEADER_KEY_REGEX.test(row.key)) {
                             errors.key = HEADER_KEY_INVALID_MESSAGE;
                           }
-                          if (!valT) errors.value = "Header value is required";
-                          return errors;
                         }
-                        return getHeaderRowSubmitErrors(row);
+                        if (touched.value && !valT) {
+                          errors.value = "Header value is required";
+                        }
+                        return errors;
                       }}
+                      onKeyBlur={(rowId) =>
+                        setHeaderFieldTouched((prev) => ({
+                          ...prev,
+                          [rowId]: { ...prev[rowId], key: true },
+                        }))
+                      }
+                      onValueBlur={(rowId) =>
+                        setHeaderFieldTouched((prev) => ({
+                          ...prev,
+                          [rowId]: { ...prev[rowId], value: true },
+                        }))
+                      }
                       sessionVariables={sessionVariables}
                       variableGroups={variableGroups}
                       onAddVariable={handleAddVariableFromHeader}
@@ -1830,7 +1918,10 @@ export const CreateFunctionModal = React.forwardRef(
                       keyMaxLength={QUERY_PARAM_KEY_MAX}
                       valueMaxLength={QUERY_PARAM_VALUE_MAX}
                       getRowErrors={(row) => {
-                        if (step2SubmitAttempted) {
+                        const useSubmitRowErrors =
+                          step2SubmitAttempted &&
+                          queryRowIdsAtLastSubmitAttempt.includes(row.id);
+                        if (useSubmitRowErrors) {
                           return getQueryParamRowSubmitErrors(row);
                         }
                         const keyT = row.key.trim();
@@ -2040,19 +2131,12 @@ export const CreateFunctionModal = React.forwardRef(
                 </Button>
               </>
             ) : (
-              <>
-                <Button variant="outline" onClick={() => setStep(1)}>
-                  Back
-                </Button>
-                <Button
-                  type="button"
-                  variant="default"
-                  onClick={handleSubmit}
-                  disabled={disabled}
-                >
-                  Submit
-                </Button>
-              </>
+              <CreateFunctionModalStep2Footer
+                disabled={disabled}
+                submitBusy={submitBusy}
+                onBack={() => setStep(1)}
+                onSubmit={handleSubmit}
+              />
             )}
           </div>
         </DialogContent>

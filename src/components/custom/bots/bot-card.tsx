@@ -124,8 +124,13 @@ export const BotCard = React.forwardRef(
           {bot.name}
         </h3>
 
-        {/* Same vertical space as former conversations line (text-xs / sm:text-sm line height) */}
-        <div className="h-4 sm:h-5 mb-3 sm:mb-4 shrink-0" aria-hidden />
+        {isChatbot ? (
+          <p className="m-0 text-xs sm:text-sm text-semantic-text-muted mb-3 sm:mb-4 min-w-0 line-clamp-1">
+            {new Intl.NumberFormat("en-US").format(bot.conversationCount)} Conversations
+          </p>
+        ) : (
+          <div className="h-4 sm:h-5 mb-3 sm:mb-4 shrink-0" aria-hidden />
+        )}
 
         {/* Divider */}
         <div className="border-t border-solid border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />

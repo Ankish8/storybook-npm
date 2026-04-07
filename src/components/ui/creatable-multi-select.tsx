@@ -51,6 +51,18 @@ export interface CreatableMultiSelectProps
   maxItems?: number
   /** Max character length per item when typing/creating (default: unlimited) */
   maxLengthPerItem?: number
+  /**
+   * When set, the text input is transformed (e.g. strip invalid characters).
+   * If the raw value differs from the sanitized value, `onInvalidCharacters` is called.
+   */
+  sanitizeInput?: (raw: string) => string
+  /** Fired when `sanitizeInput` removed one or more characters from the raw input. */
+  onInvalidCharacters?: () => void
+  /**
+   * When `sanitizeInput` is set, fired on input change if the raw value is already valid.
+   * Use to clear validation errors when the user corrects input.
+   */
+  onValidInput?: () => void
 }
 
 const CreatableMultiSelect = React.forwardRef(
@@ -66,6 +78,9 @@ const CreatableMultiSelect = React.forwardRef(
       helperText,
       maxItems,
       maxLengthPerItem,
+      sanitizeInput,
+      onInvalidCharacters,
+      onValidInput,
       ...props
     }: CreatableMultiSelectProps,
     ref: React.Ref<HTMLDivElement>
@@ -80,7 +95,8 @@ const CreatableMultiSelect = React.forwardRef(
 
     const addValue = React.useCallback(
       (val: string) => {
-        const trimmed = val.trim()
+        const afterSanitize = sanitizeInput ? sanitizeInput(val) : val
+        const trimmed = afterSanitize.trim()
         if (!trimmed || value.includes(trimmed)) return
         if (maxItems != null && value.length >= maxItems) return
         const toAdd =
@@ -92,7 +108,7 @@ const CreatableMultiSelect = React.forwardRef(
           setInputValue("")
         }
       },
-      [value, onValueChange, maxItems, maxLengthPerItem]
+      [value, onValueChange, maxItems, maxLengthPerItem, sanitizeInput]
     )
 
     const removeValue = React.useCallback(
@@ -193,9 +209,16 @@ const CreatableMultiSelect = React.forwardRef(
             type="text"
             value={inputValue}
             onChange={(e) => {
-              const v = e.target.value
+              const raw = e.target.value
+              const sanitized = sanitizeInput ? sanitizeInput(raw) : raw
+              if (sanitizeInput) {
+                if (raw !== sanitized) onInvalidCharacters?.()
+                else onValidInput?.()
+              }
               setInputValue(
-                maxLengthPerItem != null ? v.slice(0, maxLengthPerItem) : v
+                maxLengthPerItem != null
+                  ? sanitized.slice(0, maxLengthPerItem)
+                  : sanitized
               )
               if (!isOpen) setIsOpen(true)
             }}

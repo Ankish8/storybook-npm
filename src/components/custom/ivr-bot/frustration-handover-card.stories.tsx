@@ -12,7 +12,7 @@ const meta: Meta<typeof FrustrationHandoverCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for human escalation when callers are frustrated. Toggle **Escalate when caller is unhappy**, then choose **Transfer to department**.
+        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy**, then choose **Transfer to department**.
 
 **Install**
 \`\`\`bash

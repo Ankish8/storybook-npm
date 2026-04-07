@@ -62,4 +62,27 @@ describe("CreatableMultiSelect", () => {
     );
     expect(screen.getByText("Select at least one")).toBeInTheDocument();
   });
+
+  it("sanitizes typed input and notifies invalid vs valid input", async () => {
+    const user = userEvent.setup();
+    const onInvalid = vi.fn();
+    const onValid = vi.fn();
+    const sanitize = (raw: string) => raw.replace(/[^A-Za-z ]/g, "");
+    render(
+      <CreatableMultiSelect
+        options={OPTIONS}
+        placeholder="Pick items"
+        sanitizeInput={sanitize}
+        onInvalidCharacters={onInvalid}
+        onValidInput={onValid}
+        maxLengthPerItem={20}
+      />
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "a@");
+    expect(onInvalid).toHaveBeenCalled();
+    await user.type(input, "b");
+    expect(onValid).toHaveBeenCalled();
+  });
 });

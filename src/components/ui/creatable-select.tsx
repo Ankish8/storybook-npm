@@ -47,6 +47,18 @@ export interface CreatableSelectProps
   disabled?: boolean
   /** Max character length for the value (enforced when open and when creating) */
   maxLength?: number
+  /**
+   * When set, combobox input is transformed (e.g. strip invalid characters).
+   * If the raw value differs from the sanitized value, `onInvalidCharacters` is called.
+   */
+  sanitizeInput?: (raw: string) => string
+  /** Fired when `sanitizeInput` removed one or more characters from the raw input. */
+  onInvalidCharacters?: () => void
+  /**
+   * When `sanitizeInput` is set, fired on input change if the raw value is already valid
+   * (nothing was stripped). Use to clear validation errors when the user corrects input.
+   */
+  onValidInput?: () => void
 }
 
 const CreatableSelect = React.forwardRef(
@@ -61,6 +73,9 @@ const CreatableSelect = React.forwardRef(
       creatableHint,
       disabled = false,
       maxLength,
+      sanitizeInput,
+      onInvalidCharacters,
+      onValidInput,
       ...props
     }: CreatableSelectProps,
     ref: React.Ref<HTMLDivElement>
@@ -205,8 +220,15 @@ const CreatableSelect = React.forwardRef(
               type="text"
               value={search}
               onChange={(e) => {
-                const v = e.target.value
-                setSearch(maxLength != null ? v.slice(0, maxLength) : v)
+                const raw = e.target.value
+                const sanitized = sanitizeInput ? sanitizeInput(raw) : raw
+                if (sanitizeInput) {
+                  if (raw !== sanitized) onInvalidCharacters?.()
+                  else onValidInput?.()
+                }
+                setSearch(
+                  maxLength != null ? sanitized.slice(0, maxLength) : sanitized
+                )
               }}
               maxLength={maxLength}
               onKeyDown={handleKeyDown}

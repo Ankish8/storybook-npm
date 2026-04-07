@@ -15,7 +15,10 @@ export {
   defaultKnowledgeBaseInfoTooltip,
 } from "./knowledge-base-card";
 export { FunctionsCard } from "./functions-card";
-export { FrustrationHandoverCard } from "./frustration-handover-card";
+export {
+  FrustrationHandoverCard,
+  defaultEscalateToHumanInfoTooltip,
+} from "./frustration-handover-card";
 export {
   AdvancedSettingsCard,
   defaultSilenceWaitDurationTooltip,
@@ -33,6 +36,7 @@ export {
   FallbackPromptsCard,
   defaultAgentBusyPromptTooltip,
   defaultNoExtensionFoundPromptTooltip,
+  defaultFallbackPromptsInfoTooltip,
 } from "./fallback-prompts-card";
 export type {
   FallbackPromptsData,

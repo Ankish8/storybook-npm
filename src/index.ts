@@ -397,6 +397,8 @@ export {
   defaultHowItSoundsTooltip,
   defaultLanguageModeTooltip,
   defaultKnowledgeBaseInfoTooltip,
+  defaultFallbackPromptsInfoTooltip,
+  defaultEscalateToHumanInfoTooltip,
 } from "./components/custom/ivr-bot";
 export type {
   BotIdentityCardProps,

@@ -94,7 +94,7 @@ export type CreateFunctionTestValues = Record<string, string>;
 export interface CreateFunctionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit?: (data: CreateFunctionData) => void;
+  onSubmit?: (data: CreateFunctionData) => void | Promise<void>;
   onTestApi?: (
     step2: CreateFunctionStep2Data,
     testValues?: CreateFunctionTestValues
@@ -135,6 +135,11 @@ export interface CreateFunctionModalProps {
   onEditVariable?: (originalName: string, data: VariableFormData) => void;
   /** When true, all form fields are disabled (view mode) but Next is enabled so user can browse steps */
   disabled?: boolean;
+  /**
+   * When true, Step 2 Submit shows loading and Back is disabled (e.g. parent mutation in flight).
+   * Combines with the modal’s own internal submit busy state when `onSubmit` is async.
+   */
+  submitLoading?: boolean;
   /**
    * Maximum header rows; the Add row control is disabled at this count.
    * Defaults to 20 when omitted.
@@ -255,6 +260,16 @@ export interface IvrBotConfigProps {
    * When omitted, the card uses its built-in default. Pass `""` to hide the icon.
    */
   noExtensionFoundPromptTooltip?: string;
+  /**
+   * Passed to FallbackPromptsCard — hover text on the info icon next to the **Fallback Prompts** title.
+   * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
+   */
+  fallbackPromptsInfoTooltip?: string;
+  /**
+   * Passed to FrustrationHandoverCard — hover text on the info icon next to **Escalate to Human**.
+   * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
+   */
+  escalateToHumanInfoTooltip?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function name in Create/Edit Function (default: 30) */

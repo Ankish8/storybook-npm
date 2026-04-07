@@ -15,6 +15,12 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "../../ui/accordion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -34,6 +40,10 @@ const DEFAULT_DEPARTMENT_OPTIONS: DepartmentOption[] = [
   { value: "billing", label: "Billing" },
 ];
 
+/** Default hover text for the info icon next to the "Escalate to Human" accordion title */
+export const defaultEscalateToHumanInfoTooltip =
+  "When enabled, the bot automatically transfers the call to a human agent if a caller shows repeated signs of frustration. Select a department extension to route these escalations to.";
+
 export interface FrustrationHandoverCardProps {
   /** Current form data */
   data: Partial<FrustrationHandoverData>;
@@ -43,6 +53,11 @@ export interface FrustrationHandoverCardProps {
   departmentOptions?: DepartmentOption[];
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
+  /**
+   * Hover text on the info icon next to the "Escalate to Human" title (same pattern as Knowledge Base).
+   * When omitted, {@link defaultEscalateToHumanInfoTooltip} is used. Pass `""` for a non-interactive icon only.
+   */
+  infoTooltip?: string;
   /** Additional className */
   className?: string;
 }
@@ -69,7 +84,17 @@ function Field({
 // ─── Component ──────────────────────────────────────────────────────────────
 
 const FrustrationHandoverCard = React.forwardRef(
-  ({ data, onChange, departmentOptions = DEFAULT_DEPARTMENT_OPTIONS, disabled, className }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
+  ({
+    data,
+    onChange,
+    departmentOptions = DEFAULT_DEPARTMENT_OPTIONS,
+    disabled,
+    infoTooltip,
+    className,
+  }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
+    const resolvedSectionInfoTooltip =
+      infoTooltip === undefined ? defaultEscalateToHumanInfoTooltip : infoTooltip;
+
     return (
       <div
         ref={ref}
@@ -81,9 +106,27 @@ const FrustrationHandoverCard = React.forwardRef(
         <Accordion type="single">
           <AccordionItem value="frustration">
             <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
-              <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
+              <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary min-w-0">
                 Escalate to Human
-                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                {resolvedSectionInfoTooltip ? (
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span
+                          className="inline-flex shrink-0 cursor-help"
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label="Escalate to Human: more information"
+                        >
+                          <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{resolvedSectionInfoTooltip}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                )}
               </span>
             </AccordionTrigger>
             <AccordionContent>

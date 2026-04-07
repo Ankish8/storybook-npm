@@ -23,11 +23,15 @@ export interface FallbackPromptsData {
 
 /** Default hover text for the info icon next to "Agent Busy Prompt" */
 export const defaultAgentBusyPromptTooltip =
-  "Message the bot uses when the person or extension is busy. Tell callers what to expect while they wait.";
+  "Played when a call is transferred but no agent picks up and the call returns to the bot.";
 
 /** Default hover text for the info icon next to "No Extension Found" */
 export const defaultNoExtensionFoundPromptTooltip =
-  "Message when the requested extension does not exist or cannot be reached. Use it to recover the conversation helpfully.";
+  "Played when the bot can't find a valid department extension to transfer to.";
+
+/** Default hover text for the info icon next to the "Fallback Prompts" accordion title */
+export const defaultFallbackPromptsInfoTooltip =
+  "These prompts play when a transfer fails or no extension is found. Configure them to ensure callers always get a helpful response even when agents are unavailable.";
 
 export interface FallbackPromptsCardProps {
   /** Current prompt text values */
@@ -54,6 +58,11 @@ export interface FallbackPromptsCardProps {
    * When omitted, {@link defaultNoExtensionFoundPromptTooltip} is used. Pass `""` to hide the icon.
    */
   noExtensionFoundPromptTooltip?: string;
+  /**
+   * Hover text on the info icon next to the "Fallback Prompts" title (same pattern as Knowledge Base).
+   * When omitted, {@link defaultFallbackPromptsInfoTooltip} is used. Pass `""` for a non-interactive icon only.
+   */
+  infoTooltip?: string;
   /** Additional className */
   className?: string;
 }
@@ -93,10 +102,12 @@ function PromptField({
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info
-                  className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                <span
+                  className="inline-flex shrink-0 cursor-help"
                   aria-label={`${label}: more information`}
-                />
+                >
+                  <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                </span>
               </TooltipTrigger>
               <TooltipContent>{labelTooltip}</TooltipContent>
             </Tooltip>
@@ -140,6 +151,7 @@ const FallbackPromptsCard = React.forwardRef(
       defaultOpen = false,
       agentBusyPromptTooltip,
       noExtensionFoundPromptTooltip,
+      infoTooltip,
       className,
     }: FallbackPromptsCardProps,
     ref: React.Ref<HTMLDivElement>
@@ -152,6 +164,8 @@ const FallbackPromptsCard = React.forwardRef(
       noExtensionFoundPromptTooltip === undefined
         ? defaultNoExtensionFoundPromptTooltip
         : noExtensionFoundPromptTooltip;
+    const resolvedSectionInfoTooltip =
+      infoTooltip === undefined ? defaultFallbackPromptsInfoTooltip : infoTooltip;
 
     return (
       <div
@@ -167,9 +181,27 @@ const FallbackPromptsCard = React.forwardRef(
         >
           <AccordionItem value="fallback">
             <AccordionTrigger className="px-4 py-4 border-b border-solid border-semantic-border-layout hover:no-underline sm:px-6 sm:py-5">
-              <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
+              <span className="flex items-center gap-1.5 text-base font-semibold text-semantic-text-primary min-w-0">
                 Fallback Prompts
-                <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                {resolvedSectionInfoTooltip ? (
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span
+                          className="inline-flex shrink-0 cursor-help"
+                          onPointerDown={(e) => e.stopPropagation()}
+                          onClick={(e) => e.stopPropagation()}
+                          aria-label="Fallback Prompts: more information"
+                        >
+                          <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{resolvedSectionInfoTooltip}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+                )}
               </span>
             </AccordionTrigger>
             <AccordionContent>

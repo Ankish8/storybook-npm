@@ -3,6 +3,9 @@ import * as React from "react";
 import { CreateFunctionModal } from "./create-function-modal";
 import type { CreateFunctionData, VariableGroup, VariableFormData } from "./types";
 
+/** Meets default `promptMinLength` (100) for stories that open on step 2 */
+const STORY_MIN_PROMPT = "x".repeat(100);
+
 const meta: Meta<typeof CreateFunctionModal> = {
   title: "Custom/AI Bot/Create Function",
   component: CreateFunctionModal,
@@ -76,6 +79,11 @@ import { CreateFunctionModal } from "@/components/custom/ivr-bot"
     disabled: {
       control: "boolean",
       description: "View mode: fields disabled, Next stays enabled for navigation",
+    },
+    submitLoading: {
+      control: "boolean",
+      description:
+        "Step 2: parent-driven busy state — Submit shows spinner, Back disabled (adds to internal submit busy state)",
     },
     maxHeaderRows: {
       control: { type: "number" },
@@ -219,6 +227,60 @@ export const Step2QueryParamsTab: Story = {
       description: {
         story:
           "Step 2 with the **Query parameter** tab active. Works identically to the Header tab — key/value pairs appended to the URL as query string parameters.",
+      },
+    },
+  },
+};
+
+// ─── Step 2 — submitLoading prop (opens on click; loading after Submit) ─────
+function SubmitLoadingPropDemo() {
+  const [open, setOpen] = React.useState(false);
+  const [submitLoading, setSubmitLoading] = React.useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-semantic-primary text-semantic-text-inverted text-sm font-semibold rounded hover:bg-semantic-primary-hover transition-colors"
+      >
+        Open Step 2 — submitLoading demo
+      </button>
+      <CreateFunctionModal
+        open={open}
+        onOpenChange={setOpen}
+        initialStep={2}
+        submitLoading={submitLoading}
+        initialData={{
+          name: "DemoFn",
+          prompt: STORY_MIN_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/",
+          headers: [{ id: "h1", key: "X-Api", value: "1" }],
+          queryParams: [],
+          body: "",
+        }}
+        onSubmit={async () => {
+          setSubmitLoading(true);
+          try {
+            await new Promise((r) => setTimeout(r, 1200));
+          } finally {
+            setSubmitLoading(false);
+          }
+        }}
+      />
+    </>
+  );
+}
+
+export const Step2SubmitLoadingProp: Story = {
+  name: "Step 2 — submitLoading prop",
+  render: () => <SubmitLoadingPropDemo />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Click **Open Step 2 — submitLoading demo** to open the modal (it does not open on load). Click **Submit** to run a short fake save: the parent sets **`submitLoading`** so Submit shows the shared **Button** loading state and **Back** stays disabled until the request finishes (same pattern as a React Query mutation).",
       },
     },
   },

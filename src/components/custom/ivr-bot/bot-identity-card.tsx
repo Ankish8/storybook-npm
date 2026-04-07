@@ -16,6 +16,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import { formFieldLabelClassName } from "./form-field-label";
+import {
+  BOT_IDENTITY_INVALID_CHARS_MESSAGE,
+  filterBotIdentityText,
+  hadInvalidBotIdentityChars,
+} from "./bot-identity-text";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -108,6 +114,7 @@ function Field({
   label,
   required,
   helperText,
+  errorText,
   characterCount,
   labelTooltip,
   children,
@@ -115,15 +122,14 @@ function Field({
   label: string;
   required?: boolean;
   helperText?: string;
+  /** Validation error; takes precedence over helperText in the helper row. */
+  errorText?: string;
   /** e.g. { current: 0, max: 50 } to show "0/50" below right */
   characterCount?: { current: number; max: number };
   /** Info icon beside label; hover shows tooltip (same pattern as Functions card). */
   labelTooltip?: string;
   children: React.ReactNode;
 }) {
-  const labelClasses =
-    "text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]";
-
   const labelBody = (
     <>
       {label}
@@ -137,7 +143,7 @@ function Field({
     <div className="flex flex-col gap-1.5">
       {labelTooltip ? (
         <div className="flex items-center gap-1.5 min-w-0">
-          <span className={labelClasses}>{labelBody}</span>
+          <span className={formFieldLabelClassName}>{labelBody}</span>
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -151,12 +157,17 @@ function Field({
           </TooltipProvider>
         </div>
       ) : (
-        <label className={labelClasses}>{labelBody}</label>
+        <label className={formFieldLabelClassName}>{labelBody}</label>
       )}
       {children}
-      {(helperText || characterCount) && (
+      {(errorText || helperText || characterCount) && (
         <div className="flex items-center justify-between gap-2">
-          {helperText ? (
+          {errorText ? (
+            <div className="flex items-center gap-1.5 text-xs text-semantic-error-primary min-w-0">
+              <Info className="size-3.5 shrink-0" />
+              <p className="m-0">{errorText}</p>
+            </div>
+          ) : helperText ? (
             <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
               <Info className="size-3.5 shrink-0" />
               <p className="m-0">{helperText}</p>
@@ -186,6 +197,7 @@ function StyledInput({
   onChange,
   disabled,
   maxLength,
+  invalid,
   className,
 }: {
   placeholder?: string;
@@ -193,6 +205,7 @@ function StyledInput({
   onChange?: (v: string) => void;
   disabled?: boolean;
   maxLength?: number;
+  invalid?: boolean;
   className?: string;
 }) {
   return (
@@ -206,12 +219,14 @@ function StyledInput({
       placeholder={placeholder}
       disabled={disabled}
       maxLength={maxLength}
+      aria-invalid={invalid || undefined}
       className={cn(
         "w-full h-[42px] px-4 text-base rounded border border-solid",
-        "border-semantic-border-input bg-semantic-bg-primary",
-        "text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none hover:border-semantic-border-input-focus",
-        "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        "bg-semantic-bg-primary text-semantic-text-primary placeholder:text-semantic-text-muted",
+        "outline-none",
+        invalid
+          ? "border-semantic-error-primary/50 hover:border-semantic-error-primary/60 focus:border-semantic-error-primary/70 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
+          : "border-semantic-border-input hover:border-semantic-border-input-focus focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
@@ -285,6 +300,25 @@ const BotIdentityCard = React.forwardRef(
     }: BotIdentityCardProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const [botNameError, setBotNameError] = React.useState<string | null>(null);
+    const [primaryRoleError, setPrimaryRoleError] = React.useState<
+      string | null
+    >(null);
+    const [toneError, setToneError] = React.useState<string | null>(null);
+
+    const handleBotNameChange = React.useCallback(
+      (raw: string) => {
+        const sanitized = filterBotIdentityText(raw);
+        if (hadInvalidBotIdentityChars(raw, sanitized)) {
+          setBotNameError(BOT_IDENTITY_INVALID_CHARS_MESSAGE);
+        } else {
+          setBotNameError(null);
+        }
+        onChange({ botName: sanitized });
+      },
+      [onChange]
+    );
+
     return (
       <div
         ref={ref}
@@ -306,23 +340,26 @@ const BotIdentityCard = React.forwardRef(
             <Field
               label="Bot Name & Identity"
               labelTooltip={botNameIdentityTooltip}
+              errorText={botNameError ?? undefined}
               characterCount={{
                 current: (data.botName ?? "").length,
                 max: BOT_NAME_MAX_LENGTH,
               }}
             >
               <StyledInput
-                placeholder="e.g., Rhea from CaratLane"
+                placeholder="e.g., Rhea from XYZ"
                 value={data.botName}
-                onChange={(v) => onChange({ botName: v })}
+                onChange={handleBotNameChange}
                 disabled={disabled}
                 maxLength={BOT_NAME_MAX_LENGTH}
+                invalid={Boolean(botNameError)}
               />
             </Field>
 
             <Field
               label="Primary Role"
               labelTooltip={primaryRoleTooltip}
+              errorText={primaryRoleError ?? undefined}
               characterCount={{
                 current: (data.primaryRole ?? "").length,
                 max: PRIMARY_ROLE_MAX_LENGTH,
@@ -330,28 +367,48 @@ const BotIdentityCard = React.forwardRef(
             >
               <CreatableSelect
                 value={(data.primaryRole ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH)}
-                onValueChange={(v) =>
-                  onChange({ primaryRole: (v ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH) })
-                }
+                onValueChange={(v) => {
+                  setPrimaryRoleError(null);
+                  onChange({
+                    primaryRole: (v ?? "").slice(0, PRIMARY_ROLE_MAX_LENGTH),
+                  });
+                }}
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
                 disabled={disabled}
                 maxLength={PRIMARY_ROLE_MAX_LENGTH}
+                sanitizeInput={filterBotIdentityText}
+                onInvalidCharacters={() =>
+                  setPrimaryRoleError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
+                }
+                onValidInput={() => setPrimaryRoleError(null)}
+                state={primaryRoleError ? "error" : "default"}
               />
             </Field>
 
-            <Field label="Tone" labelTooltip={toneTooltip}>
+            <Field
+              label="Tone"
+              labelTooltip={toneTooltip}
+              errorText={toneError ?? undefined}
+            >
               <CreatableMultiSelect
                 value={(Array.isArray(data.tone) ? data.tone : []).slice(0, TONE_MAX_ITEMS)}
-                onValueChange={(v) =>
-                  onChange({ tone: (v ?? []).slice(0, TONE_MAX_ITEMS) })
-                }
+                onValueChange={(v) => {
+                  setToneError(null);
+                  onChange({ tone: (v ?? []).slice(0, TONE_MAX_ITEMS) });
+                }}
                 options={toneOptions}
                 placeholder="Enter or select tone"
                 disabled={disabled}
                 maxItems={TONE_MAX_ITEMS}
                 maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}
+                sanitizeInput={filterBotIdentityText}
+                onInvalidCharacters={() =>
+                  setToneError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
+                }
+                onValidInput={() => setToneError(null)}
+                state={toneError ? "error" : "default"}
               />
             </Field>
 

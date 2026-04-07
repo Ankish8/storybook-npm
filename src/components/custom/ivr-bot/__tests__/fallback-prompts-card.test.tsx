@@ -8,6 +8,22 @@ describe("FallbackPromptsCard", () => {
     expect(screen.getByText("Fallback Prompts")).toBeInTheDocument();
   });
 
+  it("shows section header info control with accessible name (tooltip trigger)", () => {
+    render(<FallbackPromptsCard data={{}} onChange={() => {}} />);
+    expect(
+      screen.getByLabelText("Fallback Prompts: more information")
+    ).toBeInTheDocument();
+  });
+
+  it("shows non-interactive header icon when infoTooltip is empty string", () => {
+    render(
+      <FallbackPromptsCard data={{}} onChange={() => {}} infoTooltip="" />
+    );
+    expect(
+      screen.queryByLabelText("Fallback Prompts: more information")
+    ).not.toBeInTheDocument();
+  });
+
   it("renders collapsed by default (trigger aria-expanded is false)", () => {
     render(<FallbackPromptsCard data={{}} onChange={() => {}} />);
     const trigger = screen.getByRole("button");

@@ -88,6 +88,28 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByRole("button", { name: /Back/i })).toBeInTheDocument();
   });
 
+  it("disables Back and Submit when submitLoading prop is true", () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        submitLoading
+        initialStep={2}
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/",
+          headers: [{ id: "h1", key: "X", value: "1" }],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+    expect(screen.getByRole("button", { name: /Back/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Submit/i })).toBeDisabled();
+  });
+
   it("goes back to step 1 from step 2", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
@@ -224,7 +246,7 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
   });
 
-  it("shows query param validation on new empty rows after a failed submit (same as header rows)", async () => {
+  it("does not show submit validation on query rows added after a failed submit until Submit is clicked again", async () => {
     const onSubmit = vi.fn();
     render(
       <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
@@ -247,6 +269,11 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Add row/i }));
     const keysAfterSecondAdd = screen.getAllByPlaceholderText("Key");
     expect(keysAfterSecondAdd).toHaveLength(2);
+    // New empty row: no "key required" until the next Submit
+    expect(screen.queryByText(/Query param key is required/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(screen.getByText(/Query param key is required/i)).toBeInTheDocument();
     expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
   });

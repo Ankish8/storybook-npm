@@ -74,6 +74,8 @@ export const IvrBotConfig = React.forwardRef(
       howItBehavesTooltip,
       agentBusyPromptTooltip,
       noExtensionFoundPromptTooltip,
+      fallbackPromptsInfoTooltip,
+      escalateToHumanInfoTooltip,
       functionPromptMinLength,
       functionNameMaxLength,
       functionPromptMaxLength,
@@ -222,6 +224,7 @@ export const IvrBotConfig = React.forwardRef(
               disabled={disabled}
               agentBusyPromptTooltip={agentBusyPromptTooltip}
               noExtensionFoundPromptTooltip={noExtensionFoundPromptTooltip}
+              infoTooltip={fallbackPromptsInfoTooltip}
             />
           </div>
 
@@ -264,6 +267,7 @@ export const IvrBotConfig = React.forwardRef(
               onChange={update}
               departmentOptions={escalationDepartmentOptions}
               disabled={disabled}
+              infoTooltip={escalateToHumanInfoTooltip}
             />
             <AdvancedSettingsCard
               data={data}
