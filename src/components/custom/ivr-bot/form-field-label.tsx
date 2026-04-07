@@ -5,8 +5,7 @@ import { cn } from "../../../lib/utils";
 export const formFieldLabelClassName =
   "text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]";
 
-export interface FormFieldLabelProps
-  extends React.HTMLAttributes<HTMLSpanElement> {}
+export type FormFieldLabelProps = React.HTMLAttributes<HTMLSpanElement>;
 
 export function FormFieldLabel({ className, ...props }: FormFieldLabelProps) {
   return (
