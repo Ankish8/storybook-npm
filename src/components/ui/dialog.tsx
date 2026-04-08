@@ -74,12 +74,37 @@ const hasDialogDescription = (children: React.ReactNode): boolean => {
 const DialogContent = React.forwardRef(({ className, children, size, hideCloseButton = false, ...props }: DialogContentProps, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Content>>) => {
   const hasDescription = hasDialogDescription(children);
 
-  // Lock body scroll when dialog is open — works regardless of host app CSS overrides
+  // Lock ALL scroll when dialog is open — position:fixed on body prevents scroll
+  // regardless of whether the host app scrolls on <body>, <html>, or a wrapper div.
+  // Only activates when dialog is truly open (has role="dialog" in DOM), not in
+  // Storybook static renders.
   React.useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const dialogEl = document.querySelector("[role='dialog'][data-state='open']");
+    if (!dialogEl) return;
+
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const html = document.documentElement;
+
+    const originalBodyPosition = body.style.position;
+    const originalBodyTop = body.style.top;
+    const originalBodyWidth = body.style.width;
+    const originalBodyOverflow = body.style.overflow;
+    const originalHtmlOverflow = html.style.overflow;
+
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+    html.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = originalOverflow;
+      body.style.position = originalBodyPosition;
+      body.style.top = originalBodyTop;
+      body.style.width = originalBodyWidth;
+      body.style.overflow = originalBodyOverflow;
+      html.style.overflow = originalHtmlOverflow;
+      window.scrollTo(0, scrollY);
     };
   }, []);
 
