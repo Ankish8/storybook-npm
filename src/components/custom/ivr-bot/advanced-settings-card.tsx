@@ -182,7 +182,9 @@ function ValidatedNumberSpinner({
   const inputStrRef = React.useRef(
     value === undefined ? "" : String(value)
   );
-  inputStrRef.current = inputStr;
+  React.useEffect(() => {
+    inputStrRef.current = inputStr;
+  }, [inputStr]);
 
   React.useEffect(() => {
     if (prevValueRef.current !== value) {

@@ -59,7 +59,7 @@ const PricingPage = React.forwardRef(
     return (
       <div
         ref={ref}
-        className={cn("flex flex-col bg-card", className)}
+        className={cn("flex flex-col bg-card h-full overflow-y-auto", className)}
         {...props}
       >
         {/* ───── Header ───── */}
@@ -78,7 +78,7 @@ const PricingPage = React.forwardRef(
                 "grid gap-8 justify-center",
                 planCards.length <= 2
                   ? "grid-cols-1 md:grid-cols-2 max-w-[960px] mx-auto"
-                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-[1200px] mx-auto w-full"
               )}
             >
               {planCards.map((cardProps, index) => {
@@ -99,7 +99,7 @@ const PricingPage = React.forwardRef(
         {/* ───── Power-ups Section ───── */}
         {hasPowerUps && (
           <div className="bg-semantic-bg-ui px-6 py-[60px]">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full">
               {/* Section header */}
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
@@ -130,7 +130,7 @@ const PricingPage = React.forwardRef(
         {/* ───── Let Us Drive Section ───── */}
         {hasLetUsDrive && (
           <div className="bg-card px-6 py-[60px]">
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full">
               {/* Section header */}
               <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
                 {letUsDriveTitle}
