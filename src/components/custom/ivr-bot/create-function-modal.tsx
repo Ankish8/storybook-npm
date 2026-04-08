@@ -60,7 +60,7 @@ const HEADER_VALUE_MAX = 2048;
 
 const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
 
-/** Spaces → underscores so users can type natural phrases without invalid-name errors. */
+/** Spaces → underscores so users can type natural phrases without invalid-name errors (function name, variable name). */
 function normalizeFunctionNameInput(value: string): string {
   return value.replace(/ /g, "_");
 }
@@ -475,7 +475,7 @@ function VariableFormModal({
   // Reset form when modal opens
   React.useEffect(() => {
     if (open) {
-      setName(initialData?.name ?? "");
+      setName(normalizeFunctionNameInput(initialData?.name ?? ""));
       setDescription(initialData?.description ?? "");
       setRequired(initialData?.required ?? false);
       setNameError("");
@@ -492,13 +492,14 @@ function VariableFormModal({
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value;
-    setName(v);
-    setNameError(validateName(v));
+    const normalized = normalizeFunctionNameInput(e.target.value);
+    setName(normalized);
+    setNameError(validateName(normalized));
   };
 
   const handleSave = () => {
-    if (!name.trim()) {
+    const normalizedName = normalizeFunctionNameInput(name).trim();
+    if (!normalizedName) {
       setNameError(
         required
           ? "Value is required for this key"
@@ -506,7 +507,7 @@ function VariableFormModal({
       );
       return;
     }
-    const error = validateName(name);
+    const error = validateName(normalizedName);
     if (error) {
       setNameError(error);
       return;
@@ -520,10 +521,10 @@ function VariableFormModal({
       return;
     }
     setDescriptionError("");
-    onSave({ name: name.trim(), description: descTrimmed, required });
+    onSave({ name: normalizedName, description: descTrimmed, required });
   };
 
-  const hasInvalidFormat = Boolean(name.trim() && validateName(name));
+  const hasInvalidFormat = Boolean(name.trim() && validateName(normalizeFunctionNameInput(name)));
   const descriptionTooLong =
     descMaxLen != null && description.length > descMaxLen;
   const descriptionInvalid = Boolean(descriptionError) || descriptionTooLong;
@@ -549,6 +550,11 @@ function VariableFormModal({
               type="text"
               value={name}
               onChange={handleNameChange}
+              onBlur={(e) => {
+                const normalized = normalizeFunctionNameInput(e.target.value);
+                setName(normalized);
+                setNameError(validateName(normalized));
+              }}
               placeholder="e.g., customer_name"
               maxLength={nameMaxLen}
               aria-invalid={Boolean(nameError)}

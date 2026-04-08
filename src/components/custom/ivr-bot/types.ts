@@ -332,11 +332,15 @@ export interface IvrBotConfigProps {
   advancedSettingsNumericBounds?: Partial<AdvancedSettingsNumericBounds>;
   /** Override silence timeout min (after `advancedSettingsNumericBounds`) */
   silenceTimeoutMin?: number;
-  /** Override silence timeout max (after `advancedSettingsNumericBounds`) */
+  /**
+   * Inclusive maximum for silence timeout (`silenceTimeoutMin` … `silenceTimeoutMax`).
+   */
   silenceTimeoutMax?: number;
   /** Override call end threshold min (after `advancedSettingsNumericBounds`) */
   callEndThresholdMin?: number;
-  /** Override call end threshold max (after `advancedSettingsNumericBounds`) */
+  /**
+   * Inclusive maximum for maximum silence retries (`callEndThresholdMin` … `callEndThresholdMax`).
+   */
   callEndThresholdMax?: number;
   /**
    * Fires when any Advanced Settings field changes (numeric commit, stepper, interruption toggle).

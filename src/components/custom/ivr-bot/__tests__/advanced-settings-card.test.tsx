@@ -106,7 +106,9 @@ describe("AdvancedSettingsCard", () => {
     fireEvent.blur(input);
     expect(input).toHaveValue("");
     expect(onChange).toHaveBeenCalledWith({ silenceTimeout: undefined });
-    expect(screen.getByText("This field is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("Value must be between 3 and 15")
+    ).toBeInTheDocument();
   });
 
   it("shows range error on blur when value is below min", () => {
@@ -125,13 +127,57 @@ describe("AdvancedSettingsCard", () => {
     ) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "0" } });
     fireEvent.blur(input);
-    expect(
-      screen.getByText("Value must be between 1 and 60")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Value must be at least 1")).toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("clamps typed value to max and commits that value on blur", () => {
+  it("shows range error when cleared after over-max (empty is invalid when required)", () => {
+    render(
+      <AdvancedSettingsCard
+        data={{ silenceTimeout: 10 }}
+        silenceTimeoutMin={3}
+        silenceTimeoutMax={15}
+        onChange={() => {}}
+      />
+    );
+    expandAdvanced();
+    const input = document.getElementById(
+      "advanced-silence-timeout"
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "16" } });
+    expect(
+      screen.getByText("Value must be at most 15")
+    ).toBeInTheDocument();
+    fireEvent.change(input, { target: { value: "" } });
+    expect(
+      screen.queryByText("Value must be at most 15")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Value must be between 3 and 15")
+    ).toBeInTheDocument();
+  });
+
+  it("accepts value equal to inclusive max without error", () => {
+    const onChange = vi.fn();
+    render(
+      <AdvancedSettingsCard
+        data={{ silenceTimeout: 10 }}
+        silenceTimeoutMin={3}
+        silenceTimeoutMax={15}
+        onChange={onChange}
+      />
+    );
+    expandAdvanced();
+    const input = document.getElementById(
+      "advanced-silence-timeout"
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "15" } });
+    fireEvent.blur(input);
+    expect(onChange).toHaveBeenCalledWith({ silenceTimeout: 15 });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("keeps digits above max while typing and shows error on blur", () => {
     const onChange = vi.fn();
     render(
       <AdvancedSettingsCard
@@ -146,15 +192,55 @@ describe("AdvancedSettingsCard", () => {
       "advanced-silence-timeout"
     ) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "61" } });
-    expect(input).toHaveValue("60");
+    expect(input).toHaveValue("61");
     fireEvent.blur(input);
-    expect(onChange).toHaveBeenCalledWith({ silenceTimeout: 60 });
+    expect(onChange).not.toHaveBeenCalledWith({ silenceTimeout: 61 });
     expect(
-      screen.queryByText("Value must be between 1 and 60")
-    ).not.toBeInTheDocument();
+      screen.getByText("Value must be at most 60")
+    ).toBeInTheDocument();
   });
 
-  it("clamps a long digit string to default silence max while typing", () => {
+  it("does not cap typed digits to max; shows validation instead", () => {
+    render(
+      <AdvancedSettingsCard
+        data={{ silenceTimeout: 3 }}
+        silenceTimeoutMin={3}
+        silenceTimeoutMax={15}
+        onChange={() => {}}
+      />
+    );
+    expandAdvanced();
+    const input = document.getElementById(
+      "advanced-silence-timeout"
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "50" } });
+    expect(input).toHaveValue("50");
+    expect(
+      screen.getByText("Value must be at most 15")
+    ).toBeInTheDocument();
+  });
+
+  it("allows typing multi-digit values above max without truncating (e.g. 100 when max is 15)", () => {
+    render(
+      <AdvancedSettingsCard
+        data={{ silenceTimeout: 3 }}
+        silenceTimeoutMin={3}
+        silenceTimeoutMax={15}
+        onChange={() => {}}
+      />
+    );
+    expandAdvanced();
+    const input = document.getElementById(
+      "advanced-silence-timeout"
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "100" } });
+    expect(input).toHaveValue("100");
+    expect(
+      screen.getByText("Value must be at most 15")
+    ).toBeInTheDocument();
+  });
+
+  it("preserves long digit strings without capping to max", () => {
     render(
       <AdvancedSettingsCard data={{ silenceTimeout: 3 }} onChange={() => {}} />
     );
@@ -165,7 +251,7 @@ describe("AdvancedSettingsCard", () => {
     fireEvent.change(input, {
       target: { value: "15123234321232122" },
     });
-    expect(input).toHaveValue("15");
+    expect(input).toHaveValue("15123234321232122");
   });
 
   it("does not show required error when field is optional and left empty", () => {
@@ -184,7 +270,9 @@ describe("AdvancedSettingsCard", () => {
     fireEvent.change(input, { target: { value: "" } });
     fireEvent.blur(input);
     expect(onChange).toHaveBeenCalledWith({ silenceTimeout: undefined });
-    expect(screen.queryByText("This field is required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Value must be between/)
+    ).not.toBeInTheDocument();
   });
 
   it("increments from empty to min and disables decrement when empty", () => {
@@ -271,9 +359,7 @@ describe("AdvancedSettingsCard", () => {
     ) as HTMLInputElement;
     fireEvent.change(silenceInput, { target: { value: "4" } });
     fireEvent.blur(silenceInput);
-    expect(
-      screen.getByText("Value must be between 5 and 12")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Value must be at least 5")).toBeInTheDocument();
   });
 
   it("calls onAdvancedSettingsChange with patch alongside onChange", () => {
