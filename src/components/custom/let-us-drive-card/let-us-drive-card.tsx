@@ -95,31 +95,37 @@ const LetUsDriveCard = React.forwardRef(
 
         {/* Price section — min-height so "Includes:" starts at same vertical position across cards when details are expanded */}
         <div className="flex min-h-[7rem] flex-col gap-2.5">
-          {startsAt && (
-            <span className="text-xs text-semantic-text-muted tracking-[0.048px]">
-              Starts at
-            </span>
-          )}
-          <div className="flex gap-1 items-end">
-            {freeLabel ? (
-              <span className="text-[28px] font-semibold leading-[36px]">
-                <span className="line-through text-semantic-text-muted">
-                  ₹{price}
-                </span>{" "}
-                <span className="text-semantic-success-primary">
-                  {freeLabel}
+          {/* "Starts at" + price grouped together. Fixed h-5 (20px) spacer ensures
+              prices align across cards regardless of whether "Starts at" is shown. */}
+          <div className="flex flex-col">
+            <div className="h-5">
+              {startsAt && (
+                <span className="text-sm leading-5 text-semantic-text-muted tracking-[0.048px]">
+                  Starts at
                 </span>
-              </span>
-            ) : (
-              <span className="text-[28px] font-semibold leading-[36px] text-semantic-text-primary">
-                ₹{price}
-              </span>
-            )}
-            {period && (
-              <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
-                {period}
-              </span>
-            )}
+              )}
+            </div>
+            <div className="flex gap-1 items-end">
+              {freeLabel ? (
+                <span className="text-[28px] font-semibold leading-[36px]">
+                  <span className="line-through text-semantic-text-muted">
+                    ₹{price}
+                  </span>{" "}
+                  <span className="text-semantic-success-primary">
+                    {freeLabel}
+                  </span>
+                </span>
+              ) : (
+                <span className="text-[28px] font-semibold leading-[36px] text-semantic-text-primary">
+                  ₹{price}
+                </span>
+              )}
+              {period && (
+                <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
+                  {period}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Description */}
