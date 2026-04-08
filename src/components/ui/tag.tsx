@@ -1,4 +1,5 @@
 import * as React from "react";
+import { X } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ const tagVariants = cva("inline-flex items-center rounded text-sm", {
       warning: "bg-semantic-warning-surface text-semantic-warning-primary",
       error: "bg-semantic-error-surface text-semantic-error-primary",
       destructive: "bg-semantic-error-surface text-semantic-error-primary",
+      info: "bg-semantic-info-surface text-semantic-text-primary",
     },
     size: {
       default: "px-2 py-1",
@@ -46,10 +48,16 @@ export interface TagProps
     VariantProps<typeof tagVariants> {
   /** Bold label prefix displayed before the content */
   label?: string;
+  /** When provided, renders a dismiss (×) button that calls this handler */
+  onRemove?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** Disables the dismiss button independently */
+  removeDisabled?: boolean;
+  /** Custom aria-label for the dismiss button (default: "Remove") */
+  removeAriaLabel?: string;
 }
 
 const Tag = React.forwardRef(
-  ({ className, variant, size, label, children, ...props }: TagProps, ref: React.Ref<HTMLSpanElement>) => {
+  ({ className, variant, size, label, onRemove, removeDisabled, removeAriaLabel, children, ...props }: TagProps, ref: React.Ref<HTMLSpanElement>) => {
     return (
       <span
         className={cn(tagVariants({ variant, size, className }))}
@@ -58,6 +66,20 @@ const Tag = React.forwardRef(
       >
         {label && <span className="font-semibold mr-1">{label}</span>}
         <span className="font-normal inline-flex items-center gap-1">{children}</span>
+        {onRemove && (
+          <button
+            type="button"
+            className={cn(
+              "inline-flex items-center justify-center shrink-0 bg-transparent border-none p-0 ml-0.5 cursor-pointer",
+              removeDisabled && "cursor-not-allowed opacity-50"
+            )}
+            onClick={onRemove}
+            disabled={removeDisabled}
+            aria-label={removeAriaLabel ?? "Remove"}
+          >
+            <X className="size-3" />
+          </button>
+        )}
       </span>
     );
   }

@@ -504,3 +504,31 @@ export type { ChatComposerProps, ChatComposerReply } from "./components/custom/c
 export { AttachmentPreview } from "./components/custom/attachment-preview";
 export type { AttachmentPreviewProps } from "./components/custom/attachment-preview";
 
+// BotKnowledgeBase (Custom)
+export { BotKnowledgeBase } from "./components/custom/bot-knowledge-base";
+export type { BotKnowledgeBaseProps, KnowledgeBaseFile as BotKnowledgeBaseFile, KnowledgeFileStatus as BotKnowledgeFileStatus } from "./components/custom/bot-knowledge-base";
+
+// BotInstructions (Custom)
+export { BotInstructions } from "./components/custom/bot-instructions";
+export type { BotInstructionsProps, InstructionItem } from "./components/custom/bot-instructions";
+
+// BotFunctions (Custom)
+export { BotFunctions } from "./components/custom/bot-functions";
+export type { BotFunctionsProps, FunctionItem as BotFunctionItem } from "./components/custom/bot-functions";
+
+// BotIntegrations (Custom)
+export { BotIntegrations } from "./components/custom/bot-integrations";
+export type { BotIntegrationsProps, IntegrationItem } from "./components/custom/bot-integrations";
+
+// BotSettings (Custom)
+export { BotSettings } from "./components/custom/bot-settings";
+export type { BotSettingsProps } from "./components/custom/bot-settings";
+
+// BotHumanHandover (Custom)
+export { BotHumanHandover } from "./components/custom/bot-human-handover";
+export type { BotHumanHandoverProps } from "./components/custom/bot-human-handover";
+
+// BotNudges (Custom)
+export { BotNudges } from "./components/custom/bot-nudges";
+export type { BotNudgesProps, NudgeItem, DelayUnit } from "./components/custom/bot-nudges";
+

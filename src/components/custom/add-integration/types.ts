@@ -2,7 +2,9 @@ import * as React from "react"
 
 /** Represents a toolkit/app from Composio API */
 export interface ComposioToolkit {
-  /** Unique identifier (e.g., "googlesheets", "slack") */
+  /** Unique identifier from the API */
+  id: string
+  /** Unique slug (e.g., "googlesheets", "slack") */
   slug: string
   /** Display name (e.g., "Google Sheets") */
   name: string
@@ -70,10 +72,10 @@ export interface AddIntegrationProps
   integrationNameError?: string
   /** Callback when close (X) is clicked */
   onClose?: () => void
-  /** Callback when Next is clicked on Step 1 */
+  /** Callback when Next is clicked on Step 1. selectedToolkit is null if user only typed a custom name. */
   onNext?: (data: {
     integrationName: string
-    selectedToolkit: ComposioToolkit
+    selectedToolkit: ComposioToolkit | null
   }) => void
   /** Callback when Back arrow is clicked */
   onBack?: () => void

@@ -91,6 +91,7 @@ import { Tag, TagGroup } from "@/components/ui/tag"
         "warning",
         "error",
         "destructive",
+        "info",
       ],
       description: "The visual style of the tag",
     },
@@ -106,6 +107,18 @@ import { Tag, TagGroup } from "@/components/ui/tag"
     children: {
       control: "text",
       description: "The content of the tag",
+    },
+    onRemove: {
+      action: "onRemove",
+      description: "When provided, renders a dismiss (×) button",
+    },
+    removeDisabled: {
+      control: "boolean",
+      description: "Disables the dismiss button independently",
+    },
+    removeAriaLabel: {
+      control: "text",
+      description: 'Custom aria-label for the dismiss button (default: "Remove")',
     },
   },
 };
@@ -147,6 +160,7 @@ export const AllVariants: Story = {
       <Tag variant="warning">Warning</Tag>
       <Tag variant="error">Error</Tag>
       <Tag variant="destructive">Destructive</Tag>
+      <Tag variant="info">Info</Tag>
     </div>
   ),
 };
@@ -183,6 +197,31 @@ export const WithIcons: Story = {
         <CheckCircle className="size-3 shrink-0" />
         Resolved
       </Tag>
+    </div>
+  ),
+};
+
+export const Removable: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Pass `onRemove` to render a dismiss (×) button. Use `removeDisabled` to disable it independently.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Tag variant="default" onRemove={() => {}}>Default</Tag>
+        <Tag variant="primary" onRemove={() => {}}>Primary</Tag>
+        <Tag variant="success" onRemove={() => {}}>Success</Tag>
+        <Tag variant="info" onRemove={() => {}}>Info</Tag>
+        <Tag variant="error" onRemove={() => {}}>Error</Tag>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <Tag variant="primary" onRemove={() => {}} removeDisabled>Disabled remove</Tag>
+        <Tag variant="default" onRemove={() => {}} removeAriaLabel="Remove filter">Custom aria-label</Tag>
+      </div>
     </div>
   ),
 };

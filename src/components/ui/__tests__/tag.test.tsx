@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Tag, TagGroup } from "../tag";
 
 describe("Tag", () => {
@@ -24,6 +25,7 @@ describe("Tag", () => {
     ["warning", "bg-semantic-warning-surface", "text-semantic-warning-primary"],
     ["error", "bg-semantic-error-surface", "text-semantic-error-primary"],
     ["destructive", "bg-semantic-error-surface", "text-semantic-error-primary"],
+    ["info", "bg-semantic-info-surface", "text-semantic-text-primary"],
   ] as const)("renders %s variant", (variant, bgClass, textClass) => {
     render(
       <Tag variant={variant} data-testid="tag">
@@ -126,6 +128,48 @@ describe("Tag accessibility", () => {
       "aria-label",
       "Custom label"
     );
+  });
+});
+
+describe("Tag onRemove", () => {
+  it("renders dismiss button when onRemove is provided", () => {
+    render(
+      <Tag onRemove={vi.fn()} data-testid="tag">
+        Removable
+      </Tag>
+    );
+    expect(screen.getByRole("button", { name: "Remove" })).toBeInTheDocument();
+  });
+
+  it("does not render dismiss button when onRemove is absent", () => {
+    render(<Tag data-testid="tag">Static</Tag>);
+    expect(screen.queryByRole("button", { name: "Remove" })).not.toBeInTheDocument();
+  });
+
+  it("calls onRemove when dismiss button is clicked", async () => {
+    const user = userEvent.setup();
+    const handleRemove = vi.fn();
+    render(<Tag onRemove={handleRemove}>Removable</Tag>);
+    await user.click(screen.getByRole("button", { name: "Remove" }));
+    expect(handleRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables dismiss button when removeDisabled is true", () => {
+    render(
+      <Tag onRemove={vi.fn()} removeDisabled>
+        Disabled
+      </Tag>
+    );
+    expect(screen.getByRole("button", { name: "Remove" })).toBeDisabled();
+  });
+
+  it("uses custom removeAriaLabel", () => {
+    render(
+      <Tag onRemove={vi.fn()} removeAriaLabel="Remove +91 123">
+        +91 123
+      </Tag>
+    );
+    expect(screen.getByRole("button", { name: "Remove +91 123" })).toBeInTheDocument();
   });
 });
 

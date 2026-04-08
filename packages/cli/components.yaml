@@ -105,6 +105,14 @@ categories:
       - wallet-topup
       - file-upload-modal
       - video-media
+      # Bot Config modules (group: "bot-config")
+      - bot-functions
+      - bot-human-handover
+      - bot-instructions
+      - bot-integrations
+      - bot-knowledge-base
+      - bot-nudges
+      - bot-settings
       # Chat Template modules (group: "chat")
       - chat-types
       - chat-transport
@@ -406,12 +414,13 @@ components:
   # FEEDBACK COMPONENTS
   # ---------------------------------------------------------------------------
   tag:
-    description: "A tag component for event labels with optional bold label prefix"
+    description: "A tag component for event labels with optional bold label prefix and optional dismiss button"
     category: feedback
     dependencies:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "lucide-react"
 
   alert:
     description: "A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility"
@@ -1094,6 +1103,124 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "ivr-bot-config.tsx"
+
+  bot-knowledge-base:
+    description: "Knowledge base section for bot configuration with file upload and status management"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - badge
+      - tooltip
+    isMultiFile: true
+    directory: "bot-knowledge-base"
+    files:
+      - "types.ts"
+      - "bot-knowledge-base.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  bot-instructions:
+    description: "Instructions section for bot configuration with toggles, character counter, and action buttons"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - switch
+      - tooltip
+    isMultiFile: true
+    directory: "bot-instructions"
+    files:
+      - "types.ts"
+      - "bot-instructions.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  bot-functions:
+    description: "Functions section for bot configuration with a list of bot functions and edit/delete actions"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - tooltip
+    isMultiFile: true
+    directory: "bot-functions"
+    files:
+      - "types.ts"
+      - "bot-functions.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  bot-integrations:
+    description: "Integrations section for bot configuration with connected integrations or empty state"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - badge
+      - button
+      - tooltip
+    isMultiFile: true
+    directory: "bot-integrations"
+    files:
+      - "types.ts"
+      - "bot-integrations.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  bot-settings:
+    description: "Collapsible settings section for bot configuration with Connect WhatsApp phone number tag input"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - tag
+      - tooltip
+    isMultiFile: true
+    directory: "bot-settings"
+    files:
+      - "types.ts"
+      - "bot-settings.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  bot-human-handover:
+    description: "Human handover section for bot configuration with toggle to enable connecting to a human agent"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - switch
+    isMultiFile: true
+    directory: "bot-human-handover"
+    files:
+      - "types.ts"
+      - "bot-human-handover.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  bot-nudges:
+    description: "Nudges section for bot configuration with delay settings and message input for each nudge"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - switch
+      - select
+      - input
+      - textarea
+      - tooltip
+    isMultiFile: true
+    directory: "bot-nudges"
+    files:
+      - "types.ts"
+      - "bot-nudges.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
 
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"

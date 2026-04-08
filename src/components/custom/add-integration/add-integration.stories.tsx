@@ -54,42 +54,49 @@ const logos = {
 
 const sampleToolkits: ComposioToolkit[] = [
   {
+    id: "tk_1",
     slug: "googlesheets",
     name: "Google Sheets",
     logo: logos.googleSheets,
     description: "Read and write data to Google Sheets spreadsheets",
   },
   {
+    id: "tk_2",
     slug: "googledrive",
     name: "Google Drive",
     logo: logos.googleDrive,
     description: "Access files from Google Drive",
   },
   {
+    id: "tk_3",
     slug: "hubspot",
     name: "HubSpot",
     logo: logos.hubspot,
     description: "Manage contacts, deals, and CRM data",
   },
   {
+    id: "tk_4",
     slug: "salesforce",
     name: "Salesforce",
     logo: logos.salesforce,
     description: "Interact with Salesforce CRM data",
   },
   {
+    id: "tk_5",
     slug: "slack",
     name: "Slack",
     logo: logos.slack,
     description: "Send messages and notifications to Slack channels",
   },
   {
+    id: "tk_6",
     slug: "gmail",
     name: "Gmail",
     logo: logos.gmail,
     description: "Send and read emails via Gmail",
   },
   {
+    id: "tk_7",
     slug: "googlecalendar",
     name: "Google Calendar",
     logo: logos.googleCalendar,
@@ -124,7 +131,7 @@ const IntegrationsTrigger = ({ onClick }: { onClick: () => void }) => (
 )
 
 const meta: Meta<typeof AddIntegration> = {
-  title: "Custom/Composio/AddIntegration",
+  title: "Custom/AI Bot/Composio/AddIntegration",
   component: AddIntegration,
   parameters: {
     layout: "centered",

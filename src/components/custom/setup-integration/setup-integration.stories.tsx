@@ -174,7 +174,7 @@ const ModalStory = (props: SetupIntegrationProps) => {
 /* ================================================================== */
 
 const meta: Meta<typeof SetupIntegration> = {
-  title: "Custom/Composio/SetupIntegration",
+  title: "Custom/AI Bot/Composio/SetupIntegration",
   component: SetupIntegration,
   parameters: {
     layout: "centered",

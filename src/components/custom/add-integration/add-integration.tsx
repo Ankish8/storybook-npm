@@ -51,6 +51,10 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
     },
     ref
   ) => {
+    const resolvedStepNumber =
+      currentStepNumber ??
+      (step === "select-toolkit" ? 1 : step === "connect-account" ? 2 : 3)
+
     const filteredToolkits = React.useMemo(() => {
       if (!searchQuery) return toolkits
       const query = searchQuery.toLowerCase()
@@ -62,11 +66,11 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
     }, [toolkits, searchQuery])
 
     const isNextDisabled =
-      !selectedToolkit || !integrationName.trim()
+      !selectedToolkit && !integrationName.trim()
 
     const handleNext = () => {
-      if (selectedToolkit && integrationName.trim() && onNext) {
-        onNext({ integrationName: integrationName.trim(), selectedToolkit })
+      if ((selectedToolkit || integrationName.trim()) && onNext) {
+        onNext({ integrationName: integrationName.trim(), selectedToolkit: selectedToolkit ?? null })
       }
     }
 
@@ -92,7 +96,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
             <>
               <StepHeader
                 title="Select Toolkit"
-                subtitle={`Step ${currentStepNumber} of ${totalSteps}`}
+                subtitle={`Step ${resolvedStepNumber} of ${totalSteps}`}
                 onClose={onClose}
               />
               <div className="flex flex-col gap-6 p-6">
@@ -205,7 +209,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
             <>
               <StepHeader
                 title="Connect your Account"
-                subtitle={`Step ${currentStepNumber} of ${totalSteps}`}
+                subtitle={`Step ${resolvedStepNumber} of ${totalSteps}`}
                 showBack
                 onBack={onBack}
                 onClose={onClose}
@@ -316,7 +320,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
               <>
                 <StepHeader
                   title="Connect your Account"
-                  subtitle={`Step ${currentStepNumber} of ${totalSteps}`}
+                  subtitle={`Step ${resolvedStepNumber} of ${totalSteps}`}
                   showBack
                   onBack={onBack}
                   onClose={onClose}

@@ -8,18 +8,21 @@ import type {
 
 const mockToolkits: ComposioToolkit[] = [
   {
+    id: "tk_1",
     slug: "googlesheets",
     name: "Google Sheets",
     logo: "https://example.com/sheets.png",
     description: "Read and write data to Google Sheets spreadsheets",
   },
   {
+    id: "tk_2",
     slug: "slack",
     name: "Slack",
     logo: "https://example.com/slack.png",
     description: "Send messages and notifications to Slack channels",
   },
   {
+    id: "tk_3",
     slug: "hubspot",
     name: "HubSpot",
     logo: "https://example.com/hubspot.png",
@@ -146,7 +149,7 @@ describe("AddIntegration", () => {
       expect(nextButton).toBeDisabled()
     })
 
-    it("Next button is disabled when toolkit selected but no name", () => {
+    it("Next button is enabled when only toolkit selected (no name)", () => {
       render(
         <AddIntegration
           {...modalProps}
@@ -157,10 +160,10 @@ describe("AddIntegration", () => {
         />
       )
       const nextButton = screen.getByRole("button", { name: "Next" })
-      expect(nextButton).toBeDisabled()
+      expect(nextButton).not.toBeDisabled()
     })
 
-    it("Next button is disabled when name provided but no toolkit", () => {
+    it("Next button is enabled when only name provided (no toolkit)", () => {
       render(
         <AddIntegration
           {...modalProps}
@@ -170,7 +173,7 @@ describe("AddIntegration", () => {
         />
       )
       const nextButton = screen.getByRole("button", { name: "Next" })
-      expect(nextButton).toBeDisabled()
+      expect(nextButton).not.toBeDisabled()
     })
 
     it("Next button enabled and fires onNext when both selected", () => {
