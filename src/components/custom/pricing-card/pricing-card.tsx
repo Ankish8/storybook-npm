@@ -71,8 +71,8 @@ const PricingCard = React.forwardRef(
       >
         {/* Popular badge bar */}
         {showPopularBadge && (
-          <div className="bg-[#4275d6] flex items-center justify-center h-[29px]">
-            <p className="text-sm text-white font-normal m-0">
+          <div className="bg-[#4275d6] flex items-center justify-center h-6">
+            <p className="text-sm text-white font-medium m-0">
               {badgeText}
             </p>
           </div>
@@ -152,21 +152,50 @@ const PricingCard = React.forwardRef(
               </p>
               <div className="flex flex-col gap-3">
                 {features.map((feature, index) => {
+                  const hasParts =
+                    typeof feature !== "string" && "parts" in feature;
                   const text =
-                    typeof feature === "string" ? feature : feature.text;
+                    typeof feature === "string"
+                      ? feature
+                      : hasParts
+                        ? ""
+                        : (feature as { text: string }).text;
                   const isBold =
-                    typeof feature !== "string" && feature.bold;
+                    typeof feature !== "string" &&
+                    !hasParts &&
+                    (feature as { bold?: boolean }).bold;
                   return (
                     <div key={index} className="flex items-start gap-2">
                       <Check className="size-4 text-semantic-text-secondary shrink-0 mt-0.5" />
-                      <span
-                        className={cn(
-                          "text-sm text-semantic-text-secondary tracking-[0.035px]",
-                          isBold && "font-semibold"
-                        )}
-                      >
-                        {text}
-                      </span>
+                      {hasParts ? (
+                        <span className="text-sm text-semantic-text-secondary tracking-[0.035px]">
+                          {(
+                            feature as {
+                              parts: Array<{
+                                text: string;
+                                bold?: boolean;
+                              }>;
+                            }
+                          ).parts.map((part, i) =>
+                            part.bold ? (
+                              <span key={i} className="font-semibold">
+                                {part.text}
+                              </span>
+                            ) : (
+                              <span key={i}>{part.text}</span>
+                            )
+                          )}
+                        </span>
+                      ) : (
+                        <span
+                          className={cn(
+                            "text-sm text-semantic-text-secondary tracking-[0.035px]",
+                            isBold && "font-semibold"
+                          )}
+                        >
+                          {text}
+                        </span>
+                      )}
                     </div>
                   );
                 })}

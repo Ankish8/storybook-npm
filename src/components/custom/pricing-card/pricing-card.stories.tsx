@@ -14,7 +14,7 @@ const compactFeatures = [
 ];
 
 const sedanFeatures = [
-  { text: "Everything in Compact", bold: true },
+  { parts: [{ text: "Everything in " }, { text: "Compact", bold: true }] },
   "Scalable inbound & outbound calling",
   "IVR call handling + call recording",
   "Smart call routing + sticky agent logic",
@@ -22,10 +22,11 @@ const sedanFeatures = [
   "Campaign reporting & summary insights",
   "Agent availability & shift controls",
   "Shopify integration",
+  "Testing",
 ];
 
 const suvFeatures = [
-  { text: "Everything in Sedan", bold: true },
+  { parts: [{ text: "Everything in " }, { text: "Sedan", bold: true }] },
   "Advanced IVR (multi-level, time & location-based)",
   "CRM integrations (Zoho, Freshsales, Pipedrive, etc.)",
   "Real-time dashboards & operational analytics",
@@ -34,7 +35,7 @@ const suvFeatures = [
   "Power dialer + call tagging",
   "BI reports & data insights",
   "Audit logs & call governance tools",
-  "Premium support",
+  { parts: [{ text: "Premium " }, { text: "Support", bold: true }] },
 ];
 
 const aioFeatures = [
@@ -313,12 +314,12 @@ export const CtaLoading: Story = {
   name: "CTA Loading",
   decorators: [singleCardDecorator],
   args: {
-    planName: "Sedan",
-    price: "5,000",
+    planName: "SUV",
+    price: "15,000",
     planDetails: "10 Users",
     description:
-      "For growing businesses that need more users & unlimited IVR+ calling.",
-    features: sedanFeatures.slice(0, 4),
+      "For teams that also need performance analytics and integrations.",
+    features: suvFeatures.slice(0, 4),
     ctaLoading: true,
     showPopularBadge: true,
     onCtaClick: fn(),
@@ -333,12 +334,12 @@ export const CtaDisabled: Story = {
   name: "CTA Disabled",
   decorators: [singleCardDecorator],
   args: {
-    planName: "Sedan",
-    price: "5,000",
+    planName: "SUV",
+    price: "15,000",
     planDetails: "10 Users",
     description:
-      "For growing businesses that need more users & unlimited IVR+ calling.",
-    features: sedanFeatures.slice(0, 4),
+      "For teams that also need performance analytics and integrations.",
+    features: suvFeatures.slice(0, 4),
     ctaDisabled: true,
     showPopularBadge: true,
     onCtaClick: fn(),
@@ -368,15 +369,15 @@ export const WithInfoText: Story = {
 // ─── Sedan: Most Popular ─────────────────────────────────────────────────
 
 export const MostPopular: Story = {
-  name: "Sedan (Most Popular)",
+  name: "SUV (Most Popular)",
   decorators: [singleCardDecorator],
   args: {
-    planName: "Sedan",
-    price: "5,000",
+    planName: "SUV",
+    price: "15,000",
     planDetails: "10 Users",
     description:
-      "For growing businesses that need more users & unlimited IVR+ calling.",
-    features: sedanFeatures,
+      "For teams that also need performance analytics and integrations.",
+    features: suvFeatures,
     showPopularBadge: true,
     onCtaClick: fn(),
     onFeatureDetails: fn(),
@@ -458,7 +459,6 @@ export const TraditionalPlans: Story = {
         planDetails="10 Users"
         description="For growing businesses that need more users & unlimited IVR+ calling."
         features={sedanFeatures}
-        showPopularBadge
         onCtaClick={fn()}
         onFeatureDetails={fn()}
         addon={defaultAddon}
@@ -470,6 +470,7 @@ export const TraditionalPlans: Story = {
         planDetails="10 Users"
         description="For teams that also need performance analytics and integrations."
         features={suvFeatures}
+        showPopularBadge
         onCtaClick={fn()}
         onFeatureDetails={fn()}
         addon={defaultAddon}

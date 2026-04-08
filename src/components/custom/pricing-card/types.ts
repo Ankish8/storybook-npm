@@ -21,9 +21,25 @@ export interface UsageDetail {
 }
 
 /**
- * A feature can be a plain string or an object with bold styling.
+ * A single segment of feature text with optional bold styling.
  */
-export type PricingCardFeature = string | { text: string; bold?: boolean };
+export interface PricingCardFeaturePart {
+  /** The text content */
+  text: string;
+  /** Whether this segment should be bold */
+  bold?: boolean;
+}
+
+/**
+ * A feature can be:
+ * - A plain string: `"WhatsApp Campaigns"`
+ * - Full bold object: `{ text: "Everything in Compact", bold: true }`
+ * - Partial bold parts: `{ parts: [{ text: "Everything in " }, { text: "Compact", bold: true }] }`
+ */
+export type PricingCardFeature =
+  | string
+  | { text: string; bold?: boolean }
+  | { parts: PricingCardFeaturePart[] };
 
 /**
  * Reusable CTA state for a single plan card (loading/disabled).

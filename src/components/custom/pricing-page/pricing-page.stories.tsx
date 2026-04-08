@@ -45,6 +45,7 @@ const teamCards: PricingCardProps[] = [
   {
     planName: "Compact",
     price: "2,500",
+    period: "per month, billed annually",
     planDetails: "10 Users",
     description:
       "For small teams that need WhatsApp Business API & missed calls.",
@@ -66,7 +67,7 @@ const teamCards: PricingCardProps[] = [
     description:
       "For growing businesses that need more users & unlimited IVR+ calling.",
     features: [
-      { text: "Everything in Compact", bold: true },
+      { parts: [{ text: "Everything in " }, { text: "Compact", bold: true }] },
       "Scalable inbound & outbound calling",
       "IVR call handling + call recording",
       "Smart call routing + sticky agent logic",
@@ -74,8 +75,8 @@ const teamCards: PricingCardProps[] = [
       "Campaign reporting & summary insights",
       "Agent availability & shift controls",
       "Shopify integration",
+      "Testing",
     ],
-    showPopularBadge: true,
     onCtaClick: fn(),
     onFeatureDetails: fn(),
     addon: defaultAddon,
@@ -86,8 +87,9 @@ const teamCards: PricingCardProps[] = [
     planDetails: "10 Users",
     description:
       "For teams that also need performance analytics and integrations.",
+    showPopularBadge: true,
     features: [
-      { text: "Everything in Sedan", bold: true },
+      { parts: [{ text: "Everything in " }, { text: "Sedan", bold: true }] },
       "Advanced IVR (multi-level, time & location-based)",
       "CRM integrations (Zoho, Freshsales, Pipedrive, etc.)",
       "Real-time dashboards & operational analytics",
@@ -96,7 +98,7 @@ const teamCards: PricingCardProps[] = [
       "Power dialer + call tagging",
       "BI reports & data insights",
       "Audit logs & call governance tools",
-      "Premium support",
+      { parts: [{ text: "Premium " }, { text: "Support", bold: true }] },
     ],
     onCtaClick: fn(),
     onFeatureDetails: fn(),

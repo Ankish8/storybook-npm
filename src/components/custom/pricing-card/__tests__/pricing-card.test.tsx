@@ -315,6 +315,38 @@ describe("PricingCard", () => {
     expect(regularFeature.className).not.toContain("font-semibold");
   });
 
+  it("renders partial bold features with parts format", () => {
+    render(
+      <PricingCard
+        {...defaultProps}
+        features={[
+          {
+            parts: [
+              { text: "Everything in " },
+              { text: "Sedan", bold: true },
+            ],
+          },
+          "Regular feature",
+        ]}
+      />
+    );
+    // The bold part should have font-semibold
+    const boldPart = screen.getByText("Sedan");
+    expect(boldPart.className).toContain("font-semibold");
+
+    // The parent span should contain both parts
+    const parentSpan = boldPart.parentElement!;
+    expect(parentSpan.textContent).toBe("Everything in Sedan");
+
+    // Non-bold part should not have font-semibold
+    const normalPart = parentSpan.querySelector("span:first-child")!;
+    expect(normalPart.textContent).toBe("Everything in ");
+    expect(normalPart.className).not.toContain("font-semibold");
+
+    const regularFeature = screen.getByText("Regular feature");
+    expect(regularFeature.className).not.toContain("font-semibold");
+  });
+
   it("renders both addon and usage details together", () => {
     render(
       <PricingCard
