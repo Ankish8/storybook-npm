@@ -262,7 +262,7 @@ const PageHeader = React.forwardRef(
           {/* Content Section: Title + Description */}
           <div className="flex-1 min-w-0">
             <div className="flex h-auto items-center gap-2 sm:min-h-10">
-              <h1 className="m-0 text-lg font-semibold leading-tight text-semantic-text-primary truncate">
+              <h1 className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary truncate">
                 {title}
               </h1>
               {badge && (
