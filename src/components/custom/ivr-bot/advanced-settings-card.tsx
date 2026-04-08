@@ -63,11 +63,11 @@ export interface AdvancedSettingsCardProps {
   numericBounds?: Partial<AdvancedSettingsNumericBounds>;
   /** Min value for silence timeout spinner */
   silenceTimeoutMin?: number;
-  /** Max value for silence timeout spinner */
+  /** Inclusive max for silence timeout (invalid when value is greater than this) */
   silenceTimeoutMax?: number;
   /** Min value for call end threshold spinner */
   callEndThresholdMin?: number;
-  /** Max value for call end threshold spinner */
+  /** Inclusive max for maximum silence retries (invalid when value is greater than this) */
   callEndThresholdMax?: number;
   /** When true, an empty value shows a validation error on blur (default: true) */
   silenceTimeoutRequired?: boolean;
@@ -143,17 +143,15 @@ function digitsOnly(raw: string): string {
   return raw.replace(/\D/g, "");
 }
 
-/**
- * If the digit-only string parses above `max`, returns `String(max)` so the field
- * cannot hold an out-of-range value while typing or pasting.
- */
-function capDigitStringAtMax(digits: string, max: number): string {
-  if (digits === "") return "";
-  const n = Number(digits);
-  if (!Number.isFinite(n) || n > max) return String(max);
-  return digits;
+function rangeRequiredErrorMessage(min: number, max: number): string {
+  return `Value must be between ${min} and ${max}`;
 }
 
+/**
+ * Free-form numeric text: users may type any digit string (e.g. `100` when max is `15`).
+ * Nothing is truncated to `max` while typing. Validation errors appear when the parsed
+ * number is outside `[min, max]`; the parent `onChange` only receives committed valid values on blur.
+ */
 function ValidatedNumberSpinner({
   id,
   value,
@@ -176,19 +174,33 @@ function ValidatedNumberSpinner({
   const [inputStr, setInputStr] = React.useState(() =>
     value === undefined ? "" : String(value)
   );
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(() =>
+    value !== undefined && value > max ? `Value must be at most ${max}` : null
+  );
   const focusedRef = React.useRef(false);
   const prevValueRef = React.useRef(value);
+  const inputStrRef = React.useRef(
+    value === undefined ? "" : String(value)
+  );
+  inputStrRef.current = inputStr;
 
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
       prevValueRef.current = value;
       if (!focusedRef.current) {
-        setInputStr(value === undefined ? "" : String(value));
-        setError(null);
+        const nextStr = value === undefined ? "" : String(value);
+        setInputStr(nextStr);
+        inputStrRef.current = nextStr;
+        if (value !== undefined && value > max) {
+          setError(`Value must be at most ${max}`);
+        } else if (required && value === undefined && nextStr === "") {
+          setError(rangeRequiredErrorMessage(min, max));
+        } else {
+          setError(null);
+        }
       }
     }
-  }, [value]);
+  }, [value, max, min, required]);
 
   const stepBase = (): number | null => {
     const t = inputStr.trim();
@@ -219,7 +231,9 @@ function ValidatedNumberSpinner({
       else return;
     }
     const next = clamp(n + delta, min, max);
-    setInputStr(String(next));
+    const nextStr = String(next);
+    setInputStr(nextStr);
+    inputStrRef.current = nextStr;
     setError(null);
     onChange(next);
   };
@@ -230,7 +244,7 @@ function ValidatedNumberSpinner({
     if (trimmed === "") {
       onChange(undefined);
       if (required) {
-        setError("This field is required");
+        setError(rangeRequiredErrorMessage(min, max));
         onBlurCommit?.({ value: undefined, valid: false });
       } else {
         setError(null);
@@ -244,8 +258,13 @@ function ValidatedNumberSpinner({
       onBlurCommit?.({ value, valid: false });
       return;
     }
-    if (num < min || num > max) {
-      setError(`Value must be between ${min} and ${max}`);
+    if (num < min) {
+      setError(`Value must be at least ${min}`);
+      onBlurCommit?.({ value, valid: false });
+      return;
+    }
+    if (num > max) {
+      setError(`Value must be at most ${max}`);
       onBlurCommit?.({ value, valid: false });
       return;
     }
@@ -277,12 +296,40 @@ function ValidatedNumberSpinner({
           aria-describedby={errorId}
           onFocus={() => {
             focusedRef.current = true;
-            setError(null);
+            const t = inputStrRef.current.trim();
+            if (required && t === "") {
+              setError(rangeRequiredErrorMessage(min, max));
+            } else {
+              setError(null);
+            }
           }}
           onBlur={handleBlur}
-          onChange={(e) =>
-            setInputStr(capDigitStringAtMax(digitsOnly(e.target.value), max))
-          }
+          onChange={(e) => {
+            const next = digitsOnly(e.target.value);
+            setInputStr(next);
+            inputStrRef.current = next;
+            const t = next.trim();
+            if (t === "") {
+              if (required) {
+                setError(rangeRequiredErrorMessage(min, max));
+              } else {
+                setError(null);
+              }
+              return;
+            }
+            const n = Number(t);
+            if (!Number.isFinite(n)) {
+              setError("Enter a valid number");
+              return;
+            }
+            if (n < min) {
+              setError(`Value must be at least ${min}`);
+            } else if (n > max) {
+              setError(`Value must be at most ${max}`);
+            } else {
+              setError(null);
+            }
+          }}
           className="flex-1 min-w-0 text-base text-semantic-text-primary bg-transparent outline-none disabled:cursor-not-allowed"
         />
         <div className="flex flex-col items-center shrink-0 gap-0.5">
@@ -334,7 +381,13 @@ function useCorrectOutOfRangeNumeric(
 
   React.useEffect(() => {
     if (disabled || raw === undefined) return;
-    if (raw < min || raw > max) {
+    if (raw < min) {
+      onChangeRef.current({
+        [patchKey]: min,
+      } as Partial<AdvancedSettingsData>);
+      return;
+    }
+    if (raw > max) {
       onChangeRef.current({
         [patchKey]: clamp(raw, min, max),
       } as Partial<AdvancedSettingsData>);

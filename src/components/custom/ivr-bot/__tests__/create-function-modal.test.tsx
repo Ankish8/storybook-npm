@@ -78,6 +78,37 @@ describe("CreateFunctionModal", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("replaces spaces in variable name with underscores and saves normalized name", async () => {
+    const onAddVariable = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onAddVariable={onAddVariable} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const valueInput = screen.getByPlaceholderText("Type {{ to add variables");
+    await user.click(valueInput);
+    await user.type(valueInput, "{{{{");
+    await user.click(screen.getByRole("button", { name: /Add new variable/i }));
+
+    const varNameInput = screen.getByPlaceholderText("e.g., customer_name");
+    await user.type(varNameInput, "my order id");
+    expect(varNameInput).toHaveValue("my_order_id");
+    expect(varNameInput).toHaveAttribute("aria-invalid", "false");
+
+    await user.type(
+      screen.getByPlaceholderText("What this variable represents"),
+      "Order identifier"
+    );
+    await user.click(screen.getByRole("button", { name: /^Save$/ }));
+
+    expect(onAddVariable).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "my_order_id", description: "Order identifier" })
+    );
+  });
+
   it("advances to step 2 on Next click", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");

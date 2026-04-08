@@ -262,8 +262,6 @@ export const CustomDropdownOptions: Story = {
           { value: "engineering", label: "Engineering" },
           { value: "account-mgmt", label: "Account Management" },
         ]}
-        silenceTimeoutMax={120}
-        callEndThresholdMax={20}
         initialData={{
           botName: "Emma",
           primaryRole: "helpdesk",

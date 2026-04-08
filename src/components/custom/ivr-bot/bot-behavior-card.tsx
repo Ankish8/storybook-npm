@@ -130,6 +130,52 @@ function getCaretPixelPos(
   };
 }
 
+/**
+ * If the caret line falls outside the visible textarea viewport, adjust scrollTop.
+ * Uses {@link getCaretPixelPos} (caret Y relative to visible area, negative = above fold).
+ */
+function scrollCaretIntoViewInTextarea(textarea: HTMLTextAreaElement, position: number) {
+  const cs = window.getComputedStyle(textarea);
+  const padTop = parseFloat(cs.paddingTop) || 0;
+  const padBottom = parseFloat(cs.paddingBottom) || 0;
+  const innerHeight = Math.max(0, textarea.clientHeight - padTop - padBottom);
+  const lineHeight = parseFloat(cs.lineHeight) || 20;
+  const top = getCaretPixelPos(textarea, position).top;
+  let st = textarea.scrollTop;
+  if (top < 0) {
+    st += top - 8;
+  } else if (innerHeight > 0 && top + lineHeight > innerHeight) {
+    st += top + lineHeight - innerHeight + 8;
+  }
+  if (st !== textarea.scrollTop) {
+    textarea.scrollTop = Math.max(0, st);
+  }
+}
+
+/** Run after React commits a controlled textarea value so DOM scroll/selection is stable. */
+function afterNextPaint(fn: () => void) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(fn);
+  });
+}
+
+/**
+ * Restore scroll after programmatic insert (React controlled updates often reset scrollTop),
+ * then place the caret and ensure it stays visible inside the textarea.
+ */
+function focusTextareaAfterInsert(
+  textarea: HTMLTextAreaElement,
+  savedScrollTop: number,
+  selectionStart: number,
+  selectionEnd: number
+) {
+  textarea.focus({ preventScroll: true });
+  textarea.scrollTop = savedScrollTop;
+  textarea.setSelectionRange(selectionStart, selectionEnd);
+  textarea.scrollTop = savedScrollTop;
+  scrollCaretIntoViewInTextarea(textarea, selectionStart);
+}
+
 // Uses the same visual classes as DropdownMenuContent + DropdownMenuItem.
 // Position is driven by cursor coordinates from getCaretPixelPos.
 function VarPopup({
@@ -277,6 +323,7 @@ const BotBehaviorCard = React.forwardRef(
     /** Insert at current caret / selection (chips and keyboard); falls back to last synced caret if textarea blurred. */
     const insertVariable = (variable: string) => {
       const el = textareaRef.current;
+      const savedScrollTop = el?.scrollTop ?? 0;
       let start: number;
       let end: number;
       if (el && document.activeElement === el) {
@@ -292,10 +339,10 @@ const BotBehaviorCard = React.forwardRef(
       if (newVal.length > MAX) return;
       onChange({ systemPrompt: newVal });
       const newPos = start + variable.length;
-      requestAnimationFrame(() => {
-        if (el) {
-          el.focus();
-          el.setSelectionRange(newPos, newPos);
+      afterNextPaint(() => {
+        const t = textareaRef.current;
+        if (t) {
+          focusTextareaAfterInsert(t, savedScrollTop, newPos, newPos);
         }
         caretRef.current = { start: newPos, end: newPos };
       });
@@ -303,18 +350,20 @@ const BotBehaviorCard = React.forwardRef(
 
     const handleVarSelect = (variable: string) => {
       if (!varTrigger) return;
-      const newVal = insertVar(prompt, variable, varTrigger.from, varTrigger.to);
+      const el = textareaRef.current;
+      const savedScrollTop = el?.scrollTop ?? 0;
+      const from = varTrigger.from;
+      const to = varTrigger.to;
+      const newVal = insertVar(prompt, variable, from, to);
       if (newVal.length <= MAX) onChange({ systemPrompt: newVal });
       clearTrigger();
-      // Restore focus and place cursor after inserted variable
-      requestAnimationFrame(() => {
-        const el = textareaRef.current;
-        if (el) {
-          const pos = varTrigger.from + variable.length;
-          el.focus();
-          el.setSelectionRange(pos, pos);
-          caretRef.current = { start: pos, end: pos };
+      const pos = from + variable.length;
+      afterNextPaint(() => {
+        const t = textareaRef.current;
+        if (t) {
+          focusTextareaAfterInsert(t, savedScrollTop, pos, pos);
         }
+        caretRef.current = { start: pos, end: pos };
       });
     };
 
@@ -422,6 +471,10 @@ const BotBehaviorCard = React.forwardRef(
                   <button
                     key={v}
                     type="button"
+                    onMouseDown={(e) => {
+                      if (disabled) return;
+                      e.preventDefault();
+                    }}
                     onClick={() => {
                       if (disabled) return;
                       insertVariable(v);

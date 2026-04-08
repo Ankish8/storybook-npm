@@ -1,5 +1,6 @@
 /**
  * Min/max for Advanced Settings numeric fields (silence timeout, call end threshold).
+ * Allowed committed values are inclusive: `min` through `max`. Values above `max` are invalid.
  * Use with `numericBounds` / `advancedSettingsNumericBounds` props or edit
  * `defaultAdvancedSettingsNumericBounds` for deployment defaults.
  */
