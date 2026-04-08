@@ -100,6 +100,10 @@ SelectScrollDownButton.displayName =
  */
 function useUnlockBodyScroll() {
   React.useEffect(() => {
+    // Don't unlock body scroll if inside a dialog/modal — the dialog's
+    // own scroll lock should remain active to prevent background scrolling
+    if (document.querySelector('[role="dialog"]')) return;
+
     const style = document.createElement("style");
     style.setAttribute("data-select-scroll-fix", "");
     style.textContent =

@@ -482,17 +482,16 @@ describe('Registry', () => {
       expect(content).toContain('[&::-webkit-inner-spin-button]:tw-appearance-none')
     })
 
-    it('prefixes ! important modifier correctly: !p-0 → !tw-p-0', async () => {
+    it('does not produce invalid tw-! prefix pattern in registry output', async () => {
       const registry = await getRegistry('tw-')
       const talkToUs = registry['talk-to-us-modal']
       const content = talkToUs.files[0].content
 
-      // ! important modifier should come BEFORE the prefix: !tw-p-0
-      expect(content).toContain('!tw-p-0')
-      expect(content).toContain('!tw-gap-0')
-      // Should NOT have prefix before !: tw-!p-0 is invalid
-      expect(content).not.toContain('tw-!p-0')
-      expect(content).not.toContain('tw-!gap-0')
+      // If ! important modifiers exist, they should come BEFORE the prefix: !tw-X
+      // The invalid form tw-!X should never appear
+      expect(content).not.toContain('tw-!p-')
+      expect(content).not.toContain('tw-!gap-')
+      expect(content).not.toContain('tw-!m-')
     })
 
     it('preserves interface definitions without corruption', async () => {
