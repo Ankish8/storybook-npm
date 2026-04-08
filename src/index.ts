@@ -532,3 +532,7 @@ export type { BotHumanHandoverProps } from "./components/custom/bot-human-handov
 export { BotNudges } from "./components/custom/bot-nudges";
 export type { BotNudgesProps, NudgeItem, DelayUnit } from "./components/custom/bot-nudges";
 
+// BotTest (Custom)
+export { BotTest } from "./components/custom/bot-test";
+export type { BotTestProps } from "./components/custom/bot-test";
+

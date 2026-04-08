@@ -648,6 +648,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["switch","select","input","textarea","tooltip"],
   },
+  "bot-test": {
+    name: "bot-test",
+    description: "Modal dialog for testing a bot by sending a message to a selected WhatsApp number with phone input",
+      category: "custom",
+    dependencies: ["lucide-react"],
+    category: "custom",
+    internalDependencies: ["dialog","select-field","phone-input","button"],
+  },
   "wallet-topup": {
     name: "wallet-topup",
     description: "A component for wallet top-up with amount selection and coupon support",

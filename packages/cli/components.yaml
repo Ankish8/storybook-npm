@@ -1222,6 +1222,24 @@ components:
       - "index.ts"
     mainFile: "index.ts"
 
+  bot-test:
+    description: "Modal dialog for testing a bot by sending a message to a selected WhatsApp number with phone input"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - dialog
+      - select-field
+      - phone-input
+      - button
+    isMultiFile: true
+    directory: "bot-test"
+    files:
+      - "types.ts"
+      - "bot-test.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
   wallet-topup:
     description: "A component for wallet top-up with amount selection and coupon support"
     category: custom
