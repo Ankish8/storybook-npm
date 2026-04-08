@@ -51,30 +51,37 @@ const TalkToUsModal: React.FC<TalkToUsModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        size="sm"
         hideCloseButton
-        className={cn("!p-0 !gap-0", className)}
+        className={cn(
+          "w-[423px] max-w-[423px] rounded-[6px] border-0 p-0 gap-0",
+          className
+        )}
       >
-        <div className="flex flex-col items-center gap-6 px-[60px] py-10 text-center">
+        <div className="flex flex-col items-center gap-[24px] px-[60px] py-[40px] text-center">
           {/* Icon + Text section */}
-          <div className="flex flex-col items-center gap-[18px]">
+          <div className="flex w-[303px] flex-col items-center gap-[18px]">
             {icon ?? <MyOperatorChatIcon />}
-            <div className="flex flex-col gap-1">
-              <DialogTitle className="m-0 text-base font-semibold text-semantic-text-primary">
+            <div className="flex flex-col gap-[4px]">
+              <DialogTitle className="m-0 text-[16px] font-semibold leading-none text-semantic-text-primary">
                 {title}
               </DialogTitle>
-              <DialogDescription className="m-0 text-sm tracking-[0.035px] text-semantic-text-muted">
+              <DialogDescription className="m-0 text-[14px] leading-normal tracking-[0.035px] text-semantic-text-muted">
                 {description}
               </DialogDescription>
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={handleSecondaryAction}>
+          <div className="flex items-start justify-center gap-[16px]">
+            <Button
+              variant="outline"
+              className="rounded-[4px] px-[24px] py-[10px]"
+              onClick={handleSecondaryAction}
+            >
               {secondaryActionLabel}
             </Button>
             <Button
+              className="rounded-[4px] px-[24px] py-[10px]"
               loading={primaryActionLoading}
               onClick={onPrimaryAction}
             >

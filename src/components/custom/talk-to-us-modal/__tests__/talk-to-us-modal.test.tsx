@@ -115,7 +115,7 @@ describe("TalkToUsModal", () => {
     render(<TalkToUsModal open />);
     const title = screen.getByText("Let's Talk!");
     expect(title).toHaveClass(
-      "text-base",
+      "text-[16px]",
       "font-semibold",
       "text-semantic-text-primary"
     );
@@ -126,7 +126,7 @@ describe("TalkToUsModal", () => {
     const desc = screen.getByText(
       "Please contact our team for more details. We're here to help you choose the right plan."
     );
-    expect(desc).toHaveClass("text-sm", "text-semantic-text-muted");
+    expect(desc).toHaveClass("text-[14px]", "text-semantic-text-muted");
   });
 
   it("hides the close button", () => {
