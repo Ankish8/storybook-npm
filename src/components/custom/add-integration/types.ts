@@ -24,13 +24,26 @@ export interface ComposioConnectedAccount {
   createdBy: string
   /** Formatted creation date (e.g., "Jan 12, 2026") */
   createdAt: string
+  /**
+   * Whether this account is the currently active one for the toolkit on the current bot.
+   * Business rule: at most one account per toolkit/bot should be active at a time.
+   * When true, the card shows a green "Active" badge, a success border, and a "Continue" action.
+   * When false and another account is active, the card shows a "Switch" action instead.
+   */
+  isActive?: boolean
 }
 
 /** Connection status during the auth flow */
 export type ConnectionStatus = "idle" | "connecting" | "success" | "error"
 
-/** Visual variant for auth connection errors */
-export type ConnectionErrorVariant = "platform" | "redirect"
+/**
+ * Visual variant for auth connection errors.
+ * - "platform": inline banner on the connect page with a full-width dark retry button (legacy)
+ * - "redirect": standalone centered error screen (legacy, for OAuth redirect failures)
+ * - "inline": preserves the full connect-account layout (toolkit header + accounts list) and
+ *   renders an error banner + light-bordered "Retry Connection" button below the accounts list
+ */
+export type ConnectionErrorVariant = "platform" | "redirect" | "inline"
 
 /** Wizard step identifiers */
 export type AddIntegrationStep =
@@ -56,7 +69,7 @@ export interface AddIntegrationProps
   currentStepNumber?: number
   /** Auth connection status */
   connectionStatus?: ConnectionStatus
-  /** Visual variant for connection errors: "platform" shows inline on connect page, "redirect" shows standalone centered */
+  /** Visual variant for connection errors. See ConnectionErrorVariant for details. */
   connectionErrorVariant?: ConnectionErrorVariant
   /** Currently selected toolkit */
   selectedToolkit?: ComposioToolkit | null
@@ -87,13 +100,19 @@ export interface AddIntegrationProps
   onSearchChange?: (search: string) => void
   /** Callback when "+ Connect a New Account" is clicked */
   onConnectNewAccount?: () => void
-  /** Callback when "Use this" is clicked on an existing account */
-  onUseExistingAccount?: (account: ComposioConnectedAccount) => void
-  /** Callback when delete icon is clicked on an existing account */
-  onDeleteAccount?: (account: ComposioConnectedAccount) => void
+  /**
+   * Callback when "Continue" is clicked on an account row.
+   * Fires for the currently-active account, or for the sole account when none is active yet.
+   */
+  onContinueAccount?: (account: ComposioConnectedAccount) => void
+  /**
+   * Callback when "Switch" is clicked on an inactive account while another account is active.
+   * Consumers should open a confirmation dialog (see SwitchAccountModal) before performing the switch.
+   */
+  onSwitchAccount?: (account: ComposioConnectedAccount) => void
   /** Callback when "Please Try Again" is clicked after toolkit load failure */
   onRetryLoadToolkits?: () => void
-  /** Callback when "Please Try Again" is clicked after auth connection failure */
+  /** Callback when "Please Try Again" / "Retry Connection" is clicked after auth connection failure */
   onRetryConnection?: () => void
 }
 
@@ -107,8 +126,14 @@ export interface ToolkitCardProps {
 /** Props for the internal ConnectedAccountCard sub-component */
 export interface ConnectedAccountCardProps {
   account: ComposioConnectedAccount
-  onUse: (account: ComposioConnectedAccount) => void
-  onDelete: (account: ComposioConnectedAccount) => void
+  /**
+   * Label for the action button on the card.
+   * Parent component decides: "Continue" when the card is the active one OR no other account is active;
+   * "Switch" when the card is not active and another account IS active.
+   */
+  actionLabel: "Continue" | "Switch"
+  /** Fires when the action button is clicked. Parent routes this to onContinueAccount or onSwitchAccount. */
+  onAction: (account: ComposioConnectedAccount) => void
 }
 
 /** Props for the internal StepHeader sub-component */

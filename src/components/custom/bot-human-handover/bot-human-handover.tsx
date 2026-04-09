@@ -1,11 +1,19 @@
 import * as React from "react";
-import { Pencil } from "lucide-react";
+import { Info, Pencil } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Switch } from "../../ui/switch";
 import { Button } from "../../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 import type { BotHumanHandoverProps } from "./types";
 
 const DEFAULT_LABEL = "Connect to a human if bot can not answer";
+const DEFAULT_INFO_TOOLTIP =
+  "Automatically transfer the chat to a human if the customer is upset, requests help, or the bot can't resolve the issue.";
 
 const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>(
   (
@@ -14,12 +22,16 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
       label = DEFAULT_LABEL,
       onToggle,
       onEdit,
+      infoTooltip,
       disabled = false,
       className,
       ...props
     },
     ref
   ) => {
+    const resolvedTooltip =
+      infoTooltip === undefined ? DEFAULT_INFO_TOOLTIP : infoTooltip;
+
     return (
       <div
         ref={ref}
@@ -29,9 +41,26 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
         )}
         {...props}
       >
-        <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
-          Human Handover
-        </h2>
+        <div className="flex items-center gap-1.5">
+          <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
+            Human Handover
+          </h2>
+          {resolvedTooltip ? (
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className="inline-flex shrink-0 cursor-help"
+                    aria-label="Human Handover: more information"
+                  >
+                    <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{resolvedTooltip}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : null}
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Switch

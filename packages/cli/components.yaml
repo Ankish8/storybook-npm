@@ -75,6 +75,7 @@ categories:
     description: "Multi-file complex components"
     components:
       - add-integration
+      - switch-account-modal
       - setup-integration
       - attachment-preview
       - audio-media
@@ -579,6 +580,24 @@ components:
       - "endpoint-details.tsx"
       - "index.ts"
     mainFile: "endpoint-details.tsx"
+
+  switch-account-modal:
+    description: "Confirmation modal for switching the active connected account of a Composio toolkit, with a list of affected integrations"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - dialog
+    isMultiFile: true
+    directory: "switch-account-modal"
+    files:
+      - "types.ts"
+      - "switch-account-modal.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
 
   add-integration:
     description: "Multi-step integration wizard for connecting Composio toolkits with account management"
@@ -1188,13 +1207,14 @@ components:
     mainFile: "index.ts"
 
   bot-human-handover:
-    description: "Human handover section for bot configuration with toggle to enable connecting to a human agent"
+    description: "Human handover section for bot configuration with toggle to enable connecting to a human agent and an info tooltip"
     category: custom
     dependencies:
       - "lucide-react"
     internalDependencies:
       - button
       - switch
+      - tooltip
     isMultiFile: true
     directory: "bot-human-handover"
     files:

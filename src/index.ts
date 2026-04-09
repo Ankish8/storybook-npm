@@ -231,6 +231,13 @@ export type {
   AddIntegrationStep,
 } from "./components/custom/add-integration"
 
+// SwitchAccountModal (Custom)
+export { SwitchAccountModal } from "./components/custom/switch-account-modal"
+export type {
+  SwitchAccountModalProps,
+  AffectedIntegration,
+} from "./components/custom/switch-account-modal"
+
 // SetupIntegration (Custom)
 export { SetupIntegration, ChatMessageBubble, ChatInput } from "./components/custom/setup-integration"
 export type {

@@ -53,6 +53,27 @@ describe("BotHumanHandover", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders the info tooltip trigger by default", () => {
+    render(<BotHumanHandover />);
+    expect(
+      screen.getByLabelText("Human Handover: more information")
+    ).toBeInTheDocument();
+  });
+
+  it("hides the info tooltip trigger when infoTooltip is null", () => {
+    render(<BotHumanHandover infoTooltip={null} />);
+    expect(
+      screen.queryByLabelText("Human Handover: more information")
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the info tooltip trigger when a custom tooltip string is provided", () => {
+    render(<BotHumanHandover infoTooltip="Custom tooltip message" />);
+    expect(
+      screen.getByLabelText("Human Handover: more information")
+    ).toBeInTheDocument();
+  });
+
   it("disables the switch when disabled is true", () => {
     render(<BotHumanHandover disabled />);
     const switchEl = screen.getByRole("switch");

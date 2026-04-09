@@ -36,6 +36,23 @@ const mockAccounts: ComposioConnectedAccount[] = [
     label: "acc_89xv2m9",
     createdBy: "Ankish Khatari",
     createdAt: "Jan 12, 2026",
+    isActive: true,
+  },
+  {
+    id: "acc_34pq7n1",
+    label: "acc_34pq7n1",
+    createdBy: "Ankish Khatari",
+    createdAt: "Jan 10, 2026",
+  },
+]
+
+// Accounts where none is marked active
+const mockAccountsNoActive: ComposioConnectedAccount[] = [
+  {
+    id: "acc_89xv2m9",
+    label: "acc_89xv2m9",
+    createdBy: "Ankish Khatari",
+    createdAt: "Jan 12, 2026",
   },
   {
     id: "acc_34pq7n1",
@@ -407,7 +424,7 @@ describe("AddIntegration", () => {
       expect(screen.getByText("acc_34pq7n1")).toBeInTheDocument()
     })
 
-    it("shows 'Use this' button for each account", () => {
+    it("shows 'Active' badge for the active account", () => {
       render(
         <AddIntegration
           {...modalProps}
@@ -418,11 +435,12 @@ describe("AddIntegration", () => {
           connectedAccounts={mockAccounts}
         />
       )
-      const useButtons = screen.getAllByRole("button", { name: "Use this" })
-      expect(useButtons).toHaveLength(2)
+      // Only one "Active" badge should appear (first account is active)
+      const activeBadges = screen.getAllByText("Active")
+      expect(activeBadges).toHaveLength(1)
     })
 
-    it("shows delete button for each account", () => {
+    it("does NOT render a delete button for any account", () => {
       render(
         <AddIntegration
           {...modalProps}
@@ -434,15 +452,50 @@ describe("AddIntegration", () => {
         />
       )
       expect(
-        screen.getByLabelText("Delete account acc_89xv2m9")
-      ).toBeInTheDocument()
+        screen.queryByLabelText(/Delete account/i)
+      ).not.toBeInTheDocument()
+    })
+
+    it("shows 'Continue' on the active account and 'Switch' on inactive ones", () => {
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={mockAccounts}
+        />
+      )
+      const continueButtons = screen.getAllByRole("button", {
+        name: "Continue",
+      })
+      const switchButtons = screen.getAllByRole("button", { name: "Switch" })
+      expect(continueButtons).toHaveLength(1)
+      expect(switchButtons).toHaveLength(1)
+    })
+
+    it("shows 'Continue' on ALL accounts when none is marked active", () => {
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={mockAccountsNoActive}
+        />
+      )
+      const continueButtons = screen.getAllByRole("button", {
+        name: "Continue",
+      })
+      expect(continueButtons).toHaveLength(2)
       expect(
-        screen.getByLabelText("Delete account acc_34pq7n1")
-      ).toBeInTheDocument()
+        screen.queryByRole("button", { name: "Switch" })
+      ).not.toBeInTheDocument()
     })
 
-    it("onUseExistingAccount fires with correct account", () => {
-      const onUseExistingAccount = vi.fn()
+    it("active and inactive account cards share the same neutral border (Active badge is the sole indicator)", () => {
       render(
         <AddIntegration
           {...modalProps}
@@ -451,16 +504,24 @@ describe("AddIntegration", () => {
           connectionStatus="idle"
           selectedToolkit={mockToolkits[0]}
           connectedAccounts={mockAccounts}
-          onUseExistingAccount={onUseExistingAccount}
         />
       )
-      const useButtons = screen.getAllByRole("button", { name: "Use this" })
-      fireEvent.click(useButtons[0])
-      expect(onUseExistingAccount).toHaveBeenCalledWith(mockAccounts[0])
+      const activeCard = screen
+        .getByText("acc_89xv2m9")
+        .closest("div.border-semantic-border-layout")
+      const inactiveCard = screen
+        .getByText("acc_34pq7n1")
+        .closest("div.border-semantic-border-layout")
+      expect(activeCard).toBeInTheDocument()
+      expect(inactiveCard).toBeInTheDocument()
+      // Neither card should have a success-colored border
+      expect(
+        document.querySelector("div.border-semantic-success-border")
+      ).not.toBeInTheDocument()
     })
 
-    it("onDeleteAccount fires with correct account", () => {
-      const onDeleteAccount = vi.fn()
+    it("onContinueAccount fires with the active account when Continue is clicked", () => {
+      const onContinueAccount = vi.fn()
       render(
         <AddIntegration
           {...modalProps}
@@ -469,13 +530,45 @@ describe("AddIntegration", () => {
           connectionStatus="idle"
           selectedToolkit={mockToolkits[0]}
           connectedAccounts={mockAccounts}
-          onDeleteAccount={onDeleteAccount}
+          onContinueAccount={onContinueAccount}
         />
       )
-      fireEvent.click(
-        screen.getByLabelText("Delete account acc_89xv2m9")
+      fireEvent.click(screen.getByRole("button", { name: "Continue" }))
+      expect(onContinueAccount).toHaveBeenCalledWith(mockAccounts[0])
+    })
+
+    it("onSwitchAccount fires with the inactive account when Switch is clicked", () => {
+      const onSwitchAccount = vi.fn()
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={mockAccounts}
+          onSwitchAccount={onSwitchAccount}
+        />
       )
-      expect(onDeleteAccount).toHaveBeenCalledWith(mockAccounts[0])
+      fireEvent.click(screen.getByRole("button", { name: "Switch" }))
+      expect(onSwitchAccount).toHaveBeenCalledWith(mockAccounts[1])
+    })
+
+    it("onContinueAccount fires for sole account when none is active", () => {
+      const onContinueAccount = vi.fn()
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={[mockAccountsNoActive[0]]}
+          onContinueAccount={onContinueAccount}
+        />
+      )
+      fireEvent.click(screen.getByRole("button", { name: "Continue" }))
+      expect(onContinueAccount).toHaveBeenCalledWith(mockAccountsNoActive[0])
     })
   })
 
@@ -632,6 +725,70 @@ describe("AddIntegration", () => {
         />
       )
       fireEvent.click(screen.getByText("Please Try Again").closest("button")!)
+      expect(onRetryConnection).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  // ─── Step 2: Auth Error — Inline ─────────────────────────────────────
+
+  describe("Step 2: Auth Error — Inline", () => {
+    const inlineErrorProps = {
+      ...modalProps,
+      toolkits: mockToolkits,
+      step: "connect-account" as const,
+      connectionStatus: "error" as const,
+      connectionErrorVariant: "inline" as const,
+      selectedToolkit: mockToolkits[0],
+      connectedAccounts: mockAccounts,
+    }
+
+    it("keeps StepHeader with 'Connect your Account'", () => {
+      render(<AddIntegration {...inlineErrorProps} />)
+      expect(screen.getByText("Connect your Account")).toBeInTheDocument()
+    })
+
+    it("still renders the existing accounts list", () => {
+      render(<AddIntegration {...inlineErrorProps} />)
+      expect(
+        screen.getByText("Existing connected accounts")
+      ).toBeInTheDocument()
+      expect(screen.getByText("acc_89xv2m9")).toBeInTheDocument()
+      expect(screen.getByText("acc_34pq7n1")).toBeInTheDocument()
+    })
+
+    it("shows the Connection Failed error banner", () => {
+      render(<AddIntegration {...inlineErrorProps} />)
+      expect(screen.getByText("Connection Failed")).toBeInTheDocument()
+      expect(
+        screen.getByText("Unable to connect to Google Sheets right now.")
+      ).toBeInTheDocument()
+    })
+
+    it("shows a 'Retry Connection' button (not 'Please Try Again')", () => {
+      render(<AddIntegration {...inlineErrorProps} />)
+      expect(
+        screen.getByRole("button", { name: /Retry Connection/i })
+      ).toBeInTheDocument()
+    })
+
+    it("does NOT show the '+ Connect a New Account' button", () => {
+      render(<AddIntegration {...inlineErrorProps} />)
+      expect(
+        screen.queryByText("Connect a New Account")
+      ).not.toBeInTheDocument()
+    })
+
+    it("onRetryConnection fires when Retry Connection is clicked", () => {
+      const onRetryConnection = vi.fn()
+      render(
+        <AddIntegration
+          {...inlineErrorProps}
+          onRetryConnection={onRetryConnection}
+        />
+      )
+      fireEvent.click(
+        screen.getByRole("button", { name: /Retry Connection/i })
+      )
       expect(onRetryConnection).toHaveBeenCalledTimes(1)
     })
   })

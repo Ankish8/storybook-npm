@@ -3,6 +3,8 @@ import { fn } from "storybook/test"
 import React, { useState } from "react"
 import { Plus } from "lucide-react"
 import { AddIntegration } from "./add-integration"
+import { SwitchAccountModal } from "../switch-account-modal"
+import type { AffectedIntegration } from "../switch-account-modal"
 import { Button } from "../../ui/button"
 import type {
   ComposioToolkit,
@@ -110,6 +112,7 @@ const sampleAccounts: ComposioConnectedAccount[] = [
     label: "acc_89xv2m9",
     createdBy: "Ankish Khatari",
     createdAt: "Jan 12, 2026",
+    isActive: true,
   },
   {
     id: "acc_34pq7n1",
@@ -117,6 +120,24 @@ const sampleAccounts: ComposioConnectedAccount[] = [
     createdBy: "Ankish Khatari",
     createdAt: "Jan 10, 2026",
   },
+]
+
+// Accounts where none is marked active — first clicked acts as "Continue"
+const sampleAccountsNoActive: ComposioConnectedAccount[] = [
+  {
+    id: "acc_solo1",
+    label: "acc_solo1",
+    createdBy: "Ankish Khatari",
+    createdAt: "Jan 12, 2026",
+  },
+]
+
+// Sample affected integrations for the Switch Account confirmation flow
+const sampleAffectedIntegrations: AffectedIntegration[] = [
+  { id: "int_1", name: "Google Sheets – Sales Data" },
+  { id: "int_2", name: "Google Sheets – Support Tickets" },
+  { id: "int_3", name: "Google Sheets – Reporting Bot" },
+  { id: "int_4", name: "Google Sheets – Lead Capture" },
 ]
 
 /* ================================================================== */
@@ -244,7 +265,7 @@ const [open, setOpen] = useState(false)
     integrationNameError: { control: "text" },
     connectionErrorVariant: {
       control: "select",
-      options: ["platform", "redirect"],
+      options: ["platform", "redirect", "inline"],
     },
   },
   args: {
@@ -255,8 +276,8 @@ const [open, setOpen] = useState(false)
     onIntegrationNameChange: fn(),
     onSearchChange: fn(),
     onConnectNewAccount: fn(),
-    onUseExistingAccount: fn(),
-    onDeleteAccount: fn(),
+    onContinueAccount: fn(),
+    onSwitchAccount: fn(),
     onRetryLoadToolkits: fn(),
     onRetryConnection: fn(),
   },
@@ -376,7 +397,7 @@ export const ConnectAccountEmpty: Story = {
   },
 }
 
-// ---------- Step 2: Connect (existing accounts) ----------
+// ---------- Step 2: Connect (existing accounts — one active) ----------
 export const ConnectAccountWithExisting: Story = {
   render: (args) => <ModalStory {...args} />,
   args: {
@@ -392,7 +413,29 @@ export const ConnectAccountWithExisting: Story = {
     docs: {
       description: {
         story:
-          'Step 2 — existing accounts listed. "Use this" to pick one, or connect a new account.',
+          'Step 2 — existing accounts with one marked `isActive: true`. The active account shows a green border, "Active" badge, and a **Continue** button. Inactive accounts show a **Switch** button.',
+      },
+    },
+  },
+}
+
+// ---------- Step 2: Connect (single account, no active) ----------
+export const ConnectAccountSingleNoActive: Story = {
+  render: (args) => <ModalStory {...args} />,
+  args: {
+    toolkits: sampleToolkits,
+    step: "connect-account",
+    connectionStatus: "idle",
+    connectedAccounts: sampleAccountsNoActive,
+    selectedToolkit: sampleToolkits[0],
+    currentStepNumber: 2,
+    totalSteps: 3,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Step 2 — a single existing account with no `isActive` flag. Because no other account is active, the sole account shows a **Continue** action (treated as the active one).',
       },
     },
   },
@@ -520,6 +563,29 @@ export const AuthErrorRedirect: Story = {
   },
 }
 
+// ---------- Step 2: Auth Error — Inline ----------
+export const AuthErrorInline: Story = {
+  render: (args) => <ModalStory {...args} />,
+  args: {
+    toolkits: sampleToolkits,
+    step: "connect-account",
+    connectionStatus: "error",
+    connectionErrorVariant: "inline",
+    connectedAccounts: sampleAccounts,
+    selectedToolkit: sampleToolkits[0],
+    currentStepNumber: 2,
+    totalSteps: 3,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Auth failed while existing accounts are visible — the "+ Connect a New Account" button is replaced with a "Connection Failed" error banner and a light "Retry Connection" button. The accounts list stays visible and interactive.',
+      },
+    },
+  },
+}
+
 // ---------- Step 3: Success ----------
 export const Success: Story = {
   render: (args) => <ModalStory {...args} />,
@@ -642,13 +708,30 @@ const Scenario2Example = () => {
   const [integrationName, setIntegrationName] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
 
+  const [accounts, setAccounts] =
+    useState<ComposioConnectedAccount[]>(sampleAccounts)
+  const [pendingSwitchAccount, setPendingSwitchAccount] =
+    useState<ComposioConnectedAccount | null>(null)
+
   const handleNext = () => {
     setStep("connect-account")
     setConnectionStatus("idle")
   }
 
-  const handleUseExistingAccount = () => {
+  const handleContinueAccount = () => {
     setStep("success")
+  }
+
+  const handleSwitchAccount = (account: ComposioConnectedAccount) => {
+    setPendingSwitchAccount(account)
+  }
+
+  const handleConfirmSwitch = () => {
+    if (!pendingSwitchAccount) return
+    setAccounts((prev) =>
+      prev.map((a) => ({ ...a, isActive: a.id === pendingSwitchAccount.id }))
+    )
+    setPendingSwitchAccount(null)
   }
 
   const handleConnectNewAccount = () => {
@@ -676,6 +759,8 @@ const Scenario2Example = () => {
     setSelectedToolkit(null)
     setIntegrationName("")
     setSearchQuery("")
+    setAccounts(sampleAccounts)
+    setPendingSwitchAccount(null)
   }
 
   return (
@@ -685,7 +770,7 @@ const Scenario2Example = () => {
         open={open}
         onOpenChange={setOpen}
         toolkits={sampleToolkits}
-        connectedAccounts={sampleAccounts}
+        connectedAccounts={accounts}
         step={step}
         connectionStatus={connectionStatus}
         selectedToolkit={selectedToolkit}
@@ -697,12 +782,20 @@ const Scenario2Example = () => {
         onSearchChange={setSearchQuery}
         onNext={handleNext}
         onConnectNewAccount={handleConnectNewAccount}
-        onUseExistingAccount={handleUseExistingAccount}
+        onContinueAccount={handleContinueAccount}
+        onSwitchAccount={handleSwitchAccount}
         onBack={handleBack}
         onClose={handleClose}
-        onDeleteAccount={(account) =>
-          console.log("Delete account:", account.id)
-        }
+      />
+      <SwitchAccountModal
+        open={pendingSwitchAccount !== null}
+        onOpenChange={(next) => {
+          if (!next) setPendingSwitchAccount(null)
+        }}
+        accountId={pendingSwitchAccount?.id ?? ""}
+        affectedIntegrations={sampleAffectedIntegrations}
+        onCancel={() => setPendingSwitchAccount(null)}
+        onConfirm={handleConfirmSwitch}
       />
     </>
   )
@@ -713,15 +806,16 @@ export const Scenario2_HappyPath_ExistingAccount: Story = {
   parameters: {
     docs: {
       description: {
-        story: `**Scenario 2 — Happy Path (Existing Account)**
+        story: `**Scenario 2 — Happy Path (Existing Account, Switch Flow)**
 
-Flow: Select Toolkit → Connect Account (with existing accounts) → Success
+Flow: Select Toolkit → Connect Account (accounts list with one active) → either **Continue** the active one or **Switch** to a different account via the confirmation modal.
 
 1. Click **"+ Integrations"** to open the modal
-2. Select a toolkit and enter an integration name
-3. Click **Next** to go to Step 2 (shows existing connected accounts)
-4. Click **"Use this"** on an existing account to go directly to success
-5. Or click **"+ Connect a New Account"** to auth a new one`,
+2. Select a toolkit and enter an integration name, click **Next**
+3. On step 2, the first account has \`isActive: true\` (green border + Active badge)
+4. Click **Continue** on the active account to go straight to success
+5. Click **Switch** on an inactive account to open the \`SwitchAccountModal\` confirmation
+6. Confirm the switch — the \`isActive\` flag moves to the newly-chosen account`,
       },
     },
   },
@@ -949,9 +1043,9 @@ const Scenario4Example = () => {
         onRetryConnection={handleRetryConnection}
         onBack={handleBack}
         onClose={handleClose}
-        onUseExistingAccount={() => console.log("Use existing")}
-        onDeleteAccount={(account) =>
-          console.log("Delete account:", account.id)
+        onContinueAccount={() => console.log("Continue existing")}
+        onSwitchAccount={(account) =>
+          console.log("Switch account:", account.id)
         }
       />
     </>

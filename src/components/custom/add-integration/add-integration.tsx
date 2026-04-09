@@ -15,6 +15,7 @@ import { ConnectedAccountCard } from "./connected-account-card"
 import type {
   AddIntegrationProps,
   ComposioToolkit,
+  ComposioConnectedAccount,
 } from "./types"
 
 const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
@@ -43,8 +44,8 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
       onIntegrationNameChange,
       onSearchChange,
       onConnectNewAccount,
-      onUseExistingAccount,
-      onDeleteAccount,
+      onContinueAccount,
+      onSwitchAccount,
       onRetryLoadToolkits,
       onRetryConnection,
       ...props
@@ -64,6 +65,30 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
           t.description.toLowerCase().includes(query)
       )
     }, [toolkits, searchQuery])
+
+    const hasActiveAccount = React.useMemo(
+      () => connectedAccounts.some((a) => a.isActive),
+      [connectedAccounts]
+    )
+
+    const getActionForAccount = (account: ComposioConnectedAccount) => {
+      const isActiveOrSole = account.isActive || !hasActiveAccount
+      return {
+        actionLabel: isActiveOrSole
+          ? ("Continue" as const)
+          : ("Switch" as const),
+        onAction: isActiveOrSole
+          ? onContinueAccount ?? (() => {})
+          : onSwitchAccount ?? (() => {}),
+      }
+    }
+
+    const isConnectAccountIdle =
+      step === "connect-account" && connectionStatus === "idle"
+    const isConnectAccountInlineError =
+      step === "connect-account" &&
+      connectionStatus === "error" &&
+      connectionErrorVariant === "inline"
 
     const isNextDisabled =
       !selectedToolkit && !integrationName.trim()
@@ -204,8 +229,8 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
             </>
           )}
 
-          {/* Step 2: Connect Account */}
-          {step === "connect-account" && connectionStatus === "idle" && (
+          {/* Step 2: Connect Account (idle or inline error) */}
+          {(isConnectAccountIdle || isConnectAccountInlineError) && (
             <>
               <StepHeader
                 title="Connect your Account"
@@ -246,28 +271,58 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                           Existing connected accounts
                         </p>
                         <div className="flex flex-col gap-3">
-                          {connectedAccounts.map((account) => (
-                            <ConnectedAccountCard
-                              key={account.id}
-                              account={account}
-                              onUse={onUseExistingAccount ?? (() => {})}
-                              onDelete={onDeleteAccount ?? (() => {})}
-                            />
-                          ))}
+                          {connectedAccounts.map((account) => {
+                            const { actionLabel, onAction } =
+                              getActionForAccount(account)
+                            return (
+                              <ConnectedAccountCard
+                                key={account.id}
+                                account={account}
+                                actionLabel={actionLabel}
+                                onAction={onAction}
+                              />
+                            )
+                          })}
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {/* Connect a New Account */}
-                  <button
-                    type="button"
-                    onClick={onConnectNewAccount}
-                    className="flex h-10 w-full items-center justify-center gap-2 rounded border border-semantic-border-layout bg-semantic-bg-primary text-sm font-semibold tracking-wide text-semantic-text-secondary transition-colors hover:bg-semantic-bg-hover"
-                  >
-                    <Plus className="size-[18px]" />
-                    Connect a New Account
-                  </button>
+                  {/* Bottom slot: idle → "+ Connect a New Account"
+                      inline error → error banner + Retry Connection */}
+                  {isConnectAccountIdle ? (
+                    <button
+                      type="button"
+                      onClick={onConnectNewAccount}
+                      className="flex h-10 w-full items-center justify-center gap-2 rounded border border-semantic-border-layout bg-semantic-bg-primary text-sm font-semibold tracking-wide text-semantic-text-secondary transition-colors hover:bg-semantic-bg-hover"
+                    >
+                      <Plus className="size-[18px]" />
+                      Connect a New Account
+                    </button>
+                  ) : (
+                    <div className="flex w-full flex-col gap-4">
+                      <div className="flex gap-4 rounded border border-semantic-error-border bg-semantic-error-surface p-4">
+                        <XCircle className="size-6 shrink-0 text-semantic-error-text" />
+                        <div className="flex flex-col gap-1.5">
+                          <p className="m-0 text-sm font-semibold leading-5 tracking-wide text-semantic-error-text">
+                            Connection Failed
+                          </p>
+                          <p className="m-0 text-xs text-semantic-error-text">
+                            Unable to connect to {selectedToolkit?.name} right
+                            now.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={onRetryConnection}
+                        className="flex h-10 w-full items-center justify-center gap-2 rounded border border-semantic-border-layout bg-semantic-bg-primary text-sm font-semibold tracking-wide text-semantic-text-secondary transition-colors hover:bg-semantic-bg-hover"
+                      >
+                        <RotateCcw className="size-[18px]" />
+                        Retry Connection
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </>

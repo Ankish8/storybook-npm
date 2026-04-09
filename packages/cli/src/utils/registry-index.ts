@@ -368,6 +368,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["readable-field"],
   },
+  "switch-account-modal": {
+    name: "switch-account-modal",
+    description: "Confirmation modal for switching the active connected account of a Composio toolkit, with a list of affected integrations",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
+    category: "custom",
+    internalDependencies: ["button","dialog"],
+  },
   "add-integration": {
     name: "add-integration",
     description: "Multi-step integration wizard for connecting Composio toolkits with account management",
@@ -634,11 +642,11 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   "bot-human-handover": {
     name: "bot-human-handover",
-    description: "Human handover section for bot configuration with toggle to enable connecting to a human agent",
+    description: "Human handover section for bot configuration with toggle to enable connecting to a human agent and an info tooltip",
       category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
-    internalDependencies: ["button","switch"],
+    internalDependencies: ["button","switch","tooltip"],
   },
   "bot-nudges": {
     name: "bot-nudges",
