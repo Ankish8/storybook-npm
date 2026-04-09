@@ -53,21 +53,21 @@ describe("BotHumanHandover", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders the info tooltip trigger by default", () => {
+  it("hides the info tooltip trigger by default (infoTooltip omitted)", () => {
     render(<BotHumanHandover />);
-    expect(
-      screen.getByLabelText("Human Handover: more information")
-    ).toBeInTheDocument();
-  });
-
-  it("hides the info tooltip trigger when infoTooltip is null", () => {
-    render(<BotHumanHandover infoTooltip={null} />);
     expect(
       screen.queryByLabelText("Human Handover: more information")
     ).not.toBeInTheDocument();
   });
 
-  it("renders the info tooltip trigger when a custom tooltip string is provided", () => {
+  it("hides the info tooltip trigger when infoTooltip is an empty string", () => {
+    render(<BotHumanHandover infoTooltip="" />);
+    expect(
+      screen.queryByLabelText("Human Handover: more information")
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the info tooltip trigger only when a non-empty tooltip string is provided", () => {
     render(<BotHumanHandover infoTooltip="Custom tooltip message" />);
     expect(
       screen.getByLabelText("Human Handover: more information")

@@ -9,7 +9,7 @@ const meta: Meta<typeof BotHumanHandover> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Human handover section for bot configuration. Shows a toggle switch to enable connecting to a human agent when the bot cannot answer. Includes an info tooltip next to the title and an optional edit action.
+        component: `Human handover section for bot configuration. Shows a toggle switch to enable connecting to a human agent when the bot cannot answer. Optionally shows an info tooltip next to the title (only when \`infoTooltip\` is passed) and an optional edit action.
 
 **Install**
 \`\`\`bash
@@ -29,7 +29,7 @@ import { BotHumanHandover } from "@/components/custom/bot-human-handover"
 | \`label\` | \`string\` | Label text next to the switch |
 | \`onToggle\` | \`(enabled: boolean) => void\` | Fires when the switch is toggled |
 | \`onEdit\` | \`() => void\` | **Optional.** When provided, shows a pencil edit button on the right. Omit to hide it. |
-| \`infoTooltip\` | \`string \\| null\` | Tooltip text for the info icon next to the title. Pass a string to override, \`null\` to hide the icon, or omit for the default copy. |
+| \`infoTooltip\` | \`string\` | **Optional.** Tooltip text for the info icon next to the title. The icon is hidden by default and only renders when a non-empty string is provided. |
 | \`disabled\` | \`boolean\` | Disables the switch |
 
 ### Design Tokens
@@ -103,7 +103,7 @@ export const WithCustomLabel: Story = {
   },
 };
 
-export const WithCustomTooltip: Story = {
+export const WithTooltip: Story = {
   render: function Render() {
     const [enabled, setEnabled] = useState(false);
     return (
@@ -112,21 +112,6 @@ export const WithCustomTooltip: Story = {
           enabled={enabled}
           onToggle={setEnabled}
           infoTooltip="Route the conversation to a live agent whenever the bot is unsure or the customer asks for one."
-        />
-      </div>
-    );
-  },
-};
-
-export const WithoutTooltip: Story = {
-  render: function Render() {
-    const [enabled, setEnabled] = useState(false);
-    return (
-      <div className="max-w-[500px]">
-        <BotHumanHandover
-          enabled={enabled}
-          onToggle={setEnabled}
-          infoTooltip={null}
         />
       </div>
     );

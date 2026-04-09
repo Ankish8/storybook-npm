@@ -10,11 +10,9 @@ export interface BotHumanHandoverProps
   onEdit?: () => void;
   /**
    * Tooltip text shown when hovering the info icon next to the "Human Handover" title.
-   * - Pass a string to override the default description.
-   * - Pass `null` to hide the info icon entirely.
-   * - Omit to use the default description.
+   * The info icon is **hidden by default** and only renders when a non-empty string is provided.
    */
-  infoTooltip?: string | null;
+  infoTooltip?: string;
   /** When true, disables the switch */
   disabled?: boolean;
 }

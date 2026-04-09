@@ -12,8 +12,6 @@ import {
 import type { BotHumanHandoverProps } from "./types";
 
 const DEFAULT_LABEL = "Connect to a human if bot can not answer";
-const DEFAULT_INFO_TOOLTIP =
-  "Automatically transfer the chat to a human if the customer is upset, requests help, or the bot can't resolve the issue.";
 
 const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>(
   (
@@ -29,9 +27,6 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
     },
     ref
   ) => {
-    const resolvedTooltip =
-      infoTooltip === undefined ? DEFAULT_INFO_TOOLTIP : infoTooltip;
-
     return (
       <div
         ref={ref}
@@ -45,7 +40,7 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
           <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
             Human Handover
           </h2>
-          {resolvedTooltip ? (
+          {infoTooltip ? (
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -56,7 +51,7 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
                     <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
                   </span>
                 </TooltipTrigger>
-                <TooltipContent>{resolvedTooltip}</TooltipContent>
+                <TooltipContent>{infoTooltip}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           ) : null}
