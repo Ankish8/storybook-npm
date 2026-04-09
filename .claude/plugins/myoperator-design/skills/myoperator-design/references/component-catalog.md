@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 86 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 94 components across 7 categories.
 
 ## Quick Reference
 
@@ -75,6 +75,13 @@
 | WalletTopup | custom | `npx myoperator-ui add wallet-topup` |
 | FileUploadModal | custom | `npx myoperator-ui add file-upload-modal` |
 | VideoMedia | custom | `npx myoperator-ui add video-media` |
+| BotFunctions | custom | `npx myoperator-ui add bot-functions` |
+| BotHumanHandover | custom | `npx myoperator-ui add bot-human-handover` |
+| BotInstructions | custom | `npx myoperator-ui add bot-instructions` |
+| BotIntegrations | custom | `npx myoperator-ui add bot-integrations` |
+| BotKnowledgeBase | custom | `npx myoperator-ui add bot-knowledge-base` |
+| BotNudges | custom | `npx myoperator-ui add bot-nudges` |
+| BotSettings | custom | `npx myoperator-ui add bot-settings` |
 | ChatTypes | custom | `npx myoperator-ui add chat-types` |
 | ChatTransport | custom | `npx myoperator-ui add chat-transport` |
 | ChatProvider | custom | `npx myoperator-ui add chat-provider` |
@@ -922,6 +929,69 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add video-media`
 **Requires**: `dropdown-menu` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotFunctions
+> Functions section for bot configuration with a list of bot functions and edit/delete actions
+
+**Install**: `npx myoperator-ui add bot-functions`
+**Requires**: `button`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotHumanHandover
+> Human handover section for bot configuration with toggle to enable connecting to a human agent
+
+**Install**: `npx myoperator-ui add bot-human-handover`
+**Requires**: `button`, `switch` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotInstructions
+> Instructions section for bot configuration with toggles, character counter, and action buttons
+
+**Install**: `npx myoperator-ui add bot-instructions`
+**Requires**: `button`, `switch`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotIntegrations
+> Integrations section for bot configuration with connected integrations or empty state
+
+**Install**: `npx myoperator-ui add bot-integrations`
+**Requires**: `badge`, `button`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotKnowledgeBase
+> Knowledge base section for bot configuration with file upload and status management
+
+**Install**: `npx myoperator-ui add bot-knowledge-base`
+**Requires**: `button`, `badge`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotNudges
+> Nudges section for bot configuration with delay settings and message input for each nudge
+
+**Install**: `npx myoperator-ui add bot-nudges`
+**Requires**: `switch`, `select`, `input`, `textarea`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BotSettings
+> Collapsible settings section for bot configuration with Connect WhatsApp phone number tag input
+
+**Install**: `npx myoperator-ui add bot-settings`
+**Requires**: `tag`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
