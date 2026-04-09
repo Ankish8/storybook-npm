@@ -45,8 +45,8 @@ const teamCards: PricingCardProps[] = [
   {
     planName: "Compact",
     price: "2,500",
-    period: "per month, billed annually",
-    planDetails: "10 Users",
+    period: "per month",
+    planDetails: "3 Users | 12 Month plan",
     description:
       "For small teams that need WhatsApp Business API & missed calls.",
     features: [
@@ -63,7 +63,8 @@ const teamCards: PricingCardProps[] = [
   {
     planName: "Sedan",
     price: "5,000",
-    planDetails: "10 Users",
+    period: "per month",
+    planDetails: "10 Users | 12 Month plan",
     description:
       "For growing businesses that need more users & unlimited IVR+ calling.",
     features: [
@@ -84,7 +85,8 @@ const teamCards: PricingCardProps[] = [
   {
     planName: "SUV",
     price: "15,000",
-    planDetails: "10 Users",
+    period: "per month",
+    planDetails: "10 Users | 12 Month plan",
     description:
       "For teams that also need performance analytics and integrations.",
     showPopularBadge: true,
