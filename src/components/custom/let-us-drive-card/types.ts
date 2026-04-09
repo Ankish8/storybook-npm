@@ -30,7 +30,7 @@ export interface LetUsDriveCardProps
   title: string;
   /** Price amount as formatted string (e.g., "20,000", "15,000") */
   price: string;
-  /** Billing period label (e.g., "/one-time fee", "/month") */
+  /** Billing period label (e.g., "one-time fee", "per month, billed annually") */
   period?: string;
   /** Show "Starts at" prefix above the price */
   startsAt?: boolean;

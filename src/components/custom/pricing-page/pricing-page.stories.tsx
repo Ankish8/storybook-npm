@@ -188,7 +188,7 @@ const letUsDriveCards: LetUsDriveCardProps[] = [
   {
     title: "Dedicated Onboarding",
     price: "20,000",
-    period: "/one-time fee",
+    period: "one-time fee",
     description: "Cut adoption time. Start seeing ROI faster.",
     onShowDetails: fn(),
     onCtaClick: fn(),
@@ -196,7 +196,7 @@ const letUsDriveCards: LetUsDriveCardProps[] = [
   {
     title: "Account Manager",
     price: "15,000",
-    period: "/per month",
+    period: "per month, billed annually",
     billingBadge: "Annually",
     description:
       "One expert who knows your business. And moves it forward.",
@@ -206,7 +206,7 @@ const letUsDriveCards: LetUsDriveCardProps[] = [
   {
     title: "Managed Services",
     price: "50,000",
-    period: "/month",
+    period: "per month, billed quarterly",
     startsAt: true,
     billingBadge: "Quarterly",
     description:

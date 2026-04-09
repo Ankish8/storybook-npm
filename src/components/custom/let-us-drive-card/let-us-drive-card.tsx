@@ -19,7 +19,7 @@ import type { LetUsDriveCardProps } from "./types";
  * <LetUsDriveCard
  *   title="Account Manager"
  *   price="15,000"
- *   period="/month"
+ *   period="per month, billed annually"
  *   billingBadge="Annually"
  *   description="One expert who knows your business. And moves it forward."
  *   detailsContent={{ heading: "Includes:", items: [{ title: "Start Your Channels", description: "Get help setting up." }] }}
@@ -105,7 +105,7 @@ const LetUsDriveCard = React.forwardRef(
                 </span>
               )}
             </div>
-            <div className="flex gap-1 items-end">
+            <div className="flex gap-1 items-baseline">
               {freeLabel ? (
                 <span className="text-[28px] font-semibold leading-[36px]">
                   <span className="line-through text-semantic-text-muted">

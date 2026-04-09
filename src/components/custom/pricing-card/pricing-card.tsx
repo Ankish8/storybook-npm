@@ -64,7 +64,7 @@ const PricingCard = React.forwardRef(
           "flex flex-col rounded-md border overflow-hidden",
           showPopularBadge
             ? "border-[#4275d6] shadow-lg"
-            : "border-semantic-border-layout",
+            : "border-semantic-border-layout pt-6", // pt-6 matches badge h-6 for grid alignment
           className
         )}
         {...props}
@@ -94,7 +94,7 @@ const PricingCard = React.forwardRef(
 
           {/* Price + plan details */}
           <div className="flex flex-col gap-4">
-            <div className="flex items-end gap-1">
+            <div className="flex items-baseline gap-1">
               <span className="text-4xl leading-[44px] text-semantic-text-primary">
                 ₹
               </span>

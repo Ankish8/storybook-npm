@@ -157,7 +157,7 @@ import { LetUsDriveCard } from "@/components/custom/let-us-drive-card";
 <LetUsDriveCard
   title="Account Manager"
   price="15,000"
-  period="/month"
+  period="per month, billed annually"
   billingBadge="Annually"
   description="One expert who knows your business. And moves it forward."
   onShowDetails={() => openDetails("account-manager")}
@@ -168,7 +168,7 @@ import { LetUsDriveCard } from "@/components/custom/let-us-drive-card";
 <LetUsDriveCard
   title="Managed Services"
   price="50,000"
-  period="/month"
+  period="per month, billed quarterly"
   billingBadge="Quarterly"
   startsAt
   description="End-to-end execution \u2014 built and run by experts."
@@ -180,7 +180,7 @@ import { LetUsDriveCard } from "@/components/custom/let-us-drive-card";
 <LetUsDriveCard
   title="Dedicated Onboarding"
   price="20,000"
-  period="/one-time fee"
+  period="one-time fee"
   freeLabel="FREE"
   description="Cut adoption time. Start seeing ROI faster."
   onShowDetails={() => openDetails("onboarding")}
@@ -214,7 +214,7 @@ export const Default: Story = {
   args: {
     title: "Account Manager",
     price: "15,000",
-    period: "/per month",
+    period: "per month, billed annually",
     billingBadge: "Annually",
     description:
       "One expert who knows your business. And moves it forward.",
@@ -230,7 +230,7 @@ export const DedicatedOnboarding: Story = {
   args: {
     title: "Dedicated Onboarding",
     price: "20,000",
-    period: "/one-time fee",
+    period: "one-time fee",
     description: "Cut adoption time. Start seeing ROI faster.",
     onShowDetails: fn(),
     onCtaClick: fn(),
@@ -245,7 +245,7 @@ export const ManagedServices: Story = {
   args: {
     title: "Managed Services",
     price: "50,000",
-    period: "/month",
+    period: "per month, billed quarterly",
     billingBadge: "Quarterly",
     startsAt: true,
     description: "End-to-end execution \u2014 built and run by experts.",
@@ -262,7 +262,7 @@ export const FreeState: Story = {
   args: {
     title: "Dedicated Onboarding",
     price: "20,000",
-    period: "/one-time fee",
+    period: "one-time fee",
     freeLabel: "FREE",
     description: "Cut adoption time. Start seeing ROI faster.",
     onShowDetails: fn(),
@@ -277,7 +277,7 @@ export const WithoutShowDetails: Story = {
   args: {
     title: "Account Manager",
     price: "15,000",
-    period: "/per month",
+    period: "per month, billed annually",
     billingBadge: "Annually",
     description:
       "One expert who knows your business. And moves it forward.",
@@ -314,7 +314,7 @@ export const ShowHideDetails: Story = {
   args: {
     title: "Dedicated Onboarding",
     price: "20,000",
-    period: "/one-time fee",
+    period: "one-time fee",
     description: "Cut adoption time. Start seeing ROI faster.",
     detailsContent: onboardingDetailsContent,
     onShowDetails: fn(),
@@ -328,7 +328,7 @@ export const ShowHideDetailsExpanded: Story = {
   args: {
     title: "Dedicated Onboarding",
     price: "20,000",
-    period: "/one-time fee",
+    period: "one-time fee",
     description: "Cut adoption time. Start seeing ROI faster.",
     detailsContent: onboardingDetailsContent,
     expanded: true,
@@ -353,7 +353,7 @@ export const AllCards: Story = {
           className="flex-1"
           title="Dedicated Onboarding"
           price="20,000"
-          period="/one-time fee"
+          period="one-time fee"
           description="Cut adoption time. Start seeing ROI faster."
           onShowDetails={fn()}
           onCtaClick={fn()}
@@ -362,7 +362,7 @@ export const AllCards: Story = {
           className="flex-1"
           title="Account Manager"
           price="15,000"
-          period="/per month"
+          period="per month, billed annually"
           billingBadge="Annually"
           description="One expert who knows your business. And moves it forward."
           onShowDetails={fn()}
@@ -372,7 +372,7 @@ export const AllCards: Story = {
           className="flex-1"
           title="Managed Services"
           price="50,000"
-          period="/month"
+          period="per month, billed quarterly"
           billingBadge="Quarterly"
           startsAt
           description="End-to-end execution — built and run by experts."
@@ -399,7 +399,7 @@ export const AllCardsFreeState: Story = {
           className="flex-1"
           title="Dedicated Onboarding"
           price="20,000"
-          period="/one-time fee"
+          period="one-time fee"
           freeLabel="FREE"
           description="Cut adoption time. Start seeing ROI faster."
           onShowDetails={fn()}
@@ -409,7 +409,7 @@ export const AllCardsFreeState: Story = {
           className="flex-1"
           title="Account Manager"
           price="15,000"
-          period="/per month"
+          period="per month, billed annually"
           billingBadge="Annually"
           description="One expert who knows your business. And moves it forward."
           onShowDetails={fn()}
@@ -419,7 +419,7 @@ export const AllCardsFreeState: Story = {
           className="flex-1"
           title="Managed Services"
           price="50,000"
-          period="/month"
+          period="per month, billed quarterly"
           billingBadge="Quarterly"
           startsAt
           description="End-to-end execution — built and run by experts."
