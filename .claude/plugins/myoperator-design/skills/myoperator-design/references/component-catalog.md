@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 94 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 95 components across 7 categories.
 
 ## Quick Reference
 
@@ -45,6 +45,7 @@
 | Panel | layout | `npx myoperator-ui add panel` |
 | Pagination | layout | `npx myoperator-ui add pagination` |
 | AddIntegration | custom | `npx myoperator-ui add add-integration` |
+| SwitchAccountModal | custom | `npx myoperator-ui add switch-account-modal` |
 | SetupIntegration | custom | `npx myoperator-ui add setup-integration` |
 | AttachmentPreview | custom | `npx myoperator-ui add attachment-preview` |
 | AudioMedia | custom | `npx myoperator-ui add audio-media` |
@@ -668,6 +669,15 @@ import { Mail } from "lucide-react"
 
 ---
 
+### SwitchAccountModal
+> Confirmation modal for switching the active connected account of a Composio toolkit, with a list of affected integrations
+
+**Install**: `npx myoperator-ui add switch-account-modal`
+**Requires**: `button`, `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
 ### SetupIntegration
 > AI chat interface for setting up, testing, and publishing integrations after successful connection
 
@@ -943,10 +953,10 @@ import { Mail } from "lucide-react"
 ---
 
 ### BotHumanHandover
-> Human handover section for bot configuration with toggle to enable connecting to a human agent
+> Human handover section for bot configuration with toggle to enable connecting to a human agent and an info tooltip
 
 **Install**: `npx myoperator-ui add bot-human-handover`
-**Requires**: `button`, `switch` (auto-installed)
+**Requires**: `button`, `switch`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
