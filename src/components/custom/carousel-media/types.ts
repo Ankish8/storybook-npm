@@ -10,8 +10,12 @@ export interface CarouselCardButton {
 }
 
 export interface CarouselCard {
-  /** Image URL for the card */
+  /** Media URL for the card — image src, or video src when mediaType is "video" */
   url: string;
+  /** Media type for the card. Defaults to "image" when omitted */
+  mediaType?: "image" | "video";
+  /** Poster image shown before a video plays. Only applies when mediaType is "video" */
+  thumbnailUrl?: string;
   /** Card title text */
   title: string;
   /** Action buttons displayed below the title */

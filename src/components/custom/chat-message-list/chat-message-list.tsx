@@ -24,8 +24,12 @@ import {
   VideoMedia,
   AudioMedia,
   CarouselMedia,
+  ReferralMedia,
+  LocationMedia,
+  ContactMedia,
+  ListReplyMedia,
   LoadingMedia,
-  SenderIndicatorBadge,
+  SenderIndicator,
 } from "./message-renderers"
 
 /* ── Types ── */
@@ -92,11 +96,15 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                       msg.type === "docPreview" ||
                       msg.type === "document" ||
                       msg.type === "otherDoc" ||
-                      msg.type === "loading"
+                      msg.type === "loading" ||
+                      msg.type === "location"
                     ? "max-w-[380px] w-full"
                     : msg.type === "audio"
                       ? "max-w-[340px] w-[340px]"
-                      : "max-w-[65%]"
+                      : msg.type === "contact" ||
+                          msg.type === "listReply"
+                        ? "max-w-[320px] w-full"
+                        : "max-w-[65%]"
 
               // System messages (e.g., assignment actions)
               if (msg.type === "system") {
@@ -157,7 +165,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                         </span>
                       )}
                       <div
-                        className={`rounded-lg overflow-hidden ${ hasMedia ? "" : "px-3 pt-3 pb-1.5" } ${ msg.type === "audio" || msg.type === "otherDoc" || msg.type === "carousel" || msg.type === "loading" ? "w-full" : "" } ${ msg.sender === "agent" ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary" : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]" }`}
+                        className={`rounded-lg overflow-hidden ${ hasMedia ? "" : "px-3 pt-3 pb-1.5" } ${ msg.type === "audio" || msg.type === "otherDoc" || msg.type === "carousel" || msg.type === "loading" || msg.type === "location" || msg.type === "contact" || msg.type === "listReply" ? "w-full" : "" } ${ msg.sender === "agent" ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary" : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]" }`}
                       >
                         {/* Carousel: body text goes ABOVE cards */}
                         {msg.type === "carousel" && hasText && (
@@ -215,6 +223,18 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                         {msg.type === "loading" && (
                           <LoadingMedia error={msg.error} />
                         )}
+                        {msg.type === "referral" && msg.referral && (
+                          <ReferralMedia referral={msg.referral} />
+                        )}
+                        {msg.type === "location" && msg.location && (
+                          <LocationMedia location={msg.location} />
+                        )}
+                        {msg.type === "contact" && msg.contactCard && (
+                          <ContactMedia contact={msg.contactCard} />
+                        )}
+                        {msg.type === "listReply" && msg.listReply && (
+                          <ListReplyMedia listReply={msg.listReply} />
+                        )}
 
                         {/* Text + footer area (with padding) */}
                         <div
@@ -255,25 +275,11 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                     </div>
                     {/* Sender indicator for outbound messages */}
                     {msg.sender === "agent" && msg.sentBy && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="self-end mb-1 shrink-0 size-7 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center cursor-default">
-                            <SenderIndicatorBadge sentBy={msg.sentBy} />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="left">
-                          <p className="m-0">
-                            {msg.sentBy.type === "agent"
-                              ? msg.sentBy.name
-                              : msg.sentBy.type === "bot"
-                                ? (msg.sentBy.name || "Bot")
-                                : msg.sentBy.type === "campaign"
-                                  ? "Campaign"
-                                  : "API"}
-                          </p>
-                          <TooltipArrow />
-                        </TooltipContent>
-                      </Tooltip>
+                      <SenderIndicator
+                        sentBy={msg.sentBy}
+                        withTooltip
+                        className="self-end mb-1 shrink-0"
+                      />
                     )}
                     {msg.sender === "customer" && (
                       <Tooltip>

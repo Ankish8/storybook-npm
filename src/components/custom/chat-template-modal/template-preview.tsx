@@ -5,9 +5,84 @@ import {
   ChevronRight,
   ExternalLink,
   Reply,
+  Play,
+  Pause,
 } from "lucide-react"
 import type { TemplateDef, VarMap } from "../chat-types"
 import { resolveVars, DeliveryRow } from "./template-helpers"
+
+/* Lightweight heuristic: a URL is treated as a video if its path ends with
+ * a known video extension (the query string is stripped first). Used only
+ * inside the template preview; the rendered chat uses explicit mediaType.
+ */
+function isVideoUrl(url?: string): boolean {
+  if (!url) return false
+  const path = url.split("?")[0].toLowerCase()
+  return (
+    path.endsWith(".mp4") ||
+    path.endsWith(".webm") ||
+    path.endsWith(".mov") ||
+    path.endsWith(".m4v")
+  )
+}
+
+/* In-card video player used inside the template preview carousel. Mirrors
+ * the overlay look of the live chat renderer so both sides feel identical.
+ */
+function PreviewCardVideo({
+  url,
+  poster,
+  label,
+  height,
+}: {
+  url: string
+  poster?: string
+  label: string
+  height: number
+}) {
+  const videoRef = React.useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = React.useState(false)
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      void v.play()
+      setPlaying(true)
+    } else {
+      v.pause()
+      setPlaying(false)
+    }
+  }
+  return (
+    <div className="relative w-full overflow-hidden" style={{ height }}>
+      <video
+        ref={videoRef}
+        src={url}
+        poster={poster}
+        playsInline
+        muted
+        onEnded={() => setPlaying(false)}
+        aria-label={label}
+        className="w-full h-full object-cover pointer-events-none"
+      />
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={playing ? "Pause video" : "Play video"}
+        className={`absolute inset-0 flex items-center justify-center cursor-pointer border-none bg-transparent p-0 transition-opacity ${playing ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
+      >
+        <span className="size-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          {playing ? (
+            <Pause className="size-5 text-white fill-white" />
+          ) : (
+            <Play className="size-5 text-white fill-white ml-0.5" />
+          )}
+        </span>
+      </button>
+    </div>
+  )
+}
 
 /* ── TemplatePreviewEmpty ── */
 export function TemplatePreviewEmpty({
@@ -80,16 +155,23 @@ export function TemplateCarouselPreview({
           style={{ scrollbarWidth: "none" }}
         >
           {(template.cards || []).map((card, i) => {
-            const imgUrl = template.cardImages?.[i]
+            const mediaUrl = template.cardImages?.[i]
+            const isVideo = isVideoUrl(mediaUrl)
             return (
               <div
                 key={card.cardIndex}
                 className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
                 style={{ width: 260 }}
               >
-                {imgUrl ? (
+                {mediaUrl && isVideo ? (
+                  <PreviewCardVideo
+                    url={mediaUrl}
+                    label={`Card ${card.cardIndex}`}
+                    height={200}
+                  />
+                ) : mediaUrl ? (
                   <img
-                    src={imgUrl}
+                    src={mediaUrl}
                     alt={`Card ${card.cardIndex}`}
                     className="w-full object-cover"
                     style={{ height: 200 }}

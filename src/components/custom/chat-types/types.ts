@@ -69,12 +69,47 @@ export type MediaPayload = {
   caption?: string
   images?: Array<{
     url: string
+    mediaType?: "image" | "video"
+    thumbnailUrl?: string
     title: string
     buttons?: Array<{ label: string; icon?: string }>
   }>
 }
 
 export type SentByType = "agent" | "bot" | "campaign" | "api"
+
+export type LocationPayload = {
+  latitude: number
+  longitude: number
+  name?: string
+  address?: string
+}
+
+export type ContactPayload = {
+  name: string
+  phone: string
+  email?: string
+  organization?: string
+}
+
+export type ReferralPayload = {
+  headline: string
+  body?: string
+  sourceUrl?: string
+  thumbnailUrl?: string
+  sourceType?: "ad" | "post" | "unknown"
+}
+
+export type ListReplyPayload = {
+  header?: string
+  body: string
+  footer?: string
+  buttonText: string
+  sections?: Array<{
+    title: string
+    rows: Array<{ id: string; title: string; description?: string }>
+  }>
+}
 
 export type ChatMessage = {
   id: string
@@ -93,11 +128,19 @@ export type ChatMessage = {
     | "otherDoc"
     | "loading"
     | "system"
+    | "referral"
+    | "location"
+    | "contact"
+    | "listReply"
   status?: "sent" | "delivered" | "read" | "failed"
   replyTo?: { sender: string; text: string; messageId?: string }
   media?: MediaPayload
   error?: string
   sentBy?: { type: SentByType; name?: string }
+  location?: LocationPayload
+  contactCard?: ContactPayload
+  referral?: ReferralPayload
+  listReply?: ListReplyPayload
 }
 
 export type Contact = {

@@ -127,6 +127,7 @@ categories:
       - chat-template-modal
       - chat-contact-panel
       - chat-template
+      - sender-indicator
 
 # =============================================================================
 # COMPONENT DEFINITIONS
@@ -1442,6 +1443,7 @@ components:
       - dropdown-menu
       - chat-timeline-divider
       - doc-media
+      - sender-indicator
     isMultiFile: true
     directory: "chat-message-list"
     files:
@@ -1586,6 +1588,7 @@ components:
       - chat-input
       - chat-template-modal
       - chat-contact-panel
+      - sender-indicator
       - button
       - tooltip
     isMultiFile: true
@@ -1595,6 +1598,23 @@ components:
       - "chat-app.tsx"
       - "index.ts"
     mainFile: "chat-app.tsx"
+
+  sender-indicator:
+    description: "A circular badge showing who sent a message — agent initials, bot icon, campaign megaphone, or API plug"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - chat-types
+      - tooltip
+    isMultiFile: true
+    directory: "sender-indicator"
+    files:
+      - "sender-indicator.tsx"
+      - "index.ts"
+    mainFile: "sender-indicator.tsx"
 
   setup-integration:
     description: "AI chat interface for setting up, testing, and publishing integrations after successful connection"
