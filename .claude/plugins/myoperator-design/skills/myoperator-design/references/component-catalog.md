@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 95 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 97 components across 7 categories.
 
 ## Quick Reference
 
@@ -95,6 +95,7 @@
 | ChatTemplateModal | custom | `npx myoperator-ui add chat-template-modal` |
 | ChatContactPanel | custom | `npx myoperator-ui add chat-contact-panel` |
 | ChatTemplate | custom | `npx myoperator-ui add chat-template` |
+| SenderIndicator | custom | `npx myoperator-ui add sender-indicator` |
 
 ## Core — Essential UI primitives
 
@@ -1063,7 +1064,7 @@ import { Mail } from "lucide-react"
 > Message list with all media renderers, delivery status, and reply functionality
 
 **Install**: `npx myoperator-ui add chat-message-list`
-**Requires**: `chat-types`, `chat-provider`, `button`, `tooltip`, `spinner`, `avatar`, `tag`, `dropdown-menu`, `chat-timeline-divider`, `doc-media` (auto-installed)
+**Requires**: `chat-types`, `chat-provider`, `button`, `tooltip`, `spinner`, `avatar`, `tag`, `dropdown-menu`, `chat-timeline-divider`, `doc-media`, `sender-indicator` (auto-installed)
 **Type**: Multi-file component
 
 ---
@@ -1108,7 +1109,16 @@ import { Mail } from "lucide-react"
 > Complete chat application template — install this to get the full chat UI
 
 **Install**: `npx myoperator-ui add chat-template`
-**Requires**: `chat-types`, `chat-transport`, `chat-provider`, `chat-sidebar`, `chat-filter-panel`, `chat-new-panel`, `chat-message-list`, `chat-header`, `chat-input`, `chat-template-modal`, `chat-contact-panel`, `button`, `tooltip` (auto-installed)
+**Requires**: `chat-types`, `chat-transport`, `chat-provider`, `chat-sidebar`, `chat-filter-panel`, `chat-new-panel`, `chat-message-list`, `chat-header`, `chat-input`, `chat-template-modal`, `chat-contact-panel`, `sender-indicator`, `button`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### SenderIndicator
+> A circular badge showing who sent a message — agent initials, bot icon, campaign megaphone, or API plug
+
+**Install**: `npx myoperator-ui add sender-indicator`
+**Requires**: `chat-types`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
