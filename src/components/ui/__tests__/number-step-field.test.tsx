@@ -34,6 +34,21 @@ describe("NumberStepField", () => {
     expect(onValueChange).toHaveBeenCalledWith(5);
   });
 
+  it("calls onBlur when the number input loses focus", () => {
+    const onBlur = vi.fn();
+    render(
+      <NumberStepField
+        value={1}
+        onValueChange={() => {}}
+        onBlur={onBlur}
+        suffix="hour"
+        aria-label="Hours"
+      />
+    );
+    fireEvent.blur(screen.getByLabelText("Hours"));
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
   it("increment button increases value", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();

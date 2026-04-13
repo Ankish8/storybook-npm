@@ -24,6 +24,27 @@ const SAMPLE_NUDGES: NudgeItem[] = [
   },
 ];
 
+/** Controlled wrapper so message edits persist (required for empty-message validation). */
+function StatefulBotFollowUps({
+  initialNudges,
+  ...rest
+}: Omit<React.ComponentProps<typeof BotFollowUps>, "nudges"> & {
+  initialNudges: NudgeItem[];
+}) {
+  const [nudges, setNudges] = React.useState(initialNudges);
+  return (
+    <BotFollowUps
+      {...rest}
+      nudges={nudges}
+      onMessageChange={(id, message) =>
+        setNudges((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, message } : n))
+        )
+      }
+    />
+  );
+}
+
 describe("BotFollowUps", () => {
   it("renders default section title", () => {
     render(<BotFollowUps nudges={[]} />);
@@ -117,6 +138,78 @@ describe("BotFollowUps", () => {
     await user.click(textarea);
     await user.tab();
     expect(onMessageBlur).toHaveBeenCalledWith(
+      "1",
+      expect.objectContaining({ type: "blur" })
+    );
+  });
+
+  it("shows message validation error when cleared and blurred", async () => {
+    const user = userEvent.setup();
+    render(<StatefulBotFollowUps initialNudges={[SAMPLE_NUDGES[0]]} />);
+    const textarea = screen.getByLabelText("Followup 1 message");
+    await user.clear(textarea);
+    await user.tab();
+    expect(screen.getByText("Message is required")).toBeInTheDocument();
+    expect(textarea).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("clears message validation error when user types non-empty text", async () => {
+    const user = userEvent.setup();
+    render(<StatefulBotFollowUps initialNudges={[SAMPLE_NUDGES[0]]} />);
+    const textarea = screen.getByLabelText("Followup 1 message");
+    await user.clear(textarea);
+    await user.tab();
+    expect(screen.getByText("Message is required")).toBeInTheDocument();
+    await user.type(textarea, "Hello");
+    expect(screen.queryByText("Message is required")).not.toBeInTheDocument();
+    expect(textarea).not.toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("uses custom messageRequiredError copy", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulBotFollowUps
+        initialNudges={[SAMPLE_NUDGES[0]]}
+        messageRequiredError="Custom required"
+      />
+    );
+    const textarea = screen.getByLabelText("Followup 1 message");
+    await user.clear(textarea);
+    await user.tab();
+    expect(screen.getByText("Custom required")).toBeInTheDocument();
+  });
+
+  it("hours input calls onDelayHoursBlur", async () => {
+    const user = userEvent.setup();
+    const onDelayHoursBlur = vi.fn();
+    render(
+      <BotFollowUps
+        nudges={[SAMPLE_NUDGES[0]]}
+        onDelayHoursBlur={onDelayHoursBlur}
+      />
+    );
+    const input = screen.getByLabelText("Followup 1 delay hours");
+    await user.click(input);
+    await user.tab();
+    expect(onDelayHoursBlur).toHaveBeenCalledWith(
+      "1",
+      expect.objectContaining({ type: "blur" })
+    );
+  });
+
+  it("minutes input calls onDelayMinutesBlur", async () => {
+    const user = userEvent.setup();
+    const onDelayMinutesBlur = vi.fn();
+    render(
+      <BotFollowUps
+        nudges={[SAMPLE_NUDGES[0]]}
+        onDelayMinutesBlur={onDelayMinutesBlur}
+      />
+    );
+    const input = screen.getByLabelText("Followup 1 delay minutes");
+    await user.click(input);
+    await user.tab();
+    expect(onDelayMinutesBlur).toHaveBeenCalledWith(
       "1",
       expect.objectContaining({ type: "blur" })
     );

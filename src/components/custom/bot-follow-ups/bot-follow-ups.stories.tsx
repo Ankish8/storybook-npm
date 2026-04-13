@@ -11,7 +11,7 @@ const meta: Meta<typeof BotFollowUps> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Follow-ups section for bot configuration. Delay uses \`NumberStepField\` (hour/minute with **chevron steppers inside** the white field and suffix chips). Row labels default to **Followup 1**, **Followup 2**, …; override with \`getItemLabel\`. Combined delay is 0–23h 59m by default, with optional blur on the message field.
+        component: `Follow-ups section for bot configuration. Delay uses \`NumberStepField\` (hour/minute with **chevron steppers inside** the white field and suffix chips). Row labels default to **Followup 1**, **Followup 2**, …; override with \`getItemLabel\`. Combined delay is 0–23h 59m by default. Blur handlers: \`onDelayHoursBlur\`, \`onDelayMinutesBlur\`, and \`onMessageBlur\` (each receives the nudge \`id\` and the focus event).
 
 **Install**
 \`\`\`bash
@@ -28,8 +28,8 @@ import { BotFollowUps, DEFAULT_MAX_TOTAL_MINUTES } from "@/components/custom/bot
 | Token | Description | Preview |
 |-------|-------------|---------|
 | \`--semantic-text-primary\` | Section title, row label, field labels | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-text-primary);border-radius:2px;vertical-align:middle" /> |
-| \`--semantic-text-muted\` | Tooltip control, secondary suffix labels | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-text-muted);border-radius:2px;vertical-align:middle" /> |
-| \`--semantic-bg-ui\` | Suffix chips (hour/minutes), tooltip button | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-bg-ui);border-radius:2px;vertical-align:middle" /> |
+| \`--semantic-text-muted\` | Info icon (Bot Functions style), field hints | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-text-muted);border-radius:2px;vertical-align:middle" /> |
+| \`--semantic-bg-ui\` | Hour/minute suffix chips | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-bg-ui);border-radius:2px;vertical-align:middle" /> |
 | \`--semantic-bg-primary\` | Input/textarea background | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-bg-primary);border-radius:2px;vertical-align:middle" /> |
 | \`--semantic-border-layout\` | Card border | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-border-layout);border-radius:2px;vertical-align:middle" /> |`,
       },
@@ -48,6 +48,9 @@ import { BotFollowUps, DEFAULT_MAX_TOTAL_MINUTES } from "@/components/custom/bot
       description:
         "Optional override for row label (default: Followup 1, Followup 2, …)",
     },
+    onDelayHoursBlur: { action: "onDelayHoursBlur" },
+    onDelayMinutesBlur: { action: "onDelayMinutesBlur" },
+    onMessageBlur: { action: "onMessageBlur" },
   },
 };
 

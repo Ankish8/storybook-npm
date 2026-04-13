@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HelpCircle } from "lucide-react";
+import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Switch } from "../../ui/switch";
 import { NumberStepField } from "../../ui/number-step-field";
@@ -12,6 +12,7 @@ import {
 } from "../../ui/tooltip";
 import {
   DEFAULT_MAX_TOTAL_MINUTES,
+  DEFAULT_MESSAGE_REQUIRED_ERROR,
   type BotFollowUpsProps,
   type NudgeItem,
 } from "./types";
@@ -55,8 +56,11 @@ function NudgeCard({
   onToggle,
   onDelayHoursChange,
   onDelayMinutesChange,
+  onDelayHoursBlur,
+  onDelayMinutesBlur,
   onMessageChange,
   onMessageBlur,
+  messageError,
   maxHours,
   maxMinutes,
   minTotalMinutes,
@@ -68,17 +72,29 @@ function NudgeCard({
   onToggle?: (id: string, enabled: boolean) => void;
   onDelayHoursChange?: (id: string, hours: number) => void;
   onDelayMinutesChange?: (id: string, minutes: number) => void;
+  onDelayHoursBlur?: (
+    id: string,
+    event: React.FocusEvent<HTMLInputElement>
+  ) => void;
+  onDelayMinutesBlur?: (
+    id: string,
+    event: React.FocusEvent<HTMLInputElement>
+  ) => void;
   onMessageChange?: (id: string, message: string) => void;
   onMessageBlur?: (
     id: string,
     event: React.FocusEvent<HTMLTextAreaElement>
   ) => void;
+  /** Shown under the message field (Info icon + error text, Figma-style). */
+  messageError?: string;
   maxHours: number;
   maxMinutes: number;
   minTotalMinutes: number;
   maxTotalMinutes: number;
   disabled?: boolean;
 }) {
+  const messageErrorDescId = React.useId();
+
   const handleHoursChange = (next: number) => {
     const { hours, minutes } = normalizeDelay(
       next,
@@ -133,6 +149,7 @@ function NudgeCard({
             <NumberStepField
               value={nudge.delayHours}
               onValueChange={(v) => handleHoursChange(v)}
+              onBlur={(e) => onDelayHoursBlur?.(nudge.id, e)}
               min={0}
               max={maxHours}
               suffix="hour"
@@ -150,6 +167,7 @@ function NudgeCard({
             <NumberStepField
               value={nudge.delayMinutes}
               onValueChange={(v) => handleMinutesChange(v)}
+              onBlur={(e) => onDelayMinutesBlur?.(nudge.id, e)}
               min={0}
               max={maxMinutes}
               suffix="minutes"
@@ -170,9 +188,22 @@ function NudgeCard({
             onBlur={(e) => onMessageBlur?.(nudge.id, e)}
             disabled={disabled}
             rows={3}
+            state={messageError ? "error" : "default"}
             aria-label={`${displayLabel} message`}
+            aria-invalid={!!messageError}
+            aria-describedby={messageError ? messageErrorDescId : undefined}
             className="bg-semantic-bg-primary"
           />
+          {messageError ? (
+            <div
+              id={messageErrorDescId}
+              className="flex items-center gap-1.5 text-xs text-semantic-error-primary min-w-0"
+              role="alert"
+            >
+              <Info className="size-3.5 shrink-0" aria-hidden />
+              <p className="m-0">{messageError}</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
@@ -192,8 +223,11 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       onToggle,
       onDelayHoursChange,
       onDelayMinutesChange,
+      onDelayHoursBlur,
+      onDelayMinutesBlur,
       onMessageChange,
       onMessageBlur,
+      messageRequiredError = DEFAULT_MESSAGE_REQUIRED_ERROR,
       tooltip,
       infoTooltip,
       minTotalMinutes = 0,
@@ -209,6 +243,61 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
   ) => {
     const tooltipContent = (tooltip ?? infoTooltip) || DEFAULT_TOOLTIP;
 
+    const [messageErrors, setMessageErrors] = React.useState<
+      Record<string, string>
+    >({});
+
+    React.useEffect(() => {
+      const ids = new Set(nudges.map((n) => n.id));
+      setMessageErrors((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        for (const k of Object.keys(next)) {
+          if (!ids.has(k)) {
+            delete next[k];
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+    }, [nudges]);
+
+    const handleMessageChange = React.useCallback(
+      (id: string, message: string) => {
+        if (message.trim()) {
+          setMessageErrors((prev) => {
+            if (!prev[id]) return prev;
+            const rest = { ...prev };
+            delete rest[id];
+            return rest;
+          });
+        }
+        onMessageChange?.(id, message);
+      },
+      [onMessageChange]
+    );
+
+    const handleMessageBlur = React.useCallback(
+      (id: string, event: React.FocusEvent<HTMLTextAreaElement>) => {
+        const v = event.target.value;
+        if (!v.trim()) {
+          setMessageErrors((prev) => ({
+            ...prev,
+            [id]: messageRequiredError,
+          }));
+        } else {
+          setMessageErrors((prev) => {
+            if (!prev[id]) return prev;
+            const rest = { ...prev };
+            delete rest[id];
+            return rest;
+          });
+        }
+        onMessageBlur?.(id, event);
+      },
+      [onMessageBlur, messageRequiredError]
+    );
+
     return (
       <div ref={ref} className={cn("pb-4", className)} {...props}>
         {/* Header */}
@@ -220,18 +309,17 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="inline-flex size-5 items-center justify-center rounded-full border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-muted hover:text-semantic-text-secondary shrink-0 cursor-help"
-                    aria-label={`${title} information`}
-                  >
-                    <HelpCircle className="size-3.5" strokeWidth={2} />
-                  </button>
+                  <Info
+                    className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                    aria-label={`${title}: more information`}
+                  />
                 </TooltipTrigger>
                 <TooltipContent>{tooltipContent}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          ) : null}
+          ) : (
+            <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+          )}
         </div>
 
         {/* Cards */}
@@ -251,8 +339,11 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
                 onToggle={onToggle}
                 onDelayHoursChange={onDelayHoursChange}
                 onDelayMinutesChange={onDelayMinutesChange}
-                onMessageChange={onMessageChange}
-                onMessageBlur={onMessageBlur}
+                onDelayHoursBlur={onDelayHoursBlur}
+                onDelayMinutesBlur={onDelayMinutesBlur}
+                onMessageChange={handleMessageChange}
+                onMessageBlur={handleMessageBlur}
+                messageError={messageErrors[nudge.id]}
                 maxHours={maxHours}
                 maxMinutes={maxMinutes}
                 minTotalMinutes={minTotalMinutes}
