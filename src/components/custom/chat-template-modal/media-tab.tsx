@@ -35,11 +35,20 @@ export function MediaTab({
           {uploadedMedia[card.cardIndex] ? (
             <div className="flex items-center gap-3 px-3 py-2.5 border border-solid border-semantic-border-layout rounded">
               <div className="size-10 shrink-0 rounded overflow-hidden bg-semantic-bg-ui flex items-center justify-center">
-                <img
-                  src={URL.createObjectURL(uploadedMedia[card.cardIndex]!)}
-                  alt=""
-                  className="size-full object-cover"
-                />
+                {uploadedMedia[card.cardIndex]!.type.startsWith("video/") ? (
+                  <video
+                    src={URL.createObjectURL(uploadedMedia[card.cardIndex]!)}
+                    muted
+                    playsInline
+                    className="size-full object-cover pointer-events-none"
+                  />
+                ) : (
+                  <img
+                    src={URL.createObjectURL(uploadedMedia[card.cardIndex]!)}
+                    alt=""
+                    className="size-full object-cover"
+                  />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="m-0 text-[13px] font-semibold text-semantic-text-primary truncate">
@@ -66,7 +75,7 @@ export function MediaTab({
             <label className="flex flex-col items-center gap-2 px-4 py-5 border border-dashed border-semantic-border-layout rounded cursor-pointer hover:bg-semantic-bg-hover transition-colors">
               <input
                 type="file"
-                accept="image/jpeg,image/png"
+                accept="image/jpeg,image/png,video/mp4,video/webm,video/quicktime"
                 className="sr-only"
                 aria-label={`Upload media for card ${card.cardIndex}`}
                 onChange={(e) => {
@@ -86,7 +95,7 @@ export function MediaTab({
                 or drag and drop file here
               </p>
               <p className="m-0 text-[11px] text-semantic-text-muted">
-                Supported file types: JPG/PNG with 5 MB size
+                Supported: JPG/PNG up to 5 MB, MP4/WebM/MOV up to 16 MB
               </p>
             </label>
           )}

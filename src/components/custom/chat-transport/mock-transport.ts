@@ -216,7 +216,7 @@ const templateList: TemplateDef[] = [
     bodyVariables: ["{{customer_name}}", "{{order_id}}"],
     cardImages: [
       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop",
-      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300&h=200&fit=crop",
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
       "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=300&h=200&fit=crop",
     ],
     cards: [
@@ -355,6 +355,7 @@ const chatMessages: Record<string, ChatMessage[]> = {
         images: [
           {
             url: "https://picsum.photos/seed/c1/300/240",
+            mediaType: "image",
             title: "Product Catalog 2025",
             buttons: [
               { label: "View Details", icon: "link" },
@@ -362,12 +363,15 @@ const chatMessages: Record<string, ChatMessage[]> = {
             ],
           },
           {
-            url: "https://picsum.photos/seed/c2/300/240",
-            title: "New Arrivals Collection",
+            url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            mediaType: "video",
+            thumbnailUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
+            title: "New Arrivals — Video Tour",
             buttons: [{ label: "Shop Now", icon: "link" }],
           },
           {
             url: "https://picsum.photos/seed/c3/300/240",
+            mediaType: "image",
             title: "Special Offers & Deals",
             buttons: [
               { label: "Learn More", icon: "link" },
@@ -387,6 +391,72 @@ const chatMessages: Record<string, ChatMessage[]> = {
       sentBy: { type: "campaign" },
       type: "loading",
       error: "Template message could not be delivered. The message template has been rejected.",
+    },
+    {
+      id: "m12",
+      text: "I saw your ad on Instagram!",
+      time: "2:32 PM",
+      sender: "customer",
+      type: "referral",
+      referral: {
+        headline: "MyOperator — Smart IVR & WhatsApp Business",
+        body: "Automate your customer support with cloud telephony and WhatsApp API. Free demo!",
+        sourceUrl: "fb.me/myoperator-ad",
+        thumbnailUrl: "https://picsum.photos/seed/ad-thumb/120/120",
+        sourceType: "ad",
+      },
+    },
+    {
+      id: "m13",
+      text: "",
+      time: "2:34 PM",
+      sender: "customer",
+      type: "location",
+      location: {
+        latitude: 28.6139,
+        longitude: 77.2090,
+        name: "India Gate",
+        address: "Rajpath Marg, India Gate, New Delhi, Delhi 110001",
+      },
+    },
+    {
+      id: "m14",
+      text: "",
+      time: "2:35 PM",
+      sender: "customer",
+      type: "contact",
+      contactCard: {
+        name: "Priya Sharma",
+        phone: "+91 98765 43210",
+        email: "priya.sharma@example.com",
+        organization: "MyOperator",
+      },
+    },
+    {
+      id: "m15",
+      text: "",
+      time: "2:37 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "delivered",
+      sentBy: { type: "api", name: "Zapier" },
+      type: "listReply",
+      listReply: {
+        header: "Choose your plan",
+        body: "We have multiple plans tailored to your needs. Select an option below to learn more about each plan.",
+        footer: "Reply with the option number or tap below",
+        buttonText: "See options",
+        sections: [
+          {
+            title: "Plans",
+            rows: [
+              { id: "1", title: "Starter", description: "Up to 3 agents, 1000 conversations/mo" },
+              { id: "2", title: "Growth", description: "Up to 10 agents, 5000 conversations/mo" },
+              { id: "3", title: "Enterprise", description: "Unlimited agents & conversations" },
+            ],
+          },
+        ],
+      },
     },
   ],
   "2": [
@@ -467,6 +537,7 @@ const chatMessages: Record<string, ChatMessage[]> = {
         images: [
           {
             url: "https://picsum.photos/seed/c1/300/240",
+            mediaType: "image",
             title: "Product Catalog 2025",
             buttons: [
               { label: "View Details", icon: "link" },
@@ -475,11 +546,13 @@ const chatMessages: Record<string, ChatMessage[]> = {
           },
           {
             url: "https://picsum.photos/seed/c2/300/240",
+            mediaType: "image",
             title: "New Arrivals Collection",
             buttons: [{ label: "Shop Now", icon: "link" }],
           },
           {
             url: "https://picsum.photos/seed/c3/300/240",
+            mediaType: "image",
             title: "Special Offers & Deals",
             buttons: [
               { label: "Learn More", icon: "link" },

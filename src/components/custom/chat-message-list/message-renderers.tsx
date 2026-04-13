@@ -10,9 +10,12 @@ import {
   ChevronRight,
   ExternalLink,
   Reply,
-  Bot,
-  Megaphone,
-  Code,
+  MapPin,
+  Phone,
+  Mail,
+  Building2,
+  ListOrdered,
+  Megaphone as MegaphoneIcon,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -23,29 +26,25 @@ import {
   DropdownMenuRadioItem,
 } from "../../ui/dropdown-menu"
 import { Spinner } from "../../ui/spinner"
-import type { MediaPayload, SentByType } from "../chat-types"
+import type {
+  MediaPayload,
+  LocationPayload,
+  ContactPayload,
+  ReferralPayload,
+  ListReplyPayload,
+} from "../chat-types"
+import {
+  SenderIndicator,
+  SenderBadgeIcon,
+  getInitials,
+} from "../sender-indicator"
+
+/* Re-export SenderIndicator so existing imports from this file keep working */
+const SenderIndicatorBadge = SenderBadgeIcon
 
 /* ── Constants ── */
 
 const SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const
-
-/* ── Helper: getInitials ── */
-
-function getInitials(name: string): string {
-  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-}
-
-/* ── SenderIndicatorBadge ── */
-
-function SenderIndicatorBadge({ sentBy }: { sentBy: { type: SentByType; name?: string } }) {
-  const iconClass = "size-3.5 text-semantic-text-muted"
-  if (sentBy.type === "agent" && sentBy.name) {
-    return <span className="text-[10px] font-medium text-semantic-text-secondary leading-none">{getInitials(sentBy.name)}</span>
-  }
-  if (sentBy.type === "bot") return <Bot className={iconClass} />
-  if (sentBy.type === "campaign") return <Megaphone className={iconClass} />
-  return <Code className={iconClass} />
-}
 
 /* ── ImageMedia ── */
 
@@ -272,6 +271,67 @@ function AudioMedia({ media: _media }: { media: MediaPayload }) {
 
 /* ── CarouselMedia ── */
 
+type CarouselCardItem = NonNullable<MediaPayload["images"]>[number]
+
+function CarouselCardMedia({ item }: { item: CarouselCardItem }) {
+  const isVideo = item.mediaType === "video"
+  const videoRef = React.useRef<HTMLVideoElement>(null)
+  const [playing, setPlaying] = React.useState(false)
+
+  if (!isVideo) {
+    return (
+      <img
+        src={item.url}
+        alt={item.title}
+        className="w-full object-cover"
+        style={{ height: 200 }}
+      />
+    )
+  }
+
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      void v.play()
+      setPlaying(true)
+    } else {
+      v.pause()
+      setPlaying(false)
+    }
+  }
+
+  return (
+    <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
+      <video
+        ref={videoRef}
+        src={item.url}
+        poster={item.thumbnailUrl}
+        playsInline
+        muted
+        onEnded={() => setPlaying(false)}
+        aria-label={item.title}
+        className="w-full h-full object-cover pointer-events-none"
+      />
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={playing ? "Pause video" : "Play video"}
+        className={`absolute inset-0 flex items-center justify-center cursor-pointer border-none bg-transparent p-0 transition-opacity ${playing ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
+      >
+        <span className="size-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          {playing ? (
+            <Pause className="size-5 text-white fill-white" />
+          ) : (
+            <Play className="size-5 text-white fill-white ml-0.5" />
+          )}
+        </span>
+      </button>
+    </div>
+  )
+}
+
 function CarouselMedia({ media }: { media: MediaPayload }) {
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = React.useState(false)
@@ -291,21 +351,16 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
     <div className="relative">
       {/* Scrollable card row */}
       <div ref={scrollRef} onScroll={updateScrollState} tabIndex={0} role="region" aria-label="Carousel" aria-roledescription="carousel" className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3" style={{ scrollbarWidth: "none" }}>
-        {media.images?.map((img, i) => (
+        {media.images?.map((item, i) => (
           <div key={i} className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]" style={{ width: 260 }}>
-            {/* Card image */}
-            <img
-              src={img.url}
-              alt={img.title}
-              className="w-full object-cover"
-              style={{ height: 200 }}
-            />
+            {/* Card media — image or video */}
+            <CarouselCardMedia item={item} />
             {/* Card title */}
             <div className="px-3 pt-2.5 pb-2">
-              <p className="m-0 text-[14px] font-medium text-semantic-text-primary line-clamp-2">{img.title}</p>
+              <p className="m-0 text-[14px] font-medium text-semantic-text-primary line-clamp-2">{item.title}</p>
             </div>
             {/* Card buttons */}
-            {img.buttons?.map((btn, j) => (
+            {item.buttons?.map((btn, j) => (
               <button
                 key={j}
                 className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-normal text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
@@ -330,6 +385,167 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
           <ChevronRight className="size-4 text-semantic-text-primary" />
         </button>
       )}
+    </div>
+  )
+}
+
+/* ── ReferralMedia ── */
+
+function ReferralMedia({ referral }: { referral: ReferralPayload }) {
+  return (
+    <div className="border-l-[3px] border-solid border-semantic-border-accent bg-semantic-bg-hover rounded-sm mx-3 mt-3 mb-1 overflow-hidden">
+      <div className="flex gap-3 p-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <MegaphoneIcon className="size-3 text-semantic-text-muted shrink-0" />
+            <span className="text-[11px] text-semantic-text-muted uppercase font-semibold tracking-wider">
+              {referral.sourceType === "post" ? "Post" : "Ad"}
+            </span>
+          </div>
+          <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5 line-clamp-2">
+            {referral.headline}
+          </p>
+          {referral.body && (
+            <p className="m-0 mt-0.5 text-[13px] text-semantic-text-muted leading-[1.4] line-clamp-2">
+              {referral.body}
+            </p>
+          )}
+          {referral.sourceUrl && (
+            <p className="m-0 mt-1 text-[12px] text-semantic-text-link truncate">
+              {referral.sourceUrl}
+            </p>
+          )}
+        </div>
+        {referral.thumbnailUrl && (
+          <img
+            src={referral.thumbnailUrl}
+            alt=""
+            className="size-[60px] rounded object-cover shrink-0"
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ── LocationMedia ── */
+
+function LocationMedia({ location }: { location: LocationPayload }) {
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${location.latitude},${location.longitude}&zoom=15&size=380x200&markers=color:red%7C${location.latitude},${location.longitude}&key=DEMO`
+  return (
+    <div>
+      {/* Static map placeholder */}
+      <div
+        className="w-full bg-semantic-bg-ui flex items-center justify-center relative overflow-hidden"
+        style={{ height: 180 }}
+      >
+        <div className="absolute inset-0 bg-[#e8e4df]" />
+        {/* Crosshair grid lines to suggest a map */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-semantic-text-muted" />
+          <div className="absolute top-1/2 left-0 right-0 h-px bg-semantic-text-muted" />
+        </div>
+        <div className="relative flex flex-col items-center gap-1">
+          <MapPin className="size-8 text-semantic-error-primary fill-semantic-error-primary" />
+          <div className="size-2 rounded-full bg-semantic-error-primary/30" />
+        </div>
+      </div>
+      {/* Location details */}
+      <div className="px-3 pt-2.5 pb-1">
+        {location.name && (
+          <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5">
+            {location.name}
+          </p>
+        )}
+        {location.address && (
+          <p className="m-0 mt-0.5 text-[13px] text-semantic-text-muted leading-[1.4]">
+            {location.address}
+          </p>
+        )}
+        {!location.name && !location.address && (
+          <p className="m-0 text-[13px] text-semantic-text-muted">
+            {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ── ContactMedia ── */
+
+function ContactMedia({ contact }: { contact: ContactPayload }) {
+  const initials = getInitials(contact.name)
+  return (
+    <div className="px-3 pt-3 pb-1">
+      <div className="flex items-center gap-3 mb-2">
+        {/* Avatar */}
+        <div className="size-10 rounded-full bg-semantic-primary flex items-center justify-center shrink-0">
+          <span className="text-[14px] font-semibold text-semantic-text-inverted leading-none">
+            {initials}
+          </span>
+        </div>
+        {/* Name + org */}
+        <div className="flex-1 min-w-0">
+          <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5 truncate">
+            {contact.name}
+          </p>
+          {contact.organization && (
+            <p className="m-0 text-[12px] text-semantic-text-muted truncate">
+              {contact.organization}
+            </p>
+          )}
+        </div>
+      </div>
+      {/* Contact details */}
+      <div className="border-t border-solid border-semantic-border-layout pt-2 flex flex-col gap-1.5">
+        <div className="flex items-center gap-2">
+          <Phone className="size-3.5 text-semantic-text-muted shrink-0" />
+          <span className="text-[13px] text-semantic-text-primary">{contact.phone}</span>
+        </div>
+        {contact.email && (
+          <div className="flex items-center gap-2">
+            <Mail className="size-3.5 text-semantic-text-muted shrink-0" />
+            <span className="text-[13px] text-semantic-text-link">{contact.email}</span>
+          </div>
+        )}
+        {contact.organization && (
+          <div className="flex items-center gap-2">
+            <Building2 className="size-3.5 text-semantic-text-muted shrink-0" />
+            <span className="text-[13px] text-semantic-text-muted">{contact.organization}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ── ListReplyMedia ── */
+
+function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
+  return (
+    <div className="px-3 pt-3 pb-1">
+      {listReply.header && (
+        <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5 mb-1">
+          {listReply.header}
+        </p>
+      )}
+      <p className="m-0 text-[14px] text-semantic-text-primary leading-5">
+        {listReply.body}
+      </p>
+      {listReply.footer && (
+        <p className="m-0 mt-1.5 text-[12px] text-semantic-text-muted">
+          {listReply.footer}
+        </p>
+      )}
+      {/* Action button */}
+      <button
+        type="button"
+        className="w-full mt-2 flex items-center justify-center gap-2 h-10 rounded border border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors cursor-default"
+      >
+        <ListOrdered className="size-4" />
+        {listReply.buttonText}
+      </button>
     </div>
   )
 }
@@ -359,9 +575,14 @@ export {
   SPEED_OPTIONS,
   getInitials,
   SenderIndicatorBadge,
+  SenderIndicator,
   ImageMedia,
   VideoMedia,
   AudioMedia,
   CarouselMedia,
+  ReferralMedia,
+  LocationMedia,
+  ContactMedia,
+  ListReplyMedia,
   LoadingMedia,
 }

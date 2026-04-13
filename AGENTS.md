@@ -23,6 +23,7 @@ This is a **React component library** (myOperator UI) distributed via a CLI tool
 npm run storybook          # Storybook on port 6006
 npm run dev                # Vite dev server
 npm test                   # Run all component tests (vitest)
+npm run test:smart         # Run tests only for changed components (fast iteration)
 npm run test:watch         # Watch mode
 npx vitest run src/components/ui/__tests__/button.test.tsx  # Single test file
 
@@ -250,16 +251,37 @@ If `api:check` blocks a commit for intentional breaking changes, run `npm run ap
 
 ## Publishing
 
+**Prefer `/publish-all`** — the project has a `.claude/commands/publish-all.md` slash command that runs the full workflow end-to-end. Use raw `npm publish` only when the slash command is unavailable or you need a partial step.
+
+### Pre-publish validation gates (run ALL in order — do not skip)
+
 ```bash
-# CLI package
+npm test                                     # 1. Root component tests
+cd packages/cli && npm test                  # 2. CLI-specific tests
+cd packages/cli && npm run validate:prefix   # 3. tw- prefix transformation is correct
+cd packages/cli && npm run build             # 4. Full build pipeline (validate → generate → tsup → verify)
+```
+
+Only publish if every step exits 0. The WABA team consumes these components in production — a broken publish breaks their app.
+
+**Before `git push`**, also run `cd packages/cli && npm run validate:prefix` so prefix issues are caught before CI.
+
+### CLI package publish
+
+```bash
 cd packages/cli
 npm run integrity:snapshot
 # ... make changes & verify ...
 npm version patch
 npm run build
 npm publish                # Uses automation token from ~/.npmrc or NPM_TOKEN
+```
 
-# MCP package (sync metadata first!)
+### MCP package publish
+
+**Only sync MCP metadata if you added or modified components.** Metadata-only changes (docs, dependencies) don't require an MCP republish.
+
+```bash
 cd ../..                   # Return to root
 node scripts/sync-mcp-metadata.js  # Sync component data from components.yaml
 cd packages/mcp

@@ -734,7 +734,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
-    internalDependencies: ["chat-types","chat-provider","button","tooltip","spinner","avatar","tag","dropdown-menu","chat-timeline-divider","doc-media"],
+    internalDependencies: ["chat-types","chat-provider","button","tooltip","spinner","avatar","tag","dropdown-menu","chat-timeline-divider","doc-media","sender-indicator"],
   },
   "chat-header": {
     name: "chat-header",
@@ -774,7 +774,15 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
-    internalDependencies: ["chat-types","chat-transport","chat-provider","chat-sidebar","chat-filter-panel","chat-new-panel","chat-message-list","chat-header","chat-input","chat-template-modal","chat-contact-panel","button","tooltip"],
+    internalDependencies: ["chat-types","chat-transport","chat-provider","chat-sidebar","chat-filter-panel","chat-new-panel","chat-message-list","chat-header","chat-input","chat-template-modal","chat-contact-panel","sender-indicator","button","tooltip"],
+  },
+  "sender-indicator": {
+    name: "sender-indicator",
+    description: "A circular badge showing who sent a message — agent initials, bot icon, campaign megaphone, or API plug",
+      category: "custom",
+    dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
+    category: "custom",
+    internalDependencies: ["chat-types","tooltip"],
   },
   "setup-integration": {
     name: "setup-integration",
