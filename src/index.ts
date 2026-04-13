@@ -548,7 +548,10 @@ export type {
   BotFollowUpsProps,
   NudgeItem,
 } from "./components/custom/bot-follow-ups";
-export { DEFAULT_MAX_TOTAL_MINUTES } from "./components/custom/bot-follow-ups";
+export {
+  DEFAULT_MAX_TOTAL_MINUTES,
+  DEFAULT_MESSAGE_REQUIRED_ERROR,
+} from "./components/custom/bot-follow-ups";
 
 // BotTest (Custom)
 export { BotTest } from "./components/custom/bot-test";

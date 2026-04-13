@@ -12,6 +12,7 @@ import {
 } from "../../ui/tooltip";
 import {
   DEFAULT_MAX_TOTAL_MINUTES,
+  DEFAULT_MESSAGE_REQUIRED_ERROR,
   type BotFollowUpsProps,
   type NudgeItem,
 } from "./types";
@@ -59,6 +60,7 @@ function NudgeCard({
   onDelayMinutesBlur,
   onMessageChange,
   onMessageBlur,
+  messageError,
   maxHours,
   maxMinutes,
   minTotalMinutes,
@@ -83,12 +85,16 @@ function NudgeCard({
     id: string,
     event: React.FocusEvent<HTMLTextAreaElement>
   ) => void;
+  /** Shown under the message field (Info icon + error text, Figma-style). */
+  messageError?: string;
   maxHours: number;
   maxMinutes: number;
   minTotalMinutes: number;
   maxTotalMinutes: number;
   disabled?: boolean;
 }) {
+  const messageErrorDescId = React.useId();
+
   const handleHoursChange = (next: number) => {
     const { hours, minutes } = normalizeDelay(
       next,
@@ -182,9 +188,22 @@ function NudgeCard({
             onBlur={(e) => onMessageBlur?.(nudge.id, e)}
             disabled={disabled}
             rows={3}
+            state={messageError ? "error" : "default"}
             aria-label={`${displayLabel} message`}
+            aria-invalid={!!messageError}
+            aria-describedby={messageError ? messageErrorDescId : undefined}
             className="bg-semantic-bg-primary"
           />
+          {messageError ? (
+            <div
+              id={messageErrorDescId}
+              className="flex items-center gap-1.5 text-xs text-semantic-error-primary min-w-0"
+              role="alert"
+            >
+              <Info className="size-3.5 shrink-0" aria-hidden />
+              <p className="m-0">{messageError}</p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
@@ -208,6 +227,7 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       onDelayMinutesBlur,
       onMessageChange,
       onMessageBlur,
+      messageRequiredError = DEFAULT_MESSAGE_REQUIRED_ERROR,
       tooltip,
       infoTooltip,
       minTotalMinutes = 0,
@@ -222,6 +242,61 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
     ref
   ) => {
     const tooltipContent = (tooltip ?? infoTooltip) || DEFAULT_TOOLTIP;
+
+    const [messageErrors, setMessageErrors] = React.useState<
+      Record<string, string>
+    >({});
+
+    React.useEffect(() => {
+      const ids = new Set(nudges.map((n) => n.id));
+      setMessageErrors((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        for (const k of Object.keys(next)) {
+          if (!ids.has(k)) {
+            delete next[k];
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+    }, [nudges]);
+
+    const handleMessageChange = React.useCallback(
+      (id: string, message: string) => {
+        if (message.trim()) {
+          setMessageErrors((prev) => {
+            if (!prev[id]) return prev;
+            const rest = { ...prev };
+            delete rest[id];
+            return rest;
+          });
+        }
+        onMessageChange?.(id, message);
+      },
+      [onMessageChange]
+    );
+
+    const handleMessageBlur = React.useCallback(
+      (id: string, event: React.FocusEvent<HTMLTextAreaElement>) => {
+        const v = event.target.value;
+        if (!v.trim()) {
+          setMessageErrors((prev) => ({
+            ...prev,
+            [id]: messageRequiredError,
+          }));
+        } else {
+          setMessageErrors((prev) => {
+            if (!prev[id]) return prev;
+            const rest = { ...prev };
+            delete rest[id];
+            return rest;
+          });
+        }
+        onMessageBlur?.(id, event);
+      },
+      [onMessageBlur, messageRequiredError]
+    );
 
     return (
       <div ref={ref} className={cn("pb-4", className)} {...props}>
@@ -266,8 +341,9 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
                 onDelayMinutesChange={onDelayMinutesChange}
                 onDelayHoursBlur={onDelayHoursBlur}
                 onDelayMinutesBlur={onDelayMinutesBlur}
-                onMessageChange={onMessageChange}
-                onMessageBlur={onMessageBlur}
+                onMessageChange={handleMessageChange}
+                onMessageBlur={handleMessageBlur}
+                messageError={messageErrors[nudge.id]}
                 maxHours={maxHours}
                 maxMinutes={maxMinutes}
                 minTotalMinutes={minTotalMinutes}

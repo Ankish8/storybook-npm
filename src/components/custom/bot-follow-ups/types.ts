@@ -14,6 +14,9 @@ export interface NudgeItem {
 /** Default cap for combined delay: 23h 59m. */
 export const DEFAULT_MAX_TOTAL_MINUTES = 23 * 60 + 59;
 
+/** Default empty-message validation copy (shown after blur). */
+export const DEFAULT_MESSAGE_REQUIRED_ERROR = "Message is required";
+
 export interface BotFollowUpsProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onToggle"> {
   nudges: NudgeItem[];
@@ -38,6 +41,11 @@ export interface BotFollowUpsProps
     id: string,
     event: React.FocusEvent<HTMLTextAreaElement>
   ) => void;
+  /**
+   * Error text when the message is empty after blur (uses {@link DEFAULT_MESSAGE_REQUIRED_ERROR} by default).
+   * Rendered below the field with an info icon and `text-semantic-error-primary` (same pattern as Bot Identity fields).
+   */
+  messageRequiredError?: string;
   /**
    * Tooltip shown next to the section title.
    * Takes precedence over `infoTooltip` when both are set.
