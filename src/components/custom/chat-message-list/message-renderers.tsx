@@ -431,7 +431,6 @@ function ReferralMedia({ referral }: { referral: ReferralPayload }) {
 /* ── LocationMedia ── */
 
 function LocationMedia({ location }: { location: LocationPayload }) {
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${location.latitude},${location.longitude}&zoom=15&size=380x200&markers=color:red%7C${location.latitude},${location.longitude}&key=DEMO`
   return (
     <div>
       {/* Static map placeholder */}
