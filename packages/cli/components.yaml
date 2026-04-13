@@ -308,6 +308,9 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+    internalDependencies:
+      - checkbox
+      - tooltip
 
   number-step-field:
     description: "Number input with inline chevron steppers and trailing suffix chip"
@@ -1214,6 +1217,7 @@ components:
     directory: "bot-settings"
     files:
       - "types.ts"
+      - "bot-settings.fixtures.ts"
       - "bot-settings.tsx"
       - "index.ts"
     mainFile: "index.ts"
