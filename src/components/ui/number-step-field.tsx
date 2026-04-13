@@ -30,7 +30,10 @@ function parseOptionalInt(raw: string): number | null {
 }
 
 export interface NumberStepFieldProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "children"> {
+  extends Omit<
+    React.HTMLAttributes<HTMLDivElement>,
+    "onChange" | "children" | "onBlur"
+  > {
   value: number;
   onValueChange: (value: number) => void;
   min?: number;
@@ -42,6 +45,8 @@ export interface NumberStepFieldProps
   "aria-label"?: string;
   incrementAriaLabel?: string;
   decrementAriaLabel?: string;
+  /** Called when the number input loses focus (e.g. validation). */
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
 }
 
 const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
@@ -58,6 +63,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
       "aria-label": ariaLabel,
       incrementAriaLabel,
       decrementAriaLabel,
+      onBlur,
       ...props
     },
     ref
@@ -93,6 +99,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
             step={step}
             value={value}
             onChange={(e) => handleChange(e.target.value)}
+            onBlur={onBlur}
             disabled={disabled}
             aria-label={ariaLabel}
             hideNumberSpinners

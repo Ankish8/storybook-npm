@@ -22,6 +22,16 @@ export interface BotFollowUpsProps
   onToggle?: (id: string, enabled: boolean) => void;
   onDelayHoursChange?: (id: string, hours: number) => void;
   onDelayMinutesChange?: (id: string, minutes: number) => void;
+  /** Fires when the hours number input loses focus. */
+  onDelayHoursBlur?: (
+    id: string,
+    event: React.FocusEvent<HTMLInputElement>
+  ) => void;
+  /** Fires when the minutes number input loses focus. */
+  onDelayMinutesBlur?: (
+    id: string,
+    event: React.FocusEvent<HTMLInputElement>
+  ) => void;
   onMessageChange?: (id: string, message: string) => void;
   /** Fires when the message field loses focus (e.g. for validation or save-on-blur). */
   onMessageBlur?: (

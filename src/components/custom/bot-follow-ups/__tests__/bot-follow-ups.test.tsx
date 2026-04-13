@@ -122,6 +122,42 @@ describe("BotFollowUps", () => {
     );
   });
 
+  it("hours input calls onDelayHoursBlur", async () => {
+    const user = userEvent.setup();
+    const onDelayHoursBlur = vi.fn();
+    render(
+      <BotFollowUps
+        nudges={[SAMPLE_NUDGES[0]]}
+        onDelayHoursBlur={onDelayHoursBlur}
+      />
+    );
+    const input = screen.getByLabelText("Followup 1 delay hours");
+    await user.click(input);
+    await user.tab();
+    expect(onDelayHoursBlur).toHaveBeenCalledWith(
+      "1",
+      expect.objectContaining({ type: "blur" })
+    );
+  });
+
+  it("minutes input calls onDelayMinutesBlur", async () => {
+    const user = userEvent.setup();
+    const onDelayMinutesBlur = vi.fn();
+    render(
+      <BotFollowUps
+        nudges={[SAMPLE_NUDGES[0]]}
+        onDelayMinutesBlur={onDelayMinutesBlur}
+      />
+    );
+    const input = screen.getByLabelText("Followup 1 delay minutes");
+    await user.click(input);
+    await user.tab();
+    expect(onDelayMinutesBlur).toHaveBeenCalledWith(
+      "1",
+      expect.objectContaining({ type: "blur" })
+    );
+  });
+
   it("renders multiple nudges", () => {
     render(<BotFollowUps nudges={SAMPLE_NUDGES} />);
     expect(screen.getByText("Followup 1")).toBeInTheDocument();

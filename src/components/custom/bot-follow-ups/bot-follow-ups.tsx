@@ -55,6 +55,8 @@ function NudgeCard({
   onToggle,
   onDelayHoursChange,
   onDelayMinutesChange,
+  onDelayHoursBlur,
+  onDelayMinutesBlur,
   onMessageChange,
   onMessageBlur,
   maxHours,
@@ -68,6 +70,14 @@ function NudgeCard({
   onToggle?: (id: string, enabled: boolean) => void;
   onDelayHoursChange?: (id: string, hours: number) => void;
   onDelayMinutesChange?: (id: string, minutes: number) => void;
+  onDelayHoursBlur?: (
+    id: string,
+    event: React.FocusEvent<HTMLInputElement>
+  ) => void;
+  onDelayMinutesBlur?: (
+    id: string,
+    event: React.FocusEvent<HTMLInputElement>
+  ) => void;
   onMessageChange?: (id: string, message: string) => void;
   onMessageBlur?: (
     id: string,
@@ -133,6 +143,7 @@ function NudgeCard({
             <NumberStepField
               value={nudge.delayHours}
               onValueChange={(v) => handleHoursChange(v)}
+              onBlur={(e) => onDelayHoursBlur?.(nudge.id, e)}
               min={0}
               max={maxHours}
               suffix="hour"
@@ -150,6 +161,7 @@ function NudgeCard({
             <NumberStepField
               value={nudge.delayMinutes}
               onValueChange={(v) => handleMinutesChange(v)}
+              onBlur={(e) => onDelayMinutesBlur?.(nudge.id, e)}
               min={0}
               max={maxMinutes}
               suffix="minutes"
@@ -192,6 +204,8 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       onToggle,
       onDelayHoursChange,
       onDelayMinutesChange,
+      onDelayHoursBlur,
+      onDelayMinutesBlur,
       onMessageChange,
       onMessageBlur,
       tooltip,
@@ -250,6 +264,8 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
                 onToggle={onToggle}
                 onDelayHoursChange={onDelayHoursChange}
                 onDelayMinutesChange={onDelayMinutesChange}
+                onDelayHoursBlur={onDelayHoursBlur}
+                onDelayMinutesBlur={onDelayMinutesBlur}
                 onMessageChange={onMessageChange}
                 onMessageBlur={onMessageBlur}
                 maxHours={maxHours}

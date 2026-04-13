@@ -11,7 +11,7 @@ const meta: Meta<typeof BotFollowUps> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Follow-ups section for bot configuration. Delay uses \`NumberStepField\` (hour/minute with **chevron steppers inside** the white field and suffix chips). Row labels default to **Followup 1**, **Followup 2**, …; override with \`getItemLabel\`. Combined delay is 0–23h 59m by default, with optional blur on the message field.
+        component: `Follow-ups section for bot configuration. Delay uses \`NumberStepField\` (hour/minute with **chevron steppers inside** the white field and suffix chips). Row labels default to **Followup 1**, **Followup 2**, …; override with \`getItemLabel\`. Combined delay is 0–23h 59m by default. Blur handlers: \`onDelayHoursBlur\`, \`onDelayMinutesBlur\`, and \`onMessageBlur\` (each receives the nudge \`id\` and the focus event).
 
 **Install**
 \`\`\`bash
@@ -48,6 +48,9 @@ import { BotFollowUps, DEFAULT_MAX_TOTAL_MINUTES } from "@/components/custom/bot
       description:
         "Optional override for row label (default: Followup 1, Followup 2, …)",
     },
+    onDelayHoursBlur: { action: "onDelayHoursBlur" },
+    onDelayMinutesBlur: { action: "onDelayMinutesBlur" },
+    onMessageBlur: { action: "onMessageBlur" },
   },
 };
 
