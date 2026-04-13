@@ -145,10 +145,15 @@ export type {
 export {
   MultiSelect,
   multiSelectTriggerVariants,
+  flattenMultiSelectOptions,
+  normalizeMultiSelectOption,
 } from "./components/ui/multi-select";
 export type {
   MultiSelectProps,
   MultiSelectOption,
+  MultiSelectChoice,
+  MultiSelectGroupedSection,
+  MultiSelectOptionInput,
 } from "./components/ui/multi-select";
 
 // Checkbox

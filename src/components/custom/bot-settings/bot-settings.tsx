@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ChevronDown, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { Tag } from "../../ui/tag";
+import { MultiSelect } from "../../ui/multi-select";
 import {
   Tooltip,
   TooltipContent,
@@ -16,11 +16,28 @@ const defaultInfoTooltip =
 const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
   (
     {
-      phoneNumbers = [],
-      onRemovePhoneNumber,
-      onOpenDropdown,
-      defaultOpen,
+      whatsappOptions,
+      whatsappValue,
+      onWhatsappValueChange,
+      defaultWhatsappValue,
+      whatsappPlaceholder = "Select WhatsApp numbers",
+      whatsappSearchable = true,
+      whatsappSearchPlaceholder = "Search numbers…",
+      whatsappMaxSelections,
+      whatsappError,
+      whatsappHelperText,
+      whatsappRequired,
+      whatsappSeparateSelectedWithDivider = true,
+      whatsappLoading,
+      whatsappId,
+      whatsappName,
+      whatsappCloseOnEscape = false,
+      whatsappWrapperClassName,
+      whatsappTriggerClassName,
+      whatsappShowClearAll = false,
+      whatsappShowSeparatorBeforeChevron = true,
       infoTooltip,
+      defaultOpen,
       disabled = false,
       className,
       ...props
@@ -32,16 +49,31 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
     const resolvedTooltip =
       infoTooltip === undefined ? defaultInfoTooltip : infoTooltip;
 
+    const [internalWhatsapp, setInternalWhatsapp] = React.useState<string[]>(
+      defaultWhatsappValue ?? []
+    );
+    const selectedWhatsappValues =
+      whatsappValue ?? internalWhatsapp;
+
+    const handleWhatsappChange = React.useCallback(
+      (values: string[]) => {
+        if (whatsappValue === undefined) {
+          setInternalWhatsapp(values);
+        }
+        onWhatsappValueChange?.(values);
+      },
+      [whatsappValue, onWhatsappValueChange]
+    );
+
     return (
       <div
         ref={ref}
         className={cn(
-          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-hidden",
+          "bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-lg overflow-visible",
           className
         )}
         {...props}
       >
-        {/* Header */}
         <button
           type="button"
           className="flex w-full items-center justify-between px-4 py-4 sm:px-6 sm:py-5 cursor-pointer bg-transparent border-none"
@@ -60,12 +92,9 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
           />
         </button>
 
-        {/* Content */}
         {isOpen && (
           <div className="border-t border-solid border-semantic-border-layout">
-            {/* Connect WhatsApp subsection */}
             <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-solid border-semantic-border-layout">
-              {/* Label row */}
               <div className="flex items-center gap-1.5 mb-3">
                 <span className="text-sm text-semantic-text-primary">
                   Connect WhatsApp
@@ -89,38 +118,32 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
                 )}
               </div>
 
-              {/* Phone number tag input container */}
-              <div className="bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded p-2.5">
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
-                    {phoneNumbers.map((phone) => (
-                      <Tag
-                        key={phone}
-                        variant="info"
-                        onRemove={() => onRemovePhoneNumber?.(phone)}
-                        removeDisabled={disabled}
-                        removeAriaLabel={`Remove ${phone}`}
-                      >
-                        {phone}
-                      </Tag>
-                    ))}
-                  </div>
-
-                  {/* Divider + dropdown chevron */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    <div className="w-px h-5 border-l border-solid border-semantic-border-layout" />
-                    <button
-                      type="button"
-                      className="inline-flex items-center justify-center bg-transparent border-none cursor-pointer p-0"
-                      onClick={() => onOpenDropdown?.()}
-                      disabled={disabled}
-                      aria-label="Open phone number dropdown"
-                    >
-                      <ChevronDown className="size-4 text-semantic-text-muted" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <MultiSelect
+                id={whatsappId}
+                name={whatsappName}
+                options={whatsappOptions}
+                value={selectedWhatsappValues}
+                onValueChange={handleWhatsappChange}
+                placeholder={whatsappPlaceholder}
+                searchable={whatsappSearchable}
+                searchPlaceholder={whatsappSearchPlaceholder}
+                maxSelections={whatsappMaxSelections}
+                error={whatsappError}
+                helperText={whatsappHelperText}
+                required={whatsappRequired}
+                disabled={disabled}
+                loading={whatsappLoading}
+                optionVariant="detailed"
+                separateSelectedWithDivider={whatsappSeparateSelectedWithDivider}
+                showClearAll={whatsappShowClearAll}
+                showSeparatorBeforeChevron={whatsappShowSeparatorBeforeChevron}
+                closeOnEscape={whatsappCloseOnEscape}
+                wrapperClassName={cn("gap-2", whatsappWrapperClassName)}
+                triggerClassName={cn(
+                  "min-h-[46px] px-2.5 py-2",
+                  whatsappTriggerClassName
+                )}
+              />
             </div>
           </div>
         )}

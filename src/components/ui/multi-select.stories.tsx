@@ -456,3 +456,75 @@ export const WithDisabledOptions: Story = {
     );
   },
 };
+
+const whatsappStyleOptions: MultiSelectOption[] = [
+  {
+    value: "w1",
+    label: "+91 9876543210",
+    secondaryText: "Assigned to Bot Name 1",
+  },
+  { value: "w2", label: "+91 6543120931" },
+  {
+    value: "w3",
+    label: "+91 7653443219",
+    disabled: true,
+    disabledTooltip: "This number is associated with another bot.",
+  },
+];
+
+/** Checkbox rows + secondary text + divider + Figma-style trigger (see BotSettings). */
+export const DetailedWhatsAppStyle: Story = {
+  name: "Detailed (WhatsApp / Figma)",
+  render: () => (
+    <div className="w-[420px]">
+      <MultiSelect
+        label="Connect WhatsApp"
+        placeholder="Select numbers"
+        options={whatsappStyleOptions}
+        defaultValue={["w1"]}
+        optionVariant="detailed"
+        separateSelectedWithDivider
+        searchable
+        showClearAll={false}
+        showSeparatorBeforeChevron
+        triggerClassName="min-h-[46px] px-2.5 py-2"
+      />
+    </div>
+  ),
+};
+
+const groupedDetailed: MultiSelectOption[] = [
+  {
+    value: "a1",
+    group: "OPTION LABEL 1",
+    label: "+91 9876543210",
+    secondaryText: "Assigned to Bot Name 1",
+  },
+  {
+    value: "a2",
+    group: "OPTION LABEL 1",
+    label: "+91 6543120931",
+  },
+  {
+    value: "b1",
+    group: "OPTION LABEL 2",
+    label: "+91 7653443219",
+    secondaryText: "Assigned to Bot Name 2",
+  },
+];
+
+export const GroupedDetailed: Story = {
+  name: "Grouped (detailed)",
+  render: () => (
+    <div className="w-[420px]">
+      <MultiSelect
+        placeholder="Select numbers"
+        options={groupedDetailed}
+        optionVariant="detailed"
+        searchable
+        showClearAll={false}
+        showSeparatorBeforeChevron
+      />
+    </div>
+  ),
+};

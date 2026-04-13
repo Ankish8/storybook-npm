@@ -3,79 +3,102 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BotSettings } from "../bot-settings";
+import { whatsappGroupedSections } from "../bot-settings.fixtures";
+import type { MultiSelectOption } from "../../../ui/multi-select";
+
+const sampleOptions: MultiSelectOption[] = [
+  {
+    value: "n1",
+    label: "+91 9876543210",
+    secondaryText: "Assigned to Bot Name 1",
+  },
+  { value: "n2", label: "+91 8765432109" },
+  {
+    value: "n3",
+    label: "+91 7653443219",
+    disabled: true,
+    disabledTooltip: "This number is associated with another bot.",
+  },
+];
 
 describe("BotSettings", () => {
   it("renders Settings title", () => {
-    render(<BotSettings />);
+    render(<BotSettings whatsappOptions={[]} />);
     expect(screen.getByText("Settings")).toBeInTheDocument();
   });
 
   it("shows content by default and hides on toggle", async () => {
     const user = userEvent.setup();
-    render(<BotSettings phoneNumbers={["+91 9876543210"]} />);
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={["n1"]}
+        onWhatsappValueChange={() => {}}
+      />
+    );
 
-    // Content visible by default
     expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
     expect(screen.getByText("+91 9876543210")).toBeInTheDocument();
 
-    // Click header to collapse
     await user.click(screen.getByRole("button", { name: /settings/i }));
     expect(screen.queryByText("Connect WhatsApp")).not.toBeInTheDocument();
 
-    // Click header again to expand
     await user.click(screen.getByRole("button", { name: /settings/i }));
     expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
   });
 
-  it("renders phone number chips", () => {
-    const phones = ["+91 1111111111", "+91 2222222222", "+91 3333333333"];
-    render(<BotSettings phoneNumbers={phones} />);
-    phones.forEach((phone) => {
-      expect(screen.getByText(phone)).toBeInTheDocument();
-    });
-  });
-
-  it("calls onRemovePhoneNumber when X clicked on a chip", async () => {
-    const user = userEvent.setup();
-    const handleRemove = vi.fn();
+  it("renders selected numbers as tags in the multi-select", () => {
     render(
       <BotSettings
-        phoneNumbers={["+91 9876543210"]}
-        onRemovePhoneNumber={handleRemove}
+        whatsappOptions={sampleOptions}
+        whatsappValue={["n1", "n2"]}
+        onWhatsappValueChange={() => {}}
+      />
+    );
+    expect(screen.getByText("+91 9876543210")).toBeInTheDocument();
+    expect(screen.getByText("+91 8765432109")).toBeInTheDocument();
+  });
+
+  it("calls onWhatsappValueChange when a tag remove control is used", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={["n1"]}
+        onWhatsappValueChange={handleChange}
       />
     );
 
     await user.click(screen.getByLabelText("Remove +91 9876543210"));
-    expect(handleRemove).toHaveBeenCalledWith("+91 9876543210");
-    expect(handleRemove).toHaveBeenCalledTimes(1);
+    expect(handleChange).toHaveBeenCalledWith([]);
   });
 
-  it("calls onOpenDropdown when dropdown chevron clicked", async () => {
+  it("opens the multi-select list from the combobox", async () => {
     const user = userEvent.setup();
-    const handleDropdown = vi.fn();
-    render(<BotSettings onOpenDropdown={handleDropdown} />);
-
-    await user.click(
-      screen.getByLabelText("Open phone number dropdown")
+    render(
+      <BotSettings whatsappOptions={sampleOptions} whatsappValue={[]} />
     );
-    expect(handleDropdown).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
   });
 
   it("merges custom className", () => {
     const { container } = render(
-      <BotSettings className="my-custom-class" />
+      <BotSettings whatsappOptions={[]} className="my-custom-class" />
     );
     expect(container.firstChild).toHaveClass("my-custom-class");
   });
 
   it("forwards ref", () => {
     const ref = React.createRef<HTMLDivElement>();
-    render(<BotSettings ref={ref} />);
+    render(<BotSettings ref={ref} whatsappOptions={[]} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 
   it("spreads additional props on root element", () => {
-    render(<BotSettings data-testid="bot-settings-root" />);
+    render(<BotSettings whatsappOptions={[]} data-testid="bot-settings-root" />);
     expect(screen.getByTestId("bot-settings-root")).toBeInTheDocument();
   });
 
@@ -83,19 +106,80 @@ describe("BotSettings", () => {
     render(
       <BotSettings
         defaultOpen={false}
-        phoneNumbers={["+91 9876543210"]}
+        whatsappOptions={sampleOptions}
+        whatsappValue={["n1"]}
+        onWhatsappValueChange={() => {}}
       />
     );
     expect(screen.queryByText("Connect WhatsApp")).not.toBeInTheDocument();
-    expect(screen.queryByText("+91 9876543210")).not.toBeInTheDocument();
   });
 
-  it("renders empty tag input when no phone numbers provided", () => {
-    render(<BotSettings />);
-    // Connect WhatsApp section is visible but no chips
-    expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
-    expect(
-      screen.getByLabelText("Open phone number dropdown")
-    ).toBeInTheDocument();
+  it("shows multi-select placeholder when no numbers selected", () => {
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+        onWhatsappValueChange={() => {}}
+        whatsappPlaceholder="Pick numbers"
+      />
+    );
+    expect(screen.getByText("Pick numbers")).toBeInTheDocument();
+  });
+
+  it("shows group section headers when using grouped options and separateSelectedWithDivider is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <BotSettings
+        whatsappOptions={whatsappGroupedSections}
+        whatsappValue={[]}
+        onWhatsappValueChange={() => {}}
+        whatsappSeparateSelectedWithDivider={false}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("OPTION LABEL 1")).toBeInTheDocument();
+    expect(screen.getByText("OPTION LABEL 2")).toBeInTheDocument();
+  });
+
+  it("passes whatsappId to the combobox", () => {
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+        whatsappId="connect-wa-field"
+      />
+    );
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "id",
+      "connect-wa-field"
+    );
+  });
+
+  it("disables the combobox when whatsappLoading is true", () => {
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+        whatsappLoading
+      />
+    );
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  it("renders hidden inputs for whatsappName when values are selected", () => {
+    const { container } = render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={["n1", "n2"]}
+        whatsappName="bot_whatsapp_numbers"
+      />
+    );
+    const hidden = container.querySelectorAll(
+      'input[type="hidden"][name="bot_whatsapp_numbers"]'
+    );
+    expect(hidden).toHaveLength(2);
+    expect(hidden[0]).toHaveAttribute("value", "n1");
+    expect(hidden[1]).toHaveAttribute("value", "n2");
   });
 });

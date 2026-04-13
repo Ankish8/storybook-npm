@@ -642,11 +642,11 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   "bot-settings": {
     name: "bot-settings",
-    description: "Collapsible settings section for bot configuration with Connect WhatsApp phone number tag input",
+    description:
+      "Collapsible Settings section with Connect WhatsApp multi-select (checkbox rows, secondary status, search, validation)",
       category: "custom",
     dependencies: ["lucide-react"],
-    category: "custom",
-    internalDependencies: ["tag","tooltip"],
+    internalDependencies: ["multi-select", "tooltip"],
   },
   "bot-human-handover": {
     name: "bot-human-handover",

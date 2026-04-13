@@ -1,7 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MultiSelect, type MultiSelectOption } from "../multi-select";
+import {
+  MultiSelect,
+  flattenMultiSelectOptions,
+  type MultiSelectOption,
+} from "../multi-select";
 
 const defaultOptions: MultiSelectOption[] = [
   { value: "option1", label: "Option 1" },
@@ -159,6 +163,17 @@ describe("MultiSelect", () => {
 
     expect(screen.queryByLabelText("Remove Option 1")).not.toBeInTheDocument();
     expect(screen.getByText("Option 2")).toBeInTheDocument();
+  });
+
+  it("hides clear all when showClearAll is false", () => {
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        defaultValue={["option1", "option2"]}
+        showClearAll={false}
+      />
+    );
+    expect(screen.queryByLabelText("Clear all")).not.toBeInTheDocument();
   });
 
   // Clear all
@@ -345,8 +360,19 @@ describe("MultiSelect", () => {
     );
   });
 
-  // Keyboard navigation
-  it("closes dropdown on Escape", async () => {
+  // Keyboard / dismiss behavior
+  it("closes dropdown on Escape when closeOnEscape is true", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} closeOnEscape />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
+
+  it("does not close on Escape by default (outside click only)", async () => {
     const user = userEvent.setup();
     render(<MultiSelect options={defaultOptions} />);
 
@@ -354,6 +380,46 @@ describe("MultiSelect", () => {
     expect(screen.getByRole("listbox")).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("flattens grouped sections and maps caption / isDisabled / overlayMsg", () => {
+    const flat = flattenMultiSelectOptions([
+      {
+        label: "Group A",
+        options: [
+          {
+            value: "1",
+            label: "One",
+            caption: "Assigned to Bot X",
+            isDisabled: true,
+            overlayMsg: "This number is associated with another bot.",
+          },
+        ],
+      },
+    ]);
+    expect(flat).toHaveLength(1);
+    expect(flat[0].group).toBe("Group A");
+    expect(flat[0].secondaryText).toBe("Assigned to Bot X");
+    expect(flat[0].disabled).toBe(true);
+    expect(flat[0].disabledTooltip).toBe(
+      "This number is associated with another bot."
+    );
+  });
+
+  it("closes dropdown when clicking outside", async () => {
+    const user = userEvent.setup();
+    render(
+      <div>
+        <MultiSelect options={defaultOptions} />
+        <button type="button">outside-target</button>
+      </div>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "outside-target" }));
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 });

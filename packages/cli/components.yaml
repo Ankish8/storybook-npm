@@ -1203,12 +1203,12 @@ components:
     mainFile: "index.ts"
 
   bot-settings:
-    description: "Collapsible settings section for bot configuration with Connect WhatsApp phone number tag input"
+    description: "Collapsible Settings section with Connect WhatsApp multi-select (Figma-style rows, search, validation)"
     category: custom
     dependencies:
       - "lucide-react"
     internalDependencies:
-      - tag
+      - multi-select
       - tooltip
     isMultiFile: true
     directory: "bot-settings"
