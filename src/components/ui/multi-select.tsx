@@ -154,6 +154,12 @@ export interface MultiSelectProps extends VariantProps<
   searchPlaceholder?: string;
   /** Maximum selections allowed */
   maxSelections?: number;
+  /**
+   * When `maxSelections` is set, a footer shows the count (e.g. "3 / 5 selected").
+   * Set to false to hide that footer while still enforcing the limit.
+   * @default true
+   */
+  showSelectionFooter?: boolean;
   /** Additional class for wrapper */
   wrapperClassName?: string;
   /** Additional class for trigger */
@@ -211,6 +217,7 @@ const MultiSelect = React.forwardRef(
       searchable,
       searchPlaceholder = "Search...",
       maxSelections,
+      showSelectionFooter = true,
       wrapperClassName,
       triggerClassName,
       labelClassName,
@@ -708,7 +715,7 @@ const MultiSelect = React.forwardRef(
               </div>
 
               {/* Footer with count */}
-              {maxSelections ? (
+              {maxSelections && showSelectionFooter ? (
                 <div className="p-2 border-t border-solid border-semantic-border-layout text-xs text-semantic-text-muted">
                   {selectedValues.length} / {maxSelections} selected
                 </div>

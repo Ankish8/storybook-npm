@@ -24,6 +24,7 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
       whatsappSearchable = true,
       whatsappSearchPlaceholder = "Search numbers…",
       whatsappMaxSelections,
+      whatsappShowSelectionFooter = true,
       whatsappError,
       whatsappHelperText,
       whatsappRequired,
@@ -128,6 +129,7 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
                 searchable={whatsappSearchable}
                 searchPlaceholder={whatsappSearchPlaceholder}
                 maxSelections={whatsappMaxSelections}
+                showSelectionFooter={whatsappShowSelectionFooter}
                 error={whatsappError}
                 helperText={whatsappHelperText}
                 required={whatsappRequired}

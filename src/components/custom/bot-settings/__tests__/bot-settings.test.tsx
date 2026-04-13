@@ -167,6 +167,38 @@ describe("BotSettings", () => {
     expect(screen.getByRole("combobox")).toBeDisabled();
   });
 
+  it("hides dropdown search when whatsappSearchable is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+        whatsappSearchable={false}
+        whatsappSearchPlaceholder="Search by number or status..."
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(
+      screen.queryByPlaceholderText("Search by number or status...")
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides selection count footer when whatsappShowSelectionFooter is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={["n1"]}
+        whatsappMaxSelections={5}
+        whatsappShowSelectionFooter={false}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText(/\/\s*5\s+selected/)).not.toBeInTheDocument();
+  });
+
   it("renders hidden inputs for whatsappName when values are selected", () => {
     const { container } = render(
       <BotSettings

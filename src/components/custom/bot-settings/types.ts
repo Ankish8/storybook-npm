@@ -19,12 +19,22 @@ export interface BotSettingsProps
   defaultWhatsappValue?: string[];
   /** Placeholder when nothing is selected */
   whatsappPlaceholder?: string;
-  /** Enable search in the dropdown */
+  /**
+   * Show the dropdown search field (filter by number, status text, etc.).
+   * Set to `false` to hide it.
+   * @default true
+   */
   whatsappSearchable?: boolean;
   /** Search placeholder */
   whatsappSearchPlaceholder?: string;
   /** Max numbers allowed for this bot */
   whatsappMaxSelections?: number;
+  /**
+   * When `whatsappMaxSelections` is set, the menu footer shows "n / max selected".
+   * Set to `false` to hide that footer while still applying the selection limit.
+   * @default true
+   */
+  whatsappShowSelectionFooter?: boolean;
   /** Field-level error (e.g. validation) */
   whatsappError?: string;
   /** Helper text under the field */
