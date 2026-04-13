@@ -176,6 +176,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "form",
     internalDependencies: [],
   },
+  "number-step-field": {
+    name: "number-step-field",
+    description: "Number input with inline chevron steppers and trailing suffix chip",
+      category: "form",
+    dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
+    category: "form",
+    internalDependencies: ["input"],
+  },
   "creatable-select": {
     name: "creatable-select",
     description: "A single-value select with type-to-search and type-to-create custom options",
@@ -648,13 +656,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["button","switch","tooltip"],
   },
-  "bot-nudges": {
-    name: "bot-nudges",
-    description: "Nudges section for bot configuration with delay settings and message input for each nudge",
+  "bot-follow-ups": {
+    name: "bot-follow-ups",
+    description: "Follow-ups section for bot configuration with hour/minute delay and message per item",
       category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
-    internalDependencies: ["switch","select","input","textarea","tooltip"],
+    internalDependencies: ["switch","number-step-field","textarea","tooltip"],
   },
   "bot-test": {
     name: "bot-test",

@@ -79,6 +79,13 @@ export type { SwitchProps } from "./components/ui/switch";
 export { Input, inputVariants } from "./components/ui/input";
 export type { InputProps } from "./components/ui/input";
 
+// NumberStepField
+export {
+  NumberStepField,
+  numberStepFieldVariants,
+} from "./components/ui/number-step-field";
+export type { NumberStepFieldProps } from "./components/ui/number-step-field";
+
 // TextField
 export {
   TextField,
@@ -535,9 +542,13 @@ export type { BotSettingsProps } from "./components/custom/bot-settings";
 export { BotHumanHandover } from "./components/custom/bot-human-handover";
 export type { BotHumanHandoverProps } from "./components/custom/bot-human-handover";
 
-// BotNudges (Custom)
-export { BotNudges } from "./components/custom/bot-nudges";
-export type { BotNudgesProps, NudgeItem, DelayUnit } from "./components/custom/bot-nudges";
+// BotFollowUps (Custom)
+export { BotFollowUps } from "./components/custom/bot-follow-ups";
+export type {
+  BotFollowUpsProps,
+  NudgeItem,
+} from "./components/custom/bot-follow-ups";
+export { DEFAULT_MAX_TOTAL_MINUTES } from "./components/custom/bot-follow-ups";
 
 // BotTest (Custom)
 export { BotTest } from "./components/custom/bot-test";

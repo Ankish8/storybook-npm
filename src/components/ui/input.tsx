@@ -40,10 +40,29 @@ export interface InputProps
     VariantProps<typeof inputVariants> {
   /** Shows a check icon on the right side when the input is focused */
   showCheckIcon?: boolean;
+  /**
+   * When `type="number"`, hide native stepper arrows (WebKit/Firefox).
+   * Default `true` — matches existing app-wide number styling.
+   * Set `false` to show native increment/decrement controls (e.g. delay fields).
+   */
+  hideNumberSpinners?: boolean;
 }
 
 const Input = React.forwardRef(
-  ({ className, state, type, showCheckIcon, onFocus, onBlur, onWheel, ...props }: InputProps, ref: React.Ref<HTMLInputElement>) => {
+  (
+    {
+      className,
+      state,
+      type,
+      showCheckIcon,
+      hideNumberSpinners = true,
+      onFocus,
+      onBlur,
+      onWheel,
+      ...props
+    }: InputProps,
+    ref: React.Ref<HTMLInputElement>
+  ) => {
     const [isFocused, setIsFocused] = React.useState(false);
 
     const inputEl = (
@@ -53,6 +72,7 @@ const Input = React.forwardRef(
           inputVariants({ state, className }),
           showCheckIcon && "pr-9",
           type === "number" &&
+            hideNumberSpinners &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
         ref={ref}

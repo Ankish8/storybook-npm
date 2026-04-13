@@ -112,7 +112,7 @@ categories:
       - bot-instructions
       - bot-integrations
       - bot-knowledge-base
-      - bot-nudges
+      - bot-follow-ups
       - bot-settings
       # Chat Template modules (group: "chat")
       - chat-types
@@ -307,6 +307,17 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+
+  number-step-field:
+    description: "Number input with inline chevron steppers and trailing suffix chip"
+    category: form
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - input
 
   creatable-select:
     description: "A single-value select with type-to-search and type-to-create custom options"
@@ -1223,22 +1234,21 @@ components:
       - "index.ts"
     mainFile: "index.ts"
 
-  bot-nudges:
-    description: "Nudges section for bot configuration with delay settings and message input for each nudge"
+  bot-follow-ups:
+    description: "Follow-ups section for bot configuration with hour/minute delay and message per item"
     category: custom
     dependencies:
       - "lucide-react"
     internalDependencies:
       - switch
-      - select
-      - input
+      - number-step-field
       - textarea
       - tooltip
     isMultiFile: true
-    directory: "bot-nudges"
+    directory: "bot-follow-ups"
     files:
       - "types.ts"
-      - "bot-nudges.tsx"
+      - "bot-follow-ups.tsx"
       - "index.ts"
     mainFile: "index.ts"
 

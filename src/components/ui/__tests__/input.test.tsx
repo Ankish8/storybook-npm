@@ -126,4 +126,18 @@ describe("Input", () => {
     render(<Input placeholder="Test" />);
     expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
+
+  it("hides native number spinners by default", () => {
+    render(<Input type="number" data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input.className).toMatch(/inner-spin-button/);
+  });
+
+  it("shows native number spinners when hideNumberSpinners is false", () => {
+    render(
+      <Input type="number" hideNumberSpinners={false} data-testid="input" />
+    );
+    const input = screen.getByTestId("input");
+    expect(input.className).not.toMatch(/inner-spin-button/);
+  });
 });

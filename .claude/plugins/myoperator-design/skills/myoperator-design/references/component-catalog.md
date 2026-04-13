@@ -81,7 +81,7 @@
 | BotInstructions | custom | `npx myoperator-ui add bot-instructions` |
 | BotIntegrations | custom | `npx myoperator-ui add bot-integrations` |
 | BotKnowledgeBase | custom | `npx myoperator-ui add bot-knowledge-base` |
-| BotNudges | custom | `npx myoperator-ui add bot-nudges` |
+| BotFollowUps | custom | `npx myoperator-ui add bot-follow-ups` |
 | BotSettings | custom | `npx myoperator-ui add bot-settings` |
 | ChatTypes | custom | `npx myoperator-ui add chat-types` |
 | ChatTransport | custom | `npx myoperator-ui add chat-transport` |
@@ -988,11 +988,11 @@ import { Mail } from "lucide-react"
 
 ---
 
-### BotNudges
-> Nudges section for bot configuration with delay settings and message input for each nudge
+### BotFollowUps
+> Follow-ups section for bot configuration with hour/minute delay and message per item
 
-**Install**: `npx myoperator-ui add bot-nudges`
-**Requires**: `switch`, `select`, `input`, `textarea`, `tooltip` (auto-installed)
+**Install**: `npx myoperator-ui add bot-follow-ups`
+**Requires**: `switch`, `number-step-field`, `textarea`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
