@@ -28,8 +28,8 @@ import { BotFollowUps, DEFAULT_MAX_TOTAL_MINUTES } from "@/components/custom/bot
 | Token | Description | Preview |
 |-------|-------------|---------|
 | \`--semantic-text-primary\` | Section title, row label, field labels | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-text-primary);border-radius:2px;vertical-align:middle" /> |
-| \`--semantic-text-muted\` | Tooltip control, secondary suffix labels | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-text-muted);border-radius:2px;vertical-align:middle" /> |
-| \`--semantic-bg-ui\` | Suffix chips (hour/minutes), tooltip button | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-bg-ui);border-radius:2px;vertical-align:middle" /> |
+| \`--semantic-text-muted\` | Info icon (Bot Functions style), field hints | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-text-muted);border-radius:2px;vertical-align:middle" /> |
+| \`--semantic-bg-ui\` | Hour/minute suffix chips | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-bg-ui);border-radius:2px;vertical-align:middle" /> |
 | \`--semantic-bg-primary\` | Input/textarea background | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-bg-primary);border-radius:2px;vertical-align:middle" /> |
 | \`--semantic-border-layout\` | Card border | <span style="display:inline-block;width:12px;height:12px;background:var(--semantic-border-layout);border-radius:2px;vertical-align:middle" /> |`,
       },

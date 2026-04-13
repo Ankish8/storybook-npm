@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HelpCircle } from "lucide-react";
+import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Switch } from "../../ui/switch";
 import { NumberStepField } from "../../ui/number-step-field";
@@ -220,18 +220,17 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
             <TooltipProvider delayDuration={200}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="inline-flex size-5 items-center justify-center rounded-full border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-muted hover:text-semantic-text-secondary shrink-0 cursor-help"
-                    aria-label={`${title} information`}
-                  >
-                    <HelpCircle className="size-3.5" strokeWidth={2} />
-                  </button>
+                  <Info
+                    className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                    aria-label={`${title}: more information`}
+                  />
                 </TooltipTrigger>
                 <TooltipContent>{tooltipContent}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          ) : null}
+          ) : (
+            <Info className="size-3.5 text-semantic-text-muted shrink-0" />
+          )}
         </div>
 
         {/* Cards */}
