@@ -36,7 +36,10 @@ import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/
 | Prop | Default Value |
 |---|---|
 | \`acceptedFormats\` | \`".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt"\` |
-| \`formatDescription\` | \`"Max file size 100 MB (Supported Format: .docs, .pdf, .csv, .xls, .xlxs, .txt)"\` |
+| \`formatDescription\` | *unset* — line is \`Max file size {n} MB ({allowedFileTypesDescription})\` |
+| \`allowedFileTypesDescription\` | \`"Supported Format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt"\` |
+| \`disallowedFileTypeToastTitle\` | \`"Unsupported file type"\` |
+| \`disallowedFileTypeToastDescription\` | \`"Only files in the supported formats can be uploaded."\` |
 | \`maxFileSizeMB\` | \`100\` |
 | \`multiple\` | \`true\` |
 | \`title\` | \`"File Upload"\` |

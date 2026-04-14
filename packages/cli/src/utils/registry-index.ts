@@ -462,7 +462,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     description: "A reusable file upload modal with drag-and-drop, progress tracking, and error handling",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
-    internalDependencies: ["dialog","button"],
+    internalDependencies: ["dialog","button","toast"],
   },
   "attachment-preview": {
     name: "attachment-preview",

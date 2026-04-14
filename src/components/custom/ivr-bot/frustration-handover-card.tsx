@@ -79,6 +79,15 @@ export interface FrustrationHandoverCardProps {
   promptValidation?: string;
   /** Called when the Prompt textarea loses focus (current value passed — use to persist via API). */
   onEscalationPromptBlur?: (value: string) => void;
+  /**
+   * Called when the **Transfer to department** dropdown list fires `scrollend` near the bottom.
+   * Use with a paginated department API to load the next page (e.g. when only the first 10 departments are loaded initially).
+   */
+  onDepartmentOptionsScrollEnd?: () => void;
+  /** When `false`, {@link onDepartmentOptionsScrollEnd} is not called (no more pages). Default: unlimited when the callback is set. */
+  departmentOptionsHasMore?: boolean;
+  /** When true, scroll-end does not request another page (avoid duplicate fetches). */
+  departmentOptionsLoadingMore?: boolean;
 }
 
 // ─── Internal helpers ───────────────────────────────────────────────────────
@@ -113,6 +122,9 @@ const FrustrationHandoverCard = React.forwardRef(
     promptMaxLength = 5000,
     promptValidation,
     onEscalationPromptBlur,
+    onDepartmentOptionsScrollEnd,
+    departmentOptionsHasMore,
+    departmentOptionsLoadingMore,
   }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     const resolvedSectionInfoTooltip =
       infoTooltip === undefined ? defaultEscalateToHumanInfoTooltip : infoTooltip;
@@ -129,6 +141,24 @@ const FrustrationHandoverCard = React.forwardRef(
       promptValidation ??
       (promptInvalidCharsError || undefined) ??
       promptOverflowMessage;
+
+    const handleDepartmentViewportScrollEnd = React.useCallback(
+      (e: React.UIEvent<HTMLDivElement>) => {
+        if (!onDepartmentOptionsScrollEnd) return;
+        if (departmentOptionsLoadingMore) return;
+        if (departmentOptionsHasMore === false) return;
+        const el = e.currentTarget;
+        const remaining =
+          el.scrollHeight - el.scrollTop - el.clientHeight;
+        if (remaining > 32) return;
+        onDepartmentOptionsScrollEnd();
+      },
+      [
+        onDepartmentOptionsScrollEnd,
+        departmentOptionsHasMore,
+        departmentOptionsLoadingMore,
+      ]
+    );
 
     return (
       <div
@@ -226,12 +256,23 @@ const FrustrationHandoverCard = React.forwardRef(
                       <SelectTrigger>
                         <SelectValue placeholder="Select a department" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        onViewportScrollEnd={
+                          onDepartmentOptionsScrollEnd
+                            ? handleDepartmentViewportScrollEnd
+                            : undefined
+                        }
+                      >
                         {departmentOptions.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
                           </SelectItem>
                         ))}
+                        {departmentOptionsLoadingMore ? (
+                          <p className="m-0 px-4 py-2 text-xs text-semantic-text-muted">
+                            Loading more departments…
+                          </p>
+                        ) : null}
                       </SelectContent>
                     </Select>
                   </Field>

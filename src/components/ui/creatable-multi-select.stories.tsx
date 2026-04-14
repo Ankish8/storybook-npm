@@ -30,7 +30,7 @@ const meta: Meta<typeof CreatableMultiSelect> = {
     layout: "padded",
     docs: {
       description: {
-        component: `A multi-select dropdown that allows selecting preset options as chips and creating custom values by typing and pressing Enter.
+        component: `A multi-select dropdown that allows selecting preset options as chips and creating custom values by typing and pressing Enter (or the Enter helper in the panel). Use \`createHintText\` and \`maxItems\` so the open panel shows guidance when typed text matches no preset.
 
 **Install**
 \`\`\`bash
@@ -60,6 +60,9 @@ export const Overview: Story = {
           onValueChange={setValue}
           options={TONE_OPTIONS}
           placeholder="Enter or select tone"
+          createHintText="Type to create a custom tone"
+          maxItems={5}
+          maxLengthPerItem={20}
           helperText="Shown when the dropdown is closed (optional)."
         />
       </div>

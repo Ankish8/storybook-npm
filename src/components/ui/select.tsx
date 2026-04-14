@@ -129,42 +129,65 @@ function useUnlockBodyScroll() {
   }, []);
 }
 
-const SelectContent = React.forwardRef(({ className, children, position = "popper", ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>) => {
-  useUnlockBodyScroll();
+export type SelectContentProps = React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Content
+> & {
+  /**
+   * Fires on the scrollable list viewport when scrolling completes (`scrollend`).
+   * Use with paginated option lists (e.g. load the next page when the user reaches the bottom).
+   */
+  onViewportScrollEnd?: (event: React.UIEvent<HTMLDivElement>) => void;
+};
 
-  return (
-    <SelectPrimitive.Portal>
-      <SelectPrimitive.Content
-        ref={ref}
-        className={cn(
-          "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
-          "data-[state=open]:animate-in data-[state=closed]:animate-out",
-          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-          "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-          "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-          position === "popper" &&
-            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-          className
-        )}
-        position={position}
-        {...props}
-      >
-        <SelectScrollUpButton />
-        <SelectPrimitive.Viewport
+const SelectContent = React.forwardRef(
+  (
+    {
+      className,
+      children,
+      position = "popper",
+      onViewportScrollEnd,
+      ...props
+    }: SelectContentProps,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
+  ) => {
+    useUnlockBodyScroll();
+
+    return (
+      <SelectPrimitive.Portal>
+        <SelectPrimitive.Content
+          ref={ref}
           className={cn(
-            "p-1",
+            "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+            "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+            "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             position === "popper" &&
-              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+              "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+            className
           )}
+          position={position}
+          {...props}
         >
-          {children}
-        </SelectPrimitive.Viewport>
-        <SelectScrollDownButton />
-      </SelectPrimitive.Content>
-    </SelectPrimitive.Portal>
-  );
-});
+          <SelectScrollUpButton />
+          <SelectPrimitive.Viewport
+            data-select-viewport=""
+            className={cn(
+              "p-1",
+              position === "popper" &&
+                "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+            )}
+            onScrollEnd={onViewportScrollEnd}
+          >
+            {children}
+          </SelectPrimitive.Viewport>
+          <SelectScrollDownButton />
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    );
+  }
+);
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Label>>) => (

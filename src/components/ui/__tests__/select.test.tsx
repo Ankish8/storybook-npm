@@ -281,4 +281,27 @@ describe("Select", () => {
     await user.click(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
+
+  it("invokes onViewportScrollEnd when the list viewport fires scrollend", async () => {
+    const onViewportScrollEnd = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <Select>
+        <SelectTrigger data-testid="trigger">
+          <SelectValue placeholder="Select an option" />
+        </SelectTrigger>
+        <SelectContent onViewportScrollEnd={onViewportScrollEnd}>
+          <SelectItem value="option1">Option 1</SelectItem>
+          <SelectItem value="option2">Option 2</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+
+    await user.click(screen.getByTestId("trigger"));
+    const viewport = document.querySelector("[data-select-viewport]");
+    expect(viewport).toBeTruthy();
+    viewport!.dispatchEvent(new Event("scrollend", { bubbles: true }));
+    expect(onViewportScrollEnd).toHaveBeenCalledTimes(1);
+  });
 });
