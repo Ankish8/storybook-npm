@@ -376,6 +376,15 @@ export interface IvrBotConfigProps {
   /** Override escalation department options for FrustrationHandoverCard */
   escalationDepartmentOptions?: SelectOption[];
   /**
+   * When the **Transfer to department** list is scrolled to the end, load the next page
+   * (paginated department APIs). Pair with `escalationDepartmentOptionsHasMore` / loading flags as needed.
+   */
+  onEscalationDepartmentOptionsScrollEnd?: () => void;
+  /** When `false`, further scroll-end loads are skipped (no more department pages). */
+  escalationDepartmentOptionsHasMore?: boolean;
+  /** While loading the next department page; avoids duplicate fetch on repeated scroll-end. */
+  escalationDepartmentOptionsLoadingMore?: boolean;
+  /**
    * Shorthand min/max for Advanced Settings numeric fields. Individual
    * `silenceTimeoutMin` / `silenceTimeoutMax` / `callEndThresholdMin` / `callEndThresholdMax`
    * override corresponding entries when set.
