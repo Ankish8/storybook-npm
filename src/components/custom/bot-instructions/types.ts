@@ -27,4 +27,8 @@ export interface BotInstructionsProps
   infoTooltip?: string;
   /** Disables all interactive elements */
   disabled?: boolean;
+  /** When true, the "+ Instructions" add button is disabled (e.g. max items reached) */
+  addDisabled?: boolean;
+  /** Shown as native `title` on the add button when `addDisabled` is true */
+  addDisabledTitle?: string;
 }

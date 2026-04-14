@@ -562,3 +562,10 @@ export {
 export { BotTest } from "./components/custom/bot-test";
 export type { BotTestProps } from "./components/custom/bot-test";
 
+// TestAIBot (Custom)
+export { TestAIBot } from "./components/custom/test-ai-bot";
+export type {
+  TestAIBotProps,
+  TestAIBotButtonProps,
+} from "./components/custom/test-ai-bot";
+

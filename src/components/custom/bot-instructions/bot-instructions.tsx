@@ -28,6 +28,8 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
       onDelete,
       infoTooltip,
       disabled = false,
+      addDisabled = false,
+      addDisabledTitle,
       ...props
     },
     ref
@@ -72,8 +74,9 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
             variant="outline"
             size="sm"
             onClick={onAdd}
-            disabled={disabled}
-          >
+            disabled={disabled || addDisabled}
+            title={addDisabled ? addDisabledTitle : undefined}
+         >
             <Plus className="h-3.5 w-3.5" />
             Instructions
           </Button>

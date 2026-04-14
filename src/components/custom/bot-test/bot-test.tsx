@@ -11,6 +11,21 @@ import { PhoneInput } from "../../ui/phone-input";
 import { Button } from "../../ui/button";
 import type { BotTestProps } from "./types";
 
+/** Digits only, for length math (E.164 / formatted numbers). */
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+/** National subscriber length: full number digits minus dial-code digits from `countryCode`. */
+function nationalDigitLength(
+  fullNumber: string | undefined,
+  dialCode: string
+): number {
+  if (!fullNumber?.trim()) return 0;
+  const national = digitsOnly(fullNumber).length - digitsOnly(dialCode).length;
+  return national > 0 ? national : 0;
+}
+
 const BotTest: React.FC<BotTestProps> = ({
   open,
   onOpenChange,
@@ -26,12 +41,23 @@ const BotTest: React.FC<BotTestProps> = ({
   phoneNumber,
   onPhoneNumberChange,
   phonePlaceholder = "Enter your number",
+  phoneNumberMaxLength = 10,
   onTest,
   testDisabled,
   testLoading = false,
   testLabel = "Test",
   disabled = false,
 }) => {
+  const resolvedCountryCode = countryCode ?? "+91";
+  const derivedNationalLen = nationalDigitLength(
+    selectedNumber,
+    resolvedCountryCode
+  );
+  const effectivePhoneMaxLength =
+    selectedNumber?.trim() && derivedNationalLen > 0
+      ? derivedNationalLen
+      : phoneNumberMaxLength;
+
   const isTestDisabled =
     testDisabled !== undefined
       ? testDisabled
@@ -69,8 +95,16 @@ const BotTest: React.FC<BotTestProps> = ({
             </label>
             <PhoneInput
               placeholder={phonePlaceholder}
-              value={phoneNumber}
-              onChange={(e) => onPhoneNumberChange?.(e.target.value)}
+              value={
+                phoneNumber !== undefined ? digitsOnly(phoneNumber) : undefined
+              }
+              onChange={(e) => {
+                const next = digitsOnly(e.target.value);
+                onPhoneNumberChange?.(next);
+              }}
+              maxLength={effectivePhoneMaxLength}
+              inputMode="numeric"
+              pattern="[0-9]*"
               countryFlag={countryFlag}
               countryCode={countryCode}
               showChevron={showCountryChevron}

@@ -672,6 +672,14 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
     category: "custom",
     internalDependencies: ["dialog","select-field","phone-input","button"],
   },
+  "test-ai-bot": {
+    name: "test-ai-bot",
+    description: "Modal with QR code and primary action to test an AI bot (WhatsApp web, etc.)",
+      category: "custom",
+    dependencies: ["lucide-react"],
+    category: "custom",
+    internalDependencies: ["dialog","button"],
+  },
   "wallet-topup": {
     name: "wallet-topup",
     description: "A component for wallet top-up with amount selection and coupon support",

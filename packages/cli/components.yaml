@@ -114,6 +114,7 @@ categories:
       - bot-knowledge-base
       - bot-follow-ups
       - bot-settings
+      - test-ai-bot
       # Chat Template modules (group: "chat")
       - chat-types
       - chat-transport
@@ -1268,6 +1269,22 @@ components:
     files:
       - "types.ts"
       - "bot-test.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
+
+  test-ai-bot:
+    description: "Modal with QR code and primary action to test an AI bot (WhatsApp web, etc.)"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - dialog
+      - button
+    isMultiFile: true
+    directory: "test-ai-bot"
+    files:
+      - "types.ts"
+      - "test-ai-bot.tsx"
       - "index.ts"
     mainFile: "index.ts"
 

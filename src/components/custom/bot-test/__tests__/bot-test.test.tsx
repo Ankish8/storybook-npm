@@ -91,6 +91,30 @@ describe("BotTest", () => {
     expect(screen.getByRole("button", { name: "Test" })).toBeDisabled();
   });
 
+  it("uses phoneNumberMaxLength on phone input when no connected number is selected", () => {
+    render(<BotTest open phoneNumberMaxLength={12} />);
+    expect(screen.getByPlaceholderText("Enter your number")).toHaveAttribute(
+      "maxLength",
+      "12"
+    );
+  });
+
+  it("derives phone input maxLength from selected connected number (national digits)", () => {
+    render(
+      <BotTest
+        open
+        whatsappNumbers={sampleNumbers}
+        selectedNumber="+91 9876543210"
+        countryCode="+91"
+        phoneNumberMaxLength={10}
+      />
+    );
+    expect(screen.getByPlaceholderText("Enter your number")).toHaveAttribute(
+      "maxLength",
+      "10"
+    );
+  });
+
   it("calls onPhoneNumberChange when typing in phone input", async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
@@ -105,6 +129,30 @@ describe("BotTest", () => {
     const phoneInput = screen.getByPlaceholderText("Enter your number");
     await user.type(phoneInput, "9");
     expect(handleChange).toHaveBeenCalled();
+  });
+
+  it("only passes digits through onPhoneNumberChange", async () => {
+    const user = userEvent.setup();
+    const handleChange = vi.fn();
+    function Wrapper() {
+      const [phone, setPhone] = React.useState("");
+      return (
+        <BotTest
+          open
+          phoneNumber={phone}
+          onPhoneNumberChange={(v) => {
+            handleChange(v);
+            setPhone(v);
+          }}
+        />
+      );
+    }
+    render(<Wrapper />);
+
+    const phoneInput = screen.getByPlaceholderText("Enter your number");
+    await user.type(phoneInput, "a1b2c");
+    expect(phoneInput).toHaveValue("12");
+    expect(handleChange).toHaveBeenLastCalledWith("12");
   });
 
   it("shows custom description", () => {

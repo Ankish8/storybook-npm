@@ -29,6 +29,12 @@ export interface BotTestProps {
   onPhoneNumberChange?: (value: string) => void;
   /** Placeholder for the phone number input */
   phonePlaceholder?: string;
+  /**
+   * Max length for the phone number field when no connected WhatsApp number is selected.
+   * When a number is selected, max length is derived from that value (national digits after `countryCode`).
+   * @default 10
+   */
+  phoneNumberMaxLength?: number;
   /** Called when the Test button is clicked */
   onTest?: () => void;
   /** Disables the Test button */
