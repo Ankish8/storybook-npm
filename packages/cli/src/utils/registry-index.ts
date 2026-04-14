@@ -174,7 +174,7 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
       category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
-    internalDependencies: [],
+    internalDependencies: ["checkbox","tooltip"],
   },
   "number-step-field": {
     name: "number-step-field",
@@ -642,11 +642,11 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   },
   "bot-settings": {
     name: "bot-settings",
-    description:
-      "Collapsible Settings section with Connect WhatsApp multi-select (checkbox rows, secondary status, search, validation)",
+    description: "Collapsible Settings section with Connect WhatsApp multi-select (Figma-style rows, search, validation)",
       category: "custom",
     dependencies: ["lucide-react"],
-    internalDependencies: ["multi-select", "tooltip"],
+    category: "custom",
+    internalDependencies: ["multi-select","tooltip"],
   },
   "bot-human-handover": {
     name: "bot-human-handover",
