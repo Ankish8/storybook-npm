@@ -7,8 +7,15 @@ export const PROMPT_INVALID_CHARS_MESSAGE = BOT_IDENTITY_INVALID_CHARS_MESSAGE;
  * Disallows ASCII control characters except tab, LF, and CR (newlines).
  * Matches product expectation for free-text bot prompts and messages.
  */
-const DISALLOWED_PROMPT_CONTROLS = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/;
+function isDisallowedControlChar(code: number): boolean {
+  if (code === 0x09 || code === 0x0a || code === 0x0d) return false; // tab, LF, CR
+  if (code < 0x20 || code === 0x7f) return true;
+  return false;
+}
 
 export function hasInvalidPromptFieldChars(value: string): boolean {
-  return DISALLOWED_PROMPT_CONTROLS.test(value);
+  for (let i = 0; i < value.length; i++) {
+    if (isDisallowedControlChar(value.charCodeAt(i))) return true;
+  }
+  return false;
 }
