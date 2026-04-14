@@ -25,7 +25,20 @@ export interface FileUploadModalProps
   sampleDownloadLabel?: string;
   showSampleDownload?: boolean;
   acceptedFormats?: string;
+  /**
+   * Full helper line under the drop zone (max size + copy). When omitted, the line is built from
+   * {@link maxFileSizeMB} and {@link allowedFileTypesDescription}.
+   */
   formatDescription?: string;
+  /**
+   * Shown inside the default format line as: `Max file size {n} MB ({allowedFileTypesDescription})`.
+   * Ignored when {@link formatDescription} is set.
+   */
+  allowedFileTypesDescription?: string;
+  /** Toast title when the user selects a file whose extension is not in {@link acceptedFormats}. */
+  disallowedFileTypeToastTitle?: string;
+  /** Toast description when the user selects a disallowed file type. */
+  disallowedFileTypeToastDescription?: string;
   maxFileSizeMB?: number;
   multiple?: boolean;
   title?: string;

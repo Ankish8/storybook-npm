@@ -63,6 +63,32 @@ describe("CreatableMultiSelect", () => {
     expect(screen.getByText("Select at least one")).toBeInTheDocument();
   });
 
+  it("shows dropdown hint, max selections, and Enter affordance when typing a custom value", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <CreatableMultiSelect
+        options={OPTIONS}
+        placeholder="Pick items"
+        createHintText="Type to create a custom tone"
+        maxItems={5}
+        maxLengthPerItem={20}
+        onValueChange={onChange}
+      />
+    );
+    const input = screen.getByRole("combobox");
+    await user.click(input);
+    await user.type(input, "angry");
+    expect(
+      screen.getByText("Type to create a custom tone")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Max selections allowed: 5")).toBeInTheDocument();
+    const enterBtn = screen.getByRole("button", { name: /add using enter key/i });
+    expect(enterBtn).toBeInTheDocument();
+    await user.click(enterBtn);
+    expect(onChange).toHaveBeenCalledWith(["angry"]);
+  });
+
   it("sanitizes typed input and notifies invalid vs valid input", async () => {
     const user = userEvent.setup();
     const onInvalid = vi.fn();

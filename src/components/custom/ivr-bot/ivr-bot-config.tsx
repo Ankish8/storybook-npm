@@ -94,6 +94,9 @@ export const IvrBotConfig = React.forwardRef(
       onAgentBusyPromptBlur,
       onNoExtensionFoundPromptBlur,
       onEscalationPromptBlur,
+      onEscalationDepartmentOptionsScrollEnd,
+      escalationDepartmentOptionsHasMore,
+      escalationDepartmentOptionsLoadingMore,
       onBack,
       onPlayVoice,
       onPauseVoice,
@@ -276,6 +279,9 @@ export const IvrBotConfig = React.forwardRef(
               data={data}
               onChange={update}
               departmentOptions={escalationDepartmentOptions}
+              onDepartmentOptionsScrollEnd={onEscalationDepartmentOptionsScrollEnd}
+              departmentOptionsHasMore={escalationDepartmentOptionsHasMore}
+              departmentOptionsLoadingMore={escalationDepartmentOptionsLoadingMore}
               disabled={disabled}
               infoTooltip={escalateToHumanInfoTooltip}
               promptMaxLength={escalationPromptMaxLength}

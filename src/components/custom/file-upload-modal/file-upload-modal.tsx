@@ -8,15 +8,20 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../ui/dialog";
+import { toast } from "../../ui/toast";
 import type {
   FileUploadModalProps,
   UploadItem,
   UploadStatus,
 } from "./types";
+import { isFileExtensionAllowed } from "./file-upload-accept";
 
 const DEFAULT_ACCEPTED = ".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt";
-const DEFAULT_FORMAT_DESC =
-  "Max file size 100 MB (Supported Format: .docs, .pdf, .csv, .xls, .xlxs, .txt)";
+const DEFAULT_ALLOWED_FILE_TYPES_DESC =
+  "Supported Format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt";
+const DEFAULT_DISALLOWED_TYPE_TOAST_TITLE = "Unsupported file type";
+const DEFAULT_DISALLOWED_TYPE_TOAST_DESCRIPTION =
+  "Only files in the supported formats can be uploaded.";
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -82,7 +87,10 @@ const FileUploadModal = React.forwardRef(
       sampleDownloadLabel = "Download sample file",
       showSampleDownload,
       acceptedFormats = DEFAULT_ACCEPTED,
-      formatDescription = DEFAULT_FORMAT_DESC,
+      formatDescription,
+      allowedFileTypesDescription = DEFAULT_ALLOWED_FILE_TYPES_DESC,
+      disallowedFileTypeToastTitle = DEFAULT_DISALLOWED_TYPE_TOAST_TITLE,
+      disallowedFileTypeToastDescription = DEFAULT_DISALLOWED_TYPE_TOAST_DESCRIPTION,
       maxFileSizeMB = 100,
       multiple = true,
       title = "File Upload",
@@ -103,11 +111,23 @@ const FileUploadModal = React.forwardRef(
     const shouldShowSampleDownload =
       showSampleDownload ?? !!onSampleDownload;
 
+    const resolvedFormatDescription =
+      formatDescription ??
+      `Max file size ${maxFileSizeMB} MB (${allowedFileTypesDescription})`;
+
     const addFiles = React.useCallback(
       (fileList: FileList | null) => {
         if (!fileList) return;
 
         Array.from(fileList).forEach((file) => {
+          if (!isFileExtensionAllowed(file.name, acceptedFormats)) {
+            toast.error({
+              title: disallowedFileTypeToastTitle,
+              description: disallowedFileTypeToastDescription,
+            });
+            return;
+          }
+
           if (file.size > maxFileSizeMB * 1024 * 1024) {
             const id = generateId();
             setItems((prev) => [
@@ -185,7 +205,14 @@ const FileUploadModal = React.forwardRef(
           }
         });
       },
-      [onUpload, maxFileSizeMB, fakeProgress]
+      [
+        onUpload,
+        maxFileSizeMB,
+        fakeProgress,
+        acceptedFormats,
+        disallowedFileTypeToastTitle,
+        disallowedFileTypeToastDescription,
+      ]
     );
 
     const removeItem = (id: string) => {
@@ -278,7 +305,7 @@ const FileUploadModal = React.forwardRef(
                     {dropDescription}
                   </p>
                   <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px] break-words">
-                    {formatDescription}
+                    {resolvedFormatDescription}
                   </p>
                 </div>
               </div>

@@ -19,7 +19,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "avatar": {
     name: "avatar",
     description: "A versatile avatar component displaying user initials or images with size variants and optional online status indicator",
-      category: "core",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -27,7 +26,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "date-divider": {
     name: "date-divider",
     description: "A horizontal line with centered date text for separating chat messages by date",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -35,7 +33,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "image-media": {
     name: "image-media",
     description: "An image display component for chat messages with rounded corners and configurable max height",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -43,7 +40,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "phone-input": {
     name: "phone-input",
     description: "A phone number input with country code prefix, flag emoji, and optional country selector",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "core",
     internalDependencies: [],
@@ -51,7 +47,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "reply-quote": {
     name: "reply-quote",
     description: "A quoted message block with blue left border showing sender name and quoted text for reply previews",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -59,7 +54,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "system-message": {
     name: "system-message",
     description: "A centered system message for chat timelines with bold markdown support",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -67,7 +61,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "unread-separator": {
     name: "unread-separator",
     description: "A horizontal divider with unread message count label for chat message lists",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -75,7 +68,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "button": {
     name: "button",
     description: "A customizable button component with variants, sizes, and icons",
-      category: "core",
     dependencies: ["@radix-ui/react-slot@^1.2.4","class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "core",
     internalDependencies: [],
@@ -83,7 +75,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "badge": {
     name: "badge",
     description: "A status badge component with active, failed, disabled, outline, secondary, and destructive variants",
-      category: "core",
     dependencies: ["@radix-ui/react-slot@^1.2.4","class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -91,7 +82,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "contact-list-item": {
     name: "contact-list-item",
     description: "Contact list item with avatar, name, subtitle, and trailing content",
-      category: "core",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: ["avatar"],
@@ -99,7 +89,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "typography": {
     name: "typography",
     description: "A semantic typography component with kind, variant, color, alignment, and truncation support",
-      category: "core",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -107,7 +96,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "input": {
     name: "input",
     description: "A text input component with error and disabled states",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "form",
     internalDependencies: [],
@@ -115,7 +103,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "select": {
     name: "select",
     description: "A select dropdown component built on Radix UI Select",
-      category: "form",
     dependencies: ["@radix-ui/react-select@^2.2.6","class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "form",
     internalDependencies: [],
@@ -123,7 +110,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "checkbox": {
     name: "checkbox",
     description: "A tri-state checkbox component with label support (checked, unchecked, indeterminate). Built on Radix UI Checkbox.",
-      category: "form",
     dependencies: ["@radix-ui/react-checkbox@^1.3.3","class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
     internalDependencies: [],
@@ -131,7 +117,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "switch": {
     name: "switch",
     description: "A switch/toggle component for boolean inputs with on/off states. Built on Radix UI Switch.",
-      category: "form",
     dependencies: ["@radix-ui/react-switch@^1.2.6","class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "form",
     internalDependencies: [],
@@ -139,7 +124,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "text-field": {
     name: "text-field",
     description: "A text field with label, helper text, icons, and validation states",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
     internalDependencies: [],
@@ -147,7 +131,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "textarea": {
     name: "textarea",
     description: "A multi-line text input with label, error state, helper text, character counter, and resize control",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "form",
     internalDependencies: [],
@@ -155,7 +138,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "readable-field": {
     name: "readable-field",
     description: "A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.",
-      category: "form",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
     internalDependencies: [],
@@ -163,7 +145,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "select-field": {
     name: "select-field",
     description: "A select field with label, helper text, and validation states",
-      category: "form",
     dependencies: ["@radix-ui/react-select@^2.2.6","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
     internalDependencies: [],
@@ -171,7 +152,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "multi-select": {
     name: "multi-select",
     description: "A multi-select dropdown component with search, badges, and async loading",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
     internalDependencies: ["checkbox","tooltip"],
@@ -179,7 +159,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "number-step-field": {
     name: "number-step-field",
     description: "Number input with inline chevron steppers and trailing suffix chip",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "form",
     internalDependencies: ["input"],
@@ -187,7 +166,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "creatable-select": {
     name: "creatable-select",
     description: "A single-value select with type-to-search and type-to-create custom options",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "form",
     internalDependencies: [],
@@ -195,7 +173,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "creatable-multi-select": {
     name: "creatable-multi-select",
     description: "A multi-value select with chips, type-to-search, and type-to-create custom options",
-      category: "form",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "form",
     internalDependencies: [],
@@ -203,7 +180,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "table": {
     name: "table",
     description: "A composable table component with size variants, loading/empty states, sticky columns, and sorting support",
-      category: "data",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "data",
     internalDependencies: [],
@@ -211,7 +187,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "tabs": {
     name: "tabs",
     description: "A flexible tabs component with underline-style active indicator, supporting badges/counts, equal-width and auto-width layouts",
-      category: "core",
     dependencies: ["@radix-ui/react-tabs","clsx","tailwind-merge@^2.6.0"],
     category: "core",
     internalDependencies: [],
@@ -219,7 +194,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "dialog": {
     name: "dialog",
     description: "A modal dialog component built on Radix UI Dialog with size variants and animations",
-      category: "overlay",
     dependencies: ["@radix-ui/react-dialog@^1.1.15","class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "overlay",
     internalDependencies: [],
@@ -227,7 +201,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "dropdown-menu": {
     name: "dropdown-menu",
     description: "A dropdown menu component for displaying actions and options",
-      category: "overlay",
     dependencies: ["@radix-ui/react-dropdown-menu@^2.1.16","clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "overlay",
     internalDependencies: [],
@@ -235,7 +208,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "tooltip": {
     name: "tooltip",
     description: "A popup that displays information related to an element when hovered or focused",
-      category: "overlay",
     dependencies: ["@radix-ui/react-tooltip@^1.2.8","clsx","tailwind-merge@^2.6.0","tailwindcss-animate"],
     category: "overlay",
     internalDependencies: [],
@@ -243,7 +215,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "delete-confirmation-modal": {
     name: "delete-confirmation-modal",
     description: "A confirmation modal requiring text input to confirm deletion",
-      category: "overlay",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "overlay",
     internalDependencies: ["dialog","button","input"],
@@ -251,7 +222,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "confirmation-modal": {
     name: "confirmation-modal",
     description: "A simple confirmation modal for yes/no decisions",
-      category: "overlay",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "overlay",
     internalDependencies: ["dialog","button"],
@@ -259,7 +229,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "form-modal": {
     name: "form-modal",
     description: "A reusable modal component for forms with consistent layout",
-      category: "overlay",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "overlay",
     internalDependencies: ["dialog","button"],
@@ -267,7 +236,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "tag": {
     name: "tag",
     description: "A tag component for event labels with optional bold label prefix and optional dismiss button",
-      category: "feedback",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "feedback",
     internalDependencies: [],
@@ -275,7 +243,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "alert": {
     name: "alert",
     description: "A dismissible alert component for notifications, errors, warnings, and success messages with icons, actions, and controlled visibility",
-      category: "feedback",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "feedback",
     internalDependencies: [],
@@ -283,7 +250,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "toast": {
     name: "toast",
     description: "A toast notification component for displaying brief messages at screen corners, with auto-dismiss and stacking support",
-      category: "feedback",
     dependencies: ["@radix-ui/react-toast@^1.2.15","class-variance-authority","lucide-react","clsx","tailwind-merge@^2.6.0","tailwindcss-animate"],
     category: "feedback",
     internalDependencies: [],
@@ -291,7 +257,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "spinner": {
     name: "spinner",
     description: "A loading spinner component with customizable size and color variants for indicating progress",
-      category: "feedback",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "feedback",
     internalDependencies: [],
@@ -299,7 +264,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "skeleton": {
     name: "skeleton",
     description: "A placeholder loading component with pulse animation for content loading states",
-      category: "feedback",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0"],
     category: "feedback",
     internalDependencies: [],
@@ -307,7 +271,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "empty-state": {
     name: "empty-state",
     description: "Centered empty state with icon, title, description, and optional action buttons",
-      category: "feedback",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "feedback",
     internalDependencies: [],
@@ -315,7 +278,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "accordion": {
     name: "accordion",
     description: "An expandable/collapsible accordion component with single or multiple mode support",
-      category: "layout",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "layout",
     internalDependencies: [],
@@ -323,7 +285,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "page-header": {
     name: "page-header",
     description: "A page header component with icon, title, description, and action buttons",
-      category: "layout",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "layout",
     internalDependencies: [],
@@ -331,7 +292,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "panel": {
     name: "panel",
     description: "A collapsible side panel layout with header, scrollable body, and optional footer",
-      category: "layout",
     dependencies: ["class-variance-authority","clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "layout",
     internalDependencies: ["button"],
@@ -339,7 +299,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "pagination": {
     name: "pagination",
     description: "A composable pagination component with page navigation, next/previous links, and ellipsis",
-      category: "layout",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "layout",
     internalDependencies: ["button"],
@@ -347,7 +306,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "event-selector": {
     name: "event-selector",
     description: "A component for selecting webhook events with groups, categories, and tri-state checkboxes",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: ["checkbox","accordion"],
@@ -355,7 +313,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "key-value-input": {
     name: "key-value-input",
     description: "A component for managing key-value pairs with validation and duplicate detection",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","input"],
@@ -363,7 +320,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "api-feature-card": {
     name: "api-feature-card",
     description: "A card component for displaying API features with icon, title, description, and action button",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button"],
@@ -371,7 +327,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "endpoint-details": {
     name: "endpoint-details",
     description: "A component for displaying API endpoint details with copy-to-clipboard and secret field support",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["readable-field"],
@@ -379,7 +334,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "switch-account-modal": {
     name: "switch-account-modal",
     description: "Confirmation modal for switching the active connected account of a Composio toolkit, with a list of affected integrations",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","dialog"],
@@ -387,7 +341,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "add-integration": {
     name: "add-integration",
     description: "Multi-step integration wizard for connecting Composio toolkits with account management",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["button","input","spinner","dialog"],
@@ -395,7 +348,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "alert-configuration": {
     name: "alert-configuration",
     description: "A configuration card for alert settings with inline editing modal",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","form-modal","select"],
@@ -403,7 +355,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "auto-pay-setup": {
     name: "auto-pay-setup",
     description: "A setup wizard component for configuring automatic payments with payment method selection",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["accordion","button"],
@@ -411,7 +362,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bank-details": {
     name: "bank-details",
     description: "A component for displaying bank account details with copy-to-clipboard functionality",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["accordion"],
@@ -419,7 +369,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "date-range-modal": {
     name: "date-range-modal",
     description: "A modal for selecting a date range with start and end date pickers",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["dialog","button","input"],
@@ -427,7 +376,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "payment-summary": {
     name: "payment-summary",
     description: "A component for displaying payment summary with line items and total",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["tooltip"],
@@ -435,7 +383,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "payment-option-card": {
     name: "payment-option-card",
     description: "A selectable payment method list with icons, titles, and descriptions. Includes a modal variant for overlay usage.",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","dialog"],
@@ -443,7 +390,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "plan-detail-modal": {
     name: "plan-detail-modal",
     description: "A read-only modal displaying plan feature breakdown with free allowances and per-unit rates",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","@radix-ui/react-dialog"],
     category: "custom",
     internalDependencies: ["dialog"],
@@ -451,7 +397,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "plan-upgrade-modal": {
     name: "plan-upgrade-modal",
     description: "A modal for selecting whether a plan upgrade is applied in the current or upcoming billing cycle",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","@radix-ui/react-dialog"],
     category: "custom",
     internalDependencies: ["button","dialog"],
@@ -459,7 +404,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "plan-upgrade-summary-modal": {
     name: "plan-upgrade-summary-modal",
     description: "A billing summary modal for confirming plan upgrades and downgrades",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","@radix-ui/react-dialog"],
     category: "custom",
     internalDependencies: ["button","dialog"],
@@ -467,7 +411,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "let-us-drive-card": {
     name: "let-us-drive-card",
     description: "A managed service card with pricing, billing badge, 'Show details' link, and CTA for the full-service management section",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: ["button","badge"],
@@ -475,7 +418,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "power-up-card": {
     name: "power-up-card",
     description: "An add-on service card with icon, title, pricing, description, and CTA button for the power-ups section",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: ["button"],
@@ -483,7 +425,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "pricing-card": {
     name: "pricing-card",
     description: "A pricing tier card with plan name, pricing, feature checklist, CTA button, and optional popularity badge and addon footer",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","badge"],
@@ -491,7 +432,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "pricing-page": {
     name: "pricing-page",
     description: "A full pricing page layout composing plan-type tabs, billing toggle, pricing cards grid, power-ups section, and let-us-drive managed services section",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","page-header","pricing-toggle","pricing-card","power-up-card","let-us-drive-card"],
@@ -499,7 +439,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "pricing-toggle": {
     name: "pricing-toggle",
     description: "A plan type tab selector with billing period toggle for pricing pages. Pill-shaped tabs switch plan categories, and an optional switch toggles between monthly/yearly billing.",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","@radix-ui/react-switch@^1.2.6"],
     category: "custom",
     internalDependencies: ["switch"],
@@ -507,7 +446,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "talk-to-us-modal": {
     name: "talk-to-us-modal",
     description: "A modal dialog with icon, heading, description, and two action buttons prompting users to contact support. Triggered by PowerUpCard's Talk to us button.",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","@radix-ui/react-dialog"],
     category: "custom",
     internalDependencies: ["button","dialog"],
@@ -515,7 +453,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bots": {
     name: "bots",
     description: "AI Bot management components — BotList, BotListHeader, BotListSearch, BotListCreateCard, BotListGrid, BotCard, CreateBotModal",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["badge","button","dialog","dropdown-menu","tooltip"],
@@ -523,15 +460,13 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "file-upload-modal": {
     name: "file-upload-modal",
     description: "A reusable file upload modal with drag-and-drop, progress tracking, and error handling",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
-    internalDependencies: ["dialog","button"],
+    internalDependencies: ["dialog","button","toast"],
   },
   "attachment-preview": {
     name: "attachment-preview",
     description: "A file attachment preview for chat composers with image, video, audio, and document previews",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: [],
@@ -539,7 +474,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "audio-media": {
     name: "audio-media",
     description: "A waveform-based audio player with play/pause, speed control, and SVG waveform visualization",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: ["dropdown-menu"],
@@ -547,7 +481,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "carousel-media": {
     name: "carousel-media",
     description: "A horizontally scrollable card carousel with images, titles, and action buttons",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: [],
@@ -555,7 +488,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-bubble": {
     name: "chat-bubble",
     description: "A chat message bubble with sender/receiver variants, delivery status, reply quote, and media slot",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["reply-quote"],
@@ -563,7 +495,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-list-item": {
     name: "chat-list-item",
     description: "A chat list item showing contact name, message preview, timestamp, delivery status, and channel badge",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: [],
@@ -571,7 +502,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-timeline-divider": {
     name: "chat-timeline-divider",
     description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: [],
@@ -579,7 +509,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-composer": {
     name: "chat-composer",
     description: "A message composition area with textarea, action slots, reply preview, attachment slot, and send button",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","reply-quote"],
@@ -587,7 +516,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "doc-media": {
     name: "doc-media",
     description: "A document media component with preview, download, and file variants for chat messages",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: [],
@@ -595,7 +523,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "video-media": {
     name: "video-media",
     description: "A video player with thumbnail overlay, play/pause, seek bar, speed dropdown, volume, and fullscreen",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["dropdown-menu"],
@@ -603,7 +530,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "ivr-bot": {
     name: "ivr-bot",
     description: "IVR/Voicebot configuration page with Create Function modal (2-step wizard)",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["button","badge","switch","accordion","dialog","select","creatable-select","creatable-multi-select","page-header","tag","file-upload-modal","form-modal","text-field","textarea"],
@@ -611,7 +537,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-knowledge-base": {
     name: "bot-knowledge-base",
     description: "Knowledge base section for bot configuration with file upload and status management",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["button","badge","tooltip"],
@@ -619,7 +544,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-instructions": {
     name: "bot-instructions",
     description: "Instructions section for bot configuration with toggles, character counter, and action buttons",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["button","switch","tooltip"],
@@ -627,7 +551,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-functions": {
     name: "bot-functions",
     description: "Functions section for bot configuration with a list of bot functions and edit/delete actions",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["button","tooltip"],
@@ -635,7 +558,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-integrations": {
     name: "bot-integrations",
     description: "Integrations section for bot configuration with connected integrations or empty state",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["badge","button","tooltip"],
@@ -643,7 +565,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-settings": {
     name: "bot-settings",
     description: "Collapsible Settings section with Connect WhatsApp multi-select (Figma-style rows, search, validation)",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["multi-select","tooltip"],
@@ -651,7 +572,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-human-handover": {
     name: "bot-human-handover",
     description: "Human handover section for bot configuration with toggle to enable connecting to a human agent and an info tooltip",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["button","switch","tooltip"],
@@ -659,7 +579,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-follow-ups": {
     name: "bot-follow-ups",
     description: "Follow-ups section for bot configuration with hour/minute delay and message per item",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["switch","number-step-field","textarea","tooltip"],
@@ -667,7 +586,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "bot-test": {
     name: "bot-test",
     description: "Modal dialog for testing a bot by sending a message to a selected WhatsApp number with phone input",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["dialog","select-field","phone-input","button"],
@@ -675,7 +593,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "test-ai-bot": {
     name: "test-ai-bot",
     description: "Modal with QR code and primary action to test an AI bot (WhatsApp web, etc.)",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["dialog","button"],
@@ -683,7 +600,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "wallet-topup": {
     name: "wallet-topup",
     description: "A component for wallet top-up with amount selection and coupon support",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["accordion","button","input"],
@@ -691,7 +607,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-types": {
     name: "chat-types",
     description: "Shared TypeScript interfaces for the chat template",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: [],
@@ -699,7 +614,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-transport": {
     name: "chat-transport",
     description: "ChatTransport interface and MockTransport with realistic fake data",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: ["chat-types"],
@@ -707,7 +621,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-provider": {
     name: "chat-provider",
     description: "React context provider for chat state management with transport abstraction",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0"],
     category: "custom",
     internalDependencies: ["chat-types","chat-transport"],
@@ -715,7 +628,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-sidebar": {
     name: "chat-sidebar",
     description: "Chat inbox sidebar with search, tabs, and conversation list",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","text-field","tabs","badge","chat-list-item"],
@@ -723,7 +635,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-filter-panel": {
     name: "chat-filter-panel",
     description: "Assignee and channel filter panel with checkbox groups",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","text-field","checkbox","dialog"],
@@ -731,7 +642,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-new-panel": {
     name: "chat-new-panel",
     description: "New chat panel with contact search and add-contact modal",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","text-field","dialog","avatar","dropdown-menu"],
@@ -739,7 +649,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-message-list": {
     name: "chat-message-list",
     description: "Message list with all media renderers, delivery status, and reply functionality",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","tooltip","spinner","avatar","tag","dropdown-menu","chat-timeline-divider","doc-media","sender-indicator"],
@@ -747,7 +656,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-header": {
     name: "chat-header",
     description: "Chat window header with assignment dropdown and resolve button",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","badge","tag","avatar","dropdown-menu","tooltip"],
@@ -755,7 +663,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-input": {
     name: "chat-input",
     description: "Chat composer with canned messages, attachments, and keyboard navigation",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","tooltip","dropdown-menu","confirmation-modal","chat-composer"],
@@ -763,7 +670,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-template-modal": {
     name: "chat-template-modal",
     description: "Template selection modal with variable mapping, media upload, and live preview",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","dialog","select-field","tabs","text-field","avatar","spinner","confirmation-modal"],
@@ -771,7 +677,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-contact-panel": {
     name: "chat-contact-panel",
     description: "Contact details slide-out panel with view and edit modes",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-provider","button","text-field","switch","tag","dropdown-menu","accordion","confirmation-modal","panel"],
@@ -779,7 +684,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "chat-template": {
     name: "chat-template",
     description: "Complete chat application template — install this to get the full chat UI",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react","tailwindcss-animate"],
     category: "custom",
     internalDependencies: ["chat-types","chat-transport","chat-provider","chat-sidebar","chat-filter-panel","chat-new-panel","chat-message-list","chat-header","chat-input","chat-template-modal","chat-contact-panel","sender-indicator","button","tooltip"],
@@ -787,7 +691,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "sender-indicator": {
     name: "sender-indicator",
     description: "A circular badge showing who sent a message — agent initials, bot icon, campaign megaphone, or API plug",
-      category: "custom",
     dependencies: ["clsx","tailwind-merge@^2.6.0","lucide-react"],
     category: "custom",
     internalDependencies: ["chat-types","tooltip"],
@@ -795,7 +698,6 @@ export const COMPONENT_METADATA: Record<string, ComponentMeta> = {
   "setup-integration": {
     name: "setup-integration",
     description: "AI chat interface for setting up, testing, and publishing integrations after successful connection",
-      category: "custom",
     dependencies: ["lucide-react"],
     category: "custom",
     internalDependencies: ["spinner","dialog","confirmation-modal"],

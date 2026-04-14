@@ -949,10 +949,12 @@ components:
     internalDependencies:
       - dialog
       - button
+      - toast
     isMultiFile: true
     directory: "file-upload-modal"
     files:
       - "file-upload-modal.tsx"
+      - "file-upload-accept.ts"
       - "types.ts"
       - "index.ts"
     mainFile: "file-upload-modal.tsx"
@@ -1124,6 +1126,7 @@ components:
     files:
       - "ivr-bot-config.tsx"
       - "create-function-validation.ts"
+      - "prompt-field-validation.ts"
       - "create-function-modal.tsx"
       - "bot-identity-card.tsx"
       - "bot-identity-text.ts"

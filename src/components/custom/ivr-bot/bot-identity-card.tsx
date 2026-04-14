@@ -438,6 +438,7 @@ const BotIdentityCard = React.forwardRef(
                 }}
                 options={toneOptions}
                 placeholder="Enter or select tone"
+                createHintText="Type to create a custom tone"
                 disabled={disabled}
                 maxItems={TONE_MAX_ITEMS}
                 maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}

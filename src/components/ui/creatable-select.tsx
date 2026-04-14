@@ -294,7 +294,7 @@ const CreatableSelect = React.forwardRef(
                 <span className="text-sm text-semantic-text-muted">
                   {creatableHint}
                 </span>
-                <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 text-[10px] text-semantic-text-muted font-medium">
+                <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-semantic-text-muted">
                   Enter ↵
                 </kbd>
               </div>

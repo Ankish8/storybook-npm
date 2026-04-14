@@ -1,10 +1,22 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FileUploadModal } from "../file-upload-modal";
 
+const { toastError } = vi.hoisted(() => ({
+  toastError: vi.fn(),
+}));
+
+vi.mock("../../../ui/toast", () => ({
+  toast: Object.assign(vi.fn(), { error: toastError }),
+}));
+
 describe("FileUploadModal", () => {
+  beforeEach(() => {
+    toastError.mockClear();
+  });
+
   it("renders title and buttons when open", () => {
     render(<FileUploadModal open={true} onOpenChange={vi.fn()} />);
     expect(screen.getByText("File Upload")).toBeInTheDocument();
@@ -86,6 +98,66 @@ describe("FileUploadModal", () => {
   it("renders close button with aria-label", () => {
     render(<FileUploadModal open={true} onOpenChange={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Close dialog" })).toBeInTheDocument();
+  });
+
+  it("shows error toast and does not upload disallowed file types", () => {
+    const onUpload = vi.fn().mockResolvedValue(undefined);
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={onUpload}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const file = new File(["x"], "photo.jpg", { type: "image/jpeg" });
+    // fireEvent bypasses host `accept` filtering (drag-and-drop also bypasses it in browsers)
+    fireEvent.change(input, { target: { files: [file] } });
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Unsupported file type",
+      description: "Only files in the supported formats can be uploaded.",
+    });
+    expect(onUpload).not.toHaveBeenCalled();
+    expect(screen.queryByText("photo.jpg")).not.toBeInTheDocument();
+  });
+
+  it("uses custom disallowed-file-type toast copy", () => {
+    const onUpload = vi.fn().mockResolvedValue(undefined);
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={onUpload}
+        disallowedFileTypeToastTitle="Invalid file"
+        disallowedFileTypeToastDescription="Pick a PDF or CSV only."
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["x"], "a.png", { type: "image/png" })] },
+    });
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Invalid file",
+      description: "Pick a PDF or CSV only.",
+    });
+  });
+
+  it("builds default format line from allowedFileTypesDescription", () => {
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        maxFileSizeMB={50}
+        allowedFileTypesDescription="Supported: PDF only"
+      />
+    );
+    expect(
+      screen.getByText("Max file size 50 MB (Supported: PDF only)")
+    ).toBeInTheDocument();
   });
 
   it("sets title on file name row for full name on hover", async () => {
