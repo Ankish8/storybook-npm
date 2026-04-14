@@ -4,6 +4,17 @@
     "npm run api:check",
     "npm --prefix packages/cli run generate-registry"
   ],
+  "src/components/custom/**/*.tsx": [
+    "eslint --fix",
+    "npm run api:check",
+    "npm --prefix packages/cli run generate-registry"
+  ],
+  "packages/cli/components.yaml": [
+    "npm --prefix packages/cli run generate-registry"
+  ],
+  "packages/cli/scripts/generate-registry.js": [
+    "npm --prefix packages/cli run generate-registry"
+  ],
   "packages/cli/src/**/*.ts": [
     "eslint --fix"
   ]

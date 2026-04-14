@@ -8,6 +8,8 @@ alwaysApply: false
 
 These files are produced by `generate-registry.js` reading `components.yaml` + source files. Any manual edits will be overwritten on the next build.
 
+**They are listed in the root `.gitignore`** so Git never merges them (no more huge `registry*.ts` merge conflicts). After `npm install`, `scripts/ensure-cli-registry.js` regenerates them locally.
+
 ## What to do instead
 
 | Goal | Correct action |
@@ -24,4 +26,4 @@ npm run generate-registry   # regenerate only
 npm run build               # full pipeline (validate → generate → tsup → verify)
 ```
 
-**Never commit changes to these files directly.**
+**Do not commit these files** — they are untracked. Change `components.yaml` or component sources instead.

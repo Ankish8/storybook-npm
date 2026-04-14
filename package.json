@@ -45,7 +45,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "prepublishOnly": "npm run build:lib",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "node scripts/ensure-cli-registry.js"
   },
   "overrides": {
     "tailwindcss": "^3.4.18"
