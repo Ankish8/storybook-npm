@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-06T10:53:20.970Z",
+  "generatedAt": "2026-04-13T11:26:28.755Z",
   "components": {
     "accordion": {
       "exports": [
@@ -392,6 +392,18 @@
           "maxLengthPerItem": {
             "type": "number",
             "optional": true
+          },
+          "sanitizeInput": {
+            "type": "(raw: string) => string",
+            "optional": true
+          },
+          "onInvalidCharacters": {
+            "type": "() => void",
+            "optional": true
+          },
+          "onValidInput": {
+            "type": "() => void",
+            "optional": true
           }
         }
       },
@@ -448,6 +460,22 @@
           },
           "maxLength": {
             "type": "number",
+            "optional": true
+          },
+          "sanitizeInput": {
+            "type": "(raw: string) => string",
+            "optional": true
+          },
+          "normalizeComboboxInput": {
+            "type": "(sanitized: string) => string",
+            "optional": true
+          },
+          "onInvalidCharacters": {
+            "type": "() => void",
+            "optional": true
+          },
+          "onValidInput": {
+            "type": "() => void",
             "optional": true
           }
         }
@@ -710,6 +738,10 @@
           "showCheckIcon": {
             "type": "boolean",
             "optional": true
+          },
+          "hideNumberSpinners": {
+            "type": "boolean",
+            "optional": true
           }
         }
       },
@@ -720,12 +752,17 @@
     "multi-select": {
       "exports": [
         "MultiSelect",
+        "MultiSelectChoice",
+        "MultiSelectGroupedSection",
         "MultiSelectOption",
+        "MultiSelectOptionInput",
         "MultiSelectProps",
-        "multiSelectTriggerVariants"
+        "flattenMultiSelectOptions",
+        "multiSelectTriggerVariants",
+        "normalizeMultiSelectOption"
       ],
       "interfaces": {
-        "MultiSelectOption": {
+        "MultiSelectChoice": {
           "value": {
             "type": "string",
             "optional": false
@@ -734,8 +771,43 @@
             "type": "string",
             "optional": false
           },
+          "caption": {
+            "type": "string",
+            "optional": true
+          },
+          "isDisabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "overlayMsg": {
+            "type": "string",
+            "optional": true
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "optional": true
+          },
+          "isLast": {
+            "type": "boolean",
+            "optional": true
+          }
+        },
+        "MultiSelectGroupedSection": {},
+        "MultiSelectOption": {
+          "secondaryText": {
+            "type": "string",
+            "optional": true
+          },
           "disabled": {
             "type": "boolean",
+            "optional": true
+          },
+          "disabledTooltip": {
+            "type": "string",
+            "optional": true
+          },
+          "group": {
+            "type": "string",
             "optional": true
           }
         },
@@ -781,8 +853,12 @@
             "optional": true
           },
           "options": {
-            "type": "MultiSelectOption[]",
+            "type": "MultiSelectOptionInput",
             "optional": false
+          },
+          "closeOnEscape": {
+            "type": "boolean",
+            "optional": true
           },
           "searchable": {
             "type": "boolean",
@@ -794,6 +870,10 @@
           },
           "maxSelections": {
             "type": "number",
+            "optional": true
+          },
+          "showSelectionFooter": {
+            "type": "boolean",
             "optional": true
           },
           "wrapperClassName": {
@@ -815,11 +895,81 @@
           "name": {
             "type": "string",
             "optional": true
+          },
+          "optionVariant": {
+            "type": "\"simple\" | \"detailed\"",
+            "optional": true
+          },
+          "separateSelectedWithDivider": {
+            "type": "boolean",
+            "optional": true
+          },
+          "showClearAll": {
+            "type": "boolean",
+            "optional": true
+          },
+          "showSeparatorBeforeChevron": {
+            "type": "boolean",
+            "optional": true
           }
         }
       },
       "variants": {
         "multiSelectTriggerVariants": {}
+      }
+    },
+    "number-step-field": {
+      "exports": [
+        "NumberStepField",
+        "NumberStepFieldProps",
+        "numberStepFieldVariants"
+      ],
+      "interfaces": {
+        "NumberStepFieldProps": {
+          "value": {
+            "type": "number",
+            "optional": false
+          },
+          "onValueChange": {
+            "type": "(value: number) => void",
+            "optional": false
+          },
+          "min": {
+            "type": "number",
+            "optional": true
+          },
+          "max": {
+            "type": "number",
+            "optional": true
+          },
+          "step": {
+            "type": "number",
+            "optional": true
+          },
+          "suffix": {
+            "type": "string",
+            "optional": false
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "incrementAriaLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "decrementAriaLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "onBlur": {
+            "type": "React.FocusEventHandler<HTMLInputElement>",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "numberStepFieldVariants": {}
       }
     },
     "page-header": {
@@ -1458,6 +1608,18 @@
       "interfaces": {
         "TagProps": {
           "label": {
+            "type": "string",
+            "optional": true
+          },
+          "onRemove": {
+            "type": "(e: React.MouseEvent<HTMLButtonElement>) => void",
+            "optional": true
+          },
+          "removeDisabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "removeAriaLabel": {
             "type": "string",
             "optional": true
           }
