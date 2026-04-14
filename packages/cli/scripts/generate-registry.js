@@ -1022,6 +1022,7 @@ export interface ComponentFile {
 export interface ComponentDefinition {
   name: string
   description: string
+  category: string
   dependencies: string[]
   files: ComponentFile[]
   // Multi-file component properties (optional)
@@ -1061,7 +1062,6 @@ function generateIndexFile(config, components) {
     return `  ${JSON.stringify(comp.name)}: {
     name: ${JSON.stringify(comp.name)},
     description: ${JSON.stringify(comp.description)},
-      category: ${JSON.stringify(comp.category)},
     dependencies: ${JSON.stringify(comp.dependencies)},
     category: ${JSON.stringify(comp.category)},
     internalDependencies: ${internalDeps},
@@ -1218,6 +1218,7 @@ export interface ComponentFile {
 export interface ComponentDefinition {
   name: string
   description: string
+  category: string
   dependencies: string[]
   files: ComponentFile[]
   // Multi-file component properties (optional)
@@ -1226,6 +1227,7 @@ export interface ComponentDefinition {
   directory?: string
   group?: string
   mainFile?: string
+  templateOnly?: boolean
 }
 
 export type Registry = Record<string, ComponentDefinition>

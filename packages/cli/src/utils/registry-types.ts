@@ -9,6 +9,7 @@ export interface ComponentFile {
 export interface ComponentDefinition {
   name: string
   description: string
+  category: string
   dependencies: string[]
   files: ComponentFile[]
   // Multi-file component properties (optional)
