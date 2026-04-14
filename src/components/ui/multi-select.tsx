@@ -3,13 +3,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "./checkbox";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./tooltip";
 
 /**
  * Single selectable row (similar to legacy OptionType — different name).
