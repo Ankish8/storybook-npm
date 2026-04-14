@@ -68,12 +68,12 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
       <div
         ref={ref}
         className={cn(
-          "flex w-full flex-col overflow-visible",
+          "flex w-full flex-col overflow-visible border-b border-solid border-semantic-border-layout pb-4",
           className
         )}
         {...props}
       >
-        <div className="flex flex-col gap-4 pb-4">
+        <div className="flex flex-col gap-4">
           <h2 className="text-base font-semibold text-semantic-text-primary m-0">
             Settings
           </h2>
@@ -131,11 +131,6 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
             />
           </div>
         </div>
-
-        <hr
-          className="m-0 h-px w-full shrink-0 border-0 border-t border-solid border-semantic-border-layout"
-          aria-hidden
-        />
       </div>
     );
   }

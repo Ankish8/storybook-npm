@@ -41,9 +41,13 @@ describe("BotSettings", () => {
     expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
   });
 
-  it("renders a horizontal divider at the bottom of the section", () => {
+  it("applies bottom border and padding on the root to separate the section", () => {
     const { container } = render(<BotSettings whatsappOptions={[]} />);
-    expect(container.querySelector("hr")).toBeInTheDocument();
+    const root = container.firstChild as HTMLElement;
+    expect(root).toHaveClass("border-b");
+    expect(root).toHaveClass("border-solid");
+    expect(root).toHaveClass("border-semantic-border-layout");
+    expect(root).toHaveClass("pb-4");
   });
 
   it("ignores defaultOpen (section is always visible)", () => {
