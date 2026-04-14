@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-13T11:26:28.755Z",
+  "generatedAt": "2026-04-14T11:35:54.845Z",
   "components": {
     "accordion": {
       "exports": [
@@ -384,26 +384,6 @@
           "helperText": {
             "type": "string",
             "optional": true
-          },
-          "maxItems": {
-            "type": "number",
-            "optional": true
-          },
-          "maxLengthPerItem": {
-            "type": "number",
-            "optional": true
-          },
-          "sanitizeInput": {
-            "type": "(raw: string) => string",
-            "optional": true
-          },
-          "onInvalidCharacters": {
-            "type": "() => void",
-            "optional": true
-          },
-          "onValidInput": {
-            "type": "() => void",
-            "optional": true
           }
         }
       },
@@ -755,6 +735,7 @@
         "MultiSelectChoice",
         "MultiSelectGroupedSection",
         "MultiSelectOption",
+        "MultiSelectOptionAuthoring",
         "MultiSelectOptionInput",
         "MultiSelectProps",
         "flattenMultiSelectOptions",
@@ -1372,6 +1353,7 @@
       "exports": [
         "Select",
         "SelectContent",
+        "SelectContentProps",
         "SelectGroup",
         "SelectItem",
         "SelectLabel",
@@ -1743,7 +1725,15 @@
             "type": "string",
             "optional": true
           },
+          "errorIcon": {
+            "type": "boolean",
+            "optional": true
+          },
           "showCount": {
+            "type": "boolean",
+            "optional": true
+          },
+          "enforceMaxLength": {
             "type": "boolean",
             "optional": true
           },
