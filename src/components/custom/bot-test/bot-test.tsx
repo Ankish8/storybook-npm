@@ -34,6 +34,8 @@ const BotTest: React.FC<BotTestProps> = ({
   selectedNumber,
   onNumberChange,
   numberPlaceholder = "Select number",
+  numberError,
+  phoneError,
   countryFlag,
   countryCode,
   showCountryChevron,
@@ -85,6 +87,7 @@ const BotTest: React.FC<BotTestProps> = ({
             value={selectedNumber}
             onValueChange={onNumberChange}
             disabled={disabled}
+            error={numberError}
           />
 
           {/* Phone number */}
@@ -111,6 +114,11 @@ const BotTest: React.FC<BotTestProps> = ({
               onCountryClick={onCountryClick}
               disabled={disabled}
             />
+            {phoneError ? (
+              <p className="tw-m-0 tw-text-sm tw-text-[var(--semantic-text-error,#DC2626)]">
+                {phoneError}
+              </p>
+            ) : null}
           </div>
         </div>
 

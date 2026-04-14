@@ -64,8 +64,10 @@ export interface BotSettingsProps
   whatsappShowSeparatorBeforeChevron?: boolean;
   /** Tooltip for the info icon next to "Connect WhatsApp" */
   infoTooltip?: string;
-  /** Whether the section starts expanded (default: true) */
+  /**
+   * @deprecated The Settings block is no longer collapsible; this value is ignored.
+   */
   defaultOpen?: boolean;
-  /** Disables the section collapsible control and the multi-select */
+  /** Disables the WhatsApp multi-select */
   disabled?: boolean;
 }
