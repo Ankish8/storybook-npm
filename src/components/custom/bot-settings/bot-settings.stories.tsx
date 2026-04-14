@@ -22,7 +22,7 @@ const meta: Meta<typeof BotSettings> = {
 | --- | --- |
 | **Default** | Search, secondary labels, disabled row + tooltip, max selections, validation in one flow. |
 | **Selected + divider + rest** | \`whatsappSeparateSelectedWithDivider\`: selected numbers first, divider, then remaining options. [Figma 19381-44751](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-44751) |
-| **Secondary status labels** | “Assigned to …” (or any \`secondaryText\`) on the right. [Figma 19381-45181](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-45181) |
+| **Secondary status labels** | “Assigned to …” via \`caption\` (base row type) or \`secondaryText\` on \`MultiSelectOption\`. [Figma 19381-45181](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-45181) |
 | **Disabled number + tooltip** | Unavailable row + hover tooltip. [Figma 19381-45604](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-45604) |
 | **Grouped categories** | Group headers: pass \`MultiSelectGroupedSection[]\` as \`whatsappOptions\` and set \`whatsappSeparateSelectedWithDivider={false}\`. [Figma 42590-146154](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42590-146154) |
 | **Search + max selections** | Search + \`whatsappMaxSelections\`. |

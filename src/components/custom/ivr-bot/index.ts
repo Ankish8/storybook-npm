@@ -70,3 +70,4 @@ export type {
   VariableGroup,
   VariableFormData,
 } from "./types";
+export type { FrustrationHandoverData } from "./frustration-handover-card";

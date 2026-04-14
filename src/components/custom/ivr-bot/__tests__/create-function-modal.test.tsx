@@ -29,10 +29,15 @@ describe("CreateFunctionModal", () => {
       <CreateFunctionModal
         open
         onOpenChange={noop}
-        initialData={{ name: "PrefilledFunc", prompt: VALID_PROMPT }}
+        initialData={{
+          name: "PrefilledFunc",
+          botMessage: "Hello from bot",
+          prompt: VALID_PROMPT,
+        }}
       />
     );
     expect(screen.getByLabelText(/Function Name/i)).toHaveValue("PrefilledFunc");
+    expect(screen.getByLabelText(/Bot Message/i)).toHaveValue("Hello from bot");
     expect(screen.getByLabelText(/Prompt/i)).toHaveValue(VALID_PROMPT);
   });
 
@@ -40,6 +45,7 @@ describe("CreateFunctionModal", () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     expect(screen.getByText("Create Function")).toBeInTheDocument();
     expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Bot Message/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Prompt/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Next/i })).toBeInTheDocument();
   });
@@ -328,10 +334,74 @@ describe("CreateFunctionModal", () => {
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         name: "MyFunc",
+        botMessage: "",
         prompt: VALID_PROMPT,
         url: "https://api.example.com/test",
       })
     );
+  });
+
+  it("calls onBotMessageBlur when Bot Message loses focus", async () => {
+    const onBotMessageBlur = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onBotMessageBlur={onBotMessageBlur} />
+    );
+    const botMsg = screen.getByLabelText(/Bot Message/i);
+    await user.type(botMsg, "Hi");
+    fireEvent.blur(botMsg);
+    expect(onBotMessageBlur).toHaveBeenCalledWith("Hi");
+  });
+
+  it("shows botMessageValidation under Bot Message", () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        botMessageValidation="Invalid bot message"
+      />
+    );
+    expect(screen.getByText("Invalid bot message")).toBeInTheDocument();
+  });
+
+  it("shows invalid character message with icon styling on Bot Message blur", () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const botMsg = screen.getByLabelText(/Bot Message/i);
+    fireEvent.change(botMsg, { target: { value: "hello\u0000" } });
+    fireEvent.blur(botMsg);
+    expect(
+      screen.getByText("Invalid characters not allowed.")
+    ).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it("treats Bot Message as required when botMessageOptional is false", async () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        botMessageOptional={false}
+      />
+    );
+    expect(screen.getByText("Bot Message")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Bot Message/i)).toBeRequired();
+    await user.type(screen.getByLabelText(/Function Name/i), "ReqBot");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    expect(screen.getByRole("button", { name: /Next/i })).toBeDisabled();
+    await user.type(screen.getByLabelText(/Bot Message/i), "Hello");
+    expect(screen.getByRole("button", { name: /Next/i })).not.toBeDisabled();
+  });
+
+  it("uses custom botMessagePlaceholder when provided", () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        botMessagePlaceholder="Custom placeholder text"
+      />
+    );
+    expect(
+      screen.getByPlaceholderText("Custom placeholder text")
+    ).toBeInTheDocument();
   });
 
   it("does not call onOpenChange on submit — parent closes from onSubmit if needed", async () => {
@@ -387,6 +457,7 @@ describe("CreateFunctionModal", () => {
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
         name: "MyFunc",
+        botMessage: "",
         prompt: VALID_PROMPT,
         url: "https://api.example.com/test",
         headers: [],

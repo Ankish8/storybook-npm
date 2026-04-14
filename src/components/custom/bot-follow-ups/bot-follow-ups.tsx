@@ -85,7 +85,7 @@ function NudgeCard({
     id: string,
     event: React.FocusEvent<HTMLTextAreaElement>
   ) => void;
-  /** Shown under the message field (Info icon + error text, Figma-style). */
+  /** Shown under the message field (field-level error via Textarea). */
   messageError?: string;
   maxHours: number;
   maxMinutes: number;
@@ -93,8 +93,6 @@ function NudgeCard({
   maxTotalMinutes: number;
   disabled?: boolean;
 }) {
-  const messageErrorDescId = React.useId();
-
   const handleHoursChange = (next: number) => {
     const { hours, minutes } = normalizeDelay(
       next,
@@ -188,22 +186,11 @@ function NudgeCard({
             onBlur={(e) => onMessageBlur?.(nudge.id, e)}
             disabled={disabled}
             rows={3}
-            state={messageError ? "error" : "default"}
+            error={messageError}
+            errorIcon
             aria-label={`${displayLabel} message`}
-            aria-invalid={!!messageError}
-            aria-describedby={messageError ? messageErrorDescId : undefined}
             className="bg-semantic-bg-primary"
           />
-          {messageError ? (
-            <div
-              id={messageErrorDescId}
-              className="flex items-center gap-1.5 text-xs text-semantic-error-primary min-w-0"
-              role="alert"
-            >
-              <Info className="size-3.5 shrink-0" aria-hidden />
-              <p className="m-0">{messageError}</p>
-            </div>
-          ) : null}
         </div>
       </div>
     </div>

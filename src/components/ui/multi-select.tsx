@@ -54,6 +54,17 @@ export interface MultiSelectOption extends MultiSelectChoice {
   group?: string;
 }
 
+/**
+ * Use when typing **object literals** for fixtures, stories, or tests so TypeScript applies
+ * [excess property checking](https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks)
+ * (catches typos like `captoin` and mistaken duplicate keys).
+ *
+ * This omits `secondaryText`; use `caption` for the secondary line — runtime code still accepts
+ * both via {@link normalizeMultiSelectOption}. Widen to {@link MultiSelectOption} where a
+ * consumer expects both aliases.
+ */
+export type MultiSelectOptionAuthoring = Omit<MultiSelectOption, "secondaryText">;
+
 function isGroupedSections(
   input: MultiSelectOptionInput
 ): input is readonly MultiSelectGroupedSection[] {

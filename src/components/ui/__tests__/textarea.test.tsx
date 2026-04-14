@@ -31,7 +31,21 @@ describe("Textarea", () => {
     render(<Textarea error="This field is required" />);
     expect(screen.getByText("This field is required")).toBeInTheDocument();
     const textarea = screen.getByRole("textbox");
-    expect(textarea).toHaveClass("border-semantic-error-primary/40");
+    expect(textarea).toHaveClass("border-semantic-error-primary");
+  });
+
+  it("shows error with leading icon when errorIcon is true", () => {
+    render(
+      <Textarea
+        error="Invalid characters not allowed."
+        errorIcon
+        id="ta-err-icon"
+      />
+    );
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText("Invalid characters not allowed.")).toBeInTheDocument();
+    const textarea = screen.getByRole("textbox");
+    expect(textarea).toHaveAttribute("aria-describedby", "ta-err-icon-error");
   });
 
   // 5. Shows helper text
@@ -47,6 +61,22 @@ describe("Textarea", () => {
   it("shows character count with maxLength and showCount", () => {
     render(<Textarea showCount maxLength={100} defaultValue="hello" />);
     expect(screen.getByText("5/100")).toBeInTheDocument();
+  });
+
+  // 7b. enforceMaxLength=false omits native maxLength but keeps counter
+  it("enforceMaxLength false does not set native maxLength", () => {
+    render(
+      <Textarea
+        showCount
+        maxLength={100}
+        enforceMaxLength={false}
+        defaultValue="hi"
+        data-testid="ta"
+      />
+    );
+    const textarea = screen.getByTestId("ta");
+    expect(textarea).not.toHaveAttribute("maxLength");
+    expect(screen.getByText("2/100")).toBeInTheDocument();
   });
 
   // 7. Character count shows error color when over maxLength
@@ -67,7 +97,7 @@ describe("Textarea", () => {
     ],
     [
       "error",
-      "border-semantic-error-primary/40",
+      "border-semantic-error-primary",
     ],
   ] as const)(
     "renders %s state variant with correct classes",

@@ -35,6 +35,7 @@ const DEFAULT_DATA: IvrBotConfigData = {
     { id: "fn-2", name: "end_call()", isBuiltIn: true },
   ],
   frustrationHandoverEnabled: false,
+  escalationPrompt: "",
   escalationDepartment: "",
   silenceTimeout: 15,
   callEndThreshold: 3,
@@ -76,14 +77,23 @@ export const IvrBotConfig = React.forwardRef(
       noExtensionFoundPromptTooltip,
       fallbackPromptsInfoTooltip,
       escalateToHumanInfoTooltip,
+      escalationPromptMaxLength,
+      escalationPromptValidation,
       functionPromptMinLength,
       functionNameMaxLength,
       functionPromptMaxLength,
+      functionBotMessageMaxLength,
+      functionBotMessageValidation,
+      onFunctionBotMessageBlur,
+      functionBotMessageTooltip,
+      functionBotMessageOptional,
+      functionBotMessagePlaceholder,
       functionEditData,
       systemPromptMaxLength,
       onSystemPromptBlur,
       onAgentBusyPromptBlur,
       onNoExtensionFoundPromptBlur,
+      onEscalationPromptBlur,
       onBack,
       onPlayVoice,
       onPauseVoice,
@@ -268,6 +278,9 @@ export const IvrBotConfig = React.forwardRef(
               departmentOptions={escalationDepartmentOptions}
               disabled={disabled}
               infoTooltip={escalateToHumanInfoTooltip}
+              promptMaxLength={escalationPromptMaxLength}
+              promptValidation={escalationPromptValidation}
+              onEscalationPromptBlur={onEscalationPromptBlur}
             />
             <AdvancedSettingsCard
               data={data}
@@ -298,6 +311,12 @@ export const IvrBotConfig = React.forwardRef(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           nameMaxLength={functionNameMaxLength}
+          botMessageMaxLength={functionBotMessageMaxLength}
+          botMessageValidation={functionBotMessageValidation}
+          onBotMessageBlur={onFunctionBotMessageBlur}
+          botMessageTooltip={functionBotMessageTooltip}
+          botMessageOptional={functionBotMessageOptional}
+          botMessagePlaceholder={functionBotMessagePlaceholder}
           sessionVariables={sessionVariables}
           variableGroups={functionVariableGroups}
           onAddVariable={onAddFunctionVariable}
@@ -315,6 +334,12 @@ export const IvrBotConfig = React.forwardRef(
           promptMinLength={functionPromptMinLength}
           promptMaxLength={functionPromptMaxLength}
           nameMaxLength={functionNameMaxLength}
+          botMessageMaxLength={functionBotMessageMaxLength}
+          botMessageValidation={functionBotMessageValidation}
+          onBotMessageBlur={onFunctionBotMessageBlur}
+          botMessageTooltip={functionBotMessageTooltip}
+          botMessageOptional={functionBotMessageOptional}
+          botMessagePlaceholder={functionBotMessagePlaceholder}
           sessionVariables={sessionVariables}
           variableGroups={functionVariableGroups}
           onAddVariable={onAddFunctionVariable}

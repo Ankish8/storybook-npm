@@ -1,4 +1,5 @@
 import * as React from "react";
+import { CircleAlert } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -14,7 +15,7 @@ const textareaVariants = cva(
         default:
           "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
       size: {
         default: "px-4 py-2.5 text-base",
@@ -35,6 +36,8 @@ const textareaVariants = cva(
  * ```tsx
  * <Textarea label="Description" placeholder="Enter description" />
  * <Textarea label="Notes" error="Too short" showCount maxLength={500} />
+ * <Textarea label="Notes" showCount maxLength={5000} enforceMaxLength={false} error={overflowMsg} />
+ * <Textarea label="Message" error="Invalid characters not allowed." errorIcon />
  * <Textarea label="JSON" rows={8} resize="vertical" />
  * ```
  */
@@ -51,8 +54,17 @@ export interface TextareaProps
   helperText?: string;
   /** Error message — shows error state with red styling */
   error?: string;
+  /**
+   * When true and `error` is set, shows a leading error icon with the message (field-level validation pattern).
+   */
+  errorIcon?: boolean;
   /** Shows character count when maxLength is set */
   showCount?: boolean;
+  /**
+   * When true (default), `maxLength` is applied to the native textarea (hard limit).
+   * When false, the limit is only used for `showCount` / styling — pair with `error` or parent validation for soft limits.
+   */
+  enforceMaxLength?: boolean;
   /** Controls CSS resize behavior. Defaults to "none" */
   resize?: "none" | "vertical" | "horizontal" | "both";
   /** Additional class for the wrapper container */
@@ -73,7 +85,9 @@ const Textarea = React.forwardRef(
       required,
       helperText,
       error,
+      errorIcon = false,
       showCount,
+      enforceMaxLength = true,
       resize = "none",
       maxLength,
       rows = 4,
@@ -154,7 +168,10 @@ const Textarea = React.forwardRef(
             resizeClasses[resize]
           )}
           disabled={disabled}
-          maxLength={maxLength}
+          required={required}
+          maxLength={
+            enforceMaxLength !== false ? maxLength : undefined
+          }
           value={isControlled ? value : undefined}
           defaultValue={!isControlled ? defaultValue : undefined}
           onChange={handleChange}
@@ -167,12 +184,28 @@ const Textarea = React.forwardRef(
         {(error || helperText || (showCount && maxLength)) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span
-                id={errorId}
-                className="text-sm text-semantic-error-primary"
-              >
-                {error}
-              </span>
+              errorIcon ? (
+                <div
+                  id={errorId}
+                  role="alert"
+                  className="flex items-center gap-1.5 min-w-0"
+                >
+                  <CircleAlert
+                    className="size-3.5 shrink-0 text-semantic-error-primary"
+                    aria-hidden
+                  />
+                  <span className="text-sm text-semantic-error-primary">
+                    {error}
+                  </span>
+                </div>
+              ) : (
+                <span
+                  id={errorId}
+                  className="text-sm text-semantic-error-primary"
+                >
+                  {error}
+                </span>
+              )
             ) : helperText ? (
               <span id={helperId} className="text-sm text-semantic-text-muted">
                 {helperText}

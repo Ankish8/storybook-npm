@@ -21,11 +21,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import { Textarea } from "../../ui/textarea";
+import {
+  hasInvalidPromptFieldChars,
+  PROMPT_INVALID_CHARS_MESSAGE,
+} from "./prompt-field-validation";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface FrustrationHandoverData {
   frustrationHandoverEnabled: boolean;
+  /** Message shown to the caller while waiting for a human handover (when escalation is enabled). */
+  escalationPrompt: string;
   escalationDepartment: string;
 }
 
@@ -60,6 +67,18 @@ export interface FrustrationHandoverCardProps {
   infoTooltip?: string;
   /** Additional className */
   className?: string;
+  /**
+   * Maximum characters for **Prompt** (default 5000). Uses soft validation: users can type past the limit;
+   * overflow styling applies unless `promptValidation` is set (parent message is shown instead).
+   */
+  promptMaxLength?: number;
+  /**
+   * External validation message for the Prompt field (e.g. from save/publish).
+   * When set, it replaces the built-in overflow message (overflow still uses error styling via length check in the shared Textarea).
+   */
+  promptValidation?: string;
+  /** Called when the Prompt textarea loses focus (current value passed — use to persist via API). */
+  onEscalationPromptBlur?: (value: string) => void;
 }
 
 // ─── Internal helpers ───────────────────────────────────────────────────────
@@ -91,9 +110,25 @@ const FrustrationHandoverCard = React.forwardRef(
     disabled,
     infoTooltip,
     className,
+    promptMaxLength = 5000,
+    promptValidation,
+    onEscalationPromptBlur,
   }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     const resolvedSectionInfoTooltip =
       infoTooltip === undefined ? defaultEscalateToHumanInfoTooltip : infoTooltip;
+
+    const [promptInvalidCharsError, setPromptInvalidCharsError] = React.useState("");
+
+    const promptValue = data.escalationPrompt ?? "";
+    const promptLength = promptValue.length;
+    const overPromptLimit = promptLength > promptMaxLength;
+    const promptOverflowMessage = overPromptLimit
+      ? `Maximum ${promptMaxLength} characters allowed.`
+      : undefined;
+    const promptErrorMessage =
+      promptValidation ??
+      (promptInvalidCharsError || undefined) ??
+      promptOverflowMessage;
 
     return (
       <div
@@ -143,6 +178,44 @@ const FrustrationHandoverCard = React.forwardRef(
                     disabled={disabled}
                   />
                 </div>
+                {data.frustrationHandoverEnabled ? (
+                  <div className="px-4 sm:px-6">
+                    <Textarea
+                      label="Prompt"
+                      labelClassName="font-semibold text-semantic-text-secondary tracking-[0.014px]"
+                      placeholder="Executives are busy at the moment, we will connect you soon."
+                      value={promptValue}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        onChange({ escalationPrompt: v });
+                        if (
+                          promptInvalidCharsError &&
+                          !hasInvalidPromptFieldChars(v)
+                        ) {
+                          setPromptInvalidCharsError("");
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const v = e.target.value;
+                        setPromptInvalidCharsError(
+                          hasInvalidPromptFieldChars(v)
+                            ? PROMPT_INVALID_CHARS_MESSAGE
+                            : ""
+                        );
+                        onEscalationPromptBlur?.(v);
+                      }}
+                      disabled={disabled}
+                      showCount
+                      maxLength={promptMaxLength}
+                      enforceMaxLength={false}
+                      error={promptErrorMessage}
+                      errorIcon={Boolean(promptErrorMessage)}
+                      resize="vertical"
+                      rows={4}
+                      size="sm"
+                    />
+                  </div>
+                ) : null}
                 <div className="px-4 pb-2 sm:px-6">
                   <Field label="Transfer to department">
                     <Select

@@ -67,6 +67,25 @@ describe("NumberStepField", () => {
     expect(onValueChange).toHaveBeenCalledWith(3);
   });
 
+  it("focuses the number input when a stepper is used so blur can fire when leaving the field", async () => {
+    const user = userEvent.setup();
+    render(
+      <NumberStepField
+        value={2}
+        onValueChange={() => {}}
+        suffix="hour"
+        min={0}
+        max={23}
+        aria-label="Hours"
+        incrementAriaLabel="Step up hours"
+      />
+    );
+    const input = screen.getByLabelText("Hours");
+    expect(input).not.toHaveFocus();
+    await user.click(screen.getByRole("button", { name: /step up hours/i }));
+    expect(input).toHaveFocus();
+  });
+
   it("decrement button decreases value", async () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();

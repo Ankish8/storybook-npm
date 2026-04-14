@@ -1,6 +1,7 @@
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { vi } from "vitest";
 import { IvrBotConfig } from "../ivr-bot-config";
 import { BOT_KNOWLEDGE_STATUS } from "../types";
 
@@ -145,6 +146,43 @@ describe("IvrBotConfig", () => {
       (el) => (el as HTMLSelectElement).disabled
     );
     expect(stillDisabled).toBeUndefined();
+  });
+
+  it("shows Prompt textarea only when Escalate when caller is unhappy is enabled", async () => {
+    const user = userEvent.setup();
+    render(<IvrBotConfig />);
+    await user.click(screen.getByText("Escalate to Human"));
+    expect(
+      screen.queryByRole("textbox", {
+        name: /prompt/i,
+      })
+    ).not.toBeInTheDocument();
+    await user.click(screen.getAllByRole("switch")[0]);
+    const promptField = screen.getByRole("textbox", { name: /^prompt$/i });
+    expect(promptField).toBeInTheDocument();
+    expect(promptField).toHaveAttribute(
+      "placeholder",
+      "Executives are busy at the moment, we will connect you soon."
+    );
+  });
+
+  it("calls onEscalationPromptBlur with prompt value when Prompt textarea blurs", async () => {
+    const user = userEvent.setup();
+    const onEscalationPromptBlur = vi.fn();
+    render(
+      <IvrBotConfig
+        onEscalationPromptBlur={onEscalationPromptBlur}
+        initialData={{
+          frustrationHandoverEnabled: true,
+          escalationPrompt: "Handover copy",
+        }}
+      />
+    );
+    await user.click(screen.getByText("Escalate to Human"));
+    const promptField = screen.getByRole("textbox", { name: /^prompt$/i });
+    await user.click(promptField);
+    await user.tab();
+    expect(onEscalationPromptBlur).toHaveBeenCalledWith("Handover copy");
   });
 
   it("accepts custom className", () => {
