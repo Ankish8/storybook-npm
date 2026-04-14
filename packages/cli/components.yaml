@@ -1124,6 +1124,7 @@ components:
     files:
       - "ivr-bot-config.tsx"
       - "create-function-validation.ts"
+      - "prompt-field-validation.ts"
       - "create-function-modal.tsx"
       - "bot-identity-card.tsx"
       - "bot-identity-text.ts"

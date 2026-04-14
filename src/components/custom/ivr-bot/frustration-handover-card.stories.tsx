@@ -12,7 +12,7 @@ const meta: Meta<typeof FrustrationHandoverCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy**, then choose **Transfer to department**.
+        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy** to show the **Prompt** textarea (shared Textarea with character count and soft max via \`promptMaxLength\`), then choose **Transfer to department**. Use \`promptValidation\` for parent-driven errors (e.g. on save). \`onEscalationPromptBlur\` fires when the Prompt field loses focus (current value passed).
 
 **Install**
 \`\`\`bash
@@ -36,6 +36,7 @@ export const Overview: Story = {
   render: function Render() {
     const [data, setData] = useState<Partial<FrustrationHandoverData>>({
       frustrationHandoverEnabled: true,
+      escalationPrompt: "",
       escalationDepartment: "support",
     });
     return (
@@ -70,6 +71,7 @@ export const CustomDepartments: Story = {
   render: function Render() {
     const [data, setData] = useState<Partial<FrustrationHandoverData>>({
       frustrationHandoverEnabled: true,
+      escalationPrompt: "",
       escalationDepartment: "tier-2",
     });
     return (

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert } from "lucide-react";
+import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -9,6 +9,12 @@ import {
 import { Button } from "../../ui/button";
 import { FormModal } from "../../ui/form-modal";
 import { Textarea } from "../../ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 import type {
   CreateFunctionModalProps,
   CreateFunctionData,
@@ -40,6 +46,10 @@ import {
   validateQueryParamValue,
   VARIABLE_DESCRIPTION_REQUIRED_MESSAGE,
 } from "./create-function-validation";
+import {
+  hasInvalidPromptFieldChars,
+  PROMPT_INVALID_CHARS_MESSAGE,
+} from "./prompt-field-validation";
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
@@ -1135,6 +1145,12 @@ export const CreateFunctionModal = React.forwardRef(
       nameMaxLength = 30,
       promptMinLength = 100,
       promptMaxLength = 2000,
+      botMessageMaxLength = 5000,
+      botMessageValidation,
+      onBotMessageBlur,
+      botMessageTooltip,
+      botMessageOptional = true,
+      botMessagePlaceholder,
       initialStep = 1,
       initialTab = "header",
       sessionVariables = DEFAULT_SESSION_VARIABLES,
@@ -1155,6 +1171,11 @@ export const CreateFunctionModal = React.forwardRef(
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
     const [name, setName] = React.useState(initialData?.name ?? "");
+    const [botMessage, setBotMessage] = React.useState(initialData?.botMessage ?? "");
+    const [botMessageInvalidCharsError, setBotMessageInvalidCharsError] =
+      React.useState("");
+    const [botMessageRequiredTouched, setBotMessageRequiredTouched] =
+      React.useState(false);
     const [prompt, setPrompt] = React.useState(initialData?.prompt ?? "");
 
     const [method, setMethod] = React.useState<HttpMethod>(initialData?.method ?? "GET");
@@ -1406,6 +1427,7 @@ export const CreateFunctionModal = React.forwardRef(
       if (open) {
         setStep(initialStep);
         setName(initialData?.name ?? "");
+        setBotMessage(initialData?.botMessage ?? "");
         setPrompt(initialData?.prompt ?? "");
         setMethod(initialData?.method ?? "GET");
         setUrl(initialData?.url ?? "");
@@ -1421,6 +1443,8 @@ export const CreateFunctionModal = React.forwardRef(
         setHeaderFieldTouched({});
         setTestApiRequiredAttempted(false);
         setNameError("");
+        setBotMessageInvalidCharsError("");
+        setBotMessageRequiredTouched(false);
         setUrlError("");
         setBodyError("");
         setHeaderQueryPairError("");
@@ -1440,6 +1464,7 @@ export const CreateFunctionModal = React.forwardRef(
     const reset = React.useCallback(() => {
       setStep(initialStep);
       setName(initialData?.name ?? "");
+      setBotMessage(initialData?.botMessage ?? "");
       setPrompt(initialData?.prompt ?? "");
       setMethod(initialData?.method ?? "GET");
       setUrl(initialData?.url ?? "");
@@ -1455,6 +1480,8 @@ export const CreateFunctionModal = React.forwardRef(
       setHeaderFieldTouched({});
       setTestApiRequiredAttempted(false);
       setNameError("");
+      setBotMessageInvalidCharsError("");
+      setBotMessageRequiredTouched(false);
       setUrlError("");
       setBodyError("");
       setHeaderQueryPairError("");
@@ -1502,8 +1529,41 @@ export const CreateFunctionModal = React.forwardRef(
       setBodyError(getBodyJsonValidationError(value));
     };
 
+    const resolvedBotMessagePlaceholder =
+      botMessagePlaceholder ??
+      (botMessageOptional
+        ? "Enter optional message for the bot"
+        : "Enter message for the bot");
+
+    const botMessageRequiredEmptyError =
+      !botMessageOptional &&
+      botMessageRequiredTouched &&
+      botMessage.trim().length === 0
+        ? "This field is required."
+        : undefined;
+
+    const isStep1Valid =
+      name.trim().length > 0 &&
+      FUNCTION_NAME_REGEX.test(name.trim()) &&
+      prompt.trim().length >= promptMinLength &&
+      (botMessageOptional || botMessage.trim().length > 0) &&
+      botMessage.length <= botMessageMaxLength &&
+      !hasInvalidPromptFieldChars(botMessage);
+
+    /** Soft limit + invalid-char (blur) + parent validation — aligned with Escalate to Human → Prompt. */
+    const botMessageOverflowMessage =
+      botMessage.length > botMessageMaxLength
+        ? `Maximum ${botMessageMaxLength} characters allowed.`
+        : undefined;
+    const botMessageErrorMessage =
+      botMessageValidation ??
+      botMessageRequiredEmptyError ??
+      (botMessageInvalidCharsError || undefined) ??
+      botMessageOverflowMessage;
+
     const handleNext = () => {
-      if (disabled || (name.trim() && prompt.trim().length >= promptMinLength)) setStep(2);
+      if (disabled || !isStep1Valid) return;
+      setStep(2);
     };
 
     const handleSubmit = async () => {
@@ -1540,6 +1600,7 @@ export const CreateFunctionModal = React.forwardRef(
 
       const data: CreateFunctionData = {
         name: name.trim(),
+        botMessage: botMessage.trim(),
         prompt: prompt.trim(),
         method,
         url: url.trim(),
@@ -1623,11 +1684,6 @@ export const CreateFunctionModal = React.forwardRef(
       });
     };
 
-    const isStep1Valid =
-      name.trim().length > 0 &&
-      FUNCTION_NAME_REGEX.test(name.trim()) &&
-      prompt.trim().length >= promptMinLength;
-
     const tabLabels: Record<FunctionTabType, string> = {
       header: `Header (${headers.length})`,
       queryParams: `Query params (${queryParams.length})`,
@@ -1706,6 +1762,80 @@ export const CreateFunctionModal = React.forwardRef(
                   {nameError && (
                     <p className="m-0 text-sm text-semantic-error-primary">{nameError}</p>
                   )}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <label
+                      htmlFor="fn-bot-message"
+                      className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
+                    >
+                      {botMessageOptional ? (
+                        "Bot Message (Optional)"
+                      ) : (
+                        <>
+                          Bot Message{" "}
+                          <span className="text-semantic-error-primary">*</span>
+                        </>
+                      )}
+                    </label>
+                    {botMessageTooltip ? (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span
+                              className="inline-flex shrink-0 cursor-help"
+                              aria-label={
+                                botMessageOptional
+                                  ? "Bot Message (Optional): more information"
+                                  : "Bot Message: more information"
+                              }
+                            >
+                              <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>{botMessageTooltip}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : null}
+                  </div>
+                  <Textarea
+                    id="fn-bot-message"
+                    value={botMessage}
+                    maxLength={botMessageMaxLength}
+                    enforceMaxLength={false}
+                    showCount
+                    disabled={disabled}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setBotMessage(v);
+                      if (
+                        botMessageInvalidCharsError &&
+                        !hasInvalidPromptFieldChars(v)
+                      ) {
+                        setBotMessageInvalidCharsError("");
+                      }
+                    }}
+                    onBlur={(e) => {
+                      const v = e.target.value;
+                      if (!botMessageOptional) {
+                        setBotMessageRequiredTouched(true);
+                      }
+                      setBotMessageInvalidCharsError(
+                        hasInvalidPromptFieldChars(v)
+                          ? PROMPT_INVALID_CHARS_MESSAGE
+                          : ""
+                      );
+                      onBotMessageBlur?.(v);
+                    }}
+                    placeholder={resolvedBotMessagePlaceholder}
+                    required={!botMessageOptional}
+                    rows={4}
+                    size="sm"
+                    resize="vertical"
+                    error={botMessageErrorMessage}
+                    errorIcon={Boolean(botMessageErrorMessage)}
+                  />
                 </div>
 
                 <Textarea

@@ -168,6 +168,7 @@ export const Overview: Story = {
             { id: "fn-3", name: "get_order_status (order_id)" },
           ],
           frustrationHandoverEnabled: false,
+          escalationPrompt: "",
           escalationDepartment: "",
           silenceTimeout: 15,
           callEndThreshold: 3,
@@ -196,6 +197,7 @@ export const FrustrationHandoverEnabled: Story = {
     botType: "Voicebot",
     initialData: {
       frustrationHandoverEnabled: true,
+      escalationPrompt: "Executives are busy at the moment, we will connect you soon.",
       escalationDepartment: "support",
       silenceTimeout: 10,
       callEndThreshold: 2,

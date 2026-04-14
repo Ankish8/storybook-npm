@@ -70,6 +70,8 @@ export interface KnowledgeBaseFile {
 
 export interface CreateFunctionStep1Data {
   name: string;
+  /** Optional caller-facing copy when the function runs (max length via `botMessageMaxLength` on the modal). */
+  botMessage: string;
   prompt: string;
 }
 
@@ -109,6 +111,31 @@ export interface CreateFunctionModalProps {
   promptMinLength?: number;
   /** Maximum character length for the prompt field (default: 2000) */
   promptMaxLength?: number;
+  /**
+   * Maximum characters for **Bot Message (Optional)** (default: 5000).
+   * Uses soft validation like Escalate to Human → Prompt: users can type past the limit;
+   * overflow message applies unless `botMessageValidation` is set (parent message wins).
+   */
+  botMessageMaxLength?: number;
+  /**
+   * External validation message for Bot Message (e.g. from save or API).
+   * When set, it replaces the built-in overflow message (overflow still uses error styling via length in Textarea).
+   */
+  botMessageValidation?: string;
+  /** Called when the Bot Message textarea loses focus */
+  onBotMessageBlur?: (value: string) => void;
+  /** Hover text for the info icon next to Bot Message (Optional). Omit to hide the icon. */
+  botMessageTooltip?: string;
+  /**
+   * When `true` (default), the label shows **Bot Message (Optional)** and the field may be left empty for Step 1.
+   * When `false`, the label shows **Bot Message** with a required asterisk and non-empty trimmed text is required before **Next**.
+   */
+  botMessageOptional?: boolean;
+  /**
+   * Overrides the Bot Message placeholder. If omitted, it is derived from `botMessageOptional`
+   * (`Enter optional message for the bot` vs `Enter message for the bot`).
+   */
+  botMessagePlaceholder?: string;
   /** Storybook/testing: start at a specific step (1 or 2) */
   initialStep?: 1 | 2;
   /** Storybook/testing: start on a specific tab when initialStep=2 */
@@ -182,6 +209,8 @@ export interface IvrBotConfigData {
   knowledgeBaseFiles: KnowledgeBaseFile[];
   functions: FunctionItem[];
   frustrationHandoverEnabled: boolean;
+  /** Caller-facing message while waiting for human handover (Escalate to Human → Prompt). */
+  escalationPrompt: string;
   escalationDepartment: string;
   /** Undefined when the field was cleared; validate before save/publish. */
   silenceTimeout?: number;
@@ -272,12 +301,32 @@ export interface IvrBotConfigProps {
    * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
    */
   escalateToHumanInfoTooltip?: string;
+  /** Maximum characters for Escalate to Human **Prompt** (default: 5000). */
+  escalationPromptMaxLength?: number;
+  /** External validation message for Escalate to Human **Prompt** (e.g. from save/publish). */
+  escalationPromptValidation?: string;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function name in Create/Edit Function (default: 30) */
   functionNameMaxLength?: number;
   /** Maximum character length for the function prompt (default: 2000) */
   functionPromptMaxLength?: number;
+  /**
+   * Max length for Create/Edit Function **Bot Message** (default: 5000; soft limit, same pattern as Escalate to Human Prompt).
+   */
+  functionBotMessageMaxLength?: number;
+  /** External validation for Create/Edit Function **Bot Message** (shown under the field; overrides overflow copy when set). */
+  functionBotMessageValidation?: string;
+  /** Called when Create/Edit Function **Bot Message** loses focus */
+  onFunctionBotMessageBlur?: (value: string) => void;
+  /** Tooltip for the info icon next to **Bot Message (Optional)** in Create/Edit Function */
+  functionBotMessageTooltip?: string;
+  /**
+   * When `true` (default), Create/Edit Function **Bot Message** is optional; when `false`, it is required (see `CreateFunctionModal` `botMessageOptional`).
+   */
+  functionBotMessageOptional?: boolean;
+  /** Overrides Bot Message placeholder in Create/Edit Function (see `CreateFunctionModal` `botMessagePlaceholder`). */
+  functionBotMessagePlaceholder?: string;
   /**
    * Pre-filled data shown when the edit function modal opens.
    * Pass when your app fetches full function data after onEditFunction fires.
@@ -296,6 +345,8 @@ export interface IvrBotConfigProps {
   onAgentBusyPromptBlur?: (value: string) => void;
   /** Called when the No Extension Found textarea loses focus */
   onNoExtensionFoundPromptBlur?: (value: string) => void;
+  /** Called when the Escalate to Human **Prompt** textarea loses focus */
+  onEscalationPromptBlur?: (value: string) => void;
   onBack?: () => void;
   /** Called when the play icon is clicked on a voice option */
   onPlayVoice?: (voiceValue: string) => void;

@@ -151,6 +151,7 @@ export {
 export type {
   MultiSelectProps,
   MultiSelectOption,
+  MultiSelectOptionAuthoring,
   MultiSelectChoice,
   MultiSelectGroupedSection,
   MultiSelectOptionInput,

@@ -197,6 +197,27 @@ describe("BotFollowUps", () => {
     );
   });
 
+  it("focuses hours input when using the stepper so blur handlers run after leaving the field", async () => {
+    const user = userEvent.setup();
+    const onDelayHoursBlur = vi.fn();
+    render(
+      <BotFollowUps
+        nudges={[SAMPLE_NUDGES[0]]}
+        onDelayHoursBlur={onDelayHoursBlur}
+      />
+    );
+    const input = screen.getByLabelText("Followup 1 delay hours");
+    await user.click(
+      screen.getByRole("button", { name: /increase followup 1 hours/i })
+    );
+    expect(input).toHaveFocus();
+    await user.tab();
+    expect(onDelayHoursBlur).toHaveBeenCalledWith(
+      "1",
+      expect.objectContaining({ type: "blur" })
+    );
+  });
+
   it("minutes input calls onDelayMinutesBlur", async () => {
     const user = userEvent.setup();
     const onDelayMinutesBlur = vi.fn();

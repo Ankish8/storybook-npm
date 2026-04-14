@@ -4,5 +4,6 @@ export type {
   MultiSelectChoice,
   MultiSelectGroupedSection,
   MultiSelectOption,
+  MultiSelectOptionAuthoring,
   MultiSelectOptionInput,
 } from "../../ui/multi-select";

@@ -21,7 +21,7 @@ describe("Input", () => {
 
   it.each([
     ["default", "border-semantic-border-input"],
-    ["error", "border-semantic-error-primary/40"],
+    ["error", "border-semantic-error-primary"],
   ] as const)("renders %s state", (state, expectedClass) => {
     render(<Input state={state} data-testid="input" />);
     const input = screen.getByTestId("input");
