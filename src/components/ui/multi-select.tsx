@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Check, ChevronDown, X, Loader2 } from "lucide-react";
+import { Check, ChevronDown, CircleAlert, Loader2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Checkbox } from "./checkbox";
@@ -542,12 +542,19 @@ const MultiSelect = React.forwardRef(
           {(error || helperText) && (
             <div className="flex justify-between items-start gap-2">
               {error ? (
-                <span
+                <div
                   id={errorId}
-                  className="text-xs text-semantic-error-primary"
+                  role="alert"
+                  className="flex items-center gap-1.5 min-w-0"
                 >
-                  {error}
-                </span>
+                  <CircleAlert
+                    className="size-3.5 shrink-0 text-semantic-error-primary"
+                    aria-hidden
+                  />
+                  <span className="text-xs text-semantic-error-primary">
+                    {error}
+                  </span>
+                </div>
               ) : helperText ? (
                 <span
                   id={helperId}
