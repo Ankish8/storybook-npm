@@ -111,6 +111,25 @@ describe("PricingPage", () => {
     expect(screen.getByText("Sedan")).toBeInTheDocument();
   });
 
+  it("lays out plan cards in one row with columns matching plan count", () => {
+    const fourPlans: PricingCardProps[] = [
+      ...mockPlanCards,
+      {
+        planName: "Enterprise",
+        price: "25,000",
+        features: ["Everything in SUV"],
+        ctaText: "Contact sales",
+        onCtaClick: vi.fn(),
+      },
+    ];
+    const { container } = render(<PricingPage planCards={fourPlans} />);
+    const grid = container.querySelector(
+      ".grid.gap-8"
+    ) as HTMLElement | null;
+    expect(grid).toBeTruthy();
+    expect(grid?.style.gridTemplateColumns).toContain("repeat(4,");
+  });
+
   it("renders power-up cards section", () => {
     render(<PricingPage powerUpCards={mockPowerUps} />);
     expect(screen.getByText("Power-ups and charges")).toBeInTheDocument();

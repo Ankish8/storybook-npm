@@ -47,6 +47,13 @@ export interface PricingPageProps
   /** Array of plan card props to render in the main pricing grid */
   planCards?: PricingCardProps[];
   /**
+   * Column count for the plan card row (single row, equal-width tracks). Defaults
+   * to `planCards.length` so any number of plans (e.g. four or more) stays on one
+   * row. Override only if you need a fixed column count that differs from the
+   * number of cards (uncommon).
+   */
+  planCardColumnCount?: number;
+  /**
    * Optional CTA state per plan card (loading/disabled). Reusable across any screen that renders plan cards.
    * Index matches planCards: [0] = first card CTA, [1] = second, [2] = third.
    * Overrides ctaLoading/ctaDisabled on the card when provided.
