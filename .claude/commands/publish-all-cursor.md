@@ -64,7 +64,7 @@ Runs full end-to-end verification: installs components into a temp project, chec
 
 ### 2.4 Linting
 ```bash
-cd /Users/ankish/Downloads/Code/storybook-npm && npm run lint
+npm run lint
 ```
 
 ### 2.5 API breaking change check

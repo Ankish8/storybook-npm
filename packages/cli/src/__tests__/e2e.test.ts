@@ -35,8 +35,11 @@ async function createTempProject(): Promise<string> {
     dependencies: {
       react: '^18.2.0',
       'react-dom': '^18.2.0',
-    },
-    devDependencies: {
+      clsx: '^2.1.0',
+      'tailwind-merge': '^2.6.0',
+      'class-variance-authority': '^0.7.0',
+      '@radix-ui/react-slot': '^1.0.0',
+      'lucide-react': '^0.400.0',
       '@types/react': '^18.2.0',
       '@types/react-dom': '^18.2.0',
       '@vitejs/plugin-react': '^4.2.0',
@@ -73,6 +76,9 @@ async function createTempProject(): Promise<string> {
     `import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
@@ -713,23 +719,24 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 `
     )
 
-    // npm install
+    // npm install — strip npm_config_dry_run so this actually installs
+    // packages when the E2E test runs inside `npm publish --dry-run`
+    const cleanEnv = { ...process.env }
+    delete cleanEnv.npm_config_dry_run
+
     execSync('npm install --legacy-peer-deps', {
       cwd: tempDir,
       stdio: 'pipe',
       timeout: 90_000,
+      env: cleanEnv,
     })
-
-    execSync(
-      'npm install clsx tailwind-merge@^2.6.0 class-variance-authority @radix-ui/react-slot lucide-react --legacy-peer-deps',
-      { cwd: tempDir, stdio: 'pipe', timeout: 60_000 }
-    )
 
     // Vite build (can be slow on CI or constrained machines)
     const result = execSync('npx vite build', {
       cwd: tempDir,
       stdio: 'pipe',
       timeout: 120_000,
+      env: cleanEnv,
     })
 
     expect(result).toBeTruthy()
