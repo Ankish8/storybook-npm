@@ -80,7 +80,6 @@ const [open, setOpen] = React.useState(false);
   tags: ["autodocs"],
   args: {
     onCancel: fn(),
-    onChange: fn(),
     onConfirm: fn(),
     onOpenChange: fn(),
   },

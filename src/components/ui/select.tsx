@@ -178,7 +178,11 @@ const SelectContent = React.forwardRef(
               position === "popper" &&
                 "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
             )}
-            onScrollEnd={onViewportScrollEnd}
+            {...((onViewportScrollEnd
+              ? { onScrollEnd: onViewportScrollEnd }
+              : {}) as React.ComponentPropsWithoutRef<
+              typeof SelectPrimitive.Viewport
+            >)}
           >
             {children}
           </SelectPrimitive.Viewport>
