@@ -71,7 +71,7 @@ function DateRangeModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md !max-h-none overflow-visible">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

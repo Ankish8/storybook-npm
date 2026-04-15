@@ -131,11 +131,12 @@ describe("PageHeader", () => {
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 
-  // Height spec
-  it("applies correct height", () => {
+  // Vertical spacing (padding-based; no min-h — avoids clipped subheads in nested headers)
+  it("applies vertical padding instead of min-height", () => {
     render(<PageHeader title="Title" data-testid="header" />);
-    expect(screen.getByTestId("header")).toHaveClass("min-h-[76px]");
-    expect(screen.getByTestId("header")).toHaveClass("lg:h-[76px]");
+    expect(screen.getByTestId("header")).toHaveClass("py-4");
+    expect(screen.getByTestId("header")).toHaveClass("lg:py-[18px]");
+    expect(screen.getByTestId("header").className).not.toMatch(/min-h-\[76px\]/);
   });
 
   // Typography
@@ -245,8 +246,8 @@ describe("PageHeader", () => {
       expect(screen.getByTestId("header")).toHaveClass("flex-col");
       expect(screen.getByTestId("header")).toHaveClass("sm:flex-row");
       expect(screen.getByTestId("header")).toHaveClass("sm:items-center");
-      expect(screen.getByTestId("header")).toHaveClass("min-h-[76px]");
-      expect(screen.getByTestId("header")).toHaveClass("lg:h-[76px]");
+      expect(screen.getByTestId("header")).toHaveClass("py-4");
+      expect(screen.getByTestId("header")).toHaveClass("lg:py-[18px]");
     });
 
     it("applies vertical layout when specified", () => {
@@ -254,7 +255,6 @@ describe("PageHeader", () => {
         <PageHeader title="Title" layout="vertical" data-testid="header" />
       );
       expect(screen.getByTestId("header")).toHaveClass("flex-col");
-      expect(screen.getByTestId("header")).toHaveClass("min-h-[76px]");
       expect(screen.getByTestId("header")).toHaveClass("py-4");
     });
 
