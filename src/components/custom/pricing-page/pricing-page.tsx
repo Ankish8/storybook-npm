@@ -6,12 +6,14 @@ import { PricingCard } from "../pricing-card/pricing-card";
 import { PowerUpCard } from "../power-up-card/power-up-card";
 import { LetUsDriveCard } from "../let-us-drive-card/let-us-drive-card";
 import { ExternalLink } from "lucide-react";
+import { PricingPlanCardsRow } from "./pricing-plan-cards-row";
 import type { PricingPageProps } from "./types";
 
 /**
  * PricingPage composes all plan-selection sub-components into a full
  * page layout: header, plan-type tabs with billing toggle, pricing
- * cards grid, power-ups section, and let-us-drive section.
+ * cards row (equal-width columns for any plan count), power-ups section,
+ * and let-us-drive section.
  *
  * Supports controlled or uncontrolled tab / billing state.
  *
@@ -41,6 +43,7 @@ const PricingPage = React.forwardRef(
       billingPeriod: controlledBilling,
       onBillingPeriodChange,
       planCards = [],
+      planCardColumnCount,
       planCardCtaStates,
       powerUpCards = [],
       powerUpsTitle = "Power-ups and charges",
@@ -55,6 +58,10 @@ const PricingPage = React.forwardRef(
   ) => {
     const hasPowerUps = powerUpCards.length > 0;
     const hasLetUsDrive = letUsDriveCards.length > 0;
+    const planRowColumns =
+      planCardColumnCount !== undefined
+        ? Math.max(planCards.length, planCardColumnCount)
+        : planCards.length;
 
     return (
       <div
@@ -73,14 +80,7 @@ const PricingPage = React.forwardRef(
         <div className="flex flex-col items-center gap-12 px-6 py-12">
           {/* Plan cards grid */}
           {planCards.length > 0 && (
-            <div
-              className={cn(
-                "grid gap-8 justify-center",
-                planCards.length <= 2
-                  ? "grid-cols-1 md:grid-cols-2 max-w-[960px] mx-auto"
-                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-[1200px] mx-auto w-full"
-              )}
-            >
+            <PricingPlanCardsRow columnCount={planRowColumns}>
               {planCards.map((cardProps, index) => {
                 const ctaState = planCardCtaStates?.[index];
                 const merged = { ...cardProps };
@@ -90,9 +90,13 @@ const PricingPage = React.forwardRef(
                   if (ctaState.disabled !== undefined)
                     merged.ctaDisabled = ctaState.disabled;
                 }
-                return <PricingCard key={index} {...merged} />;
+                return (
+                  <div key={index} className="min-w-0">
+                    <PricingCard {...merged} />
+                  </div>
+                );
               })}
-            </div>
+            </PricingPlanCardsRow>
           )}
         </div>
 

@@ -324,7 +324,7 @@ const meta: Meta<typeof PricingPage> = {
         component: `
 Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
 
-Displays pricing cards in a responsive grid with power-ups and let-us-drive sections below.
+Displays pricing cards in a single row (equal-width columns; horizontal scroll on narrow viewports when needed) with power-ups and let-us-drive sections below. Column count follows \`planCards.length\`; optional \`planCardColumnCount\` can reserve extra columns (rare).
 
 ## Installation
 
@@ -414,7 +414,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 />
 \`\`\`
 
-**Plan card CTA states** — Use \`planCardCtaStates\` to control loading/disabled for each of the three pricing card buttons (index 0 = first card, 1 = second, 2 = third). Overrides \`ctaLoading\`/\`ctaDisabled\` on individual card props when provided.
+**Plan card CTA states** — Use \`planCardCtaStates\` to control loading/disabled for each pricing card button (index matches \`planCards\`). Overrides \`ctaLoading\`/\`ctaDisabled\` on individual card props when provided.
 `,
       },
     },
@@ -462,6 +462,36 @@ export const PlansOnly: Story = {
   args: {
     headerActions: <NumberTypeSelect />,
     planCards: teamCards,
+  },
+};
+
+/** Four team-style plans in one row — column count follows array length. */
+export const FourPlansOneRow: Story = {
+  name: "Four plans (single row)",
+  args: {
+    headerActions: <NumberTypeSelect />,
+    planCards: [
+      ...teamCards,
+      {
+        planName: "Enterprise",
+        price: "25,000",
+        period: "per month",
+        planDetails: "Unlimited users | Custom term",
+        description:
+          "For organisations that need custom limits, security, and dedicated support.",
+        features: [
+          {
+            parts: [{ text: "Everything in " }, { text: "SUV", bold: true }],
+          },
+          "Dedicated success team",
+          "Custom SLAs & security reviews",
+          "Volume pricing & invoicing",
+        ],
+        onCtaClick: fn(),
+        onFeatureDetails: fn(),
+        addon: defaultAddon,
+      },
+    ],
   },
 };
 
