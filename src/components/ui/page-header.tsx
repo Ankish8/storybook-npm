@@ -153,10 +153,12 @@ const PageHeader = React.forwardRef(
       responsive: "flex-col sm:flex-row sm:items-center",
     };
 
+    // Height is content-driven only — min-height (any breakpoint) clipped wrapped subheads in app shells.
+    // ~76px single-row bar on lg is approximated with padding instead of min-h / fixed h.
     const heightClasses = {
-      horizontal: "min-h-[76px] py-4 lg:py-0 lg:h-[76px]",
-      vertical: "min-h-[76px] py-4",
-      responsive: "min-h-[76px] py-4 lg:py-0 lg:h-[76px]",
+      horizontal: "py-4 lg:py-[18px]",
+      vertical: "py-4",
+      responsive: "py-4 lg:py-[18px]",
     };
 
     // Render actions for desktop (all inline)
@@ -250,7 +252,7 @@ const PageHeader = React.forwardRef(
         {/* Top Row: Icon/Back + Title + Description */}
         <div
           className={cn(
-            "flex flex-1 min-w-0",
+            "flex min-h-0 flex-1 min-w-0",
             description ? "items-start sm:items-center" : "items-center"
           )}
         >
@@ -260,8 +262,8 @@ const PageHeader = React.forwardRef(
           )}
 
           {/* Content Section: Title + Description */}
-          <div className="flex-1 min-w-0">
-            <div className="flex h-auto items-center gap-2 sm:min-h-10">
+          <div className="min-h-0 flex-1 min-w-0">
+            <div className="flex h-auto min-h-0 items-center gap-2">
               <h1 className="m-0 text-lg font-semibold leading-normal text-semantic-text-primary truncate">
                 {title}
               </h1>

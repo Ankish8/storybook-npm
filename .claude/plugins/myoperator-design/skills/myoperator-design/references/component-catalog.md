@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 97 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 98 components across 7 categories.
 
 ## Quick Reference
 
@@ -83,6 +83,7 @@
 | BotKnowledgeBase | custom | `npx myoperator-ui add bot-knowledge-base` |
 | BotFollowUps | custom | `npx myoperator-ui add bot-follow-ups` |
 | BotSettings | custom | `npx myoperator-ui add bot-settings` |
+| TestAiBot | custom | `npx myoperator-ui add test-ai-bot` |
 | ChatTypes | custom | `npx myoperator-ui add chat-types` |
 | ChatTransport | custom | `npx myoperator-ui add chat-transport` |
 | ChatProvider | custom | `npx myoperator-ui add chat-provider` |
@@ -406,6 +407,7 @@ import { Mail } from "lucide-react"
 > A multi-select component with tags display, search functionality, and validation states. Supports maximum selection limits.
 
 **Install**: `npx myoperator-ui add multi-select`
+**Requires**: `checkbox`, `tooltip` (auto-installed)
 
 **States**: default, error (default: default)
 
@@ -930,7 +932,7 @@ import { Mail } from "lucide-react"
 > A reusable file upload modal with drag-and-drop, progress tracking, and error handling
 
 **Install**: `npx myoperator-ui add file-upload-modal`
-**Requires**: `dialog`, `button` (auto-installed)
+**Requires**: `dialog`, `button`, `toast` (auto-installed)
 **Type**: Multi-file component
 
 ---
@@ -999,10 +1001,19 @@ import { Mail } from "lucide-react"
 ---
 
 ### BotSettings
-> Collapsible settings section for bot configuration with Connect WhatsApp phone number tag input
+> Collapsible Settings section with Connect WhatsApp multi-select (Figma-style rows, search, validation)
 
 **Install**: `npx myoperator-ui add bot-settings`
-**Requires**: `tag`, `tooltip` (auto-installed)
+**Requires**: `multi-select`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### TestAiBot
+> Modal with QR code and primary action to test an AI bot (WhatsApp web, etc.)
+
+**Install**: `npx myoperator-ui add test-ai-bot`
+**Requires**: `dialog`, `button` (auto-installed)
 **Type**: Multi-file component
 
 ---

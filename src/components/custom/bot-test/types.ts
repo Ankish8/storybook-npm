@@ -15,6 +15,10 @@ export interface BotTestProps {
   onNumberChange?: (value: string) => void;
   /** Placeholder for the whatsapp number select */
   numberPlaceholder?: string;
+  /** Validation / error message for the WhatsApp number field */
+  numberError?: string;
+  /** Validation / error message for the phone number field */
+  phoneError?: string;
   /** Country flag emoji for the phone input (default: flag of India) */
   countryFlag?: string;
   /** Country dial code for the phone input (default: "+91") */

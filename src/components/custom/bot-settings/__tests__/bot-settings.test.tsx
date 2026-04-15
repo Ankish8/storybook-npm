@@ -27,8 +27,7 @@ describe("BotSettings", () => {
     expect(screen.getByText("Settings")).toBeInTheDocument();
   });
 
-  it("shows content by default and hides on toggle", async () => {
-    const user = userEvent.setup();
+  it("always shows Connect WhatsApp and the multi-select (no accordion)", () => {
     render(
       <BotSettings
         whatsappOptions={sampleOptions}
@@ -39,11 +38,26 @@ describe("BotSettings", () => {
 
     expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
     expect(screen.getByText("+91 9876543210")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
+  });
 
-    await user.click(screen.getByRole("button", { name: /settings/i }));
-    expect(screen.queryByText("Connect WhatsApp")).not.toBeInTheDocument();
+  it("applies bottom border and padding on the root to separate the section", () => {
+    const { container } = render(<BotSettings whatsappOptions={[]} />);
+    const root = container.firstChild as HTMLElement;
+    expect(root).toHaveClass("border-b");
+    expect(root).toHaveClass("border-solid");
+    expect(root).toHaveClass("border-semantic-border-layout");
+    expect(root).toHaveClass("pb-4");
+  });
 
-    await user.click(screen.getByRole("button", { name: /settings/i }));
+  it("ignores defaultOpen (section is always visible)", () => {
+    render(
+      <BotSettings
+        defaultOpen={false}
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+      />
+    );
     expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
   });
 
@@ -100,18 +114,6 @@ describe("BotSettings", () => {
   it("spreads additional props on root element", () => {
     render(<BotSettings whatsappOptions={[]} data-testid="bot-settings-root" />);
     expect(screen.getByTestId("bot-settings-root")).toBeInTheDocument();
-  });
-
-  it("starts collapsed when defaultOpen is false", () => {
-    render(
-      <BotSettings
-        defaultOpen={false}
-        whatsappOptions={sampleOptions}
-        whatsappValue={["n1"]}
-        onWhatsappValueChange={() => {}}
-      />
-    );
-    expect(screen.queryByText("Connect WhatsApp")).not.toBeInTheDocument();
   });
 
   it("shows multi-select placeholder when no numbers selected", () => {

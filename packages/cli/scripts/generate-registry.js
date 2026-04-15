@@ -126,7 +126,9 @@ function extractFunctionFromSource(source, funcName) {
 }
 
 // Extract Pattern 6 block and helper functions from prefix-utils.ts
-const pattern6Match = prefixUtilsSource.match(/\/\/ PATTERN-6-START\n([\s\S]*?)\/\/ PATTERN-6-END/)
+const pattern6Match = prefixUtilsSource.match(
+  /\/\/ PATTERN-6-START\r?\n([\s\S]*?)\r?\n\s*\/\/ PATTERN-6-END/
+)
 const PATTERN_6_CODE = pattern6Match ? pattern6Match[1].trimEnd() : ''
 
 const HELPER_FUNCTIONS = ['isAlreadyPrefixed', 'prefixStaticTemplatePart', 'prefixStringLiteralsInExpr', 'prefixClassNameExpression']

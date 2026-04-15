@@ -14,7 +14,7 @@ const meta: Meta<typeof BotSettings> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Collapsible **Settings** section with **Connect WhatsApp**: Figma-style multi-select (tags, checkbox rows, secondary status text, disabled numbers with tooltip, searchable list).
+        component: `**Settings** block with **Connect WhatsApp**: Figma-style multi-select (tags, checkbox rows, secondary status text, disabled numbers with tooltip, searchable list). No outer card wrapper—use \`className\` on the root if the host page needs padding or a container. A horizontal rule appears at the bottom of the section.
 
 **Story variants**
 
@@ -40,7 +40,9 @@ import { BotSettings } from "@/components/custom/bot-settings"
 
 ### WhatsApp field props
 
-All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlying \`MultiSelect\` always uses \`optionVariant="detailed"\` (checkbox rows). Additional passthroughs: \`whatsappLoading\`, \`whatsappId\`, \`whatsappName\` (form submission), \`whatsappCloseOnEscape\`, \`whatsappWrapperClassName\`, \`whatsappTriggerClassName\`, \`whatsappShowClearAll\`, \`whatsappShowSeparatorBeforeChevron\`.`,
+All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlying \`MultiSelect\` always uses \`optionVariant="detailed"\` (checkbox rows). Additional passthroughs: \`whatsappLoading\`, \`whatsappId\`, \`whatsappName\` (form submission), \`whatsappCloseOnEscape\`, \`whatsappWrapperClassName\`, \`whatsappTriggerClassName\`, \`whatsappShowClearAll\`, \`whatsappShowSeparatorBeforeChevron\`.
+
+**Design:** [Figma — Settings / Connect WhatsApp](https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=3-34482)`,
       },
     },
   },
@@ -70,7 +72,10 @@ All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlyin
     whatsappShowClearAll: { control: "boolean" },
     whatsappShowSeparatorBeforeChevron: { control: "boolean" },
     infoTooltip: { control: "text" },
-    defaultOpen: { control: "boolean" },
+    defaultOpen: {
+      control: "boolean",
+      description: "Deprecated — ignored; section is always visible.",
+    },
     disabled: { control: "boolean" },
     className: { control: "text" },
   },
@@ -124,21 +129,6 @@ export const Empty: Story = {
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
           onWhatsappValueChange={setValues}
-        />
-      </div>
-    );
-  },
-};
-
-export const Collapsed: Story = {
-  render: function Render() {
-    return (
-      <div className="max-w-[520px]">
-        <BotSettings
-          defaultOpen={false}
-          whatsappOptions={demoWhatsappOptions}
-          whatsappValue={["wa-1"]}
-          onWhatsappValueChange={fn()}
         />
       </div>
     );

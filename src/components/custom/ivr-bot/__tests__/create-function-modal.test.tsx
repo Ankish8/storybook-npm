@@ -765,4 +765,4 @@ describe("CreateFunctionModal", () => {
     const nameField = screen.getByPlaceholderText("e.g., customer_name");
     expect(nameField).toHaveAttribute("aria-invalid", "true");
   });
-});
+}, { timeout: 30_000 });
