@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { SetupIntegration } from "../setup-integration"
+import { SetupIntegrationView } from "../setup-integration-view"
 import { ChatMessageBubble } from "../chat-message"
 import { ChatInput } from "../chat-input"
 import type { ChatMessage } from "../types"
@@ -383,6 +384,14 @@ describe("SetupIntegration", () => {
     expect(onNameChange).not.toHaveBeenCalled()
     // Should exit edit mode and show the original name
     expect(screen.getByText("Integration test 1")).toBeInTheDocument()
+  })
+
+  it("SetupIntegrationView renders panel without dialog role", () => {
+    render(
+      <SetupIntegrationView messages={sampleMessages} title="Setup Integration" />
+    )
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    expect(screen.getByText("AI Assistant")).toBeInTheDocument()
   })
 
   it("does not show pencil icon when onIntegrationNameChange is not provided", () => {

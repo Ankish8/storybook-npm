@@ -70,6 +70,12 @@ export interface SetupIntegrationProps
   onResetChat?: () => void
 }
 
+/** Presentational layout — no Dialog; use inside any container. */
+export type SetupIntegrationViewProps = Omit<
+  SetupIntegrationProps,
+  "open" | "onOpenChange"
+>
+
 /** Props for the internal ChatMessage sub-component */
 export interface ChatMessageProps {
   message: ChatMessage

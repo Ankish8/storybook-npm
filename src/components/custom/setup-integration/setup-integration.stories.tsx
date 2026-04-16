@@ -3,6 +3,7 @@ import { fn } from "storybook/test"
 import React, { useState } from "react"
 import { Plus } from "lucide-react"
 import { SetupIntegration } from "./setup-integration"
+import { SetupIntegrationView } from "./setup-integration-view"
 import { Button } from "../../ui/button"
 import type {
   ChatMessage,
@@ -1359,6 +1360,32 @@ Flow: Open in edit mode → Click pencil icon → Rename integration → Confirm
 3. Click the pencil icon — name becomes an editable input field
 4. Type a new name and click ✓ (or press Enter) to confirm
 5. Press Escape to cancel the edit`,
+      },
+    },
+  },
+}
+
+/** Same UI as the dialog, rendered as a plain panel (e.g. inside a custom modal or page). */
+export const StandaloneView: StoryObj<typeof SetupIntegrationView> = {
+  render: () => (
+    <div className="rounded-lg border border-semantic-border-layout p-4">
+      <SetupIntegrationView
+        messages={defaultMessages}
+        title="Setup Integration"
+        subtitle="Step 3 of 4"
+        actionLabel="Test Integration"
+        isActionDisabled
+        onResetChat={fn()}
+        onClose={fn()}
+        onBack={fn()}
+      />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Uses `SetupIntegrationView` without Radix Dialog — embed in your own modal shell or route layout.",
       },
     },
   },

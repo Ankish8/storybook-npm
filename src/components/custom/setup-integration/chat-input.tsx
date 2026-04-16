@@ -30,9 +30,9 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
     return (
       <div
         ref={ref}
-        className="border-t border-[#e4e4e4] px-6 pb-2 pt-5"
+        className="border-t border-semantic-border-layout px-6 pb-2 pt-5"
       >
-        <div className="flex h-12 items-center rounded-[10px] border border-black/10 bg-semantic-bg-primary pl-4 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)]">
+        <div className="flex h-12 items-center rounded-[10px] border border-semantic-border-input bg-semantic-bg-primary pl-4 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)]">
           <input
             type="text"
             value={value}
