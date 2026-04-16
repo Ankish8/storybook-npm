@@ -95,8 +95,8 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                     {integration.icon}
                   </div>
 
-                  {/* Label + description — basis-0 so this column takes all space between icon and actions */}
-                  <div className="flex min-w-0 flex-1 basis-0 flex-col gap-1">
+                  {/* Label + description — 90% on mobile/tablet; 80% on desktop (lg+) */}
+                  <div className="flex min-w-0 max-w-[90%] flex-1 basis-0 flex-col gap-1 lg:max-w-[80%]">
                     <p
                       className="m-0 truncate text-sm font-semibold text-semantic-text-primary"
                       title={integration.label}
@@ -105,7 +105,7 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                     </p>
                     {integration.description ? (
                       <p
-                        className="m-0 max-w-[80%] min-w-0 line-clamp-2 text-sm text-semantic-text-muted"
+                        className="m-0 min-w-0 line-clamp-2 text-sm text-semantic-text-muted"
                         title={integration.description}
                       >
                         {integration.description}
