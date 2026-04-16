@@ -2,23 +2,61 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 import { BotIntegrations } from "../bot-integrations"
-import type { IntegrationItem } from "../types"
+import type { IntegrationItem, IntegrationItemWithRequiredDescription } from "../types"
+
+const onEditGoogle = vi.fn()
+const onDeleteSlack = vi.fn()
 
 const SIMPLE_INTEGRATIONS: IntegrationItem[] = [
-  { id: "int-1", name: "Google Sheets" },
-  { id: "int-2", name: "Slack" },
-  { id: "int-3", name: "HubSpot CRM" },
+  {
+    id: "int-1",
+    label: "Google Sheets",
+    icon: <span data-testid="icon-1">i</span>,
+    onEdit: onEditGoogle,
+    onDelete: vi.fn(),
+  },
+  {
+    id: "int-2",
+    label: "Slack",
+    icon: <span data-testid="icon-2">i</span>,
+    onEdit: vi.fn(),
+    onDelete: onDeleteSlack,
+  },
+  {
+    id: "int-3",
+    label: "HubSpot CRM",
+    icon: <span data-testid="icon-3">i</span>,
+    onEdit: vi.fn(),
+    onDelete: vi.fn(),
+  },
 ]
 
 const RICH_INTEGRATIONS: IntegrationItem[] = [
   {
     id: "int-1",
-    name: "Lead Capture Sheet",
-    icon: <img src="/icons/gsheets.png" alt="Google Sheets" data-testid="integration-icon" />,
-    status: "Connected",
-    statusVariant: "active",
-    subtitle: "Google Sheets • 1 tool configured",
-    description: "Log all incoming patient leads to the centralized Hospital Leads sheet.",
+    label: "Lead Capture Sheet",
+    icon: (
+      <img
+        src="/icons/gsheets.png"
+        alt="Google Sheets"
+        data-testid="integration-icon"
+      />
+    ),
+    description:
+      "Log all incoming patient leads to the centralized Hospital Leads sheet.",
+    onEdit: vi.fn(),
+    onDelete: vi.fn(),
+  },
+]
+
+const REQUIRED_DESC_INTEGRATIONS: IntegrationItemWithRequiredDescription[] = [
+  {
+    id: "int-1",
+    label: "Always described",
+    icon: <span>icon</span>,
+    description: "Required copy for this row.",
+    onEdit: vi.fn(),
+    onDelete: vi.fn(),
   },
 ]
 
@@ -33,7 +71,7 @@ describe("BotIntegrations", () => {
   it("renders the add button", () => {
     render(<BotIntegrations integrations={[]} />)
     expect(
-      screen.getByRole("button", { name: /integrations/i })
+      screen.getByRole("button", { name: /add integration/i })
     ).toBeInTheDocument()
   })
 
@@ -94,18 +132,6 @@ describe("BotIntegrations", () => {
     expect(screen.getByTestId("integration-icon")).toBeInTheDocument()
   })
 
-  it("renders status badge when provided", () => {
-    render(<BotIntegrations integrations={RICH_INTEGRATIONS} />)
-    expect(screen.getByText("Connected")).toBeInTheDocument()
-  })
-
-  it("renders subtitle when provided", () => {
-    render(<BotIntegrations integrations={RICH_INTEGRATIONS} />)
-    expect(
-      screen.getByText("Google Sheets • 1 tool configured")
-    ).toBeInTheDocument()
-  })
-
   it("renders description when provided", () => {
     render(<BotIntegrations integrations={RICH_INTEGRATIONS} />)
     expect(
@@ -115,96 +141,58 @@ describe("BotIntegrations", () => {
     ).toBeInTheDocument()
   })
 
+  it("sets native title on label and description for full text on hover", () => {
+    render(<BotIntegrations integrations={RICH_INTEGRATIONS} />)
+    expect(screen.getByText("Lead Capture Sheet")).toHaveAttribute(
+      "title",
+      "Lead Capture Sheet"
+    )
+    const desc = screen.getByText(
+      "Log all incoming patient leads to the centralized Hospital Leads sheet."
+    )
+    expect(desc).toHaveAttribute(
+      "title",
+      "Log all incoming patient leads to the centralized Hospital Leads sheet."
+    )
+  })
+
+  it("accepts descriptionRequirement=\"required\" when every row includes description", () => {
+    render(
+      <BotIntegrations
+        descriptionRequirement="required"
+        integrations={REQUIRED_DESC_INTEGRATIONS}
+      />
+    )
+    expect(screen.getByText("Required copy for this row.")).toBeInTheDocument()
+  })
+
   // ── Callbacks ──────────────────────────────────────────────────────────────
 
   it("calls onAdd when add button is clicked", async () => {
     const user = userEvent.setup()
     const onAdd = vi.fn()
     render(<BotIntegrations integrations={[]} onAdd={onAdd} />)
-    const addBtn = screen.getByRole("button", { name: /integrations/i })
+    const addBtn = screen.getByRole("button", { name: /add integration/i })
     await user.click(addBtn)
     expect(onAdd).toHaveBeenCalledTimes(1)
   })
 
-  it("calls onConfigure with integration id", async () => {
+  it("calls the row onEdit handler when edit is clicked", async () => {
     const user = userEvent.setup()
-    const onConfigure = vi.fn()
-    render(
-      <BotIntegrations
-        integrations={SIMPLE_INTEGRATIONS}
-        onConfigure={onConfigure}
-      />
-    )
-    const configBtns = screen.getAllByRole("button", { name: "Configure" })
-    await user.click(configBtns[0])
-    expect(onConfigure).toHaveBeenCalledWith("int-1")
-  })
-
-  it("renders custom configure label", () => {
-    render(
-      <BotIntegrations
-        integrations={SIMPLE_INTEGRATIONS}
-        onConfigure={vi.fn()}
-        configureLabel="Setup"
-      />
-    )
-    expect(screen.getAllByRole("button", { name: "Setup" })).toHaveLength(3)
-  })
-
-  it("calls onEdit with integration id", async () => {
-    const user = userEvent.setup()
-    const onEdit = vi.fn()
-    render(
-      <BotIntegrations integrations={SIMPLE_INTEGRATIONS} onEdit={onEdit} />
-    )
+    onEditGoogle.mockClear()
+    render(<BotIntegrations integrations={SIMPLE_INTEGRATIONS} />)
     const editBtn = screen.getByLabelText("Edit Google Sheets")
     await user.click(editBtn)
-    expect(onEdit).toHaveBeenCalledWith("int-1")
+    expect(onEditGoogle).toHaveBeenCalledTimes(1)
   })
 
-  it("calls onDelete with integration id", async () => {
+  it("calls the row onDelete handler when delete is clicked", async () => {
     const user = userEvent.setup()
-    const onDelete = vi.fn()
-    render(
-      <BotIntegrations
-        integrations={SIMPLE_INTEGRATIONS}
-        onDelete={onDelete}
-      />
-    )
+    onDeleteSlack.mockClear()
+    render(<BotIntegrations integrations={SIMPLE_INTEGRATIONS} />)
     const deleteBtn = screen.getByLabelText("Delete Slack")
     await user.click(deleteBtn)
-    expect(onDelete).toHaveBeenCalledWith("int-2")
-  })
-
-  it("hides edit buttons when onEdit is not provided", () => {
-    render(
-      <BotIntegrations
-        integrations={SIMPLE_INTEGRATIONS}
-        onDelete={vi.fn()}
-      />
-    )
-    expect(screen.queryByLabelText("Edit Google Sheets")).not.toBeInTheDocument()
-    expect(screen.getByLabelText("Delete Google Sheets")).toBeInTheDocument()
-  })
-
-  it("hides delete buttons when onDelete is not provided", () => {
-    render(
-      <BotIntegrations
-        integrations={SIMPLE_INTEGRATIONS}
-        onEdit={vi.fn()}
-      />
-    )
-    expect(
-      screen.queryByLabelText("Delete Google Sheets")
-    ).not.toBeInTheDocument()
-    expect(screen.getByLabelText("Edit Google Sheets")).toBeInTheDocument()
-  })
-
-  it("hides configure button when onConfigure is not provided", () => {
-    render(
-      <BotIntegrations integrations={SIMPLE_INTEGRATIONS} onEdit={vi.fn()} />
-    )
-    expect(screen.queryByRole("button", { name: "Configure" })).not.toBeInTheDocument()
+    expect(onDeleteSlack).toHaveBeenCalledTimes(1)
   })
 
   // ── className & ref ────────────────────────────────────────────────────────
@@ -226,26 +214,16 @@ describe("BotIntegrations", () => {
 
   it("disables the add button when disabled", () => {
     render(<BotIntegrations integrations={[]} disabled />)
-    const addBtn = screen.getByRole("button", { name: /integrations/i })
+    const addBtn = screen.getByRole("button", { name: /add integration/i })
     expect(addBtn).toBeDisabled()
   })
 
-  it("disables edit, delete, and configure buttons when disabled", () => {
-    render(
-      <BotIntegrations
-        integrations={SIMPLE_INTEGRATIONS}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onConfigure={vi.fn()}
-        disabled
-      />
-    )
+  it("disables edit and delete buttons when disabled", () => {
+    render(<BotIntegrations integrations={SIMPLE_INTEGRATIONS} disabled />)
     const editBtn = screen.getByLabelText("Edit Google Sheets")
     const deleteBtn = screen.getByLabelText("Delete Google Sheets")
-    const configBtn = screen.getAllByRole("button", { name: "Configure" })[0]
     expect(editBtn).toBeDisabled()
     expect(deleteBtn).toBeDisabled()
-    expect(configBtn).toBeDisabled()
   })
 
   // ── Tooltip ────────────────────────────────────────────────────────────────

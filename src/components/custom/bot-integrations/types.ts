@@ -1,32 +1,35 @@
 import * as React from "react"
 
-export interface IntegrationItem {
+/** Shared fields for every integration row (required). */
+export interface IntegrationItemBase {
   id: string
-  name: string
-  /** Integration icon/logo element (e.g., an <img> or SVG of the service logo) */
-  icon?: React.ReactNode
-  /** Status text displayed as a badge (e.g., "Connected") */
-  status?: string
-  /** Badge variant for the status (default: "active") */
-  statusVariant?: "active" | "default" | "destructive" | "disabled"
-  /** Subtitle line (e.g., "Google Sheets • 1 tool configured") */
-  subtitle?: string
-  /** Description line, truncated to one line */
+  /** Row title (single line with ellipsis when overflow; full text shown via native tooltip on hover) */
+  label: string
+  /** Integration icon (e.g. an `<img>` or SVG) */
+  icon: React.ReactNode
+  /** Called when the user activates edit for this row */
+  onEdit: () => void
+  /** Called when the user activates delete for this row */
+  onDelete: () => void
+}
+
+/** Row with optional description (default). */
+export type IntegrationItemWithOptionalDescription = IntegrationItemBase & {
+  /** Optional body copy (max two lines with ellipsis; full text shown via native tooltip on hover) */
   description?: string
 }
 
-export interface BotIntegrationsProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  /** List of integrations to display */
-  integrations: IntegrationItem[]
+/** Row where description is required — use with `descriptionRequirement="required"` on the section. */
+export type IntegrationItemWithRequiredDescription = IntegrationItemBase & {
+  description: string
+}
+
+/** Default integration row: `icon`, `label`, `onEdit`, and `onDelete` are required; `description` is optional unless the section sets `descriptionRequirement="required"`. */
+export type IntegrationItem = IntegrationItemWithOptionalDescription
+
+type BotIntegrationsShared = Omit<React.HTMLAttributes<HTMLDivElement>, "children"> & {
   /** Called when user clicks the add integration button */
   onAdd?: () => void
-  /** Called when user clicks the edit button on an integration */
-  onEdit?: (id: string) => void
-  /** Called when user clicks the delete button on an integration */
-  onDelete?: (id: string) => void
-  /** Called when user clicks the configure button on an integration */
-  onConfigure?: (id: string) => void
   /** Title shown in the empty state */
   emptyStateTitle?: string
   /** Description shown in the empty state */
@@ -37,6 +40,21 @@ export interface BotIntegrationsProps
   infoTooltip?: string
   /** Disables the add button and action buttons */
   disabled?: boolean
-  /** Label for the configure button (default: "Configure") */
-  configureLabel?: string
 }
+
+export type BotIntegrationsProps = BotIntegrationsShared &
+  (
+    | {
+        /**
+         * Whether each integration must include `description`.
+         * - `"optional"` (default): `description` may be omitted on each item.
+         * - `"required"`: TypeScript requires `description` on every item.
+         */
+        descriptionRequirement?: "optional"
+        integrations: IntegrationItemWithOptionalDescription[]
+      }
+    | {
+        descriptionRequirement: "required"
+        integrations: IntegrationItemWithRequiredDescription[]
+      }
+  )

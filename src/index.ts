@@ -538,7 +538,13 @@ export type { BotFunctionsProps, FunctionItem as BotFunctionItem } from "./compo
 
 // BotIntegrations (Custom)
 export { BotIntegrations } from "./components/custom/bot-integrations";
-export type { BotIntegrationsProps, IntegrationItem } from "./components/custom/bot-integrations";
+export type {
+  BotIntegrationsProps,
+  IntegrationItem,
+  IntegrationItemBase,
+  IntegrationItemWithOptionalDescription,
+  IntegrationItemWithRequiredDescription,
+} from "./components/custom/bot-integrations";
 
 // BotSettings (Custom)
 export { BotSettings } from "./components/custom/bot-settings";

@@ -1,9 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { fn } from "storybook/test"
-import { useState } from "react"
+import React, { useState } from "react"
 import { Puzzle } from "lucide-react"
 import { BotIntegrations } from "./bot-integrations"
-import type { IntegrationItem } from "./types"
+import type {
+  IntegrationItem,
+  IntegrationItemWithRequiredDescription,
+} from "./types"
+
+/** Static row data — add \`onEdit\` / \`onDelete\` when passing to the component. */
+type IntegrationRowSeed = Omit<IntegrationItem, "onEdit" | "onDelete">
 
 /* ------------------------------------------------------------------ */
 /* Official brand SVG logos via data URIs (same as Composio stories)   */
@@ -39,7 +45,7 @@ const meta: Meta<typeof BotIntegrations> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Integrations section for bot configuration. Shows connected integrations with icon, status, subtitle, description, and configure/edit/delete actions — or a compact empty state placeholder.
+        component: `Integrations section for bot configuration. Each row shows an icon, a single-line label, optional two-line description (with ellipsis when overflowing), and edit/delete actions — or a compact empty state placeholder. Hovering the label or description shows the full text via the native \`title\` tooltip.
 
 **Install**
 \`\`\`bash
@@ -55,41 +61,37 @@ import { BotIntegrations } from "@/components/custom/bot-integrations"
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| \`integrations\` | \`IntegrationItem[]\` | — | List of integrations to display |
-| \`onAdd\` | \`() => void\` | — | Called when user clicks "+ Integrations" |
-| \`onConfigure\` | \`(id: string) => void\` | — | Configure handler. Omit to hide configure buttons |
-| \`onEdit\` | \`(id: string) => void\` | — | Edit handler. Omit to hide edit buttons |
-| \`onDelete\` | \`(id: string) => void\` | — | Delete handler. Omit to hide delete buttons |
-| \`configureLabel\` | \`string\` | \`"Configure"\` | Label for the configure button |
+| \`integrations\` | \`IntegrationItem[]\` | — | List of integrations; each row supplies its own handlers (see below) |
+| \`descriptionRequirement\` | \`"optional" \\| "required"\` | \`"optional"\` | When \`"required"\`, TypeScript requires \`description\` on every item |
+| \`onAdd\` | \`() => void\` | — | Called when user clicks "Add integration" |
 | \`emptyStateTitle\` | \`string\` | \`"No integrations yet"\` | Title in empty state |
 | \`emptyStateDescription\` | \`string\` | — | Description in empty state |
 | \`emptyStateIcon\` | \`ReactNode\` | Blocks icon | Custom icon for empty state |
 | \`infoTooltip\` | \`string\` | — | Tooltip text on the info icon |
-| \`disabled\` | \`boolean\` | \`false\` | Disables add/configure/edit/delete buttons |
+| \`disabled\` | \`boolean\` | \`false\` | Disables add and row edit/delete buttons |
 
-### IntegrationItem
+### IntegrationItem (per row)
 
-| Field | Type | Description |
-|-------|------|-------------|
-| \`id\` | \`string\` | Unique identifier |
-| \`name\` | \`string\` | Integration name |
-| \`icon\` | \`ReactNode\` | Integration logo / icon |
-| \`status\` | \`string\` | Status badge text (e.g., "Connected") |
-| \`statusVariant\` | \`"active" \\| "default" \\| "destructive" \\| "disabled"\` | Badge color variant |
-| \`subtitle\` | \`string\` | Subtitle (e.g., "Google Sheets • 1 tool configured") |
-| \`description\` | \`string\` | Description, truncated to one line |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| \`id\` | \`string\` | Yes | Unique key for the row |
+| \`label\` | \`string\` | Yes | Title (single line + ellipsis; full text on hover via \`title\`) |
+| \`icon\` | \`ReactNode\` | Yes | Logo / icon in the rounded tile |
+| \`onEdit\` | \`() => void\` | Yes | Edit action for this row |
+| \`onDelete\` | \`() => void\` | Yes | Delete action for this row |
+| \`description\` | \`string\` | Optional* | Body copy (max two lines + ellipsis) — *required in TypeScript when \`descriptionRequirement="required"\` on the section |
 
 ### Design Tokens
 
 | Token | CSS Variable | Usage | Preview |
 |---|---|---|---|
 | Surface | \`--semantic-bg-primary\` | Icon circle background | <span style="color:#FFFFFF">■</span> |
-| Empty bg | \`--color-neutral-50\` | Empty state container | <span style="color:#FAFAFA">■</span> |
-| Empty border | \`--color-neutral-100\` | Empty state border | <span style="color:#F5F5F5">■</span> |
-| Icon bg | \`--semantic-info-surface-subtle\` | Integration icon container | <span style="color:#F6F8FD">■</span> |
+| Empty surface | \`--semantic-bg-ui\` | Empty state container | <span style="color:#F5F5F5">■</span> |
+| Empty border | \`--semantic-border-layout\` | Empty state border | <span style="color:#E9EAEB">■</span> |
+| Icon tile | \`--semantic-info-surface-subtle\` | Integration icon container | <span style="color:#F6F8FD">■</span> |
 | Border | \`--semantic-border-layout\` | Section dividers | <span style="color:#E9EAEB">■</span> |
 | Title | \`--semantic-text-primary\` | Section title, item names | <span style="color:#181D27">■</span> |
-| Muted | \`--semantic-text-muted\` | Subtitle, description | <span style="color:#717680">■</span> |`,
+| Muted | \`--semantic-text-muted\` | Description | <span style="color:#717680">■</span> |`,
       },
     },
   },
@@ -99,40 +101,73 @@ import { BotIntegrations } from "@/components/custom/bot-integrations"
 export default meta
 type Story = StoryObj<typeof meta>
 
-const SIMPLE_INTEGRATIONS: IntegrationItem[] = [
-  { id: "int-1", name: "Google Sheets" },
-  { id: "int-2", name: "Slack" },
-  { id: "int-3", name: "HubSpot CRM" },
-]
-
-const RICH_INTEGRATIONS: IntegrationItem[] = [
+const SIMPLE_SEEDS: IntegrationRowSeed[] = [
   {
     id: "int-1",
-    name: "Lead Capture Sheet",
+    label: "Google Sheets",
     icon: <IntegrationIcon src={logos.googleSheets} alt="Google Sheets" />,
-    status: "Connected",
-    statusVariant: "active",
-    subtitle: "Google Sheets • 1 tool configured",
-    description:
-      'Log all incoming patient leads to the centralized Hospital Leads sheet.',
   },
   {
     id: "int-2",
-    name: "CRM Sync",
+    label: "Slack",
+    icon: <IntegrationIcon src={logos.slack} alt="Slack" />,
+  },
+  {
+    id: "int-3",
+    label: "HubSpot CRM",
     icon: <IntegrationIcon src={logos.hubspot} alt="HubSpot" />,
-    status: "Connected",
-    statusVariant: "active",
-    subtitle: "HubSpot CRM • 2 tools configured",
+  },
+]
+
+const RICH_SEEDS: IntegrationRowSeed[] = [
+  {
+    id: "int-1",
+    label: "Lead Capture Sheet",
+    icon: <IntegrationIcon src={logos.googleSheets} alt="Google Sheets" />,
+    description:
+      "Log all incoming patient leads to the centralized Hospital Leads sheet. Captures new lead information directly from the chat interface and appends it as a new row.",
+  },
+  {
+    id: "int-2",
+    label: "CRM Sync",
+    icon: <IntegrationIcon src={logos.hubspot} alt="HubSpot" />,
     description: "Sync contacts and deals to HubSpot automatically.",
   },
   {
     id: "int-3",
-    name: "Team Notifications",
+    label: "Team Notifications",
     icon: <IntegrationIcon src={logos.slack} alt="Slack" />,
-    status: "Connected",
-    statusVariant: "active",
-    subtitle: "Slack • 1 tool configured",
     description: "Send real-time alerts to the support channel.",
+  },
+]
+
+function attachRowHandlers(
+  rows: IntegrationRowSeed[],
+  onRemove: (id: string) => void
+): IntegrationItem[] {
+  return rows.map((row) => ({
+    ...row,
+    onEdit: fn(),
+    onDelete: () => onRemove(row.id),
+  }))
+}
+
+const REQUIRED_DESCRIPTION_ROWS: IntegrationItemWithRequiredDescription[] = [
+  {
+    id: "int-1",
+    label: "Google Sheets",
+    icon: <IntegrationIcon src={logos.googleSheets} alt="Google Sheets" />,
+    description: "Spreadsheet sync is configured for this workspace.",
+    onEdit: fn(),
+    onDelete: fn(),
+  },
+  {
+    id: "int-2",
+    label: "Slack",
+    icon: <IntegrationIcon src={logos.slack} alt="Slack" />,
+    description: "Notifications go to #support when a lead is captured.",
+    onEdit: fn(),
+    onDelete: fn(),
   },
 ]
 
@@ -145,51 +180,62 @@ export const Default: Story = {
     onAdd: fn(),
   },
   render: (args) => (
-    <div className="max-w-[750px]">
+    <div className="w-full max-w-[750px]">
       <BotIntegrations {...args} />
     </div>
   ),
 }
 
-/** Shows rich integration items with real brand icons, status, subtitle, description, and actions. */
+/** Shows integration rows with icons, label, optional description, and actions (matches [Figma — Integrations](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42771-56666)). */
 export const WithIntegrations: Story = {
   render: function Render() {
-    const [items, setItems] = useState<IntegrationItem[]>(RICH_INTEGRATIONS)
+    const [rows, setRows] = useState<IntegrationRowSeed[]>(RICH_SEEDS)
+    const integrations = attachRowHandlers(rows, (id) =>
+      setRows((prev) => prev.filter((row) => row.id !== id))
+    )
     return (
-      <div className="max-w-[750px]">
+      <div className="w-full max-w-[750px]">
         <BotIntegrations
-          integrations={items}
+          integrations={integrations}
           infoTooltip="Connect external apps to extend your bot's capabilities"
           onAdd={fn()}
-          onConfigure={fn()}
-          onEdit={fn()}
-          onDelete={(id) =>
-            setItems((prev) => prev.filter((item) => item.id !== id))
-          }
         />
       </div>
     )
   },
 }
 
-/** Simple integrations without icons or metadata — backward compatible with basic IntegrationItem. */
+/** Simple rows: icon + label only (no description). */
 export const SimpleIntegrations: Story = {
   render: function Render() {
-    const [items, setItems] = useState<IntegrationItem[]>(SIMPLE_INTEGRATIONS)
+    const [rows, setRows] = useState<IntegrationRowSeed[]>(SIMPLE_SEEDS)
+    const integrations = attachRowHandlers(rows, (id) =>
+      setRows((prev) => prev.filter((row) => row.id !== id))
+    )
     return (
-      <div className="max-w-[750px]">
+      <div className="w-full max-w-[750px]">
         <BotIntegrations
-          integrations={items}
+          integrations={integrations}
           infoTooltip="Connect external apps to extend your bot's capabilities"
           onAdd={fn()}
-          onEdit={fn()}
-          onDelete={(id) =>
-            setItems((prev) => prev.filter((item) => item.id !== id))
-          }
         />
       </div>
     )
   },
+}
+
+/** Every row must include \`description\` when \`descriptionRequirement="required"\`. */
+export const RequiredDescriptions: Story = {
+  render: () => (
+    <div className="w-full max-w-[750px]">
+      <BotIntegrations
+        descriptionRequirement="required"
+        integrations={REQUIRED_DESCRIPTION_ROWS}
+        infoTooltip="Connect external apps to extend your bot's capabilities"
+        onAdd={fn()}
+      />
+    </div>
+  ),
 }
 
 /** Empty state with custom title, description, and icon. */
@@ -203,26 +249,26 @@ export const CustomEmptyState: Story = {
     onAdd: fn(),
   },
   render: (args) => (
-    <div className="max-w-[750px]">
+    <div className="w-full max-w-[750px]">
       <BotIntegrations {...args} />
     </div>
   ),
 }
 
-/** All interactions disabled. Add, configure, edit, and delete buttons are non-interactive. */
+/** All interactions disabled. Add, edit, and delete controls are non-interactive. */
 export const Disabled: Story = {
-  args: {
-    integrations: RICH_INTEGRATIONS,
-    onAdd: fn(),
-    onConfigure: fn(),
-    onEdit: fn(),
-    onDelete: fn(),
-    infoTooltip: "Connect external apps to extend your bot's capabilities",
-    disabled: true,
-  },
-  render: (args) => (
-    <div className="max-w-[750px]">
-      <BotIntegrations {...args} />
+  render: () => (
+    <div className="w-full max-w-[750px]">
+      <BotIntegrations
+        integrations={RICH_SEEDS.map((row) => ({
+          ...row,
+          onEdit: fn(),
+          onDelete: fn(),
+        }))}
+        onAdd={fn()}
+        infoTooltip="Connect external apps to extend your bot's capabilities"
+        disabled
+      />
     </div>
   ),
 }
