@@ -112,28 +112,31 @@ export interface CreateFunctionModalProps {
   /** Maximum character length for the prompt field (default: 2000) */
   promptMaxLength?: number;
   /**
-   * Maximum characters for **Bot Message (Optional)** (default: 5000).
+   * Maximum characters for **Agent Message (Optional)** (default: 5000).
    * Uses soft validation like Escalate to Human → Prompt: users can type past the limit;
    * overflow message applies unless `botMessageValidation` is set (parent message wins).
    */
   botMessageMaxLength?: number;
   /**
-   * External validation message for Bot Message (e.g. from save or API).
+   * External validation message for Agent Message (e.g. from save or API).
    * When set, it replaces the built-in overflow message (overflow still uses error styling via length in Textarea).
    */
   botMessageValidation?: string;
-  /** Called when the Bot Message textarea loses focus */
+  /** Called when the Agent Message textarea loses focus */
   onBotMessageBlur?: (value: string) => void;
-  /** Hover text for the info icon next to Bot Message (Optional). Omit to hide the icon. */
+  /**
+   * Hover text for the info icon next to Agent Message (Optional).
+   * When omitted, the modal uses a built-in default. Pass `""` to hide the icon.
+   */
   botMessageTooltip?: string;
   /**
-   * When `true` (default), the label shows **Bot Message (Optional)** and the field may be left empty for Step 1.
-   * When `false`, the label shows **Bot Message** with a required asterisk and non-empty trimmed text is required before **Next**.
+   * When `true` (default), the label shows **Agent Message (Optional)** and the field may be left empty for Step 1.
+   * When `false`, the label shows **Agent Message** with a required asterisk and non-empty trimmed text is required before **Next**.
    */
   botMessageOptional?: boolean;
   /**
-   * Overrides the Bot Message placeholder. If omitted, it is derived from `botMessageOptional`
-   * (`Enter optional message for the bot` vs `Enter message for the bot`).
+   * Overrides the Agent Message placeholder. If omitted, a default example placeholder is used
+   * (see `CreateFunctionModal`).
    */
   botMessagePlaceholder?: string;
   /** Storybook/testing: start at a specific step (1 or 2) */
@@ -312,20 +315,23 @@ export interface IvrBotConfigProps {
   /** Maximum character length for the function prompt (default: 2000) */
   functionPromptMaxLength?: number;
   /**
-   * Max length for Create/Edit Function **Bot Message** (default: 5000; soft limit, same pattern as Escalate to Human Prompt).
+   * Max length for Create/Edit Function **Agent Message** (default: 5000; soft limit, same pattern as Escalate to Human Prompt).
    */
   functionBotMessageMaxLength?: number;
-  /** External validation for Create/Edit Function **Bot Message** (shown under the field; overrides overflow copy when set). */
+  /** External validation for Create/Edit Function **Agent Message** (shown under the field; overrides overflow copy when set). */
   functionBotMessageValidation?: string;
-  /** Called when Create/Edit Function **Bot Message** loses focus */
+  /** Called when Create/Edit Function **Agent Message** loses focus */
   onFunctionBotMessageBlur?: (value: string) => void;
-  /** Tooltip for the info icon next to **Bot Message (Optional)** in Create/Edit Function */
+  /**
+   * Tooltip for the info icon next to **Agent Message (Optional)** in Create/Edit Function.
+   * When omitted, `CreateFunctionModal` uses its built-in default. Pass `""` to hide the icon.
+   */
   functionBotMessageTooltip?: string;
   /**
-   * When `true` (default), Create/Edit Function **Bot Message** is optional; when `false`, it is required (see `CreateFunctionModal` `botMessageOptional`).
+   * When `true` (default), Create/Edit Function **Agent Message** is optional; when `false`, it is required (see `CreateFunctionModal` `botMessageOptional`).
    */
   functionBotMessageOptional?: boolean;
-  /** Overrides Bot Message placeholder in Create/Edit Function (see `CreateFunctionModal` `botMessagePlaceholder`). */
+  /** Overrides Agent Message placeholder in Create/Edit Function (see `CreateFunctionModal` `botMessagePlaceholder`). */
   functionBotMessagePlaceholder?: string;
   /**
    * Pre-filled data shown when the edit function modal opens.
