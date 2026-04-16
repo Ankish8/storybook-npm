@@ -99,7 +99,7 @@ import { BotIntegrations } from "@/components/custom/bot-integrations"
 }
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj<typeof BotIntegrations>
 
 const SIMPLE_SEEDS: IntegrationRowSeed[] = [
   {
