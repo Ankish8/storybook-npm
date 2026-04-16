@@ -141,19 +141,15 @@ describe("BotIntegrations", () => {
     ).toBeInTheDocument()
   })
 
-  it("sets native title on label and description for full text on hover", () => {
+  it("does not set native title when label and description are not truncated", () => {
     render(<BotIntegrations integrations={RICH_INTEGRATIONS} />)
-    expect(screen.getByText("Lead Capture Sheet")).toHaveAttribute(
-      "title",
-      "Lead Capture Sheet"
-    )
+    const label = screen.getByText("Lead Capture Sheet")
     const desc = screen.getByText(
       "Log all incoming patient leads to the centralized Hospital Leads sheet."
     )
-    expect(desc).toHaveAttribute(
-      "title",
-      "Log all incoming patient leads to the centralized Hospital Leads sheet."
-    )
+    // jsdom has no real layout; overflow checks treat text as not truncated
+    expect(label).not.toHaveAttribute("title")
+    expect(desc).not.toHaveAttribute("title")
   })
 
   it("accepts descriptionRequirement=\"required\" when every row includes description", () => {

@@ -10,6 +10,56 @@ import {
 } from "../../ui/tooltip"
 import type { BotIntegrationsProps } from "./types"
 
+/** Native `title` only when text is visually truncated (ellipsis / line clamp). */
+function ConditionalOverflowTitle({
+  className,
+  fullText,
+  lineClamp,
+  children,
+}: {
+  className?: string
+  fullText: string
+  /** When true, detect vertical overflow (e.g. line-clamp-2); otherwise horizontal ellipsis. */
+  lineClamp?: boolean
+  children: React.ReactNode
+}) {
+  const ref = React.useRef<HTMLParagraphElement>(null)
+  const [showTitle, setShowTitle] = React.useState(false)
+
+  const measure = React.useCallback(() => {
+    const el = ref.current
+    if (!el) return
+    if (lineClamp) {
+      setShowTitle(el.scrollHeight > el.clientHeight + 1)
+    } else {
+      setShowTitle(el.scrollWidth > el.clientWidth + 1)
+    }
+  }, [lineClamp])
+
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    measure()
+    const ro = new ResizeObserver(() => {
+      measure()
+    })
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+    }
+  }, [fullText, measure])
+
+  return (
+    <p
+      ref={ref}
+      className={className}
+      title={showTitle ? fullText : undefined}
+    >
+      {children}
+    </p>
+  )
+}
+
 const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
   (
     {
@@ -97,19 +147,20 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
 
                   {/* Label + description — 90% on mobile/tablet; 80% on desktop (lg+) */}
                   <div className="flex min-w-0 max-w-[90%] flex-1 basis-0 flex-col gap-1 lg:max-w-[80%]">
-                    <p
+                    <ConditionalOverflowTitle
                       className="m-0 truncate text-sm font-semibold text-semantic-text-primary"
-                      title={integration.label}
+                      fullText={integration.label}
                     >
                       {integration.label}
-                    </p>
+                    </ConditionalOverflowTitle>
                     {integration.description ? (
-                      <p
+                      <ConditionalOverflowTitle
+                        lineClamp
                         className="m-0 min-w-0 line-clamp-2 text-sm text-semantic-text-muted"
-                        title={integration.description}
+                        fullText={integration.description}
                       >
                         {integration.description}
-                      </p>
+                      </ConditionalOverflowTitle>
                     ) : null}
                   </div>
                 </div>
