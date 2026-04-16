@@ -1,8 +1,8 @@
 import * as React from "react"
 import { cn } from "../../../lib/utils"
 
-export interface IntegrationAssistantSectionProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export type IntegrationAssistantSectionProps =
+  React.HTMLAttributes<HTMLDivElement>
 
 /**
  * Layout wrapper for the assistant strip, transcript, and composer.

@@ -1,8 +1,8 @@
 import * as React from "react"
 import { cn } from "../../../lib/utils"
 
-export interface IntegrationStepsProps
-  extends React.HTMLAttributes<HTMLParagraphElement> {}
+export type IntegrationStepsProps =
+  React.HTMLAttributes<HTMLParagraphElement>
 
 const IntegrationSteps = React.forwardRef<HTMLParagraphElement, IntegrationStepsProps>(
   ({ className, ...props }, ref) => (
