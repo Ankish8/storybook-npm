@@ -821,7 +821,7 @@ import { Mail } from "lucide-react"
 ---
 
 ### DateRangeModal
-> A modal for selecting a date range with start and end date pickers
+> A modal for selecting a date range with start and end date pickers; supports optional min/max bounds and disabling past dates
 
 **Install**: `npx myoperator-ui add date-range-modal`
 **Requires**: `dialog`, `button`, `input` (auto-installed)
