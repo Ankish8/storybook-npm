@@ -25,6 +25,11 @@ export interface DateRangeModalProps {
   loading?: boolean;
   minDate?: Date;
   maxDate?: Date;
+  /**
+   * When true, days before today cannot be selected. The effective minimum is the later of
+   * today (start of local day) and `minDate` when both apply.
+   */
+  disablePastDates?: boolean;
   /** Preselected start date when modal opens (e.g. from URL when reopening custom date) */
   defaultStartDate?: Date;
   /** Preselected end date when modal opens (e.g. from URL when reopening custom date) */
@@ -42,13 +47,31 @@ function DateRangeModal({
   loading = false,
   minDate,
   maxDate,
+  disablePastDates = false,
   defaultStartDate,
   defaultEndDate,
 }: DateRangeModalProps) {
+  const [dialogContentEl, setDialogContentEl] = React.useState<HTMLElement | null>(null);
   const [startDate, setStartDate] = React.useState<Date | undefined>(defaultStartDate);
   const [endDate, setEndDate] = React.useState<Date | undefined>(defaultEndDate);
+  /** Bumped when the other field’s calendar opens so only one popover stays open. */
+  const [dismissStartCalendar, setDismissStartCalendar] = React.useState(0);
+  const [dismissEndCalendar, setDismissEndCalendar] = React.useState(0);
 
   const canConfirm = !!startDate && !!endDate;
+
+  const effectiveMinDate = React.useMemo(() => {
+    if (!disablePastDates) return minDate;
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (!minDate) return todayStart;
+    const minDay = new Date(
+      minDate.getFullYear(),
+      minDate.getMonth(),
+      minDate.getDate()
+    );
+    return minDay.getTime() >= todayStart.getTime() ? minDay : todayStart;
+  }, [disablePastDates, minDate]);
 
   function handleConfirm() {
     if (startDate && endDate) {
@@ -71,7 +94,10 @@ function DateRangeModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md !max-h-none overflow-visible">
+      <DialogContent
+        ref={(node) => setDialogContentEl(node)}
+        className="sm:max-w-md overflow-visible"
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
@@ -84,16 +110,22 @@ function DateRangeModal({
             value={startDate}
             onChange={setStartDate}
             placeholder="MM/DD/YYYY"
-            minDate={minDate}
+            minDate={effectiveMinDate}
             maxDate={maxDate}
+            dismissSignal={dismissStartCalendar}
+            onPopoverOpened={() => setDismissEndCalendar((n) => n + 1)}
+            portalContainer={dialogContentEl}
           />
           <DateInput
             label="End date"
             value={endDate}
             onChange={setEndDate}
             placeholder="MM/DD/YYYY"
-            minDate={startDate ?? minDate}
+            minDate={startDate ?? effectiveMinDate}
             maxDate={maxDate}
+            dismissSignal={dismissEndCalendar}
+            onPopoverOpened={() => setDismissStartCalendar((n) => n + 1)}
+            portalContainer={dialogContentEl}
           />
         </div>
 

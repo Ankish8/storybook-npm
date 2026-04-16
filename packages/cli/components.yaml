@@ -691,7 +691,7 @@ components:
     mainFile: "bank-details.tsx"
 
   date-range-modal:
-    description: "A modal for selecting a date range with start and end date pickers"
+    description: "A modal for selecting a date range with start and end date pickers; supports optional min/max bounds and disabling past dates"
     category: custom
     dependencies:
       - "clsx"

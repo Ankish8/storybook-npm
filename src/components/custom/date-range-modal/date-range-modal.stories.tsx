@@ -204,3 +204,16 @@ export const CustomTitle: Story = {
     />
   ),
 };
+
+export const DisablePastDates: Story = {
+  name: "No past dates",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "With `disablePastDates`, only today and future days can be chosen. Past days are disabled in the calendar. If `minDate` is also set, the later boundary applies.",
+      },
+    },
+  },
+  render: () => <ModalDemo disablePastDates />,
+};
