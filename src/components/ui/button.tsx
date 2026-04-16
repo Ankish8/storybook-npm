@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-semibold leading-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -19,7 +19,7 @@ const buttonVariants = cva(
         success:
           "bg-semantic-success-primary text-semantic-text-inverted hover:bg-semantic-success-hover",
         outline:
-          "border border-solid border-[var(--color-neutral-300,#D5D7DA)] bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
+          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface",
         secondary:
           "bg-semantic-primary-surface text-semantic-text-secondary hover:bg-semantic-bg-hover",
         ghost:
@@ -30,7 +30,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "min-w-20 py-2.5 px-4 [&_svg]:size-4",
-        sm: "min-w-16 py-2 px-3 text-xs [&_svg]:size-3.5",
+        sm: "min-w-16 py-2.5 px-4 text-xs [&_svg]:size-[18px]",
         lg: "min-w-24 py-3 px-6 [&_svg]:size-5",
         icon: "h-8 w-8 rounded-md",
         "icon-sm": "h-7 w-7 rounded-md",

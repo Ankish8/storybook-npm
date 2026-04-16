@@ -482,17 +482,19 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
-  // 4. Handle variant values in cva config objects
-  // Pattern: key: "class string" or key: 'class string' within variants/defaultVariants objects
-  // Handles both unquoted keys (default:) and quoted keys ("icon-sm":)
-  // But be careful not to match non-class string values
-  // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures
+  // 4. Handle variant values in cva config objects / classname lookup maps
+  // Pattern: key: "class string" or key: 'class string' within variants/defaultVariants objects,
+  // but also classname-lookup maps like `{ xs: "size-2 border" }` that components use for
+  // variant-to-class mapping outside of cva().
+  // Handles both unquoted keys (default:) and quoted keys ("icon-sm":).
+  // IMPORTANT: [^"\n]+ prevents matching across newlines to avoid greedy captures.
 
   // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
   // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
   // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
   // position, background, top, left, right, bottom, gap, transform, transition, animation,
   // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  // For those ambiguous keys, we use `cssKeywordValues` below to detect CSS-only values.
   const nonClassKeys = [
     // HTML attributes
     'name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy',
@@ -515,6 +517,26 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
     'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
   ]
 
+  // CSS style-object entries whose keys collide with common CVA variant names
+  // (so they can't go in `nonClassKeys`) but whose values are reserved CSS
+  // keywords, not Tailwind classes. When we see one of these pairs, the context
+  // is unambiguously a React.CSSProperties entry, and prefixing would produce
+  // invalid values like `position: "tw-absolute"` that TypeScript rejects.
+  //
+  // Only values that happen to also be single-word Tailwind utilities need
+  // guarding (that's what creates the ambiguity in the first place).
+  const cssKeywordValues: Record<string, string[]> = {
+    position: ['static', 'relative', 'absolute', 'fixed', 'sticky', 'inherit', 'initial', 'unset', 'revert'],
+    display: ['block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'table', 'inline-table', 'table-row', 'table-cell', 'table-caption', 'contents', 'flow-root', 'list-item', 'none', 'inherit', 'initial', 'unset'],
+    visibility: ['visible', 'hidden', 'collapse', 'inherit', 'initial', 'unset'],
+  }
+
+  function isCSSStyleObjectEntry(key: string, value: string): boolean {
+    const keywords = cssKeywordValues[key]
+    if (!keywords) return false
+    return keywords.includes(value.trim())
+  }
+
   // Handle double-quoted values
   content = content.replace(
     /(\w+|"[^"]+"):\s*"([^"\n]+)"/g,
@@ -523,6 +545,11 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
       const cleanKey = key.replace(/"/g, '')
 
       if (nonClassKeys.includes(cleanKey)) return match
+
+      // Guard against CSS style-object entries (e.g. position: "absolute",
+      // display: "flex", visibility: "hidden") that would otherwise be treated
+      // as Tailwind single-word utilities.
+      if (isCSSStyleObjectEntry(cleanKey, value)) return match
 
       // Only prefix if the value looks like Tailwind classes
       if (!looksLikeTailwindClasses(value)) return match
@@ -540,6 +567,9 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
       const cleanKey = key.replace(/'/g, '')
 
       if (nonClassKeys.includes(cleanKey)) return match
+
+      // Same CSS style-object guard for single-quoted values
+      if (isCSSStyleObjectEntry(cleanKey, value)) return match
 
       // Only prefix if the value looks like Tailwind classes
       if (!looksLikeTailwindClasses(value)) return match

@@ -788,20 +788,18 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     }
   )
 
-  // 4. Handle variant values in cva config objects
-  // Pattern: key: "class string" or key: 'class string' within variants/defaultVariants objects
-  // Handles both unquoted keys (default:) and quoted keys ("icon-sm":)
-  // But be careful not to match non-class string values
-  // IMPORTANT: [^"\\n]+ prevents matching across newlines to avoid greedy captures
+  // 4. Handle variant values in cva config objects / classname lookup maps
+  // Pattern: key: "class string" or key: 'class string' within variants/defaultVariants
+  // objects, but also classname-lookup maps like \`{ xs: "size-2 border" }\` that
+  // components use for variant-to-class mapping outside of cva().
 
   // Skip keys that are definitely not class values (HTML attributes + CSS style properties)
   // IMPORTANT: Only include camelCase CSS properties that CANNOT be CVA variant names.
-  // Do NOT add simple words like: border, outline, color, flex, fill, stroke, display,
-  // position, background, top, left, right, bottom, gap, transform, transition, animation,
-  // cursor, opacity, visibility — these overlap with common CVA variant keys.
+  // Ambiguous simple keys (position, display, visibility, etc.) are guarded via
+  // \`cssKeywordValues\` below instead, because they overlap with common CVA variants.
   const nonClassKeys = [
     // HTML attributes
-    'name', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'text', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy', 'description', 'title', 'content', 'header', 'footer', 'caption', 'summary', 'tooltip', 'errorMessage', 'successMessage', 'warningMessage', 'infoMessage', 'hint',
+    'name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy',
     // CSS style properties (camelCase — safe because they can't be CVA variant keys)
     'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
     'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
@@ -821,30 +819,37 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
   ]
 
-  // Helper to check if value has obvious Tailwind patterns (should always be prefixed)
-  function hasObviousTailwindPatterns(value: string): boolean {
-    // Check for variant prefixes that clearly indicate Tailwind classes
-    return /(?:^|\\s)(hover|focus|active|disabled|group|peer|data-|aria-|sm:|md:|lg:|xl:|2xl:|dark:)/.test(value) ||
-           // Group/peer with selectors
-           /group-\\[|peer-\\[/.test(value) ||
-           // Arbitrary selectors
-           /\\[&/.test(value)
+  // CSS style-object entries whose keys collide with common CVA variant names
+  // (so they can't go in \`nonClassKeys\`) but whose values are reserved CSS
+  // keywords, not Tailwind classes. When we see one of these pairs, the context
+  // is unambiguously a React.CSSProperties entry, and prefixing would produce
+  // invalid values like \`position: "tw-absolute"\` that TypeScript rejects.
+  //
+  // Only values that happen to also be single-word Tailwind utilities need
+  // guarding (that's what creates the ambiguity in the first place).
+  const cssKeywordValues: Record<string, string[]> = {
+    position: ['static', 'relative', 'absolute', 'fixed', 'sticky', 'inherit', 'initial', 'unset', 'revert'],
+    display: ['block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'table', 'inline-table', 'table-row', 'table-cell', 'table-caption', 'contents', 'flow-root', 'list-item', 'none', 'inherit', 'initial', 'unset'],
+    visibility: ['visible', 'hidden', 'collapse', 'inherit', 'initial', 'unset'],
+  }
+
+  function isCSSStyleObjectEntry(key: string, value: string): boolean {
+    const keywords = cssKeywordValues[key]
+    if (!keywords) return false
+    return keywords.includes(value.trim())
   }
 
   // Handle double-quoted values
   content = content.replace(
     /(\\w+|"[^"]+"):\\s*"([^"\\n]+)"/g,
     (match: string, key: string, value: string) => {
-      // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/"/g, '')
-
-      // First check if value looks like Tailwind classes at all
+      if (nonClassKeys.includes(cleanKey)) return match
+      // Guard against CSS style-object entries (e.g. position: "absolute",
+      // display: "flex", visibility: "hidden") that would otherwise be treated
+      // as Tailwind single-word utilities.
+      if (isCSSStyleObjectEntry(cleanKey, value)) return match
       if (!looksLikeTailwindClasses(value)) return match
-
-      // If the value has obvious Tailwind patterns, always prefix (override blocklist)
-      // This handles cases like title: "group-[.toast]:font-semibold" in Sonner
-      if (!hasObviousTailwindPatterns(value) && nonClassKeys.includes(cleanKey)) return match
-
       const prefixed = prefixClassString(value, prefix)
       return \`\${key}: "\${prefixed}"\`
     }
@@ -854,15 +859,10 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   content = content.replace(
     /(\\w+|'[^']+'):\\s*'([^'\\n]+)'/g,
     (match: string, key: string, value: string) => {
-      // Remove quotes from key if present for comparison
       const cleanKey = key.replace(/'/g, '')
-
-      // First check if value looks like Tailwind classes at all
+      if (nonClassKeys.includes(cleanKey)) return match
+      if (isCSSStyleObjectEntry(cleanKey, value)) return match
       if (!looksLikeTailwindClasses(value)) return match
-
-      // If the value has obvious Tailwind patterns, always prefix (override blocklist)
-      if (!hasObviousTailwindPatterns(value) && nonClassKeys.includes(cleanKey)) return match
-
       const prefixed = prefixClassString(value, prefix)
       return \`\${key}: '\${prefixed}'\`
     }
