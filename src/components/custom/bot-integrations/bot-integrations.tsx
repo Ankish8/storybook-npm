@@ -89,14 +89,14 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                 key={integration.id}
                 className="flex flex-col gap-3 py-4 first:pt-0 sm:flex-row sm:items-center sm:gap-4"
               >
-                <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center">
+                <div className="flex min-w-0 flex-1 basis-0 items-start gap-3 sm:items-center">
                   {/* Icon */}
                   <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-semantic-info-surface-subtle p-1.5">
                     {integration.icon}
                   </div>
 
-                  {/* Label + description */}
-                  <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  {/* Label + description — basis-0 so this column takes all space between icon and actions */}
+                  <div className="flex min-w-0 flex-1 basis-0 flex-col gap-1">
                     <p
                       className="m-0 truncate text-sm font-semibold text-semantic-text-primary"
                       title={integration.label}
@@ -105,7 +105,7 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                     </p>
                     {integration.description ? (
                       <p
-                        className="m-0 line-clamp-2 text-sm text-semantic-text-muted"
+                        className="m-0 max-w-[80%] min-w-0 line-clamp-2 text-sm text-semantic-text-muted"
                         title={integration.description}
                       >
                         {integration.description}
