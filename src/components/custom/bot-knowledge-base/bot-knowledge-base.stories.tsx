@@ -85,7 +85,6 @@ export const Empty: Story = {
 };
 
 export const WithAllStatuses: Story = {
-  name: "With All Statuses",
   render: () => (
     <div className="max-w-[500px]">
       <BotKnowledgeBase

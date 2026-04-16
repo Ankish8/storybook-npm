@@ -33,7 +33,7 @@ describe("Button", () => {
 
   it.each([
     ["default", "py-2.5", "px-4"],
-    ["sm", "py-2", "px-3"],
+    ["sm", "py-2.5", "px-4"],
     ["lg", "py-3", "px-6"],
     ["icon", "h-8", "w-8"],
     ["icon-sm", "h-7", "w-7"],

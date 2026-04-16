@@ -149,7 +149,6 @@ export const Disabled: Story = {
 };
 
 export const CustomDescription: Story = {
-  name: "Custom Description",
   render: function Render() {
     const [open, setOpen] = useState(false);
     const [selectedNumber, setSelectedNumber] = useState<string>("");

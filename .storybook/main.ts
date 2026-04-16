@@ -45,11 +45,22 @@ const config: StorybookConfig = {
       ...(Array.isArray(config.optimizeDeps.include) ? config.optimizeDeps.include : []),
       "react",
       "react-dom",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
       "lucide-react",
       "class-variance-authority",
       "clsx",
       "tailwind-merge",
     ];
+    // Force esbuild (used by Storybook's CSF pre-transform) to use the automatic
+    // JSX runtime so story files don't need an explicit `import React from "react"`.
+    // Without this, top-level JSX in argTypes.mapping throws "React is not defined"
+    // at module load because esbuild defaults to the classic React.createElement
+    // transform and does not inject a React import.
+    config.esbuild = {
+      ...config.esbuild,
+      jsx: "automatic",
+    };
     return config;
   },
 };
