@@ -47,18 +47,6 @@ function useTooltipFieldContext() {
   return ctx;
 }
 
-function composeEventHandlers<E extends React.SyntheticEvent>(
-  original: React.EventHandler<E> | undefined,
-  next: React.EventHandler<E> | undefined,
-) {
-  return (event: E) => {
-    original?.(event);
-    if (!event.defaultPrevented) {
-      next?.(event);
-    }
-  };
-}
-
 const Tooltip = (props: React.ComponentProps<typeof TooltipPrimitive.Root>) => {
   const { open: openProp, defaultOpen, onOpenChange: onOpenChangeProp, delayDuration: delayDurationProp } = props;
   const tapMode = usePrefersTapTooltipInteraction();
@@ -163,17 +151,24 @@ const TooltipTrigger = React.forwardRef<
     [tapMode, isControlled, open, setOpen, suppressFocusOpenRef],
   );
 
-  /* Event-handler-only ref writes; rule misfires on composeEventHandlers + useCallback. */
-  /* eslint-disable react-hooks/refs -- suppressFocusOpenRef */
   return (
     <TooltipPrimitive.Trigger
       ref={ref}
       {...props}
-      onPointerDown={composeEventHandlers(onPointerDown, onPointerDownForTap)}
-      onClick={composeEventHandlers(onClick, onClickForTap)}
+      onPointerDown={(e) => {
+        onPointerDown?.(e);
+        if (!e.defaultPrevented) {
+          onPointerDownForTap(e);
+        }
+      }}
+      onClick={(e) => {
+        onClick?.(e);
+        if (!e.defaultPrevented) {
+          onClickForTap(e);
+        }
+      }}
     />
   );
-  /* eslint-enable react-hooks/refs */
 });
 TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName;
 

@@ -4,6 +4,12 @@ import { CreateFunctionModal } from "../create-function-modal";
 import { HEADER_MAX_ROWS } from "../create-function-validation";
 
 const noop = () => {};
+
+const agentMessageOptionalField = () =>
+  screen.getByRole("textbox", { name: "Agent Message (Optional)" });
+
+const agentMessageRequiredField = () =>
+  screen.getByRole("textbox", { name: "Agent Message *" });
 // A prompt string ≥ 100 chars for meeting the default promptMinLength
 const VALID_PROMPT =
   "This is a valid prompt that meets the minimum character length requirement for the create function modal test cases here.";
@@ -37,7 +43,7 @@ describe("CreateFunctionModal", () => {
       />
     );
     expect(screen.getByLabelText(/Function Name/i)).toHaveValue("PrefilledFunc");
-    expect(screen.getByLabelText(/Bot Message/i)).toHaveValue("Hello from bot");
+    expect(agentMessageOptionalField()).toHaveValue("Hello from bot");
     expect(screen.getByLabelText(/Prompt/i)).toHaveValue(VALID_PROMPT);
   });
 
@@ -45,7 +51,7 @@ describe("CreateFunctionModal", () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     expect(screen.getByText("Create Function")).toBeInTheDocument();
     expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Bot Message/i)).toBeInTheDocument();
+    expect(agentMessageOptionalField()).toBeInTheDocument();
     expect(screen.getByLabelText(/Prompt/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Next/i })).toBeInTheDocument();
   });
@@ -341,18 +347,18 @@ describe("CreateFunctionModal", () => {
     );
   });
 
-  it("calls onBotMessageBlur when Bot Message loses focus", async () => {
+  it("calls onBotMessageBlur when Agent Message loses focus", async () => {
     const onBotMessageBlur = vi.fn();
     render(
       <CreateFunctionModal open onOpenChange={noop} onBotMessageBlur={onBotMessageBlur} />
     );
-    const botMsg = screen.getByLabelText(/Bot Message/i);
+    const botMsg = agentMessageOptionalField();
     await user.type(botMsg, "Hi");
     fireEvent.blur(botMsg);
     expect(onBotMessageBlur).toHaveBeenCalledWith("Hi");
   });
 
-  it("shows botMessageValidation under Bot Message", () => {
+  it("shows botMessageValidation under Agent Message", () => {
     render(
       <CreateFunctionModal
         open
@@ -363,9 +369,9 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText("Invalid bot message")).toBeInTheDocument();
   });
 
-  it("shows invalid character message with icon styling on Bot Message blur", () => {
+  it("shows invalid character message with icon styling on Agent Message blur", () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
-    const botMsg = screen.getByLabelText(/Bot Message/i);
+    const botMsg = agentMessageOptionalField();
     fireEvent.change(botMsg, { target: { value: "hello\u0000" } });
     fireEvent.blur(botMsg);
     expect(
@@ -374,7 +380,7 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
-  it("treats Bot Message as required when botMessageOptional is false", async () => {
+  it("treats Agent Message as required when botMessageOptional is false", async () => {
     render(
       <CreateFunctionModal
         open
@@ -382,12 +388,12 @@ describe("CreateFunctionModal", () => {
         botMessageOptional={false}
       />
     );
-    expect(screen.getByText("Bot Message")).toBeInTheDocument();
-    expect(screen.getByLabelText(/Bot Message/i)).toBeRequired();
+    expect(screen.getByText("Agent Message")).toBeInTheDocument();
+    expect(agentMessageRequiredField()).toBeRequired();
     await user.type(screen.getByLabelText(/Function Name/i), "ReqBot");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     expect(screen.getByRole("button", { name: /Next/i })).toBeDisabled();
-    await user.type(screen.getByLabelText(/Bot Message/i), "Hello");
+    await user.type(agentMessageRequiredField(), "Hello");
     expect(screen.getByRole("button", { name: /Next/i })).not.toBeDisabled();
   });
 
@@ -401,6 +407,18 @@ describe("CreateFunctionModal", () => {
     );
     expect(
       screen.getByPlaceholderText("Custom placeholder text")
+    ).toBeInTheDocument();
+  });
+
+  it("uses default Agent Message placeholder and shows the info tooltip trigger", () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    expect(
+      screen.getByPlaceholderText(
+        "e.g. Please wait while I get the data for you"
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Agent Message \(Optional\): more information/i)
     ).toBeInTheDocument();
   });
 

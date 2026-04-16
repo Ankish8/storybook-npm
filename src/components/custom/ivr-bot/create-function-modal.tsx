@@ -1529,11 +1529,17 @@ export const CreateFunctionModal = React.forwardRef(
       setBodyError(getBodyJsonValidationError(value));
     };
 
+    const DEFAULT_AGENT_MESSAGE_TOOLTIP =
+      "Text spoken by the agent before this function is called.";
+
+    const resolvedBotMessageTooltip =
+      botMessageTooltip === undefined
+        ? DEFAULT_AGENT_MESSAGE_TOOLTIP
+        : botMessageTooltip;
+
     const resolvedBotMessagePlaceholder =
       botMessagePlaceholder ??
-      (botMessageOptional
-        ? "Enter optional message for the bot"
-        : "Enter message for the bot");
+      "e.g. Please wait while I get the data for you";
 
     const botMessageRequiredEmptyError =
       !botMessageOptional &&
@@ -1767,19 +1773,19 @@ export const CreateFunctionModal = React.forwardRef(
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <label
-                      htmlFor="fn-bot-message"
+                      htmlFor="fn-agent-message"
                       className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
                     >
                       {botMessageOptional ? (
-                        "Bot Message (Optional)"
+                        "Agent Message (Optional)"
                       ) : (
                         <>
-                          Bot Message{" "}
+                          Agent Message{" "}
                           <span className="text-semantic-error-primary">*</span>
                         </>
                       )}
                     </label>
-                    {botMessageTooltip ? (
+                    {resolvedBotMessageTooltip ? (
                       <TooltipProvider delayDuration={200}>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -1787,20 +1793,20 @@ export const CreateFunctionModal = React.forwardRef(
                               className="inline-flex shrink-0 cursor-help"
                               aria-label={
                                 botMessageOptional
-                                  ? "Bot Message (Optional): more information"
-                                  : "Bot Message: more information"
+                                  ? "Agent Message (Optional): more information"
+                                  : "Agent Message: more information"
                               }
                             >
                               <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent>{botMessageTooltip}</TooltipContent>
+                          <TooltipContent>{resolvedBotMessageTooltip}</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     ) : null}
                   </div>
                   <Textarea
-                    id="fn-bot-message"
+                    id="fn-agent-message"
                     value={botMessage}
                     maxLength={botMessageMaxLength}
                     enforceMaxLength={false}
