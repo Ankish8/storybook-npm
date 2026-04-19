@@ -60,7 +60,7 @@ import { SingleTabEnforcement } from "@/components/custom/single-tab-enforcement
 
 ### Tokens
 
-Uses \`bg-semantic-bg-primary\`, \`border-semantic-border-layout\`, \`text-semantic-text-primary\`, \`text-semantic-text-muted\`, and primary \`Button\` (\`variant=\"default\"\` → \`bg-semantic-primary\` / \`text-semantic-text-inverted\`). With \`openModalOnAction\`, a single trigger opens a **Dialog** whose panel uses the **same three-section card layout** as the inline notice (dividers, typography, centered primary button).
+Uses \`bg-semantic-bg-primary\`, \`border-semantic-border-layout\`, \`text-semantic-text-primary\`, \`text-semantic-text-muted\`, and primary \`Button\` (\`variant="default"\` → \`bg-semantic-primary\` / \`text-semantic-text-inverted\`). With \`openModalOnAction\`, a single trigger opens a **Dialog** whose panel uses the **same three-section card layout** as the inline notice (dividers, typography, centered primary button).
         `,
       },
     },
