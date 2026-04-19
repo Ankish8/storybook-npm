@@ -123,6 +123,9 @@ categories:
       - chat-filter-panel
       - chat-new-panel
       - chat-message-list
+      - chat-notification
+      - clear-local-chat-data
+      - single-tab-enforcement
       - chat-header
       - chat-input
       - chat-template-modal
@@ -1477,6 +1480,59 @@ components:
       - "index.ts"
     mainFile: "chat-message-list.tsx"
 
+  chat-notification:
+    description: "Full-width chat nudge banner for warnings and errors — composes Alert and link Button"
+    category: custom
+    group: "chat"
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - alert
+      - button
+      - typography
+    isMultiFile: true
+    directory: "chat-notification"
+    files:
+      - "chat-notification.tsx"
+      - "index.ts"
+    mainFile: "chat-notification.tsx"
+
+  clear-local-chat-data:
+    description: "Settings block to clear local chat data from the browser with destructive action"
+    category: custom
+    group: "chat"
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - button
+      - typography
+    isMultiFile: true
+    directory: "clear-local-chat-data"
+    files:
+      - "clear-local-chat-data.tsx"
+      - "index.ts"
+    mainFile: "clear-local-chat-data.tsx"
+
+  single-tab-enforcement:
+    description: "Centered notice card when the chat session is active in another tab — Typography + primary Button"
+    category: custom
+    group: "chat"
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - button
+      - typography
+      - dialog
+    isMultiFile: true
+    directory: "single-tab-enforcement"
+    files:
+      - "single-tab-enforcement.tsx"
+      - "index.ts"
+    mainFile: "single-tab-enforcement.tsx"
+
   chat-header:
     description: "Chat window header with assignment dropdown and resolve button"
     category: custom
@@ -1609,6 +1665,9 @@ components:
       - chat-filter-panel
       - chat-new-panel
       - chat-message-list
+      - chat-notification
+      - clear-local-chat-data
+      - single-tab-enforcement
       - chat-header
       - chat-input
       - chat-template-modal

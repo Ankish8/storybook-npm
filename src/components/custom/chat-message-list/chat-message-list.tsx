@@ -6,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger,
   TooltipArrow,
+  TooltipProvider,
 } from "../../ui/tooltip"
 import {
   Check,
@@ -60,11 +61,12 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
     if (!selectedChat || !selectedChatId) return null
 
     return (
-      <div
-        ref={ref}
-        className={cn("flex-1 relative", className)}
-        {...props}
-      >
+      <TooltipProvider delayDuration={200}>
+        <div
+          ref={ref}
+          className={cn("flex-1 relative", className)}
+          {...props}
+        >
         <div
           key={selectedChatId}
           className="absolute inset-0 overflow-y-auto bg-semantic-bg-ui px-6 py-4 animate-in fade-in duration-200 ease-out"
@@ -338,6 +340,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
             : ""}
         </div>
       </div>
+      </TooltipProvider>
     )
   }
 )

@@ -399,7 +399,11 @@ function ReferralMedia({ referral }: { referral: ReferralPayload }) {
           <div className="flex items-center gap-1.5 mb-1">
             <MegaphoneIcon className="size-3 text-semantic-text-muted shrink-0" />
             <span className="text-[11px] text-semantic-text-muted uppercase font-semibold tracking-wider">
-              {referral.sourceType === "post" ? "Post" : "Ad"}
+              {referral.sourceType === "post"
+                ? "Post"
+                : referral.sourceType === "ad"
+                  ? "Ad"
+                  : "Referral"}
             </span>
           </div>
           <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5 line-clamp-2">

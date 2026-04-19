@@ -178,6 +178,39 @@ const chatItems: ChatItem[] = [
     messageStatus: "read",
     channel: "MY02",
   },
+  /* Storybook: isolated message-type showcases (Chat Message List) */
+  {
+    id: "msg-story-referral",
+    tab: "open",
+    name: "Story: Referral (CTWA)",
+    message: "Referral payloads",
+    timestamp: "Now",
+    channel: "MY01",
+  },
+  {
+    id: "msg-story-location",
+    tab: "open",
+    name: "Story: Location pin",
+    message: "Location payloads",
+    timestamp: "Now",
+    channel: "MY01",
+  },
+  {
+    id: "msg-story-contact",
+    tab: "open",
+    name: "Story: Contact card",
+    message: "Contact payloads",
+    timestamp: "Now",
+    channel: "MY01",
+  },
+  {
+    id: "msg-story-list",
+    tab: "open",
+    name: "Story: List reply",
+    message: "List reply payloads",
+    timestamp: "Now",
+    channel: "MY01",
+  },
 ]
 
 const templateList: TemplateDef[] = [
@@ -642,6 +675,162 @@ const chatMessages: Record<string, ChatMessage[]> = {
         fileType: "PDF",
         pageCount: 12,
         fileSize: "3.1MB",
+      },
+    },
+  ],
+  /* ReferralPayload — headline (required in UI); body, sourceUrl, thumbnailUrl, sourceType optional */
+  "msg-story-referral": [
+    {
+      id: "sr-full",
+      text: "I came from this ad (all optional fields set).",
+      time: "10:00 AM",
+      sender: "customer",
+      type: "referral",
+      referral: {
+        headline: "MyOperator — Cloud telephony & WhatsApp Business API",
+        body: "Automate IVR, live chat, and campaigns. Book a free demo with our solutions team.",
+        sourceUrl: "https://fb.me/myoperator-promo",
+        thumbnailUrl: "https://picsum.photos/seed/referral-ad/120/120",
+        sourceType: "ad",
+      },
+    },
+    {
+      id: "sr-post",
+      text: "This one is from a social post.",
+      time: "10:02 AM",
+      sender: "customer",
+      type: "referral",
+      referral: {
+        headline: "Monsoon sale — 40% off annual plans",
+        body: "Limited time offer for SMB teams upgrading from legacy PBX.",
+        sourceType: "post",
+        thumbnailUrl: "https://picsum.photos/seed/referral-post/120/120",
+        sourceUrl: "https://instagram.com/p/example",
+      },
+    },
+    {
+      id: "sr-unknown",
+      text: "Unknown source type — headline only.",
+      time: "10:04 AM",
+      sender: "customer",
+      type: "referral",
+      referral: {
+        headline: "Partner referral — contact sales",
+        sourceType: "unknown",
+      },
+    },
+  ],
+  /* LocationPayload — latitude & longitude required; name & address optional */
+  "msg-story-location": [
+    {
+      id: "sl-full",
+      text: "Here is our office (name + address + coordinates).",
+      time: "11:00 AM",
+      sender: "customer",
+      type: "location",
+      location: {
+        latitude: 19.076,
+        longitude: 72.8777,
+        name: "MyOperator HQ (example)",
+        address: "Bandra Kurla Complex, Mumbai, Maharashtra 400051",
+      },
+    },
+    {
+      id: "sl-coords",
+      text: "Coordinates only (no place name or address).",
+      time: "11:05 AM",
+      sender: "customer",
+      type: "location",
+      location: {
+        latitude: -33.8688,
+        longitude: 151.2093,
+      },
+    },
+  ],
+  /* ContactPayload — name & phone required in product flows; email & organization optional */
+  "msg-story-contact": [
+    {
+      id: "sc-full",
+      text: "Please use this contact (all fields).",
+      time: "12:00 PM",
+      sender: "customer",
+      type: "contact",
+      contactCard: {
+        name: "Priya Sharma",
+        phone: "+91 98765 43210",
+        email: "priya.sharma@example.com",
+        organization: "MyOperator Pvt Ltd",
+      },
+    },
+    {
+      id: "sc-min",
+      text: "Minimal vCard — name and phone only.",
+      time: "12:03 PM",
+      sender: "customer",
+      type: "contact",
+      contactCard: {
+        name: "Arjun Mehta",
+        phone: "+91 91234 56789",
+      },
+    },
+  ],
+  /* ListReplyPayload — body & buttonText required; header, footer, sections optional (sections for API parity) */
+  "msg-story-list": [
+    {
+      id: "slr-full",
+      text: "",
+      time: "1:00 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      type: "listReply",
+      listReply: {
+        header: "Choose a support tier",
+        body: "Pick the option that matches your team size. You can change plans later from billing settings.",
+        footer: "Reply with a number or tap the button below.",
+        buttonText: "View options",
+        sections: [
+          {
+            title: "Self-serve",
+            rows: [
+              {
+                id: "s1",
+                title: "Starter",
+                description: "Up to 3 agents · 1k conversations / mo",
+              },
+              {
+                id: "s2",
+                title: "Growth",
+                description: "Up to 10 agents · 5k conversations / mo",
+              },
+            ],
+          },
+          {
+            title: "Enterprise",
+            rows: [
+              {
+                id: "e1",
+                title: "Custom SLA",
+                description: "Dedicated CSM & onboarding",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "slr-min",
+      text: "",
+      time: "1:05 PM",
+      sender: "agent",
+      senderName: "Alex Smith",
+      status: "delivered",
+      sentBy: { type: "agent", name: "Alex Smith" },
+      type: "listReply",
+      listReply: {
+        body: "Which integration do you need help with?",
+        buttonText: "Show list",
       },
     },
   ],
