@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 98 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 101 components across 7 categories.
 
 ## Quick Reference
 
@@ -91,6 +91,9 @@
 | ChatFilterPanel | custom | `npx myoperator-ui add chat-filter-panel` |
 | ChatNewPanel | custom | `npx myoperator-ui add chat-new-panel` |
 | ChatMessageList | custom | `npx myoperator-ui add chat-message-list` |
+| ChatNotification | custom | `npx myoperator-ui add chat-notification` |
+| ClearLocalChatData | custom | `npx myoperator-ui add clear-local-chat-data` |
+| SingleTabEnforcement | custom | `npx myoperator-ui add single-tab-enforcement` |
 | ChatHeader | custom | `npx myoperator-ui add chat-header` |
 | ChatInput | custom | `npx myoperator-ui add chat-input` |
 | ChatTemplateModal | custom | `npx myoperator-ui add chat-template-modal` |
@@ -1080,6 +1083,33 @@ import { Mail } from "lucide-react"
 
 ---
 
+### ChatNotification
+> Full-width chat nudge banner for warnings and errors — composes Alert and link Button
+
+**Install**: `npx myoperator-ui add chat-notification`
+**Requires**: `alert`, `button`, `typography` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### ClearLocalChatData
+> Settings block to clear local chat data from the browser with destructive action
+
+**Install**: `npx myoperator-ui add clear-local-chat-data`
+**Requires**: `button`, `typography` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### SingleTabEnforcement
+> Centered notice card when the chat session is active in another tab — Typography + primary Button
+
+**Install**: `npx myoperator-ui add single-tab-enforcement`
+**Requires**: `button`, `typography`, `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
 ### ChatHeader
 > Chat window header with assignment dropdown and resolve button
 
@@ -1120,7 +1150,7 @@ import { Mail } from "lucide-react"
 > Complete chat application template — install this to get the full chat UI
 
 **Install**: `npx myoperator-ui add chat-template`
-**Requires**: `chat-types`, `chat-transport`, `chat-provider`, `chat-sidebar`, `chat-filter-panel`, `chat-new-panel`, `chat-message-list`, `chat-header`, `chat-input`, `chat-template-modal`, `chat-contact-panel`, `sender-indicator`, `button`, `tooltip` (auto-installed)
+**Requires**: `chat-types`, `chat-transport`, `chat-provider`, `chat-sidebar`, `chat-filter-panel`, `chat-new-panel`, `chat-message-list`, `chat-notification`, `clear-local-chat-data`, `single-tab-enforcement`, `chat-header`, `chat-input`, `chat-template-modal`, `chat-contact-panel`, `sender-indicator`, `button`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
