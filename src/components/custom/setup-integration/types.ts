@@ -14,12 +14,15 @@ export interface ChatMessage {
   /**
    * Visual variant for the message bubble:
    * - "default" — assistant: info surface, user: gray surface (default)
-   * - "success" — green success surface (typically final confirmation)
-   * - "error" — red error surface (AI processing failure)
-   * - "status" — no bubble, muted text with avatar (e.g., "Mapping tool...")
+   * - "success" — green success surface (assistant or user)
+   * - "error" — red error surface (assistant or user-authored failure)
+   * - "status" — no bubble, muted text only (e.g., "Mapping tool…", "Running test…")
    */
   variant?: "default" | "success" | "error" | "status"
-  /** Optional status label shown above the message bubble (e.g., "Running test...") */
+  /**
+   * Optional label above the assistant bubble (no bubble on this line), e.g. "Running test…".
+   * If `content` is empty/whitespace and this is set, only this line is shown (progress, no bubble below).
+   */
   statusLabel?: string
 }
 

@@ -435,7 +435,7 @@ describe("ChatMessageBubble", () => {
     expect(container.querySelector(".bg-semantic-bg-ui")).toBeTruthy()
   })
 
-  it("renders status variant as muted text with avatar", () => {
+  it("renders status variant as muted text without a bubble", () => {
     render(
       <ChatMessageBubble
         message={{
@@ -447,16 +447,80 @@ describe("ChatMessageBubble", () => {
       />
     )
     expect(screen.getByText("Mapping tool.")).toBeInTheDocument()
-    // Status text should be muted
     const statusText = screen.getByText("Mapping tool.")
     expect(statusText.classList.contains("text-semantic-text-muted")).toBe(true)
+  })
+
+  it("renders assistant progress line only when statusLabel is set and content is empty", () => {
+    const { container } = render(
+      <ChatMessageBubble
+        message={{
+          id: "progress-1",
+          role: "assistant",
+          content: "   ",
+          statusLabel: "Running test...",
+        }}
+      />
+    )
+    expect(screen.getByText("Running test...")).toBeInTheDocument()
+    expect(container.querySelector(".rounded-lg")).toBeFalsy()
+  })
+
+  it("applies w-fit to assistant bubbles so width follows content", () => {
+    const { container } = render(
+      <ChatMessageBubble
+        message={{ id: "1", role: "assistant", content: "Short" }}
+      />
+    )
+    const bubble = container.querySelector(".rounded-tl-none")
+    expect(bubble?.classList.contains("w-fit")).toBe(true)
+  })
+
+  it("renders user-authored error variant with error surface and text", () => {
+    const { container } = render(
+      <ChatMessageBubble
+        message={{
+          id: "u-err",
+          role: "user",
+          content: "Invalid input",
+          variant: "error",
+        }}
+      />
+    )
+    expect(screen.getByText("Invalid input")).toBeInTheDocument()
+    expect(
+      container.querySelector(".bg-semantic-error-surface")
+    ).toBeTruthy()
+    expect(screen.getByText("Invalid input").classList.contains("text-semantic-error-text")).toBe(
+      true
+    )
+  })
+
+  it("renders user-authored success variant with success surface and text", () => {
+    const { container } = render(
+      <ChatMessageBubble
+        message={{
+          id: "u-ok",
+          role: "user",
+          content: "Saved",
+          variant: "success",
+        }}
+      />
+    )
+    expect(screen.getByText("Saved")).toBeInTheDocument()
+    expect(
+      container.querySelector(".bg-semantic-success-surface")
+    ).toBeTruthy()
+    expect(
+      screen.getByText("Saved").classList.contains("text-semantic-success-text")
+    ).toBe(true)
   })
 
   it("renders statusLabel above message bubble", () => {
     render(
       <ChatMessageBubble
         message={{
-          id: "5",
+          id: "status-label-1",
           role: "assistant",
           content: "Test content here",
           statusLabel: "Running test...",
@@ -471,7 +535,7 @@ describe("ChatMessageBubble", () => {
     const { container } = render(
       <ChatMessageBubble
         message={{
-          id: "4",
+          id: "asst-success-1",
           role: "assistant",
           content: "Test passed!",
           variant: "success",
@@ -488,7 +552,7 @@ describe("ChatMessageBubble", () => {
     const { container } = render(
       <ChatMessageBubble
         message={{
-          id: "5",
+          id: "asst-err-1",
           role: "assistant",
           content: "Something went wrong processing your message. Please try again.",
           variant: "error",
@@ -509,7 +573,7 @@ describe("ChatMessageBubble", () => {
     render(
       <ChatMessageBubble
         message={{
-          id: "6",
+          id: "asst-err-color",
           role: "assistant",
           content: "Error occurred",
           variant: "error",
@@ -524,7 +588,7 @@ describe("ChatMessageBubble", () => {
     const { container } = render(
       <ChatMessageBubble
         message={{
-          id: "7",
+          id: "asst-err-align",
           role: "assistant",
           content: "Error message",
           variant: "error",

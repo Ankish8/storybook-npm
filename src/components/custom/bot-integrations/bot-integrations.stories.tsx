@@ -77,8 +77,8 @@ import { BotIntegrations } from "@/components/custom/bot-integrations"
 | \`id\` | \`string\` | Yes | Unique key for the row |
 | \`label\` | \`string\` | Yes | Title (single line + ellipsis; full text on hover via \`title\`) |
 | \`icon\` | \`ReactNode\` | Yes | Logo / icon in the rounded tile |
-| \`onEdit\` | \`() => void\` | Yes | Edit action for this row |
-| \`onDelete\` | \`() => void\` | Yes | Delete action for this row |
+| \`onEdit\` | \`(integrationId: string) => void\` | Yes | Edit action — receives the row \`id\` |
+| \`onDelete\` | \`(integrationId: string) => void\` | Yes | Delete action — receives the row \`id\` |
 | \`description\` | \`string\` | Optional* | Body copy (max two lines + ellipsis) — *required in TypeScript when \`descriptionRequirement="required"\` on the section |
 
 ### Design Tokens
@@ -148,7 +148,7 @@ function attachRowHandlers(
   return rows.map((row) => ({
     ...row,
     onEdit: fn(),
-    onDelete: () => onRemove(row.id),
+    onDelete: (id) => onRemove(id),
   }))
 }
 

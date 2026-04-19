@@ -32,12 +32,12 @@ const IntegrationAssistantBar = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-[52px] shrink-0 items-center justify-between border-b border-semantic-border-layout bg-semantic-info-surface-subtle px-6",
+        "flex min-h-[52px] shrink-0 flex-wrap items-center justify-between gap-2 border-b border-semantic-border-layout bg-semantic-info-surface-subtle px-4 py-2.5 sm:h-[52px] sm:flex-nowrap sm:px-6 sm:py-0",
         className
       )}
       {...props}
     >
-      <div className="flex items-center gap-2.5 px-1">
+      <div className="flex min-w-0 items-center gap-2 px-0.5 sm:gap-2.5 sm:px-1">
         {leadingIcon ?? (
           <Sparkles className="size-[18px] text-semantic-text-secondary" />
         )}

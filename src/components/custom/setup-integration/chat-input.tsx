@@ -1,5 +1,5 @@
 import * as React from "react"
-import { SendHorizonal } from "lucide-react"
+import { SendHorizontal } from "lucide-react"
 import { cn } from "../../../lib/utils"
 import type { ChatInputProps } from "./types"
 
@@ -30,9 +30,9 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
     return (
       <div
         ref={ref}
-        className="border-t border-semantic-border-layout px-6 pb-2 pt-5"
+        className="border-t border-semantic-border-layout px-4 pb-2 pt-4 sm:px-6 sm:pt-5"
       >
-        <div className="flex h-12 items-center rounded-[10px] border border-semantic-border-input bg-semantic-bg-primary pl-4 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)]">
+        <div className="flex min-h-12 items-center rounded-[10px] border border-semantic-border-input bg-semantic-bg-primary pl-3 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)] sm:pl-4">
           <input
             type="text"
             value={value}
@@ -58,7 +58,7 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
             )}
             aria-label="Send message"
           >
-            <SendHorizonal className="size-5" />
+            <SendHorizontal className="size-5" />
           </button>
         </div>
       </div>
