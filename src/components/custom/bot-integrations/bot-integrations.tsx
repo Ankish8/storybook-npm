@@ -171,7 +171,7 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    onClick={integration.onEdit}
+                    onClick={() => integration.onEdit(integration.id)}
                     disabled={disabled}
                     className="text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
                     aria-label={`Edit ${integration.label}`}
@@ -182,7 +182,7 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    onClick={integration.onDelete}
+                    onClick={() => integration.onDelete(integration.id)}
                     disabled={disabled}
                     className="text-semantic-text-muted hover:bg-semantic-error-surface hover:text-semantic-error-primary"
                     aria-label={`Delete ${integration.label}`}

@@ -173,22 +173,24 @@ describe("BotIntegrations", () => {
     expect(onAdd).toHaveBeenCalledTimes(1)
   })
 
-  it("calls the row onEdit handler when edit is clicked", async () => {
+  it("calls the row onEdit handler with integration id when edit is clicked", async () => {
     const user = userEvent.setup()
     onEditGoogle.mockClear()
     render(<BotIntegrations integrations={SIMPLE_INTEGRATIONS} />)
     const editBtn = screen.getByLabelText("Edit Google Sheets")
     await user.click(editBtn)
     expect(onEditGoogle).toHaveBeenCalledTimes(1)
+    expect(onEditGoogle).toHaveBeenCalledWith("int-1")
   })
 
-  it("calls the row onDelete handler when delete is clicked", async () => {
+  it("calls the row onDelete handler with integration id when delete is clicked", async () => {
     const user = userEvent.setup()
     onDeleteSlack.mockClear()
     render(<BotIntegrations integrations={SIMPLE_INTEGRATIONS} />)
     const deleteBtn = screen.getByLabelText("Delete Slack")
     await user.click(deleteBtn)
     expect(onDeleteSlack).toHaveBeenCalledTimes(1)
+    expect(onDeleteSlack).toHaveBeenCalledWith("int-2")
   })
 
   // ── className & ref ────────────────────────────────────────────────────────

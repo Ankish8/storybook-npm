@@ -31,7 +31,7 @@ const IntegrationActions = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex items-center justify-end px-6 pb-5 pt-2",
+        "flex flex-col items-stretch gap-2 px-4 pb-4 pt-2 sm:flex-row sm:items-center sm:justify-end sm:gap-0 sm:px-6 sm:pb-5",
         className
       )}
       {...props}
@@ -41,7 +41,7 @@ const IntegrationActions = React.forwardRef<
         disabled={isActionDisabled || isActionLoading}
         onClick={onAction}
         className={cn(
-          "flex h-12 items-center justify-center gap-2 rounded px-4 text-sm font-semibold tracking-wide text-semantic-text-inverted transition-colors",
+          "flex h-12 w-full min-w-0 shrink-0 items-center justify-center gap-2 rounded px-4 text-sm font-semibold tracking-wide text-semantic-text-inverted transition-colors sm:w-auto",
           isActionDisabled || isActionLoading
             ? "cursor-not-allowed bg-semantic-disabled-primary"
             : "bg-semantic-primary hover:bg-semantic-primary-hover"

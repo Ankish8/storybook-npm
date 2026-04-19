@@ -69,7 +69,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
       <div
         ref={ref}
         className={cn(
-          "flex items-center gap-2.5 border-b border-semantic-border-layout p-6",
+          "flex items-start gap-2.5 border-b border-semantic-border-layout p-4 sm:items-center sm:p-6",
           className
         )}
         {...props}
@@ -81,13 +81,13 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
             className="shrink-0 text-semantic-text-primary hover:text-semantic-text-secondary transition-colors"
             aria-label="Go back"
           >
-            {backIcon ?? <ArrowLeft className="size-6" />}
+            {backIcon ?? <ArrowLeft className="size-5 shrink-0 sm:size-6" />}
           </button>
         )}
-        <div className="flex flex-1 flex-col gap-0.5">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           {integrationName !== undefined ? (
-            <div className="flex items-center gap-1.5">
-              <h2 className="m-0 shrink-0 text-lg font-semibold text-semantic-text-primary">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
+              <h2 className="m-0 shrink-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                 {title} -
               </h2>
               {isEditingName ? (
@@ -98,7 +98,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
                     onChange={(e) => setEditNameDraft(e.target.value)}
                     onKeyDown={handleEditNameKeyDown}
                     autoFocus
-                    className="m-0 h-8 rounded border border-semantic-border-focus bg-semantic-bg-primary px-2 text-lg font-semibold text-semantic-text-primary outline-none"
+                    className="m-0 h-8 min-w-0 max-w-full flex-1 rounded border border-semantic-border-focus bg-semantic-bg-primary px-2 text-base font-semibold text-semantic-text-primary outline-none sm:max-w-md sm:text-lg"
                     aria-label="Integration name"
                   />
                   <button
@@ -112,7 +112,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
                 </>
               ) : (
                 <>
-                  <span className="text-lg font-semibold text-semantic-text-primary">
+                  <span className="min-w-0 max-w-full break-words text-base font-semibold text-semantic-text-primary sm:text-lg">
                     {integrationName}
                   </span>
                   {onIntegrationNameChange && (
@@ -129,7 +129,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
               )}
             </div>
           ) : (
-            <h2 className="m-0 text-lg font-semibold text-semantic-text-primary">
+            <h2 className="m-0 min-w-0 break-words text-base font-semibold text-semantic-text-primary sm:text-lg">
               {title}
             </h2>
           )}

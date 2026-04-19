@@ -7,10 +7,10 @@ export interface IntegrationItemBase {
   label: string
   /** Integration icon (e.g. an `<img>` or SVG) */
   icon: React.ReactNode
-  /** Called when the user activates edit for this row */
-  onEdit: () => void
-  /** Called when the user activates delete for this row */
-  onDelete: () => void
+  /** Called when the user activates edit for this row — receives this row's `id` */
+  onEdit: (integrationId: string) => void
+  /** Called when the user activates delete for this row — receives this row's `id` */
+  onDelete: (integrationId: string) => void
 }
 
 /** Row with optional description (default). */
