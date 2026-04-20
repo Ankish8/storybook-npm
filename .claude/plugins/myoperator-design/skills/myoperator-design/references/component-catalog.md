@@ -1004,10 +1004,10 @@ import { Mail } from "lucide-react"
 ---
 
 ### BotSettings
-> Collapsible Settings section with Connect WhatsApp multi-select (Figma-style rows, search, validation)
+> Settings card with Connect WhatsApp multi-select and optional Human Handover row (Figma WABA Phase 1)
 
 **Install**: `npx myoperator-ui add bot-settings`
-**Requires**: `multi-select`, `tooltip` (auto-installed)
+**Requires**: `multi-select`, `tooltip`, `bot-human-handover` (auto-installed)
 **Type**: Multi-file component
 
 ---
