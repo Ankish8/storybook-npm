@@ -1214,13 +1214,14 @@ components:
     mainFile: "index.ts"
 
   bot-settings:
-    description: "Collapsible Settings section with Connect WhatsApp multi-select (Figma-style rows, search, validation)"
+    description: "Settings card with Connect WhatsApp multi-select and optional Human Handover row (Figma WABA Phase 1)"
     category: custom
     dependencies:
       - "lucide-react"
     internalDependencies:
       - multi-select
       - tooltip
+      - bot-human-handover
     isMultiFile: true
     directory: "bot-settings"
     files:

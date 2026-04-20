@@ -1,6 +1,11 @@
 import * as React from "react";
 import type { MultiSelectOptionInput } from "../../ui/multi-select";
+import type { BotHumanHandoverProps } from "../bot-human-handover/types";
 
+/**
+ * Settings card for bot configuration: fluid width (`min-w-0` / `max-w-full`), responsive padding,
+ * and `overflow-visible` so the WhatsApp multi-select menu is not clipped.
+ */
 export interface BotSettingsProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
   /**
@@ -70,4 +75,10 @@ export interface BotSettingsProps
   defaultOpen?: boolean;
   /** Disables the WhatsApp multi-select */
   disabled?: boolean;
+  /**
+   * Props forwarded to `BotHumanHandover` below Connect WhatsApp.
+   * Pass `false` to omit the Human Handover block.
+   * @default {} (embedded handover row; toggle off unless you pass `enabled`)
+   */
+  humanHandover?: false | Partial<BotHumanHandoverProps>;
 }
