@@ -23,7 +23,7 @@ const SetupIntegration = React.forwardRef<
       messages,
       inputValue = "",
       isInputDisabled = false,
-      inputPlaceholder = "Describe your action...",
+      inputPlaceholder = "Describe your action… (Shift+Enter for new line)",
       isActionLoading = false,
       actionLabel = "Test Integration",
       isActionDisabled = false,
@@ -33,6 +33,7 @@ const SetupIntegration = React.forwardRef<
       onClose,
       onBack,
       onInputChange,
+      onInputKeyDown,
       onSendMessage,
       onAction,
       onResetChat,
@@ -83,6 +84,7 @@ const SetupIntegration = React.forwardRef<
             onClose={onClose ? handleDiscardRequest : undefined}
             onBack={onBack ? handleDiscardRequest : undefined}
             onInputChange={onInputChange}
+            onInputKeyDown={onInputKeyDown}
             onSendMessage={onSendMessage}
             onAction={onAction}
             onResetChat={onResetChat ? handleResetRequest : undefined}

@@ -476,6 +476,36 @@ describe("ChatMessageBubble", () => {
     expect(bubble?.classList.contains("w-fit")).toBe(true)
   })
 
+  it("renders markdown (bold and italic) in assistant bubbles", () => {
+    render(
+      <ChatMessageBubble
+        message={{
+          id: "md-asst",
+          role: "assistant",
+          content: "Use **bold** and _italic_.",
+        }}
+      />
+    )
+    const strong = screen.getByText("bold")
+    expect(strong.tagName.toLowerCase()).toBe("strong")
+    const em = screen.getByText("italic")
+    expect(em.tagName.toLowerCase()).toBe("em")
+  })
+
+  it("renders markdown in user bubbles", () => {
+    render(
+      <ChatMessageBubble
+        message={{
+          id: "md-user",
+          role: "user",
+          content: "Item:\n\n- one\n- two",
+        }}
+      />
+    )
+    expect(screen.getByText("one")).toBeInTheDocument()
+    expect(screen.getByText("two")).toBeInTheDocument()
+  })
+
   it("renders user-authored error variant with error surface and text", () => {
     const { container } = render(
       <ChatMessageBubble
@@ -491,8 +521,8 @@ describe("ChatMessageBubble", () => {
     expect(
       container.querySelector(".bg-semantic-error-surface")
     ).toBeTruthy()
-    expect(screen.getByText("Invalid input").classList.contains("text-semantic-error-text")).toBe(
-      true
+    expect(screen.getByText("Invalid input").parentElement).toHaveClass(
+      "text-semantic-error-text"
     )
   })
 
@@ -511,9 +541,9 @@ describe("ChatMessageBubble", () => {
     expect(
       container.querySelector(".bg-semantic-success-surface")
     ).toBeTruthy()
-    expect(
-      screen.getByText("Saved").classList.contains("text-semantic-success-text")
-    ).toBe(true)
+    expect(screen.getByText("Saved").parentElement).toHaveClass(
+      "text-semantic-success-text"
+    )
   })
 
   it("renders statusLabel above message bubble", () => {
@@ -581,7 +611,7 @@ describe("ChatMessageBubble", () => {
       />
     )
     const text = screen.getByText("Error occurred")
-    expect(text.classList.contains("text-semantic-error-text")).toBe(true)
+    expect(text.parentElement).toHaveClass("text-semantic-error-text")
   })
 
   it("renders error variant left-aligned like assistant messages", () => {
@@ -627,6 +657,31 @@ describe("ChatInput", () => {
     render(<ChatInput value="Add Row" onSend={onSend} />)
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" })
     expect(onSend).toHaveBeenCalledWith("Add Row")
+  })
+
+  it("does not call onSend when Shift+Enter is pressed (new line)", () => {
+    const onSend = vi.fn()
+    render(<ChatInput value="Line one" onSend={onSend} />)
+    fireEvent.keyDown(screen.getByRole("textbox"), {
+      key: "Enter",
+      shiftKey: true,
+    })
+    expect(onSend).not.toHaveBeenCalled()
+  })
+
+  it("does not send when onInputKeyDown prevents default on Enter", () => {
+    const onSend = vi.fn()
+    render(
+      <ChatInput
+        value="hello"
+        onSend={onSend}
+        onInputKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) e.preventDefault()
+        }}
+      />
+    )
+    fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" })
+    expect(onSend).not.toHaveBeenCalled()
   })
 
   it("does not call onSend when Enter is pressed with empty value", () => {

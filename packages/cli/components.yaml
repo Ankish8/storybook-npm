@@ -1707,6 +1707,8 @@ components:
     category: custom
     dependencies:
       - "lucide-react"
+      - "react-markdown"
+      - "remark-gfm"
     internalDependencies:
       - spinner
       - dialog
@@ -1715,6 +1717,7 @@ components:
     directory: "setup-integration"
     files:
       - "types.ts"
+      - "markdown-content.tsx"
       - "chat-message.tsx"
       - "chat-input.tsx"
       - "integration-steps.tsx"
