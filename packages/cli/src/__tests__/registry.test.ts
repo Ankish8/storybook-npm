@@ -92,6 +92,8 @@ describe('Registry', () => {
       'clsx',
       'tailwind-merge',
       'lucide-react',
+      'react-markdown',
+      'remark-gfm',
       'tailwindcss-animate',  // Required for animation classes (animate-in, animate-out, etc.)
     ]
 
