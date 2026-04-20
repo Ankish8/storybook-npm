@@ -118,6 +118,9 @@ export type { SelectTriggerProps } from "./components/ui/select";
 export {
   CreatableSelect,
   creatableSelectTriggerVariants,
+  creatableEnterHintKbdClassName,
+  creatablePrimaryRoleHintRowClassName,
+  creatableToneHintRowClassName,
 } from "./components/ui/creatable-select";
 export type {
   CreatableSelectProps,

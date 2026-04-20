@@ -198,6 +198,16 @@ export interface CreateFunctionModalProps {
    * Omit for default (2000). Pass `null` for no limit.
    */
   descriptionMaxLimit?: number | null;
+  /**
+   * When `false`, the **Agent Message** field is not rendered and Step 1 validation skips it
+   * (submitted `botMessage` is `""`). When omitted or `true`, the field is shown.
+   */
+  showAgentMessage?: boolean;
+  /**
+   * When `false`, the **Prompt** field is not rendered and Step 1 skips `promptMinLength`
+   * (submitted `prompt` is `""`). When omitted or `true`, the field is shown.
+   */
+  showFunctionPrompt?: boolean;
 }
 
 export interface IvrBotConfigData {
@@ -304,6 +314,16 @@ export interface IvrBotConfigProps {
    * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
    */
   escalateToHumanInfoTooltip?: string;
+  /**
+   * Passed to FrustrationHandoverCard — when `false`, the Escalation **Prompt** textarea is not rendered.
+   * When omitted or `true`, it is shown when escalation is enabled.
+   */
+  showEscalationPrompt?: boolean;
+  /**
+   * Passed to FrustrationHandoverCard — when `false`, **Transfer to department** is not rendered.
+   * When omitted or `true`, it is shown.
+   */
+  showEscalationDepartment?: boolean;
   /** Maximum characters for Escalate to Human **Prompt** (default: 5000). */
   escalationPromptMaxLength?: number;
   /** External validation message for Escalate to Human **Prompt** (e.g. from save/publish). */
@@ -333,6 +353,16 @@ export interface IvrBotConfigProps {
   functionBotMessageOptional?: boolean;
   /** Overrides Agent Message placeholder in Create/Edit Function (see `CreateFunctionModal` `botMessagePlaceholder`). */
   functionBotMessagePlaceholder?: string;
+  /**
+   * Passed to Create Function / Edit Function modals — when `false`, **Agent Message** is not rendered.
+   * When omitted or `true`, the field is shown.
+   */
+  showCreateFunctionAgentMessage?: boolean;
+  /**
+   * Passed to Create Function / Edit Function modals — when `false`, **Prompt** is not rendered.
+   * When omitted or `true`, the field is shown.
+   */
+  showCreateFunctionPrompt?: boolean;
   /**
    * Pre-filled data shown when the edit function modal opens.
    * Pass when your app fetches full function data after onEditFunction fires.

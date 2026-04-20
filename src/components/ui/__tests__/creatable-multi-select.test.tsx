@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CreatableMultiSelect } from "../creatable-multi-select";
 
@@ -11,18 +11,17 @@ const OPTIONS = [
 describe("CreatableMultiSelect", () => {
   it("renders with placeholder when no values", () => {
     render(<CreatableMultiSelect options={OPTIONS} placeholder="Pick items" />);
-    expect(screen.getByPlaceholderText("Pick items")).toBeInTheDocument();
+    expect(screen.getByText("Pick items")).toBeInTheDocument();
   });
 
-  it("renders selected values as chips", () => {
+  it("renders selected values as comma-separated summary when closed", () => {
     render(
       <CreatableMultiSelect options={OPTIONS} value={["Alpha", "Beta"]} />
     );
-    expect(screen.getByText("Alpha")).toBeInTheDocument();
-    expect(screen.getByText("Beta")).toBeInTheDocument();
+    expect(screen.getByText("Alpha, Beta")).toBeInTheDocument();
   });
 
-  it("calls onValueChange when removing a chip", async () => {
+  it("calls onValueChange when removing last item with Backspace on empty input", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(
@@ -32,15 +31,18 @@ describe("CreatableMultiSelect", () => {
         onValueChange={onChange}
       />
     );
-    // Click the × button on the first chip
-    const removeButtons = screen.getAllByRole("button", { name: /remove/i });
-    await user.click(removeButtons[0]);
-    expect(onChange).toHaveBeenCalledWith(["Beta"]);
+    await user.click(screen.getByRole("button"));
+    const input = screen.getByRole("combobox");
+    await waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+    await user.keyboard("{Backspace}");
+    expect(onChange).toHaveBeenCalledWith(["Alpha"]);
   });
 
   it("renders without options (empty list)", () => {
     render(<CreatableMultiSelect placeholder="Pick items" />);
-    expect(screen.getByPlaceholderText("Pick items")).toBeInTheDocument();
+    expect(screen.getByText("Pick items")).toBeInTheDocument();
   });
 
   it("applies custom className", () => {
@@ -76,16 +78,15 @@ describe("CreatableMultiSelect", () => {
         onValueChange={onChange}
       />
     );
+    await user.click(screen.getByRole("button"));
     const input = screen.getByRole("combobox");
-    await user.click(input);
     await user.type(input, "angry");
     expect(
       screen.getByText("Type to create a custom tone")
     ).toBeInTheDocument();
     expect(screen.getByText("Max selections allowed: 5")).toBeInTheDocument();
-    const enterBtn = screen.getByRole("button", { name: /add using enter key/i });
-    expect(enterBtn).toBeInTheDocument();
-    await user.click(enterBtn);
+    expect(screen.getByText("Enter ↵")).toBeInTheDocument();
+    await user.keyboard("{Enter}");
     expect(onChange).toHaveBeenCalledWith(["angry"]);
   });
 
@@ -104,8 +105,8 @@ describe("CreatableMultiSelect", () => {
         maxLengthPerItem={20}
       />
     );
+    await user.click(screen.getByRole("button"));
     const input = screen.getByRole("combobox");
-    await user.click(input);
     await user.type(input, "a@");
     expect(onInvalid).toHaveBeenCalled();
     await user.type(input, "b");

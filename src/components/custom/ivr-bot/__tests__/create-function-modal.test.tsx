@@ -56,6 +56,37 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByRole("button", { name: /Next/i })).toBeInTheDocument();
   });
 
+  it("does not render Agent Message when showAgentMessage is false", () => {
+    render(
+      <CreateFunctionModal open onOpenChange={noop} showAgentMessage={false} />
+    );
+    expect(
+      screen.queryByRole("textbox", { name: "Agent Message (Optional)" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Prompt/i)).toBeInTheDocument();
+  });
+
+  it("does not render Prompt when showFunctionPrompt is false", () => {
+    render(
+      <CreateFunctionModal open onOpenChange={noop} showFunctionPrompt={false} />
+    );
+    expect(agentMessageOptionalField()).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Prompt$/i)).not.toBeInTheDocument();
+  });
+
+  it("enables Next with only a valid name when both optional step-1 text fields are hidden", async () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        showAgentMessage={false}
+        showFunctionPrompt={false}
+      />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "OnlyName");
+    expect(screen.getByRole("button", { name: /Next/i })).not.toBeDisabled();
+  });
+
   it("disables Next button when fields are empty", () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     const nextBtn = screen.getByRole("button", { name: /Next/i });

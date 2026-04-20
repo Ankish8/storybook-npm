@@ -30,7 +30,7 @@ const meta: Meta<typeof CreatableMultiSelect> = {
     layout: "padded",
     docs: {
       description: {
-        component: `A multi-select dropdown that allows selecting preset options as chips and creating custom values by typing and pressing Enter (or the Enter helper in the panel). Use \`createHintText\` and \`maxItems\` so the open panel shows guidance when typed text matches no preset.
+        component: `A multi-select that matches Primary Role styling: closed field shows comma-separated selections; open field uses the same teal focus ring and a panel with hint text, Enter, max-selections copy, and preset \`+\` pills. Creating custom values by typing uses Enter (or the Enter helper in the panel). Use \`createHintText\` and \`maxItems\` so the open panel shows guidance when typed text matches no preset. Use \`showPerItemCharacterCounter={false}\` when you do not want length under the field (e.g. Figma bot Tone).
 
 **Install**
 \`\`\`bash

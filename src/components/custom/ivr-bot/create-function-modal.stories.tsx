@@ -14,7 +14,7 @@ const meta: Meta<typeof CreateFunctionModal> = {
     layout: "centered",
     docs: {
       description: {
-        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name and prompt. Step 2 configures the API endpoint with headers, query parameters, and an optional request body. The body editor appears only for **POST**, **PUT**, and **PATCH**; **GET** and **DELETE** do not show a body tab.
+        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name, optional **Agent Message**, and **Prompt**. Use \`showAgentMessage={false}\` or \`showFunctionPrompt={false}\` to omit those fields when your API does not support them (Step 1 validation and submitted \`botMessage\` / \`prompt\` strings adjust accordingly). Step 2 configures the API endpoint with headers, query parameters, and an optional request body. The body editor appears only for **POST**, **PUT**, and **PATCH**; **GET** and **DELETE** do not show a body tab.
 
 **Install**
 \`\`\`bash

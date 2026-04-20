@@ -144,4 +144,40 @@ describe("FrustrationHandoverCard", () => {
     viewport!.dispatchEvent(new Event("scrollend", { bubbles: true }));
     expect(onDepartmentOptionsScrollEnd).not.toHaveBeenCalled();
   });
+
+  it("does not render Prompt when showEscalationPrompt is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <FrustrationHandoverCard
+        data={{
+          frustrationHandoverEnabled: true,
+          escalationPrompt: "x",
+          escalationDepartment: "",
+        }}
+        onChange={() => {}}
+        showEscalationPrompt={false}
+      />
+    );
+    await user.click(screen.getByText("Escalate to Human"));
+    expect(
+      screen.queryByRole("textbox", { name: /^prompt$/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not render Transfer to department when showEscalationDepartment is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <FrustrationHandoverCard
+        data={{
+          frustrationHandoverEnabled: true,
+          escalationPrompt: "",
+          escalationDepartment: "",
+        }}
+        onChange={() => {}}
+        showEscalationDepartment={false}
+      />
+    );
+    await user.click(screen.getByText("Escalate to Human"));
+    expect(screen.queryByText("Transfer to department")).not.toBeInTheDocument();
+  });
 });

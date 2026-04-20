@@ -1165,6 +1165,8 @@ export const CreateFunctionModal = React.forwardRef(
       className,
       variableNameMaxLimit,
       descriptionMaxLimit,
+      showAgentMessage = true,
+      showFunctionPrompt = true,
     }: CreateFunctionModalProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
@@ -1542,6 +1544,7 @@ export const CreateFunctionModal = React.forwardRef(
       "e.g. Please wait while I get the data for you";
 
     const botMessageRequiredEmptyError =
+      showAgentMessage &&
       !botMessageOptional &&
       botMessageRequiredTouched &&
       botMessage.trim().length === 0
@@ -1551,10 +1554,11 @@ export const CreateFunctionModal = React.forwardRef(
     const isStep1Valid =
       name.trim().length > 0 &&
       FUNCTION_NAME_REGEX.test(name.trim()) &&
-      prompt.trim().length >= promptMinLength &&
-      (botMessageOptional || botMessage.trim().length > 0) &&
-      botMessage.length <= botMessageMaxLength &&
-      !hasInvalidPromptFieldChars(botMessage);
+      (!showFunctionPrompt || prompt.trim().length >= promptMinLength) &&
+      (!showAgentMessage ||
+        ((botMessageOptional || botMessage.trim().length > 0) &&
+          botMessage.length <= botMessageMaxLength &&
+          !hasInvalidPromptFieldChars(botMessage)));
 
     /** Soft limit + invalid-char (blur) + parent validation — aligned with Escalate to Human → Prompt. */
     const botMessageOverflowMessage =
@@ -1606,8 +1610,8 @@ export const CreateFunctionModal = React.forwardRef(
 
       const data: CreateFunctionData = {
         name: name.trim(),
-        botMessage: botMessage.trim(),
-        prompt: prompt.trim(),
+        botMessage: showAgentMessage ? botMessage.trim() : "",
+        prompt: showFunctionPrompt ? prompt.trim() : "",
         method,
         url: url.trim(),
         headers,
@@ -1770,98 +1774,102 @@ export const CreateFunctionModal = React.forwardRef(
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <label
-                      htmlFor="fn-agent-message"
-                      className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
-                    >
-                      {botMessageOptional ? (
-                        "Agent Message (Optional)"
-                      ) : (
-                        <>
-                          Agent Message{" "}
-                          <span className="text-semantic-error-primary">*</span>
-                        </>
-                      )}
-                    </label>
-                    {resolvedBotMessageTooltip ? (
-                      <TooltipProvider delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              className="inline-flex shrink-0 cursor-help"
-                              aria-label={
-                                botMessageOptional
-                                  ? "Agent Message (Optional): more information"
-                                  : "Agent Message: more information"
-                              }
-                            >
-                              <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>{resolvedBotMessageTooltip}</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : null}
+                {showAgentMessage ? (
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <label
+                        htmlFor="fn-agent-message"
+                        className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
+                      >
+                        {botMessageOptional ? (
+                          "Agent Message (Optional)"
+                        ) : (
+                          <>
+                            Agent Message{" "}
+                            <span className="text-semantic-error-primary">*</span>
+                          </>
+                        )}
+                      </label>
+                      {resolvedBotMessageTooltip ? (
+                        <TooltipProvider delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span
+                                className="inline-flex shrink-0 cursor-help"
+                                aria-label={
+                                  botMessageOptional
+                                    ? "Agent Message (Optional): more information"
+                                    : "Agent Message: more information"
+                                }
+                              >
+                                <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>{resolvedBotMessageTooltip}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ) : null}
+                    </div>
+                    <Textarea
+                      id="fn-agent-message"
+                      value={botMessage}
+                      maxLength={botMessageMaxLength}
+                      enforceMaxLength={false}
+                      showCount
+                      disabled={disabled}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setBotMessage(v);
+                        if (
+                          botMessageInvalidCharsError &&
+                          !hasInvalidPromptFieldChars(v)
+                        ) {
+                          setBotMessageInvalidCharsError("");
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const v = e.target.value;
+                        if (!botMessageOptional) {
+                          setBotMessageRequiredTouched(true);
+                        }
+                        setBotMessageInvalidCharsError(
+                          hasInvalidPromptFieldChars(v)
+                            ? PROMPT_INVALID_CHARS_MESSAGE
+                            : ""
+                        );
+                        onBotMessageBlur?.(v);
+                      }}
+                      placeholder={resolvedBotMessagePlaceholder}
+                      required={!botMessageOptional}
+                      rows={4}
+                      size="sm"
+                      resize="vertical"
+                      error={botMessageErrorMessage}
+                      errorIcon={Boolean(botMessageErrorMessage)}
+                    />
                   </div>
+                ) : null}
+
+                {showFunctionPrompt ? (
                   <Textarea
-                    id="fn-agent-message"
-                    value={botMessage}
-                    maxLength={botMessageMaxLength}
-                    enforceMaxLength={false}
+                    id="fn-prompt"
+                    label="Prompt"
+                    required
+                    value={prompt}
+                    maxLength={promptMaxLength}
                     showCount
                     disabled={disabled}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setBotMessage(v);
-                      if (
-                        botMessageInvalidCharsError &&
-                        !hasInvalidPromptFieldChars(v)
-                      ) {
-                        setBotMessageInvalidCharsError("");
-                      }
-                    }}
-                    onBlur={(e) => {
-                      const v = e.target.value;
-                      if (!botMessageOptional) {
-                        setBotMessageRequiredTouched(true);
-                      }
-                      setBotMessageInvalidCharsError(
-                        hasInvalidPromptFieldChars(v)
-                          ? PROMPT_INVALID_CHARS_MESSAGE
-                          : ""
-                      );
-                      onBotMessageBlur?.(v);
-                    }}
-                    placeholder={resolvedBotMessagePlaceholder}
-                    required={!botMessageOptional}
-                    rows={4}
-                    size="sm"
-                    resize="vertical"
-                    error={botMessageErrorMessage}
-                    errorIcon={Boolean(botMessageErrorMessage)}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Enter the description of the function"
+                    rows={5}
+                    labelClassName="font-semibold text-semantic-text-primary"
+                    error={
+                      prompt.length > 0 && prompt.trim().length < promptMinLength
+                        ? `Minimum ${promptMinLength} characters required`
+                        : undefined
+                    }
                   />
-                </div>
-
-                <Textarea
-                  id="fn-prompt"
-                  label="Prompt"
-                  required
-                  value={prompt}
-                  maxLength={promptMaxLength}
-                  showCount
-                  disabled={disabled}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Enter the description of the function"
-                  rows={5}
-                  labelClassName="font-semibold text-semantic-text-primary"
-                  error={
-                    prompt.length > 0 && prompt.trim().length < promptMinLength
-                      ? `Minimum ${promptMinLength} characters required`
-                      : undefined
-                  }
-                />
+                ) : null}
               </div>
             )}
 

@@ -21,6 +21,20 @@ const creatableSelectTriggerVariants = cva(
   }
 )
 
+/**
+ * Tailwind classes for the "Enter ↵" hint in creatable dropdown headers (shared by Primary Role and Tone).
+ */
+export const creatableEnterHintKbdClassName =
+  "inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-semantic-text-muted"
+
+/** Primary Role: hint row above the options list (custom role + Enter kbd). */
+export const creatablePrimaryRoleHintRowClassName =
+  "flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout"
+
+/** Tone / CreatableMultiSelect: hint row inside the padded dropdown panel (-mx-4 full-bleed border). */
+export const creatableToneHintRowClassName =
+  "-mx-4 flex min-h-[45px] shrink-0 items-center justify-between gap-2.5 border-b border-solid border-semantic-border-layout px-4 py-2.5"
+
 export interface CreatableSelectOption {
   value: string
   label: string
@@ -290,11 +304,11 @@ const CreatableSelect = React.forwardRef(
         {open && (
           <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {creatableHint ? (
-              <div className="flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout">
+              <div className={creatablePrimaryRoleHintRowClassName}>
                 <span className="text-sm text-semantic-text-muted">
                   {creatableHint}
                 </span>
-                <kbd className="inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-semantic-text-muted">
+                <kbd className={creatableEnterHintKbdClassName}>
                   Enter ↵
                 </kbd>
               </div>
