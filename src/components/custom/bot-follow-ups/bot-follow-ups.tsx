@@ -1,6 +1,12 @@
 import * as React from "react";
 import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../../ui/accordion";
 import { Switch } from "../../ui/switch";
 import { NumberStepField } from "../../ui/number-step-field";
 import { Textarea } from "../../ui/textarea";
@@ -124,74 +130,74 @@ function NudgeCard({
   };
 
   return (
-    <div className="border border-solid border-semantic-border-layout rounded p-4">
-      <div className="flex flex-col gap-4">
-        {/* Toggle + name */}
-        <div className="flex items-center gap-2">
-          <Switch
-            size="sm"
-            checked={nudge.enabled}
-            onCheckedChange={(checked) => onToggle?.(nudge.id, !!checked)}
+    <div className="flex min-w-0 flex-col gap-4 py-5">
+      {/* Toggle + name */}
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <Switch
+          size="sm"
+          checked={nudge.enabled}
+          onCheckedChange={(checked) => onToggle?.(nudge.id, !!checked)}
+          disabled={disabled}
+          aria-label={`Toggle ${displayLabel}`}
+        />
+        <span className="text-sm font-medium text-semantic-text-primary">
+          {displayLabel}
+        </span>
+      </div>
+
+      {/* Set delay — hour : minute */}
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <span className="text-xs text-semantic-text-muted">Set delay</span>
+        <div className="flex min-w-0 w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-2 sm:gap-y-2">
+          <NumberStepField
+            value={nudge.delayHours}
+            onValueChange={(v) => handleHoursChange(v)}
+            onBlur={(e) => onDelayHoursBlur?.(nudge.id, e)}
+            min={0}
+            max={maxHours}
+            suffix="hour"
             disabled={disabled}
-            aria-label={`Toggle ${displayLabel}`}
+            className="min-w-0 w-full sm:max-w-[min(100%,240px)] sm:flex-1"
+            aria-label={`${displayLabel} delay hours`}
+            incrementAriaLabel={`Increase ${displayLabel} hours`}
+            decrementAriaLabel={`Decrease ${displayLabel} hours`}
           />
-          <span className="text-sm text-semantic-text-primary">
-            {displayLabel}
+          <span
+            className="hidden shrink-0 select-none pb-2.5 text-sm font-medium text-semantic-text-primary sm:inline"
+            aria-hidden
+          >
+            :
           </span>
-        </div>
-
-        {/* Set delay — hour : minute */}
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-semantic-text-muted">Set delay</span>
-          <div className="flex items-center gap-2 min-w-0">
-            <NumberStepField
-              value={nudge.delayHours}
-              onValueChange={(v) => handleHoursChange(v)}
-              onBlur={(e) => onDelayHoursBlur?.(nudge.id, e)}
-              min={0}
-              max={maxHours}
-              suffix="hour"
-              disabled={disabled}
-              aria-label={`${displayLabel} delay hours`}
-              incrementAriaLabel={`Increase ${displayLabel} hours`}
-              decrementAriaLabel={`Decrease ${displayLabel} hours`}
-            />
-            <span
-              className="text-sm font-medium text-semantic-text-primary select-none shrink-0"
-              aria-hidden
-            >
-              :
-            </span>
-            <NumberStepField
-              value={nudge.delayMinutes}
-              onValueChange={(v) => handleMinutesChange(v)}
-              onBlur={(e) => onDelayMinutesBlur?.(nudge.id, e)}
-              min={0}
-              max={maxMinutes}
-              suffix="minutes"
-              disabled={disabled}
-              aria-label={`${displayLabel} delay minutes`}
-              incrementAriaLabel={`Increase ${displayLabel} minutes`}
-              decrementAriaLabel={`Decrease ${displayLabel} minutes`}
-            />
-          </div>
-        </div>
-
-        {/* Message */}
-        <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-semantic-text-muted">Message</span>
-          <Textarea
-            value={nudge.message}
-            onChange={(e) => onMessageChange?.(nudge.id, e.target.value)}
-            onBlur={(e) => onMessageBlur?.(nudge.id, e)}
+          <NumberStepField
+            value={nudge.delayMinutes}
+            onValueChange={(v) => handleMinutesChange(v)}
+            onBlur={(e) => onDelayMinutesBlur?.(nudge.id, e)}
+            min={0}
+            max={maxMinutes}
+            suffix="minutes"
             disabled={disabled}
-            rows={3}
-            error={messageError}
-            errorIcon
-            aria-label={`${displayLabel} message`}
-            className="bg-semantic-bg-primary"
+            className="min-w-0 w-full sm:max-w-[min(100%,240px)] sm:flex-1"
+            aria-label={`${displayLabel} delay minutes`}
+            incrementAriaLabel={`Increase ${displayLabel} minutes`}
+            decrementAriaLabel={`Decrease ${displayLabel} minutes`}
           />
         </div>
+      </div>
+
+      {/* Message */}
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <span className="text-xs text-semantic-text-muted">Message</span>
+        <Textarea
+          value={nudge.message}
+          onChange={(e) => onMessageChange?.(nudge.id, e.target.value)}
+          onBlur={(e) => onMessageBlur?.(nudge.id, e)}
+          disabled={disabled}
+          rows={3}
+          error={messageError}
+          errorIcon
+          aria-label={`${displayLabel} message`}
+          className="min-h-[88px] w-full min-w-0 bg-semantic-bg-primary sm:min-h-[96px]"
+        />
       </div>
     </div>
   );
@@ -222,6 +228,7 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       maxHours = 23,
       maxMinutes = 59,
       getItemLabel,
+      defaultOpen = true,
       disabled,
       className,
       ...props
@@ -285,61 +292,93 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       [onMessageBlur, messageRequiredError]
     );
 
-    return (
-      <div ref={ref} className={cn("pb-4", className)} {...props}>
-        {/* Header */}
-        <div className="flex items-center gap-1.5 mb-3">
-          <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
-            {title}
-          </h3>
-          {tooltipContent ? (
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info
-                    className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
-                    aria-label={`${title}: more information`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>{tooltipContent}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <Info className="size-3.5 text-semantic-text-muted shrink-0" />
-          )}
-        </div>
+    const accordionId = "follow-ups";
 
-        {/* Cards */}
-        {nudges.length === 0 ? (
-          <p className="m-0 text-sm text-semantic-text-muted text-center py-4">
-            No follow-ups configured
-          </p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {nudges.map((nudge, index) => (
-              <NudgeCard
-                key={nudge.id}
-                nudge={nudge}
-                displayLabel={
-                  getItemLabel?.(nudge, index) ?? `Followup ${index + 1}`
-                }
-                onToggle={onToggle}
-                onDelayHoursChange={onDelayHoursChange}
-                onDelayMinutesChange={onDelayMinutesChange}
-                onDelayHoursBlur={onDelayHoursBlur}
-                onDelayMinutesBlur={onDelayMinutesBlur}
-                onMessageChange={handleMessageChange}
-                onMessageBlur={handleMessageBlur}
-                messageError={messageErrors[nudge.id]}
-                maxHours={maxHours}
-                maxMinutes={maxMinutes}
-                minTotalMinutes={minTotalMinutes}
-                maxTotalMinutes={maxTotalMinutes}
-                disabled={disabled}
-              />
-            ))}
-          </div>
-        )}
+    return (
+      <div
+        ref={ref}
+        className={cn("min-w-0 max-w-full", className)}
+        {...props}
+      >
+        <div
+          className={cn(
+            "overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary"
+          )}
+        >
+          <Accordion
+            type="single"
+            defaultValue={defaultOpen ? [accordionId] : []}
+          >
+            <AccordionItem value={accordionId}>
+              <AccordionTrigger
+                className={cn(
+                  "border-b border-solid border-semantic-border-layout px-4 py-4 hover:no-underline sm:px-6 sm:py-5"
+                )}
+              >
+                <span className="flex min-w-0 items-center gap-1.5 text-base font-semibold text-semantic-text-primary">
+                  {title}
+                  {tooltipContent ? (
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="inline-flex shrink-0 cursor-help"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label={`${title}: more information`}
+                          >
+                            <Info className="pointer-events-none size-3.5 text-semantic-text-muted" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>{tooltipContent}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <Info
+                      className="size-3.5 shrink-0 text-semantic-text-muted"
+                      aria-hidden
+                    />
+                  )}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="px-4 pb-5 pt-4 sm:px-6 sm:pb-6 sm:pt-5">
+                  {nudges.length === 0 ? (
+                    <p className="m-0 text-center text-sm text-semantic-text-muted">
+                      No follow-ups configured
+                    </p>
+                  ) : (
+                    <div className="divide-y divide-semantic-border-layout">
+                      {nudges.map((nudge, index) => (
+                        <NudgeCard
+                          key={nudge.id}
+                          nudge={nudge}
+                          displayLabel={
+                            getItemLabel?.(nudge, index) ??
+                            `Followup ${index + 1}`
+                          }
+                          onToggle={onToggle}
+                          onDelayHoursChange={onDelayHoursChange}
+                          onDelayMinutesChange={onDelayMinutesChange}
+                          onDelayHoursBlur={onDelayHoursBlur}
+                          onDelayMinutesBlur={onDelayMinutesBlur}
+                          onMessageChange={handleMessageChange}
+                          onMessageBlur={handleMessageBlur}
+                          messageError={messageErrors[nudge.id]}
+                          maxHours={maxHours}
+                          maxMinutes={maxMinutes}
+                          minTotalMinutes={minTotalMinutes}
+                          maxTotalMinutes={maxTotalMinutes}
+                          disabled={disabled}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </div>
     );
   }

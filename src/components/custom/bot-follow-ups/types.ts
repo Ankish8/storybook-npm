@@ -68,5 +68,7 @@ export interface BotFollowUpsProps
    * Use this to override with `nudge.name` or custom copy.
    */
   getItemLabel?: (nudge: NudgeItem, index: number) => string;
+  /** Opens the section by default (default: `true` — matches prior always-visible layout). */
+  defaultOpen?: boolean;
   disabled?: boolean;
 }
