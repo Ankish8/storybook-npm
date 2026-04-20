@@ -44,6 +44,10 @@ import { BotFollowUps, DEFAULT_MAX_TOTAL_MINUTES } from "@/components/custom/bot
     minTotalMinutes: { control: { type: "number", min: 0 } },
     maxTotalMinutes: { control: { type: "number", min: 0 } },
     disabled: { control: "boolean" },
+    defaultOpen: {
+      control: "boolean",
+      description: "Whether the section starts expanded (default: true)",
+    },
     getItemLabel: {
       description:
         "Optional override for row label (default: Followup 1, Followup 2, …)",
@@ -95,10 +99,11 @@ export const Default: Story = {
     const [nudges, setNudges] = useState<NudgeItem[]>(SINGLE_NUDGE);
 
     return (
-      <div className="max-w-[500px]">
+      <div className="w-full max-w-[560px]">
         <BotFollowUps
           title="Follow-ups"
           tooltip="Configure automated follow-up messages when the user is inactive for the delay you set."
+          defaultOpen
           maxHours={23}
           maxMinutes={59}
           minTotalMinutes={0}
@@ -136,10 +141,11 @@ export const WithMultipleFollowUps: Story = {
     const [nudges, setNudges] = useState<NudgeItem[]>(MULTIPLE_NUDGES);
 
     return (
-      <div className="max-w-[500px]">
+      <div className="w-full max-w-[560px]">
         <BotFollowUps
           title="Follow-ups"
           tooltip="Configure automated follow-up messages when the user is inactive for the delay you set."
+          defaultOpen
           maxHours={23}
           maxMinutes={59}
           minTotalMinutes={0}
@@ -173,15 +179,24 @@ export const WithMultipleFollowUps: Story = {
 
 export const Empty: Story = {
   render: () => (
-    <div className="max-w-[500px]">
+    <div className="w-full max-w-[560px]">
       <BotFollowUps nudges={[]} />
+    </div>
+  ),
+};
+
+export const Collapsed: Story = {
+  name: "Collapsed by default",
+  render: () => (
+    <div className="w-full max-w-[560px]">
+      <BotFollowUps nudges={MULTIPLE_NUDGES} defaultOpen={false} />
     </div>
   ),
 };
 
 export const Disabled: Story = {
   render: () => (
-    <div className="max-w-[500px]">
+    <div className="w-full max-w-[560px]">
       <BotFollowUps nudges={MULTIPLE_NUDGES} disabled />
     </div>
   ),

@@ -1254,6 +1254,7 @@ components:
     dependencies:
       - "lucide-react"
     internalDependencies:
+      - accordion
       - switch
       - number-step-field
       - textarea
