@@ -104,30 +104,24 @@ const CreatableMultiSelect = React.forwardRef(
 
     const selectedSummary = joinSelectedLabels(value, options)
 
-    const addValue = React.useCallback(
-      (val: string) => {
-        const afterSanitize = sanitizeInput ? sanitizeInput(val) : val
-        const trimmed = afterSanitize.trim()
-        if (!trimmed || value.includes(trimmed)) return
-        if (maxItems != null && value.length >= maxItems) return
-        const toAdd =
-          maxLengthPerItem != null
-            ? trimmed.slice(0, maxLengthPerItem)
-            : trimmed
-        if (toAdd) {
-          onValueChange?.([...value, toAdd])
-          setInputValue("")
-        }
-      },
-      [value, onValueChange, maxItems, maxLengthPerItem, sanitizeInput]
-    )
+    const addValue = (val: string) => {
+      const afterSanitize = sanitizeInput ? sanitizeInput(val) : val
+      const trimmed = afterSanitize.trim()
+      if (!trimmed || value.includes(trimmed)) return
+      if (maxItems != null && value.length >= maxItems) return
+      const toAdd =
+        maxLengthPerItem != null
+          ? trimmed.slice(0, maxLengthPerItem)
+          : trimmed
+      if (toAdd) {
+        onValueChange?.([...value, toAdd])
+        setInputValue("")
+      }
+    }
 
-    const removeValue = React.useCallback(
-      (val: string) => {
-        onValueChange?.(value.filter((v) => v !== val))
-      },
-      [value, onValueChange]
-    )
+    const removeValue = (val: string) => {
+      onValueChange?.(value.filter((v) => v !== val))
+    }
 
     const handleOpen = React.useCallback(() => {
       if (disabled) return
