@@ -998,7 +998,7 @@ import { Mail } from "lucide-react"
 > Follow-ups section for bot configuration with hour/minute delay and message per item
 
 **Install**: `npx myoperator-ui add bot-follow-ups`
-**Requires**: `switch`, `number-step-field`, `textarea`, `tooltip` (auto-installed)
+**Requires**: `accordion`, `switch`, `number-step-field`, `textarea`, `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
