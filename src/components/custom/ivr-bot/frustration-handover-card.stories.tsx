@@ -12,7 +12,7 @@ const meta: Meta<typeof FrustrationHandoverCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy** to show the **Prompt** textarea (shared Textarea with character count and soft max via \`promptMaxLength\`), then choose **Transfer to department**. Use \`promptValidation\` for parent-driven errors (e.g. on save). \`onEscalationPromptBlur\` fires when the Prompt field loses focus (current value passed).
+        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy** to show the **Prompt** textarea (shared Textarea with character count and soft max via \`promptMaxLength\`), then choose **Transfer to department**. Use \`showEscalationPrompt={false}\` or \`showEscalationDepartment={false}\` to omit those blocks when your product does not expose them. Use \`promptValidation\` for parent-driven errors (e.g. on save). \`onEscalationPromptBlur\` fires when the Prompt field loses focus (current value passed).
 
 For paginated department APIs, pass \`onDepartmentOptionsScrollEnd\` and append new pages to \`departmentOptions\`. Use \`departmentOptionsHasMore={false}\` when there are no further pages, and \`departmentOptionsLoadingMore\` while fetching to avoid duplicate requests.
 
