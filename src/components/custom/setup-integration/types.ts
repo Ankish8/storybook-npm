@@ -9,7 +9,11 @@ export interface ChatMessage {
   id: string
   /** Message role — matches OpenAI chat completions format */
   role: "assistant" | "user"
-  /** Message text content */
+  /**
+   * Message body. User and assistant bubbles render this as GitHub-Flavored Markdown
+   * (lists, bold/italic, fenced code, tables, task lists, links). Status-only lines
+   * use plain text.
+   */
   content: string
   /**
    * Visual variant for the message bubble:
@@ -67,6 +71,12 @@ export interface SetupIntegrationProps
   onInputChange?: (value: string) => void
   /** Callback when a message is sent (Enter or send button) */
   onSendMessage?: (message: string) => void
+  /**
+   * Optional keyboard handler on the message field (textarea).
+   * Runs after the built-in handling: **Enter** sends (when not empty), **Shift+Enter** inserts a new line.
+   * Call `preventDefault()` on the event to override send-on-Enter.
+   */
+  onInputKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
   /** Callback when the primary action button is clicked */
   onAction?: () => void
   /** Callback when "Reset Chat" is clicked */
@@ -87,8 +97,14 @@ export interface ChatMessageProps {
 /** Props for the internal ChatInput sub-component */
 export interface ChatInputProps {
   value: string
+  /**
+   * Shown when the field is empty. The field is a multi-line textarea: compose Markdown
+   * (**bold**, lists, tables, etc.); it is sent as plain text for the host to persist.
+   */
   placeholder?: string
   disabled?: boolean
   onValueChange?: (value: string) => void
   onSend?: (message: string) => void
+  /** @see SetupIntegrationProps.onInputKeyDown */
+  onInputKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
 }

@@ -1,6 +1,22 @@
 import * as React from "react"
 import { cn } from "../../../lib/utils"
-import type { ChatMessageProps } from "./types"
+import { MarkdownBubbleContent } from "./markdown-content"
+import type { MarkdownBubbleTone } from "./markdown-content"
+import type { ChatMessage, ChatMessageProps } from "./types"
+
+function bubbleTone(
+  role: "assistant" | "user",
+  variant: NonNullable<ChatMessage["variant"]>
+): MarkdownBubbleTone {
+  if (role === "user") {
+    if (variant === "error") return "user-error"
+    if (variant === "success") return "user-success"
+    return "user-default"
+  }
+  if (variant === "error") return "assistant-error"
+  if (variant === "success") return "assistant-success"
+  return "assistant-default"
+}
 
 const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
   ({ message }, ref) => {
@@ -22,6 +38,7 @@ const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
     if (role === "user") {
       const isUserError = variant === "error"
       const isUserSuccess = variant === "success"
+      const mdTone = bubbleTone("user", variant)
       return (
         <div ref={ref} className="flex justify-end">
           <div
@@ -34,18 +51,18 @@ const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
                   : "bg-semantic-bg-ui"
             )}
           >
-            <p
+            <MarkdownBubbleContent
+              markdown={content}
+              tone={mdTone}
               className={cn(
-                "m-0 break-words text-sm leading-normal",
+                "break-words",
                 isUserError
                   ? "text-semantic-error-text"
                   : isUserSuccess
                     ? "text-semantic-success-text"
                     : "text-semantic-text-primary"
               )}
-            >
-              {content}
-            </p>
+            />
           </div>
         </div>
       )
@@ -65,6 +82,7 @@ const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
     // Assistant messages — left-aligned, bubble width fits content
     const isSuccess = variant === "success"
     const isError = variant === "error"
+    const mdTone = bubbleTone("assistant", variant)
 
     return (
       <div ref={ref} className="flex flex-col items-start gap-1.5">
@@ -83,18 +101,18 @@ const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
                 : "bg-semantic-info-surface"
           )}
         >
-          <p
+          <MarkdownBubbleContent
+            markdown={content}
+            tone={mdTone}
             className={cn(
-              "m-0 break-words text-sm leading-normal",
+              "break-words",
               isError
                 ? "text-semantic-error-text"
                 : isSuccess
                   ? "text-semantic-success-text"
                   : "text-semantic-text-primary"
             )}
-          >
-            {content}
-          </p>
+          />
         </div>
       </div>
     )

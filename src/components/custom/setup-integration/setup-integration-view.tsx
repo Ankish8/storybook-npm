@@ -30,6 +30,7 @@ const SetupIntegrationView = React.forwardRef<
       onClose,
       onBack,
       onInputChange,
+      onInputKeyDown,
       onSendMessage,
       onAction,
       onResetChat,
@@ -62,6 +63,7 @@ const SetupIntegrationView = React.forwardRef<
           placeholder={inputPlaceholder}
           disabled={isInputDisabled}
           onValueChange={onInputChange}
+          onInputKeyDown={onInputKeyDown}
           onSend={onSendMessage}
         />
       </IntegrationAssistantSection>
