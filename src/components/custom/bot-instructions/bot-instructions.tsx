@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus, Info, Pencil, Trash2 } from "lucide-react";
+import { Plus, HelpCircle, Pencil, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../ui/button";
 import { Switch } from "../../ui/switch";
@@ -13,7 +13,8 @@ import type { BotInstructionsProps } from "./types";
 
 /**
  * BotInstructions displays the instructions section for bot configuration.
- * Shows instruction items with toggles, character counter, and action buttons.
+ * Matches WABA bot screen styling: card shell, header with aggregate counter,
+ * and rows with toggles, labels, per-item usage, and actions.
  */
 const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
   (
@@ -38,59 +39,67 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
       <div
         ref={ref}
         className={cn(
-          "border-b border-solid border-semantic-border-layout pb-4",
+          "flex flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
           className
         )}
         {...props}
       >
-        {/* Header row */}
-        <div className="flex items-center justify-between gap-3 mb-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-base font-semibold text-semantic-text-primary">
+        {/* Header — Figma: title + help + aggregate count; add button right */}
+        <div className="flex shrink-0 flex-col border-b border-solid border-semantic-border-layout px-6">
+          <div className="flex items-center justify-between gap-4 py-5">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-4">
+              <div className="flex min-w-0 items-center gap-1">
+                <span className="text-base font-semibold text-semantic-text-primary">
+                  Instructions
+                </span>
+                {infoTooltip && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex shrink-0 cursor-help text-semantic-text-muted">
+                          <HelpCircle
+                            className="h-3.5 w-3.5"
+                            aria-hidden
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>{infoTooltip}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+              <span className="text-sm text-semantic-text-link">
+                <span>(</span>
+                <span className="font-semibold text-semantic-text-muted">
+                  {usedCharacters}
+                </span>
+                <span>{`/${maxCharacters} characters)`}</span>
+              </span>
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="h-8 shrink-0 gap-1.5 px-4 py-0"
+              onClick={onAdd}
+              disabled={disabled || addDisabled}
+              title={addDisabled ? addDisabledTitle : undefined}
+            >
+              <Plus aria-hidden />
               Instructions
-            </span>
-            {infoTooltip && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex cursor-help text-semantic-text-muted">
-                      <Info className="h-4 w-4" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{infoTooltip}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-            <span className="text-sm">
-              <span className="text-semantic-text-muted">
-                ({usedCharacters}
-              </span>
-              <span className="text-semantic-text-link">
-                /{maxCharacters} characters)
-              </span>
-            </span>
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onAdd}
-            disabled={disabled || addDisabled}
-            title={addDisabled ? addDisabledTitle : undefined}
-         >
-            <Plus className="h-3.5 w-3.5" />
-            Instructions
-          </Button>
         </div>
 
-        {/* Instruction list */}
-        {instructions.length > 0 ? (
-          <div className="flex flex-col gap-1.5">
-            {instructions.map((item) => (
+        {/* Body */}
+        <div className="flex flex-col gap-1.5 px-6 py-6">
+          {instructions.length > 0 ? (
+            instructions.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between gap-3"
+                className="flex items-center gap-[30px]"
               >
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex min-w-0 flex-1 items-center gap-[15px]">
                   <Switch
                     size="sm"
                     checked={item.enabled}
@@ -98,42 +107,48 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
                     disabled={disabled}
                     aria-label={`Toggle ${item.name}`}
                   />
-                  <span className="text-sm text-semantic-text-secondary truncate">
-                    {item.name}
-                  </span>
-                  <span className="text-xs text-semantic-text-muted whitespace-nowrap">
-                    ({item.charCount} character used)
-                  </span>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="truncate text-sm text-semantic-text-secondary">
+                      {item.name}
+                    </span>
+                    <span className="shrink-0 whitespace-nowrap text-sm text-semantic-text-muted">
+                      ({item.charCount} character used)
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-0.5 shrink-0">
+                <div className="flex shrink-0 items-center gap-3">
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
+                    className="size-8 rounded"
                     onClick={() => onEdit?.(item.id)}
                     disabled={disabled}
                     aria-label={`Edit ${item.name}`}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    <Pencil className="size-4" />
                   </Button>
                   <Button
+                    type="button"
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
+                    className="size-8 rounded"
                     onClick={() => onDelete?.(item.id)}
                     disabled={disabled}
                     aria-label={`Delete ${item.name}`}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Trash2 className="size-4" />
                   </Button>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className="m-0 text-sm text-semantic-text-muted">
-            No instructions added yet. Click &quot;+ Instructions&quot; to add
-            one.
-          </p>
-        )}
+            ))
+          ) : (
+            <p className="m-0 text-sm text-semantic-text-muted">
+              No instructions added yet. Click &quot;+ Instructions&quot; to add
+              one.
+            </p>
+          )}
+        </div>
       </div>
     );
   }

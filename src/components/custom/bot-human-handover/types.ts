@@ -2,7 +2,7 @@ export interface BotHumanHandoverProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onToggle"> {
   /** Whether the human handover toggle is enabled */
   enabled?: boolean;
-  /** Label text displayed next to the switch */
+  /** Description shown below the title (muted subtext), not beside the switch */
   label?: string;
   /** Called when the toggle is switched */
   onToggle?: (enabled: boolean) => void;

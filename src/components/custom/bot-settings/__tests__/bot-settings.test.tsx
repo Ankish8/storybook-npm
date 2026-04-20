@@ -41,13 +41,41 @@ describe("BotSettings", () => {
     expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
   });
 
-  it("applies bottom border and padding on the root to separate the section", () => {
+  it("uses a card shell on the root (border, radius, background)", () => {
     const { container } = render(<BotSettings whatsappOptions={[]} />);
     const root = container.firstChild as HTMLElement;
-    expect(root).toHaveClass("border-b");
+    expect(root).toHaveClass("rounded-lg");
+    expect(root).toHaveClass("border");
     expect(root).toHaveClass("border-solid");
     expect(root).toHaveClass("border-semantic-border-layout");
-    expect(root).toHaveClass("pb-4");
+    expect(root).toHaveClass("bg-semantic-bg-primary");
+  });
+
+  it("renders Human Handover below Connect WhatsApp by default", () => {
+    render(
+      <BotSettings
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+        onWhatsappValueChange={() => {}}
+      />
+    );
+    expect(screen.getByRole("heading", { name: "Human Handover" })).toBeInTheDocument();
+    expect(
+      screen.getByText("Connect to a human if bot can not answer")
+    ).toBeInTheDocument();
+  });
+
+  it("omits Human Handover when humanHandover is false", () => {
+    render(
+      <BotSettings
+        humanHandover={false}
+        whatsappOptions={sampleOptions}
+        whatsappValue={[]}
+      />
+    );
+    expect(
+      screen.queryByRole("heading", { name: "Human Handover" })
+    ).not.toBeInTheDocument();
   });
 
   it("ignores defaultOpen (section is always visible)", () => {

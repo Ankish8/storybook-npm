@@ -79,65 +79,77 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
     return (
       <div
         ref={ref}
-        className={cn("border-b border-solid border-semantic-border-layout pb-6", className)}
+        className={cn(
+          "flex flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
+          className
+        )}
         {...props}
       >
-        {/* Header */}
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
-              Integrations
-            </h2>
-            {infoTooltip ? (
-              <TooltipProvider delayDuration={200}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="size-3.5 shrink-0 cursor-help text-semantic-text-muted" />
-                  </TooltipTrigger>
-                  <TooltipContent>{infoTooltip}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <Info className="size-3.5 shrink-0 text-semantic-text-muted" />
-            )}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onAdd}
-            disabled={disabled}
-            className="w-full shrink-0 justify-center sm:w-auto"
-            leftIcon={<Plus className="size-3.5" aria-hidden />}
-          >
-            Add integration
-          </Button>
-        </div>
-
-        {/* Content */}
-        {integrations.length === 0 ? (
-          /* Compact empty state matching Figma */
-          <div className="flex flex-col items-center gap-2.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-4 py-3">
-            <div className="flex items-center justify-center rounded-full bg-semantic-bg-primary size-10">
-              {emptyStateIcon || (
-                <Blocks className="size-6 text-semantic-text-muted" />
+        {/* Header — Figma: title + info; secondary “+ Integrations”; border below */}
+        <div className="flex shrink-0 flex-col border-b border-solid border-semantic-border-layout px-6">
+          <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-1.5">
+              <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
+                Integrations
+              </h2>
+              {infoTooltip ? (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex shrink-0 cursor-help text-semantic-text-muted">
+                        <Info className="size-3.5" aria-hidden />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>{infoTooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                <span className="inline-flex shrink-0 text-semantic-text-muted">
+                  <Info className="size-3.5" aria-hidden />
+                </span>
               )}
             </div>
-            <div className="flex flex-col items-center gap-1 text-center">
-              <p className="m-0 max-w-full text-sm text-semantic-text-primary sm:max-w-[310px]">
-                {emptyStateTitle}
-              </p>
-              <p className="m-0 max-w-full text-xs text-semantic-text-muted sm:max-w-[310px]">
-                {emptyStateDescription}
-              </p>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={onAdd}
+              disabled={disabled}
+              aria-label="Add integration"
+              className="h-8 w-full shrink-0 justify-center gap-2 px-3 py-0 sm:w-auto"
+            >
+              <Plus className="size-[18px] shrink-0" aria-hidden />
+              Integrations
+            </Button>
+          </div>
+        </div>
+
+        {/* Body */}
+        {integrations.length === 0 ? (
+          <div className="px-6 py-6">
+            {/* Empty state — Figma node 42915:85255–85261 */}
+            <div className="flex min-h-[104px] flex-col items-center justify-center gap-2.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-4 py-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-semantic-bg-primary">
+                {emptyStateIcon || (
+                  <Blocks className="size-6 text-semantic-text-secondary" />
+                )}
+              </div>
+              <div className="flex flex-col items-center gap-1 text-center">
+                <p className="m-0 max-w-full text-sm font-semibold text-semantic-text-primary sm:max-w-[310px]">
+                  {emptyStateTitle}
+                </p>
+                <p className="m-0 max-w-full text-xs leading-normal tracking-wide text-semantic-text-muted sm:max-w-[310px]">
+                  {emptyStateDescription}
+                </p>
+              </div>
             </div>
           </div>
         ) : (
-          /* Integration List */
-          <div className="flex flex-col divide-y divide-semantic-border-layout">
+          <div className="flex flex-col divide-y divide-semantic-border-layout px-6 py-6">
             {integrations.map((integration) => (
               <div
                 key={integration.id}
-                className="flex flex-col gap-3 py-4 first:pt-0 sm:flex-row sm:items-center sm:gap-4"
+                className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:gap-4"
               >
                 <div className="flex min-w-0 flex-1 basis-0 items-start gap-3 sm:items-center">
                   {/* Icon */}

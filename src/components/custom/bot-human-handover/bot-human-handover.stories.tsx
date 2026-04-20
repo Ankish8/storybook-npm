@@ -26,7 +26,7 @@ import { BotHumanHandover } from "@/components/custom/bot-human-handover"
 | Prop | Type | Description |
 |------|------|-------------|
 | \`enabled\` | \`boolean\` | Whether the handover toggle is on |
-| \`label\` | \`string\` | Label text next to the switch |
+| \`label\` | \`string\` | Description below the title (muted subtext) |
 | \`onToggle\` | \`(enabled: boolean) => void\` | Fires when the switch is toggled |
 | \`onEdit\` | \`() => void\` | **Optional.** When provided, shows a pencil edit button on the right. Omit to hide it. |
 | \`infoTooltip\` | \`string\` | **Optional.** Tooltip text for the info icon next to the title. The icon is hidden by default and only renders when a non-empty string is provided. |
@@ -36,7 +36,8 @@ import { BotHumanHandover } from "@/components/custom/bot-human-handover"
 
 | Token | Usage |
 |-------|-------|
-| \`--semantic-text-primary\` | Title and label text |
+| \`--semantic-text-primary\` | Title |
+| \`--semantic-text-secondary\` | Description under the title |
 | \`--semantic-text-muted\` | Info icon color |
 | \`--semantic-border-layout\` | Bottom border divider |
 | \`--semantic-primary\` | Tooltip background |

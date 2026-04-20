@@ -36,45 +36,49 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
         )}
         {...props}
       >
-        <div className="flex items-center gap-1.5">
-          <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
-            Human Handover
-          </h2>
-          {infoTooltip ? (
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span
-                    className="inline-flex shrink-0 cursor-help"
-                    aria-label="Human Handover: more information"
-                  >
-                    <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>{infoTooltip}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : null}
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+              <h2 className="m-0 min-w-0 text-base font-semibold text-semantic-text-primary">
+                Human Handover
+              </h2>
+              {infoTooltip ? (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        className="inline-flex shrink-0 cursor-help"
+                        aria-label="Human Handover: more information"
+                      >
+                        <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>{infoTooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : null}
+            </div>
+            <p className="m-0 min-w-0 break-words text-sm text-semantic-text-secondary">
+              {label}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
             <Switch
               checked={enabled}
               onCheckedChange={onToggle}
               disabled={disabled}
             />
-            <span className="text-sm text-semantic-text-primary">{label}</span>
+            {onEdit ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onEdit}
+                aria-label="Edit handover settings"
+              >
+                <Pencil className="size-4" />
+              </Button>
+            ) : null}
           </div>
-          {onEdit && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onEdit}
-              aria-label="Edit handover settings"
-            >
-              <Pencil className="size-4" />
-            </Button>
-          )}
         </div>
       </div>
     );

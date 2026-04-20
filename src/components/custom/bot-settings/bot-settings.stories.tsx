@@ -14,13 +14,13 @@ const meta: Meta<typeof BotSettings> = {
     layout: "padded",
     docs: {
       description: {
-        component: `**Settings** block with **Connect WhatsApp**: Figma-style multi-select (tags, checkbox rows, secondary status text, disabled numbers with tooltip, searchable list). No outer card wrapper—use \`className\` on the root if the host page needs padding or a container. A horizontal rule appears at the bottom of the section.
+        component: `**Settings** card (**Connect WhatsApp** + **Human Handover**): matches [Figma — Settings](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42915-85126). Rounded bordered container, header row with chevron, multi-select (tags, checkbox rows, secondary status, searchable list), then a divider and \`BotHumanHandover\` (title + description left, switch right). Pass \`humanHandover={false}\` to hide the handover block.
 
 **Story variants**
 
 | Story | What it shows |
 | --- | --- |
-| **Default** | Search, secondary labels, disabled row + tooltip, max selections, validation in one flow. |
+| **Default** | Figma-aligned card: Connect WhatsApp + Human Handover; search, max selections, required + inline validation (no helper line under the field). |
 | **Selected + divider + rest** | \`whatsappSeparateSelectedWithDivider\`: selected numbers first, divider, then remaining options. [Figma 19381-44751](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-44751) |
 | **Secondary status labels** | “Assigned to …” via \`caption\` (base row type) or \`secondaryText\` on \`MultiSelectOption\`. [Figma 19381-45181](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-45181) |
 | **Disabled number + tooltip** | Unavailable row + hover tooltip. [Figma 19381-45604](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=19381-45604) |
@@ -42,7 +42,7 @@ import { BotSettings } from "@/components/custom/bot-settings"
 
 All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlying \`MultiSelect\` always uses \`optionVariant="detailed"\` (checkbox rows). Additional passthroughs: \`whatsappLoading\`, \`whatsappId\`, \`whatsappName\` (form submission), \`whatsappCloseOnEscape\`, \`whatsappWrapperClassName\`, \`whatsappTriggerClassName\`, \`whatsappShowClearAll\`, \`whatsappShowSeparatorBeforeChevron\`.
 
-**Design:** [Figma — Settings / Connect WhatsApp](https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=3-34482)`,
+**Design:** [Figma — Settings (Phase 1)](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42915-85126)`,
       },
     },
   },
@@ -71,6 +71,7 @@ All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlyin
     whatsappTriggerClassName: { control: "text" },
     whatsappShowClearAll: { control: "boolean" },
     whatsappShowSeparatorBeforeChevron: { control: "boolean" },
+    humanHandover: { control: false, description: "false to hide; else props for BotHumanHandover." },
     infoTooltip: { control: "text" },
     defaultOpen: {
       control: "boolean",
@@ -84,14 +85,15 @@ All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlyin
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** All primary behaviours in one place: search, secondary labels, disabled row + tooltip, max selections, validation. */
+/** Matches the Phase 1 Settings frame: card, WhatsApp field, handover toggle — no `whatsappHelperText` under the field (see other stories for helper text). */
 export const Default: Story = {
   render: function Render(args) {
     const [values, setValues] = useState<string[]>(["wa-1", "wa-2", "wa-3"]);
     const [error, setError] = useState<string | undefined>(undefined);
+    const [handoverEnabled, setHandoverEnabled] = useState(true);
 
     return (
-      <div className="max-w-[520px] space-y-4">
+      <div className="w-full max-w-[520px] space-y-4">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
@@ -105,12 +107,15 @@ export const Default: Story = {
             }
           }}
           whatsappError={error}
-          whatsappHelperText="Numbers already used elsewhere show status on the right; unavailable rows show a tooltip."
           whatsappRequired
           whatsappMaxSelections={5}
           whatsappSearchable
           whatsappSearchPlaceholder="Search by number or status…"
           whatsappPlaceholder="Select WhatsApp numbers"
+          humanHandover={{
+            enabled: handoverEnabled,
+            onToggle: setHandoverEnabled,
+          }}
         />
         <p className="text-xs text-semantic-text-muted">
           Selected values: {values.length ? values.join(", ") : "(none)"}
@@ -124,7 +129,7 @@ export const Empty: Story = {
   render: function Render() {
     const [values, setValues] = useState<string[]>([]);
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
@@ -138,7 +143,7 @@ export const Empty: Story = {
 export const Disabled: Story = {
   render: function Render() {
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           disabled
           whatsappOptions={demoWhatsappOptions}
@@ -156,7 +161,7 @@ export const SelectedDividerRest: Story = {
   render: function Render() {
     const [values, setValues] = useState<string[]>(["wa-1", "wa-2", "wa-3"]);
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
@@ -174,7 +179,7 @@ export const SecondaryStatusLabels: Story = {
   render: function Render() {
     const [values, setValues] = useState<string[]>(["wa-1"]);
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
@@ -191,7 +196,7 @@ export const DisabledNumberTooltip: Story = {
   render: function Render() {
     const [values, setValues] = useState<string[]>([]);
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
@@ -209,7 +214,7 @@ export const GroupedCategories: Story = {
   render: function Render() {
     const [values, setValues] = useState<string[]>(["g1", "g2", "g3", "g4"]);
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={whatsappGroupedSections}
           whatsappValue={values}
@@ -226,7 +231,7 @@ export const SearchAndMax: Story = {
   render: function Render() {
     const [values, setValues] = useState<string[]>(["wa-4"]);
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={values}
@@ -244,7 +249,7 @@ export const ValidationError: Story = {
   name: "Validation error",
   render: function Render() {
     return (
-      <div className="max-w-[520px]">
+      <div className="w-full max-w-[520px]">
         <BotSettings
           whatsappOptions={demoWhatsappOptions}
           whatsappValue={[]}

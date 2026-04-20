@@ -23,22 +23,21 @@ describe("BotInstructions", () => {
   });
 
   it("shows character counter with correct values", () => {
-    render(
+    const { container } = render(
       <BotInstructions
         instructions={mockInstructions}
         usedCharacters={1600}
         maxCharacters={5000}
       />
     );
-    expect(screen.getByText("(1600")).toBeInTheDocument();
-    expect(screen.getByText("/5000 characters)")).toBeInTheDocument();
+    expect(container).toHaveTextContent("(1600/5000 characters)");
   });
 
   it("uses default maxCharacters of 5000", () => {
-    render(
+    const { container } = render(
       <BotInstructions instructions={mockInstructions} usedCharacters={800} />
     );
-    expect(screen.getByText("/5000 characters)")).toBeInTheDocument();
+    expect(container).toHaveTextContent("(800/5000 characters)");
   });
 
   it("renders instruction items with names", () => {
@@ -158,16 +157,15 @@ describe("BotInstructions", () => {
         infoTooltip="Helpful tooltip text"
       />
     );
-    // The Info icon (SVG) should be present inside the tooltip trigger
-    const infoIcon = container.querySelector(".lucide-info");
-    expect(infoIcon).toBeInTheDocument();
+    const helpIcon = container.querySelector(".lucide-circle-question-mark");
+    expect(helpIcon).toBeInTheDocument();
   });
 
   it("does not render info icon when infoTooltip is not provided", () => {
     const { container } = render(
       <BotInstructions instructions={mockInstructions} />
     );
-    const infoIcon = container.querySelector(".lucide-info");
-    expect(infoIcon).not.toBeInTheDocument();
+    const helpIcon = container.querySelector(".lucide-circle-question-mark");
+    expect(helpIcon).not.toBeInTheDocument();
   });
 });
