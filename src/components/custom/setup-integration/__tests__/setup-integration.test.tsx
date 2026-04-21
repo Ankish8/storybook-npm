@@ -457,16 +457,15 @@ describe("SetupIntegration", () => {
 // ─── IntegrationChatMessages / IntegrationChatEmptyHint ─────────
 
 describe("IntegrationChatMessages", () => {
-  it("applies min-h-[454px] when messages is empty", () => {
+  it("does not force a fixed min-height when empty so short viewports can shrink", () => {
     const { container } = render(<IntegrationChatMessages messages={[]} />)
-    expect(container.firstChild).toHaveClass("min-h-[454px]")
+    expect(container.firstChild).not.toHaveClass("min-h-[454px]")
   })
 
-  it("does not apply min-h-[454px] when messages exist", () => {
-    const { container } = render(
-      <IntegrationChatMessages messages={sampleMessages} />
-    )
-    expect(container.firstChild).not.toHaveClass("min-h-[454px]")
+  it("keeps flex-1 min-h-0 on the messages area for consistent flex layout", () => {
+    const { container } = render(<IntegrationChatMessages messages={[]} />)
+    expect(container.firstChild).toHaveClass("min-h-0")
+    expect(container.firstChild).toHaveClass("flex-1")
   })
 })
 

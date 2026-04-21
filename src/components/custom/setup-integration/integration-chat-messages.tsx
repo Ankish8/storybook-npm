@@ -46,31 +46,27 @@ const IntegrationChatMessages = React.forwardRef<
     return (
       <div
         ref={ref}
-        className={cn(
-          messagesAreaClassName,
-          isEmpty && "min-h-[454px]",
-          className
-        )}
+        className={cn(messagesAreaClassName, className)}
         {...props}
       >
         <div
-          className={cn(
-            "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:gap-5 sm:p-6",
-            isEmpty && "min-h-0 flex-1 items-center justify-center"
-          )}
+          className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overflow-x-hidden p-4 sm:gap-5 sm:p-6"
         >
           {isEmpty ? (
             <div
               className={cn(
-                "flex w-full max-w-lg flex-col items-center",
-                emptyChatSecondary ? "gap-6" : undefined
+                "mx-auto flex w-full max-w-lg flex-col items-center pb-6 pt-2 sm:pt-4",
+                emptyChatSecondary ? "gap-3 sm:gap-5" : "gap-0",
+                // Stack from the top when vertical space is tight so the secondary tip stays
+                // clearly above the composer; center in the transcript when the viewport is tall.
+                "justify-start [@media(min-height:36rem)]:min-h-full [@media(min-height:36rem)]:flex-1 [@media(min-height:36rem)]:justify-center"
               )}
             >
               <IntegrationChatEmptyHint
                 title={emptyChatTitle}
                 description={emptyChatDescription}
                 icon={emptyChatIcon}
-                className="w-full py-4"
+                className="w-full py-2 sm:py-4"
               />
               {emptyChatSecondary}
             </div>

@@ -53,7 +53,7 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
     return (
       <div
         ref={ref}
-        className="shrink-0 border-t border-semantic-border-layout px-4 pb-2 pt-4 sm:px-6 sm:pt-5"
+        className="relative z-10 shrink-0 border-t border-semantic-border-layout bg-semantic-bg-primary px-4 pb-2 pt-4 sm:px-6 sm:pt-5"
       >
         <div className="flex min-h-12 max-h-[min(200px,40vh)] items-end rounded-[10px] border border-semantic-border-input bg-semantic-bg-primary pl-3 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)] sm:pl-4">
           <textarea

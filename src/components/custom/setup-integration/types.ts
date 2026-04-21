@@ -47,7 +47,8 @@ export interface SetupIntegrationProps
   messages: ChatMessage[]
   /**
    * Classes for the messages scroll region outer wrapper (passed to IntegrationChatMessages).
-   * When there are no messages, `min-h-[454px]` is applied by default unless overridden.
+   * Defaults to a flex child that fills remaining space (`flex-1 min-h-0`) so the composer
+   * and footer stay visible on short viewports; empty content scrolls inside the region.
    */
   messagesAreaClassName?: string
   /** Empty transcript title (centered with icon) — shown when `messages.length === 0` */
