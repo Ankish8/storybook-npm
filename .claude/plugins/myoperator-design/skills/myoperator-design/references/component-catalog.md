@@ -688,7 +688,7 @@ import { Mail } from "lucide-react"
 > AI chat interface for setting up, testing, and publishing integrations after successful connection
 
 **Install**: `npx myoperator-ui add setup-integration`
-**Requires**: `spinner`, `dialog`, `confirmation-modal` (auto-installed)
+**Requires**: `spinner`, `dialog`, `confirmation-modal`, `empty-state` (auto-installed)
 **Type**: Multi-file component
 
 ---
