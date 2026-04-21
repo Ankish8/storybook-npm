@@ -719,10 +719,10 @@ import { Mail } from "lucide-react"
 ---
 
 ### ChatBubble
-> A chat message bubble with sender/receiver variants, delivery status, reply quote, and media slot
+> A chat message bubble with sender/receiver variants, delivery status, reply quote, media slot, and optional full ChatMessage rendering (all list message types)
 
 **Install**: `npx myoperator-ui add chat-bubble`
-**Requires**: `reply-quote` (auto-installed)
+**Requires**: `reply-quote`, `button`, `tooltip`, `doc-media`, `dropdown-menu`, `spinner`, `sender-indicator`, `chat-types`, `chat-message-list`, `chat-timeline-divider`, `chat-provider` (auto-installed)
 **Type**: Multi-file component
 
 ---
@@ -899,7 +899,7 @@ import { Mail } from "lucide-react"
 > A full pricing page layout composing plan-type tabs, billing toggle, pricing cards grid, power-ups section, and let-us-drive managed services section
 
 **Install**: `npx myoperator-ui add pricing-page`
-**Requires**: `button`, `page-header`, `pricing-toggle`, `pricing-card`, `power-up-card`, `let-us-drive-card` (auto-installed)
+**Requires**: `alert`, `button`, `page-header`, `pricing-toggle`, `pricing-card`, `power-up-card`, `let-us-drive-card` (auto-installed)
 **Type**: Multi-file component
 
 ---
@@ -1075,10 +1075,10 @@ import { Mail } from "lucide-react"
 ---
 
 ### ChatMessageList
-> Message list with all media renderers, delivery status, and reply functionality
+> Compatibility entry — implementation lives in chat-bubble (use ChatBubble.MessageList or import ChatMessageList from chat-bubble).
 
 **Install**: `npx myoperator-ui add chat-message-list`
-**Requires**: `chat-types`, `chat-provider`, `button`, `tooltip`, `spinner`, `avatar`, `tag`, `dropdown-menu`, `chat-timeline-divider`, `doc-media`, `sender-indicator` (auto-installed)
+**Requires**: `chat-bubble` (auto-installed)
 **Type**: Multi-file component
 
 ---
