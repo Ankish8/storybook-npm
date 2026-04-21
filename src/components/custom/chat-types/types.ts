@@ -140,6 +140,7 @@ export type ChatMessage = {
   senderName?: string
   type?:
     | "text"
+    | "template"
     | "image"
     | "video"
     | "audio"

@@ -1,15 +1,65 @@
+import { useEffect, type ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { ChatBubble } from "./chat-bubble";
+import { fn } from "storybook/test";
+import type { ChatMessage } from "../chat-types";
+import { ChatProvider, useChatContext } from "../chat-provider";
+import {
+  MockTransport,
+  chatMessageListStoryThreadMessages,
+} from "../chat-transport";
+import { TooltipProvider } from "../../ui/tooltip";
+import { ChatBubble } from ".";
+import { ChatMessageList } from "./chat-message-list";
+
+/** Select a chat in mock provider so the message thread renders (same helper as Chat Message List stories). */
+function MessageListLoader({
+  chatId,
+  children,
+}: {
+  chatId: string;
+  children: ReactNode;
+}) {
+  const { selectChat } = useChatContext();
+  useEffect(() => {
+    selectChat(chatId);
+  }, [chatId, selectChat]);
+  return <>{children}</>;
+}
+
+/** Renders the same `ChatMessage` rows as the matching Chat Message List story (mock thread). */
+function MessageListParityColumn({
+  messages,
+  replyParticipantName,
+}: {
+  messages: readonly ChatMessage[];
+  replyParticipantName: string;
+}) {
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-[560px]">
+      {messages.map((msg) => (
+        <ChatBubble
+          key={msg.id}
+          message={msg}
+          replyParticipantName={replyParticipantName}
+          onReplyTo={fn()}
+        />
+      ))}
+    </div>
+  );
+}
 
 const meta: Meta<typeof ChatBubble> = {
   title: "Custom/Chat/Chat Bubble",
   component: ChatBubble,
+  subcomponents: { MessageList: ChatMessageList },
   parameters: {
     layout: "centered",
     docs: {
       description: {
         component: `
-A chat message bubble with sender/receiver alignment, optional sender name, reply quote, media slot, text content, delivery status footer, and timestamp. The core building block for chat message rendering.
+**Single bubble** — sender/receiver alignment, reply quote, media slot, text, delivery footer, and timestamp. Pass \`message={…}\` (\`ChatMessage\`) for full template media (same rows as the thread view).
+
+**Thread (list)** — use \`ChatBubble.MessageList\` (alias: import \`{ ChatMessageList }\` from the same package). Requires \`ChatProvider\`. Props: \`onReplyTo\` (customer reply control), \`className\` (merged on the **root** scroll wrapper), plus standard div attributes.
 
 ### Installation
 
@@ -20,7 +70,8 @@ npx myoperator-ui add chat-bubble
 ### Import
 
 \`\`\`tsx
-import { ChatBubble } from "@/components/custom/chat-bubble"
+import { ChatBubble, ChatMessageList } from "@/components/custom/chat-bubble";
+// <ChatBubble.MessageList onReplyTo={...} className="..." />
 \`\`\`
 
 ### Design Tokens
@@ -150,6 +201,168 @@ export const FailedMessage: Story = {
     status: "failed",
     children: "This message could not be delivered due to a network error.",
   },
+};
+
+const sampleTemplateMessage: ChatMessage = {
+  id: "story-msg-1",
+  text: "Your appointment is confirmed for tomorrow at 10 AM.",
+  time: "9:41 AM",
+  sender: "agent",
+  type: "template",
+  status: "read",
+  senderName: "Support Bot",
+  sentBy: { type: "bot", name: "Bot" },
+};
+
+export const FromChatMessagePayload: Story = {
+  name: "From ChatMessage (list parity)",
+  render: () => (
+    <TooltipProvider delayDuration={200}>
+      <ChatBubble
+        message={sampleTemplateMessage}
+        onReplyTo={fn()}
+      />
+    </TooltipProvider>
+  ),
+};
+
+/** Same surface as **Chat Message List** — `onReplyTo` and root `className` on `ChatBubble.MessageList`. */
+export const MessageListScrollThread: Story = {
+  name: "MessageList (provider / onReplyTo / className)",
+  parameters: {
+    layout: "fullscreen",
+    docs: {
+      description: {
+        story:
+          "Full scroll thread via **`ChatBubble.MessageList`**; `className` and `onReplyTo` match the Chat Message List docs. Uses mock chat **1**.",
+      },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <ChatProvider transport={new MockTransport()}>
+        <div className="flex h-[min(700px,90vh)] w-full max-w-xl mx-auto flex-col bg-semantic-bg-ui">
+          <MessageListLoader chatId="1">
+            <Story />
+          </MessageListLoader>
+        </div>
+      </ChatProvider>
+    ),
+  ],
+  render: () => (
+    <ChatBubble.MessageList onReplyTo={fn()} className="flex-1 min-h-0" />
+  ),
+};
+
+const listParityDecorators = [
+  (Story) => (
+    <div className="w-full max-w-[580px] min-h-[200px] p-4 bg-semantic-bg-ui rounded-lg">
+      <TooltipProvider delayDuration={200}>
+        <Story />
+      </TooltipProvider>
+    </div>
+  ),
+];
+
+/** Same mock data as Chat Message List → `MinimalConversation` (chat id `2`). */
+export const MinimalConversationListParity: Story = {
+  name: "Minimal Conversation",
+  decorators: listParityDecorators,
+  parameters: {
+    layout: "centered",
+    docs: {
+      description: {
+        story:
+          "Uses `chatMessageListStoryThreadMessages.minimalConversation` — identical payloads to **Chat Message List → Minimal Conversation** (chat `2`).",
+      },
+    },
+  },
+  render: () => (
+    <MessageListParityColumn
+      messages={chatMessageListStoryThreadMessages.minimalConversation}
+      replyParticipantName="+91 98765 43210"
+    />
+  ),
+};
+
+/** Same mock data as Chat Message List → `ReferralView`. */
+export const ReferralAllPayloadShapesListParity: Story = {
+  name: "Referral · All payload shapes",
+  decorators: listParityDecorators,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Uses `referralAllPayloadShapes` — same as **Chat Message List → Referral · All payload shapes**.",
+      },
+    },
+  },
+  render: () => (
+    <MessageListParityColumn
+      messages={chatMessageListStoryThreadMessages.referralAllPayloadShapes}
+      replyParticipantName="Story: Referral (CTWA)"
+    />
+  ),
+};
+
+/** Same mock data as Chat Message List → `LocationMessage`. */
+export const LocationNameVsCoordsListParity: Story = {
+  name: "Location · Name + address vs coordinates only",
+  decorators: listParityDecorators,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Uses `locationNameVsCoords` — same as **Chat Message List → Location · Name + address vs coordinates only**.",
+      },
+    },
+  },
+  render: () => (
+    <MessageListParityColumn
+      messages={chatMessageListStoryThreadMessages.locationNameVsCoords}
+      replyParticipantName="Story: Location pin"
+    />
+  ),
+};
+
+/** Same mock data as Chat Message List → `ContactMessage`. */
+export const ContactFullVsMinimalListParity: Story = {
+  name: "Contact · Full card vs minimal",
+  decorators: listParityDecorators,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Uses `contactFullVsMinimal` — same as **Chat Message List → Contact · Full card vs minimal**.",
+      },
+    },
+  },
+  render: () => (
+    <MessageListParityColumn
+      messages={chatMessageListStoryThreadMessages.contactFullVsMinimal}
+      replyParticipantName="Story: Contact card"
+    />
+  ),
+};
+
+/** Same mock data as Chat Message List → `ListMessage`. */
+export const ListReplyFullVsMinimalListParity: Story = {
+  name: "List reply · Full vs minimal",
+  decorators: listParityDecorators,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Uses `listReplyFullVsMinimal` — same as **Chat Message List → List reply · Full vs minimal**.",
+      },
+    },
+  },
+  render: () => (
+    <MessageListParityColumn
+      messages={chatMessageListStoryThreadMessages.listReplyFullVsMinimal}
+      replyParticipantName="Story: List reply"
+    />
+  ),
 };
 
 export const Conversation: Story = {

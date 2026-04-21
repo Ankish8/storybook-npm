@@ -3,6 +3,7 @@ import { fn } from "storybook/test";
 import React from "react";
 import { Bot, Phone, Hash, PhoneCall } from "lucide-react";
 import { PricingPage } from "./pricing-page";
+import type { PricingPlanAlertConfig } from "./types";
 import {
   Select,
   SelectTrigger,
@@ -326,6 +327,8 @@ Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard,
 
 Displays pricing cards in a single row (equal-width columns; horizontal scroll on narrow viewports when needed) with power-ups and let-us-drive sections below. Column count follows \`planCards.length\`; optional \`planCardColumnCount\` can reserve extra columns (rare).
 
+Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid. Use \`status\`: \`success\`, \`warning\`, or \`failed\` (failed → error styling), plus \`title\` and optional \`description\`.
+
 ## Installation
 
 \`\`\`bash
@@ -402,6 +405,11 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
       </SelectContent>
     </Select>
   }
+  planAlert={{
+    status: "warning",
+    title: "Custom Plan Active",
+    description: "You're on an enterprise plan. Contact support to change seats.",
+  }}
   planCards={teamCards}
   planCardCtaStates={[
     { disabled: true },
@@ -420,6 +428,13 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
     },
   },
   tags: ["autodocs"],
+  argTypes: {
+    planAlert: {
+      description:
+        "Optional banner above plan cards: `status` success | warning | failed (failed → error surface), plus `title` and optional `description`.",
+      control: "object",
+    },
+  },
   args: {
     onCtaClick: fn(),
     onFeatureComparisonClick: fn(),
@@ -433,10 +448,19 @@ type Story = StoryObj<typeof meta>;
 
 // ─── Default ──────────────────────────────────────────────────────────────────
 
+/** Example banner matching the “Custom plan” pattern from design (uses `warning` status). */
+const exampleCustomPlanAlert: PricingPlanAlertConfig = {
+  status: "warning",
+  title: "Custom Plan Active",
+  description:
+    "You're currently on a tailored enterprise plan. Contact support to change billing or seats.",
+};
+
 export const Default: Story = {
   args: {
     headerActions: <NumberTypeSelect />,
     planCards: teamCards,
+    planAlert: exampleCustomPlanAlert,
     powerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveCards,
@@ -450,10 +474,66 @@ export const GoAIFirst: Story = {
   args: {
     headerActions: <NumberTypeSelect />,
     planCards: aiCards,
+    planAlert: exampleCustomPlanAlert,
     powerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveCards,
   },
+};
+
+/** All three `planAlert.status` values: success, warning, failed. */
+export const PlanAlertsAllStatuses: Story = {
+  name: "Plan alerts (success, warning, failed)",
+  render: () => (
+    <div className="flex flex-col gap-16 bg-card p-6">
+      <div>
+        <p className="m-0 mb-2 text-sm font-medium text-semantic-text-secondary">
+          success
+        </p>
+        <PricingPage
+          className="min-h-0 rounded-lg border border-semantic-border-layout overflow-hidden"
+          headerActions={<NumberTypeSelect />}
+          planCards={teamCards}
+          planAlert={{
+            status: "success",
+            title: "Payment updated",
+            description: "Your plan will renew on the next billing date with the new card.",
+          }}
+        />
+      </div>
+      <div>
+        <p className="m-0 mb-2 text-sm font-medium text-semantic-text-secondary">
+          warning
+        </p>
+        <PricingPage
+          className="min-h-0 rounded-lg border border-semantic-border-layout overflow-hidden"
+          headerActions={<NumberTypeSelect />}
+          planCards={teamCards}
+          planAlert={{
+            status: "warning",
+            title: "Custom Plan Active",
+            description:
+              "You're currently on a tailored enterprise plan. Changes may require sales approval.",
+          }}
+        />
+      </div>
+      <div>
+        <p className="m-0 mb-2 text-sm font-medium text-semantic-text-secondary">
+          failed
+        </p>
+        <PricingPage
+          className="min-h-0 rounded-lg border border-semantic-border-layout overflow-hidden"
+          headerActions={<NumberTypeSelect />}
+          planCards={teamCards}
+          planAlert={{
+            status: "failed",
+            title: "Could not load plan pricing",
+            description: "Refresh the page or try again in a few minutes.",
+          }}
+        />
+      </div>
+    </div>
+  ),
 };
 
 // ─── Plans Only (No Power-ups / Drive) ────────────────────────────────────────

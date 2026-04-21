@@ -1,2 +1,3 @@
-export { ChatMessageList } from "./chat-message-list"
-export type { ChatMessageListProps, ReplyToPayload } from "./chat-message-list"
+/** Compatibility re-export — implementation lives in `chat-bubble`. */
+export { ChatMessageList } from "../chat-bubble/chat-message-list"
+export type { ChatMessageListProps } from "../chat-bubble/types"

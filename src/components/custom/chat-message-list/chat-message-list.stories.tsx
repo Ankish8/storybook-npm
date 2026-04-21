@@ -3,7 +3,7 @@ import { fn } from "storybook/test"
 import { useEffect } from "react"
 import { ChatProvider, useChatContext } from "../chat-provider"
 import { MockTransport } from "../chat-transport"
-import { ChatMessageList } from "./chat-message-list"
+import { ChatMessageList } from "../chat-bubble/chat-message-list"
 
 /** Auto-select a chat so `fetchMessages` runs and the list renders */
 function MessageListLoader({

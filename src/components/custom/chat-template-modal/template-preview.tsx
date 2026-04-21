@@ -138,7 +138,7 @@ export function TemplateCarouselPreview({
     }
 
   return (
-    <div className="bg-semantic-info-surface border border-solid border-semantic-border-layout rounded overflow-hidden w-full max-w-[360px]">
+    <div className="bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout rounded-lg overflow-hidden w-full max-w-[360px]">
       {/* Body text */}
       <div className="px-3 pt-3">
         <p className="text-[14px] leading-5 text-semantic-text-primary m-0">
@@ -242,8 +242,8 @@ export function TemplateCarouselPreview({
         )}
       </div>
 
-      {/* Footer + delivery */}
-      <div className="px-3 pb-2">
+      {/* Footer + delivery — bottom inset matches chat message list bubble */}
+      <div className="px-3 pb-1.5">
         {template.footer && (
           <p className="text-[12px] text-semantic-text-muted m-0 mb-1">
             {template.footer}
@@ -265,8 +265,8 @@ export function TemplatePreviewBubble({
 }) {
   if (template.type === "text") {
     return (
-      <div className="bg-semantic-info-surface rounded-lg px-3 pt-3 pb-2 max-w-[280px] w-full">
-        <p className="m-0 text-[14px] leading-[1.4] text-semantic-text-primary">
+      <div className="bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary rounded-lg overflow-hidden px-3 pt-3 pb-1.5 max-w-[280px] w-full">
+        <p className="m-0 text-[14px] leading-5 text-semantic-text-primary">
           {resolveVars(template.body, varValues)}
         </p>
         {template.button && (
@@ -282,14 +282,14 @@ export function TemplatePreviewBubble({
 
   if (template.type === "image") {
     return (
-      <div className="bg-semantic-info-surface rounded-lg overflow-hidden max-w-[280px] w-full">
+      <div className="bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary rounded-lg overflow-hidden max-w-[280px] w-full">
         <img
           src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=560&h=320&fit=crop"
           alt="Template image"
           className="w-full h-[160px] object-cover"
         />
-        <div className="px-3 pt-2.5 pb-2">
-          <p className="m-0 text-[14px] leading-[1.4] text-semantic-text-primary">
+        <div className="px-3 pb-1.5 pt-2">
+          <p className="m-0 text-[14px] leading-5 text-semantic-text-primary">
             {resolveVars(template.body, varValues)}
           </p>
           {template.button && (

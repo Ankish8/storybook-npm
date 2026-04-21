@@ -42,7 +42,10 @@ export { ChatSidebar } from "../chat-sidebar"
 export { ChatFilterPanel } from "../chat-filter-panel"
 export { ChatNewPanel, AddNewContactModal } from "../chat-new-panel"
 export { ChatMessageList } from "../chat-message-list"
-export type { ReplyToPayload } from "../chat-message-list"
+export type {
+  ReplyToPayload,
+  ChatMessageListProps,
+} from "../chat-message-list"
 export { ChatHeader, AssignmentDropdown, ResolveButton } from "../chat-header"
 export { ChatInput, ComposerAttachmentPreview } from "../chat-input"
 export { ChatTemplateModal } from "../chat-template-modal"

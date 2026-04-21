@@ -6,6 +6,20 @@ import type { PricingToggleTab } from "../pricing-toggle/types";
 
 export type { PricingToggleTab };
 
+/** Status for the optional banner above the plan cards (maps to Alert variants). */
+export type PricingPlanAlertStatus = "success" | "warning" | "failed";
+
+/**
+ * Config for the plan-area alert (Figma: full-width banner with icon, title, description).
+ */
+export interface PricingPlanAlertConfig {
+  /** Visual tone: success, warning, or failed (error surface). */
+  status: PricingPlanAlertStatus;
+  /** Bold heading line. */
+  title: string;
+  /** Supporting copy below the title. */
+  description?: string;
+}
 
 /**
  * Props for the PricingPage component.
@@ -59,6 +73,12 @@ export interface PricingPageProps
    * Overrides ctaLoading/ctaDisabled on the card when provided.
    */
   planCardCtaStates?: PlanCardCtaState[];
+
+  /**
+   * Optional alert above the pricing cards (Plan & Pricing area).
+   * `failed` uses the error Alert variant.
+   */
+  planAlert?: PricingPlanAlertConfig;
 
   /* ───── Power-ups Section ───── */
 

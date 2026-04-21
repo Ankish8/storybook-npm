@@ -1,6 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import * as React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { ChatBubble } from "../chat-bubble";
+import type { ChatMessage } from "../../chat-types";
+import { TooltipProvider } from "../../../ui/tooltip";
+import { ChatBubble } from "..";
+
+function renderWithTooltip(ui: React.ReactElement) {
+  return render(<TooltipProvider>{ui}</TooltipProvider>);
+}
 
 describe("ChatBubble", () => {
   it("renders children text in sender variant", () => {
@@ -189,5 +196,44 @@ describe("ChatBubble", () => {
     );
     const root = container.firstElementChild;
     expect(root).toHaveClass("justify-start");
+  });
+
+  describe("message mode (ChatMessage)", () => {
+    const baseMsg: ChatMessage = {
+      id: "m1",
+      text: "Hello from template",
+      time: "3:00 PM",
+      sender: "customer",
+      type: "text",
+    };
+
+    it("renders text from message payload", () => {
+      render(<ChatBubble message={baseMsg} />);
+      expect(screen.getByText("Hello from template")).toBeInTheDocument();
+      expect(screen.getByText("3:00 PM")).toBeInTheDocument();
+    });
+
+    it("anchors dom id for scroll-to-quote", () => {
+      const { container } = render(<ChatBubble message={baseMsg} />);
+      expect(container.querySelector("#msg-m1")).toBeInTheDocument();
+    });
+
+    it("invokes onReplyTo for customer messages", () => {
+      const onReplyTo = vi.fn();
+      renderWithTooltip(
+        <ChatBubble
+          message={baseMsg}
+          replyParticipantName="Jane"
+          onReplyTo={onReplyTo}
+        />
+      );
+      const replyBtn = screen.getByRole("button", { name: "Reply" });
+      fireEvent.click(replyBtn);
+      expect(onReplyTo).toHaveBeenCalledWith({
+        messageId: "m1",
+        sender: "Jane",
+        text: "Hello from template",
+      });
+    });
   });
 });

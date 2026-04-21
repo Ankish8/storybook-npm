@@ -7,7 +7,15 @@ import { PowerUpCard } from "../power-up-card/power-up-card";
 import { LetUsDriveCard } from "../let-us-drive-card/let-us-drive-card";
 import { ExternalLink } from "lucide-react";
 import { PricingPlanCardsRow } from "./pricing-plan-cards-row";
-import type { PricingPageProps } from "./types";
+import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
+import type { PricingPageProps, PricingPlanAlertStatus } from "./types";
+
+function planAlertStatusToVariant(
+  status: PricingPlanAlertStatus
+): "success" | "warning" | "error" {
+  if (status === "failed") return "error";
+  return status;
+}
 
 /**
  * PricingPage composes all plan-selection sub-components into a full
@@ -45,6 +53,7 @@ const PricingPage = React.forwardRef(
       planCards = [],
       planCardColumnCount,
       planCardCtaStates,
+      planAlert,
       powerUpCards = [],
       powerUpsTitle = "Power-ups and charges",
       featureComparisonText = "See full feature comparison",
@@ -78,25 +87,36 @@ const PricingPage = React.forwardRef(
 
         {/* ───── Plan Selection Area ───── */}
         <div className="flex flex-col items-center gap-12 px-6 py-12">
-          {/* Plan cards grid */}
-          {planCards.length > 0 && (
-            <PricingPlanCardsRow columnCount={planRowColumns}>
-              {planCards.map((cardProps, index) => {
-                const ctaState = planCardCtaStates?.[index];
-                const merged = { ...cardProps };
-                if (ctaState) {
-                  if (ctaState.loading !== undefined)
-                    merged.ctaLoading = ctaState.loading;
-                  if (ctaState.disabled !== undefined)
-                    merged.ctaDisabled = ctaState.disabled;
-                }
-                return (
-                  <div key={index} className="min-w-0">
-                    <PricingCard {...merged} />
-                  </div>
-                );
-              })}
-            </PricingPlanCardsRow>
+          {(planAlert || planCards.length > 0) && (
+            <div className="flex w-full max-w-[1200px] flex-col gap-6">
+              {planAlert && (
+                <Alert variant={planAlertStatusToVariant(planAlert.status)}>
+                  <AlertTitle>{planAlert.title}</AlertTitle>
+                  {planAlert.description ? (
+                    <AlertDescription>{planAlert.description}</AlertDescription>
+                  ) : null}
+                </Alert>
+              )}
+              {planCards.length > 0 && (
+                <PricingPlanCardsRow columnCount={planRowColumns}>
+                  {planCards.map((cardProps, index) => {
+                    const ctaState = planCardCtaStates?.[index];
+                    const merged = { ...cardProps };
+                    if (ctaState) {
+                      if (ctaState.loading !== undefined)
+                        merged.ctaLoading = ctaState.loading;
+                      if (ctaState.disabled !== undefined)
+                        merged.ctaDisabled = ctaState.disabled;
+                    }
+                    return (
+                      <div key={index} className="min-w-0">
+                        <PricingCard {...merged} />
+                      </div>
+                    );
+                  })}
+                </PricingPlanCardsRow>
+              )}
+            </div>
           )}
         </div>
 

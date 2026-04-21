@@ -385,7 +385,11 @@ export type { PricingToggleProps, PricingToggleTab } from "./components/custom/p
 
 // PricingPage (Custom)
 export { PricingPage } from "./components/custom/pricing-page";
-export type { PricingPageProps } from "./components/custom/pricing-page";
+export type {
+  PricingPageProps,
+  PricingPlanAlertConfig,
+  PricingPlanAlertStatus,
+} from "./components/custom/pricing-page";
 
 // DateRangeModal (Custom)
 export { DateRangeModal } from "./components/custom/date-range-modal/index";
@@ -515,9 +519,25 @@ export type { DocMediaProps, DocMediaVariant } from "./components/custom/doc-med
 export { CarouselMedia } from "./components/custom/carousel-media";
 export type { CarouselMediaProps, CarouselCard, CarouselCardButton } from "./components/custom/carousel-media";
 
-// ChatBubble (Custom)
-export { ChatBubble } from "./components/custom/chat-bubble";
-export type { ChatBubbleProps, ChatBubbleReply, DeliveryStatus } from "./components/custom/chat-bubble";
+// ChatBubble (Custom) — includes Chat Message List, provider, timeline types (see chat-bubble/index.ts)
+export {
+  ChatBubble,
+  ChatMessageList,
+  ChatProvider,
+  ChatContext,
+  useChatContext,
+} from "./components/custom/chat-bubble";
+export type {
+  ChatBubbleProps,
+  ChatBubbleManualProps,
+  ChatBubbleMessageProps,
+  ChatBubbleReply,
+  DeliveryStatus,
+  ReplyToPayload,
+  ChatMessageListProps,
+  ChatMessageListBubbleRowProps,
+  ChatContextValue,
+} from "./components/custom/chat-bubble";
 
 // ChatComposer (Custom)
 export { ChatComposer } from "./components/custom/chat-composer";

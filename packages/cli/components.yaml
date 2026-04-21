@@ -863,6 +863,7 @@ components:
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
     internalDependencies:
+      - alert
       - button
       - page-header
       - pricing-toggle
@@ -1010,21 +1011,34 @@ components:
     mainFile: "carousel-media.tsx"
 
   chat-bubble:
-    description: "A chat message bubble with sender/receiver variants, delivery status, reply quote, and media slot"
+    description: "A chat message bubble with sender/receiver variants, delivery status, reply quote, media slot, and optional full ChatMessage rendering (all list message types)"
     category: custom
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+      - "tailwindcss-animate"
     internalDependencies:
       - reply-quote
+      - button
+      - tooltip
+      - doc-media
+      - dropdown-menu
+      - spinner
+      - sender-indicator
+      - chat-types
+      - chat-message-list
+      - chat-timeline-divider
+      - chat-provider
     isMultiFile: true
     directory: "chat-bubble"
     files:
-      - "chat-bubble.tsx"
+      - "message-renderers.tsx"
+      - "chat-bubble-base.tsx"
+      - "chat-message-list.tsx"
       - "types.ts"
       - "index.ts"
-    mainFile: "chat-bubble.tsx"
+    mainFile: "chat-bubble-base.tsx"
 
   chat-list-item:
     description: "A chat list item showing contact name, message preview, timestamp, delivery status, and channel badge"
@@ -1453,7 +1467,7 @@ components:
     mainFile: "chat-new-panel.tsx"
 
   chat-message-list:
-    description: "Message list with all media renderers, delivery status, and reply functionality"
+    description: "Compatibility entry — implementation lives in chat-bubble (use ChatBubble.MessageList or import ChatMessageList from chat-bubble)."
     category: custom
     group: "chat"
     templateOnly: true
@@ -1463,24 +1477,12 @@ components:
       - "lucide-react"
       - "tailwindcss-animate"
     internalDependencies:
-      - chat-types
-      - chat-provider
-      - button
-      - tooltip
-      - spinner
-      - avatar
-      - tag
-      - dropdown-menu
-      - chat-timeline-divider
-      - doc-media
-      - sender-indicator
+      - chat-bubble
     isMultiFile: true
     directory: "chat-message-list"
     files:
-      - "message-renderers.tsx"
-      - "chat-message-list.tsx"
       - "index.ts"
-    mainFile: "chat-message-list.tsx"
+    mainFile: "index.ts"
 
   chat-notification:
     description: "Full-width chat nudge banner for warnings and errors — composes Alert and link Button"

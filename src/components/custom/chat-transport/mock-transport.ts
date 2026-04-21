@@ -836,6 +836,23 @@ const chatMessages: Record<string, ChatMessage[]> = {
   ],
 }
 
+/**
+ * Message arrays used by Chat Message List isolated stories — re-export for Chat Bubble
+ * stories so both show identical `ChatMessage` payloads (no drift).
+ */
+export const chatMessageListStoryThreadMessages = {
+  /** Chat id \`2\` — minimal back-and-forth + audio + API line */
+  minimalConversation: chatMessages["2"],
+  /** Chat id \`msg-story-referral\` — ad, post, unknown referral shapes */
+  referralAllPayloadShapes: chatMessages["msg-story-referral"],
+  /** Chat id \`msg-story-location\` — name + address vs coordinates only */
+  locationNameVsCoords: chatMessages["msg-story-location"],
+  /** Chat id \`msg-story-contact\` — full vCard vs minimal */
+  contactFullVsMinimal: chatMessages["msg-story-contact"],
+  /** Chat id \`msg-story-list\` — full list reply vs body + button only */
+  listReplyFullVsMinimal: chatMessages["msg-story-list"],
+} as const
+
 const contacts: Contact[] = [
   { id: "c1", name: "Aditi Kumar", phone: "+91 98765 43210", channel: "MY01" },
   { id: "c2", name: "Arsh Raj", phone: "+91 91234 56789", channel: "MY01" },

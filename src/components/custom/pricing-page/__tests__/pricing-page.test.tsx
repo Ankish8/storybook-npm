@@ -111,6 +111,44 @@ describe("PricingPage", () => {
     expect(screen.getByText("Sedan")).toBeInTheDocument();
   });
 
+  it("renders planAlert above plan cards with title and description", () => {
+    render(
+      <PricingPage
+        planCards={mockPlanCards}
+        planAlert={{
+          status: "success",
+          title: "Plan notice",
+          description: "Details here.",
+        }}
+      />
+    );
+    const alerts = screen.getAllByRole("alert");
+    expect(alerts.some((el) => el.textContent?.includes("Plan notice"))).toBe(
+      true
+    );
+    expect(screen.getByText("Details here.")).toBeInTheDocument();
+    expect(screen.getByText("Compact")).toBeInTheDocument();
+  });
+
+  it.each([
+    ["success", "bg-semantic-success-surface"],
+    ["warning", "bg-semantic-warning-surface"],
+    ["failed", "bg-semantic-error-surface"],
+  ] as const)("planAlert status %s maps to Alert surface", (status, surfaceClass) => {
+    const { container } = render(
+      <PricingPage
+        planCards={mockPlanCards}
+        planAlert={{
+          status,
+          title: "Alert title",
+        }}
+      />
+    );
+    const alert = container.querySelector("[role='alert']");
+    expect(alert).toBeTruthy();
+    expect(alert).toHaveClass(surfaceClass);
+  });
+
   it("lays out plan cards in one row with columns matching plan count", () => {
     const fourPlans: PricingCardProps[] = [
       ...mockPlanCards,

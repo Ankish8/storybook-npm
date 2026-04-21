@@ -442,7 +442,7 @@ function LocationMedia({ location }: { location: LocationPayload }) {
         className="w-full bg-semantic-bg-ui flex items-center justify-center relative overflow-hidden"
         style={{ height: 180 }}
       >
-        <div className="absolute inset-0 bg-[#e8e4df]" />
+        <div className="absolute inset-0 bg-semantic-bg-ui" />
         {/* Crosshair grid lines to suggest a map */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute left-1/2 top-0 bottom-0 w-px bg-semantic-text-muted" />
