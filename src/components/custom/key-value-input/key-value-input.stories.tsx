@@ -36,6 +36,7 @@ KeyValueInput is a specialized component for managing key-value pairs such as HT
 - **Required field validation** - Configurable via \`keyRequired\` and \`valueRequired\` props
 - **Native form validation** - Uses HTML \`required\` attribute for form integration
 - **Maximum items limit** - Disabled button with tooltip when at limit
+- **Optional add UI** - Hide the add button and limit message together with \`showAddControls={false}\`
 - **Controlled and uncontrolled modes** - Flexible state management
 
 ## Usage
@@ -100,6 +101,11 @@ const [headers, setHeaders] = useState<KeyValuePair[]>([])
     valueRequired: {
       control: "boolean",
       description: "Whether value field is required (default: true)",
+    },
+    showAddControls: {
+      control: "boolean",
+      description:
+        "Show the dashed add button and at-limit message (default: true). Set false to hide both.",
     },
   },
   args: {
@@ -182,6 +188,23 @@ export const AtMaxLimit: Story = {
     title: "Headers",
     description: "Maximum 3 headers allowed (for demo)",
     maxItems: 3,
+    defaultValue: [
+      { id: "1", key: "Content-Type", value: "application/json" },
+      { id: "2", key: "Authorization", value: "Bearer token" },
+      { id: "3", key: "Accept", value: "application/json" },
+    ],
+  },
+};
+
+/** Add button and "Maximum of N items reached" are hidden together via `showAddControls={false}` (existing rows remain). */
+export const AddControlsHidden: Story = {
+  name: "Add Controls Hidden",
+  args: {
+    title: "Headers",
+    description:
+      "At max items but add button and limit message are hidden (`showAddControls={false}`).",
+    maxItems: 3,
+    showAddControls: false,
     defaultValue: [
       { id: "1", key: "Content-Type", value: "application/json" },
       { id: "2", key: "Authorization", value: "Bearer token" },

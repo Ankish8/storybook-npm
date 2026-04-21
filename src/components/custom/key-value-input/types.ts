@@ -21,6 +21,11 @@ export interface KeyValueInputProps {
   description?: string;
   /** Text for the add button (default: "Add Header") */
   addButtonText?: string;
+  /**
+   * When `true` (default), shows the dashed add button and the "Maximum of N items reached" message when at limit.
+   * Set to `false` to hide both—useful when add/limit UI is controlled elsewhere (e.g. tests).
+   */
+  showAddControls?: boolean;
   /** Maximum number of items allowed (default: 10) */
   maxItems?: number;
   /** Placeholder for key input */

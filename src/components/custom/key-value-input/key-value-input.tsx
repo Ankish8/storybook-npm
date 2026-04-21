@@ -38,6 +38,7 @@ export const KeyValueInput = React.forwardRef(
       title,
       description,
       addButtonText = "Add Header",
+      showAddControls = true,
       maxItems = 10,
       keyPlaceholder = "Key",
       valuePlaceholder = "Value",
@@ -210,24 +211,27 @@ export const KeyValueInput = React.forwardRef(
           </div>
         )}
 
-        {/* Add Button using dashed variant - outside the gray container */}
-        <Button
-          type="button"
-          variant="dashed"
-          onClick={handleAdd}
-          disabled={isAtLimit}
-          title={addButtonTitle}
-          className="w-full justify-center"
-        >
-          <Plus className="h-4 w-4" />
-          {addButtonText}
-        </Button>
+        {/* Add button + at-limit message (toggle together via `showAddControls`) */}
+        {showAddControls && (
+          <>
+            <Button
+              type="button"
+              variant="dashed"
+              onClick={handleAdd}
+              disabled={isAtLimit}
+              title={addButtonTitle}
+              className="w-full justify-center"
+            >
+              <Plus className="h-4 w-4" />
+              {addButtonText}
+            </Button>
 
-        {/* Limit indicator */}
-        {isAtLimit && (
-          <p className="m-0 text-xs text-semantic-text-muted mt-2 text-center">
-            Maximum of {maxItems} items reached
-          </p>
+            {isAtLimit && (
+              <p className="m-0 text-xs text-semantic-text-muted mt-2 text-center">
+                Maximum of {maxItems} items reached
+              </p>
+            )}
+          </>
         )}
       </div>
     );
