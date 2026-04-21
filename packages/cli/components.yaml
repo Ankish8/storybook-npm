@@ -1018,6 +1018,8 @@ components:
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
       - "tailwindcss-animate"
+    # chat-message-list is NOT listed — it ships inside this folder as chat-message-list.tsx; the
+    # separate registry entry is a compatibility stub that re-exports from chat-bubble (would cycle).
     internalDependencies:
       - reply-quote
       - button
@@ -1027,7 +1029,6 @@ components:
       - spinner
       - sender-indicator
       - chat-types
-      - chat-message-list
       - chat-timeline-divider
       - chat-provider
     isMultiFile: true
