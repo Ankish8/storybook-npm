@@ -25,8 +25,8 @@ const pageShellClass = "w-full max-w-[1139px] mx-auto min-w-0 flex flex-col";
 const pageGutterX = "px-4 md:px-6";
 
 /**
- * Figma Power-ups band (1119:2985): `pl-[24px] pr-[48px]` — not symmetric; tighter
- * left gutter so the block aligns with the 1091px content column.
+ * Figma Power-ups band (1119:2985): `pl-[24px] pr-[48px]` — more space on the right
+ * (matches design; common when balancing scrollbar / visual balance).
  */
 const powerUpsGutterX = "px-4 md:pl-6 md:pr-12";
 
@@ -138,38 +138,38 @@ const PricingPage = React.forwardRef(
           >
             {(planAlertVisible || planCards.length > 0) && (
               <div className="flex w-full flex-col gap-4 sm:gap-[18px] min-w-0">
-              {planAlertVisible && planAlert && (
-                <Alert
-                  variant={resolvePlanAlertVariant(planAlert)}
-                  {...planAlert.alertProps}
-                >
-                  <AlertTitle>{planAlert.title}</AlertTitle>
-                  {planAlert.description ? (
-                    <AlertDescription>{planAlert.description}</AlertDescription>
-                  ) : null}
-                </Alert>
-              )}
-              {planCards.length > 0 && (
-                <PricingPlanCardsRow columnCount={planRowColumns}>
-                  {planCards.map((cardProps, index) => {
-                    const ctaState = planCardCtaStates?.[index];
-                    const merged = { ...cardProps };
-                    if (ctaState) {
-                      if (ctaState.loading !== undefined)
-                        merged.ctaLoading = ctaState.loading;
-                      if (ctaState.disabled !== undefined)
-                        merged.ctaDisabled = ctaState.disabled;
-                    }
-                    return (
-                      <div key={index} className="min-w-0">
-                        <PricingCard {...merged} />
-                      </div>
-                    );
-                  })}
-                </PricingPlanCardsRow>
-              )}
-            </div>
-          )}
+                {planAlertVisible && planAlert && (
+                  <Alert
+                    variant={resolvePlanAlertVariant(planAlert)}
+                    {...planAlert.alertProps}
+                  >
+                    <AlertTitle>{planAlert.title}</AlertTitle>
+                    {planAlert.description ? (
+                      <AlertDescription>{planAlert.description}</AlertDescription>
+                    ) : null}
+                  </Alert>
+                )}
+                {planCards.length > 0 && (
+                  <PricingPlanCardsRow columnCount={planRowColumns}>
+                    {planCards.map((cardProps, index) => {
+                      const ctaState = planCardCtaStates?.[index];
+                      const merged = { ...cardProps };
+                      if (ctaState) {
+                        if (ctaState.loading !== undefined)
+                          merged.ctaLoading = ctaState.loading;
+                        if (ctaState.disabled !== undefined)
+                          merged.ctaDisabled = ctaState.disabled;
+                      }
+                      return (
+                        <div key={index} className="min-w-0">
+                          <PricingCard {...merged} />
+                        </div>
+                      );
+                    })}
+                  </PricingPlanCardsRow>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ───── Power-ups Section ───── */}
@@ -182,31 +182,31 @@ const PricingPage = React.forwardRef(
               )}
             >
               <div className="flex flex-col gap-3 sm:gap-4 w-full min-w-0">
-              {/* Section header */}
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
-                  {powerUpsTitle}
-                </h2>
-                {onFeatureComparisonClick && (
-                  <Button
-                    variant="link"
-                    className="text-semantic-text-link p-0 h-auto min-w-0 gap-1 self-start sm:shrink-0"
-                    onClick={onFeatureComparisonClick}
-                  >
-                    {featureComparisonText}
-                    <ExternalLink className="size-3.5" />
-                  </Button>
-                )}
-              </div>
+                {/* Section header */}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
+                    {powerUpsTitle}
+                  </h2>
+                  {onFeatureComparisonClick && (
+                    <Button
+                      variant="link"
+                      className="text-semantic-text-link p-0 h-auto min-w-0 gap-1 self-start sm:shrink-0"
+                      onClick={onFeatureComparisonClick}
+                    >
+                      {featureComparisonText}
+                      <ExternalLink className="size-3.5" />
+                    </Button>
+                  )}
+                </div>
 
-              {/* Power-up cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
-                {powerUpCards.map((cardProps, index) => (
-                  <PowerUpCard key={index} {...cardProps} />
-                ))}
+                {/* Power-up cards — Figma row gap 24px between cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
+                  {powerUpCards.map((cardProps, index) => (
+                    <PowerUpCard key={index} {...cardProps} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
           )}
 
           {/* ───── Let Us Drive Section ───── */}
@@ -215,19 +215,19 @@ const PricingPage = React.forwardRef(
               className={cn("bg-card w-full min-w-0", pageGutterX, sectionPaddingY)}
             >
               <div className="flex flex-col gap-3 sm:gap-4 w-full min-w-0">
-              {/* Section header */}
-              <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
-                {letUsDriveTitle}
-              </h2>
+                {/* Section header */}
+                <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
+                  {letUsDriveTitle}
+                </h2>
 
-              {/* Service cards — items-start so expanding one card doesn't stretch others */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 items-start">
-                {letUsDriveCards.map((cardProps, index) => (
-                  <LetUsDriveCard key={index} {...cardProps} />
-                ))}
+                {/* Service cards — items-start so expanding one card doesn't stretch others */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 items-start">
+                  {letUsDriveCards.map((cardProps, index) => (
+                    <LetUsDriveCard key={index} {...cardProps} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
           )}
         </div>
       </div>
