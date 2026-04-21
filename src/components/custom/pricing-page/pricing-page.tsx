@@ -14,12 +14,21 @@ import type {
   PricingPlanAlertStatus,
 } from "./types";
 
-/** Horizontal gutters: tighter on small viewports, Figma 24px from `md` up. */
-const sectionPaddingX =
-  "px-4 sm:px-5 md:px-6";
+/**
+ * Figma main column (node 1119:2783): `w-[1139px]` with `px-[24px]` content gutters.
+ * We cap the page and apply 24px horizontal padding from `md` so the content width
+ * matches the 1091px inner frame without double gutters + separate max-width.
+ */
+const pageShellClass = "w-full max-w-[1139px] mx-auto min-w-0 flex flex-col";
 
-/** Matches {@link sectionPaddingX} — PageHeader already applies `px-4`. */
-const pageHeaderPaddingX = "sm:px-5 md:px-6";
+/** Horizontal gutters: mobile 16px, Figma 24px (`px-24`) from `md` up. */
+const pageGutterX = "px-4 md:px-6";
+
+/**
+ * Figma Power-ups band (1119:2985): `pl-[24px] pr-[48px]` — not symmetric; tighter
+ * left gutter so the block aligns with the 1091px content column.
+ */
+const powerUpsGutterX = "px-4 md:pl-6 md:pr-12";
 
 /** Vertical rhythm between header and plan blocks — scales up at `md`. */
 const planSectionPaddingY =
@@ -110,24 +119,25 @@ const PricingPage = React.forwardRef(
         className={cn("flex flex-col bg-card h-full overflow-y-auto", className)}
         {...props}
       >
-        {/* ───── Header ───── */}
-        <PageHeader
-          title={title}
-          actions={headerActions}
-          layout="horizontal"
-          className={pageHeaderPaddingX}
-        />
+        <div className={pageShellClass}>
+          {/* ───── Header ───── */}
+          <PageHeader
+            title={title}
+            actions={headerActions}
+            layout="horizontal"
+            className={pageGutterX}
+          />
 
-        {/* ───── Plan Selection Area ───── */}
-        <div
-          className={cn(
-            "flex flex-col items-center w-full min-w-0",
-            sectionPaddingX,
-            planSectionPaddingY
-          )}
-        >
-          {(planAlertVisible || planCards.length > 0) && (
-            <div className="flex w-full max-w-[1091px] flex-col gap-4 sm:gap-[18px] min-w-0">
+          {/* ───── Plan Selection Area ───── */}
+          <div
+            className={cn(
+              "flex flex-col items-center w-full min-w-0",
+              pageGutterX,
+              planSectionPaddingY
+            )}
+          >
+            {(planAlertVisible || planCards.length > 0) && (
+              <div className="flex w-full flex-col gap-4 sm:gap-[18px] min-w-0">
               {planAlertVisible && planAlert && (
                 <Alert
                   variant={resolvePlanAlertVariant(planAlert)}
@@ -160,18 +170,18 @@ const PricingPage = React.forwardRef(
               )}
             </div>
           )}
-        </div>
+          </div>
 
-        {/* ───── Power-ups Section ───── */}
-        {hasPowerUps && (
-          <div
-            className={cn(
-              "bg-semantic-bg-ui w-full min-w-0",
-              sectionPaddingY,
-              "pl-4 pr-4 sm:pl-5 sm:pr-5 md:pl-6 md:pr-6 lg:pr-12"
-            )}
-          >
-            <div className="flex flex-col gap-3 sm:gap-4 max-w-[1091px] mx-auto w-full min-w-0">
+          {/* ───── Power-ups Section ───── */}
+          {hasPowerUps && (
+            <div
+              className={cn(
+                "bg-semantic-bg-ui w-full min-w-0",
+                sectionPaddingY,
+                powerUpsGutterX
+              )}
+            >
+              <div className="flex flex-col gap-3 sm:gap-4 w-full min-w-0">
               {/* Section header */}
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
@@ -197,14 +207,14 @@ const PricingPage = React.forwardRef(
               </div>
             </div>
           </div>
-        )}
+          )}
 
-        {/* ───── Let Us Drive Section ───── */}
-        {hasLetUsDrive && (
-          <div
-            className={cn("bg-card w-full min-w-0", sectionPaddingX, sectionPaddingY)}
-          >
-            <div className="flex flex-col gap-3 sm:gap-4 max-w-[1091px] mx-auto w-full min-w-0">
+          {/* ───── Let Us Drive Section ───── */}
+          {hasLetUsDrive && (
+            <div
+              className={cn("bg-card w-full min-w-0", pageGutterX, sectionPaddingY)}
+            >
+              <div className="flex flex-col gap-3 sm:gap-4 w-full min-w-0">
               {/* Section header */}
               <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
                 {letUsDriveTitle}
@@ -218,7 +228,8 @@ const PricingPage = React.forwardRef(
               </div>
             </div>
           </div>
-        )}
+          )}
+        </div>
       </div>
     );
   }
