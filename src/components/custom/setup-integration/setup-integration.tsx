@@ -58,7 +58,7 @@ const SetupIntegration = React.forwardRef<
           ref={ref}
           hideCloseButton
           className={cn(
-            "flex h-[min(100dvh-1rem,920px)] max-h-[min(100dvh-1rem,920px)] w-[min(calc(100vw-1rem),860px)] max-w-none min-w-0 flex-col gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary p-0 shadow-sm",
+            "flex h-[min(100dvh-1rem,920px)] max-h-[min(100dvh-1rem,920px)] min-h-0 w-[min(calc(100vw-1rem),860px)] max-w-none min-w-0 flex-col gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary p-0 shadow-sm",
             className
           )}
           {...rest}

@@ -31,7 +31,7 @@ const IntegrationActions = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex flex-col items-stretch gap-2 px-4 pb-4 pt-2 sm:flex-row sm:items-center sm:justify-end sm:gap-0 sm:px-6 sm:pb-5",
+        "flex shrink-0 flex-col items-stretch gap-2 px-4 pb-4 pt-2 sm:flex-row sm:items-center sm:justify-end sm:gap-0 sm:px-6 sm:pb-5",
         className
       )}
       {...props}

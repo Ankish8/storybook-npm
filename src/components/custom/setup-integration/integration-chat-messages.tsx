@@ -18,7 +18,7 @@ const IntegrationChatMessages = React.forwardRef<
     {
       className,
       messages,
-      messagesAreaClassName = "flex min-h-0 flex-1 flex-col overflow-hidden",
+      messagesAreaClassName = "flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
       ...props
     },
     ref

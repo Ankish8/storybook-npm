@@ -1368,7 +1368,7 @@ Flow: Open in edit mode → Click pencil icon → Rename integration → Confirm
 /** Same UI as the dialog, rendered as a plain panel (e.g. inside a custom modal or page). */
 export const StandaloneView: StoryObj<typeof SetupIntegrationView> = {
   render: () => (
-    <div className="w-full max-w-[min(calc(100vw-2rem),860px)] rounded-lg border border-semantic-border-layout p-3 sm:p-4">
+    <div className="flex h-[min(100dvh-4rem,920px)] min-h-0 w-full max-w-[min(calc(100vw-2rem),860px)] flex-col rounded-lg border border-semantic-border-layout p-3 sm:p-4">
       <SetupIntegrationView
         messages={defaultMessages}
         title="Setup Integration"

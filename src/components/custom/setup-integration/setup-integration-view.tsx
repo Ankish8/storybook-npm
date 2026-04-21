@@ -41,7 +41,7 @@ const SetupIntegrationView = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex h-full min-h-[min(100dvh-2rem,920px)] w-full min-w-0 max-w-[860px] flex-col gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary shadow-sm",
+        "flex h-full min-h-0 w-full min-w-0 max-w-[860px] flex-col gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary shadow-sm",
         className
       )}
       {...props}
