@@ -14,7 +14,10 @@ const IntegrationAssistantSection = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex min-h-0 flex-1 flex-col", className)}
+    className={cn(
+      "flex min-h-0 flex-1 flex-col overflow-hidden",
+      className
+    )}
     {...props}
   />
 ))

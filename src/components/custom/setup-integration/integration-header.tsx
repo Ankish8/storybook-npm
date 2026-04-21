@@ -69,7 +69,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
       <div
         ref={ref}
         className={cn(
-          "flex items-start gap-2.5 border-b border-semantic-border-layout p-4 sm:items-center sm:p-6",
+          "flex shrink-0 items-start gap-2.5 border-b border-semantic-border-layout p-4 sm:items-center sm:p-6",
           className
         )}
         {...props}
