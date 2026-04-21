@@ -27,6 +27,25 @@ describe("ChatListItem", () => {
     expect(screen.getByText("-")).toBeInTheDocument();
   });
 
+  it("does not render channel pill when channel and agent name are empty", () => {
+    const { container } = render(
+      <ChatListItem
+        {...defaultProps}
+        channel=""
+        agentName={undefined}
+      />
+    );
+    const column = container.querySelector(".flex.flex-col.gap-2");
+    expect(column?.children.length).toBe(2);
+  });
+
+  it("renders channel pill with agent only when channel is omitted", () => {
+    const { channel: _c, ...rest } = defaultProps;
+    render(<ChatListItem {...rest} agentName="Alex Smith" />);
+    expect(screen.getByText("Alex Smith")).toBeInTheDocument();
+    expect(screen.queryByText("-")).not.toBeInTheDocument();
+  });
+
   it("renders unread count badge when unreadCount is set", () => {
     render(<ChatListItem {...defaultProps} unreadCount={3} />);
     expect(screen.getByText("3")).toBeInTheDocument();
@@ -161,5 +180,22 @@ describe("ChatListItem", () => {
     );
     const item = screen.getByRole("button");
     expect(item).toHaveAttribute("aria-label", "Custom label");
+  });
+
+  it.each([
+    ["queue", "Queued"],
+    ["failed", "Failed"],
+    ["received", "Received"],
+  ] as const)("renders %s status with aria-label %s", (status, label) => {
+    render(<ChatListItem {...defaultProps} messageStatus={status} />);
+    expect(screen.getByLabelText(label)).toBeInTheDocument();
+  });
+
+  it("renders message type icon for template messages", () => {
+    const { container } = render(
+      <ChatListItem {...defaultProps} messageType="template" />
+    );
+    const svg = container.querySelector("svg.lucide-layout-template");
+    expect(svg).toBeTruthy();
   });
 });

@@ -21,9 +21,30 @@ export type ChatItem = {
   name: string
   message: string
   timestamp: string
-  messageStatus?: "sent" | "delivered" | "read"
-  messageType?: "document" | "image" | "video" | "audio" | "text"
-  channel: string
+  messageStatus?:
+    | "sent"
+    | "delivered"
+    | "read"
+    | "received"
+    | "queue"
+    | "failed"
+  messageType?:
+    | "text"
+    | "button"
+    | "reaction"
+    | "audio"
+    | "document"
+    | "image"
+    | "video"
+    | "sticker"
+    | "template"
+    | "location"
+    | "unsupportedFile"
+    | "unsupported message"
+    | "contacts"
+    | "interactive"
+  /** When absent, channel pill still renders if `agentName` is set */
+  channel?: string
   agentName?: string
   unreadCount?: number
   slaTimer?: string

@@ -4,7 +4,7 @@ import { Button } from "../../ui/button"
 import { TextField } from "../../ui/text-field"
 import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs"
 import { Badge } from "../../ui/badge"
-import { ChatListItem, type MessageType } from "../chat-list-item"
+import { ChatListItem } from "../chat-list-item"
 import { useChatContext } from "../chat-provider"
 import type { Tab } from "../chat-types"
 import { Search, Plus, CircleAlert } from "lucide-react"
@@ -212,7 +212,7 @@ function ChatSidebar({ children, chatAreaRef }: ChatSidebarProps) {
               <div key={chat.id} className="relative">
                 <ChatListItem
                   {...chat}
-                  messageType={chat.messageType as MessageType}
+                  messageType={chat.messageType}
                   message={
                     search
                       ? highlightMatch(chat.message, search)

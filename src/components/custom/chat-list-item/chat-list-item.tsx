@@ -1,19 +1,68 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import {
+  AudioLines,
   Bot,
   Check,
   CheckCheck,
+  CircleAlert,
   Clock,
+  ContactRound,
   FileText,
+  FileWarning,
   Image as ImageIcon,
+  Inbox,
+  LayoutTemplate,
+  ListTree,
+  MapPin,
+  Smile,
+  SquareMousePointer,
+  Sticker,
+  Video,
+  type LucideIcon,
 } from "lucide-react";
 
 /* ── Types ── */
 
-export type MessageStatus = "sent" | "delivered" | "read";
+export type MessageStatus =
+  | "sent"
+  | "delivered"
+  | "read"
+  | "received"
+  | "queue"
+  | "failed";
 
-export type MessageType = "text" | "document" | "image";
+export type MessageType =
+  | "text"
+  | "button"
+  | "reaction"
+  | "audio"
+  | "document"
+  | "image"
+  | "video"
+  | "sticker"
+  | "template"
+  | "location"
+  | "unsupportedFile"
+  | "unsupported message"
+  | "contacts"
+  | "interactive";
+
+const MESSAGE_TYPE_ICON_MAP: Partial<Record<MessageType, LucideIcon>> = {
+  button: SquareMousePointer,
+  reaction: Smile,
+  audio: AudioLines,
+  document: FileText,
+  image: ImageIcon,
+  video: Video,
+  sticker: Sticker,
+  template: LayoutTemplate,
+  location: MapPin,
+  unsupportedFile: FileWarning,
+  ["unsupported message"]: CircleAlert,
+  contacts: ContactRound,
+  interactive: ListTree,
+};
 
 export interface ChatListItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
@@ -24,11 +73,14 @@ export interface ChatListItemProps
   /** Timestamp display string (e.g. "2:30 PM", "Yesterday") */
   timestamp: string;
   /**
-   * Delivery status of the last outbound message.
+   * Delivery / handling status of the last message.
    * Mutually exclusive with `unreadCount` — when set, no unread badge is shown.
    * - `sent`: single gray checkmark (message left the server)
    * - `delivered`: double gray checkmarks (reached the customer's device)
-   * - `read`: double blue checkmarks (customer opened the message)
+   * - `read`: double accent checkmarks (customer opened the message)
+   * - `received`: inbound / received (inbox icon)
+   * - `queue`: pending in outbound queue (clock)
+   * - `failed`: send or delivery failed (error icon)
    */
   messageStatus?: MessageStatus;
   /**
@@ -44,13 +96,11 @@ export interface ChatListItemProps
   slaTimer?: string;
   /**
    * Type of the last message — controls the icon prefix before the message text.
-   * - `text`: no icon (default)
-   * - `document`: file icon
-   * - `image`: image icon
+   * `text` shows no icon (default).
    */
   messageType?: MessageType;
-  /** Channel identifier (e.g. "MY01") */
-  channel: string;
+  /** Channel identifier (e.g. "MY01"). Omit when unknown — channel pill still shows if `agentName` is set. */
+  channel?: string;
   /** Name of the assigned agent */
   agentName?: string;
   /** Whether the assigned agent's account has been deleted — renders in error color */
@@ -80,10 +130,31 @@ function StatusIndicator({ status }: { status: MessageStatus }) {
       </span>
     );
   }
-  // read
+  if (status === "read") {
+    return (
+      <span aria-label="Read">
+        <CheckCheck className="size-4 text-semantic-text-link shrink-0" aria-hidden="true" />
+      </span>
+    );
+  }
+  if (status === "received") {
+    return (
+      <span aria-label="Received">
+        <Inbox className="size-4 text-semantic-info-primary shrink-0" aria-hidden="true" />
+      </span>
+    );
+  }
+  if (status === "queue") {
+    return (
+      <span aria-label="Queued">
+        <Clock className="size-4 text-semantic-warning-primary shrink-0" aria-hidden="true" />
+      </span>
+    );
+  }
+  // failed
   return (
-    <span aria-label="Read">
-      <CheckCheck className="size-4 text-[#47b5bc] shrink-0" aria-hidden="true" />
+    <span aria-label="Failed">
+      <CircleAlert className="size-4 text-semantic-error-primary shrink-0" aria-hidden="true" />
     </span>
   );
 }
@@ -113,13 +184,15 @@ function SlaTag({ timer }: { timer: string }) {
 }
 
 function MessageTypeIcon({ type }: { type: MessageType }) {
-  if (type === "document") {
-    return <FileText className="size-[14px] text-semantic-text-placeholder shrink-0" />;
+  const Icon = MESSAGE_TYPE_ICON_MAP[type];
+  if (!Icon) {
+    return null;
   }
-  if (type === "image") {
-    return <ImageIcon className="size-[14px] text-semantic-text-placeholder shrink-0" />;
-  }
-  return null;
+  return <Icon className="size-[14px] text-semantic-text-placeholder shrink-0" aria-hidden="true" />;
+}
+
+function channelPillVisible(channel?: string, agentName?: string) {
+  return Boolean((channel && channel.trim()) || (agentName && agentName.trim()));
 }
 
 function ChannelPill({
@@ -128,29 +201,37 @@ function ChannelPill({
   isAgentDeleted,
   isBot,
 }: {
-  channel: string;
+  channel?: string;
   agentName?: string;
   isAgentDeleted?: boolean;
   isBot?: boolean;
 }) {
+  const ch = channel?.trim() ?? "";
+  const agent = agentName?.trim() ?? "";
   const textColor = isAgentDeleted ? "text-semantic-error-text" : "text-semantic-text-primary";
 
   return (
     <div className="flex items-center gap-3">
       <span
         className={cn(
-          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-solid border-semantic-border-layout text-[12px]",
+          "inline-flex items-center gap-[6px] px-2 py-1 rounded-[12px] border border-solid border-semantic-border-layout text-[12px] max-w-full min-w-0",
           textColor
         )}
       >
-        {channel}
-        {agentName && (
+        {ch ? (
           <>
-            <span>-</span>
-            <span className="truncate">{agentName}</span>
+            <span className="shrink-0">{ch}</span>
+            {agent ? (
+              <>
+                <span className="shrink-0">-</span>
+                <span className="truncate">{agent}</span>
+              </>
+            ) : null}
           </>
+        ) : (
+          <span className="truncate">{agent}</span>
         )}
-        {isBot && <Bot className="size-[14px] text-semantic-text-primary" aria-hidden="true" />}
+        {isBot && <Bot className="size-[14px] text-semantic-text-primary shrink-0" aria-hidden="true" />}
       </span>
     </div>
   );
@@ -199,6 +280,7 @@ const ChatListItem = React.forwardRef(
     }: ChatListItemProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const showChannelPill = channelPillVisible(channel, agentName);
     const nameText = typeof name === "string" ? name : "";
     const messageText = typeof message === "string" ? message : "";
     const defaultAriaLabel = `${nameText}. ${messageText}. ${timestamp}${unreadCount ? `. ${unreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
@@ -254,12 +336,14 @@ const ChatListItem = React.forwardRef(
           </div>
 
           {/* Row 3: Channel + Agent Pill */}
-          <ChannelPill
-            channel={channel}
-            agentName={agentName}
-            isAgentDeleted={isAgentDeleted}
-            isBot={isBot}
-          />
+          {showChannelPill ? (
+            <ChannelPill
+              channel={channel}
+              agentName={agentName}
+              isAgentDeleted={isAgentDeleted}
+              isBot={isBot}
+            />
+          ) : null}
         </div>
       </div>
     );
