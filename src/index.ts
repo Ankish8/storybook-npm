@@ -388,7 +388,9 @@ export { PricingPage } from "./components/custom/pricing-page";
 export type {
   PricingPageProps,
   PricingPlanAlertConfig,
+  PricingPlanAlertForwardedProps,
   PricingPlanAlertStatus,
+  PricingPlanAlertVariant,
 } from "./components/custom/pricing-page";
 
 // DateRangeModal (Custom)

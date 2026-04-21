@@ -133,6 +133,7 @@ describe("PricingPage", () => {
   it.each([
     ["success", "bg-semantic-success-surface"],
     ["warning", "bg-semantic-warning-surface"],
+    ["info", "bg-semantic-info-surface"],
     ["failed", "bg-semantic-error-surface"],
   ] as const)("planAlert status %s maps to Alert surface", (status, surfaceClass) => {
     const { container } = render(
@@ -147,6 +148,59 @@ describe("PricingPage", () => {
     const alert = container.querySelector("[role='alert']");
     expect(alert).toBeTruthy();
     expect(alert).toHaveClass(surfaceClass);
+  });
+
+  it("planAlert variant overrides status for Alert appearance", () => {
+    const { container } = render(
+      <PricingPage
+        planCards={mockPlanCards}
+        planAlert={{
+          status: "success",
+          variant: "warning",
+          title: "Overrides",
+        }}
+      />
+    );
+    const alert = container.querySelector("[role='alert']");
+    expect(alert).toHaveClass("bg-semantic-warning-surface");
+  });
+
+  it("hides plan alert when showPlanAlert is false", () => {
+    render(
+      <PricingPage
+        planCards={mockPlanCards}
+        showPlanAlert={false}
+        planAlert={{
+          status: "warning",
+          title: "Hidden",
+          description: "Should not show",
+        }}
+      />
+    );
+    expect(screen.queryByText("Hidden")).not.toBeInTheDocument();
+    expect(screen.getByText("Compact")).toBeInTheDocument();
+  });
+
+  it("forwards alertProps to the underlying Alert", () => {
+    const onClose = vi.fn();
+    render(
+      <PricingPage
+        planCards={mockPlanCards}
+        planAlert={{
+          variant: "info",
+          title: "Closable",
+          alertProps: {
+            closable: true,
+            onClose,
+            "data-testid": "plan-area-alert",
+          },
+        }}
+      />
+    );
+    const alert = screen.getByTestId("plan-area-alert");
+    expect(alert).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Close alert" }));
+    expect(onClose).toHaveBeenCalled();
   });
 
   it("lays out plan cards in one row with columns matching plan count", () => {

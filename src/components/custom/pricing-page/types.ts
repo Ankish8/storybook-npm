@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { AlertProps } from "../../ui/alert";
 import type { PlanCardCtaState, PricingCardProps } from "../pricing-card/types";
 import type { PowerUpCardProps } from "../power-up-card/types";
 import type { LetUsDriveCardProps } from "../let-us-drive-card/types";
@@ -7,18 +8,38 @@ import type { PricingToggleTab } from "../pricing-toggle/types";
 export type { PricingToggleTab };
 
 /** Status for the optional banner above the plan cards (maps to Alert variants). */
-export type PricingPlanAlertStatus = "success" | "warning" | "failed";
+export type PricingPlanAlertStatus = "success" | "warning" | "info" | "failed";
+
+/**
+ * Props forwarded to the underlying {@link AlertProps Alert} (everything except `children` and `variant`).
+ * Set appearance with `PricingPlanAlertConfig.variant` or `status` on the parent object, not here.
+ */
+export type PricingPlanAlertForwardedProps = Omit<AlertProps, "children" | "variant">;
+
+/** Same options as `<Alert variant={…} />` — use instead of `status` when you want to match the Alert API directly. */
+export type PricingPlanAlertVariant = NonNullable<AlertProps["variant"]>;
 
 /**
  * Config for the plan-area alert (Figma: full-width banner with icon, title, description).
+ *
+ * **Appearance:** set **`variant`** to mirror `<Alert variant />` (switch e.g. `info` → `warning` in one prop).
+ * If omitted, **`status`** is mapped to an Alert variant (`failed` → `error`). If both are omitted, the Alert uses `default`.
+ *
+ * **Behavior:** pass **`alertProps`** for closable, actions, icons, and other `Alert` props.
  */
 export interface PricingPlanAlertConfig {
-  /** Visual tone: success, warning, or failed (error surface). */
-  status: PricingPlanAlertStatus;
   /** Bold heading line. */
   title: string;
   /** Supporting copy below the title. */
   description?: string;
+  /** Semantic tone when `variant` is omitted — maps to Alert (e.g. `failed` → error). */
+  status?: PricingPlanAlertStatus;
+  /**
+   * Direct Alert variant (same names as `Alert`). Overrides `status` when both are set.
+   */
+  variant?: PricingPlanAlertVariant;
+  /** Extra props for the shared `Alert` (e.g. `closable`, `onClose`, `icon`, `action`, `className`). */
+  alertProps?: PricingPlanAlertForwardedProps;
 }
 
 /**
@@ -75,10 +96,15 @@ export interface PricingPageProps
   planCardCtaStates?: PlanCardCtaState[];
 
   /**
-   * Optional alert above the pricing cards (Plan & Pricing area).
-   * `failed` uses the error Alert variant.
+   * Optional alert above the pricing cards (Plan & Pricing area), using the design-system `Alert`.
+   * Set **`showPlanAlert={false}`** to keep config in memory but hide the banner (e.g. feature flags).
    */
   planAlert?: PricingPlanAlertConfig;
+  /**
+   * When `false`, the plan-area alert is not rendered; `planAlert` can stay defined for easy toggling.
+   * Default: show whenever `planAlert` is set.
+   */
+  showPlanAlert?: boolean;
 
   /* ───── Power-ups Section ───── */
 

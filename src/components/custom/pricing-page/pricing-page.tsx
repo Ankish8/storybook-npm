@@ -8,13 +8,26 @@ import { LetUsDriveCard } from "../let-us-drive-card/let-us-drive-card";
 import { ExternalLink } from "lucide-react";
 import { PricingPlanCardsRow } from "./pricing-plan-cards-row";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
-import type { PricingPageProps, PricingPlanAlertStatus } from "./types";
+import type {
+  PricingPageProps,
+  PricingPlanAlertConfig,
+  PricingPlanAlertStatus,
+} from "./types";
 
 function planAlertStatusToVariant(
   status: PricingPlanAlertStatus
-): "success" | "warning" | "error" {
+): "success" | "warning" | "info" | "error" {
   if (status === "failed") return "error";
   return status;
+}
+
+/** Uses `variant` when set, else maps `status`, else Alert `default`. */
+function resolvePlanAlertVariant(
+  config: PricingPlanAlertConfig
+): NonNullable<PricingPlanAlertConfig["variant"]> {
+  if (config.variant) return config.variant;
+  if (config.status) return planAlertStatusToVariant(config.status);
+  return "default";
 }
 
 /**
@@ -54,6 +67,7 @@ const PricingPage = React.forwardRef(
       planCardColumnCount,
       planCardCtaStates,
       planAlert,
+      showPlanAlert = true,
       powerUpCards = [],
       powerUpsTitle = "Power-ups and charges",
       featureComparisonText = "See full feature comparison",
@@ -72,6 +86,9 @@ const PricingPage = React.forwardRef(
         ? Math.max(planCards.length, planCardColumnCount)
         : planCards.length;
 
+    const planAlertVisible =
+      !!planAlert && showPlanAlert !== false;
+
     return (
       <div
         ref={ref}
@@ -87,10 +104,13 @@ const PricingPage = React.forwardRef(
 
         {/* ───── Plan Selection Area ───── */}
         <div className="flex flex-col items-center gap-12 px-6 py-12">
-          {(planAlert || planCards.length > 0) && (
+          {(planAlertVisible || planCards.length > 0) && (
             <div className="flex w-full max-w-[1200px] flex-col gap-6">
-              {planAlert && (
-                <Alert variant={planAlertStatusToVariant(planAlert.status)}>
+              {planAlertVisible && planAlert && (
+                <Alert
+                  variant={resolvePlanAlertVariant(planAlert)}
+                  {...planAlert.alertProps}
+                >
                   <AlertTitle>{planAlert.title}</AlertTitle>
                   {planAlert.description ? (
                     <AlertDescription>{planAlert.description}</AlertDescription>

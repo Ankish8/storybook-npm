@@ -327,7 +327,7 @@ Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard,
 
 Displays pricing cards in a single row (equal-width columns; horizontal scroll on narrow viewports when needed) with power-ups and let-us-drive sections below. Column count follows \`planCards.length\`; optional \`planCardColumnCount\` can reserve extra columns (rare).
 
-Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid. Use \`status\`: \`success\`, \`warning\`, or \`failed\` (failed → error styling), plus \`title\` and optional \`description\`.
+Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
 
 ## Installation
 
@@ -431,8 +431,13 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
   argTypes: {
     planAlert: {
       description:
-        "Optional banner above plan cards: `status` success | warning | failed (failed → error surface), plus `title` and optional `description`.",
+        "Banner above plan cards (shared Alert). Prefer `variant` to mirror Alert API, or `status` for semantic mapping; optional `alertProps` for closable/actions.",
       control: "object",
+    },
+    showPlanAlert: {
+      description:
+        "When false, hides the plan-area alert; keep `planAlert` for easy toggling.",
+      control: "boolean",
     },
   },
   args: {
@@ -481,9 +486,9 @@ export const GoAIFirst: Story = {
   },
 };
 
-/** All three `planAlert.status` values: success, warning, failed. */
+/** All `planAlert.status` values: success, warning, info, failed. */
 export const PlanAlertsAllStatuses: Story = {
-  name: "Plan alerts (success, warning, failed)",
+  name: "Plan alerts (success, warning, info, failed)",
   render: () => (
     <div className="flex flex-col gap-16 bg-card p-6">
       <div>
@@ -514,6 +519,21 @@ export const PlanAlertsAllStatuses: Story = {
             title: "Custom Plan Active",
             description:
               "You're currently on a tailored enterprise plan. Changes may require sales approval.",
+          }}
+        />
+      </div>
+      <div>
+        <p className="m-0 mb-2 text-sm font-medium text-semantic-text-secondary">
+          info
+        </p>
+        <PricingPage
+          className="min-h-0 rounded-lg border border-semantic-border-layout overflow-hidden"
+          headerActions={<NumberTypeSelect />}
+          planCards={teamCards}
+          planAlert={{
+            status: "info",
+            title: "Prices shown exclude taxes",
+            description: "Taxes are calculated at checkout based on your billing address.",
           }}
         />
       </div>
