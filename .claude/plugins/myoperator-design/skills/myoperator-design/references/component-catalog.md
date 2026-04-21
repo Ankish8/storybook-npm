@@ -722,7 +722,7 @@ import { Mail } from "lucide-react"
 > A chat message bubble with sender/receiver variants, delivery status, reply quote, media slot, and optional full ChatMessage rendering (all list message types)
 
 **Install**: `npx myoperator-ui add chat-bubble`
-**Requires**: `reply-quote`, `button`, `tooltip`, `doc-media`, `dropdown-menu`, `spinner`, `sender-indicator`, `chat-types`, `chat-message-list`, `chat-timeline-divider`, `chat-provider` (auto-installed)
+**Requires**: `reply-quote`, `button`, `tooltip`, `doc-media`, `dropdown-menu`, `spinner`, `sender-indicator`, `chat-types`, `chat-timeline-divider`, `chat-provider` (auto-installed)
 **Type**: Multi-file component
 
 ---
