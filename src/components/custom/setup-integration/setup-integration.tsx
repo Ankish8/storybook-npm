@@ -21,6 +21,11 @@ const SetupIntegration = React.forwardRef<
       title = "Setup Integration",
       subtitle = "Step 3 of 4",
       messages,
+      messagesAreaClassName,
+      emptyChatTitle,
+      emptyChatDescription,
+      emptyChatIcon,
+      emptyChatSecondary,
       inputValue = "",
       isInputDisabled = false,
       inputPlaceholder = "Describe your action… (Shift+Enter for new line)",
@@ -72,6 +77,11 @@ const SetupIntegration = React.forwardRef<
             title={title}
             subtitle={subtitle}
             messages={messages}
+            messagesAreaClassName={messagesAreaClassName}
+            emptyChatTitle={emptyChatTitle}
+            emptyChatDescription={emptyChatDescription}
+            emptyChatIcon={emptyChatIcon}
+            emptyChatSecondary={emptyChatSecondary}
             inputValue={inputValue}
             isInputDisabled={isInputDisabled}
             inputPlaceholder={inputPlaceholder}

@@ -14,6 +14,21 @@ import type {
   PricingPlanAlertStatus,
 } from "./types";
 
+/** Horizontal gutters: tighter on small viewports, Figma 24px from `md` up. */
+const sectionPaddingX =
+  "px-4 sm:px-5 md:px-6";
+
+/** Matches {@link sectionPaddingX} — PageHeader already applies `px-4`. */
+const pageHeaderPaddingX = "sm:px-5 md:px-6";
+
+/** Vertical rhythm between header and plan blocks — scales up at `md`. */
+const planSectionPaddingY =
+  "pt-4 pb-4 sm:pt-5 sm:pb-5 md:pt-6 md:pb-6";
+
+/** Section bands (Power-ups / Let us drive): Figma 60px vertical at desktop. */
+const sectionPaddingY =
+  "py-10 sm:py-12 md:py-[60px]";
+
 function planAlertStatusToVariant(
   status: PricingPlanAlertStatus
 ): "success" | "warning" | "info" | "error" {
@@ -100,12 +115,19 @@ const PricingPage = React.forwardRef(
           title={title}
           actions={headerActions}
           layout="horizontal"
+          className={pageHeaderPaddingX}
         />
 
         {/* ───── Plan Selection Area ───── */}
-        <div className="flex flex-col items-center gap-12 px-6 py-12">
+        <div
+          className={cn(
+            "flex flex-col items-center w-full min-w-0",
+            sectionPaddingX,
+            planSectionPaddingY
+          )}
+        >
           {(planAlertVisible || planCards.length > 0) && (
-            <div className="flex w-full max-w-[1200px] flex-col gap-6">
+            <div className="flex w-full max-w-[1091px] flex-col gap-4 sm:gap-[18px] min-w-0">
               {planAlertVisible && planAlert && (
                 <Alert
                   variant={resolvePlanAlertVariant(planAlert)}
@@ -142,17 +164,23 @@ const PricingPage = React.forwardRef(
 
         {/* ───── Power-ups Section ───── */}
         {hasPowerUps && (
-          <div className="bg-semantic-bg-ui px-6 py-[60px]">
-            <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full">
+          <div
+            className={cn(
+              "bg-semantic-bg-ui w-full min-w-0",
+              sectionPaddingY,
+              "pl-4 pr-4 sm:pl-5 sm:pr-5 md:pl-6 md:pr-6 lg:pr-12"
+            )}
+          >
+            <div className="flex flex-col gap-3 sm:gap-4 max-w-[1091px] mx-auto w-full min-w-0">
               {/* Section header */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
                   {powerUpsTitle}
                 </h2>
                 {onFeatureComparisonClick && (
                   <Button
                     variant="link"
-                    className="text-semantic-text-link p-0 h-auto min-w-0 gap-1"
+                    className="text-semantic-text-link p-0 h-auto min-w-0 gap-1 self-start sm:shrink-0"
                     onClick={onFeatureComparisonClick}
                   >
                     {featureComparisonText}
@@ -162,7 +190,7 @@ const PricingPage = React.forwardRef(
               </div>
 
               {/* Power-up cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
                 {powerUpCards.map((cardProps, index) => (
                   <PowerUpCard key={index} {...cardProps} />
                 ))}
@@ -173,15 +201,17 @@ const PricingPage = React.forwardRef(
 
         {/* ───── Let Us Drive Section ───── */}
         {hasLetUsDrive && (
-          <div className="bg-card px-6 py-[60px]">
-            <div className="flex flex-col gap-4 max-w-[1200px] mx-auto w-full">
+          <div
+            className={cn("bg-card w-full min-w-0", sectionPaddingX, sectionPaddingY)}
+          >
+            <div className="flex flex-col gap-3 sm:gap-4 max-w-[1091px] mx-auto w-full min-w-0">
               {/* Section header */}
-              <h2 className="text-lg font-semibold text-semantic-text-primary m-0">
+              <h2 className="text-base sm:text-lg font-semibold text-semantic-text-primary m-0">
                 {letUsDriveTitle}
               </h2>
 
               {/* Service cards — items-start so expanding one card doesn't stretch others */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 items-start">
                 {letUsDriveCards.map((cardProps, index) => (
                   <LetUsDriveCard key={index} {...cardProps} />
                 ))}

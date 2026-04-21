@@ -2,6 +2,9 @@ import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { SetupIntegration } from "../setup-integration"
 import { SetupIntegrationView } from "../setup-integration-view"
+import { IntegrationChatMessages } from "../integration-chat-messages"
+import { IntegrationChatEmptyHint } from "../integration-chat-empty-hint"
+import { IntegrationChatEmptySecondary } from "../integration-chat-empty-secondary"
 import { ChatMessageBubble } from "../chat-message"
 import { ChatInput } from "../chat-input"
 import type { ChatMessage } from "../types"
@@ -394,6 +397,47 @@ describe("SetupIntegration", () => {
     expect(screen.getByText("AI Assistant")).toBeInTheDocument()
   })
 
+  it("shows empty transcript with default copy when messages is empty", () => {
+    render(
+      <SetupIntegrationView messages={[]} title="Setup Integration" />
+    )
+    expect(screen.getByText("No messages yet")).toBeInTheDocument()
+    expect(
+      screen.getByText("Describe your integration action below to get started.")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/Describe what your bot should do with this integration/)
+    ).toBeInTheDocument()
+  })
+
+  it("hides empty secondary block when emptyChatSecondary is null", () => {
+    render(
+      <SetupIntegrationView
+        messages={[]}
+        title="Setup Integration"
+        emptyChatSecondary={null}
+      />
+    )
+    expect(
+      screen.queryByText(/Describe what your bot should do with this integration/)
+    ).not.toBeInTheDocument()
+  })
+
+  it("shows custom empty transcript copy when props are set", () => {
+    render(
+      <SetupIntegrationView
+        messages={[]}
+        title="Setup Integration"
+        emptyChatTitle="Start here"
+        emptyChatDescription="Tell the assistant what to do."
+      />
+    )
+    expect(screen.getByText("Start here")).toBeInTheDocument()
+    expect(
+      screen.getByText("Tell the assistant what to do.")
+    ).toBeInTheDocument()
+  })
+
   it("does not show pencil icon when onIntegrationNameChange is not provided", () => {
     render(
       <SetupIntegration
@@ -407,6 +451,45 @@ describe("SetupIntegration", () => {
     expect(
       screen.queryByLabelText("Edit integration name")
     ).not.toBeInTheDocument()
+  })
+})
+
+// ─── IntegrationChatMessages / IntegrationChatEmptyHint ─────────
+
+describe("IntegrationChatMessages", () => {
+  it("applies min-h-[454px] when messages is empty", () => {
+    const { container } = render(<IntegrationChatMessages messages={[]} />)
+    expect(container.firstChild).toHaveClass("min-h-[454px]")
+  })
+
+  it("does not apply min-h-[454px] when messages exist", () => {
+    const { container } = render(
+      <IntegrationChatMessages messages={sampleMessages} />
+    )
+    expect(container.firstChild).not.toHaveClass("min-h-[454px]")
+  })
+})
+
+describe("IntegrationChatEmptyHint", () => {
+  it("renders EmptyState with title and description", () => {
+    render(
+      <IntegrationChatEmptyHint title="T" description="D" />
+    )
+    expect(screen.getByText("T")).toBeInTheDocument()
+    expect(screen.getByText("D")).toBeInTheDocument()
+    expect(
+      document.querySelector('[data-slot="empty-state"]')
+    ).toBeInTheDocument()
+  })
+})
+
+describe("IntegrationChatEmptySecondary", () => {
+  it("renders note with icon and text", () => {
+    const { container } = render(
+      <IntegrationChatEmptySecondary>Secondary tip.</IntegrationChatEmptySecondary>
+    )
+    expect(screen.getByRole("note")).toHaveTextContent("Secondary tip.")
+    expect(container.querySelector(".border-semantic-border-layout")).toBeTruthy()
   })
 })
 

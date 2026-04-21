@@ -145,24 +145,30 @@ const SetupTrigger = ({ onClick }: { onClick: () => void }) => (
 /* Modal wrapper for args-based stories                                */
 /* ================================================================== */
 
-const ModalStory = (props: SetupIntegrationProps) => {
-  const [open, setOpen] = useState(false)
-  const [inputValue, setInputValue] = useState(props.inputValue ?? "")
+type ModalStoryProps = SetupIntegrationProps & {
+  /** When true, the modal opens on load (useful for empty state / full-screen previews). */
+  initialOpen?: boolean
+}
+
+const ModalStory = (props: ModalStoryProps) => {
+  const { initialOpen = false, ...setupProps } = props
+  const [open, setOpen] = useState(initialOpen)
+  const [inputValue, setInputValue] = useState(setupProps.inputValue ?? "")
 
   return (
     <>
       <SetupTrigger onClick={() => setOpen(true)} />
       <SetupIntegration
-        {...props}
+        {...setupProps}
         open={open}
         onOpenChange={setOpen}
         inputValue={inputValue}
         onInputChange={(v) => {
           setInputValue(v)
-          props.onInputChange?.(v)
+          setupProps.onInputChange?.(v)
         }}
         onClose={() => {
-          props.onClose?.()
+          setupProps.onClose?.()
           setOpen(false)
         }}
       />
@@ -342,6 +348,27 @@ export const Default: Story = {
       description: {
         story:
           "Initial state — single assistant greeting message. Test Integration button is disabled until the user configures an action.",
+      },
+    },
+  },
+}
+
+// ---------- Empty: No messages yet (empty hint + secondary tip) ----------
+export const Empty: Story = {
+  render: (args) => <ModalStory {...args} initialOpen />,
+  args: {
+    messages: [],
+    title: "Setup Integration",
+    subtitle: "Step 3 of 4",
+    actionLabel: "Test Integration",
+    isActionDisabled: true,
+    actionMode: "test",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "No transcript yet — shows the empty state (icon, title, description) and the secondary tip panel. Modal opens by default so you can review the layout without clicking Integrations.",
       },
     },
   },

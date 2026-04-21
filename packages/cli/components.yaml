@@ -1716,6 +1716,7 @@ components:
       - spinner
       - dialog
       - confirmation-modal
+      - empty-state
     isMultiFile: true
     directory: "setup-integration"
     files:
@@ -1728,6 +1729,8 @@ components:
       - "integration-assistant-bar.tsx"
       - "integration-assistant-section.tsx"
       - "integration-chat-messages.tsx"
+      - "integration-chat-empty-hint.tsx"
+      - "integration-chat-empty-secondary.tsx"
       - "integration-actions.tsx"
       - "setup-integration-view.tsx"
       - "setup-integration.tsx"

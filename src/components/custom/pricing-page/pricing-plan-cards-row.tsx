@@ -27,13 +27,14 @@ const PricingPlanCardsRow = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "w-full max-w-[1200px] mx-auto overflow-x-auto",
+        "w-full max-w-[1091px] mx-auto overflow-x-auto",
         className
       )}
       {...props}
     >
       <div
-        className="grid gap-8 w-full min-w-0"
+        data-testid="pricing-plan-cards-grid"
+        className="grid w-full min-w-0 gap-4 sm:gap-6 md:gap-8"
         style={{
           gridTemplateColumns: `repeat(${columnCount}, minmax(240px, 1fr))`,
         }}

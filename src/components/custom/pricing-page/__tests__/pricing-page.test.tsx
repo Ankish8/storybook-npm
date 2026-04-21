@@ -216,7 +216,7 @@ describe("PricingPage", () => {
     ];
     const { container } = render(<PricingPage planCards={fourPlans} />);
     const grid = container.querySelector(
-      ".grid.gap-8"
+      "[data-testid=\"pricing-plan-cards-grid\"]"
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
     expect(grid?.style.gridTemplateColumns).toContain("repeat(4,");

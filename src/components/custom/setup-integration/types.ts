@@ -45,6 +45,23 @@ export interface SetupIntegrationProps
   subtitle?: string
   /** Chat messages to display */
   messages: ChatMessage[]
+  /**
+   * Classes for the messages scroll region outer wrapper (passed to IntegrationChatMessages).
+   * When there are no messages, `min-h-[454px]` is applied by default unless overridden.
+   */
+  messagesAreaClassName?: string
+  /** Empty transcript title (centered with icon) — shown when `messages.length === 0` */
+  emptyChatTitle?: React.ReactNode
+  /** Empty transcript description — shown when `messages.length === 0` */
+  emptyChatDescription?: React.ReactNode
+  /** Custom icon for the empty transcript — shown when `messages.length === 0` */
+  emptyChatIcon?: React.ReactNode
+  /**
+   * Extra block below the main empty hint (e.g. {@link IntegrationChatEmptySecondary}).
+   * Only shown when `messages.length === 0`.
+   * Omit or leave undefined to use the built-in tip; pass `null` to hide the secondary block.
+   */
+  emptyChatSecondary?: React.ReactNode | null
   /** Current text input value */
   inputValue?: string
   /** Whether the text input is disabled */
