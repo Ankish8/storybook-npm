@@ -1482,6 +1482,7 @@ components:
     directory: "chat-message-list"
     files:
       - "index.ts"
+      - "types.ts"
     mainFile: "index.ts"
 
   chat-notification:
