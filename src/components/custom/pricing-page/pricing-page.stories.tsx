@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import React from "react";
-import { Hash, PhoneCall, Shield } from "lucide-react";
+import { ChevronsDown, Hash, Phone, PhoneCall, Shield } from "lucide-react";
+import { Button } from "../../ui/button";
 import { PricingPage } from "./pricing-page";
 import type { PricingPlanAlertConfig } from "./types";
 import {
@@ -38,6 +39,109 @@ const NumberTypeSelect = () => (
     </Select>
   </div>
 );
+
+/** Figma 1119:2783 — mock “number type” control (matches UI/PricingPage story). */
+const numberTypeControlFigma = (
+  <div className="flex items-center gap-2.5">
+    <span className="whitespace-nowrap text-sm text-semantic-text-primary">
+      Number Type:
+    </span>
+    <Button
+      type="button"
+      variant="outline"
+      className="h-10 w-[9rem] justify-between gap-2 rounded border-semantic-border-layout px-4 py-1 text-sm font-semibold text-semantic-text-primary"
+    >
+      <span>Virtual</span>
+      <ChevronsDown className="size-5 shrink-0 opacity-70" aria-hidden />
+    </Button>
+  </div>
+);
+
+const figmaCompactFeatures = [
+  "WhatsApp Campaigns (up to 5K audience)",
+  "Missed Call Tracking & Alerts",
+  "Shared WhatsApp Inbox",
+  "Daily SMS/Email Alerts",
+  "Basic performance reports",
+  "1 virtual number + channel line",
+];
+
+const figmaSedanFeatures: PricingCardProps["features"] = [
+  { parts: [{ text: "Everything in " }, { text: "Compact", bold: true }] },
+  "Scalable inbound & outbound calling",
+  "IVR call handling + call recording",
+  "Smart call routing + sticky agent logic",
+  "Team & department setup",
+  "Campaign reporting & summary insights",
+  "Agent availability & shift controls",
+  "Shopify integration",
+];
+
+const figmaSuvFeatures: PricingCardProps["features"] = [
+  { parts: [{ text: "Everything in " }, { text: "Sedan", bold: true }] },
+  "Advanced analytics & custom dashboards",
+  "Audit logs & call governance tools",
+  { parts: [{ text: "Premium " }, { text: "Support", bold: true }] },
+];
+
+const figmaPlanAddon = { text: "Add AI Agents @₹10,000/agent" };
+
+const figmaPowerUpCards: PowerUpCardProps[] = [
+  {
+    icon: <Shield className="size-6 text-semantic-text-primary" />,
+    title: "Truecaller business",
+    price: "Starts @ ₹30,000/month",
+    description:
+      "Leverage the power of Truecaller Business to grow your reach and reputation.",
+    onCtaClick: fn(),
+  },
+  {
+    icon: <Hash className="size-6 text-semantic-text-primary" />,
+    title: "1800 Toll-free",
+    price: "Starts @ ₹500/month",
+    description:
+      "Strengthen your brand accessibility with a professional 1800 line.",
+    onCtaClick: fn(),
+  },
+  {
+    icon: <Phone className="size-6 text-semantic-text-primary" />,
+    title: "Auto-Dialer",
+    price: "Starts @ ₹700/user/month",
+    description:
+      "Available for SUV & Enterprise plans as an add-on per user.",
+    onCtaClick: fn(),
+  },
+];
+
+const figmaLetUsDriveCards: LetUsDriveCardProps[] = [
+  {
+    title: "Dedicated Onboarding",
+    price: "20,000",
+    period: "one-time fee",
+    description: "Cut adoption time. Start seeing ROI faster.",
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+  {
+    title: "Account Manager",
+    price: "15,000",
+    period: "per month",
+    billingBadge: "Annually",
+    description: "One expert who knows your business. And moves it forward.",
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+  {
+    title: "Managed Services",
+    price: "50,000",
+    period: "per month, billed quarterly",
+    startsAt: true,
+    billingBadge: "Quarterly",
+    description: "End-to-end execution — built and run by experts.",
+    onShowDetails: fn(),
+    onCtaClick: fn(),
+  },
+];
 
 // ─── Team-Led Plan Cards ──────────────────────────────────────────────────────
 
@@ -471,7 +575,10 @@ export const Default: Story = {
   },
 };
 
-/** Canvas + copy aligned with Figma 1119:2783 and production “Lite” plan row (4-up on xl). */
+/**
+ * Canvas matches Figma `1119:2783` (MyO — Product Design): Select Business Plan
+ * (plans, power-ups, full-service). Same data as `UI/PricingPage` Figma story.
+ */
 export const FigmaSelectBusinessPlan: Story = {
   name: "Figma (1119:2783) – Select business plan",
   parameters: {
@@ -492,8 +599,9 @@ export const FigmaSelectBusinessPlan: Story = {
   ],
   args: {
     showCategoryToggle: false,
+    showPlanAlert: true,
     showBillingToggle: false,
-    headerActions: <NumberTypeSelect />,
+    headerActions: numberTypeControlFigma,
     planAlert: {
       title: "Custom Plan Active",
       description:
@@ -502,51 +610,49 @@ export const FigmaSelectBusinessPlan: Story = {
     },
     planCards: [
       {
-        planName: "Lite- 1C",
-        price: "1,150",
+        planName: "Compact",
+        price: "2,500",
         period: "per month",
-        planDetails: "6 Users | 12 Month plan",
-        features: [],
+        planDetails: "3 Users | 12 Month plan",
+        description:
+          "For small teams that need WhatsApp Business API & missed calls.",
+        features: figmaCompactFeatures,
+        ctaText: "Upgrade",
         onCtaClick: fn(),
         onFeatureDetails: fn(),
-        addon: defaultAddon,
+        addon: figmaPlanAddon,
       },
       {
-        planName: "Lite- 2C",
-        price: "2,150",
+        planName: "Sedan",
+        price: "5,000",
         period: "per month",
-        planDetails: "6 Users | 12 Month plan",
-        features: [],
+        planDetails: "10 Users | 12 Month plan",
+        description:
+          "For growing businesses that need more users & unlimited IVR+ calling.",
+        features: figmaSedanFeatures,
+        ctaText: "Upgrade",
         onCtaClick: fn(),
         onFeatureDetails: fn(),
-        addon: defaultAddon,
+        addon: figmaPlanAddon,
       },
       {
-        planName: "Lite- 3C",
-        price: "3,150",
+        planName: "SUV",
+        price: "9,000",
         period: "per month",
-        planDetails: "6 Users | 12 Month plan",
-        features: [],
-        onCtaClick: fn(),
-        onFeatureDetails: fn(),
-        addon: defaultAddon,
-      },
-      {
-        planName: "Lite- 5C",
-        price: "5,150",
-        period: "per month",
-        planDetails: "6 Users | 12 Month plan",
+        planDetails: "20 Users | 12 Month plan",
+        description: "For established teams with advanced use cases and scale.",
+        features: figmaSuvFeatures,
         showPopularBadge: true,
         badgeText: "Most Popular",
-        features: [],
+        ctaText: "Downgrade",
         onCtaClick: fn(),
         onFeatureDetails: fn(),
-        addon: defaultAddon,
+        addon: figmaPlanAddon,
       },
     ],
-    powerUpCards,
+    powerUpCards: figmaPowerUpCards,
     onFeatureComparisonClick: fn(),
-    letUsDriveCards: letUsDriveCards,
+    letUsDriveCards: figmaLetUsDriveCards,
   },
 };
 

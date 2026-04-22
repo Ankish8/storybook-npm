@@ -219,7 +219,7 @@ describe("PricingPage", () => {
       "[data-testid=\"pricing-plan-cards-grid\"]"
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
-    expect(grid).toHaveClass("xl:grid-cols-4");
+    expect(grid).toHaveClass("md:grid-cols-4");
   });
 
   it("renders power-up cards section", () => {

@@ -16,30 +16,38 @@ import type {
 
 /**
  * Constrains plan / add-on sections; PageHeader is rendered full-width above this.
+ * Figma `1119:2783` content ~1139px wide; 1200 keeps comfortable margins.
  */
 const pageBodyMaxClass =
   "mx-auto flex w-full min-w-0 max-w-[1200px] flex-col";
 
-/** Figma: `px-[24px]` on the plan row, header, Let us drive (1119:3357, 2785, 3030). */
-const pageGutterX = "px-4 md:px-6";
-
-/** Tighter top on small viewports, 24px from `sm` up. */
-const planSectionPaddingTop = "pt-4 sm:pt-6";
+/**
+ * Figma `1119:2785` header row, `1119:3030` let-us-drive, plan area: `px-[24px]`.
+ */
+const pageGutterX = "px-4 sm:px-6";
 
 /**
- * Spacing *between* plan, Power-ups, and Let us drive — `gap` (no margin on sections).
- * 24px → 32px → 60px from sm to md+.
+ * Figma `1119:2784` — 24px between the title row and the plan stack (not extra `pt` on the plan).
+ */
+const planSectionPaddingTop = "pt-0";
+
+/**
+ * Figma `1119:2784` — 24px between the main column sections that map to separate flex children
+ * in code (e.g. plan block → power-ups + let-us wrapper). Power-ups and let-us are nested
+ * together with no extra gap to match `1119:2984` (no flex gap between `2985` and `3030`).
  */
 const interSectionStackClass =
-  "flex w-full min-w-0 flex-col gap-6 sm:gap-8 md:gap-[60px]";
+  "flex w-full min-w-0 flex-col gap-4 sm:gap-6";
 
-/** Inset for band content; outer separation comes from `interSectionStackClass` gap, not `py` doubling. */
-const sectionBandPaddingTop = "pt-6 sm:pt-8 md:pt-10";
+/**
+ * Figma: `60px` vertical padding on each band; scales down on small viewports.
+ */
+const sectionBandPaddingY = "py-8 sm:py-10 md:py-12 lg:py-[60px]";
 
-const sectionBandPaddingBottom = "pb-10 sm:pb-12 md:pb-[60px]";
-
-/** 1119:2985 — `pl-[24px] pr-[48px]`. */
-const powerUpsGutterX = "px-4 md:pl-6 md:pr-12";
+/**
+ * Figma `1119:2985` — `pl-[24px] pr-[48px]`; matches page gutters, then `md` right pad.
+ */
+const powerUpsGutterX = "px-4 sm:pl-6 sm:pr-4 md:pr-12";
 
 function planAlertStatusToVariant(
   status: PricingPlanAlertStatus
@@ -113,25 +121,22 @@ const PricingPage = React.forwardRef(
         ? Math.max(planCards.length, planCardColumnCount)
         : planCards.length;
 
-    const planAlertVisible =
-      !!planAlert && showPlanAlert !== false;
+    const planAlertVisible = !!planAlert && showPlanAlert !== false;
 
     return (
       <div
         ref={ref}
-        className={cn("flex flex-col bg-card h-full overflow-y-auto", className)}
+        className={cn("flex h-full flex-col overflow-y-auto bg-card", className)}
         {...props}
       >
-        <div className="flex min-w-0 w-full flex-col">
+        <div className="flex min-w-0 w-full flex-col gap-4 sm:gap-6">
           <PageHeader
             title={title}
             actions={headerActions}
             layout="horizontal"
             className={cn("w-full", pageGutterX)}
           />
-          <div
-            className={cn(interSectionStackClass, "w-full min-w-0")}
-          >
+          <div className={cn(interSectionStackClass, "w-full min-w-0")}>
             {/* ───── Plan (max 1200) ───── */}
             <div className={pageBodyMaxClass}>
               <div
@@ -143,7 +148,7 @@ const PricingPage = React.forwardRef(
                 )}
               >
                 {(planAlertVisible || planCards.length > 0) && (
-                  <div className="flex min-w-0 w-full flex-col gap-4 sm:gap-6">
+                  <div className="flex min-w-0 w-full flex-col gap-6">
                     {planAlertVisible && planAlert && (
                       <Alert
                         variant={resolvePlanAlertVariant(planAlert)}
@@ -181,64 +186,66 @@ const PricingPage = React.forwardRef(
               </div>
             </div>
 
-            {/* ───── Power-ups: full-bleed band; content stays max 1200 ───── */}
-            {hasPowerUps && (
-              <div className="w-full min-w-0 bg-semantic-bg-ui">
-                <div
-                  className={cn(
-                    pageBodyMaxClass,
-                    sectionBandPaddingTop,
-                    sectionBandPaddingBottom,
-                    powerUpsGutterX
-                  )}
-                >
-                  <div className="flex w-full min-w-0 flex-col gap-4">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
-                      <h2 className="m-0 text-base sm:text-lg font-semibold text-semantic-text-primary">
-                        {powerUpsTitle}
-                      </h2>
-                      {onFeatureComparisonClick && (
-                        <Button
-                          variant="link"
-                          className="h-auto min-w-0 gap-1 self-start p-0 text-semantic-text-link sm:shrink-0"
-                          onClick={onFeatureComparisonClick}
-                        >
-                          {featureComparisonText}
-                          <ExternalLink className="size-3.5" />
-                        </Button>
+            {/* ───── Power-ups + Let us drive: Figma `1119:2984` stacks both with no flex gap. ───── */}
+            {(hasPowerUps || hasLetUsDrive) && (
+              <div className="flex w-full min-w-0 flex-col">
+                {hasPowerUps && (
+                  <div className="min-w-0 w-full bg-semantic-bg-ui">
+                    <div
+                      className={cn(
+                        pageBodyMaxClass,
+                        sectionBandPaddingY,
+                        powerUpsGutterX
                       )}
-                    </div>
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {powerUpCards.map((cardProps, index) => (
-                        <PowerUpCard key={index} {...cardProps} />
-                      ))}
+                    >
+                      <div className="flex w-full min-w-0 flex-col gap-3 sm:gap-4">
+                        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6 md:gap-8">
+                          <h2 className="m-0 min-w-0 text-balance text-base font-semibold leading-6 text-semantic-text-primary sm:text-[18px]">
+                            {powerUpsTitle}
+                          </h2>
+                          {onFeatureComparisonClick && (
+                            <Button
+                              variant="link"
+                              className="h-auto min-w-0 gap-1 self-start p-0 text-semantic-text-link sm:shrink-0"
+                              onClick={onFeatureComparisonClick}
+                            >
+                              {featureComparisonText}
+                              <ExternalLink className="size-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                          {powerUpCards.map((cardProps, index) => (
+                            <PowerUpCard key={index} {...cardProps} />
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
 
-            {/* ───── Let us drive (max 1200) ───── */}
-            {hasLetUsDrive && (
-              <div className={pageBodyMaxClass}>
-                <div
-                  className={cn(
-                    "w-full min-w-0 bg-card pt-0",
-                    pageGutterX,
-                    sectionBandPaddingBottom
-                  )}
-                >
-                  <div className="flex w-full min-w-0 flex-col gap-4">
-                    <h2 className="m-0 text-base sm:text-lg font-semibold text-semantic-text-primary">
-                      {letUsDriveTitle}
-                    </h2>
-                    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-3">
-                      {letUsDriveCards.map((cardProps, index) => (
-                        <LetUsDriveCard key={index} {...cardProps} />
-                      ))}
+                {hasLetUsDrive && (
+                  <div className="min-w-0 w-full bg-card">
+                    <div
+                      className={cn(
+                        pageBodyMaxClass,
+                        sectionBandPaddingY,
+                        pageGutterX
+                      )}
+                    >
+                      <div className="flex w-full min-w-0 flex-col gap-3 sm:gap-4">
+                        <h2 className="m-0 min-w-0 text-balance text-base font-semibold leading-6 text-semantic-text-primary sm:text-[18px]">
+                          {letUsDriveTitle}
+                        </h2>
+                        <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                          {letUsDriveCards.map((cardProps, index) => (
+                            <LetUsDriveCard key={index} {...cardProps} />
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>
