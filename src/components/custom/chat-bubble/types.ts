@@ -39,7 +39,11 @@ export interface ChatBubbleManualProps extends HtmlDiv {
   media?: React.ReactNode;
   /** Controls max-width of the bubble: "text" = 65%, "media" = 380px, "audio" = 340px, "carousel" = 466px */
   maxWidth?: "text" | "media" | "audio" | "carousel";
-  /** Sender indicator rendered outside the bubble at bottom-right (e.g., agent avatar, bot icon) */
+  /**
+   * **Manual mode only** — e.g. avatar/initials slot to the right of the bubble. In **message mode**
+   * (the `message` prop), source UI comes from `message.sentBy` / `message.senderName` in the
+   * header, not this prop.
+   */
   senderIndicator?: React.ReactNode;
 }
 
@@ -54,9 +58,18 @@ export interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElemen
 
 /** Full template message: renders text, media, documents, carousel, location, contact, etc. */
 export interface ChatBubbleMessageProps extends HtmlDiv {
-  /** Renders all supported `ChatMessage` shapes (same rows as `ChatBubble.MessageList`). */
+  /**
+   * `ChatMessage` from `../chat-types`. Relevant to **source badges** (bot / campaign / API):
+   * - `sender` must be `"agent"` for a header badge; use `senderName?` and `sentBy?`.
+   * - `sentBy.type` — `bot` | `campaign` | `api` | `agent` (see `SenderIndicator`).
+   * - `sentBy.name` — tooltips and, for `type: "agent"`, initials in the circle.
+   * All other fields (`id`, `text`, `time`, `type`, `status`, `media`, …) drive body and footer.
+   */
   message: ChatMessage;
-  /** Display name for the thread participant — used with `onReplyTo` for customer messages */
+  /**
+   * Display name for the thread participant (customer rows) — passed into the **Reply** action
+   * payload. Not the same as `message.senderName` (agent display label in the row header).
+   */
   replyParticipantName?: string;
   /**
    * Customer-message reply control; mirrors `ChatMessageList`’s `onReplyTo`.

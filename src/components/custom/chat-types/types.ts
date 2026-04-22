@@ -137,6 +137,11 @@ export type ChatMessage = {
   text: string
   time: string
   sender: "customer" | "agent"
+  /**
+   * Shown in the **header** above the bubble (outbound: right-aligned; inbound: left). On **agent**
+   * messages, when `sentBy` is set, the name and source badge sit on the same row (see
+   * `SenderIndicator` in the `sender-indicator` module).
+   */
   senderName?: string
   type?:
     | "text"
@@ -158,6 +163,14 @@ export type ChatMessage = {
   replyTo?: { sender: string; text: string; messageId?: string }
   media?: MediaPayload
   error?: string
+  /**
+   * **Agent rows only** (`sender: "agent"`). Drives the header-row badge next to `senderName`
+   * (see `SenderBadgeIcon` in `SenderIndicator`):
+   * - `agent` + `name` → two-letter initials; if `name` is missing, the badge falls back to the plug icon.
+   * - `bot` → Bot icon; `name` used in the tooltip.
+   * - `campaign` → megaphone; tooltip `"Campaign"`.
+   * - `api` → plug; tooltip is `name` or `"API"`.
+   */
   sentBy?: { type: SentByType; name?: string }
   location?: LocationPayload
   contactCard?: ContactPayload

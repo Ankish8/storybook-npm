@@ -66,25 +66,16 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByLabelText(/Prompt/i)).toBeInTheDocument();
   });
 
-  it("does not render Prompt when showFunctionPrompt is false", () => {
-    render(
-      <CreateFunctionModal open onOpenChange={noop} showFunctionPrompt={false} />
-    );
-    expect(agentMessageOptionalField()).toBeInTheDocument();
-    expect(screen.queryByLabelText(/^Prompt$/i)).not.toBeInTheDocument();
-  });
-
-  it("enables Next with only a valid name when both optional step-1 text fields are hidden", async () => {
+  it("disables Next with only a valid name when Agent Message is hidden (Prompt still required)", async () => {
     render(
       <CreateFunctionModal
         open
         onOpenChange={noop}
         showAgentMessage={false}
-        showFunctionPrompt={false}
       />
     );
     await user.type(screen.getByLabelText(/Function Name/i), "OnlyName");
-    expect(screen.getByRole("button", { name: /Next/i })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /Next/i })).toBeDisabled();
   });
 
   it("disables Next button when fields are empty", () => {

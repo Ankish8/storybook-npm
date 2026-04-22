@@ -1166,7 +1166,6 @@ export const CreateFunctionModal = React.forwardRef(
       variableNameMaxLimit,
       descriptionMaxLimit,
       showAgentMessage = true,
-      showFunctionPrompt = true,
     }: CreateFunctionModalProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
@@ -1554,7 +1553,7 @@ export const CreateFunctionModal = React.forwardRef(
     const isStep1Valid =
       name.trim().length > 0 &&
       FUNCTION_NAME_REGEX.test(name.trim()) &&
-      (!showFunctionPrompt || prompt.trim().length >= promptMinLength) &&
+      prompt.trim().length >= promptMinLength &&
       (!showAgentMessage ||
         ((botMessageOptional || botMessage.trim().length > 0) &&
           botMessage.length <= botMessageMaxLength &&
@@ -1611,7 +1610,7 @@ export const CreateFunctionModal = React.forwardRef(
       const data: CreateFunctionData = {
         name: name.trim(),
         botMessage: showAgentMessage ? botMessage.trim() : "",
-        prompt: showFunctionPrompt ? prompt.trim() : "",
+        prompt: prompt.trim(),
         method,
         url: url.trim(),
         headers,
@@ -1850,26 +1849,24 @@ export const CreateFunctionModal = React.forwardRef(
                   </div>
                 ) : null}
 
-                {showFunctionPrompt ? (
-                  <Textarea
-                    id="fn-prompt"
-                    label="Prompt"
-                    required
-                    value={prompt}
-                    maxLength={promptMaxLength}
-                    showCount
-                    disabled={disabled}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Enter the description of the function"
-                    rows={5}
-                    labelClassName="font-semibold text-semantic-text-primary"
-                    error={
-                      prompt.length > 0 && prompt.trim().length < promptMinLength
-                        ? `Minimum ${promptMinLength} characters required`
-                        : undefined
-                    }
-                  />
-                ) : null}
+                <Textarea
+                  id="fn-prompt"
+                  label="Prompt"
+                  required
+                  value={prompt}
+                  maxLength={promptMaxLength}
+                  showCount
+                  disabled={disabled}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Enter the description of the function"
+                  rows={5}
+                  labelClassName="font-semibold text-semantic-text-primary"
+                  error={
+                    prompt.length > 0 && prompt.trim().length < promptMinLength
+                      ? `Minimum ${promptMinLength} characters required`
+                      : undefined
+                  }
+                />
               </div>
             )}
 

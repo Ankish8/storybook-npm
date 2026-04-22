@@ -93,11 +93,6 @@ export interface FrustrationHandoverCardProps {
    * When omitted or `true`, the Prompt field is shown when escalation is enabled.
    */
   showEscalationPrompt?: boolean;
-  /**
-   * When `false`, the **Transfer to department** selector is not rendered.
-   * When omitted or `true`, it is shown.
-   */
-  showEscalationDepartment?: boolean;
 }
 
 // ─── Internal helpers ───────────────────────────────────────────────────────
@@ -136,7 +131,6 @@ const FrustrationHandoverCard = React.forwardRef(
     departmentOptionsHasMore,
     departmentOptionsLoadingMore,
     showEscalationPrompt = true,
-    showEscalationDepartment = true,
   }: FrustrationHandoverCardProps, ref: React.Ref<HTMLDivElement>) => {
     const resolvedSectionInfoTooltip =
       infoTooltip === undefined ? defaultEscalateToHumanInfoTooltip : infoTooltip;
@@ -258,39 +252,37 @@ const FrustrationHandoverCard = React.forwardRef(
                     />
                   </div>
                 ) : null}
-                {showEscalationDepartment ? (
-                  <div className="px-4 pb-2 sm:px-6">
-                    <Field label="Transfer to department">
-                      <Select
-                        value={data.escalationDepartment || undefined}
-                        onValueChange={(v) => onChange({ escalationDepartment: v })}
-                        disabled={disabled || !data.frustrationHandoverEnabled}
+                <div className="px-4 pb-2 sm:px-6">
+                  <Field label="Transfer to department">
+                    <Select
+                      value={data.escalationDepartment || undefined}
+                      onValueChange={(v) => onChange({ escalationDepartment: v })}
+                      disabled={disabled || !data.frustrationHandoverEnabled}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a department" />
+                      </SelectTrigger>
+                      <SelectContent
+                        onViewportScrollEnd={
+                          onDepartmentOptionsScrollEnd
+                            ? handleDepartmentViewportScrollEnd
+                            : undefined
+                        }
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a department" />
-                        </SelectTrigger>
-                        <SelectContent
-                          onViewportScrollEnd={
-                            onDepartmentOptionsScrollEnd
-                              ? handleDepartmentViewportScrollEnd
-                              : undefined
-                          }
-                        >
-                          {departmentOptions.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                          {departmentOptionsLoadingMore ? (
-                            <p className="m-0 px-4 py-2 text-xs text-semantic-text-muted">
-                              Loading more departments…
-                            </p>
-                          ) : null}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                  </div>
-                ) : null}
+                        {departmentOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                        {departmentOptionsLoadingMore ? (
+                          <p className="m-0 px-4 py-2 text-xs text-semantic-text-muted">
+                            Loading more departments…
+                          </p>
+                        ) : null}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>

@@ -78,7 +78,6 @@ export const IvrBotConfig = React.forwardRef(
       fallbackPromptsInfoTooltip,
       escalateToHumanInfoTooltip,
       showEscalationPrompt,
-      showEscalationDepartment,
       escalationPromptMaxLength,
       escalationPromptValidation,
       functionPromptMinLength,
@@ -91,7 +90,6 @@ export const IvrBotConfig = React.forwardRef(
       functionBotMessageOptional,
       functionBotMessagePlaceholder,
       showCreateFunctionAgentMessage,
-      showCreateFunctionPrompt,
       functionEditData,
       systemPromptMaxLength,
       onSystemPromptBlur,
@@ -289,7 +287,6 @@ export const IvrBotConfig = React.forwardRef(
               disabled={disabled}
               infoTooltip={escalateToHumanInfoTooltip}
               showEscalationPrompt={showEscalationPrompt}
-              showEscalationDepartment={showEscalationDepartment}
               promptMaxLength={escalationPromptMaxLength}
               promptValidation={escalationPromptValidation}
               onEscalationPromptBlur={onEscalationPromptBlur}
@@ -330,7 +327,6 @@ export const IvrBotConfig = React.forwardRef(
           botMessageOptional={functionBotMessageOptional}
           botMessagePlaceholder={functionBotMessagePlaceholder}
           showAgentMessage={showCreateFunctionAgentMessage}
-          showFunctionPrompt={showCreateFunctionPrompt}
           sessionVariables={sessionVariables}
           variableGroups={functionVariableGroups}
           onAddVariable={onAddFunctionVariable}
@@ -355,7 +351,6 @@ export const IvrBotConfig = React.forwardRef(
           botMessageOptional={functionBotMessageOptional}
           botMessagePlaceholder={functionBotMessagePlaceholder}
           showAgentMessage={showCreateFunctionAgentMessage}
-          showFunctionPrompt={showCreateFunctionPrompt}
           sessionVariables={sessionVariables}
           variableGroups={functionVariableGroups}
           onAddVariable={onAddFunctionVariable}

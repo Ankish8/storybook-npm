@@ -89,7 +89,8 @@ const meta: Meta<typeof ChatBubble> = {
     senderName: {
       control: "text",
       table: { category: "Manual bubble" },
-      description: "Name above the bubble (manual mode).",
+      description:
+        "Label above the bubble in **manual** mode. For **message** mode, set `message.senderName` (shown with `message.sentBy` on agent rows).",
     },
     reply: {
       control: "object",
@@ -116,7 +117,8 @@ const meta: Meta<typeof ChatBubble> = {
     senderIndicator: {
       control: false,
       table: { category: "Manual bubble" },
-      description: "Element shown beside **sender** bubbles (e.g. avatar).",
+      description:
+        "Slot **to the right of the bubble in manual mode** (e.g. avatar). Message mode does not use this; use `message.sentBy` + `message.senderName` for source badges in the **header**.",
     },
     children: {
       control: "text",
@@ -127,7 +129,7 @@ const meta: Meta<typeof ChatBubble> = {
       control: false,
       table: { category: "Message mode" },
       description:
-        "Full `ChatMessage` from `../chat-types` (template, media, referral, location, contact, list reply, etc.). **Mutually exclusive** with manual props (`variant`, `timestamp`, …).",
+        "Full `ChatMessage` (see docs table below). **Source row:** when `sender` is `agent`, optional `senderName` + `sentBy` show the header badge. **Mutually exclusive** with manual props.",
     },
     replyParticipantName: {
       control: "text",
@@ -187,6 +189,17 @@ const meta: Meta<typeof ChatBubble> = {
 | \`media\`, \`referral\`, \`location\`, \`contactCard\`, \`listReply\` | Per-type payloads |
 | \`sentBy\` | On **agent** rows, a circular badge (Bot / megaphone / plug / initials) appears **in the header** next to \`senderName\`. See stories **Agent source · Bot / Campaign / API**. |
 | \`error\` | For \`loading\` / failed template state |
+
+### Agent source badge — \`message\` fields (bot / campaign / API)
+
+| Field | Values / shape | Role |
+| --- | --- | --- |
+| \`sender\` | \`"agent"\` or \`"customer"\` | Badge + header row only when the value is \`"agent"\`. |
+| \`senderName\` | \`string\` (optional) | Label in the header; shown before the badge. |
+| \`sentBy\` | \`{ type, name? }\` with \`type\` in \`agent\`, \`bot\`, \`campaign\`, \`api\` (optional) | \`bot\` / \`campaign\` / \`api\` use fixed icons; \`agent\` with \`name\` uses initials. Tooltips: \`getTooltipLabel\` in \`sender-indicator\`. |
+| (other) | \`id\`, \`text\`, \`time\`, \`type\`, \`status\`, … | Body, media, and delivery footer — unchanged by source. |
+
+**Top-level \`ChatBubble\` props** in message mode: \`message\` (required), \`replyParticipantName?\` (customer reply label), \`onReplyTo?\` (customer rows), \`className?\`, and div spread. \`sentBy\` is **not** a top-level prop — it lives on \`message.sentBy\`.
 
 ### Installation
 

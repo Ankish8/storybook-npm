@@ -163,21 +163,4 @@ describe("FrustrationHandoverCard", () => {
       screen.queryByRole("textbox", { name: /^prompt$/i })
     ).not.toBeInTheDocument();
   });
-
-  it("does not render Transfer to department when showEscalationDepartment is false", async () => {
-    const user = userEvent.setup();
-    render(
-      <FrustrationHandoverCard
-        data={{
-          frustrationHandoverEnabled: true,
-          escalationPrompt: "",
-          escalationDepartment: "",
-        }}
-        onChange={() => {}}
-        showEscalationDepartment={false}
-      />
-    );
-    await user.click(screen.getByText("Escalate to Human"));
-    expect(screen.queryByText("Transfer to department")).not.toBeInTheDocument();
-  });
 });

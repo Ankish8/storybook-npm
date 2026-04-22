@@ -3,6 +3,8 @@ import type { ChatMessage } from "../chat-types"
 import { TooltipProvider } from "../../ui/tooltip"
 import { ChatBubblePrimitive as ChatBubble } from "./chat-bubble-base"
 
+/** Storybook-only samples: agent rows with `sentBy` (bot / campaign / API). Pass as `message` to `ChatBubble`. */
+
 const base: Pick<
   ChatMessage,
   "id" | "time" | "sender" | "type" | "status" | "text"
