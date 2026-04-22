@@ -222,17 +222,27 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
 }
 
 function computeMessageBubbleLayout(msg: ChatMessage) {
+  /**
+   * True when the card has a full-bleed block above the text/footer (image, referral, or
+   * `template` with a header `media` payload). Plain `text` and text-only `template` use
+   * a single padded content block instead (same as manual bubbles).
+   */
   const hasMedia =
-    !!msg.type && msg.type !== "text" && msg.type !== "template";
+    !!msg.type &&
+    msg.type !== "text" &&
+    (msg.type !== "template" || !!msg.media);
   const mediaCaption = msg.media?.caption;
   const hasText = !!(msg.text || mediaCaption);
   const isDocWithMeta = msg.type === "otherDoc" && msg.media;
+
+  const isTemplateWithMedia = msg.type === "template" && !!msg.media;
 
   const bubbleWidth =
     msg.type === "carousel"
       ? "max-w-[466px] w-full"
       : msg.type === "image" ||
           msg.type === "video" ||
+          isTemplateWithMedia ||
           msg.type === "docPreview" ||
           msg.type === "document" ||
           msg.type === "otherDoc" ||
@@ -286,7 +296,28 @@ const ChatBubbleMessageMode = React.forwardRef<
           msg.sender === "agent" ? "items-end" : "items-start"
         )}
       >
-        {msg.senderName && (
+        {msg.sender === "agent" && (msg.senderName || msg.sentBy) && (
+          <div
+            className={cn(
+              "flex w-full max-w-full items-center gap-1.5 mb-1 px-1",
+              "justify-end"
+            )}
+          >
+            {msg.senderName && (
+              <span className="text-[12px] text-semantic-text-muted leading-5 min-w-0 text-right break-words">
+                {msg.senderName}
+              </span>
+            )}
+            {msg.sentBy && (
+              <SenderIndicator
+                sentBy={msg.sentBy}
+                withTooltip
+                className="shrink-0 !size-6 !min-h-6 !min-w-6"
+              />
+            )}
+          </div>
+        )}
+        {msg.sender === "customer" && msg.senderName && (
           <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
             {msg.senderName}
           </span>
@@ -294,14 +325,14 @@ const ChatBubbleMessageMode = React.forwardRef<
         <div
           className={cn(
             "rounded-lg overflow-hidden",
-            !hasMedia && "px-3 pt-3 pb-1.5",
             msg.type === "audio" ||
               msg.type === "otherDoc" ||
               msg.type === "carousel" ||
               msg.type === "loading" ||
               msg.type === "location" ||
               msg.type === "contact" ||
-              msg.type === "listReply"
+              msg.type === "listReply" ||
+              (msg.type === "template" && msg.media)
               ? "w-full"
               : "",
             msg.sender === "agent"
@@ -319,6 +350,11 @@ const ChatBubbleMessageMode = React.forwardRef<
           {msg.type === "image" && msg.media && (
             <ImageMedia media={msg.media} />
           )}
+          {msg.type === "template" && msg.media && (msg.media.duration ? (
+            <VideoMedia media={msg.media} />
+          ) : (
+            <ImageMedia media={msg.media} />
+          ))}
           {msg.type === "video" && msg.media && (
             <VideoMedia media={msg.media} />
           )}
@@ -370,11 +406,11 @@ const ChatBubbleMessageMode = React.forwardRef<
           )}
 
           <div
-            className={
+            className={cn(
               hasMedia
                 ? `px-3 pb-1.5 ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" ? "pt-3 mt-1" : "pt-2"}`
-                : ""
-            }
+                : "px-3 pt-3 pb-1.5"
+            )}
           >
             {msg.replyTo && (
               <MessageModeReplyQuoteButton replyTo={msg.replyTo} />
@@ -403,13 +439,6 @@ const ChatBubbleMessageMode = React.forwardRef<
           </div>
         </div>
       </div>
-      {msg.sender === "agent" && msg.sentBy && (
-        <SenderIndicator
-          sentBy={msg.sentBy}
-          withTooltip
-          className="self-end mb-1 shrink-0"
-        />
-      )}
       {msg.sender === "customer" && onReplyTo && (
         <Tooltip>
           <TooltipTrigger asChild>

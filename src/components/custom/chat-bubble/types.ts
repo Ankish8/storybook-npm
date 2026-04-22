@@ -54,7 +54,7 @@ export interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElemen
 
 /** Full template message: renders text, media, documents, carousel, location, contact, etc. */
 export interface ChatBubbleMessageProps extends HtmlDiv {
-  /** Renders all supported `ChatMessage` shapes (same as Chat Message List rows). */
+  /** Renders all supported `ChatMessage` shapes (same rows as `ChatBubble.MessageList`). */
   message: ChatMessage;
   /** Display name for the thread participant — used with `onReplyTo` for customer messages */
   replyParticipantName?: string;

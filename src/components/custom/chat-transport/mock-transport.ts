@@ -178,7 +178,7 @@ const chatItems: ChatItem[] = [
     messageStatus: "read",
     channel: "MY02",
   },
-  /* Storybook: isolated message-type showcases (Chat Message List) */
+  /* Storybook: isolated message-type showcases (see Chat Bubble stories) */
   {
     id: "msg-story-referral",
     tab: "open",
@@ -837,8 +837,7 @@ const chatMessages: Record<string, ChatMessage[]> = {
 }
 
 /**
- * Message arrays used by Chat Message List isolated stories — re-export for Chat Bubble
- * stories so both show identical `ChatMessage` payloads (no drift).
+ * Message arrays for Storybook (`chat-bubble` stories) — single source for `ChatMessage` mock payloads.
  */
 export const chatMessageListStoryThreadMessages = {
   /** Chat id \`2\` — minimal back-and-forth + audio + API line */

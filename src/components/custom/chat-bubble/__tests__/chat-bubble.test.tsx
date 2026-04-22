@@ -235,5 +235,23 @@ describe("ChatBubble", () => {
         text: "Hello from template",
       });
     });
+
+    it("renders sentBy source badge in the header row next to sender name (agent)", () => {
+      const msg: ChatMessage = {
+        id: "m-agent-sentby",
+        text: "Campaign line",
+        time: "3:00 PM",
+        sender: "agent",
+        type: "text",
+        status: "read",
+        senderName: "Alex Smith",
+        sentBy: { type: "campaign" },
+      };
+      renderWithTooltip(<ChatBubble message={msg} />);
+      const name = screen.getByText("Alex Smith");
+      const headerRow = name.parentElement;
+      expect(headerRow).toHaveClass("justify-end");
+      expect(headerRow?.querySelector("svg")).toBeTruthy();
+    });
   });
 });
