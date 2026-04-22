@@ -621,10 +621,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
     },
   },
   args: {
-    onCtaClick: fn(),
     onFeatureComparisonClick: fn(),
-    onFeatureDetails: fn(),
-    onShowDetails: fn(),
+    onTabChange: fn(),
+    onBillingPeriodChange: fn(),
   },
 };
 
