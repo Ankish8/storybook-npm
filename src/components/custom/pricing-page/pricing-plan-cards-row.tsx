@@ -4,17 +4,38 @@ import { cn } from "../../../lib/utils";
 export interface PricingPlanCardsRowProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /**
-   * Number of equal-width columns in a single row. Typically matches
-   * `planCards.length` so every plan appears in one row with consistent width.
+   * Number of plan cards (used to build responsive column spans).
+   * Typically matches `planCards.length`.
    */
   columnCount: number;
 }
 
 /**
- * Lays out plan cards in one horizontal row: equal-width columns that scale with
- * the container, with horizontal scrolling on narrow viewports when the row
- * cannot fit. Does not alter {@link PricingCard} styling — only outer layout.
+ * Responsive class map: stack on small screens, 2-up from `sm`, full row on `xl`
+ * (or `lg` for 3) so we avoid a horizontal scrollbar on mobile.
+ * Desktop: ~32px gaps (`gap-8`); smaller gaps on narrow viewports.
  */
+function planCardsResponsiveGridClass(columnCount: number): string {
+  if (columnCount <= 1) {
+    return "grid-cols-1";
+  }
+  if (columnCount === 2) {
+    return "grid-cols-1 sm:grid-cols-2";
+  }
+  if (columnCount === 3) {
+    return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+  }
+  if (columnCount === 4) {
+    // 1 col → 2-up from sm → single row of 4 from xl
+    return "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4";
+  }
+  if (columnCount === 5) {
+    return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5";
+  }
+  // 6+ — three columns from md, six across only on very wide viewports
+  return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-6";
+}
+
 const PricingPlanCardsRow = React.forwardRef<
   HTMLDivElement,
   PricingPlanCardsRowProps
@@ -26,15 +47,16 @@ const PricingPlanCardsRow = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn("w-full min-w-0 overflow-x-auto", className)}
+      className={cn("w-full min-w-0", className)}
       {...props}
     >
       <div
         data-testid="pricing-plan-cards-grid"
-        className="grid w-full min-w-0 gap-4 md:gap-8"
-        style={{
-          gridTemplateColumns: `repeat(${columnCount}, minmax(240px, 1fr))`,
-        }}
+        className={cn(
+          "grid w-full min-w-0 items-stretch",
+          "gap-4 sm:gap-5 md:gap-6 lg:gap-8",
+          planCardsResponsiveGridClass(columnCount)
+        )}
       >
         {children}
       </div>

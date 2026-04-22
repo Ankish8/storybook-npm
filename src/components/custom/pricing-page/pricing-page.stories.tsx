@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import React from "react";
-import { Bot, Phone, Hash, PhoneCall } from "lucide-react";
+import { Phone, Hash, PhoneCall, Shield } from "lucide-react";
 import { PricingPage } from "./pricing-page";
 import type { PricingPlanAlertConfig } from "./types";
 import {
@@ -18,8 +18,7 @@ import type { LetUsDriveCardProps } from "../let-us-drive-card/types";
 // ─── Shared Data ──────────────────────────────────────────────────────────────
 
 const defaultAddon = {
-  icon: <Bot className="size-5 text-semantic-text-muted" />,
-  text: "Add AI Agents @₹10,000/agent",
+  text: "Add AI Agents @ ₹10,000/agent",
 };
 
 const NumberTypeSelect = () => (
@@ -160,7 +159,7 @@ const aiCards: PricingCardProps[] = [
 
 const powerUpCards: PowerUpCardProps[] = [
   {
-    icon: <Phone className="size-6 text-semantic-text-muted" />,
+    icon: <Shield className="size-6 text-semantic-text-primary" />,
     title: "Truecaller business",
     price: "Starts @ \u20B930,000/month",
     description:
@@ -325,7 +324,7 @@ const meta: Meta<typeof PricingPage> = {
         component: `
 Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
 
-Displays pricing cards in a single row (equal-width columns; horizontal scroll on narrow viewports when needed) with power-ups and let-us-drive sections below. Column count follows \`planCards.length\`; optional \`planCardColumnCount\` can reserve extra columns (rare).
+Displays pricing cards in a responsive grid (1 column on mobile, 2 from \`sm\`, up to 4 in one row from \`xl\` for four plans) with power-ups and let-us-drive sections below. Column count follows \`planCards.length\`; optional \`planCardColumnCount\` can reserve extra columns (rare).
 
 Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
 
@@ -453,12 +452,12 @@ type Story = StoryObj<typeof meta>;
 
 // ─── Default ──────────────────────────────────────────────────────────────────
 
-/** Example banner matching the “Custom plan” pattern from design (uses `warning` status). */
+/** Example banner matching Figma (1119:2783) — info-style “Custom plan active” message. */
 const exampleCustomPlanAlert: PricingPlanAlertConfig = {
-  status: "warning",
   title: "Custom Plan Active",
   description:
-    "You're currently on a tailored enterprise plan. Contact support to change billing or seats.",
+    "You're currently on a tailored enterprise plan. To make changes or explore standard plans, please connect with your account manager.",
+  variant: "info",
 };
 
 export const Default: Story = {
@@ -466,6 +465,85 @@ export const Default: Story = {
     headerActions: <NumberTypeSelect />,
     planCards: teamCards,
     planAlert: exampleCustomPlanAlert,
+    powerUpCards,
+    onFeatureComparisonClick: fn(),
+    letUsDriveCards: letUsDriveCards,
+  },
+};
+
+/** Canvas + copy aligned with Figma 1119:2783 and production “Lite” plan row (4-up on xl). */
+export const FigmaSelectBusinessPlan: Story = {
+  name: "Figma (1119:2783) – Select business plan",
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2783",
+    },
+  },
+  decorators: [
+    (Story) => (
+      <div
+        className="box-border min-h-screen w-full bg-semantic-bg-ui p-0"
+        data-testid="story-pricing-canvas"
+      >
+        <Story />
+      </div>
+    ),
+  ],
+  args: {
+    showCategoryToggle: false,
+    showBillingToggle: false,
+    headerActions: <NumberTypeSelect />,
+    planAlert: {
+      title: "Custom Plan Active",
+      description:
+        "You're currently on a tailored enterprise plan. To make changes or explore standard plans, please connect with your account manager.",
+      variant: "info" as const,
+    },
+    planCards: [
+      {
+        planName: "Lite- 1C",
+        price: "1,150",
+        period: "per month",
+        planDetails: "6 Users | 12 Month plan",
+        features: [],
+        onCtaClick: fn(),
+        onFeatureDetails: fn(),
+        addon: defaultAddon,
+      },
+      {
+        planName: "Lite- 2C",
+        price: "2,150",
+        period: "per month",
+        planDetails: "6 Users | 12 Month plan",
+        features: [],
+        onCtaClick: fn(),
+        onFeatureDetails: fn(),
+        addon: defaultAddon,
+      },
+      {
+        planName: "Lite- 3C",
+        price: "3,150",
+        period: "per month",
+        planDetails: "6 Users | 12 Month plan",
+        features: [],
+        onCtaClick: fn(),
+        onFeatureDetails: fn(),
+        addon: defaultAddon,
+      },
+      {
+        planName: "Lite- 5C",
+        price: "5,150",
+        period: "per month",
+        planDetails: "6 Users | 12 Month plan",
+        showPopularBadge: true,
+        badgeText: "Most Popular",
+        features: [],
+        onCtaClick: fn(),
+        onFeatureDetails: fn(),
+        addon: defaultAddon,
+      },
+    ],
     powerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: letUsDriveCards,

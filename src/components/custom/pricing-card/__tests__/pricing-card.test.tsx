@@ -254,10 +254,11 @@ describe("PricingCard", () => {
     const { container } = render(
       <PricingCard {...defaultProps} headerBgColor="#d7eae9" />
     );
-    // The main content wrapper is .flex.flex-col.gap-6.px-6.py-8.flex-1
+    // Main content stack: flex-1 flex-col gap-5 (see pricing-card layout)
     const content = container.querySelector(
-      ".flex.flex-col.gap-6"
+      ".flex.min-h-0.flex-1.flex-col.gap-5"
     );
+    expect(content).toBeTruthy();
     expect(content).not.toHaveStyle({ backgroundColor: "#d7eae9" });
   });
 

@@ -203,7 +203,7 @@ describe("PricingPage", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("lays out plan cards in one row with columns matching plan count", () => {
+  it("lays out plan cards in a responsive grid with four columns on wide viewports", () => {
     const fourPlans: PricingCardProps[] = [
       ...mockPlanCards,
       {
@@ -219,7 +219,7 @@ describe("PricingPage", () => {
       "[data-testid=\"pricing-plan-cards-grid\"]"
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
-    expect(grid?.style.gridTemplateColumns).toContain("repeat(4,");
+    expect(grid).toHaveClass("xl:grid-cols-4");
   });
 
   it("renders power-up cards section", () => {
