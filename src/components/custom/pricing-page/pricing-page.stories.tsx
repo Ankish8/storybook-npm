@@ -40,7 +40,7 @@ const NumberTypeSelect = () => (
   </div>
 );
 
-/** Figma 1119:2783 — mock “number type” control (matches UI/PricingPage story). */
+/** Figma 1119:2782 — mock “number type” control (matches UI/PricingPage story). */
 const numberTypeControlFigma = (
   <div className="flex items-center gap-2.5">
     <span className="whitespace-nowrap text-sm text-semantic-text-primary">
@@ -85,6 +85,83 @@ const figmaSuvFeatures: PricingCardProps["features"] = [
 ];
 
 const figmaPlanAddon = { text: "Add AI Agents @₹10,000/agent" };
+
+const figmaBasePlanCards: PricingCardProps[] = [
+  {
+    planName: "Compact",
+    price: "2,500",
+    period: "per month",
+    planDetails: "3 Users | 12 Month plan",
+    description:
+      "For small teams that need WhatsApp Business API & missed calls.",
+    features: figmaCompactFeatures,
+    ctaText: "Upgrade",
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
+    addon: figmaPlanAddon,
+  },
+  {
+    planName: "Sedan",
+    price: "5,000",
+    period: "per month",
+    planDetails: "10 Users | 12 Month plan",
+    description:
+      "For growing businesses that need more users & unlimited IVR+ calling.",
+    features: figmaSedanFeatures,
+    ctaText: "Upgrade",
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
+    addon: figmaPlanAddon,
+  },
+  {
+    planName: "SUV",
+    price: "9,000",
+    period: "per month",
+    planDetails: "20 Users | 12 Month plan",
+    description: "For established teams with advanced use cases and scale.",
+    features: figmaSuvFeatures,
+    showPopularBadge: true,
+    badgeText: "Most Popular",
+    ctaText: "Downgrade",
+    onCtaClick: fn(),
+    onFeatureDetails: fn(),
+    addon: figmaPlanAddon,
+  },
+];
+
+const figmaEnterprisePlanCard: PricingCardProps = {
+  planName: "Enterprise",
+  price: "15,000",
+  period: "per month",
+  planDetails: "50 Users | 12 Month plan",
+  description: "For large orgs with advanced needs.",
+  features: [
+    { parts: [{ text: "Everything in " }, { text: "SUV", bold: true }] },
+    "Dedicated success manager",
+    "Custom contracts & security reviews",
+  ],
+  ctaText: "Upgrade",
+  onCtaClick: fn(),
+  onFeatureDetails: fn(),
+  addon: figmaPlanAddon,
+};
+
+const figmaUltimatePlanCard: PricingCardProps = {
+  planName: "Ultimate",
+  price: "25,000",
+  period: "per month",
+  planDetails: "Unlimited Users | 12 Month plan",
+  description: "Maximum scale, dedicated support, and custom SLAs.",
+  features: [
+    { parts: [{ text: "Everything in " }, { text: "Enterprise", bold: true }] },
+    "24/7 priority support",
+    "Bespoke integrations",
+  ],
+  ctaText: "Upgrade",
+  onCtaClick: fn(),
+  onFeatureDetails: fn(),
+  addon: figmaPlanAddon,
+};
 
 const figmaPowerUpCards: PowerUpCardProps[] = [
   {
@@ -428,7 +505,7 @@ const meta: Meta<typeof PricingPage> = {
         component: `
 Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
 
-Displays pricing cards in a responsive grid (1 column on mobile, 2 from \`sm\`, up to 4 in one row from \`xl\` for four plans) with power-ups and let-us-drive sections below. Column count follows \`planCards.length\`; optional \`planCardColumnCount\` can reserve extra columns (rare).
+Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1200px** content width). Power-ups and let-us-drive sections use **60px** vertical gaps between the title row and card grid, and between major page bands.
 
 Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
 
@@ -556,7 +633,7 @@ type Story = StoryObj<typeof meta>;
 
 // ─── Default ──────────────────────────────────────────────────────────────────
 
-/** Example banner matching Figma (1119:2783) — info-style “Custom plan active” message. */
+/** Example banner matching Figma (1119:2782) — info-style “Custom plan active” message. */
 const exampleCustomPlanAlert: PricingPlanAlertConfig = {
   title: "Custom Plan Active",
   description:
@@ -576,15 +653,15 @@ export const Default: Story = {
 };
 
 /**
- * Canvas matches Figma `1119:2783` (MyO — Product Design): Select Business Plan
- * (plans, power-ups, full-service). Same data as `UI/PricingPage` Figma story.
+ * Canvas matches Figma `1119:2782` (MyO — Product Design): Select Business Plan
+ * (plans, power-ups, full-service). Max content **1200px**, 32px plan card gaps, 60px section gaps.
  */
 export const FigmaSelectBusinessPlan: Story = {
-  name: "Figma (1119:2783) – Select business plan",
+  name: "Figma (1119:2782) – Select business plan (3 plans, no scroll)",
   parameters: {
     design: {
       type: "figma",
-      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2783",
+      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
     },
   },
   decorators: [
@@ -608,51 +685,49 @@ export const FigmaSelectBusinessPlan: Story = {
         "You're currently on a tailored enterprise plan. To make changes or explore standard plans, please connect with your account manager.",
       variant: "info" as const,
     },
-    planCards: [
-      {
-        planName: "Compact",
-        price: "2,500",
-        period: "per month",
-        planDetails: "3 Users | 12 Month plan",
-        description:
-          "For small teams that need WhatsApp Business API & missed calls.",
-        features: figmaCompactFeatures,
-        ctaText: "Upgrade",
-        onCtaClick: fn(),
-        onFeatureDetails: fn(),
-        addon: figmaPlanAddon,
-      },
-      {
-        planName: "Sedan",
-        price: "5,000",
-        period: "per month",
-        planDetails: "10 Users | 12 Month plan",
-        description:
-          "For growing businesses that need more users & unlimited IVR+ calling.",
-        features: figmaSedanFeatures,
-        ctaText: "Upgrade",
-        onCtaClick: fn(),
-        onFeatureDetails: fn(),
-        addon: figmaPlanAddon,
-      },
-      {
-        planName: "SUV",
-        price: "9,000",
-        period: "per month",
-        planDetails: "20 Users | 12 Month plan",
-        description: "For established teams with advanced use cases and scale.",
-        features: figmaSuvFeatures,
-        showPopularBadge: true,
-        badgeText: "Most Popular",
-        ctaText: "Downgrade",
-        onCtaClick: fn(),
-        onFeatureDetails: fn(),
-        addon: figmaPlanAddon,
-      },
-    ],
+    planCards: figmaBasePlanCards,
     powerUpCards: figmaPowerUpCards,
     onFeatureComparisonClick: fn(),
     letUsDriveCards: figmaLetUsDriveCards,
+  },
+};
+
+/** Up to **4** plans: grid in the 1200px row; no horizontal scrollbar. */
+export const FigmaFourPlansNoScrollbar: Story = {
+  name: "Figma – 4 plans, grid, no horizontal scroll",
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
+    },
+  },
+  decorators: FigmaSelectBusinessPlan.decorators,
+  args: {
+    ...FigmaSelectBusinessPlan.args,
+    planCards: [...figmaBasePlanCards, figmaEnterprisePlanCard],
+  },
+};
+
+/**
+ * **5+** plans: fixed-width cards scroll horizontally inside the 1200px content column.
+ */
+export const FigmaFivePlansHorizontalScroll: Story = {
+  name: "Figma – 5 plans, horizontal scroll (inside 1200px)",
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
+    },
+  },
+  decorators: FigmaSelectBusinessPlan.decorators,
+  args: {
+    ...FigmaSelectBusinessPlan.args,
+    showPlanAlert: false,
+    planCards: [
+      ...figmaBasePlanCards,
+      figmaEnterprisePlanCard,
+      figmaUltimatePlanCard,
+    ],
   },
 };
 

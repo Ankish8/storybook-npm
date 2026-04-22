@@ -16,15 +16,13 @@ import type {
 
 /**
  * Constrains plan / add-on sections; PageHeader is rendered full-width above this.
- * Figma `1119:2783` content ~1139px wide; 1200 keeps comfortable margins.
+ * Figma `1119:2782` / `1119:2783`: plan surface uses max **1200px** for the content column.
  */
 const pageBodyMaxClass =
   "mx-auto flex w-full min-w-0 max-w-[1200px] flex-col";
 
-/**
- * Figma `1119:2785` header row, `1119:3030` let-us-drive, plan area: `px-[24px]`.
- */
-const pageGutterX = "px-4 sm:px-6";
+/** Figma `1119:2785`, plan stack `1119:9739`, let-us-drive: horizontal padding **24px**. */
+const pageGutterX = "px-6";
 
 /**
  * Figma `1119:2784` — 24px between the title row and the plan stack (not extra `pt` on the plan).
@@ -32,12 +30,23 @@ const pageGutterX = "px-4 sm:px-6";
 const planSectionPaddingTop = "pt-0";
 
 /**
- * Figma `1119:2784` — 24px between the main column sections that map to separate flex children
- * in code (e.g. plan block → power-ups + let-us wrapper). Power-ups and let-us are nested
- * together with no extra gap to match `1119:2984` (no flex gap between `2985` and `3030`).
+ * Figma `1119:2784` — **24px** between the main column sections (header band → plan / lower sections).
+ */
+const pageHeaderToBodyGapClass = "gap-6";
+
+/**
+ * Vertical stack for plan area → lower bands: **60px** between children.
  */
 const interSectionStackClass =
-  "flex w-full min-w-0 flex-col gap-4 sm:gap-6";
+  "flex w-full min-w-0 flex-col gap-[60px]";
+
+/**
+ * **60px** between a section title row and the card grid (Power-ups, Let us drive).
+ */
+const sectionTitleToGridGapClass = "gap-[60px]";
+
+/** Figma `1119:9740` — **18px** between the plan alert and the plan cards row. */
+const planAlertToCardsGapClass = "gap-[18px]";
 
 /**
  * Figma: `60px` vertical padding on each band; scales down on small viewports.
@@ -121,7 +130,8 @@ const PricingPage = React.forwardRef(
         ? Math.max(planCards.length, planCardColumnCount)
         : planCards.length;
 
-    const planAlertVisible = !!planAlert && showPlanAlert !== false;
+    const planAlertVisible =
+      !!planAlert && showPlanAlert !== false;
 
     return (
       <div
@@ -129,7 +139,12 @@ const PricingPage = React.forwardRef(
         className={cn("flex h-full flex-col overflow-y-auto bg-card", className)}
         {...props}
       >
-        <div className="flex min-w-0 w-full flex-col gap-4 sm:gap-6">
+        <div
+          className={cn(
+            "flex min-w-0 w-full flex-col",
+            pageHeaderToBodyGapClass
+          )}
+        >
           <PageHeader
             title={title}
             actions={headerActions}
@@ -148,7 +163,12 @@ const PricingPage = React.forwardRef(
                 )}
               >
                 {(planAlertVisible || planCards.length > 0) && (
-                  <div className="flex min-w-0 w-full flex-col gap-6">
+                  <div
+                    className={cn(
+                      "flex min-w-0 w-full flex-col",
+                      planAlertToCardsGapClass
+                    )}
+                  >
                     {planAlertVisible && planAlert && (
                       <Alert
                         variant={resolvePlanAlertVariant(planAlert)}
@@ -198,7 +218,12 @@ const PricingPage = React.forwardRef(
                         powerUpsGutterX
                       )}
                     >
-                      <div className="flex w-full min-w-0 flex-col gap-3 sm:gap-4">
+                      <div
+                        className={cn(
+                          "flex w-full min-w-0 flex-col",
+                          sectionTitleToGridGapClass
+                        )}
+                      >
                         <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6 md:gap-8">
                           <h2 className="m-0 min-w-0 text-balance text-base font-semibold leading-6 text-semantic-text-primary sm:text-[18px]">
                             {powerUpsTitle}
@@ -233,7 +258,12 @@ const PricingPage = React.forwardRef(
                         pageGutterX
                       )}
                     >
-                      <div className="flex w-full min-w-0 flex-col gap-3 sm:gap-4">
+                      <div
+                        className={cn(
+                          "flex w-full min-w-0 flex-col",
+                          sectionTitleToGridGapClass
+                        )}
+                      >
                         <h2 className="m-0 min-w-0 text-balance text-base font-semibold leading-6 text-semantic-text-primary sm:text-[18px]">
                           {letUsDriveTitle}
                         </h2>

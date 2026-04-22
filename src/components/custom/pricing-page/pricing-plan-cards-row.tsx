@@ -12,11 +12,11 @@ export interface PricingPlanCardsRowProps
 
 /**
  * Equal `minmax(0,1fr)` columns: full width on `md+`; stack on small screens for readability.
- * Gaps: 16px → 24px for `sm+` to match the 24px spec on tablet/desktop.
+ * Figma `1119:3357` — **32px** between plan cards (`gap-[32px]`).
  */
 function equalWidthGridClass(cardCount: number): string {
   const base =
-    "grid w-full min-w-0 items-stretch gap-4 sm:gap-6 [&>div]:min-h-0 [&>div]:min-w-0";
+    "grid w-full min-w-0 items-stretch gap-8 [&>div]:min-h-0 [&>div]:min-w-0";
 
   if (cardCount === 1) {
     return cn(base, "grid-cols-1");
@@ -52,7 +52,7 @@ const PricingPlanCardsRow = React.forwardRef<
   if (cardCount < 1) {
     return null;
   }
-  /** Scroll only when more than four cards. */
+  /** Figma: 3–4 plans fit the 1200px row; **5+** use horizontal scroll (no scrollbar for ≤4). */
   const scrollMode = cardCount > 4;
 
   return (
@@ -60,8 +60,9 @@ const PricingPlanCardsRow = React.forwardRef<
       ref={ref}
       className={cn(
         "w-full min-w-0",
-        scrollMode &&
-          "overflow-x-auto overscroll-x-contain pb-1 [scrollbar-gutter:stable]",
+        scrollMode
+          ? "overflow-x-auto overscroll-x-contain pb-1 [scrollbar-gutter:stable]"
+          : "overflow-x-hidden",
         className
       )}
       {...props}
@@ -72,9 +73,10 @@ const PricingPlanCardsRow = React.forwardRef<
           scrollMode
             ? [
                 "flex w-max min-w-full flex-nowrap items-stretch",
-                "gap-4 sm:gap-6",
+                "gap-8",
                 "snap-x snap-mandatory sm:snap-none",
-                "[&>div]:snap-start [&>div]:min-h-0 [&>div]:min-w-0 [&>div]:w-[min(20rem,calc(100vw-2rem))] sm:[&>div]:w-[min(21.375rem,calc(100vw-3rem))] [&>div]:max-w-full [&>div]:shrink-0",
+                // Figma plan card `1119:3358` — `w-[342px]`; cap by viewport on narrow screens.
+                "[&>div]:snap-start [&>div]:min-h-0 [&>div]:w-[min(21.375rem,calc(100vw-3rem))] [&>div]:max-w-full [&>div]:shrink-0",
               ]
             : equalWidthGridClass(cardCount)
         )}
