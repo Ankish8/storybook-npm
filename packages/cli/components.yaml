@@ -1035,6 +1035,7 @@ components:
     directory: "chat-bubble"
     files:
       - "message-renderers.tsx"
+      - "agent-source-samples.tsx"
       - "chat-bubble-base.tsx"
       - "chat-message-list.tsx"
       - "types.ts"
