@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import React from "react";
-import { Phone, Hash, PhoneCall, Shield } from "lucide-react";
+import { Hash, PhoneCall, Shield } from "lucide-react";
 import { PricingPage } from "./pricing-page";
 import type { PricingPlanAlertConfig } from "./types";
 import {
