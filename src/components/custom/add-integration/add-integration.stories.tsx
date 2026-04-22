@@ -122,6 +122,31 @@ const sampleAccounts: ComposioConnectedAccount[] = [
   },
 ]
 
+/** Matches WABA Figma “Connect your Account” — Active, Expired, Initialized (spinner) */
+const sampleAccountsFigmaStates: ComposioConnectedAccount[] = [
+  {
+    id: "acc_89xv2m9",
+    label: "acc_89xv2m9",
+    createdBy: "Ankish Khatri",
+    createdAt: "Jan 12, 2026",
+    accountStatus: "active",
+  },
+  {
+    id: "acr_65xv532",
+    label: "acr_65xv532",
+    createdBy: "Ankish Khatri",
+    createdAt: "Jan 10, 2026",
+    accountStatus: "expired",
+  },
+  {
+    id: "acr_init_1",
+    label: "acr_65xv532",
+    createdBy: "Ankish Khatri",
+    createdAt: "Jan 10, 2026",
+    accountStatus: "initialized",
+  },
+]
+
 // Accounts where none is marked active — first clicked acts as "Continue"
 const sampleAccountsNoActive: ComposioConnectedAccount[] = [
   {
@@ -397,8 +422,30 @@ export const ConnectAccountEmpty: Story = {
   },
 }
 
-// ---------- Step 2: Connect (existing accounts — one active) ----------
+// ---------- Step 2: Connect (existing accounts — Figma states) ----------
 export const ConnectAccountWithExisting: Story = {
+  render: (args) => <ModalStory {...args} />,
+  args: {
+    toolkits: sampleToolkits,
+    step: "connect-account",
+    connectionStatus: "idle",
+    connectedAccounts: sampleAccountsFigmaStates,
+    selectedToolkit: sampleToolkits[0],
+    currentStepNumber: 2,
+    totalSteps: 3,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Step 2 — matches [WABA Figma](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=41911-35107): **Active** (Continue), **Expired** (Reconnect), **Initialized** (spinner). Use `accountStatus` on each `ComposioConnectedAccount`, or omit it and rely on `isActive` for Active / Switch / Continue.",
+      },
+    },
+  },
+}
+
+/** Two-account legacy flow: one active, one inactive (Switch) */
+export const ConnectAccountWithExistingLegacy: Story = {
   render: (args) => <ModalStory {...args} />,
   args: {
     toolkits: sampleToolkits,
@@ -413,7 +460,28 @@ export const ConnectAccountWithExisting: Story = {
     docs: {
       description: {
         story:
-          'Step 2 — existing accounts with one marked `isActive: true`. The active account shows a green border, "Active" badge, and a **Continue** button. Inactive accounts show a **Switch** button.',
+          "Same as before explicit `accountStatus`: one `isActive: true` row (Continue + Active badge) and one inactive row (Switch).",
+      },
+    },
+  },
+}
+
+export const ConnectAccountHideNewAccountButton: Story = {
+  render: (args) => <ModalStory {...args} />,
+  args: {
+    toolkits: sampleToolkits,
+    step: "connect-account",
+    connectionStatus: "idle",
+    connectedAccounts: sampleAccountsFigmaStates,
+    selectedToolkit: sampleToolkits[0],
+    currentStepNumber: 2,
+    totalSteps: 3,
+    showConnectNewAccountButton: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "`showConnectNewAccountButton={false}` hides the “Connect a New Account” footer.",
       },
     },
   },

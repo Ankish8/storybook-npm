@@ -242,6 +242,7 @@ export type {
   AddIntegrationProps,
   ComposioToolkit,
   ComposioConnectedAccount,
+  ComposioAccountRowStatus,
   ConnectionStatus,
   ConnectionErrorVariant,
   AddIntegrationStep,

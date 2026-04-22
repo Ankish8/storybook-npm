@@ -9,7 +9,7 @@ const StepHeader = React.forwardRef<HTMLDivElement, StepHeaderProps>(
       <div
         ref={ref}
         className={cn(
-          "flex items-center gap-6 border-b border-semantic-border-layout p-6"
+          "flex items-center gap-3 border-b border-semantic-border-layout p-4 sm:gap-6 sm:p-6"
         )}
       >
         {showBack && (
@@ -22,8 +22,8 @@ const StepHeader = React.forwardRef<HTMLDivElement, StepHeaderProps>(
             <ArrowLeft className="size-6" />
           </button>
         )}
-        <div className="flex flex-1 flex-col gap-0.5">
-          <h2 className="m-0 text-lg font-semibold text-semantic-text-primary">
+        <div className="min-w-0 flex flex-1 flex-col gap-0.5">
+          <h2 className="m-0 line-clamp-2 text-base font-semibold text-semantic-text-primary sm:text-lg">
             {title}
           </h2>
           <p className="m-0 text-xs tracking-wide text-semantic-text-muted">

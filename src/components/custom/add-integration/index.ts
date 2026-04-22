@@ -6,10 +6,12 @@ export type {
   AddIntegrationProps,
   ComposioToolkit,
   ComposioConnectedAccount,
+  ComposioAccountRowStatus,
   ConnectionStatus,
   ConnectionErrorVariant,
   AddIntegrationStep,
   ToolkitCardProps,
   ConnectedAccountCardProps,
+  ConnectedAccountActionType,
   StepHeaderProps,
 } from "./types"

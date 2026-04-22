@@ -16,7 +16,28 @@ import type {
   AddIntegrationProps,
   ComposioToolkit,
   ComposioConnectedAccount,
+  ComposioAccountRowStatus,
+  ConnectedAccountActionType,
 } from "./types"
+
+function resolveRowStatus(
+  account: ComposioConnectedAccount,
+  hasActiveAccount: boolean
+): ComposioAccountRowStatus {
+  if (account.accountStatus) return account.accountStatus
+  if (account.isActive) return "active"
+  if (hasActiveAccount) return "inactive"
+  return "unassigned"
+}
+
+function resolveActionType(
+  rowStatus: ComposioAccountRowStatus
+): ConnectedAccountActionType {
+  if (rowStatus === "expired") return "reconnect"
+  if (rowStatus === "initialized") return "spinner"
+  if (rowStatus === "inactive") return "switch"
+  return "continue"
+}
 
 const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
   (
@@ -46,6 +67,8 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
       onConnectNewAccount,
       onContinueAccount,
       onSwitchAccount,
+      onReconnectAccount,
+      showConnectNewAccountButton = true,
       onRetryLoadToolkits,
       onRetryConnection,
       ...props
@@ -71,15 +94,27 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
       [connectedAccounts]
     )
 
-    const getActionForAccount = (account: ComposioConnectedAccount) => {
-      const isActiveOrSole = account.isActive || !hasActiveAccount
+    const handleAccountAction = (account: ComposioConnectedAccount) => {
+      const row = resolveRowStatus(account, hasActiveAccount)
+      if (row === "expired") {
+        onReconnectAccount?.(account)
+        return
+      }
+      if (row === "inactive") {
+        onSwitchAccount?.(account)
+        return
+      }
+      onContinueAccount?.(account)
+    }
+
+    const getAccountCardProps = (account: ComposioConnectedAccount) => {
+      const rowStatus = resolveRowStatus(account, hasActiveAccount)
+      const actionType = resolveActionType(rowStatus)
+      const showAction = account.showAccountAction !== false
       return {
-        actionLabel: isActiveOrSole
-          ? ("Continue" as const)
-          : ("Switch" as const),
-        onAction: isActiveOrSole
-          ? onContinueAccount ?? (() => {})
-          : onSwitchAccount ?? (() => {}),
+        rowStatus,
+        actionType: (showAction ? actionType : "none") as ConnectedAccountActionType,
+        showAction,
       }
     }
 
@@ -109,7 +144,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
           ref={ref}
           hideCloseButton
           className={cn(
-            "w-[744px] max-w-none gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary p-0 shadow-sm",
+            "w-full max-w-[min(744px,calc(100vw-1.5rem))] gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary p-0 shadow-sm",
             className
           )}
           {...props}
@@ -124,7 +159,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                 subtitle={`Step ${resolvedStepNumber} of ${totalSteps}`}
                 onClose={onClose}
               />
-              <div className="flex flex-col gap-6 p-6">
+              <div className="flex flex-col gap-4 p-4 sm:gap-6 sm:p-6">
                 {/* Integration Name */}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold tracking-wide text-semantic-text-primary">
@@ -194,9 +229,9 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                       </button>
                     </div>
                   ) : (
-                    <div className="grid max-h-[324px] grid-cols-2 gap-3 overflow-y-auto">
+                    <div className="grid max-h-[min(324px,55vh)] grid-cols-1 gap-3 overflow-y-auto sm:max-h-[324px] sm:grid-cols-2">
                       {filteredToolkits.length === 0 ? (
-                        <div className="col-span-2 py-12 text-center">
+                        <div className="col-span-1 py-12 text-center sm:col-span-2">
                           <p className="m-0 text-sm text-semantic-text-muted">
                             No integrations found
                           </p>
@@ -239,10 +274,10 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                 onBack={onBack}
                 onClose={onClose}
               />
-              <div className="flex flex-col items-center overflow-hidden p-8">
-                <div className="flex w-full flex-col items-center gap-8">
+              <div className="flex min-h-0 flex-col items-center overflow-hidden p-4 sm:p-8">
+                <div className="flex w-full min-h-0 max-w-full flex-col items-center gap-5 sm:gap-8">
                   {/* Toolkit Icon + Title */}
-                  <div className="flex flex-col items-center gap-4">
+                  <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
                     {selectedToolkit && (
                       <div className="flex size-[58px] items-center justify-center rounded-full bg-semantic-bg-ui">
                         <img
@@ -252,45 +287,44 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                         />
                       </div>
                     )}
-                    <div className="flex flex-col items-center gap-1.5 text-center">
-                      <h3 className="m-0 text-lg font-semibold text-semantic-text-primary">
+                    <div className="flex w-full max-w-md flex-col items-center gap-1.5 px-1 text-center sm:px-0">
+                      <h3 className="m-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                         Connect {selectedToolkit?.name}
                       </h3>
-                      <p className="m-0 max-w-[285px] text-sm tracking-wide text-semantic-text-muted">
+                      <p className="m-0 max-w-[min(285px,100%)] text-pretty text-sm leading-relaxed tracking-wide text-semantic-text-muted">
                         Authorise your account to allow the bot to access your
                         data securely.
                       </p>
                     </div>
                   </div>
 
-                  {/* Existing Connected Accounts */}
+                  {/* Existing Connected Accounts — title stays fixed; only the list scrolls */}
                   {connectedAccounts.length > 0 && (
-                    <div className="flex w-full flex-col gap-6">
-                      <div className="flex max-h-[180px] flex-col gap-2.5 overflow-y-auto">
-                        <p className="m-0 text-sm font-semibold tracking-wide text-semantic-text-primary">
-                          Existing connected accounts
-                        </p>
-                        <div className="flex flex-col gap-3">
-                          {connectedAccounts.map((account) => {
-                            const { actionLabel, onAction } =
-                              getActionForAccount(account)
-                            return (
-                              <ConnectedAccountCard
-                                key={account.id}
-                                account={account}
-                                actionLabel={actionLabel}
-                                onAction={onAction}
-                              />
-                            )
-                          })}
-                        </div>
+                    <div className="flex w-full min-h-0 flex-col gap-2.5">
+                      <p className="m-0 shrink-0 text-sm font-semibold tracking-wide text-semantic-text-primary">
+                        Existing connected accounts
+                      </p>
+                      <div className="flex min-h-0 max-h-[min(270px,50vh)] flex-col gap-3 overflow-y-auto pr-1 [scrollbar-gutter:stable] sm:max-h-[270px] sm:gap-4">
+                        {connectedAccounts.map((account) => {
+                          const cardProps = getAccountCardProps(account)
+                          return (
+                            <ConnectedAccountCard
+                              key={account.id}
+                              account={account}
+                              rowStatus={cardProps.rowStatus}
+                              showAction={cardProps.showAction}
+                              actionType={cardProps.actionType}
+                              onAction={handleAccountAction}
+                            />
+                          )
+                        })}
                       </div>
                     </div>
                   )}
 
                   {/* Bottom slot: idle → "+ Connect a New Account"
                       inline error → error banner + Retry Connection */}
-                  {isConnectAccountIdle ? (
+                  {isConnectAccountIdle && showConnectNewAccountButton && (
                     <button
                       type="button"
                       onClick={onConnectNewAccount}
@@ -299,7 +333,8 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                       <Plus className="size-[18px]" />
                       Connect a New Account
                     </button>
-                  ) : (
+                  )}
+                  {isConnectAccountInlineError && (
                     <div className="flex w-full flex-col gap-4">
                       <div className="flex gap-4 rounded border border-semantic-error-border bg-semantic-error-surface p-4">
                         <XCircle className="size-6 shrink-0 text-semantic-error-text" />
@@ -331,7 +366,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
           {/* Step 2: Auth Loading (connecting) */}
           {step === "connect-account" && connectionStatus === "connecting" && (
             <>
-              <div className="flex items-center justify-between p-6">
+              <div className="flex items-center justify-between p-4 sm:p-6">
                 <button
                   type="button"
                   onClick={onBack}
@@ -351,14 +386,14 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                   </button>
                 )}
               </div>
-              <div className="flex h-[292px] flex-col items-center justify-center p-8">
+              <div className="flex min-h-[220px] flex-col items-center justify-center p-4 sm:min-h-[292px] sm:p-8">
                 <div className="flex flex-col items-center gap-4">
                   <Spinner size="xl" />
-                  <div className="flex flex-col items-center gap-1.5 text-center">
-                    <h3 className="m-0 text-lg font-semibold text-semantic-text-primary">
+                  <div className="flex max-w-md flex-col items-center gap-1.5 px-1 text-center sm:px-0">
+                    <h3 className="m-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                       Connect {selectedToolkit?.name}
                     </h3>
-                    <p className="m-0 max-w-[285px] text-sm tracking-wide text-semantic-text-muted">
+                    <p className="m-0 max-w-[min(285px,100%)] text-pretty text-sm tracking-wide text-semantic-text-muted">
                       Authorise your account to allow the bot to access your data
                       securely.
                     </p>
@@ -380,10 +415,10 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                   onBack={onBack}
                   onClose={onClose}
                 />
-                <div className="flex flex-col items-center overflow-hidden p-8">
-                  <div className="flex w-full flex-col items-center gap-8">
+                <div className="flex min-h-0 flex-col items-center overflow-hidden p-4 sm:p-8">
+                  <div className="flex w-full min-h-0 max-w-full flex-col items-center gap-5 sm:gap-8">
                     {/* Toolkit Icon + Title */}
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
                       {selectedToolkit && (
                         <div className="flex size-[58px] items-center justify-center rounded-full bg-semantic-bg-ui">
                           <img
@@ -393,11 +428,11 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                           />
                         </div>
                       )}
-                      <div className="flex flex-col items-center gap-1.5 text-center">
-                        <h3 className="m-0 text-lg font-semibold text-semantic-text-primary">
+                      <div className="flex w-full max-w-md flex-col items-center gap-1.5 px-1 text-center sm:px-0">
+                        <h3 className="m-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                           Connect {selectedToolkit?.name}
                         </h3>
-                        <p className="m-0 max-w-[285px] text-sm tracking-wide text-semantic-text-muted">
+                        <p className="m-0 max-w-[min(285px,100%)] text-pretty text-sm tracking-wide text-semantic-text-muted">
                           Authorise your account to allow the bot to access your
                           data securely.
                         </p>
@@ -405,7 +440,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                     </div>
 
                     {/* Error Banner */}
-                    <div className="flex w-full flex-col gap-6">
+                    <div className="flex w-full min-w-0 flex-col gap-4 sm:gap-6">
                       <div className="flex gap-4 rounded border border-semantic-error-border bg-semantic-error-surface p-4">
                         <XCircle className="size-6 shrink-0 text-semantic-error-text" />
                         <div className="flex flex-col gap-1.5">
@@ -437,7 +472,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
             connectionStatus === "error" &&
             connectionErrorVariant === "redirect" && (
               <>
-                <div className="flex items-center justify-between p-6">
+                <div className="flex items-center justify-between p-4 sm:p-6">
                   <button
                     type="button"
                     onClick={onBack}
@@ -457,24 +492,24 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                     </button>
                   )}
                 </div>
-                <div className="flex h-[292px] flex-col items-center justify-center p-8">
-                  <div className="flex flex-col items-center gap-4">
+                <div className="flex min-h-[220px] flex-col items-center justify-center p-4 sm:min-h-[292px] sm:p-8">
+                  <div className="flex w-full max-w-md flex-col items-center gap-4 px-1 sm:px-0">
                     <div className="flex size-16 items-center justify-center rounded-full bg-semantic-error-surface">
                       <AlertTriangle className="size-10 text-semantic-error-primary" />
                     </div>
-                    <div className="flex flex-col items-center gap-5">
+                    <div className="flex w-full flex-col items-center gap-4 sm:gap-5">
                       <div className="flex flex-col items-center gap-1.5 text-center">
-                        <h3 className="m-0 text-lg font-semibold text-semantic-text-primary">
+                        <h3 className="m-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                           Connection Failed
                         </h3>
-                        <p className="m-0 max-w-[285px] text-sm tracking-wide text-semantic-text-muted">
+                        <p className="m-0 max-w-[min(285px,100%)] text-pretty text-sm tracking-wide text-semantic-text-muted">
                           Unable to connect to {selectedToolkit?.name} right now.
                         </p>
                       </div>
                       <button
                         type="button"
                         onClick={onRetryConnection}
-                        className="flex h-10 items-center justify-center rounded bg-semantic-primary-hover px-4 text-sm font-semibold tracking-wide text-semantic-text-inverted transition-colors hover:opacity-90"
+                        className="flex h-10 w-full max-w-xs items-center justify-center rounded bg-semantic-primary-hover px-4 text-sm font-semibold tracking-wide text-semantic-text-inverted transition-colors hover:opacity-90 sm:w-auto"
                       >
                         Please Try Again
                       </button>
@@ -487,7 +522,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
           {/* Step 3: Success */}
           {step === "success" && (
             <>
-              <div className="flex items-center justify-between p-6">
+              <div className="flex items-center justify-between p-4 sm:p-6">
                 <button
                   type="button"
                   onClick={onBack}
@@ -507,16 +542,16 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                   </button>
                 )}
               </div>
-              <div className="flex h-[292px] flex-col items-center justify-center p-8">
-                <div className="flex flex-col items-center gap-4">
+              <div className="flex min-h-[220px] flex-col items-center justify-center p-4 sm:min-h-[292px] sm:p-8">
+                <div className="flex w-full max-w-md flex-col items-center gap-4 px-1 text-center sm:px-0">
                   <div className="flex size-16 items-center justify-center rounded-full bg-semantic-success-surface">
                     <CheckCircle2 className="size-10 text-semantic-success-primary" />
                   </div>
-                  <div className="flex flex-col items-center text-center">
-                    <h3 className="m-0 text-lg font-semibold text-semantic-text-primary">
+                  <div className="flex flex-col items-center text-pretty">
+                    <h3 className="m-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                       Successfully connected to
                     </h3>
-                    <h3 className="m-0 text-lg font-semibold text-semantic-text-primary">
+                    <h3 className="m-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
                       {selectedToolkit?.name}!
                     </h3>
                   </div>

@@ -14,6 +14,22 @@ export interface ComposioToolkit {
   description: string
 }
 
+/**
+ * Row state for the “Existing connected accounts” list (WABA Figma: active, expired, initialized, plus switch/continue).
+ * If omitted, it is derived from `isActive` and whether another account in the list is active.
+ */
+export type ComposioAccountRowStatus =
+  /** Green “Active” badge; primary “Continue” */
+  | "active"
+  /** No status badge; outline “Switch” when another account is the designated active one */
+  | "inactive"
+  /** No status badge; “Continue” when no account in the list is active yet (legacy sole / pick-one flow) */
+  | "unassigned"
+  /** Red “Expired” badge; outline “Reconnect” */
+  | "expired"
+  /** Grey “Initialized” badge; loading spinner in the action column */
+  | "initialized"
+
 /** Represents a connected account from Composio API */
 export interface ComposioConnectedAccount {
   /** Account identifier (e.g., "acc_89xv2m9") */
@@ -27,10 +43,17 @@ export interface ComposioConnectedAccount {
   /**
    * Whether this account is the currently active one for the toolkit on the current bot.
    * Business rule: at most one account per toolkit/bot should be active at a time.
-   * When true, the card shows a green "Active" badge, a success border, and a "Continue" action.
-   * When false and another account is active, the card shows a "Switch" action instead.
+   * When `accountStatus` is not set, this drives `active` vs `inactive` / `unassigned` (see `ComposioAccountRowStatus`).
    */
   isActive?: boolean
+  /**
+   * Explicit row status (badges and actions). When set, it overrides `isActive`-based inference.
+   */
+  accountStatus?: ComposioAccountRowStatus
+  /**
+   * When false, the right column (button or spinner) is hidden for this row. Defaults to true.
+   */
+  showAccountAction?: boolean
 }
 
 /** Connection status during the auth flow */
@@ -75,6 +98,10 @@ export interface AddIntegrationProps
   selectedToolkit?: ComposioToolkit | null
   /** Integration name input value */
   integrationName?: string
+  /**
+   * When false, the “+ Connect a New Account” control is hidden on the connect-account step. Defaults to true.
+   */
+  showConnectNewAccountButton?: boolean
   /** Search query for filtering toolkits */
   searchQuery?: string
   /** Whether toolkits are loading */
@@ -110,6 +137,8 @@ export interface AddIntegrationProps
    * Consumers should open a confirmation dialog (see SwitchAccountModal) before performing the switch.
    */
   onSwitchAccount?: (account: ComposioConnectedAccount) => void
+  /** Callback when "Reconnect" is clicked on a row with `accountStatus: "expired"`. */
+  onReconnectAccount?: (account: ComposioConnectedAccount) => void
   /** Callback when "Please Try Again" is clicked after toolkit load failure */
   onRetryLoadToolkits?: () => void
   /** Callback when "Please Try Again" / "Retry Connection" is clicked after auth connection failure */
@@ -123,16 +152,23 @@ export interface ToolkitCardProps {
   onClick: (toolkit: ComposioToolkit) => void
 }
 
+/** Action shown in the right column of a connected account row */
+export type ConnectedAccountActionType =
+  | "continue"
+  | "switch"
+  | "reconnect"
+  | "spinner"
+  | "none"
+
 /** Props for the internal ConnectedAccountCard sub-component */
 export interface ConnectedAccountCardProps {
   account: ComposioConnectedAccount
-  /**
-   * Label for the action button on the card.
-   * Parent component decides: "Continue" when the card is the active one OR no other account is active;
-   * "Switch" when the card is not active and another account IS active.
-   */
-  actionLabel: "Continue" | "Switch"
-  /** Fires when the action button is clicked. Parent routes this to onContinueAccount or onSwitchAccount. */
+  /** Resolved row status for badges and layout */
+  rowStatus: ComposioAccountRowStatus
+  /** When false, the right column (button or spinner) is not rendered */
+  showAction: boolean
+  actionType: ConnectedAccountActionType
+  /** Fires for button rows (not for spinner) */
   onAction: (account: ComposioConnectedAccount) => void
 }
 

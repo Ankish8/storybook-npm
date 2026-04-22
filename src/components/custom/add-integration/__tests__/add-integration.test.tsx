@@ -570,6 +570,100 @@ describe("AddIntegration", () => {
       fireEvent.click(screen.getByRole("button", { name: "Continue" }))
       expect(onContinueAccount).toHaveBeenCalledWith(mockAccountsNoActive[0])
     })
+
+    it("renders Expired badge and Reconnect for accountStatus expired", () => {
+      const accounts: ComposioConnectedAccount[] = [
+        {
+          id: "a1",
+          label: "expired_acc",
+          createdBy: "User",
+          createdAt: "Jan 1, 2026",
+          accountStatus: "expired",
+        },
+      ]
+      const onReconnectAccount = vi.fn()
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={accounts}
+          onReconnectAccount={onReconnectAccount}
+        />
+      )
+      expect(screen.getByText("Expired")).toBeInTheDocument()
+      fireEvent.click(screen.getByRole("button", { name: "Reconnect" }))
+      expect(onReconnectAccount).toHaveBeenCalledWith(accounts[0])
+    })
+
+    it("renders Initialized badge and spinner for accountStatus initialized", () => {
+      const accounts: ComposioConnectedAccount[] = [
+        {
+          id: "a1",
+          label: "init_acc",
+          createdBy: "User",
+          createdAt: "Jan 1, 2026",
+          accountStatus: "initialized",
+        },
+      ]
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={accounts}
+        />
+      )
+      expect(screen.getByText("Initialized")).toBeInTheDocument()
+      expect(screen.getByRole("status")).toBeInTheDocument()
+    })
+
+    it("hides Connect a New Account when showConnectNewAccountButton is false", () => {
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={mockAccounts}
+          showConnectNewAccountButton={false}
+        />
+      )
+      expect(
+        screen.queryByRole("button", { name: "Connect a New Account" })
+      ).not.toBeInTheDocument()
+    })
+
+    it("hides account action column when showAccountAction is false", () => {
+      const accounts: ComposioConnectedAccount[] = [
+        {
+          id: "a1",
+          label: "no_action",
+          createdBy: "User",
+          createdAt: "Jan 1, 2026",
+          isActive: true,
+          showAccountAction: false,
+        },
+      ]
+      render(
+        <AddIntegration
+          {...modalProps}
+          toolkits={mockToolkits}
+          step="connect-account"
+          connectionStatus="idle"
+          selectedToolkit={mockToolkits[0]}
+          connectedAccounts={accounts}
+        />
+      )
+      expect(
+        screen.queryByRole("button", { name: "Continue" })
+      ).not.toBeInTheDocument()
+    })
   })
 
   // ─── Step 2: Connecting state ────────────────────────────────────────
