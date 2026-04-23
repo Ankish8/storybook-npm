@@ -98,10 +98,14 @@ function DateInput({
 
     const vh = window.innerHeight;
     const belowTop = rect.bottom + gap;
-    const roomBelow = Math.max(0, vh - margin - belowTop);
-    const roomAbove = Math.max(0, rect.top - margin - gap);
+    // When portaled into a dialog, measure free space using the container clip rect so the
+    // popover is not placed above the trigger (wrong flip) and clipped by overflow-y-auto.
+    const cr = container?.getBoundingClientRect();
+    const clipTop = cr ? cr.top + margin : margin;
+    const clipBottom = cr ? cr.bottom - margin : vh - margin;
+    const roomBelow = Math.max(0, clipBottom - belowTop);
+    const roomAbove = Math.max(0, rect.top - gap - clipTop);
 
-    // Prefer the side with more room; opening above then clamping top to ~0 misplaces the popover.
     let top: number;
     let maxHeight: number;
 
@@ -111,14 +115,13 @@ function DateInput({
     } else {
       maxHeight = Math.max(1, Math.min(maxPopoverH, roomAbove));
       top = rect.top - gap - maxHeight;
-      if (top < margin) {
+      if (top < clipTop) {
         top = belowTop;
         maxHeight = Math.max(1, Math.min(maxPopoverH, roomBelow));
       }
     }
 
-    if (container) {
-      const cr = container.getBoundingClientRect();
+    if (container && cr) {
       setPopoverStyle({
         position: "absolute",
         top: top - cr.top + container.scrollTop,

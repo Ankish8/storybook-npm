@@ -33,7 +33,7 @@ import type {
  * classes for shared layout class chunks.
  */
 const pageBodyMaxClass = cn(
-  "mx-auto flex w-full min-w-0 max-w-[1139px] flex-col"
+  "mx-auto flex w-full min-w-0 max-w-[1200px] flex-col"
 );
 
 /**
@@ -47,14 +47,14 @@ const pageShellPaddingX = cn("box-border px-4 sm:px-6 md:px-8 lg:px-10");
  * Horizontal padding **inside** the 1139px content column (alert / plan row / let-us-drive).
  * Figma gutters: **~24px** from `sm+`.
  */
-const pageGutterX = cn("box-border px-4 sm:px-6");
+const pageGutterX = cn("box-border");
 
 /**
  * Figma `1119:2784` — **24px** between the page header (bottom rule) and the plan block (alert / cards).
  * Applied as `pt-6` here; the header + plan sit in one padded column so the outer `gap-6` does not
  * create space between them.
  */
-const planSectionPaddingTop = cn("pt-6");
+const planSectionPaddingTop = cn("pt-0");
 
 /**
  * Figma `1119:2784` — **24px** between the main column sections (header band → plan / lower sections).
@@ -62,7 +62,7 @@ const planSectionPaddingTop = cn("pt-6");
 const pageHeaderToBodyGapClass = cn("gap-6");
 
 /** Plan column stack (header and plan share one full-width column; no outer shell `px`, gutters on header + plan). */
-const planColumnStackClass = cn("flex w-full min-w-0 max-w-full flex-col gap-0");
+const planColumnStackClass = cn("flex w-full min-w-0 max-w-full flex-col gap-0 px-4 sm:px-6 pt-6 pb-[60px]");
 
 /**
  * Figma `1119:2986`, `1119:3031` — **16px** between the section title row and the card grid.
@@ -86,7 +86,7 @@ const bandAfterPlanPaddingY = cn(
 );
 
 /** **60px** space below the plan row (alert + cards + optional pagination) when a lower band follows. */
-const planRowPaddingBottomWhenFollowed = cn("pb-[60px]");
+const planRowPaddingBottomWhenFollowed = cn("pb-[0px]");
 
 /**
  * Power-ups **inner** content: side padding inside the full-width band (Figma: ~24px / 48px rhythm).
