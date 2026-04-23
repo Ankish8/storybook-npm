@@ -13,6 +13,8 @@ A timeline divider for chat message lists. Renders centered content between two 
 
 Use it to separate messages by date, mark unread boundaries, or display system events like agent assignments and conversation resolutions.
 
+For string children, wrap names or keywords in `**` for link-colored, medium-weight highlights (e.g. \`Assigned to **Alex Smith** by **Admin**\`).
+
 ### Installation
 
 \`\`\`bash
@@ -77,10 +79,7 @@ export const UnreadCount: Story = {
 export const SystemEvent: Story = {
   render: () => (
     <ChatTimelineDivider variant="system">
-      Assigned to{" "}
-      <span className="text-semantic-text-link font-medium">Alex Smith</span>
-      {" "}by{" "}
-      <span className="text-semantic-text-link font-medium">Alex Smith</span>
+      Assigned to **Alex Smith** by **Admin**
     </ChatTimelineDivider>
   ),
 };
@@ -110,10 +109,7 @@ export const AllVariants: Story = {
       <div>
         <p className="m-0 text-xs text-semantic-text-muted mb-2">system — action events</p>
         <ChatTimelineDivider variant="system">
-          Assigned to{" "}
-          <span className="text-semantic-text-link font-medium">Alex Smith</span>
-          {" "}by{" "}
-          <span className="text-semantic-text-link font-medium">Alex Smith</span>
+          Assigned to **Alex Smith** by **Admin**
         </ChatTimelineDivider>
       </div>
     </div>
@@ -141,10 +137,7 @@ export const InChatTimeline: Story = {
       <ChatTimelineDivider>Today</ChatTimelineDivider>
 
       <ChatTimelineDivider variant="system">
-        Assigned to{" "}
-        <span className="text-semantic-text-link font-medium">Alex Smith</span>
-        {" "}by{" "}
-        <span className="text-semantic-text-link font-medium">Admin</span>
+        Assigned to **Alex Smith** by **Admin**
       </ChatTimelineDivider>
 
       <ChatTimelineDivider variant="unread">1 unread message</ChatTimelineDivider>

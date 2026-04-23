@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FileUploadModal } from "../file-upload-modal";
@@ -115,12 +115,69 @@ describe("FileUploadModal", () => {
     const file = new File(["x"], "photo.jpg", { type: "image/jpeg" });
     // fireEvent bypasses host `accept` filtering (drag-and-drop also bypasses it in browsers)
     fireEvent.change(input, { target: { files: [file] } });
+    expect(toastError).toHaveBeenCalledTimes(1);
     expect(toastError).toHaveBeenCalledWith({
       title: "Unsupported file type",
       description: "Only files in the supported formats can be uploaded.",
     });
     expect(onUpload).not.toHaveBeenCalled();
     expect(screen.queryByText("photo.jpg")).not.toBeInTheDocument();
+  });
+
+  it("shows a single error toast when multiple disallowed file types are selected at once", () => {
+    const onUpload = vi.fn().mockResolvedValue(undefined);
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={onUpload}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const files = [
+      new File(["a"], "a.jpg", { type: "image/jpeg" }),
+      new File(["b"], "b.png", { type: "image/png" }),
+      new File(["c"], "c.gif", { type: "image/gif" }),
+    ];
+    fireEvent.change(input, { target: { files } });
+    expect(toastError).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Unsupported file type",
+      description:
+        "3 files are not in a supported format. Only files in the supported formats can be uploaded.",
+    });
+    expect(onUpload).not.toHaveBeenCalled();
+  });
+
+  it("shows one disallowed-type toast and still processes allowed files in the same batch", async () => {
+    const onUpload = vi.fn().mockResolvedValue(undefined);
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={onUpload}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const valid = new File(["p"], "doc.pdf", { type: "application/pdf" });
+    const invalid = new File(["x"], "a.jpg", { type: "image/jpeg" });
+    fireEvent.change(input, { target: { files: [invalid, valid] } });
+    expect(toastError).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Unsupported file type",
+      description: "Only files in the supported formats can be uploaded.",
+    });
+    await waitFor(() => {
+      expect(onUpload).toHaveBeenCalledTimes(1);
+    });
+    expect(onUpload).toHaveBeenCalledWith(
+      valid,
+      expect.objectContaining({ onProgress: expect.any(Function), onError: expect.any(Function) })
+    );
   });
 
   it("uses custom disallowed-file-type toast copy", () => {

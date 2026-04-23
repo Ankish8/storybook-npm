@@ -14,7 +14,10 @@ export interface ChatTimelineDividerProps
    * - `system`: muted text in a white pill with border (e.g. "Assigned to Alex Smith")
    */
   variant?: ChatTimelineDividerVariant;
-  /** Content to display — text or ReactNode for rich content (e.g. linked names) */
+  /**
+   * Content to display. Pass a string and wrap highlights in `**` for link-colored, medium-weight segments
+   * (e.g. `Assigned to **Alex Smith** by **Admin**`), or pass a ReactNode for full control.
+   */
   children: React.ReactNode;
 }
 
@@ -34,6 +37,36 @@ const textStyles: Record<ChatTimelineDividerVariant, string> = {
   system: "text-[13px] text-semantic-text-muted",
 };
 
+const highlightSegmentClassName = "text-semantic-text-link font-medium";
+
+/**
+ * Splits a string on markdown-style `**label**` markers and returns nodes:
+ * text outside markers inherits the parent span; segments inside `**` use link color + medium weight.
+ */
+function parseBoldMarkers(content: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  const re = /\*\*([^*]+)\*\*/g;
+  let last = 0;
+  let m: RegExpExecArray | null = re.exec(content);
+  let i = 0;
+  while (m !== null) {
+    if (m.index > last) {
+      nodes.push(content.slice(last, m.index));
+    }
+    nodes.push(
+      <span key={`b-${i++}`} className={highlightSegmentClassName}>
+        {m[1]}
+      </span>
+    );
+    last = m.index + m[0].length;
+    m = re.exec(content);
+  }
+  if (last < content.length) {
+    nodes.push(content.slice(last));
+  }
+  return nodes.length > 0 ? nodes : [content];
+}
+
 /* ── Component ── */
 
 /**
@@ -51,9 +84,9 @@ const textStyles: Record<ChatTimelineDividerVariant, string> = {
  * // Unread count
  * <ChatTimelineDivider variant="unread">3 unread messages</ChatTimelineDivider>
  *
- * // System event with linked names
+ * // System event — use **name** in a string for link-colored highlights
  * <ChatTimelineDivider variant="system">
- *   Assigned to <span className="text-semantic-text-link font-medium">Alex Smith</span>
+ *   Assigned to **Alex Smith** by **Admin**
  * </ChatTimelineDivider>
  * ```
  */
@@ -78,7 +111,11 @@ const ChatTimelineDivider = React.forwardRef<
           <div className="flex-1 h-px bg-semantic-border-layout" />
         )}
         <div className={cn(containerStyles[variant])}>
-          <span className={cn(textStyles[variant])}>{children}</span>
+          <span className={cn(textStyles[variant])}>
+            {typeof children === "string"
+              ? parseBoldMarkers(children)
+              : children}
+          </span>
         </div>
         {showLines && (
           <div className="flex-1 h-px bg-semantic-border-layout" />

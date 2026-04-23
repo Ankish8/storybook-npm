@@ -62,6 +62,23 @@ describe("ChatTimelineDivider", () => {
     expect(screen.getByTestId("link")).toHaveTextContent("Alex Smith");
   });
 
+  it("applies link color and weight to **segments** in string children", () => {
+    render(
+      <ChatTimelineDivider variant="system">
+        Assigned to **Alex Smith** by **Admin**
+      </ChatTimelineDivider>
+    );
+    expect(screen.getByRole("separator")).toHaveTextContent(
+      "Assigned to Alex Smith by Admin"
+    );
+    const alex = screen.getByText("Alex Smith");
+    const admin = screen.getByText("Admin");
+    expect(alex.className).toContain("text-semantic-text-link");
+    expect(alex.className).toContain("font-medium");
+    expect(admin.className).toContain("text-semantic-text-link");
+    expect(admin.className).toContain("font-medium");
+  });
+
   it("forwards ref", () => {
     const ref = { current: null } as React.RefObject<HTMLDivElement>;
     render(

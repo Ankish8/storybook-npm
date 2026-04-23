@@ -37,7 +37,11 @@ export interface FileUploadModalProps
   allowedFileTypesDescription?: string;
   /** Toast title when the user selects a file whose extension is not in {@link acceptedFormats}. */
   disallowedFileTypeToastTitle?: string;
-  /** Toast description when the user selects a disallowed file type. */
+  /**
+   * Toast description when the user selects a disallowed file type.
+   * If several files in one selection are invalid, a single toast is shown and this string is
+   * appended after a count prefix (e.g. "3 files are not in a supported format. …").
+   */
   disallowedFileTypeToastDescription?: string;
   maxFileSizeMB?: number;
   multiple?: boolean;

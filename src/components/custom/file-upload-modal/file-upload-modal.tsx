@@ -119,15 +119,29 @@ const FileUploadModal = React.forwardRef(
       (fileList: FileList | null) => {
         if (!fileList) return;
 
-        Array.from(fileList).forEach((file) => {
-          if (!isFileExtensionAllowed(file.name, acceptedFormats)) {
+        const files = Array.from(fileList);
+        const disallowed = files.filter(
+          (file) => !isFileExtensionAllowed(file.name, acceptedFormats)
+        );
+        if (disallowed.length > 0) {
+          if (disallowed.length === 1) {
             toast.error({
               title: disallowedFileTypeToastTitle,
               description: disallowedFileTypeToastDescription,
             });
-            return;
+          } else {
+            toast.error({
+              title: disallowedFileTypeToastTitle,
+              description: `${disallowed.length} files are not in a supported format. ${disallowedFileTypeToastDescription}`,
+            });
           }
+        }
 
+        const allowed = files.filter((file) =>
+          isFileExtensionAllowed(file.name, acceptedFormats)
+        );
+
+        allowed.forEach((file) => {
           if (file.size > maxFileSizeMB * 1024 * 1024) {
             const id = generateId();
             setItems((prev) => [
