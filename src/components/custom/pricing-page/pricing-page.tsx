@@ -25,10 +25,12 @@ import type {
  * Figma `1119:2782` / `1119:2783`: main white column is **1139px** (inner rows use ~1091px for cards + gutters).
  *
  * **Registry / `tw-` prefix:** `generate-registry` only prefixes class strings that appear as
- * literals inside `cn()`, `cva(...)`, and `className="..."` — *not* bare
- * `const x = "flex ..."` values. In consumer apps with `prefix: "tw-"` those raw strings do not
- * match emitted utilities (broken max-width, grid, gaps). Use `const x = cn("flex ...")` for
- * shared layout class chunks.
+ * literals inside `cn()`, `cva(...)`, and `className="..."` — *not* a plain string variable holding
+ * layout utilities without `cn` (a raw `const` string). In consumer apps with `prefix: "tw-"` in
+ * Tailwind config, those
+ * undecorated strings do not
+ * match emitted utilities (broken max-width, grid, gaps). Use `cn` with one string of layout
+ * classes for shared layout class chunks.
  */
 const pageBodyMaxClass = cn(
   "mx-auto flex w-full min-w-0 max-w-[1139px] flex-col"
