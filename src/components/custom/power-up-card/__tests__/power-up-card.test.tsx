@@ -80,15 +80,18 @@ describe("PowerUpCard", () => {
     const { container } = render(<PowerUpCard {...defaultProps} />);
     const root = container.firstChild as HTMLElement;
     expect(root).toHaveClass(
+      "box-border",
       "flex",
       "flex-col",
       "justify-between",
       "gap-8",
       "rounded-md",
       "border",
+      "border-solid",
       "border-semantic-border-layout",
-      "bg-card",
-      "p-5"
+      "bg-semantic-bg-primary",
+      "p-5",
+      "shadow-none"
     );
   });
 });

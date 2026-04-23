@@ -50,6 +50,13 @@ export interface PricingPlanAlertConfig {
  * the full plan selection page. Modular and reusable across screens:
  * use the full page layout, or compose sections elsewhere with the same
  * sub-components (PricingCard, PowerUpCard, LetUsDriveCard, etc.).
+ *
+ * **Embedding in host apps:** the root uses `h-auto` and `w-full max-w-full` so it does not rely on
+ * a parent height, and includes **horizontal shell padding** (`px-4` → `lg:px-10`) so the layout is
+ * not flush to the viewport. To **fill a flex panel** (sidebar + main) and scroll inside the main
+ * column, pass **`className="h-full min-h-0 min-w-0 flex-1"`** (or `className="min-h-0 flex-1"`) on
+ * `PricingPage` so the flex chain and overflow behave correctly. Override side padding with
+ * `className` if the host already pads the main area.
  */
 export interface PricingPageProps
   extends React.HTMLAttributes<HTMLDivElement> {

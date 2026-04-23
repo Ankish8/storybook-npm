@@ -73,7 +73,7 @@ const LetUsDriveCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-solid border-semantic-border-layout bg-card p-5 shadow-sm",
+          "flex min-h-0 flex-col gap-6 rounded-[14px] border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 shadow-none",
           className
         )}
         {...props}

@@ -66,9 +66,9 @@ const PricingCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-md border border-solid",
+          "flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-md border border-solid shadow-none",
           showPopularBadge
-            ? "border-semantic-info-primary shadow-lg"
+            ? "border-semantic-info-primary"
             : "border-semantic-border-layout",
           className
         )}
@@ -86,15 +86,18 @@ const PricingCard = React.forwardRef(
         {/* Main content — 24px horizontal; balanced vertical padding. */}
         <div
           className={cn(
-            "flex min-h-0 flex-1 flex-col gap-5 px-4 pb-5 sm:gap-6 sm:px-6 sm:pb-6",
+            "flex min-h-0 flex-1 flex-col gap-6 px-4 sm:px-6",
             showPopularBadge
               ? "pt-2"
-              : "pt-6 sm:pt-8"
+              : "pt-9",
+            showAddon
+              ? "pb-8 sm:pb-10 md:pb-12 lg:pb-[60px]"
+              : "pb-6"
           )}
         >
-          {/* Plan name + description */}
+          {/* Plan name + description — Figma `1119:3358`: 24/32 title, 8px title↔description */}
           <div className="flex min-w-0 flex-col gap-2">
-            <h3 className="m-0 min-w-0 break-words text-xl font-semibold leading-7 text-semantic-text-primary sm:text-2xl sm:leading-8">
+            <h3 className="m-0 min-w-0 break-words text-2xl font-semibold leading-8 text-semantic-text-primary">
               {planName}
             </h3>
             {description && (
@@ -108,18 +111,18 @@ const PricingCard = React.forwardRef(
           <div className="flex flex-col gap-3.5">
             <div className="flex min-w-0 flex-col gap-4">
               <div className="flex min-w-0 flex-wrap items-baseline gap-x-1 gap-y-0.5">
-                <span className="text-3xl leading-9 text-semantic-text-primary sm:text-4xl sm:leading-[44px]">
+                <span className="text-4xl font-normal leading-[44px] text-semantic-text-primary">
                   ₹
                 </span>
-                <span className="text-3xl font-semibold leading-9 text-semantic-text-primary sm:text-4xl sm:leading-[44px]">
+                <span className="text-4xl font-semibold leading-[44px] text-semantic-text-primary">
                   {cleanPrice}
                 </span>
-                <span className="text-xs tracking-[0.035px] text-semantic-text-muted sm:text-sm">
+                <span className="text-sm tracking-[0.035px] text-semantic-text-muted">
                   {period}
                 </span>
               </div>
               {planDetails && (
-                <p className="m-0 text-base text-semantic-text-secondary">
+                <p className="m-0 text-base text-semantic-text-primary">
                   {planDetails}
                 </p>
               )}
@@ -239,7 +242,7 @@ const PricingCard = React.forwardRef(
 
               {/* Addon */}
               {addon && (
-                <div className="flex items-center justify-center border-t border-solid border-semantic-border-layout pt-2.5">
+                <div className="flex flex-col items-center justify-center border-t border-solid border-semantic-border-layout pt-2.5 pb-1">
                   <p className="m-0 text-center text-sm tracking-[0.035px] text-semantic-primary">
                     {addon.text}
                   </p>

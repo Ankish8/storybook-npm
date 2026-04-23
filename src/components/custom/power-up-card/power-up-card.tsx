@@ -37,7 +37,7 @@ const PowerUpCard = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-col justify-between gap-8 rounded-md border border-solid border-semantic-border-layout bg-card p-5",
+          "box-border flex flex-col justify-between gap-8 rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 shadow-none",
           className
         )}
         {...props}
@@ -47,7 +47,7 @@ const PowerUpCard = React.forwardRef(
           {/* Icon + title/price row */}
           <div className="flex gap-4 items-start">
             {icon && (
-              <div className="flex items-center justify-center size-[47px] rounded bg-[var(--color-info-25)] shrink-0">
+              <div className="flex size-[47px] shrink-0 items-center justify-center rounded bg-semantic-info-surface-subtle">
                 {icon}
               </div>
             )}

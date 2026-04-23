@@ -498,6 +498,16 @@ const letUsDriveCardsWithDetails: LetUsDriveCardProps[] = [
 const meta: Meta<typeof PricingPage> = {
   title: "Custom/Plan & Payment/Plan & Pricing/PricingPage",
   component: PricingPage,
+  decorators: [
+    (Story) => (
+      <div
+        className="box-border min-h-screen w-full bg-semantic-bg-ui px-4 py-4 sm:px-6 sm:py-6"
+        data-testid="story-pricing-canvas"
+      >
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     layout: "fullscreen",
     docs: {
@@ -505,7 +515,7 @@ const meta: Meta<typeof PricingPage> = {
         component: `
 Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
 
-Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1200px** content width). Power-ups and let-us-drive sections use **60px** vertical gaps between the title row and card grid, and between major page bands.
+Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1139px** content width, Figma \`1119:2783\`). Section bands use **60px** vertical padding; **16px** between each section title and its card grid (Figma \`1119:2986\` / \`1119:3031\`). Story canvas uses a grey background and horizontal padding so spacing matches the app shell.
 
 Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
 
@@ -653,7 +663,8 @@ export const Default: Story = {
 
 /**
  * Canvas matches Figma `1119:2782` (MyO — Product Design): Select Business Plan
- * (plans, power-ups, full-service). Max content **1200px**, 32px plan card gaps, 60px section gaps.
+ * (plans, power-ups, full-service). Max content **1139px**, 32px plan card gaps, 24px page gutters,
+ * 18px alert→cards, 16px section title→grids, 60px section band padding, 55px header row.
  */
 export const FigmaSelectBusinessPlan: Story = {
   name: "Figma (1119:2782) – Select business plan (3 plans, no scroll)",
@@ -663,16 +674,6 @@ export const FigmaSelectBusinessPlan: Story = {
       url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
     },
   },
-  decorators: [
-    (Story) => (
-      <div
-        className="box-border min-h-screen w-full bg-semantic-bg-ui p-0"
-        data-testid="story-pricing-canvas"
-      >
-        <Story />
-      </div>
-    ),
-  ],
   args: {
     showCategoryToggle: false,
     showPlanAlert: true,
@@ -700,7 +701,6 @@ export const FigmaFourPlansNoScrollbar: Story = {
       url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
     },
   },
-  decorators: FigmaSelectBusinessPlan.decorators,
   args: {
     ...FigmaSelectBusinessPlan.args,
     planCards: [...figmaBasePlanCards, figmaEnterprisePlanCard],
@@ -718,7 +718,6 @@ export const FigmaFivePlansHorizontalScroll: Story = {
       url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
     },
   },
-  decorators: FigmaSelectBusinessPlan.decorators,
   args: {
     ...FigmaSelectBusinessPlan.args,
     showPlanAlert: false,

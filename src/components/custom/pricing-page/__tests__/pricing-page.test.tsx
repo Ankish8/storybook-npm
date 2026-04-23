@@ -220,6 +220,44 @@ describe("PricingPage", () => {
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
     expect(grid).toHaveClass("md:grid-cols-4");
+    expect(grid).toHaveAttribute("data-pricing-plans-layout", "grid");
+  });
+
+  it("uses horizontal scroll for five or more plan cards (5th accessible via scrollbar)", () => {
+    const fivePlans: PricingCardProps[] = [
+      ...mockPlanCards,
+      {
+        planName: "Enterprise",
+        price: "25,000",
+        features: ["Everything in SUV"],
+        ctaText: "Contact sales",
+        onCtaClick: vi.fn(),
+      },
+      {
+        planName: "Ultimate",
+        price: "35,000",
+        features: ["Top tier"],
+        ctaText: "Contact",
+        onCtaClick: vi.fn(),
+      },
+    ];
+    const { container } = render(<PricingPage planCards={fivePlans} />);
+    const row = container.querySelector(
+      "[data-testid=\"pricing-plan-cards-grid\"]"
+    ) as HTMLElement | null;
+    const scrollRegion = row?.parentElement;
+    expect(row).toBeTruthy();
+    expect(row).toHaveAttribute("data-pricing-plans-layout", "scroll");
+    expect(row?.className).toMatch(/flex-nowrap/);
+    expect(scrollRegion?.className).toMatch(/overflow-x-auto/);
+    expect(screen.getByRole("region", { name: "Plan options" })).toBe(
+      scrollRegion
+    );
+    const pagination = screen.getByTestId("pricing-plan-cards-pagination");
+    expect(pagination).toBeInTheDocument();
+    expect(
+      pagination.querySelectorAll("button[aria-label^='Show plan']")
+    ).toHaveLength(5);
   });
 
   it("renders power-up cards section", () => {

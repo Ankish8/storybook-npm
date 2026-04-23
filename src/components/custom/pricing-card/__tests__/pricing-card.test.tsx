@@ -254,9 +254,9 @@ describe("PricingCard", () => {
     const { container } = render(
       <PricingCard {...defaultProps} headerBgColor="#d7eae9" />
     );
-    // Main content stack: flex-1 flex-col gap-5 (see pricing-card layout)
+    // Main content stack: flex-1 flex-col gap-6 (see pricing-card layout)
     const content = container.querySelector(
-      ".flex.min-h-0.flex-1.flex-col.gap-5"
+      ".flex.min-h-0.flex-1.flex-col.gap-6"
     );
     expect(content).toBeTruthy();
     expect(content).not.toHaveStyle({ backgroundColor: "#d7eae9" });
