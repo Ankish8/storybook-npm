@@ -6,6 +6,7 @@ import { ArrowDown } from "lucide-react"
 import { ChatTimelineDivider } from "../chat-timeline-divider"
 import { useChatContext } from "../chat-provider"
 import { ChatBubblePrimitive } from "./chat-bubble-base"
+import type { ChatItem, ChatMessage } from "../chat-types"
 import type { ChatMessageListProps } from "./types"
 
 /* ── ChatBubble.MessageList — scrollable thread (requires ChatProvider) ── */
@@ -15,7 +16,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
     const { messages, selectedChatId, chats } = useChatContext()
 
     const selectedChat = React.useMemo(
-      () => chats.find((c) => c.id === selectedChatId) ?? null,
+      () => chats.find((c: ChatItem) => c.id === selectedChatId) ?? null,
       [chats, selectedChatId]
     )
 
@@ -37,7 +38,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
             </ChatTimelineDivider>
 
             <div className="flex flex-col gap-4">
-              {messages.map((msg, msgIdx) => {
+              {messages.map((msg: ChatMessage, msgIdx: number) => {
                 const unreadCount = selectedChat.unreadCount || 0
                 const unreadStartIdx = messages.length - unreadCount
                 const showUnreadSeparator =

@@ -75,6 +75,10 @@ export interface ChatBubbleMessageProps extends HtmlDiv {
    * Customer-message reply control; mirrors `ChatMessageList`’s `onReplyTo`.
    */
   onReplyTo?: (payload: ReplyToPayload) => void;
+  /**
+   * Optional custom header slot when `sentBy` is not set; otherwise `SenderIndicator` uses `message.sentBy`.
+   */
+  senderIndicator?: React.ReactNode;
 }
 
 export type ChatBubbleProps = ChatBubbleManualProps | ChatBubbleMessageProps;

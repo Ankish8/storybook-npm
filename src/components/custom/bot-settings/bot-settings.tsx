@@ -66,9 +66,10 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
     );
 
     const handoverHidden = humanHandover === false;
-    const { className: handoverClassName, ...handoverRest } =
-      humanHandover === false ? {} : { ...(humanHandover ?? {}) };
-
+    const {
+      className: handoverClassName = undefined,
+      ...handoverRest
+    } = handoverHidden ? {} : { ...(humanHandover ?? {}) };
     return (
       <div
         ref={ref}
