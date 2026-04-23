@@ -501,10 +501,17 @@ const meta: Meta<typeof PricingPage> = {
   decorators: [
     (Story) => (
       <div
-        className="box-border min-h-screen w-full bg-semantic-bg-ui px-4 py-4 sm:px-6 sm:py-6"
+        className="box-border flex min-h-screen w-full min-w-0 flex-col bg-semantic-bg-ui px-4 py-4 sm:px-6 sm:py-6"
         data-testid="story-pricing-canvas"
       >
-        <Story />
+        {/*
+          Mirror a typical app shell: a flex child next to a sidebar can overflow if min-w-0 is missing
+          in the tree. In consumer apps with Tailwind `prefix: "tw-"` use the same idea with
+          `tw-flex tw-min-w-0 tw-max-w-full tw-flex-1 tw-overflow-x-hidden` on the inner wrap.
+        */}
+        <div className="flex min-h-0 w-full min-w-0 max-w-full flex-1 flex-col overflow-x-hidden">
+          <Story />
+        </div>
       </div>
     ),
   ],
@@ -515,7 +522,9 @@ const meta: Meta<typeof PricingPage> = {
         component: `
 Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
 
-Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1139px** content width, Figma \`1119:2783\`). Section bands use **60px** vertical padding; **16px** between each section title and its card grid (Figma \`1119:2986\` / \`1119:3031\`). Story canvas uses a grey background and horizontal padding so spacing matches the app shell.
+Shared layout class strings in the source use \`cn("...")\` (not raw string constants) so the CLI registry applies the \`tw-\` prefix for host apps with \`prefix: "tw-"\` in Tailwind. The story decorator adds a flex child with \`min-w-0\` and \`overflow-x-hidden\` to approximate a main column beside a sidebar (in prefixed apps: \`tw-min-w-0\`, \`tw-overflow-x-hidden\`).
+
+Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1139px** content width, Figma \`1119:2783\` — use responsive variant order \`md:tw-grid-cols-4\`, not \`tw-md:grid-cols-4\`). Section bands use **60px** vertical padding; **16px** between each section title and its card grid (Figma \`1119:2986\` / \`1119:3031\`). Story canvas uses a grey background and horizontal padding so spacing is closer to the app shell.
 
 Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
 

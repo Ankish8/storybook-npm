@@ -23,65 +23,73 @@ import type {
  *
  * Constrains plan / add-on sections; PageHeader is rendered full-width above this.
  * Figma `1119:2782` / `1119:2783`: main white column is **1139px** (inner rows use ~1091px for cards + gutters).
+ *
+ * **Registry / `tw-` prefix:** `generate-registry` only prefixes class strings that appear as
+ * literals inside `cn()`, `cva(...)`, and `className="..."` — *not* bare
+ * `const x = "flex ..."` values. In consumer apps with `prefix: "tw-"` those raw strings do not
+ * match emitted utilities (broken max-width, grid, gaps). Use `const x = cn("flex ...")` for
+ * shared layout class chunks.
  */
-const pageBodyMaxClass =
-  "mx-auto flex w-full min-w-0 max-w-[1139px] flex-col";
+const pageBodyMaxClass = cn(
+  "mx-auto flex w-full min-w-0 max-w-[1139px] flex-col"
+);
 
 /**
  * Horizontal padding for the **Let us drive** band (full-width below Power-ups / plan). Header +
  * plan use **no** outer shell `px` — `pageGutterX` on `PageHeader` and the plan column provides the
  * side inset so we do not double-stack shell + gutter padding.
  */
-const pageShellPaddingX = "box-border px-4 sm:px-6 md:px-8 lg:px-10";
+const pageShellPaddingX = cn("box-border px-4 sm:px-6 md:px-8 lg:px-10");
 
 /**
  * Horizontal padding **inside** the 1139px content column (alert / plan row / let-us-drive).
  * Figma gutters: **~24px** from `sm+`.
  */
-const pageGutterX = "box-border px-4 sm:px-6";
+const pageGutterX = cn("box-border px-4 sm:px-6");
 
 /**
  * Figma `1119:2784` — **24px** between the page header (bottom rule) and the plan block (alert / cards).
  * Applied as `pt-6` here; the header + plan sit in one padded column so the outer `gap-6` does not
  * create space between them.
  */
-const planSectionPaddingTop = "pt-6";
+const planSectionPaddingTop = cn("pt-6");
 
 /**
  * Figma `1119:2784` — **24px** between the main column sections (header band → plan / lower sections).
  */
-const pageHeaderToBodyGapClass = "gap-6";
+const pageHeaderToBodyGapClass = cn("gap-6");
 
 /** Plan column stack (header and plan share one full-width column; no outer shell `px`, gutters on header + plan). */
-const planColumnStackClass = "flex w-full min-w-0 max-w-full flex-col gap-0";
+const planColumnStackClass = cn("flex w-full min-w-0 max-w-full flex-col gap-0");
 
 /**
  * Figma `1119:2986`, `1119:3031` — **16px** between the section title row and the card grid.
  */
-const sectionTitleToGridGapClass = "gap-4";
+const sectionTitleToGridGapClass = cn("gap-4");
 
 /** Figma `1119:9740` — **18px** between the plan alert and the plan cards row. */
-const planAlertToCardsGapClass = "gap-[18px]";
+const planAlertToCardsGapClass = cn("gap-[18px]");
 
 /**
  * Figma: `60px` vertical padding on each band; scales down on small viewports.
  */
-const sectionBandPaddingY = "py-8 sm:py-10 md:py-12 lg:py-[60px]";
+const sectionBandPaddingY = cn("py-8 sm:py-10 md:py-12 lg:py-[60px]");
 
 /**
  * First band after the plan (**Power-ups**, or **Let us drive** when there are no power-ups).
  * **60px** top padding on the section (per design); bottom scales with viewport.
  */
-const bandAfterPlanPaddingY =
-  "pt-[60px] pb-8 sm:pb-10 md:pb-12 lg:pb-[60px]";
+const bandAfterPlanPaddingY = cn(
+  "pt-[60px] pb-8 sm:pb-10 md:pb-12 lg:pb-[60px]"
+);
 
 /** **60px** space below the plan row (alert + cards + optional pagination) when a lower band follows. */
-const planRowPaddingBottomWhenFollowed = "pb-[60px]";
+const planRowPaddingBottomWhenFollowed = cn("pb-[60px]");
 
 /**
  * Power-ups **inner** content: side padding inside the full-width band (Figma: ~24px / 48px rhythm).
  */
-const powerUpsGutterX = "box-border px-4 sm:px-6 md:px-8 lg:px-10";
+const powerUpsGutterX = cn("box-border px-4 sm:px-6 md:px-8 lg:px-10");
 
 function planAlertStatusToVariant(
   status: PricingPlanAlertStatus

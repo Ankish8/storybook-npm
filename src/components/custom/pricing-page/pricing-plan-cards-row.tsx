@@ -25,28 +25,26 @@ export interface PricingPlanCardsRowProps
 /**
  * Equal `minmax(0,1fr)` columns: up to **4** columns; stack on small screens for readability.
  * Figma `1119:3357` — **32px** between plan cards (`gap-8`).
+ *
+ * **Registry / `tw-` prefix:** The shared grid “base” must use `cn("...")`, not a raw string, so
+ * `npm run generate-registry` prefixes it for host apps with `prefix: "tw-"`. See `pricing-page.tsx` note.
  */
-function equalWidthGridClass(gridColumns: number): string {
-  const base =
-    "grid w-full min-w-0 items-stretch gap-8 [&>div]:min-h-0 [&>div]:min-w-0";
+const equalWidthGridBase = cn(
+  "grid w-full min-w-0 items-stretch gap-8 [&>div]:min-h-0 [&>div]:min-w-0"
+);
 
+function equalWidthGridClass(gridColumns: number): string {
   if (gridColumns <= 1) {
-    return cn(base, "grid-cols-1");
+    return cn(equalWidthGridBase, "grid-cols-1");
   }
   if (gridColumns === 2) {
-    return cn(
-      base,
-      "min-[480px]:grid-cols-2 grid-cols-1"
-    );
+    return cn(equalWidthGridBase, "min-[480px]:grid-cols-2 grid-cols-1");
   }
   if (gridColumns === 3) {
-    return cn(
-      base,
-      "md:grid-cols-3 grid-cols-1"
-    );
+    return cn(equalWidthGridBase, "md:grid-cols-3 grid-cols-1");
   }
   // gridColumns === 4 — one row of four from `md` up (3–4 plans in a single row on wide viewports)
-  return cn(base, "md:grid-cols-4 grid-cols-1");
+  return cn(equalWidthGridBase, "md:grid-cols-4 grid-cols-1");
 }
 
 const PricingPlanCardsRow = React.forwardRef<
