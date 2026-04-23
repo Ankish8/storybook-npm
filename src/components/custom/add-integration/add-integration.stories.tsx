@@ -361,7 +361,11 @@ const DefaultExample = () => {
         onIntegrationNameChange={setIntegrationName}
         onSearchChange={setSearchQuery}
         onNext={(data) =>
-          console.log("Next:", data.integrationName, data.selectedToolkit.name)
+          console.log(
+            "Next:",
+            data.integrationName,
+            data.selectedToolkit?.name ?? "(no toolkit selected)"
+          )
         }
         onClose={() => setOpen(false)}
       />

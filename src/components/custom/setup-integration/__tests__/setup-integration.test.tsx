@@ -438,7 +438,7 @@ describe("SetupIntegration", () => {
     ).toBeInTheDocument()
   })
 
-  it("does not show pencil icon when onIntegrationNameChange is not provided", () => {
+  it("does not show pencil icon when neither rename callback is provided", () => {
     render(
       <SetupIntegration
         {...modalProps}
@@ -451,6 +451,62 @@ describe("SetupIntegration", () => {
     expect(
       screen.queryByLabelText("Edit integration name")
     ).not.toBeInTheDocument()
+  })
+
+  it("shows confirm loading state on IntegrationHeader when isIntegrationNameLoading", () => {
+    render(
+      <SetupIntegration
+        {...modalProps}
+        messages={sampleMessages}
+        title="Edit Integration"
+        integrationName="Integration test 1"
+        onConfirmIntegrationName={vi.fn()}
+        isIntegrationNameLoading
+      />
+    )
+    fireEvent.click(screen.getByLabelText("Edit integration name"))
+    expect(screen.getByLabelText("Integration name")).toHaveAttribute(
+      "readonly"
+    )
+    expect(screen.getByLabelText("Confirm name")).toBeDisabled()
+    expect(screen.getByLabelText("Confirm name")).toHaveAttribute(
+      "aria-busy",
+      "true"
+    )
+  })
+
+  it("calls onConfirmIntegrationName when confirming with async callback", async () => {
+    const onConfirm = vi.fn()
+    const { rerender } = render(
+      <SetupIntegration
+        {...modalProps}
+        messages={sampleMessages}
+        title="Edit Integration"
+        integrationName="Integration test 1"
+        onConfirmIntegrationName={onConfirm}
+        isIntegrationNameLoading={false}
+      />
+    )
+    fireEvent.click(screen.getByLabelText("Edit integration name"))
+    const input = screen.getByLabelText("Integration name")
+    fireEvent.change(input, { target: { value: "Renamed" } })
+    fireEvent.click(screen.getByLabelText("Confirm name"))
+    expect(onConfirm).toHaveBeenCalledWith("Renamed")
+
+    rerender(
+      <SetupIntegration
+        {...modalProps}
+        messages={sampleMessages}
+        title="Edit Integration"
+        integrationName="Renamed"
+        onConfirmIntegrationName={onConfirm}
+        isIntegrationNameLoading={false}
+      />
+    )
+    await vi.waitFor(() => {
+      expect(screen.queryByLabelText("Integration name")).not.toBeInTheDocument()
+    })
+    expect(screen.getByText("Renamed")).toBeInTheDocument()
   })
 })
 

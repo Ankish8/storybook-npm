@@ -81,6 +81,13 @@ export interface SetupIntegrationProps
   integrationName?: string
   /** Callback when integration name is changed (confirmed via checkmark or Enter) */
   onIntegrationNameChange?: (name: string) => void
+  /**
+   * When set, confirm uses this callback for async save; update `integrationName` when done.
+   * @see IntegrationHeader onConfirmIntegrationName
+   */
+  onConfirmIntegrationName?: (name: string) => void
+  /** While a confirm-name save is in progress (spinner on check, read-only field). */
+  isIntegrationNameLoading?: boolean
   /** Callback when close (X) is clicked */
   onClose?: () => void
   /** Callback when back arrow is clicked */

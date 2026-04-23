@@ -33,6 +33,8 @@ const SetupIntegrationView = React.forwardRef<
       actionMode = "test",
       integrationName,
       onIntegrationNameChange,
+      onConfirmIntegrationName,
+      isIntegrationNameLoading = false,
       onClose,
       onBack,
       onInputChange,
@@ -69,6 +71,8 @@ const SetupIntegrationView = React.forwardRef<
           subtitle={subtitle}
           integrationName={integrationName}
           onIntegrationNameChange={onIntegrationNameChange}
+          onConfirmIntegrationName={onConfirmIntegrationName}
+          isLoading={isIntegrationNameLoading}
           onBack={onBack}
           onClose={onClose}
         />

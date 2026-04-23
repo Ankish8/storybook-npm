@@ -35,6 +35,8 @@ const SetupIntegration = React.forwardRef<
       actionMode = "test",
       integrationName,
       onIntegrationNameChange,
+      onConfirmIntegrationName,
+      isIntegrationNameLoading = false,
       onClose,
       onBack,
       onInputChange,
@@ -91,6 +93,8 @@ const SetupIntegration = React.forwardRef<
             actionMode={actionMode}
             integrationName={integrationName}
             onIntegrationNameChange={onIntegrationNameChange}
+            onConfirmIntegrationName={onConfirmIntegrationName}
+            isIntegrationNameLoading={isIntegrationNameLoading}
             onClose={onClose ? handleDiscardRequest : undefined}
             onBack={onBack ? handleDiscardRequest : undefined}
             onInputChange={onInputChange}

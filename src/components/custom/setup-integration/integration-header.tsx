@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ArrowLeft, X, Pencil, Check } from "lucide-react"
+import { ArrowLeft, X, Pencil, Check, Loader2 } from "lucide-react"
 import { cn } from "../../../lib/utils"
 import { IntegrationSteps } from "./integration-steps"
 
@@ -12,6 +12,16 @@ export interface IntegrationHeaderProps
   /** When set, shows "Title - {name}" with optional inline edit */
   integrationName?: string
   onIntegrationNameChange?: (name: string) => void
+  /**
+   * Called when the user confirms the inline name (check button or Enter).
+   * If provided, the host should save the name (e.g. via API) and then update
+   * `integrationName` on success. Use with `isLoading` while the save is in progress.
+   * The header does not call `onIntegrationNameChange` in this mode — the host updates
+   * the name and closes the editor when the save completes.
+   */
+  onConfirmIntegrationName?: (name: string) => void
+  /** When true, the name field and confirm control are disabled and the check shows a spinner. */
+  isLoading?: boolean
   /** Invoked when the back control is activated */
   onBack?: () => void
   /** Invoked when the close control is activated */
@@ -30,6 +40,8 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
       subtitle,
       integrationName,
       onIntegrationNameChange,
+      onConfirmIntegrationName,
+      isLoading = false,
       onBack,
       onClose,
       backIcon,
@@ -40,19 +52,46 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
   ) => {
     const [isEditingName, setIsEditingName] = React.useState(false)
     const [editNameDraft, setEditNameDraft] = React.useState("")
+    const pendingAsyncNameSave = React.useRef(false)
+
+    const clearNameEdit = () => {
+      pendingAsyncNameSave.current = false
+      setIsEditingName(false)
+    }
 
     const handleEditName = () => {
+      pendingAsyncNameSave.current = false
       setEditNameDraft(integrationName ?? "")
       setIsEditingName(true)
     }
 
     const handleConfirmName = () => {
+      if (isLoading) return
       const trimmed = editNameDraft.trim()
+
+      if (onConfirmIntegrationName) {
+        onConfirmIntegrationName(trimmed)
+        if (!trimmed) {
+          clearNameEdit()
+          return
+        }
+        pendingAsyncNameSave.current = true
+        return
+      }
+
       if (trimmed && trimmed !== integrationName) {
         onIntegrationNameChange?.(trimmed)
       }
-      setIsEditingName(false)
+      clearNameEdit()
     }
+
+    React.useEffect(() => {
+      if (!pendingAsyncNameSave.current || isLoading) return
+      const t = editNameDraft.trim()
+      if (t && integrationName === t) {
+        clearNameEdit()
+      }
+    }, [isLoading, integrationName, editNameDraft])
 
     const handleEditNameKeyDown = (
       e: React.KeyboardEvent<HTMLInputElement>
@@ -61,7 +100,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
         e.preventDefault()
         handleConfirmName()
       } else if (e.key === "Escape") {
-        setIsEditingName(false)
+        clearNameEdit()
       }
     }
 
@@ -98,16 +137,27 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
                     onChange={(e) => setEditNameDraft(e.target.value)}
                     onKeyDown={handleEditNameKeyDown}
                     autoFocus
-                    className="m-0 h-8 min-w-0 max-w-full flex-1 rounded border border-semantic-border-focus bg-semantic-bg-primary px-2 text-base font-semibold text-semantic-text-primary outline-none sm:max-w-md sm:text-lg"
+                    readOnly={isLoading}
+                    className="m-0 h-8 min-w-0 max-w-full flex-1 rounded border border-semantic-border-focus bg-semantic-bg-primary px-2 text-base font-semibold text-semantic-text-primary outline-none read-only:opacity-70 sm:max-w-md sm:text-lg"
                     aria-label="Integration name"
+                    aria-busy={isLoading}
                   />
                   <button
                     type="button"
                     onClick={handleConfirmName}
-                    className="shrink-0 text-semantic-text-secondary hover:text-semantic-text-primary transition-colors"
+                    disabled={isLoading}
+                    className="shrink-0 text-semantic-text-secondary transition-colors enabled:hover:text-semantic-text-primary disabled:pointer-events-none disabled:opacity-50"
                     aria-label="Confirm name"
+                    aria-busy={isLoading}
                   >
-                    <Check className="size-5" />
+                    {isLoading ? (
+                      <Loader2
+                        className="size-5 animate-spin text-semantic-text-muted"
+                        aria-hidden
+                      />
+                    ) : (
+                      <Check className="size-5" />
+                    )}
                   </button>
                 </>
               ) : (
@@ -115,7 +165,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
                   <span className="min-w-0 max-w-full break-words text-base font-semibold text-semantic-text-primary sm:text-lg">
                     {integrationName}
                   </span>
-                  {onIntegrationNameChange && (
+                  {(onIntegrationNameChange || onConfirmIntegrationName) && (
                     <button
                       type="button"
                       onClick={handleEditName}
