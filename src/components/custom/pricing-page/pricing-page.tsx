@@ -28,8 +28,9 @@ const pageBodyMaxClass =
   "mx-auto flex w-full min-w-0 max-w-[1139px] flex-col";
 
 /**
- * Insets the whole page from the **host** viewport or panel (fixes flush edge-to-edge embeds). Inner
- * sections keep `pageGutterX` for the max-width column rhythm. `box-border` keeps width math stable.
+ * Horizontal padding for the **Let us drive** band (full-width below Power-ups / plan). Header +
+ * plan use **no** outer shell `px` — `pageGutterX` on `PageHeader` and the plan column provides the
+ * side inset so we do not double-stack shell + gutter padding.
  */
 const pageShellPaddingX = "box-border px-4 sm:px-6 md:px-8 lg:px-10";
 
@@ -40,16 +41,18 @@ const pageShellPaddingX = "box-border px-4 sm:px-6 md:px-8 lg:px-10";
 const pageGutterX = "box-border px-4 sm:px-6";
 
 /**
- * Figma `1119:2784` — 24px between the title row and the plan stack (not extra `pt` on the plan).
+ * Figma `1119:2784` — **24px** between the page header (bottom rule) and the plan block (alert / cards).
+ * Applied as `pt-6` here; the header + plan sit in one padded column so the outer `gap-6` does not
+ * create space between them.
  */
-const planSectionPaddingTop = "pt-0";
+const planSectionPaddingTop = "pt-6";
 
 /**
  * Figma `1119:2784` — **24px** between the main column sections (header band → plan / lower sections).
  */
 const pageHeaderToBodyGapClass = "gap-6";
 
-/** Legacy: plan-only column stack (header + plan use a shared padded shell; Power-ups breaks out for full-bleed bg). */
+/** Plan column stack (header and plan share one full-width column; no outer shell `px`, gutters on header + plan). */
 const planColumnStackClass = "flex w-full min-w-0 max-w-full flex-col gap-0";
 
 /**
@@ -166,8 +169,8 @@ const PricingPage = React.forwardRef(
         {...props}
       >
         {/*
-         * Shell padding (`pageShellPaddingX`) wraps **header + plan** only. **Power-ups** uses a
-         * full-bleed grey band (`w-full` below); Let us drive is padded to match the shell.
+         * Header + plan: no outer horizontal shell padding (avoids double `px` with `pageGutterX`).
+         * **Power-ups** is a full-bleed grey band; **Let us drive** uses `pageShellPaddingX`.
          * Host: pass `className="h-full min-h-0"` when filling a flex panel.
          */}
         <div
@@ -176,13 +179,16 @@ const PricingPage = React.forwardRef(
             pageHeaderToBodyGapClass
           )}
         >
-          <div className={cn(pageShellPaddingX, "flex w-full min-w-0 max-w-full flex-col")}>
+          <div
+            className={cn("box-border flex w-full min-w-0 max-w-full flex-col")}
+          >
             <PageHeader
               title={title}
               actions={headerActions}
               layout="horizontal"
               className={cn(
-                "w-full max-w-full shrink-0 !px-0",
+                "w-full max-w-full shrink-0",
+                pageGutterX,
                 "sm:min-h-[55px] sm:!py-0 sm:items-center"
               )}
             />
