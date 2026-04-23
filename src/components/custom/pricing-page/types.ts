@@ -7,6 +7,13 @@ import type { PricingToggleTab } from "../pricing-toggle/types";
 
 export type { PricingToggleTab };
 
+/**
+ * How the main plan card area is laid out. **`default`** uses `PricingPlanCardsRow` (grid
+ * up to 4 columns; **5+** cards use horizontal scroll). **`oneColumn`** / **`twoColumn`** use
+ * dedicated layouts that never switch to horizontal scroll.
+ */
+export type PricingPagePlanCardsLayout = "default" | "oneColumn" | "twoColumn";
+
 /** Status for the optional banner above the plan cards (maps to Alert variants). */
 export type PricingPlanAlertStatus = "success" | "warning" | "info" | "failed";
 
@@ -92,9 +99,15 @@ export interface PricingPageProps
    * Column count for the plan card row (single row, equal-width tracks). Defaults
    * to `planCards.length` so any number of plans (e.g. four or more) stays on one
    * row. Override only if you need a fixed column count that differs from the
-   * number of cards (uncommon).
+   * number of cards (uncommon). Ignored when `planCardsLayout` is `oneColumn` or `twoColumn`.
    */
   planCardColumnCount?: number;
+  /**
+   * Plan card region layout. **`default`**: responsive grid (up to 4 columns) or horizontal scroll
+   * for **5+** cards. **`oneColumn`**: always a single vertical stack. **`twoColumn`**: 1 col on
+   * small screens, 2 columns from `min-[480px]` with wrapping.
+   */
+  planCardsLayout?: PricingPagePlanCardsLayout;
   /**
    * Optional CTA state per plan card (loading/disabled). Reusable across any screen that renders plan cards.
    * Index matches planCards: [0] = first card CTA, [1] = second, [2] = third.

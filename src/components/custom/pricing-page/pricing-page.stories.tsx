@@ -524,7 +524,7 @@ Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard,
 
 Shared layout class strings in the source use \`cn("...")\` (not raw string constants) so the CLI registry applies the \`tw-\` prefix for host apps with \`prefix: "tw-"\` in Tailwind. The story decorator adds a flex child with \`min-w-0\` and \`overflow-x-hidden\` to approximate a main column beside a sidebar (in prefixed apps: \`tw-min-w-0\`, \`tw-overflow-x-hidden\`).
 
-Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1139px** content width, Figma \`1119:2783\` — use responsive variant order \`md:tw-grid-cols-4\`, not \`tw-md:grid-cols-4\`). Section bands use **60px** vertical padding; **16px** between each section title and its card grid (Figma \`1119:2986\` / \`1119:3031\`). Story canvas uses a grey background and horizontal padding so spacing is closer to the app shell.
+Displays pricing cards in a responsive grid (1 column on small screens; 2–4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1139px** content width, Figma \`1119:2783\` — use responsive variant order \`md:tw-grid-cols-4\`, not \`tw-md:grid-cols-4\`). Pass \`planCardsLayout="oneColumn"\` for a vertical stack at all widths, or \`planCardsLayout="twoColumn"\` for a 1→2 column grid with wrapping (no horizontal scroll for many plans). Reusable **\`PricingPlanCardsOneColumn\`** / **\`PricingPlanCardsTwoColumn\`** are exported for custom composition. Section bands use **60px** vertical padding; **16px** between each section title and its card grid (Figma \`1119:2986\` / \`1119:3031\`). Story canvas uses a grey background and horizontal padding so spacing is closer to the app shell.
 
 Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
 
@@ -638,6 +638,12 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
         "When false, hides the plan-area alert; keep `planAlert` for easy toggling.",
       control: "boolean",
     },
+    planCardsLayout: {
+      description:
+        "`default` (grid or horizontal scroll for 5+), `oneColumn` (stack), or `twoColumn` (2-col grid with wrap).",
+      control: "select",
+      options: ["default", "oneColumn", "twoColumn"],
+    },
   },
   args: {
     onFeatureComparisonClick: fn(),
@@ -730,6 +736,33 @@ export const FigmaFivePlansHorizontalScroll: Story = {
   args: {
     ...FigmaSelectBusinessPlan.args,
     showPlanAlert: false,
+    planCards: [
+      ...figmaBasePlanCards,
+      figmaEnterprisePlanCard,
+      figmaUltimatePlanCard,
+    ],
+  },
+};
+
+/** Plan cards in a **single column** at all breakpoints (use `planCardsLayout="oneColumn"`). */
+export const PlanCardsOneColumnLayout: Story = {
+  name: "Plan cards — one column layout",
+  args: {
+    ...FigmaSelectBusinessPlan.args,
+    planCardsLayout: "oneColumn",
+  },
+};
+
+/**
+ * Plan cards in a **two column** grid from `min-[480px]` (use `planCardsLayout="twoColumn"`).
+ * Five plans wrap to multiple rows — no horizontal scroll.
+ */
+export const PlanCardsTwoColumnLayout: Story = {
+  name: "Plan cards — two column layout (5 plans, no scroll)",
+  args: {
+    ...FigmaSelectBusinessPlan.args,
+    showPlanAlert: false,
+    planCardsLayout: "twoColumn",
     planCards: [
       ...figmaBasePlanCards,
       figmaEnterprisePlanCard,

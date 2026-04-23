@@ -203,6 +203,30 @@ describe("PricingPage", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it("centers a single plan card in a three-column track (not full width on md+)", () => {
+    const onePlan: PricingCardProps[] = [mockPlanCards[0]!];
+    const { container } = render(<PricingPage planCards={onePlan} />);
+    const grid = container.querySelector(
+      "[data-testid=\"pricing-plan-cards-grid\"]"
+    ) as HTMLElement | null;
+    expect(grid).toBeTruthy();
+    expect(grid).toHaveClass("md:grid-cols-3");
+    expect(grid).toHaveClass("md:[&>div]:col-start-2");
+  });
+
+  it("centers two plan cards with one-third width slots (not 50% each)", () => {
+    const twoPlans: PricingCardProps[] = [mockPlanCards[0]!, mockPlanCards[1]!];
+    const { container } = render(<PricingPage planCards={twoPlans} />);
+    const grid = container.querySelector(
+      "[data-testid=\"pricing-plan-cards-grid\"]"
+    ) as HTMLElement | null;
+    expect(grid).toBeTruthy();
+    expect(grid).toHaveClass("min-[480px]:justify-center");
+    expect(grid).toHaveClass(
+      "[&>div]:min-[480px]:w-[min(21.375rem,calc((100%-4rem)/3))]"
+    );
+  });
+
   it("lays out plan cards in a responsive grid with four columns on wide viewports", () => {
     const fourPlans: PricingCardProps[] = [
       ...mockPlanCards,
@@ -221,6 +245,66 @@ describe("PricingPage", () => {
     expect(grid).toBeTruthy();
     expect(grid).toHaveClass("md:grid-cols-4");
     expect(grid).toHaveAttribute("data-pricing-plans-layout", "grid");
+  });
+
+  it("uses one-column layout when planCardsLayout is oneColumn", () => {
+    const { container } = render(
+      <PricingPage planCards={mockPlanCards} planCardsLayout="oneColumn" />
+    );
+    const grid = container.querySelector(
+      "[data-testid=\"pricing-plan-cards-grid\"]"
+    ) as HTMLElement | null;
+    expect(grid).toBeTruthy();
+    expect(grid).toHaveAttribute("data-pricing-plans-layout", "one-column");
+    expect(grid).toHaveClass("grid-cols-1");
+  });
+
+  it("keeps one-column stack for five or more plan cards (no horizontal scroll)", () => {
+    const fivePlans: PricingCardProps[] = [
+      ...mockPlanCards,
+      {
+        planName: "Enterprise",
+        price: "25,000",
+        features: ["Everything in SUV"],
+        ctaText: "Contact sales",
+        onCtaClick: vi.fn(),
+      },
+      {
+        planName: "Ultimate",
+        price: "35,000",
+        features: ["Top tier"],
+        ctaText: "Contact",
+        onCtaClick: vi.fn(),
+      },
+    ];
+    const { container } = render(
+      <PricingPage
+        planCards={fivePlans}
+        planCardsLayout="oneColumn"
+      />
+    );
+    const grid = container.querySelector(
+      "[data-testid=\"pricing-plan-cards-grid\"]"
+    ) as HTMLElement | null;
+    expect(grid).toHaveAttribute("data-pricing-plans-layout", "one-column");
+    expect(
+      screen.queryByTestId("pricing-plan-cards-pagination")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Plan options" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses two-column layout when planCardsLayout is twoColumn", () => {
+    const { container } = render(
+      <PricingPage planCards={mockPlanCards} planCardsLayout="twoColumn" />
+    );
+    const grid = container.querySelector(
+      "[data-testid=\"pricing-plan-cards-grid\"]"
+    ) as HTMLElement | null;
+    expect(grid).toBeTruthy();
+    expect(grid).toHaveAttribute("data-pricing-plans-layout", "two-column");
+    expect(grid).toHaveClass("min-[480px]:grid-cols-2");
   });
 
   it("uses horizontal scroll for five or more plan cards (5th accessible via scrollbar)", () => {

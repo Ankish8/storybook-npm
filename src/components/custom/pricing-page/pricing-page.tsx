@@ -7,6 +7,8 @@ import { PowerUpCard } from "../power-up-card/power-up-card";
 import { LetUsDriveCard } from "../let-us-drive-card/let-us-drive-card";
 import { ExternalLink } from "lucide-react";
 import { PricingPlanCardsRow } from "./pricing-plan-cards-row";
+import { PricingPlanCardsOneColumn } from "./pricing-plan-cards-one-column";
+import { PricingPlanCardsTwoColumn } from "./pricing-plan-cards-two-column";
 import { Alert, AlertDescription, AlertTitle } from "../../ui/alert";
 import type {
   PricingPageProps,
@@ -17,7 +19,8 @@ import type {
 /**
  * **CLI / registry:** The published `myoperator-ui` package embeds this file in its registry at
  * build time (`packages/cli`: `npm run generate-registry`). After you edit this file or
- * `pricing-plan-cards-row.tsx`, run `cd packages/cli && npm run generate-registry` before
+ * `pricing-plan-cards-row.tsx`, `pricing-plan-cards-one-column.tsx`, or
+ * `pricing-plan-cards-two-column.tsx`, run `cd packages/cli && npm run generate-registry` before
  * `npm run build` / release — otherwise `npx myoperator-ui update pricing-page` in consumer apps
  * can overwrite good layouts with an older embedded copy.
  *
@@ -144,6 +147,7 @@ const PricingPage = React.forwardRef(
       onBillingPeriodChange,
       planCards = [],
       planCardColumnCount,
+      planCardsLayout = "default",
       planCardCtaStates,
       planAlert,
       showPlanAlert = true,
@@ -164,6 +168,27 @@ const PricingPage = React.forwardRef(
       planCardColumnCount !== undefined
         ? Math.max(planCards.length, planCardColumnCount)
         : planCards.length;
+
+    const planCardItems = planCards.map((cardProps, index) => {
+      const ctaState = planCardCtaStates?.[index];
+      const merged = { ...cardProps };
+      if (ctaState) {
+        if (ctaState.loading !== undefined) merged.ctaLoading = ctaState.loading;
+        if (ctaState.disabled !== undefined) merged.ctaDisabled = ctaState.disabled;
+      }
+      const { className: cardClassName, ...cardRest } = merged;
+      return (
+        <div
+          key={index}
+          className="flex min-h-0 min-w-0 max-w-full flex-1 flex-col self-stretch"
+        >
+          <PricingCard
+            {...cardRest}
+            className={cn("min-h-0 w-full max-w-full flex-1", cardClassName)}
+          />
+        </div>
+      );
+    });
 
     const planAlertVisible =
       !!planAlert && showPlanAlert !== false;
@@ -234,35 +259,20 @@ const PricingPage = React.forwardRef(
                           ) : null}
                         </Alert>
                       )}
-                      {planCards.length > 0 && (
-                        <PricingPlanCardsRow columnCount={planRowColumns}>
-                          {planCards.map((cardProps, index) => {
-                            const ctaState = planCardCtaStates?.[index];
-                            const merged = { ...cardProps };
-                            if (ctaState) {
-                              if (ctaState.loading !== undefined)
-                                merged.ctaLoading = ctaState.loading;
-                              if (ctaState.disabled !== undefined)
-                                merged.ctaDisabled = ctaState.disabled;
-                            }
-                            const { className: cardClassName, ...cardRest } = merged;
-                            return (
-                              <div
-                                key={index}
-                                className="flex min-h-0 min-w-0 max-w-full flex-1 flex-col self-stretch"
-                              >
-                                <PricingCard
-                                  {...cardRest}
-                                  className={cn(
-                                    "min-h-0 w-full max-w-full flex-1",
-                                    cardClassName
-                                  )}
-                                />
-                              </div>
-                            );
-                          })}
-                        </PricingPlanCardsRow>
-                      )}
+                      {planCards.length > 0 &&
+                        (planCardsLayout === "oneColumn" ? (
+                          <PricingPlanCardsOneColumn>
+                            {planCardItems}
+                          </PricingPlanCardsOneColumn>
+                        ) : planCardsLayout === "twoColumn" ? (
+                          <PricingPlanCardsTwoColumn>
+                            {planCardItems}
+                          </PricingPlanCardsTwoColumn>
+                        ) : (
+                          <PricingPlanCardsRow columnCount={planRowColumns}>
+                            {planCardItems}
+                          </PricingPlanCardsRow>
+                        ))}
                     </div>
                   )}
                 </div>

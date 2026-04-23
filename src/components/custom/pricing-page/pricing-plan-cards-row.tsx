@@ -24,7 +24,8 @@ export interface PricingPlanCardsRowProps
 
 /**
  * Equal `minmax(0,1fr)` columns: up to **4** columns; stack on small screens for readability.
- * Figma `1119:3357` — **32px** between plan cards (`gap-8`).
+ * Figma `1119:3357` — **32px** between plan cards (`gap-8`). Cards fill their grid track under the
+ * plan max-width column so horizontal spacing is **only** the gutter, not side margins on each card.
  *
  * **Registry / `tw-` prefix:** The shared grid “base” must use `cn("...")`, not a raw string, so
  * `npm run generate-registry` prefixes it for host apps with `prefix: "tw-"`. See `pricing-page.tsx` note.
@@ -33,7 +34,33 @@ const equalWidthGridBase = cn(
   "grid w-full min-w-0 items-stretch gap-8 [&>div]:min-h-0 [&>div]:min-w-0"
 );
 
-function equalWidthGridClass(gridColumns: number): string {
+/**
+ * One plan: 3-col grid on `md+` with the card in the **middle** column (matches Figma 3-card slot width
+ * so it does not stretch full width). Narrow viewports: same max width as a grid track, centered.
+ * Two plans: `flex` row with **1/3**-row card width and **gap-8** so the pair stays **centered** (not
+ * 50% / 50% of the full row). Three or more plans: fall through to a normal column grid.
+ */
+function equalWidthGridClass(gridColumns: number, cardCount: number): string {
+  if (cardCount === 1) {
+    return cn(
+      equalWidthGridBase,
+      "grid-cols-1 justify-items-stretch md:grid-cols-3",
+      "[&>div]:w-full [&>div]:max-w-[min(21.375rem,100%)] md:[&>div]:max-w-none",
+      "[&>div]:mx-auto md:[&>div]:col-span-1 md:[&>div]:col-start-2",
+      /* Card wrapper uses `flex-1` in PricingPage; column width is set by the grid. */
+      "[&>div]:md:flex-none"
+    );
+  }
+  if (cardCount === 2) {
+    return cn(
+      "flex w-full min-w-0 min-[480px]:flex-row min-[480px]:flex-nowrap min-[480px]:justify-center",
+      "flex-col items-stretch justify-center gap-8",
+      "[&>div]:min-h-0 [&>div]:min-w-0",
+      "[&>div]:w-full [&>div]:min-[480px]:w-[min(21.375rem,calc((100%-4rem)/3))] [&>div]:min-[480px]:shrink-0",
+      /* Card wrappers use `flex-1` in PricingPage; prevent equal grow in this centered row. */
+      "[&>div]:min-[480px]:flex-none"
+    );
+  }
   if (gridColumns <= 1) {
     return cn(equalWidthGridBase, "grid-cols-1");
   }
@@ -74,7 +101,7 @@ const PricingPlanCardsRow = React.forwardRef<
       scrollMode={scrollMode}
       cardCount={cardCount}
       showPagination={showPagination}
-      equalWidthClass={scrollMode ? "" : equalWidthGridClass(gridColumns)}
+      equalWidthClass={scrollMode ? "" : equalWidthGridClass(gridColumns, cardCount)}
       {...props}
     >
       {children}

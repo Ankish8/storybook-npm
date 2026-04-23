@@ -875,6 +875,8 @@ components:
     files:
       - "pricing-page.tsx"
       - "pricing-plan-cards-row.tsx"
+      - "pricing-plan-cards-one-column.tsx"
+      - "pricing-plan-cards-two-column.tsx"
       - "types.ts"
       - "index.ts"
     mainFile: "pricing-page.tsx"
