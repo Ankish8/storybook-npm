@@ -47,8 +47,7 @@ function equalWidthGridClass(gridColumns: number, cardCount: number): string {
       "grid-cols-1 justify-items-stretch md:grid-cols-3",
       "[&>div]:w-full [&>div]:max-w-[min(21.375rem,100%)] md:[&>div]:max-w-none",
       "[&>div]:mx-auto md:[&>div]:col-span-1 md:[&>div]:col-start-2",
-      /* Card wrapper uses `flex-1` in PricingPage; column width is set by the grid. */
-      "[&>div]:md:flex-none"
+      "md:[&>div]:flex-none"
     );
   }
   if (cardCount === 2) {
@@ -57,7 +56,6 @@ function equalWidthGridClass(gridColumns: number, cardCount: number): string {
       "flex-col items-stretch justify-center gap-8",
       "[&>div]:min-h-0 [&>div]:min-w-0",
       "[&>div]:w-full [&>div]:min-[480px]:w-[min(21.375rem,calc((100%-4rem)/3))] [&>div]:min-[480px]:shrink-0",
-      /* Card wrappers use `flex-1` in PricingPage; prevent equal grow in this centered row. */
       "[&>div]:min-[480px]:flex-none"
     );
   }
@@ -65,13 +63,13 @@ function equalWidthGridClass(gridColumns: number, cardCount: number): string {
     return cn(equalWidthGridBase, "grid-cols-1");
   }
   if (gridColumns === 2) {
-    return cn(equalWidthGridBase, "min-[480px]:grid-cols-2 grid-cols-1");
+    return cn(equalWidthGridBase, "grid-cols-1 min-[480px]:grid-cols-2");
   }
   if (gridColumns === 3) {
-    return cn(equalWidthGridBase, "md:grid-cols-3 grid-cols-1");
+    return cn(equalWidthGridBase, "grid-cols-1 md:grid-cols-3");
   }
   // gridColumns === 4 — one row of four from `md` up (3–4 plans in a single row on wide viewports)
-  return cn(equalWidthGridBase, "md:grid-cols-4 grid-cols-1");
+  return cn(equalWidthGridBase, "grid-cols-1 md:grid-cols-4");
 }
 
 const PricingPlanCardsRow = React.forwardRef<
