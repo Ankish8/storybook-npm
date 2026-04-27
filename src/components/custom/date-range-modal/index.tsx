@@ -51,9 +51,14 @@ function DateRangeModal({
   defaultStartDate,
   defaultEndDate,
 }: DateRangeModalProps) {
-  const [dialogContentEl, setDialogContentEl] = React.useState<HTMLElement | null>(null);
-  const [startDate, setStartDate] = React.useState<Date | undefined>(defaultStartDate);
-  const [endDate, setEndDate] = React.useState<Date | undefined>(defaultEndDate);
+  const [dialogContentEl, setDialogContentEl] =
+    React.useState<HTMLElement | null>(null);
+  const [startDate, setStartDate] = React.useState<Date | undefined>(
+    defaultStartDate
+  );
+  const [endDate, setEndDate] = React.useState<Date | undefined>(
+    defaultEndDate
+  );
   /** Bumped when the other field’s calendar opens so only one popover stays open. */
   const [dismissStartCalendar, setDismissStartCalendar] = React.useState(0);
   const [dismissEndCalendar, setDismissEndCalendar] = React.useState(0);
@@ -63,7 +68,11 @@ function DateRangeModal({
   const effectiveMinDate = React.useMemo(() => {
     if (!disablePastDates) return minDate;
     const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
     if (!minDate) return todayStart;
     const minDay = new Date(
       minDate.getFullYear(),
@@ -95,8 +104,16 @@ function DateRangeModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        ref={(node) => setDialogContentEl(node)}
+        ref={setDialogContentEl}
         className="sm:max-w-md overflow-visible"
+        onInteractOutside={(event) => {
+          if (
+            event.target instanceof Element &&
+            event.target.closest("[data-date-range-calendar]")
+          ) {
+            event.preventDefault();
+          }
+        }}
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -135,10 +152,7 @@ function DateRangeModal({
           <Button variant="outline" onClick={handleCancel} disabled={loading}>
             {cancelButtonText}
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={!canConfirm || loading}
-          >
+          <Button onClick={handleConfirm} disabled={!canConfirm || loading}>
             {loading ? "Loading..." : confirmButtonText}
           </Button>
         </div>

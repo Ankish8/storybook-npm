@@ -21,7 +21,10 @@ export type PricingPlanAlertStatus = "success" | "warning" | "info" | "failed";
  * Props forwarded to the underlying {@link AlertProps Alert} (everything except `children` and `variant`).
  * Set appearance with `PricingPlanAlertConfig.variant` or `status` on the parent object, not here.
  */
-export type PricingPlanAlertForwardedProps = Omit<AlertProps, "children" | "variant">;
+export type PricingPlanAlertForwardedProps = Omit<
+  AlertProps,
+  "children" | "variant"
+>;
 
 /** Same options as `<Alert variant={…} />` — use instead of `status` when you want to match the Alert API directly. */
 export type PricingPlanAlertVariant = NonNullable<AlertProps["variant"]>;
@@ -65,8 +68,7 @@ export interface PricingPlanAlertConfig {
  * `PricingPage` so the flex chain and overflow behave correctly. Override side padding with
  * `className` if the host already pads the main area.
  */
-export interface PricingPageProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface PricingPageProps extends React.HTMLAttributes<HTMLDivElement> {
   /* ───── Header ───── */
 
   /** Page title (default: "Select business plan") */
@@ -97,8 +99,8 @@ export interface PricingPageProps
   planCards?: PricingCardProps[];
   /**
    * Column count for the plan card row in `default` layout. Defaults to
-   * `planCards.length`; one or two plans still reserve three-card sizing and
-   * stay centered, three/four stay in an equal-width row, and five+ switch to
+   * `planCards.length`; one plan uses a wide featured layout, two plans use a
+   * wider two-up row, three/four stay in an equal-width row, and five+ switch to
    * horizontal scroll. Ignored when `planCardsLayout` is `oneColumn` or
    * `twoColumn`.
    */

@@ -56,8 +56,7 @@ export interface PlanCardCtaState {
 /**
  * Props for the PricingCard component. Modular and reusable across screens (e.g. plan selection grid, comparison view, or any plan card with features and CTA).
  */
-export interface PricingCardProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Plan name displayed in the header (e.g., "Compact", "Sedan", "SUV") */
   planName: string;
   /** Price amount as formatted string (e.g., "2,5000") */
@@ -96,4 +95,6 @@ export interface PricingCardProps
   usageDetails?: UsageDetail[];
   /** Informational text shown below the CTA button (e.g., "Your package change will be effective from 23-03-2026") */
   infoText?: string;
+  /** Layout treatment for the card content. `featured` gives a single plan a wider summary + action layout. */
+  layout?: "default" | "featured";
 }

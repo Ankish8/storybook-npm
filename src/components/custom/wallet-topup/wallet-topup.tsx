@@ -29,6 +29,16 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
   })}`;
 }
 
+function isCustomAmountAllowed(value: string): boolean {
+  return /^\d*$/.test(value);
+}
+
+function parseCustomAmount(value: string): number | null {
+  if (!value || !isCustomAmountAllowed(value)) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
 /**
  * WalletTopup provides a collapsible panel for wallet recharge with
  * preset amount selection, custom amount input, voucher link, and payment CTA.
@@ -187,6 +197,9 @@ export const WalletTopup = React.forwardRef(
       e: React.ChangeEvent<HTMLInputElement>
     ) => {
       const value = e.target.value;
+      if (!isCustomAmountAllowed(value)) {
+        return;
+      }
       if (!isCustomControlled) {
         setInternalCustom(value);
       }
@@ -200,9 +213,29 @@ export const WalletTopup = React.forwardRef(
       onCustomAmountChange?.(value);
     };
 
+    const handleCustomAmountKeyDown = (
+      e: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+      if (
+        e.key.length === 1 &&
+        !/^\d$/.test(e.key) &&
+        !e.metaKey &&
+        !e.ctrlKey
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    const handleCustomAmountPaste = (
+      e: React.ClipboardEvent<HTMLInputElement>
+    ) => {
+      if (!isCustomAmountAllowed(e.clipboardData.getData("text"))) {
+        e.preventDefault();
+      }
+    };
+
     // Determine the effective pay amount
-    const baseSelection =
-      selectedValue ?? (customValue ? Number(customValue) : null);
+    const baseSelection = selectedValue ?? parseCustomAmount(customValue);
 
     // Effective recharge amount (includes outstanding if present)
     const effectiveRechargeAmount =
@@ -331,15 +364,9 @@ export const WalletTopup = React.forwardRef(
                             )}
                           >
                             {hasOutstanding
-                              ? formatCurrency(
-                                  totalForOption,
-                                  currencySymbol
-                                )
+                              ? formatCurrency(totalForOption, currencySymbol)
                               : option.label ||
-                                formatCurrency(
-                                  option.value,
-                                  currencySymbol
-                                )}
+                                formatCurrency(option.value, currencySymbol)}
                           </span>
                           {hasOutstanding && (
                             <>
@@ -353,10 +380,7 @@ export const WalletTopup = React.forwardRef(
                               <span className="text-xs text-semantic-text-muted">
                                 {topupLabel}:{" "}
                                 {option.value > 0
-                                  ? formatCurrency(
-                                      option.value,
-                                      currencySymbol
-                                    )
+                                  ? formatCurrency(option.value, currencySymbol)
                                   : "-"}
                               </span>
                             </>
@@ -373,10 +397,14 @@ export const WalletTopup = React.forwardRef(
                     {customAmountLabel}
                   </label>
                   <Input
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     placeholder={customAmountPlaceholder}
                     value={customValue}
                     onChange={handleCustomAmountChange}
+                    onKeyDown={handleCustomAmountKeyDown}
+                    onPaste={handleCustomAmountPaste}
                   />
                 </div>
 

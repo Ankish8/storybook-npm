@@ -21,9 +21,7 @@ describe("WalletTopup", () => {
   });
 
   it("renders header icon when provided", () => {
-    render(
-      <WalletTopup icon={<span data-testid="header-icon">IC</span>} />
-    );
+    render(<WalletTopup icon={<span data-testid="header-icon">IC</span>} />);
     expect(screen.getByTestId("header-icon")).toBeInTheDocument();
   });
 
@@ -51,7 +49,11 @@ describe("WalletTopup", () => {
   it("renders custom amount input with label and placeholder", () => {
     render(<WalletTopup />);
     expect(screen.getByText("Custom Amount")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter amount")).toBeInTheDocument();
+    const input = screen.getByPlaceholderText("Enter amount");
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute("type", "text");
+    expect(input).toHaveAttribute("inputmode", "numeric");
+    expect(input).toHaveAttribute("pattern", "[0-9]*");
   });
 
   it("renders voucher link by default", () => {
@@ -75,9 +77,7 @@ describe("WalletTopup", () => {
 
   it("renders voucher icon when provided", () => {
     render(
-      <WalletTopup
-        voucherIcon={<span data-testid="voucher-icon">V</span>}
-      />
+      <WalletTopup voucherIcon={<span data-testid="voucher-icon">V</span>} />
     );
     expect(screen.getByTestId("voucher-icon")).toBeInTheDocument();
   });
@@ -121,17 +121,13 @@ describe("WalletTopup", () => {
   });
 
   it("marks selected amount with aria-checked and primary text", () => {
-    render(
-      <WalletTopup amounts={[500, 1000]} defaultSelectedAmount={500} />
-    );
+    render(<WalletTopup amounts={[500, 1000]} defaultSelectedAmount={500} />);
     const selectedButton = screen.getByText("₹500").closest("button");
     expect(selectedButton).toHaveAttribute("aria-checked", "true");
   });
 
   it("marks unselected amounts as unchecked", () => {
-    render(
-      <WalletTopup amounts={[500, 1000]} defaultSelectedAmount={500} />
-    );
+    render(<WalletTopup amounts={[500, 1000]} defaultSelectedAmount={500} />);
     const unselectedButton = screen.getByText("₹1,000").closest("button");
     expect(unselectedButton).toHaveAttribute("aria-checked", "false");
   });
@@ -139,13 +135,37 @@ describe("WalletTopup", () => {
   // ─── Custom Amount ──────────────────────────────────────
   it("calls onCustomAmountChange when custom input changes", () => {
     const onCustomAmountChange = vi.fn();
-    render(
-      <WalletTopup onCustomAmountChange={onCustomAmountChange} />
-    );
+    render(<WalletTopup onCustomAmountChange={onCustomAmountChange} />);
 
     const input = screen.getByPlaceholderText("Enter amount");
     fireEvent.change(input, { target: { value: "750" } });
     expect(onCustomAmountChange).toHaveBeenCalledWith("750");
+  });
+
+  it("rejects exponent notation in the custom amount input", () => {
+    const onCustomAmountChange = vi.fn();
+    render(<WalletTopup onCustomAmountChange={onCustomAmountChange} />);
+
+    const input = screen.getByPlaceholderText("Enter amount");
+    fireEvent.change(input, { target: { value: "2" } });
+    fireEvent.change(input, { target: { value: "2e22" } });
+
+    expect(input).toHaveValue("2");
+    expect(onCustomAmountChange).toHaveBeenCalledTimes(1);
+    expect(onCustomAmountChange).toHaveBeenCalledWith("2");
+  });
+
+  it("does not calculate payment totals from invalid custom amount values", () => {
+    render(
+      <WalletTopup
+        customAmount="2e22"
+        onCustomAmountChange={() => {}}
+        taxCalculator={(amount) => Math.round(amount * 0.18)}
+      />
+    );
+
+    expect(screen.queryByText("Recharge amount")).not.toBeInTheDocument();
+    expect(screen.getByText("Select an amount")).toBeDisabled();
   });
 
   it("clears preset selection when custom amount is entered (uncontrolled)", () => {
@@ -166,9 +186,7 @@ describe("WalletTopup", () => {
 
   // ─── Pay Button ─────────────────────────────────────────
   it("shows pay button with selected amount text", () => {
-    render(
-      <WalletTopup amounts={[500]} defaultSelectedAmount={500} />
-    );
+    render(<WalletTopup amounts={[500]} defaultSelectedAmount={500} />);
     expect(screen.getByText("Pay ₹500 now")).toBeInTheDocument();
   });
 
@@ -191,11 +209,7 @@ describe("WalletTopup", () => {
   it("calls onPay with selected amount", () => {
     const onPay = vi.fn();
     render(
-      <WalletTopup
-        amounts={[500]}
-        defaultSelectedAmount={500}
-        onPay={onPay}
-      />
+      <WalletTopup amounts={[500]} defaultSelectedAmount={500} onPay={onPay} />
     );
 
     fireEvent.click(screen.getByText("Pay ₹500 now"));
@@ -222,11 +236,7 @@ describe("WalletTopup", () => {
 
   it("shows loading state on pay button", () => {
     render(
-      <WalletTopup
-        amounts={[500]}
-        defaultSelectedAmount={500}
-        loading={true}
-      />
+      <WalletTopup amounts={[500]} defaultSelectedAmount={500} loading={true} />
     );
     // Loading button is disabled
     const button = screen.getByRole("button", { name: /pay ₹500 now/i });
@@ -238,9 +248,7 @@ describe("WalletTopup", () => {
     const onVoucherClick = vi.fn();
     render(<WalletTopup onVoucherClick={onVoucherClick} />);
 
-    fireEvent.click(
-      screen.getByText("Have an offline code or voucher?")
-    );
+    fireEvent.click(screen.getByText("Have an offline code or voucher?"));
     expect(onVoucherClick).toHaveBeenCalledOnce();
   });
 
@@ -251,7 +259,9 @@ describe("WalletTopup", () => {
     expect(
       screen.getByText("Have an offline code or voucher?")
     ).toBeInTheDocument();
-    expect(screen.queryByPlaceholderText("XXXX-XXXX-XXXX")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("XXXX-XXXX-XXXX")
+    ).not.toBeInTheDocument();
 
     // Click voucher link
     fireEvent.click(screen.getByText("Have an offline code or voucher?"));
@@ -454,11 +464,7 @@ describe("WalletTopup", () => {
   // ─── Tax / Summary Section ─────────────────────────────
   it("shows summary section with static taxAmount", () => {
     render(
-      <WalletTopup
-        amounts={[500]}
-        defaultSelectedAmount={500}
-        taxAmount={90}
-      />
+      <WalletTopup amounts={[500]} defaultSelectedAmount={500} taxAmount={90} />
     );
     expect(screen.getByText("Recharge amount")).toBeInTheDocument();
     expect(screen.getByText("Taxes (GST)")).toBeInTheDocument();
@@ -495,26 +501,18 @@ describe("WalletTopup", () => {
   });
 
   it("hides summary section when no tax props provided", () => {
-    render(
-      <WalletTopup amounts={[500]} defaultSelectedAmount={500} />
-    );
+    render(<WalletTopup amounts={[500]} defaultSelectedAmount={500} />);
     expect(screen.queryByText("Recharge amount")).not.toBeInTheDocument();
   });
 
   it("hides summary section when no amount selected", () => {
-    render(
-      <WalletTopup amounts={[500]} taxAmount={90} />
-    );
+    render(<WalletTopup amounts={[500]} taxAmount={90} />);
     expect(screen.queryByText("Recharge amount")).not.toBeInTheDocument();
   });
 
   it("includes tax in pay button text", () => {
     render(
-      <WalletTopup
-        amounts={[500]}
-        defaultSelectedAmount={500}
-        taxAmount={90}
-      />
+      <WalletTopup amounts={[500]} defaultSelectedAmount={500} taxAmount={90} />
     );
     expect(screen.getByText("Pay ₹590 now")).toBeInTheDocument();
   });
@@ -549,24 +547,14 @@ describe("WalletTopup", () => {
 
   // ─── Outstanding Amount ───────────────────────────────
   it("auto-prepends outstanding-only option when outstandingAmount is set", () => {
-    render(
-      <WalletTopup
-        amounts={[1000, 5000]}
-        outstandingAmount={10000}
-      />
-    );
+    render(<WalletTopup amounts={[1000, 5000]} outstandingAmount={10000} />);
     // Should have 3 options: outstanding-only + 2 amounts
     const radioButtons = screen.getAllByRole("radio");
     expect(radioButtons).toHaveLength(3);
   });
 
   it("shows outstanding breakdown in amount buttons", () => {
-    render(
-      <WalletTopup
-        amounts={[1000]}
-        outstandingAmount={10000}
-      />
-    );
+    render(<WalletTopup amounts={[1000]} outstandingAmount={10000} />);
     // Outstanding-only option
     expect(screen.getByText("₹10,000")).toBeInTheDocument();
     // Outstanding + 1000 option
@@ -577,12 +565,7 @@ describe("WalletTopup", () => {
   });
 
   it("shows dash for topup in outstanding-only option", () => {
-    render(
-      <WalletTopup
-        amounts={[1000]}
-        outstandingAmount={10000}
-      />
-    );
+    render(<WalletTopup amounts={[1000]} outstandingAmount={10000} />);
     const topupTexts = screen.getAllByText(/Top-up:/);
     expect(topupTexts[0].textContent).toContain("-");
   });
@@ -611,12 +594,7 @@ describe("WalletTopup", () => {
   });
 
   it("smart formats amounts with decimals only when needed", () => {
-    render(
-      <WalletTopup
-        amounts={[1000]}
-        outstandingAmount={10000.5}
-      />
-    );
+    render(<WalletTopup amounts={[1000]} outstandingAmount={10000.5} />);
     // Outstanding amount with decimals
     expect(screen.getAllByText(/₹10,000.50/).length).toBeGreaterThan(0);
   });
@@ -642,9 +620,7 @@ describe("WalletTopup", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(
-      <WalletTopup className="custom-class" />
-    );
+    const { container } = render(<WalletTopup className="custom-class" />);
     expect(container.firstChild).toHaveClass("custom-class");
   });
 });

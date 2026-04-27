@@ -203,28 +203,32 @@ describe("PricingPage", () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it("centers a single plan card in a three-column track (not full width on md+)", () => {
+  it("renders a single plan as a full-width featured card", () => {
     const onePlan: PricingCardProps[] = [mockPlanCards[0]!];
     const { container } = render(<PricingPage planCards={onePlan} />);
     const grid = container.querySelector(
       "[data-testid=\"pricing-plan-cards-grid\"]"
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
-    expect(grid).toHaveClass("md:grid-cols-3");
-    expect(grid).toHaveClass("md:[&>div]:col-start-2");
+    expect(grid).toHaveClass("grid-cols-1");
+    expect(grid).toHaveClass("[&>div]:max-w-full");
+    expect(
+      container.querySelector("[data-pricing-card-layout='featured']")
+    ).toBeTruthy();
   });
 
-  it("centers two plan cards with one-third width slots (not 50% each)", () => {
+  it("renders two plans as wider two-up cards", () => {
     const twoPlans: PricingCardProps[] = [mockPlanCards[0]!, mockPlanCards[1]!];
     const { container } = render(<PricingPage planCards={twoPlans} />);
     const grid = container.querySelector(
       "[data-testid=\"pricing-plan-cards-grid\"]"
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
-    expect(grid).toHaveClass("min-[480px]:justify-center");
-    expect(grid).toHaveClass(
-      "[&>div]:min-[480px]:w-[min(21.375rem,calc((100%-4rem)/3))]"
-    );
+    expect(grid).toHaveClass("min-[640px]:grid-cols-2");
+    expect(grid).toHaveClass("[&>div]:max-w-full");
+    expect(
+      container.querySelector("[data-pricing-card-layout='featured']")
+    ).not.toBeTruthy();
   });
 
   it("lays out plan cards in a responsive grid with four columns on wide viewports", () => {
@@ -260,6 +264,8 @@ describe("PricingPage", () => {
     expect(grid).toBeTruthy();
     expect(grid).toHaveAttribute("data-pricing-plans-layout", "one-column");
     expect(grid).toHaveClass("grid-cols-1");
+    expect(grid).toHaveClass("justify-items-center");
+    expect(grid?.className).toContain("[&>div]:max-w-[min(21.375rem,100%)]");
   });
 
   it("keeps one-column stack for five or more plan cards (no horizontal scroll)", () => {

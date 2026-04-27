@@ -249,6 +249,16 @@ import { PricingCard } from "@/components/custom/pricing-card";
     onFeatureDetails: fn(),
   },
   argTypes: {
+    layout: {
+      control: "select",
+      options: ["default", "featured"],
+      description:
+        "Card layout treatment. `featured` uses a two-pane summary + actions arrangement.",
+      table: {
+        type: { summary: '"default" | "featured"' },
+        defaultValue: { summary: "default" },
+      },
+    },
     infoText: {
       control: "text",
       description:
@@ -289,6 +299,27 @@ export const Default: Story = {
     onFeatureDetails: fn(),
     addon: defaultAddon,
   },
+};
+
+export const FeaturedLayout: Story = {
+  name: "Featured layout",
+  parameters: { layout: "padded" },
+  render: () => (
+    <div style={{ width: "760px" }}>
+      <PricingCard
+        planName="Compact"
+        price="2,500"
+        period="per month"
+        planDetails="3 Users | 12 Month plan"
+        description="For small teams that need WhatsApp Business API & missed calls."
+        features={compactFeatures}
+        layout="featured"
+        onCtaClick={fn()}
+        onFeatureDetails={fn()}
+        addon={defaultAddon}
+      />
+    </div>
+  ),
 };
 
 // ─── Current Plan ────────────────────────────────────────────────────────

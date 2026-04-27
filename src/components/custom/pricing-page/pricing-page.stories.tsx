@@ -40,8 +40,8 @@ const NumberTypeSelect = () => (
   </div>
 );
 
-/** Figma 1119:2782 — mock “number type” control (matches UI/PricingPage story). */
-const numberTypeControlFigma = (
+/** Mock “number type” control used by pricing page examples. */
+const numberTypeControl = (
   <div className="flex items-center gap-2.5">
     <span className="whitespace-nowrap text-sm text-semantic-text-primary">
       Number Type:
@@ -146,23 +146,6 @@ const figmaEnterprisePlanCard: PricingCardProps = {
   addon: figmaPlanAddon,
 };
 
-const figmaUltimatePlanCard: PricingCardProps = {
-  planName: "Ultimate",
-  price: "25,000",
-  period: "per month",
-  planDetails: "Unlimited Users | 12 Month plan",
-  description: "Maximum scale, dedicated support, and custom SLAs.",
-  features: [
-    { parts: [{ text: "Everything in " }, { text: "Enterprise", bold: true }] },
-    "24/7 priority support",
-    "Bespoke integrations",
-  ],
-  ctaText: "Upgrade",
-  onCtaClick: fn(),
-  onFeatureDetails: fn(),
-  addon: figmaPlanAddon,
-};
-
 const figmaPowerUpCards: PowerUpCardProps[] = [
   {
     icon: <Shield className="size-6 text-semantic-text-primary" />,
@@ -184,8 +167,7 @@ const figmaPowerUpCards: PowerUpCardProps[] = [
     icon: <Phone className="size-6 text-semantic-text-primary" />,
     title: "Auto-Dialer",
     price: "Starts @ ₹700/user/month",
-    description:
-      "Available for SUV & Enterprise plans as an add-on per user.",
+    description: "Available for SUV & Enterprise plans as an add-on per user.",
     onCtaClick: fn(),
   },
 ];
@@ -359,8 +341,7 @@ const powerUpCards: PowerUpCardProps[] = [
     icon: <PhoneCall className="size-6 text-semantic-text-muted" />,
     title: "Auto-Dialer",
     price: "Starts @ \u20B9700/user/month",
-    description:
-      "Available for SUV & Enterprise plans as an add-on per user.",
+    description: "Available for SUV & Enterprise plans as an add-on per user.",
     onCtaClick: fn(),
   },
 ];
@@ -381,8 +362,7 @@ const letUsDriveCards: LetUsDriveCardProps[] = [
     price: "15,000",
     period: "per month, billed annually",
     billingBadge: "Annually",
-    description:
-      "One expert who knows your business. And moves it forward.",
+    description: "One expert who knows your business. And moves it forward.",
     onShowDetails: fn(),
     onCtaClick: fn(),
   },
@@ -392,8 +372,7 @@ const letUsDriveCards: LetUsDriveCardProps[] = [
     period: "per month, billed quarterly",
     startsAt: true,
     billingBadge: "Quarterly",
-    description:
-      "End-to-end execution \u2014 built and run by experts.",
+    description: "End-to-end execution \u2014 built and run by experts.",
     onShowDetails: fn(),
     onCtaClick: fn(),
   },
@@ -404,13 +383,11 @@ const onboardingDetailsContent = {
   items: [
     {
       title: "Start Your Channels:",
-      description:
-        "Get help setting up your Call and WhatsApp channels.",
+      description: "Get help setting up your Call and WhatsApp channels.",
     },
     {
       title: "Set Up Your Agent:",
-      description:
-        "We'll help you activate your first Chat or Voice Agent.",
+      description: "We'll help you activate your first Chat or Voice Agent.",
     },
     {
       title: "Begin Training:",
@@ -461,13 +438,11 @@ const managedServicesDetailsContent = {
     },
     {
       title: "Seamless Integration:",
-      description:
-        "Connect easily with your existing business tools.",
+      description: "Connect easily with your existing business tools.",
     },
     {
       title: "Weekly Performance Calls:",
-      description:
-        "Stay aligned and on track through regular check-ins.",
+      description: "Stay aligned and on track through regular check-ins.",
     },
   ],
 };
@@ -520,13 +495,9 @@ const meta: Meta<typeof PricingPage> = {
     docs: {
       description: {
         component: `
-Full pricing page layout that composes PricingCard, PowerUpCard, LetUsDriveCard, and PageHeader into a complete plan selection experience.
+Full plan selection layout for choosing a business plan, optional add-ons, and managed services.
 
-Shared layout class strings in the source use \`cn("...")\` (not raw string constants) so the CLI registry applies the \`tw-\` prefix for host apps with \`prefix: "tw-"\` in Tailwind. The story decorator adds a flex child with \`min-w-0\` and \`overflow-x-hidden\` to approximate a main column beside a sidebar (in prefixed apps: \`tw-min-w-0\`, \`tw-overflow-x-hidden\`).
-
-Displays pricing cards in a responsive grid (1 column on small screens; 2-4 plans sit in one row from \`md\` with **32px** gaps; **5+** plans use horizontal scroll inside the **1139px** content width, Figma \`1119:2783\`). One or two plans keep three-card sizing and stay centered instead of stretching. Optional \`planCardColumnCount\` can reserve extra columns (rare). Pass \`planCardsLayout="oneColumn"\` for a vertical stack at all widths, or \`planCardsLayout="twoColumn"\` for a 1→2 column grid with wrapping (no horizontal scroll for many plans). Reusable **\`PricingPlanCardsOneColumn\`** / **\`PricingPlanCardsTwoColumn\`** are exported for custom composition. Section bands use **60px** vertical padding; **16px** between each section title and its card grid (Figma \`1119:2986\` / \`1119:3031\`). Story canvas uses a grey background and horizontal padding so spacing is closer to the app shell.
-
-Optional **\`planAlert\`** renders the design-system **Alert** above the plan grid (\`title\`, optional \`description\`). Set appearance with **\`variant\`** (same values as \`<Alert variant />\` — e.g. \`info\`, \`warning\`, \`error\`) or with **\`status\`** (\`success\` | \`warning\` | \`info\` | \`failed\`; \`failed\` → error). If both are set, **\`variant\` wins**. Pass **\`alertProps\`** for closable, \`onClose\`, \`icon\`, \`action\`, etc. Use **\`showPlanAlert={false}\`** to hide the banner while keeping \`planAlert\` defined.
+The default plan grid is responsive: one or two plans stay centered at the three-card width, and three or four plans sit in one row on wide screens.
 
 ## Installation
 
@@ -543,85 +514,37 @@ import type { PricingPageProps } from "@/components/custom/pricing-page"
 
 ## Design Tokens
 
-<table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px;">
   <thead>
     <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
       <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
       <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Usage</th>
       <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
     </tr>
   </thead>
   <tbody>
     <tr style="border-bottom: 1px solid #E9EAEB;">
-      <td style="padding: 12px 16px;">Background Primary</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-primary</code></td>
-      <td style="padding: 12px 16px;">Header, let-us-drive section background</td>
+      <td style="padding: 12px 16px;"><code>--semantic-bg-primary</code></td>
+      <td style="padding: 12px 16px;">Main page and service sections</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #FFFFFF; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
-      <td style="padding: 12px 16px;">Background UI</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-bg-ui</code></td>
-      <td style="padding: 12px 16px;">Power-ups section background</td>
+      <td style="padding: 12px 16px;"><code>--semantic-bg-ui</code></td>
+      <td style="padding: 12px 16px;">Power-ups band</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F3F5F6; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
-      <td style="padding: 12px 16px;">Text Primary</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-primary</code></td>
-      <td style="padding: 12px 16px;">Section headings</td>
+      <td style="padding: 12px 16px;"><code>--semantic-text-primary</code></td>
+      <td style="padding: 12px 16px;">Headings and plan text</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #181D27; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
-      <td style="padding: 12px 16px;">Text Link</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-link</code></td>
+      <td style="padding: 12px 16px;"><code>--semantic-text-link</code></td>
       <td style="padding: 12px 16px;">Feature comparison link</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #4275D6; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;">
-      <td style="padding: 12px 16px;">Border Layout</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-border-layout</code></td>
-      <td style="padding: 12px 16px;">Header bottom border</td>
-      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #E9EAEB; border-radius: 6px; border: 1px solid #D5D7DA;"></div></td>
-    </tr>
   </tbody>
 </table>
-
-## Usage
-
-\`\`\`tsx
-import { PricingPage } from "@/components/custom/pricing-page";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-
-<PricingPage
-  headerActions={
-    <Select defaultValue="virtual">
-      <SelectTrigger className="h-9 w-[140px]">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="virtual">Virtual</SelectItem>
-        <SelectItem value="mobile">Mobile</SelectItem>
-      </SelectContent>
-    </Select>
-  }
-  planAlert={{
-    status: "warning",
-    title: "Custom Plan Active",
-    description: "You're on an enterprise plan. Contact support to change seats.",
-  }}
-  planCards={teamCards}
-  planCardCtaStates={[
-    { disabled: true },
-    { loading: false },
-    { disabled: false },
-  ]}
-  powerUpCards={powerUps}
-  letUsDriveCards={driveCards}
-  onFeatureComparisonClick={() => window.open("/features")}
-/>
-\`\`\`
-
-**Plan card CTA states** — Use \`planCardCtaStates\` to control loading/disabled for each pricing card button (index matches \`planCards\`). Overrides \`ctaLoading\`/\`ctaDisabled\` on individual card props when provided.
 `,
       },
     },
@@ -657,7 +580,7 @@ type Story = StoryObj<typeof meta>;
 
 // ─── Default ──────────────────────────────────────────────────────────────────
 
-/** Example banner matching Figma (1119:2782) — info-style “Custom plan active” message. */
+/** Example info banner for the plan area. */
 const exampleCustomPlanAlert: PricingPlanAlertConfig = {
   title: "Custom Plan Active",
   description:
@@ -676,24 +599,53 @@ export const Default: Story = {
   },
 };
 
-/**
- * Canvas matches Figma `1119:2782` (MyO — Product Design): Select Business Plan
- * (plans, power-ups, full-service). Max content **1139px**, 32px plan card gaps, 24px page gutters,
- * 18px alert→cards, 16px section title→grids, 60px section band padding, 55px header row.
- */
-export const FigmaSelectBusinessPlan: Story = {
-  name: "Figma (1119:2782) – Select business plan (3 plans, no scroll)",
-  parameters: {
-    design: {
-      type: "figma",
-      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
-    },
-  },
+export const OnePlan: Story = {
+  name: "1 plan",
   args: {
     showCategoryToggle: false,
     showPlanAlert: true,
     showBillingToggle: false,
-    headerActions: numberTypeControlFigma,
+    headerActions: numberTypeControl,
+    planAlert: {
+      title: "Custom Plan Active",
+      description:
+        "You're currently on a tailored enterprise plan. To make changes or explore standard plans, please connect with your account manager.",
+      variant: "info" as const,
+    },
+    planCards: figmaBasePlanCards.slice(0, 1),
+    powerUpCards: figmaPowerUpCards,
+    onFeatureComparisonClick: fn(),
+    letUsDriveCards: figmaLetUsDriveCards,
+  },
+};
+
+export const TwoPlans: Story = {
+  name: "2 plans",
+  args: {
+    showCategoryToggle: false,
+    showPlanAlert: true,
+    showBillingToggle: false,
+    headerActions: numberTypeControl,
+    planAlert: {
+      title: "Custom Plan Active",
+      description:
+        "You're currently on a tailored enterprise plan. To make changes or explore standard plans, please connect with your account manager.",
+      variant: "info" as const,
+    },
+    planCards: figmaBasePlanCards.slice(0, 2),
+    powerUpCards: figmaPowerUpCards,
+    onFeatureComparisonClick: fn(),
+    letUsDriveCards: figmaLetUsDriveCards,
+  },
+};
+
+export const ThreePlans: Story = {
+  name: "3 plans",
+  args: {
+    showCategoryToggle: false,
+    showPlanAlert: true,
+    showBillingToggle: false,
+    headerActions: numberTypeControl,
     planAlert: {
       title: "Custom Plan Active",
       description:
@@ -707,67 +659,29 @@ export const FigmaSelectBusinessPlan: Story = {
   },
 };
 
-/** Up to **4** plans: grid in the 1200px row; no horizontal scrollbar. */
-export const FigmaFourPlansNoScrollbar: Story = {
-  name: "Figma – 4 plans, grid, no horizontal scroll",
-  parameters: {
-    design: {
-      type: "figma",
-      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
-    },
-  },
+export const FourPlans: Story = {
+  name: "4 plans",
   args: {
-    ...FigmaSelectBusinessPlan.args,
+    ...ThreePlans.args,
     planCards: [...figmaBasePlanCards, figmaEnterprisePlanCard],
   },
 };
 
-/**
- * **5+** plans: fixed-width cards scroll horizontally inside the 1200px content column.
- */
-export const FigmaFivePlansHorizontalScroll: Story = {
-  name: "Figma – 5 plans, horizontal scroll (inside 1200px)",
-  parameters: {
-    design: {
-      type: "figma",
-      url: "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design?node-id=1119-2782",
-    },
-  },
-  args: {
-    ...FigmaSelectBusinessPlan.args,
-    showPlanAlert: false,
-    planCards: [
-      ...figmaBasePlanCards,
-      figmaEnterprisePlanCard,
-      figmaUltimatePlanCard,
-    ],
-  },
-};
-
-/** Plan cards in a **single column** at all breakpoints (use `planCardsLayout="oneColumn"`). */
 export const PlanCardsOneColumnLayout: Story = {
-  name: "Plan cards — one column layout",
+  name: "One column layout",
   args: {
-    ...FigmaSelectBusinessPlan.args,
+    ...ThreePlans.args,
     planCardsLayout: "oneColumn",
   },
 };
 
-/**
- * Plan cards in a **two column** grid from `min-[480px]` (use `planCardsLayout="twoColumn"`).
- * Five plans wrap to multiple rows — no horizontal scroll.
- */
 export const PlanCardsTwoColumnLayout: Story = {
-  name: "Plan cards — two column layout (5 plans, no scroll)",
+  name: "Two column layout",
   args: {
-    ...FigmaSelectBusinessPlan.args,
+    ...ThreePlans.args,
     showPlanAlert: false,
     planCardsLayout: "twoColumn",
-    planCards: [
-      ...figmaBasePlanCards,
-      figmaEnterprisePlanCard,
-      figmaUltimatePlanCard,
-    ],
+    planCards: [...figmaBasePlanCards, figmaEnterprisePlanCard],
   },
 };
 
@@ -787,7 +701,7 @@ export const GoAIFirst: Story = {
 
 /** All `planAlert.status` values: success, warning, info, failed. */
 export const PlanAlertsAllStatuses: Story = {
-  name: "Plan alerts (success, warning, info, failed)",
+  name: "Plan alerts",
   render: () => (
     <div className="flex flex-col gap-16 bg-card p-6">
       <div>
@@ -801,7 +715,8 @@ export const PlanAlertsAllStatuses: Story = {
           planAlert={{
             status: "success",
             title: "Payment updated",
-            description: "Your plan will renew on the next billing date with the new card.",
+            description:
+              "Your plan will renew on the next billing date with the new card.",
           }}
         />
       </div>
@@ -832,7 +747,8 @@ export const PlanAlertsAllStatuses: Story = {
           planAlert={{
             status: "info",
             title: "Prices shown exclude taxes",
-            description: "Taxes are calculated at checkout based on your billing address.",
+            description:
+              "Taxes are calculated at checkout based on your billing address.",
           }}
         />
       </div>
@@ -858,45 +774,17 @@ export const PlanAlertsAllStatuses: Story = {
 // ─── Plans Only (No Power-ups / Drive) ────────────────────────────────────────
 
 export const PlansOnly: Story = {
+  name: "Plans only",
   args: {
     headerActions: <NumberTypeSelect />,
     planCards: teamCards,
   },
 };
 
-/** Four team-style plans in one row — column count follows array length. */
-export const FourPlansOneRow: Story = {
-  name: "Four plans (single row)",
-  args: {
-    headerActions: <NumberTypeSelect />,
-    planCards: [
-      ...teamCards,
-      {
-        planName: "Enterprise",
-        price: "25,000",
-        period: "per month",
-        planDetails: "Unlimited users | Custom term",
-        description:
-          "For organisations that need custom limits, security, and dedicated support.",
-        features: [
-          {
-            parts: [{ text: "Everything in " }, { text: "SUV", bold: true }],
-          },
-          "Dedicated success team",
-          "Custom SLAs & security reviews",
-          "Volume pricing & invoicing",
-        ],
-        onCtaClick: fn(),
-        onFeatureDetails: fn(),
-        addon: defaultAddon,
-      },
-    ],
-  },
-};
-
 // ─── Without Header Actions ───────────────────────────────────────────────────
 
 export const WithoutHeaderActions: Story = {
+  name: "Without header actions",
   args: {
     planCards: teamCards,
     powerUpCards,
@@ -904,10 +792,10 @@ export const WithoutHeaderActions: Story = {
   },
 };
 
-// ─── Plan Card CTAs: Loading & Disabled ───────────────────────────────────────
+// ─── CTA States ───────────────────────────────────────────────────────────────
 
 export const PlanCardCtaStates: Story = {
-  name: "Plan Card CTAs: Loading & Disabled",
+  name: "CTA states",
   args: {
     headerActions: <NumberTypeSelect />,
     planCards: teamCards,
@@ -925,6 +813,7 @@ export const PlanCardCtaStates: Story = {
 // ─── Full page with Let Us Drive details ─────────────────────────────────────
 
 export const FullPageWithLetUsDriveDetails: Story = {
+  name: "Full page with service details",
   parameters: {
     docs: {
       description: {

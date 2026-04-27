@@ -152,6 +152,15 @@ import { Input } from "@/components/ui/input"
         defaultValue: { summary: "text" },
       },
     },
+    preventNumberExponent: {
+      control: "boolean",
+      description:
+        'When `type="number"`, block scientific notation characters (`e`/`E`).',
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
+      },
+    },
     placeholder: {
       control: "text",
       description: "Placeholder text",
@@ -246,6 +255,30 @@ export const InputTypes: Story = {
       <div>
         <p className="text-sm text-[#6B7280] mb-1.5">Search</p>
         <Input type="search" placeholder="Search..." />
+      </div>
+    </div>
+  ),
+};
+
+export const NumberExponentGuard: Story = {
+  name: "Number exponent guard",
+  render: () => (
+    <div className="flex flex-col gap-4 w-80">
+      <div>
+        <p className="text-sm text-[#6B7280] mb-1.5">
+          Default (blocks `e` / `E`)
+        </p>
+        <Input type="number" placeholder="Try typing 2e3" />
+      </div>
+      <div>
+        <p className="text-sm text-[#6B7280] mb-1.5">
+          Opt-out (preventNumberExponent false)
+        </p>
+        <Input
+          type="number"
+          preventNumberExponent={false}
+          placeholder="Allows exponent notation"
+        />
       </div>
     </div>
   ),

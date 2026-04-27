@@ -1,0 +1,36 @@
+{
+  "name": "myoperator-workflows",
+  "version": "0.1.0",
+  "description": "Codex commands for myOperator UI repository workflows.",
+  "author": {
+    "name": "myOperator",
+    "email": "engineering@myoperator.com",
+    "url": "https://myoperator.com"
+  },
+  "homepage": "https://myoperator.com",
+  "license": "UNLICENSED",
+  "keywords": [
+    "myoperator",
+    "storybook",
+    "publish",
+    "workflow"
+  ],
+  "interface": {
+    "displayName": "myOperator Workflows",
+    "shortDescription": "Repository commands for publishing myOperator UI packages.",
+    "longDescription": "Codex command shortcuts for validated myOperator UI repository workflows, including the full beta/latest publish process.",
+    "developerName": "myOperator",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://myoperator.com",
+    "defaultPrompt": [
+      "Run /publish-all for a beta or latest release."
+    ],
+    "brandColor": "#343E55",
+    "screenshots": []
+  }
+}

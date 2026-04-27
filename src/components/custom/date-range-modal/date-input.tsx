@@ -1,5 +1,13 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  size,
+  useFloating,
+} from "@floating-ui/react-dom";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Calendar } from "./calendar";
@@ -15,12 +23,7 @@ export interface DateInputProps {
   dismissSignal?: number;
   /** Called when the calendar opens (not when it closes). */
   onPopoverOpened?: () => void;
-  /**
-   * Mount the calendar inside this element (e.g. the dialog content node). Pass `null` until the
-   * node exists. Omit when not inside a Radix modal (defaults to `document.body` with pointer-events
-   * restored). Body-only popovers under a modal receive no clicks or wheel: the dialog sets
-   * `pointer-events: none` on the body and only re-enables the dialog surface.
-   */
+  /** Mount the floating calendar inside a containing layer, such as Radix DialogContent. */
   portalContainer?: HTMLElement | null;
 }
 
@@ -33,6 +36,11 @@ function formatDate(date: Date): string {
 
 /** Extra slack for native scrollbar hit-testing (target can be wrong or pierce “through” in some engines). */
 const SCROLLBAR_SLOP = 20;
+const POPOVER_WIDTH = 288;
+const POPOVER_MARGIN = 8;
+const POPOVER_GAP = 4;
+const MAX_POPOVER_HEIGHT = 340;
+const POPOVER_SCROLL_HEIGHT_VAR = "--date-range-calendar-scroll-height";
 
 /** Scrollbar hits often don't set target inside the scrollable node; bbox + composedPath fixes that. */
 function isPointerInsideElement(
@@ -73,91 +81,75 @@ function DateInput({
   portalContainer,
 }: DateInputProps) {
   const [open, setOpen] = React.useState(false);
-  const [popoverStyle, setPopoverStyle] = React.useState<React.CSSProperties>({});
   const containerRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const popoverRef = React.useRef<HTMLDivElement>(null);
   const popoverScrollRef = React.useRef<HTMLDivElement>(null);
-
-  const updatePopoverPosition = React.useCallback(() => {
-    const trigger = triggerRef.current;
-    if (!trigger) return;
-
-    const container = portalContainer ?? null;
-
-    const rect = trigger.getBoundingClientRect();
-    const popoverWidth = 288;
-    const margin = 8;
-    const gap = 4;
-    const maxPopoverH = 340;
-
-    let left = rect.left;
-    if (left + popoverWidth > window.innerWidth - margin) {
-      left = Math.max(margin, window.innerWidth - popoverWidth - margin);
+  const usesContainerPortal = portalContainer !== undefined;
+  const floatingStrategy: "absolute" | "fixed" = usesContainerPortal
+    ? "absolute"
+    : "fixed";
+  const floatingMiddleware = React.useMemo(
+    () => [
+      offset(POPOVER_GAP),
+      flip({ padding: POPOVER_MARGIN }),
+      shift({ padding: POPOVER_MARGIN }),
+      size({
+        padding: POPOVER_MARGIN,
+        apply({ availableHeight, elements }) {
+          const maxHeight = Math.max(
+            1,
+            Math.min(MAX_POPOVER_HEIGHT, availableHeight)
+          );
+          elements.floating.style.setProperty(
+            POPOVER_SCROLL_HEIGHT_VAR,
+            `${maxHeight}px`
+          );
+        },
+      }),
+    ],
+    []
+  );
+  const { refs, floatingStyles, isPositioned } = useFloating<HTMLButtonElement>(
+    {
+      open,
+      placement: "bottom-start",
+      strategy: floatingStrategy,
+      transform: false,
+      middleware: floatingMiddleware,
+      whileElementsMounted: (reference, floating, update) =>
+        autoUpdate(reference, floating, update, { animationFrame: true }),
     }
+  );
 
-    const vh = window.innerHeight;
-    const belowTop = rect.bottom + gap;
-    // When portaled into a dialog, measure free space using the container clip rect so the
-    // popover is not placed above the trigger (wrong flip) and clipped by overflow-y-auto.
-    const cr = container?.getBoundingClientRect();
-    const clipTop = cr ? cr.top + margin : margin;
-    const clipBottom = cr ? cr.bottom - margin : vh - margin;
-    const roomBelow = Math.max(0, clipBottom - belowTop);
-    const roomAbove = Math.max(0, rect.top - gap - clipTop);
+  const setTriggerRef = React.useCallback(
+    (node: HTMLButtonElement | null) => {
+      triggerRef.current = node;
+      refs.setReference(node);
+    },
+    [refs]
+  );
 
-    let top: number;
-    let maxHeight: number;
-
-    if (roomBelow >= roomAbove) {
-      top = belowTop;
-      maxHeight = Math.max(1, Math.min(maxPopoverH, roomBelow));
-    } else {
-      maxHeight = Math.max(1, Math.min(maxPopoverH, roomAbove));
-      top = rect.top - gap - maxHeight;
-      if (top < clipTop) {
-        top = belowTop;
-        maxHeight = Math.max(1, Math.min(maxPopoverH, roomBelow));
-      }
+  const setPopoverRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      popoverRef.current = node;
+      popoverScrollRef.current = node;
+      refs.setFloating(node);
+    },
+    [refs]
+  );
+  const handleTriggerClick = React.useCallback(() => {
+    const nextOpen = !open;
+    setOpen(nextOpen);
+    if (nextOpen) {
+      onPopoverOpened?.();
     }
-
-    if (container && cr) {
-      setPopoverStyle({
-        position: "absolute",
-        top: top - cr.top + container.scrollTop,
-        left: left - cr.left + container.scrollLeft,
-        width: popoverWidth,
-        zIndex: 60,
-        maxHeight,
-      });
-    } else {
-      setPopoverStyle({
-        position: "fixed",
-        top,
-        left,
-        width: popoverWidth,
-        zIndex: 10050,
-        maxHeight,
-      });
-    }
-  }, [portalContainer]);
+  }, [onPopoverOpened, open]);
 
   React.useEffect(() => {
     if (dismissSignal === undefined) return;
     setOpen(false);
   }, [dismissSignal]);
-
-  React.useLayoutEffect(() => {
-    if (!open) return;
-
-    updatePopoverPosition();
-    window.addEventListener("resize", updatePopoverPosition);
-    document.addEventListener("scroll", updatePopoverPosition, true);
-    return () => {
-      window.removeEventListener("resize", updatePopoverPosition);
-      document.removeEventListener("scroll", updatePopoverPosition, true);
-    };
-  }, [open, updatePopoverPosition]);
 
   // Stop propagation so native listeners on document (ours + host apps) don’t treat scrollbar as “outside”.
   React.useLayoutEffect(() => {
@@ -197,12 +189,11 @@ function DateInput({
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, [open]);
 
-  const useBodyPortal = portalContainer === undefined;
   const portalMount =
     typeof document !== "undefined"
-      ? useBodyPortal
-        ? document.body
-        : portalContainer
+      ? usesContainerPortal
+        ? portalContainer
+        : document.body
       : null;
 
   const popover =
@@ -210,21 +201,35 @@ function DateInput({
     portalMount &&
     createPortal(
       <div
-        ref={popoverRef}
+        ref={setPopoverRef}
+        data-date-range-calendar=""
+        data-date-range-calendar-scroll=""
         className={cn(
-          "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg flex flex-col min-h-0 overflow-hidden",
-          useBodyPortal && "pointer-events-auto"
+          "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+          "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
+          "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
         )}
-        style={popoverStyle}
+        style={{
+          ...floatingStyles,
+          width: POPOVER_WIDTH,
+          maxHeight: `var(${POPOVER_SCROLL_HEIGHT_VAR}, min(${MAX_POPOVER_HEIGHT}px, calc(100dvh - ${
+            POPOVER_MARGIN * 2
+          }px)))`,
+          zIndex: 10050,
+          visibility: isPositioned ? undefined : "hidden",
+        }}
         aria-label={`${label} calendar`}
         onPointerDown={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
       >
         <div
-          ref={popoverScrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain p-3 touch-pan-y"
+          className="p-3 touch-pan-y"
           onPointerDown={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
         >
           <Calendar
             value={value}
@@ -246,20 +251,15 @@ function DateInput({
         {label}
       </label>
       <button
-        ref={triggerRef}
+        ref={setTriggerRef}
         type="button"
-        onClick={() =>
-          setOpen((o) => {
-            const next = !o;
-            if (next) onPopoverOpened?.();
-            return next;
-          })
-        }
+        onClick={handleTriggerClick}
         className={cn(
           "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border border-solid text-sm transition-colors outline-none",
           "border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary",
           "hover:border-semantic-border-input-focus/50",
-          open && "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          open &&
+            "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
           !value && "text-semantic-text-muted"
         )}
         aria-haspopup="dialog"

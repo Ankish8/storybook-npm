@@ -33,17 +33,13 @@ describe("PricingCard", () => {
 
   it("renders plan details", () => {
     render(<PricingCard {...defaultProps} />);
-    expect(
-      screen.getByText("3 Users | 12 Month plan")
-    ).toBeInTheDocument();
+    expect(screen.getByText("3 Users | 12 Month plan")).toBeInTheDocument();
   });
 
   it("renders description", () => {
     render(<PricingCard {...defaultProps} />);
     expect(
-      screen.getByText(
-        "For small teams that need a WhatsApp-first plan"
-      )
+      screen.getByText("For small teams that need a WhatsApp-first plan")
     ).toBeInTheDocument();
   });
 
@@ -113,9 +109,7 @@ describe("PricingCard", () => {
   });
 
   it("shows loading state on CTA when ctaLoading is true", () => {
-    render(
-      <PricingCard {...defaultProps} ctaText="Upgrade plan" ctaLoading />
-    );
+    render(<PricingCard {...defaultProps} ctaText="Upgrade plan" ctaLoading />);
     const button = screen.getByRole("button", { name: /Upgrade plan/i });
     expect(button).toBeDisabled();
     expect(button.querySelector(".animate-spin")).toBeInTheDocument();
@@ -160,10 +154,7 @@ describe("PricingCard", () => {
   it("renders Feature details link when onFeatureDetails is provided", () => {
     const onFeatureDetails = vi.fn();
     render(
-      <PricingCard
-        {...defaultProps}
-        onFeatureDetails={onFeatureDetails}
-      />
+      <PricingCard {...defaultProps} onFeatureDetails={onFeatureDetails} />
     );
     const link = screen.getByRole("button", { name: "Check feature details" });
     expect(link).toBeInTheDocument();
@@ -185,11 +176,7 @@ describe("PricingCard", () => {
 
   it("renders custom badge text", () => {
     render(
-      <PricingCard
-        {...defaultProps}
-        showPopularBadge
-        badgeText="BEST VALUE"
-      />
+      <PricingCard {...defaultProps} showPopularBadge badgeText="BEST VALUE" />
     );
     expect(screen.getByText("BEST VALUE")).toBeInTheDocument();
   });
@@ -227,9 +214,7 @@ describe("PricingCard", () => {
 
   it("does not render addon section when addon is not provided", () => {
     render(<PricingCard {...defaultProps} />);
-    expect(
-      screen.queryByText("Add AI Agents")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Add AI Agents")).not.toBeInTheDocument();
   });
 
   it("applies custom className", () => {
@@ -237,6 +222,25 @@ describe("PricingCard", () => {
       <PricingCard {...defaultProps} className="custom-class" />
     );
     expect(container.firstChild).toHaveClass("custom-class");
+  });
+
+  it("supports a featured content layout", () => {
+    const { container } = render(
+      <PricingCard {...defaultProps} layout="featured" />
+    );
+    const card = container.querySelector(
+      "[data-pricing-card-layout='featured']"
+    );
+    expect(card).toBeTruthy();
+    const content = container.querySelector(".grid.min-h-0.flex-1");
+    expect(content).toBeTruthy();
+    expect(content?.className).toContain(
+      "lg:grid-cols-[minmax(0,1fr)_1px_minmax(18rem,22rem)]"
+    );
+    expect(
+      container.querySelector("[data-pricing-card-feature-list='featured']")
+        ?.className
+    ).toContain("sm:grid-cols-2");
   });
 
   it("forwards ref", () => {
@@ -263,9 +267,7 @@ describe("PricingCard", () => {
   });
 
   it("renders secondary disabled button for current plan", () => {
-    render(
-      <PricingCard {...defaultProps} isCurrentPlan data-testid="card" />
-    );
+    render(<PricingCard {...defaultProps} isCurrentPlan data-testid="card" />);
     const button = screen.getByRole("button", { name: "Current plan" });
     expect(button.className).toContain("bg-semantic-primary-surface");
     expect(button).toBeDisabled();
@@ -288,9 +290,7 @@ describe("PricingCard", () => {
       />
     );
     expect(screen.getByText(/Usage:/)).toBeInTheDocument();
-    expect(
-      screen.getByText(/2,000 conversations\/month/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/2,000 conversations\/month/)).toBeInTheDocument();
     expect(screen.getByText(/Extra usage:/)).toBeInTheDocument();
   });
 
@@ -322,10 +322,7 @@ describe("PricingCard", () => {
         {...defaultProps}
         features={[
           {
-            parts: [
-              { text: "Everything in " },
-              { text: "Sedan", bold: true },
-            ],
+            parts: [{ text: "Everything in " }, { text: "Sedan", bold: true }],
           },
           "Regular feature",
         ]}

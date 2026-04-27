@@ -697,6 +697,7 @@ components:
     description: "A modal for selecting a date range with start and end date pickers; supports optional min/max bounds and disabling past dates"
     category: custom
     dependencies:
+      - "@floating-ui/react-dom"
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"

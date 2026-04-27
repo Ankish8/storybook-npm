@@ -133,6 +133,60 @@ describe("Input", () => {
     expect(input.className).toMatch(/inner-spin-button/);
   });
 
+  it("prevents exponent keys for number inputs by default", () => {
+    const handleKeyDown = vi.fn();
+    render(
+      <Input type="number" onKeyDown={handleKeyDown} data-testid="input" />
+    );
+
+    expect(fireEvent.keyDown(screen.getByTestId("input"), { key: "e" })).toBe(
+      false
+    );
+    expect(handleKeyDown).toHaveBeenCalledTimes(1);
+  });
+
+  it("prevents pasted exponent notation for number inputs by default", () => {
+    const handlePaste = vi.fn();
+    render(<Input type="number" onPaste={handlePaste} data-testid="input" />);
+
+    expect(
+      fireEvent.paste(screen.getByTestId("input"), {
+        clipboardData: { getData: () => "2e22" },
+      })
+    ).toBe(false);
+    expect(handlePaste).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores change events containing exponent notation for number inputs", () => {
+    const handleChange = vi.fn();
+    render(<Input type="number" onChange={handleChange} data-testid="input" />);
+
+    fireEvent.change(screen.getByTestId("input"), {
+      target: { value: "2e22" },
+    });
+    expect(handleChange).not.toHaveBeenCalled();
+  });
+
+  it("allows exponent notation when preventNumberExponent is false", () => {
+    const handleChange = vi.fn();
+    render(
+      <Input
+        type="number"
+        preventNumberExponent={false}
+        onChange={handleChange}
+        data-testid="input"
+      />
+    );
+
+    expect(fireEvent.keyDown(screen.getByTestId("input"), { key: "e" })).toBe(
+      true
+    );
+    fireEvent.change(screen.getByTestId("input"), {
+      target: { value: "2e22" },
+    });
+    expect(handleChange).toHaveBeenCalledTimes(1);
+  });
+
   it("shows native number spinners when hideNumberSpinners is false", () => {
     render(
       <Input type="number" hideNumberSpinners={false} data-testid="input" />

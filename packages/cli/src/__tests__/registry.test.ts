@@ -88,6 +88,7 @@ describe('Registry', () => {
       '@radix-ui/react-tooltip',
       '@radix-ui/react-tabs',
       '@radix-ui/react-toast',
+      '@floating-ui/react-dom',
       'class-variance-authority',
       'clsx',
       'tailwind-merge',

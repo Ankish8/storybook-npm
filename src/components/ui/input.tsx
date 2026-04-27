@@ -4,6 +4,8 @@ import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+const blockedNumberKeys = new Set(["e", "E"]);
+
 /**
  * Input variants for different visual states
  */
@@ -46,6 +48,11 @@ export interface InputProps
    * Set `false` to show native increment/decrement controls (e.g. delay fields).
    */
   hideNumberSpinners?: boolean;
+  /**
+   * When `type="number"`, prevent scientific notation characters (`e`/`E`).
+   * Default `true` so amount-like fields cannot accept exponent values such as `2e22`.
+   */
+  preventNumberExponent?: boolean;
 }
 
 const Input = React.forwardRef(
@@ -56,14 +63,20 @@ const Input = React.forwardRef(
       type,
       showCheckIcon,
       hideNumberSpinners = true,
+      preventNumberExponent = true,
       onFocus,
       onBlur,
       onWheel,
+      onKeyDown,
+      onPaste,
+      onChange,
       ...props
     }: InputProps,
     ref: React.Ref<HTMLInputElement>
   ) => {
     const [isFocused, setIsFocused] = React.useState(false);
+    const shouldPreventNumberExponent =
+      type === "number" && preventNumberExponent;
 
     const inputEl = (
       <input
@@ -92,6 +105,27 @@ const Input = React.forwardRef(
               }
             : onWheel
         }
+        onKeyDown={(e) => {
+          if (shouldPreventNumberExponent && blockedNumberKeys.has(e.key)) {
+            e.preventDefault();
+          }
+          onKeyDown?.(e);
+        }}
+        onPaste={(e) => {
+          if (
+            shouldPreventNumberExponent &&
+            /[eE]/.test(e.clipboardData.getData("text"))
+          ) {
+            e.preventDefault();
+          }
+          onPaste?.(e);
+        }}
+        onChange={(e) => {
+          if (shouldPreventNumberExponent && /[eE]/.test(e.target.value)) {
+            return;
+          }
+          onChange?.(e);
+        }}
         {...props}
       />
     );

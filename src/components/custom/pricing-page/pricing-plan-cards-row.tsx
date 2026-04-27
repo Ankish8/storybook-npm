@@ -5,8 +5,7 @@ import { cn } from "../../../lib/utils";
 
 const SCROLL_CARD_GAP_PX = 32;
 
-export interface PricingPlanCardsRowProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface PricingPlanCardsRowProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * Column slots for the grid (from `planCardColumnCount` / `planCards.length`
    * on `PricingPage`). With 1-4 child cards, this controls responsive columns
@@ -33,28 +32,23 @@ const equalWidthGridBase = cn(
 );
 
 /**
- * One plan: 3-col grid on `md+` with the card in the **middle** column (matches Figma 3-card slot width
- * so it does not stretch full width). Narrow viewports: same max width as a grid track, centered.
- * Two plans: `flex` row with **1/3**-row card width and **gap-8** so the pair stays **centered** (not
- * 50% / 50% of the full row). Three or more plans: fall through to a normal column grid.
+ * One plan: full-width featured card so the page does not look empty.
+ * Two plans: balanced two-up grid with wider cards. Three or more plans:
+ * fall through to a normal column grid.
  */
 function equalWidthGridClass(gridColumns: number, cardCount: number): string {
   if (cardCount === 1) {
     return cn(
       equalWidthGridBase,
-      "grid-cols-1 justify-items-stretch md:grid-cols-3",
-      "[&>div]:w-full [&>div]:max-w-[min(21.375rem,100%)] md:[&>div]:max-w-none",
-      "[&>div]:mx-auto md:[&>div]:col-span-1 md:[&>div]:col-start-2",
-      "md:[&>div]:flex-none"
+      "grid-cols-1",
+      "[&>div]:w-full [&>div]:max-w-full"
     );
   }
   if (cardCount === 2) {
     return cn(
-      "flex w-full min-w-0 min-[480px]:flex-row min-[480px]:flex-nowrap min-[480px]:justify-center",
-      "flex-col items-stretch justify-center gap-8",
-      "[&>div]:min-h-0 [&>div]:min-w-0",
-      "[&>div]:w-full [&>div]:min-[480px]:w-[min(21.375rem,calc((100%-4rem)/3))] [&>div]:min-[480px]:shrink-0",
-      "[&>div]:min-[480px]:flex-none"
+      equalWidthGridBase,
+      "grid-cols-1 min-[640px]:grid-cols-2",
+      "[&>div]:w-full [&>div]:max-w-full"
     );
   }
   if (gridColumns <= 1) {
@@ -73,39 +67,46 @@ function equalWidthGridClass(gridColumns: number, cardCount: number): string {
 const PricingPlanCardsRow = React.forwardRef<
   HTMLDivElement,
   PricingPlanCardsRowProps
->(({ columnCount, className, showPagination = true, children, ...props }, ref) => {
-  if (columnCount < 1) {
-    return null;
+>(
+  (
+    { columnCount, className, showPagination = true, children, ...props },
+    ref
+  ) => {
+    if (columnCount < 1) {
+      return null;
+    }
+
+    const cardCount = React.Children.toArray(children).length;
+    if (cardCount < 1) {
+      return null;
+    }
+
+    /** **5+** plans: horizontal scroll; cards 1–4 stay in a single grid row from `md` (see `equalWidthGridClass`). */
+    const scrollMode = cardCount > 4;
+
+    const gridColumns = scrollMode
+      ? 0
+      : Math.min(Math.max(columnCount, cardCount), 4);
+
+    return (
+      <PricingPlanCardsRowScrollWithDots
+        ref={ref}
+        className={className}
+        scrollMode={scrollMode}
+        cardCount={cardCount}
+        columnCount={columnCount}
+        layoutColumnCount={scrollMode ? cardCount : gridColumns}
+        showPagination={showPagination}
+        equalWidthClass={
+          scrollMode ? "" : equalWidthGridClass(gridColumns, cardCount)
+        }
+        {...props}
+      >
+        {children}
+      </PricingPlanCardsRowScrollWithDots>
+    );
   }
-
-  const cardCount = React.Children.toArray(children).length;
-  if (cardCount < 1) {
-    return null;
-  }
-
-  /** **5+** plans: horizontal scroll; cards 1–4 stay in a single grid row from `md` (see `equalWidthGridClass`). */
-  const scrollMode = cardCount > 4;
-
-  const gridColumns = scrollMode
-    ? 0
-    : Math.min(Math.max(columnCount, cardCount), 4);
-
-  return (
-    <PricingPlanCardsRowScrollWithDots
-      ref={ref}
-      className={className}
-      scrollMode={scrollMode}
-      cardCount={cardCount}
-      columnCount={columnCount}
-      layoutColumnCount={scrollMode ? cardCount : gridColumns}
-      showPagination={showPagination}
-      equalWidthClass={scrollMode ? "" : equalWidthGridClass(gridColumns, cardCount)}
-      {...props}
-    >
-      {children}
-    </PricingPlanCardsRowScrollWithDots>
-  );
-});
+);
 
 type RowInnerProps = {
   children: React.ReactNode;
@@ -120,115 +121,138 @@ type RowInnerProps = {
 const PricingPlanCardsRowScrollWithDots = React.forwardRef<
   HTMLDivElement,
   RowInnerProps
->(({ scrollMode, cardCount, columnCount, layoutColumnCount, showPagination, equalWidthClass, className, children, ...props }, ref) => {
-  const scrollerRef = React.useRef<HTMLDivElement | null>(null);
-  const [activeIndex, setActiveIndex] = React.useState(0);
-  const showDots =
-    scrollMode && showPagination && cardCount > 1;
-
-  const setScrollRef = React.useCallback(
-    (node: HTMLDivElement | null) => {
-      scrollerRef.current = node;
-      if (typeof ref === "function") ref(node);
-      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+>(
+  (
+    {
+      scrollMode,
+      cardCount,
+      columnCount,
+      layoutColumnCount,
+      showPagination,
+      equalWidthClass,
+      className,
+      children,
+      ...props
     },
-    [ref]
-  );
+    ref
+  ) => {
+    const scrollerRef = React.useRef<HTMLDivElement | null>(null);
+    const [activeIndex, setActiveIndex] = React.useState(0);
+    const showDots = scrollMode && showPagination && cardCount > 1;
 
-  const updateActiveFromScroll = React.useCallback(() => {
-    if (!scrollMode) return;
-    const scroller = scrollerRef.current;
-    const track = scroller?.querySelector<HTMLElement>(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+    const setScrollRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        scrollerRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref)
+          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      },
+      [ref]
     );
-    const firstCard = track?.firstElementChild as HTMLElement | null | undefined;
-    if (!scroller || !firstCard) return;
-    const step = firstCard.offsetWidth + SCROLL_CARD_GAP_PX;
-    if (step <= 0) return;
-    const i = Math.round(scroller.scrollLeft / step);
-    setActiveIndex(Math.min(Math.max(0, i), cardCount - 1));
-  }, [scrollMode, cardCount]);
 
-  React.useEffect(() => {
-    if (!showDots) return;
-    updateActiveFromScroll();
-  }, [showDots, updateActiveFromScroll, children]);
+    const updateActiveFromScroll = React.useCallback(() => {
+      if (!scrollMode) return;
+      const scroller = scrollerRef.current;
+      const track = scroller?.querySelector<HTMLElement>(
+        '[data-testid="pricing-plan-cards-grid"]'
+      );
+      const firstCard = track?.firstElementChild as
+        | HTMLElement
+        | null
+        | undefined;
+      if (!scroller || !firstCard) return;
+      const step = firstCard.offsetWidth + SCROLL_CARD_GAP_PX;
+      if (step <= 0) return;
+      const i = Math.round(scroller.scrollLeft / step);
+      setActiveIndex(Math.min(Math.max(0, i), cardCount - 1));
+    }, [scrollMode, cardCount]);
 
-  const goToIndex = (index: number) => {
-    const scroller = scrollerRef.current;
-    const track = scroller?.querySelector<HTMLElement>(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
-    );
-    const el = track?.children[index] as HTMLElement | undefined;
-    if (el && scroller) {
-      el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-    }
-  };
+    React.useEffect(() => {
+      if (!showDots) return;
+      updateActiveFromScroll();
+    }, [showDots, updateActiveFromScroll, children]);
 
-  return (
-    <div className="flex w-full min-w-0 max-w-full flex-col">
-      <div
-        ref={setScrollRef}
-        onScroll={scrollMode ? updateActiveFromScroll : undefined}
-        className={cn(
-          "w-full min-w-0",
-          scrollMode
-            ? "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-gutter:stable]"
-            : "overflow-x-hidden",
-          className
-        )}
-        role={scrollMode ? "region" : undefined}
-        aria-label={scrollMode ? "Plan options" : undefined}
-        {...props}
-      >
+    const goToIndex = (index: number) => {
+      const scroller = scrollerRef.current;
+      const track = scroller?.querySelector<HTMLElement>(
+        '[data-testid="pricing-plan-cards-grid"]'
+      );
+      const el = track?.children[index] as HTMLElement | undefined;
+      if (el && scroller) {
+        el.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
+      }
+    };
+
+    return (
+      <div className="flex w-full min-w-0 max-w-full flex-col">
         <div
-          data-testid="pricing-plan-cards-grid"
-          data-pricing-plans-layout={scrollMode ? "scroll" : "grid"}
-          data-column-count={columnCount}
-          data-layout-column-count={layoutColumnCount}
+          ref={setScrollRef}
+          onScroll={scrollMode ? updateActiveFromScroll : undefined}
           className={cn(
+            "w-full min-w-0",
             scrollMode
-              ? [
-                  "flex w-max min-w-full flex-nowrap items-stretch",
-                  "gap-8",
-                  "snap-x snap-mandatory sm:snap-none",
-                  "[&>div]:snap-start [&>div]:min-h-0 [&>div]:w-[min(21.375rem,calc(100vw-3rem))] [&>div]:max-w-full [&>div]:shrink-0",
-                ]
-              : equalWidthClass
+              ? "overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-gutter:stable]"
+              : "overflow-x-hidden",
+            className
           )}
+          role={scrollMode ? "region" : undefined}
+          aria-label={scrollMode ? "Plan options" : undefined}
+          {...props}
         >
-          {children}
+          <div
+            data-testid="pricing-plan-cards-grid"
+            data-pricing-plans-layout={scrollMode ? "scroll" : "grid"}
+            data-column-count={columnCount}
+            data-layout-column-count={layoutColumnCount}
+            className={cn(
+              scrollMode
+                ? [
+                    "flex w-max min-w-full flex-nowrap items-stretch",
+                    "gap-8",
+                    "snap-x snap-mandatory sm:snap-none",
+                    "[&>div]:snap-start [&>div]:min-h-0 [&>div]:w-[min(21.375rem,calc(100vw-3rem))] [&>div]:max-w-full [&>div]:shrink-0",
+                  ]
+                : equalWidthClass
+            )}
+          >
+            {children}
+          </div>
         </div>
+        {showDots && (
+          <nav
+            className="mt-3 flex w-full min-w-0 items-center justify-center gap-1.5 pb-0 pt-1"
+            aria-label="Plan card pages"
+            data-testid="pricing-plan-cards-pagination"
+          >
+            {Array.from({ length: cardCount }, (_, i) => (
+              <button
+                key={i}
+                type="button"
+                className={cn(
+                  "size-2.5 min-h-[10px] min-w-[10px] rounded-full border-0 p-0 transition-colors",
+                  "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2 focus-visible:outline-none",
+                  i === activeIndex
+                    ? "bg-semantic-primary"
+                    : "bg-semantic-border-layout hover:bg-semantic-text-muted"
+                )}
+                aria-label={`Show plan ${i + 1} of ${cardCount}`}
+                aria-current={i === activeIndex ? "true" : undefined}
+                onClick={() => goToIndex(i)}
+              />
+            ))}
+          </nav>
+        )}
       </div>
-      {showDots && (
-        <nav
-          className="mt-3 flex w-full min-w-0 items-center justify-center gap-1.5 pb-0 pt-1"
-          aria-label="Plan card pages"
-          data-testid="pricing-plan-cards-pagination"
-        >
-          {Array.from({ length: cardCount }, (_, i) => (
-            <button
-              key={i}
-              type="button"
-              className={cn(
-                "size-2.5 min-h-[10px] min-w-[10px] rounded-full border-0 p-0 transition-colors",
-                "focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2 focus-visible:outline-none",
-                i === activeIndex
-                  ? "bg-semantic-primary"
-                  : "bg-semantic-border-layout hover:bg-semantic-text-muted"
-              )}
-              aria-label={`Show plan ${i + 1} of ${cardCount}`}
-              aria-current={i === activeIndex ? "true" : undefined}
-              onClick={() => goToIndex(i)}
-            />
-          ))}
-        </nav>
-      )}
-    </div>
-  );
-});
+    );
+  }
+);
 
-PricingPlanCardsRowScrollWithDots.displayName = "PricingPlanCardsRowScrollWithDots";
+PricingPlanCardsRowScrollWithDots.displayName =
+  "PricingPlanCardsRowScrollWithDots";
 
 PricingPlanCardsRow.displayName = "PricingPlanCardsRow";
 

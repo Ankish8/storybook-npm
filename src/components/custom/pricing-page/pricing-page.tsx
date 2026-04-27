@@ -65,7 +65,9 @@ const planSectionPaddingTop = cn("pt-0");
 const pageHeaderToBodyGapClass = cn("gap-6");
 
 /** Plan column stack (header and plan share one full-width column; no outer shell `px`, gutters on header + plan). */
-const planColumnStackClass = cn("flex w-full min-w-0 max-w-full flex-col gap-0 px-4 sm:px-6 pt-6 pb-[60px]");
+const planColumnStackClass = cn(
+  "flex w-full min-w-0 max-w-full flex-col gap-0 px-4 sm:px-6 pt-6 pb-[60px]"
+);
 
 /**
  * Figma `1119:2986`, `1119:3031` — **16px** between the section title row and the card grid.
@@ -163,15 +165,19 @@ const PricingPage = React.forwardRef(
       planCardColumnCount !== undefined
         ? Math.max(planCards.length, planCardColumnCount)
         : planCards.length;
+    const useFeaturedPlanCard =
+      planCardsLayout === "default" && planCards.length === 1;
 
     const planCardItems = planCards.map((cardProps, index) => {
       const ctaState = planCardCtaStates?.[index];
       const merged = { ...cardProps };
       if (ctaState) {
-        if (ctaState.loading !== undefined) merged.ctaLoading = ctaState.loading;
-        if (ctaState.disabled !== undefined) merged.ctaDisabled = ctaState.disabled;
+        if (ctaState.loading !== undefined)
+          merged.ctaLoading = ctaState.loading;
+        if (ctaState.disabled !== undefined)
+          merged.ctaDisabled = ctaState.disabled;
       }
-      const { className: cardClassName, ...cardRest } = merged;
+      const { className: cardClassName, layout, ...cardRest } = merged;
       return (
         <div
           key={index}
@@ -179,14 +185,14 @@ const PricingPage = React.forwardRef(
         >
           <PricingCard
             {...cardRest}
+            layout={layout ?? (useFeaturedPlanCard ? "featured" : "default")}
             className={cn("min-h-0 w-full max-w-full flex-1", cardClassName)}
           />
         </div>
       );
     });
 
-    const planAlertVisible =
-      !!planAlert && showPlanAlert !== false;
+    const planAlertVisible = !!planAlert && showPlanAlert !== false;
 
     return (
       <div
@@ -330,9 +336,7 @@ const PricingPage = React.forwardRef(
                     className={cn(
                       pageBodyMaxClass,
                       "mx-auto w-full",
-                      hasPowerUps
-                        ? sectionBandPaddingY
-                        : bandAfterPlanPaddingY,
+                      hasPowerUps ? sectionBandPaddingY : bandAfterPlanPaddingY,
                       pageGutterX
                     )}
                   >
