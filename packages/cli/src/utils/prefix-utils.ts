@@ -545,9 +545,10 @@ export function prefixClassString(classString: string, prefix: string): string {
     )
       return cls
 
-    // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
+    // Handle variant prefixes like hover:, focus:, sm:, min-[640px]:,
+    // data-[state=open]:, aria-[checked]:, group-[.selector]:, etc.
     const variantMatch = cls.match(
-      /^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/
+      /^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|([a-z][a-z0-9-]*(\/[a-z0-9-]+)?-\[[^\]]+\]:))+/
     )
     if (variantMatch) {
       const variants = variantMatch[0]

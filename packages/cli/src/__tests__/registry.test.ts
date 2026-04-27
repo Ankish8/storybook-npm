@@ -3,6 +3,7 @@ import { getRegistry } from '../utils/registry.js'
 import {
   prefixTailwindClasses,
   prefixClassNameExpression,
+  prefixClassString,
 } from '../utils/prefix-utils.js'
 
 describe('Registry', () => {
@@ -213,6 +214,36 @@ describe('Registry', () => {
 
       // Components now use CSS variables: hover:tw-bg-[var(--semantic-primary-hover,#2F384D)]
       expect(content).toContain('hover:tw-bg-[var(--semantic-primary-hover')
+    })
+
+    it('prefixes arbitrary breakpoint variant utilities without moving the variant', () => {
+      expect(prefixClassString('min-[640px]:grid-cols-2', 'tw-')).toBe(
+        'min-[640px]:tw-grid-cols-2'
+      )
+      expect(prefixClassString('max-[900px]:!grid-cols-1', 'tw-')).toBe(
+        'max-[900px]:!tw-grid-cols-1'
+      )
+
+      const result = prefixTailwindClasses(
+        'className="grid min-[480px]:grid-cols-2 min-[640px]:grid-cols-2"',
+        'tw-'
+      )
+      expect(result).toContain('tw-grid')
+      expect(result).toContain('min-[480px]:tw-grid-cols-2')
+      expect(result).toContain('min-[640px]:tw-grid-cols-2')
+      expect(result).not.toContain('tw-min-[480px]:grid-cols-2')
+      expect(result).not.toContain('tw-min-[640px]:grid-cols-2')
+    })
+
+    it('generates valid prefixed arbitrary breakpoints for pricing page layouts', async () => {
+      const registry = await getRegistry('tw-')
+      const pricingPage = registry['pricing-page']
+      const content = pricingPage.files.map((file) => file.content).join('\n')
+
+      expect(content).toContain('min-[480px]:tw-grid-cols-2')
+      expect(content).toContain('min-[640px]:tw-grid-cols-2')
+      expect(content).not.toContain('tw-min-[480px]:grid-cols-2')
+      expect(content).not.toContain('tw-min-[640px]:grid-cols-2')
     })
 
     it('preserves import paths without prefixing', async () => {

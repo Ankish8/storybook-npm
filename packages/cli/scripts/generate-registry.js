@@ -714,13 +714,14 @@ function prefixClassString(classString: string, prefix: string): string {
         return cls
       }
 
-      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:,
-      // group-[.selector]:, peer-[.selector]:, etc.
+      // Handle variant prefixes like hover:, focus:, sm:, min-[640px]:,
+      // data-[state=open]:, aria-[checked]:, group-[.selector]:, peer-[.selector]:, etc.
       // Pattern breakdown:
       // - Simple variants: hover:, focus:, sm:, lg:, dark:, etc.
+      // - Arbitrary value variants: min-[640px]:, max-[900px]:, supports-[display:grid]:
       // - Data/aria variants: data-[state=open]:, aria-[checked]:
       // - Group/peer variants: group-[.toaster]:, peer-[.active]:, group/name-[.class]:
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\\/[a-z][a-z0-9-]*)?:)|((data|aria|group|peer)(\\/[a-z0-9-]+)?-?\\[[^\\]]+\\]:))+/)
+      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\\/[a-z][a-z0-9-]*)?:)|([a-z][a-z0-9-]*(\\/[a-z0-9-]+)?-\\[[^\\]]+\\]:))+/)
       if (variantMatch) {
         const variants = variantMatch[0]
         let utility = cls.slice(variants.length)

@@ -60,6 +60,8 @@ const CORRUPTION_PATTERNS = [
 // Pattern to detect misplaced data-attribute prefix
 const MISPLACED_DATA_PREFIX = /tw-data-\[[^\]]+\]:/g
 const MISPLACED_ARIA_PREFIX = /tw-aria-\[[^\]]+\]:/g
+const MISPLACED_ARBITRARY_VARIANT_PREFIX =
+  /tw-[a-z][a-z0-9-]*(?:\/[a-z0-9-]+)?-\[[^\]]+\]:/g
 
 function validateFile(filePath, fileName) {
   if (!fs.existsSync(filePath)) {
@@ -104,6 +106,18 @@ function validateFile(filePath, fileName) {
       count: ariaMatches.length,
       examples: ariaMatches.slice(0, 5),
       fix: 'Should be aria-[...]:tw-<utility> not tw-aria-[...]:utility',
+    })
+  }
+
+  // Check for misplaced arbitrary variant prefix (e.g. tw-min-[640px]:grid-cols-2)
+  const arbitraryVariantMatches = content.match(MISPLACED_ARBITRARY_VARIANT_PREFIX)
+  if (arbitraryVariantMatches) {
+    issues.push({
+      type: 'MISPLACED_PREFIX',
+      desc: 'tw- prefix on arbitrary variant instead of utility class',
+      count: arbitraryVariantMatches.length,
+      examples: arbitraryVariantMatches.slice(0, 5),
+      fix: 'Should be min-[...]:tw-<utility> not tw-min-[...]:utility',
     })
   }
 
