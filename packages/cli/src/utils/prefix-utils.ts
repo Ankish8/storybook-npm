@@ -545,6 +545,38 @@ export function prefixClassString(classString: string, prefix: string): string {
     )
       return cls
 
+    // Handle arbitrary variants/selectors like [@media(...)]:min-h-full
+    // or [&_[data-icon]]:text-red. This must run before the normal variant
+    // regex so the prefix stays on the utility, not on the bracketed variant.
+    if (cls.startsWith('[')) {
+      let depth = 0
+      let closeBracket = -1
+      for (let i = 0; i < cls.length; i++) {
+        if (cls[i] === '[') depth++
+        else if (cls[i] === ']') {
+          depth--
+          if (depth === 0 && cls[i + 1] === ':') {
+            closeBracket = i
+            break
+          }
+        }
+      }
+
+      if (closeBracket !== -1) {
+        const variant = cls.slice(0, closeBracket + 2)
+        let utility = cls.slice(closeBracket + 2)
+        if (!utility) return cls
+
+        const isImportant = utility.startsWith('!')
+        if (isImportant) utility = utility.slice(1)
+
+        if (utility.startsWith('-')) {
+          return `${variant}${isImportant ? '!' : ''}-${prefix}${utility.slice(1)}`
+        }
+        return `${variant}${isImportant ? '!' : ''}${prefix}${utility}`
+      }
+    }
+
     // Handle variant prefixes like hover:, focus:, sm:, min-[640px]:,
     // data-[state=open]:, aria-[checked]:, group-[.selector]:, etc.
     const variantMatch = cls.match(
@@ -578,18 +610,6 @@ export function prefixClassString(classString: string, prefix: string): string {
     // Handle negative values like -mt-4
     if (cls.startsWith('-') && cls.length > 1) {
       return `-${prefix}${cls.slice(1)}`
-    }
-
-    // Handle arbitrary selector values like [&_svg]:pointer-events-none
-    if (cls.startsWith('[&')) {
-      const closeBracket = cls.indexOf(']:')
-      if (closeBracket !== -1) {
-        const selector = cls.slice(0, closeBracket + 2)
-        const utility = cls.slice(closeBracket + 2)
-        if (!utility) return cls
-        return `${selector}${prefix}${utility}`
-      }
-      return cls
     }
 
     // Regular class (including arbitrary values like bg-[#343E55])

@@ -223,6 +223,12 @@ describe("Registry", () => {
       expect(prefixClassString("max-[900px]:!grid-cols-1", "tw-")).toBe(
         "max-[900px]:!tw-grid-cols-1"
       );
+      expect(
+        prefixClassString("[@media(min-height:36rem)]:min-h-full", "tw-")
+      ).toBe("[@media(min-height:36rem)]:tw-min-h-full");
+      expect(prefixClassString("[&_[data-icon]]:text-red", "tw-")).toBe(
+        "[&_[data-icon]]:tw-text-red"
+      );
 
       const result = prefixTailwindClasses(
         'className="grid min-[480px]:grid-cols-2 min-[640px]:grid-cols-2"',
@@ -266,6 +272,14 @@ describe("Registry", () => {
       expect(content).toContain(
         "tw-border tw-border-solid tw-border-[var(--semantic-border-layout"
       );
+      expect(content).toContain(
+        "[@media(min-height:36rem)]:tw-min-h-full"
+      );
+      expect(content).toContain("[@media(min-height:36rem)]:tw-flex-1");
+      expect(content).toContain(
+        "[@media(min-height:36rem)]:tw-justify-center"
+      );
+      expect(content).not.toContain("tw-[@media(min-height:36rem)]");
     });
 
     it("preserves import paths without prefixing", async () => {

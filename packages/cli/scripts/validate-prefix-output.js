@@ -61,7 +61,7 @@ const CORRUPTION_PATTERNS = [
 const MISPLACED_DATA_PREFIX = /tw-data-\[[^\]]+\]:/g
 const MISPLACED_ARIA_PREFIX = /tw-aria-\[[^\]]+\]:/g
 const MISPLACED_ARBITRARY_VARIANT_PREFIX =
-  /tw-[a-z][a-z0-9-]*(?:\/[a-z0-9-]+)?-\[[^\]]+\]:/g
+  /tw-(?:[a-z][a-z0-9-]*(?:\/[a-z0-9-]+)?-\[[^\]]+\]|\[[^\]]+\]):/g
 
 function validateFile(filePath, fileName) {
   if (!fs.existsSync(filePath)) {

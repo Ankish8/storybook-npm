@@ -685,9 +685,10 @@ function prefixClassString(classString: string, prefix: string): string {
       // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
       if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return cls
 
-      // Handle arbitrary selector values like [&_svg]:pointer-events-none or [&_[data-icon]]:text-red
-      // MUST be checked BEFORE variant match to handle nested brackets properly
-      if (cls.startsWith('[&') || cls.startsWith('[&_')) {
+      // Handle arbitrary variants/selectors like [@media(...)]:min-h-full
+      // or [&_[data-icon]]:text-red. This must run before the normal variant
+      // regex so the prefix stays on the utility, not on the bracketed variant.
+      if (cls.startsWith('[')) {
         // Find the matching closing bracket by tracking depth
         let depth = 0
         let closeBracket = -1
@@ -702,16 +703,19 @@ function prefixClassString(classString: string, prefix: string): string {
           }
         }
         if (closeBracket !== -1) {
-          const selector = cls.slice(0, closeBracket + 2) // Include ]:
-          const utility = cls.slice(closeBracket + 2)
+          const variant = cls.slice(0, closeBracket + 2) // Include ]:
+          let utility = cls.slice(closeBracket + 2)
           if (!utility) return cls
-          // Handle negative utilities
+
+          // Handle ! important modifier: [@media(...)]:!p-0 → [@media(...)]:!tw-p-0
+          const isImportant = utility.startsWith('!')
+          if (isImportant) utility = utility.slice(1)
+
           if (utility.startsWith('-')) {
-            return \`\${selector}-\${prefix}\${utility.slice(1)}\`
+            return \`\${variant}\${isImportant ? '!' : ''}-\${prefix}\${utility.slice(1)}\`
           }
-          return \`\${selector}\${prefix}\${utility}\`
+          return \`\${variant}\${isImportant ? '!' : ''}\${prefix}\${utility}\`
         }
-        return cls
       }
 
       // Handle variant prefixes like hover:, focus:, sm:, min-[640px]:,
