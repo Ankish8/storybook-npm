@@ -8,11 +8,9 @@ const SCROLL_CARD_GAP_PX = 32;
 export interface PricingPlanCardsRowProps
   extends React.HTMLAttributes<HTMLDivElement> {
   /**
-   * Column slots for the grid (from `planCardColumnCount` / `planCards.length` on `PricingPage`).
-   * With **1–4** child cards, the row uses a responsive grid with this many columns (capped at 4)
-   * so e.g. two plans can still use a **4-column** layout when `columnCount` is 4.
-   * With **5+** children, this prop is ignored and cards use **horizontal scroll** (5th+ off-screen
-   * until the user scrolls).
+   * Column slots for the grid (from `planCardColumnCount` / `planCards.length`
+   * on `PricingPage`). With 1-4 child cards, this controls responsive columns
+   * (capped at 4). With 5+ cards, the row switches to horizontal scroll.
    */
   columnCount: number;
   /**
@@ -182,6 +180,8 @@ const PricingPlanCardsRowScrollWithDots = React.forwardRef<
         <div
           data-testid="pricing-plan-cards-grid"
           data-pricing-plans-layout={scrollMode ? "scroll" : "grid"}
+          data-column-count={columnCount}
+          data-layout-column-count={scrollMode ? cardCount : gridColumns}
           className={cn(
             scrollMode
               ? [

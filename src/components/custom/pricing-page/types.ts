@@ -96,10 +96,11 @@ export interface PricingPageProps
   /** Array of plan card props to render in the main pricing grid */
   planCards?: PricingCardProps[];
   /**
-   * Column count for the plan card row (single row, equal-width tracks). Defaults
-   * to `planCards.length` so any number of plans (e.g. four or more) stays on one
-   * row. Override only if you need a fixed column count that differs from the
-   * number of cards (uncommon). Ignored when `planCardsLayout` is `oneColumn` or `twoColumn`.
+   * Column count for the plan card row in `default` layout. Defaults to
+   * `planCards.length`; one or two plans still reserve three-card sizing and
+   * stay centered, three/four stay in an equal-width row, and five+ switch to
+   * horizontal scroll. Ignored when `planCardsLayout` is `oneColumn` or
+   * `twoColumn`.
    */
   planCardColumnCount?: number;
   /**

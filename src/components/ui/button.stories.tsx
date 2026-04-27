@@ -13,11 +13,18 @@ import {
   Check,
 } from "lucide-react";
 
+const FIGMA_BUTTON_DESIGN_URL =
+  "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=33-288&t=SZisDxHhkguO3E6z-4";
+
 const meta: Meta<typeof Button> = {
   title: "Components/Button",
   component: Button,
   parameters: {
     layout: "centered",
+    design: {
+      type: "figma",
+      url: FIGMA_BUTTON_DESIGN_URL,
+    },
     docs: {
       description: {
         component: `

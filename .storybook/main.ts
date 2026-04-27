@@ -18,7 +18,8 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     "@storybook/addon-vitest",
     "storybook-addon-pseudo-states",
-    "storybook-design-token"
+    "storybook-design-token",
+    "@storybook/addon-designs"
   ],
   framework: {
     name: "@storybook/react-vite",

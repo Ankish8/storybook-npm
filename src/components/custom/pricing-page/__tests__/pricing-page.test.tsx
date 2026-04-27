@@ -240,11 +240,14 @@ describe("PricingPage", () => {
     ];
     const { container } = render(<PricingPage planCards={fourPlans} />);
     const grid = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
+
     expect(grid).toBeTruthy();
     expect(grid).toHaveClass("md:grid-cols-4");
     expect(grid).toHaveAttribute("data-pricing-plans-layout", "grid");
+    expect(grid).toHaveAttribute("data-column-count", "4");
+    expect(grid).toHaveAttribute("data-layout-column-count", "4");
   });
 
   it("uses one-column layout when planCardsLayout is oneColumn", () => {
