@@ -91,11 +91,6 @@ const bandAfterPlanPaddingY = cn(
 /** **60px** space below the plan row (alert + cards + optional pagination) when a lower band follows. */
 const planRowPaddingBottomWhenFollowed = cn("pb-[0px]");
 
-/**
- * Power-ups **inner** content: side padding inside the full-width band (Figma: ~24px / 48px rhythm).
- */
-const powerUpsGutterX = cn("box-border px-4 sm:px-6 md:px-8 lg:px-10");
-
 function planAlertStatusToVariant(
   status: PricingPlanAlertStatus
 ): "success" | "warning" | "info" | "error" {
@@ -280,7 +275,7 @@ const PricingPage = React.forwardRef(
             </div>
           </div>
 
-          {/* ─── Full-bleed Power-ups (grey bg edge-to-edge of `PricingPage`); content stays max-w + px. ─── */}
+          {/* ─── Full-bleed Power-ups (grey bg edge-to-edge of `PricingPage`); content aligns to the plan grid. ─── */}
           {(hasPowerUps || hasLetUsDrive) && (
             <div className="flex w-full min-w-0 max-w-full min-h-0 flex-col">
               {hasPowerUps && (
@@ -290,7 +285,7 @@ const PricingPage = React.forwardRef(
                       pageBodyMaxClass,
                       "mx-auto w-full",
                       bandAfterPlanPaddingY,
-                      powerUpsGutterX
+                      pageGutterX
                     )}
                   >
                     <div

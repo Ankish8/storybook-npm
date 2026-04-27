@@ -96,6 +96,8 @@ const PricingPlanCardsRow = React.forwardRef<
       className={className}
       scrollMode={scrollMode}
       cardCount={cardCount}
+      columnCount={columnCount}
+      layoutColumnCount={scrollMode ? cardCount : gridColumns}
       showPagination={showPagination}
       equalWidthClass={scrollMode ? "" : equalWidthGridClass(gridColumns, cardCount)}
       {...props}
@@ -109,6 +111,8 @@ type RowInnerProps = {
   children: React.ReactNode;
   scrollMode: boolean;
   cardCount: number;
+  columnCount: number;
+  layoutColumnCount: number;
   showPagination: boolean;
   equalWidthClass: string;
 } & React.HTMLAttributes<HTMLDivElement>;
@@ -116,7 +120,7 @@ type RowInnerProps = {
 const PricingPlanCardsRowScrollWithDots = React.forwardRef<
   HTMLDivElement,
   RowInnerProps
->(({ scrollMode, cardCount, showPagination, equalWidthClass, className, children, ...props }, ref) => {
+>(({ scrollMode, cardCount, columnCount, layoutColumnCount, showPagination, equalWidthClass, className, children, ...props }, ref) => {
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = React.useState(0);
   const showDots =
@@ -181,7 +185,7 @@ const PricingPlanCardsRowScrollWithDots = React.forwardRef<
           data-testid="pricing-plan-cards-grid"
           data-pricing-plans-layout={scrollMode ? "scroll" : "grid"}
           data-column-count={columnCount}
-          data-layout-column-count={scrollMode ? cardCount : gridColumns}
+          data-layout-column-count={layoutColumnCount}
           className={cn(
             scrollMode
               ? [

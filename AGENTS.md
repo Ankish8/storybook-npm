@@ -251,7 +251,7 @@ If `api:check` blocks a commit for intentional breaking changes, run `npm run ap
 
 ## Publishing
 
-**Prefer `/publish-all`** — the project has a `.claude/commands/publish-all.md` slash command that runs the full workflow end-to-end. Use raw `npm publish` only when the slash command is unavailable or you need a partial step.
+**Prefer `/publish-all`** — the project has a Claude/Codex-compatible workflow at `.claude/commands/publish-all.md` that runs the full workflow end-to-end. In Codex, treat a user request for `/publish-all` as an instruction to read and execute that workflow when a native slash-command runner is unavailable. Use raw `npm publish` only when the slash command is unavailable or you need a partial step.
 
 ### Pre-publish validation gates (run ALL in order — do not skip)
 

@@ -1,6 +1,12 @@
+---
+description: "Full publish workflow for myOperator UI (Claude/Codex compatible; beta/latest) with pre-flight checks, Storybook sync, and conditional publish paths"
+argument-hint: "Optional release type (beta|latest)"
+---
+
 # Full Publish Workflow
 
 > **Cursor users:** Use `/publish-all-cursor` for the Cursor-native version of this workflow.
+> **Codex users:** Follow this command directly. If no release type is provided, ask the user in chat for `beta` or `latest`, then continue after they answer.
 
 Complete publishing workflow for myOperator UI:
 1. Ask for release type (Beta or Latest)
@@ -12,14 +18,22 @@ Complete publishing workflow for myOperator UI:
 
 ## Step 1: Ask for Release Type
 
-Use the AskQuestion tool to ask:
+If the user provided an argument, normalize it:
+- `beta` / `Beta` -> Beta release
+- `latest` / `Latest` -> Latest release
 
-```
-Question: "Which release type?"
-Options:
-  - Beta — Publish CLI with --tag beta. Test before affecting other developers. Does NOT commit or publish MCP.
-  - Latest — Publish to @latest. All users get this version. Commits, pushes, and publishes MCP.
-```
+If no release type was provided, ask:
+
+> Which release type: `beta` or `latest`?
+
+Use the host-native interaction:
+- **Claude Code:** use the available question tool if present; otherwise ask in chat.
+- **Codex:** ask in chat and wait for the user's reply. Do not call unavailable structured question tools.
+- **Cursor:** use `/publish-all-cursor`, which contains the Cursor-native `AskQuestion` call.
+
+Release choices:
+- **Beta:** Publish CLI with `--tag beta`. Test before affecting other developers. Does NOT publish MCP.
+- **Latest:** Publish to `@latest`. All users get this version. Commits, pushes, and publishes MCP.
 
 ---
 
