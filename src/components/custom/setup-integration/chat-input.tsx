@@ -1,9 +1,9 @@
-import * as React from "react"
-import { SendHorizontal } from "lucide-react"
-import { cn } from "../../../lib/utils"
-import type { ChatInputProps } from "./types"
+import * as React from "react";
+import { SendHorizontal } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import type { ChatInputProps } from "./types";
 
-const MAX_TEXTAREA_HEIGHT_PX = 200
+const MAX_TEXTAREA_HEIGHT_PX = 200;
 
 const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
   (
@@ -17,45 +17,45 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
     },
     ref
   ) => {
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
     const resizeTextarea = React.useCallback(() => {
-      const el = textareaRef.current
-      if (!el) return
-      el.style.height = "auto"
-      const next = Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT_PX)
-      el.style.height = `${Math.max(next, 48)}px`
-    }, [])
+      const el = textareaRef.current;
+      if (!el) return;
+      el.style.height = "auto";
+      const next = Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT_PX);
+      el.style.height = `${Math.max(next, 48)}px`;
+    }, []);
 
     React.useLayoutEffect(() => {
-      resizeTextarea()
-    }, [value, resizeTextarea])
+      resizeTextarea();
+    }, [value, resizeTextarea]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      onInputKeyDown?.(e)
-      if (e.defaultPrevented) return
+      onInputKeyDown?.(e);
+      if (e.defaultPrevented) return;
       if (e.key === "Enter" && !e.shiftKey) {
         if (value.trim() && onSend && !disabled) {
-          e.preventDefault()
-          onSend(value.trim())
+          e.preventDefault();
+          onSend(value.trim());
         } else if (!value.trim()) {
-          e.preventDefault()
+          e.preventDefault();
         }
       }
-    }
+    };
 
     const handleSend = () => {
       if (value.trim() && onSend) {
-        onSend(value.trim())
+        onSend(value.trim());
       }
-    }
+    };
 
     return (
       <div
         ref={ref}
-        className="relative z-10 shrink-0 border-t border-semantic-border-layout bg-semantic-bg-primary px-4 pb-2 pt-4 sm:px-6 sm:pt-5"
+        className="relative z-10 shrink-0 border-t border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 pb-2 pt-4 sm:px-6 sm:pt-5"
       >
-        <div className="flex min-h-12 max-h-[min(200px,40vh)] items-end rounded-[10px] border border-semantic-border-input bg-semantic-bg-primary pl-3 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)] sm:pl-4">
+        <div className="flex min-h-12 max-h-[min(200px,40vh)] items-end rounded-[10px] border border-solid border-semantic-border-input bg-semantic-bg-primary pl-3 pr-1 shadow-[4px_4px_25px_0px_rgba(0,0,0,0.04)] sm:pl-4">
           <textarea
             ref={textareaRef}
             value={value}
@@ -87,9 +87,9 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
           </button>
         </div>
       </div>
-    )
+    );
   }
-)
-ChatInput.displayName = "ChatInput"
+);
+ChatInput.displayName = "ChatInput";
 
-export { ChatInput }
+export { ChatInput };

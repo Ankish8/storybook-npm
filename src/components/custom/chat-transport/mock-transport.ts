@@ -925,7 +925,9 @@ export class MockTransport implements ChatTransport {
 
     if (params.filters?.channels && params.filters.channels.size > 0) {
       items = items.filter((c) =>
-        params.filters!.channels!.has(c.channel.toLowerCase()),
+        c.channel
+          ? params.filters!.channels!.has(c.channel.toLowerCase())
+          : false,
       )
     }
 

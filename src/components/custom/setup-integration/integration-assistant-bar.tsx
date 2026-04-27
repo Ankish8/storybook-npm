@@ -1,16 +1,15 @@
-import * as React from "react"
-import { Sparkles, RotateCcw } from "lucide-react"
-import { cn } from "../../../lib/utils"
+import * as React from "react";
+import { Sparkles, RotateCcw } from "lucide-react";
+import { cn } from "../../../lib/utils";
 
-export interface IntegrationAssistantBarProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface IntegrationAssistantBarProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Label next to the leading icon (default: "AI Assistant") */
-  label?: string
+  label?: string;
   /** Reset control label (default: "Reset Chat") */
-  resetLabel?: string
-  onResetClick?: () => void
-  leadingIcon?: React.ReactNode
-  resetIcon?: React.ReactNode
+  resetLabel?: string;
+  onResetClick?: () => void;
+  leadingIcon?: React.ReactNode;
+  resetIcon?: React.ReactNode;
 }
 
 const IntegrationAssistantBar = React.forwardRef<
@@ -32,7 +31,7 @@ const IntegrationAssistantBar = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "flex min-h-[52px] shrink-0 flex-wrap items-center justify-between gap-2 border-b border-semantic-border-layout bg-semantic-info-surface-subtle px-4 py-2.5 sm:h-[52px] sm:flex-nowrap sm:px-6 sm:py-0",
+        "flex min-h-[52px] shrink-0 flex-wrap items-center justify-between gap-2 border-b border-solid border-semantic-border-layout bg-semantic-info-surface-subtle px-4 py-2.5 sm:h-[52px] sm:flex-nowrap sm:px-6 sm:py-0",
         className
       )}
       {...props}
@@ -57,7 +56,7 @@ const IntegrationAssistantBar = React.forwardRef<
       )}
     </div>
   )
-)
-IntegrationAssistantBar.displayName = "IntegrationAssistantBar"
+);
+IntegrationAssistantBar.displayName = "IntegrationAssistantBar";
 
-export { IntegrationAssistantBar }
+export { IntegrationAssistantBar };

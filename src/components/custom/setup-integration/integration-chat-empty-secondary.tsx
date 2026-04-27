@@ -1,18 +1,17 @@
-import * as React from "react"
-import { Sparkles } from "lucide-react"
-import { cn } from "../../../lib/utils"
+import * as React from "react";
+import { Sparkles } from "lucide-react";
+import { cn } from "../../../lib/utils";
 
-export interface IntegrationChatEmptySecondaryProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface IntegrationChatEmptySecondaryProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Optional leading icon (defaults to Sparkles) */
-  icon?: React.ReactNode
+  icon?: React.ReactNode;
   /** Main text — tips, hints, or short guidance */
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const defaultIcon = (
   <Sparkles className="size-5 text-semantic-text-secondary" aria-hidden />
-)
+);
 
 /**
  * Secondary panel below {@link IntegrationChatEmptyHint} — icon + text in a subtle surface.
@@ -26,7 +25,7 @@ const IntegrationChatEmptySecondary = React.forwardRef<
     ref={ref}
     role="note"
     className={cn(
-      "flex w-full max-w-md flex-row items-start gap-3 rounded-lg border border-semantic-border-layout bg-semantic-bg-ui p-4 text-left",
+      "flex w-full max-w-md flex-row items-start gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui p-4 text-left",
       className
     )}
     {...props}
@@ -36,7 +35,7 @@ const IntegrationChatEmptySecondary = React.forwardRef<
       {children}
     </p>
   </div>
-))
-IntegrationChatEmptySecondary.displayName = "IntegrationChatEmptySecondary"
+));
+IntegrationChatEmptySecondary.displayName = "IntegrationChatEmptySecondary";
 
-export { IntegrationChatEmptySecondary }
+export { IntegrationChatEmptySecondary };

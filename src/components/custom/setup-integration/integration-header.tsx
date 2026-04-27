@@ -1,17 +1,16 @@
-import * as React from "react"
-import { ArrowLeft, X, Pencil, Check, Loader2 } from "lucide-react"
-import { cn } from "../../../lib/utils"
-import { IntegrationSteps } from "./integration-steps"
+import * as React from "react";
+import { ArrowLeft, X, Pencil, Check, Loader2 } from "lucide-react";
+import { cn } from "../../../lib/utils";
+import { IntegrationSteps } from "./integration-steps";
 
-export interface IntegrationHeaderProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface IntegrationHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Main heading (e.g. "Setup Integration") */
-  title?: string
+  title?: string;
   /** Step line shown under the title (e.g. "Step 3 of 4") */
-  subtitle?: React.ReactNode
+  subtitle?: React.ReactNode;
   /** When set, shows "Title - {name}" with optional inline edit */
-  integrationName?: string
-  onIntegrationNameChange?: (name: string) => void
+  integrationName?: string;
+  onIntegrationNameChange?: (name: string) => void;
   /**
    * Called when the user confirms the inline name (check button or Enter).
    * If provided, the host should save the name (e.g. via API) and then update
@@ -19,20 +18,23 @@ export interface IntegrationHeaderProps
    * The header does not call `onIntegrationNameChange` in this mode — the host updates
    * the name and closes the editor when the save completes.
    */
-  onConfirmIntegrationName?: (name: string) => void
+  onConfirmIntegrationName?: (name: string) => void;
   /** When true, the name field and confirm control are disabled and the check shows a spinner. */
-  isLoading?: boolean
+  isLoading?: boolean;
   /** Invoked when the back control is activated */
-  onBack?: () => void
+  onBack?: () => void;
   /** Invoked when the close control is activated */
-  onClose?: () => void
+  onClose?: () => void;
   /** Optional icon for the back action (defaults to ArrowLeft) */
-  backIcon?: React.ReactNode
+  backIcon?: React.ReactNode;
   /** Optional icon for the close action (defaults to X) */
-  closeIcon?: React.ReactNode
+  closeIcon?: React.ReactNode;
 }
 
-const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProps>(
+const IntegrationHeader = React.forwardRef<
+  HTMLDivElement,
+  IntegrationHeaderProps
+>(
   (
     {
       className,
@@ -50,65 +52,65 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
     },
     ref
   ) => {
-    const [isEditingName, setIsEditingName] = React.useState(false)
-    const [editNameDraft, setEditNameDraft] = React.useState("")
-    const pendingAsyncNameSave = React.useRef(false)
+    const [isEditingName, setIsEditingName] = React.useState(false);
+    const [editNameDraft, setEditNameDraft] = React.useState("");
+    const pendingAsyncNameSave = React.useRef(false);
 
     const clearNameEdit = () => {
-      pendingAsyncNameSave.current = false
-      setIsEditingName(false)
-    }
+      pendingAsyncNameSave.current = false;
+      setIsEditingName(false);
+    };
 
     const handleEditName = () => {
-      pendingAsyncNameSave.current = false
-      setEditNameDraft(integrationName ?? "")
-      setIsEditingName(true)
-    }
+      pendingAsyncNameSave.current = false;
+      setEditNameDraft(integrationName ?? "");
+      setIsEditingName(true);
+    };
 
     const handleConfirmName = () => {
-      if (isLoading) return
-      const trimmed = editNameDraft.trim()
+      if (isLoading) return;
+      const trimmed = editNameDraft.trim();
 
       if (onConfirmIntegrationName) {
-        onConfirmIntegrationName(trimmed)
+        onConfirmIntegrationName(trimmed);
         if (!trimmed) {
-          clearNameEdit()
-          return
+          clearNameEdit();
+          return;
         }
-        pendingAsyncNameSave.current = true
-        return
+        pendingAsyncNameSave.current = true;
+        return;
       }
 
       if (trimmed && trimmed !== integrationName) {
-        onIntegrationNameChange?.(trimmed)
+        onIntegrationNameChange?.(trimmed);
       }
-      clearNameEdit()
-    }
+      clearNameEdit();
+    };
 
     React.useEffect(() => {
-      if (!pendingAsyncNameSave.current || isLoading) return
-      const t = editNameDraft.trim()
+      if (!pendingAsyncNameSave.current || isLoading) return;
+      const t = editNameDraft.trim();
       if (t && integrationName === t) {
-        clearNameEdit()
+        clearNameEdit();
       }
-    }, [isLoading, integrationName, editNameDraft])
+    }, [isLoading, integrationName, editNameDraft]);
 
     const handleEditNameKeyDown = (
       e: React.KeyboardEvent<HTMLInputElement>
     ) => {
       if (e.key === "Enter") {
-        e.preventDefault()
-        handleConfirmName()
+        e.preventDefault();
+        handleConfirmName();
       } else if (e.key === "Escape") {
-        clearNameEdit()
+        clearNameEdit();
       }
-    }
+    };
 
     return (
       <div
         ref={ref}
         className={cn(
-          "flex shrink-0 items-start gap-2.5 border-b border-semantic-border-layout p-4 sm:items-center sm:p-6",
+          "flex shrink-0 items-start gap-2.5 border-b border-solid border-semantic-border-layout p-4 sm:items-center sm:p-6",
           className
         )}
         {...props}
@@ -138,7 +140,7 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
                     onKeyDown={handleEditNameKeyDown}
                     autoFocus
                     readOnly={isLoading}
-                    className="m-0 h-8 min-w-0 max-w-full flex-1 rounded border border-semantic-border-focus bg-semantic-bg-primary px-2 text-base font-semibold text-semantic-text-primary outline-none read-only:opacity-70 sm:max-w-md sm:text-lg"
+                    className="m-0 h-8 min-w-0 max-w-full flex-1 rounded border border-solid border-semantic-border-focus bg-semantic-bg-primary px-2 text-base font-semibold text-semantic-text-primary outline-none read-only:opacity-70 sm:max-w-md sm:text-lg"
                     aria-label="Integration name"
                     aria-busy={isLoading}
                   />
@@ -198,9 +200,9 @@ const IntegrationHeader = React.forwardRef<HTMLDivElement, IntegrationHeaderProp
           </button>
         )}
       </div>
-    )
+    );
   }
-)
-IntegrationHeader.displayName = "IntegrationHeader"
+);
+IntegrationHeader.displayName = "IntegrationHeader";
 
-export { IntegrationHeader }
+export { IntegrationHeader };

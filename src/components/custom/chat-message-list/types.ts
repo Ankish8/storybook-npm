@@ -1,2 +1,2 @@
 /** Re-exported from chat-bubble for CLI install path. */
-export type { ChatMessageListProps } from "../chat-bubble/types"
+export type { ChatMessageListProps, ReplyToPayload } from "../chat-bubble/types"

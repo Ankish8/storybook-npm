@@ -1,13 +1,9 @@
-import * as React from "react"
-import { cn } from "../../../lib/utils"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "../../ui/dialog"
-import { ConfirmationModal } from "../../ui/confirmation-modal"
-import { SetupIntegrationView } from "./setup-integration-view"
-import type { SetupIntegrationProps } from "./types"
+import * as React from "react";
+import { cn } from "../../../lib/utils";
+import { Dialog, DialogContent, DialogTitle } from "../../ui/dialog";
+import { ConfirmationModal } from "../../ui/confirmation-modal";
+import { SetupIntegrationView } from "./setup-integration-view";
+import type { SetupIntegrationProps } from "./types";
 
 const SetupIntegration = React.forwardRef<
   HTMLDivElement,
@@ -48,16 +44,16 @@ const SetupIntegration = React.forwardRef<
     },
     ref
   ) => {
-    const [showResetConfirm, setShowResetConfirm] = React.useState(false)
-    const [showDiscardConfirm, setShowDiscardConfirm] = React.useState(false)
+    const [showResetConfirm, setShowResetConfirm] = React.useState(false);
+    const [showDiscardConfirm, setShowDiscardConfirm] = React.useState(false);
 
     const handleDiscardRequest = () => {
-      setShowDiscardConfirm(true)
-    }
+      setShowDiscardConfirm(true);
+    };
 
     const handleResetRequest = () => {
-      setShowResetConfirm(true)
-    }
+      setShowResetConfirm(true);
+    };
 
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -65,7 +61,7 @@ const SetupIntegration = React.forwardRef<
           ref={ref}
           hideCloseButton
           className={cn(
-            "flex h-[min(100dvh-1rem,920px)] max-h-[min(100dvh-1rem,920px)] min-h-0 w-[min(calc(100vw-1rem),860px)] max-w-none min-w-0 flex-col gap-0 overflow-hidden border-semantic-border-layout bg-semantic-bg-primary p-0 shadow-sm",
+            "flex h-[min(100dvh-1rem,920px)] max-h-[min(100dvh-1rem,920px)] min-h-0 w-[min(calc(100vw-1rem),860px)] max-w-none min-w-0 flex-col gap-0 overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary p-0 shadow-sm",
             className
           )}
           {...rest}
@@ -114,8 +110,8 @@ const SetupIntegration = React.forwardRef<
           confirmButtonText="Confirm"
           cancelButtonText="Cancel"
           onConfirm={() => {
-            setShowResetConfirm(false)
-            onResetChat?.()
+            setShowResetConfirm(false);
+            onResetChat?.();
           }}
         />
 
@@ -128,14 +124,14 @@ const SetupIntegration = React.forwardRef<
           confirmButtonText="Discard"
           cancelButtonText="Cancel"
           onConfirm={() => {
-            setShowDiscardConfirm(false)
-            onClose?.()
+            setShowDiscardConfirm(false);
+            onClose?.();
           }}
         />
       </Dialog>
-    )
+    );
   }
-)
-SetupIntegration.displayName = "SetupIntegration"
+);
+SetupIntegration.displayName = "SetupIntegration";
 
-export { SetupIntegration }
+export { SetupIntegration };
