@@ -1,179 +1,187 @@
 import { describe, it, expect } from 'vitest'
 import { getRegistry } from '../utils/registry.js'
-import { prefixTailwindClasses, prefixClassNameExpression } from '../utils/prefix-utils.js'
+import {
+  prefixTailwindClasses,
+  prefixClassNameExpression,
+} from '../utils/prefix-utils.js'
 
 describe('Registry', () => {
   describe('getRegistry', () => {
-  it('returns all expected components', async () => {
-    const registry = await getRegistry()
-    const components = Object.keys(registry)
+    it('returns all expected components', async () => {
+      const registry = await getRegistry()
+      const components = Object.keys(registry)
 
-    expect(components).toContain('button')
-    expect(components).toContain('badge')
-    expect(components).toContain('tag')
-    expect(components).toContain('table')
-    expect(components).toContain('dropdown-menu')
-  })
+      expect(components).toContain('button')
+      expect(components).toContain('badge')
+      expect(components).toContain('tag')
+      expect(components).toContain('table')
+      expect(components).toContain('dropdown-menu')
+    })
 
-  it('each component has required fields', async () => {
-    const registry = await getRegistry()
+    it('each component has required fields', async () => {
+      const registry = await getRegistry()
 
-    for (const [name, component] of Object.entries(registry)) {
-      // Check name matches key
-      expect(component.name).toBe(name)
+      for (const [name, component] of Object.entries(registry)) {
+        // Check name matches key
+        expect(component.name).toBe(name)
 
-      // Check description exists
-      expect(component.description).toBeTruthy()
-      expect(typeof component.description).toBe('string')
+        // Check description exists
+        expect(component.description).toBeTruthy()
+        expect(typeof component.description).toBe('string')
 
-      // Check dependencies
-      expect(component.dependencies).toBeInstanceOf(Array)
-      expect(component.dependencies.length).toBeGreaterThan(0)
+        // Check dependencies
+        expect(component.dependencies).toBeInstanceOf(Array)
+        expect(component.dependencies.length).toBeGreaterThan(0)
 
-      // Check files
-      expect(component.files).toBeInstanceOf(Array)
-      expect(component.files.length).toBeGreaterThan(0)
+        // Check files
+        expect(component.files).toBeInstanceOf(Array)
+        expect(component.files.length).toBeGreaterThan(0)
 
-      // Check file structure
-      for (const file of component.files) {
-        expect(file.name).toMatch(/\.tsx?$/)  // .tsx or .ts files
-        expect(file.content).toBeTruthy()
-        expect(typeof file.content).toBe('string')
+        // Check file structure
+        for (const file of component.files) {
+          expect(file.name).toMatch(/\.tsx?$/) // .tsx or .ts files
+          expect(file.content).toBeTruthy()
+          expect(typeof file.content).toBe('string')
+        }
       }
-    }
-  })
+    })
 
-  it('component content has valid structure', async () => {
-    const registry = await getRegistry()
+    it('component content has valid structure', async () => {
+      const registry = await getRegistry()
 
-    for (const component of Object.values(registry)) {
-      // Get the main file content (either first file or mainFile for multi-file components)
-      const mainFile = component.isMultiFile
-        ? component.files.find(f => f.name === component.mainFile)
-        : component.files[0]
-      const content = mainFile!.content
+      for (const component of Object.values(registry)) {
+        // Get the main file content (either first file or mainFile for multi-file components)
+        const mainFile = component.isMultiFile
+          ? component.files.find((f) => f.name === component.mainFile)
+          : component.files[0]
+        const content = mainFile!.content
 
-      // Should have imports (type-only files like chat-types may have no imports)
-      const isTypeOnlyFile = mainFile!.name.endsWith('.ts') && !mainFile!.name.endsWith('.tsx') && !content.includes('import')
-      if (!isTypeOnlyFile) {
-        expect(content).toContain('import')
+        // Should have imports (type-only files like chat-types may have no imports)
+        const isTypeOnlyFile =
+          mainFile!.name.endsWith('.ts') &&
+          !mainFile!.name.endsWith('.tsx') &&
+          !content.includes('import')
+        if (!isTypeOnlyFile) {
+          expect(content).toContain('import')
+        }
+
+        // Should have exports
+        expect(content).toContain('export')
+
+        // Should import cn utility if component uses cn() - some composing components don't need it
+        const usesCn = content.includes('cn(')
+        if (usesCn) {
+          const hasCnImport =
+            content.includes('../../lib/utils') ||
+            content.includes('../../../lib/utils')
+          expect(hasCnImport).toBe(true)
+        }
+
+        // Should not have Tailwind v4 syntax
+        expect(content).not.toContain('@theme')
+        expect(content).not.toContain('@source')
+      }
+    })
+
+    it('dependencies are valid packages', async () => {
+      const registry = await getRegistry()
+      const validDeps = [
+        '@radix-ui/react-slot',
+        '@radix-ui/react-dialog',
+        '@radix-ui/react-dropdown-menu',
+        '@radix-ui/react-select',
+        '@radix-ui/react-checkbox',
+        '@radix-ui/react-switch',
+        '@radix-ui/react-accordion',
+        '@radix-ui/react-tooltip',
+        '@radix-ui/react-tabs',
+        '@radix-ui/react-toast',
+        '@floating-ui/react-dom',
+        'class-variance-authority',
+        'clsx',
+        'tailwind-merge',
+        'lucide-react',
+        'react-markdown',
+        'remark-gfm',
+        'tailwindcss-animate', // Required for animation classes (animate-in, animate-out, etc.)
+      ]
+
+      const getPackageName = (dep: string) => {
+        // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
+        if (dep.startsWith('@')) {
+          const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
+          return match ? match[1] : dep
+        }
+        return dep.split(/[@^~]/)[0]
       }
 
-      // Should have exports
-      expect(content).toContain('export')
+      for (const component of Object.values(registry)) {
+        for (const dep of component.dependencies) {
+          const pkgName = getPackageName(dep)
+          expect(validDeps).toContain(pkgName)
+        }
+      }
+    })
 
-      // Should import cn utility if component uses cn() - some composing components don't need it
-      const usesCn = content.includes('cn(')
-      if (usesCn) {
-        const hasCnImport = content.includes('../../lib/utils') || content.includes('../../../lib/utils')
-        expect(hasCnImport).toBe(true)
+    it('does not include tailwindcss as dependency', async () => {
+      const registry = await getRegistry()
+
+      for (const component of Object.values(registry)) {
+        // tailwindcss itself should never be a dependency (it's a dev dependency in user's project)
+        expect(component.dependencies).not.toContain('tailwindcss')
+        // Note: tailwindcss-animate IS allowed as it's a runtime dependency for animation classes
+      }
+    })
+
+    it('button component has correct dependencies', async () => {
+      const registry = await getRegistry()
+      const button = registry.button
+
+      const getPackageName = (dep: string) => {
+        // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
+        if (dep.startsWith('@')) {
+          const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
+          return match ? match[1] : dep
+        }
+        return dep.split(/[@^~]/)[0]
       }
 
-      // Should not have Tailwind v4 syntax
-      expect(content).not.toContain('@theme')
-      expect(content).not.toContain('@source')
-    }
-  })
+      const depNames = button.dependencies.map(getPackageName)
 
-  it('dependencies are valid packages', async () => {
-    const registry = await getRegistry()
-    const validDeps = [
-      '@radix-ui/react-slot',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-select',
-      '@radix-ui/react-checkbox',
-      '@radix-ui/react-switch',
-      '@radix-ui/react-accordion',
-      '@radix-ui/react-tooltip',
-      '@radix-ui/react-tabs',
-      '@radix-ui/react-toast',
-      '@floating-ui/react-dom',
-      'class-variance-authority',
-      'clsx',
-      'tailwind-merge',
-      'lucide-react',
-      'react-markdown',
-      'remark-gfm',
-      'tailwindcss-animate',  // Required for animation classes (animate-in, animate-out, etc.)
-    ]
+      expect(depNames).toContain('@radix-ui/react-slot')
+      expect(depNames).toContain('class-variance-authority')
+      expect(depNames).toContain('lucide-react')
+    })
 
-    const getPackageName = (dep: string) => {
-      // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
-      if (dep.startsWith('@')) {
-        const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
-        return match ? match[1] : dep
+    it('dropdown-menu component has radix dependency', async () => {
+      const registry = await getRegistry()
+      const dropdown = registry['dropdown-menu']
+
+      const getPackageName = (dep: string) => {
+        // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
+        if (dep.startsWith('@')) {
+          const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
+          return match ? match[1] : dep
+        }
+        return dep.split(/[@^~]/)[0]
       }
-      return dep.split(/[@^~]/)[0]
-    }
 
-    for (const component of Object.values(registry)) {
-      for (const dep of component.dependencies) {
-        const pkgName = getPackageName(dep)
-        expect(validDeps).toContain(pkgName)
+      const depNames = dropdown.dependencies.map(getPackageName)
+
+      expect(depNames).toContain('@radix-ui/react-dropdown-menu')
+    })
+
+    it('prefix function works correctly', async () => {
+      const registry = await getRegistry('tw-')
+
+      for (const component of Object.values(registry)) {
+        const content = component.files[0].content
+
+        // Classes should be prefixed (this is a basic check)
+        // The actual prefixing logic is tested separately
+        expect(content).toBeTruthy()
       }
-    }
-  })
-
-  it('does not include tailwindcss as dependency', async () => {
-    const registry = await getRegistry()
-
-    for (const component of Object.values(registry)) {
-      // tailwindcss itself should never be a dependency (it's a dev dependency in user's project)
-      expect(component.dependencies).not.toContain('tailwindcss')
-      // Note: tailwindcss-animate IS allowed as it's a runtime dependency for animation classes
-    }
-  })
-
-  it('button component has correct dependencies', async () => {
-    const registry = await getRegistry()
-    const button = registry.button
-
-    const getPackageName = (dep: string) => {
-      // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
-      if (dep.startsWith('@')) {
-        const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
-        return match ? match[1] : dep
-      }
-      return dep.split(/[@^~]/)[0]
-    }
-
-    const depNames = button.dependencies.map(getPackageName)
-
-    expect(depNames).toContain('@radix-ui/react-slot')
-    expect(depNames).toContain('class-variance-authority')
-    expect(depNames).toContain('lucide-react')
-  })
-
-  it('dropdown-menu component has radix dependency', async () => {
-    const registry = await getRegistry()
-    const dropdown = registry['dropdown-menu']
-
-    const getPackageName = (dep: string) => {
-      // Remove version specifier: @radix-ui/react-slot@^1.2.4 -> @radix-ui/react-slot
-      if (dep.startsWith('@')) {
-        const match = dep.match(/^(@[^@]+\/[^@]+)(@|$)/)
-        return match ? match[1] : dep
-      }
-      return dep.split(/[@^~]/)[0]
-    }
-
-    const depNames = dropdown.dependencies.map(getPackageName)
-
-    expect(depNames).toContain('@radix-ui/react-dropdown-menu')
-  })
-
-  it('prefix function works correctly', async () => {
-    const registry = await getRegistry('tw-')
-
-    for (const component of Object.values(registry)) {
-      const content = component.files[0].content
-
-      // Classes should be prefixed (this is a basic check)
-      // The actual prefixing logic is tested separately
-      expect(content).toBeTruthy()
-    }
-  })
+    })
   })
 
   describe('prefixTailwindClasses', () => {
@@ -374,7 +382,9 @@ describe('Registry', () => {
 
       // Error variant CSS classes should be prefixed
       expect(content).toContain('error: "tw-border')
-      expect(content).not.toContain('error: "border border-semantic-error-primary')
+      expect(content).not.toContain(
+        'error: "border border-semantic-error-primary'
+      )
     })
 
     it('prefixes default variant values in cva', async () => {
@@ -443,7 +453,10 @@ describe('Registry', () => {
         expect(content).toContain('export')
         // Type-only files (e.g. chat-types) may have no imports
         const mainFileName = component.files[0].name
-        const isTypeOnly = mainFileName.endsWith('.ts') && !mainFileName.endsWith('.tsx') && !content.includes('import')
+        const isTypeOnly =
+          mainFileName.endsWith('.ts') &&
+          !mainFileName.endsWith('.tsx') &&
+          !content.includes('import')
         if (!isTypeOnly) {
           expect(content).toContain('import')
         }
@@ -466,12 +479,20 @@ describe('Registry', () => {
       const content = input.files[0].content
 
       // [&::-webkit-outer-spin-button]:appearance-none → [&::-webkit-outer-spin-button]:tw-appearance-none
-      expect(content).toContain('[&::-webkit-outer-spin-button]:tw-appearance-none')
-      expect(content).toContain('[&::-webkit-inner-spin-button]:tw-appearance-none')
+      expect(content).toContain(
+        '[&::-webkit-outer-spin-button]:tw-appearance-none'
+      )
+      expect(content).toContain(
+        '[&::-webkit-inner-spin-button]:tw-appearance-none'
+      )
 
       // Should NOT have unprefixed utility after pseudo-element selector
-      expect(content).not.toContain('[&::-webkit-outer-spin-button]:appearance-none')
-      expect(content).not.toContain('[&::-webkit-inner-spin-button]:appearance-none')
+      expect(content).not.toContain(
+        '[&::-webkit-outer-spin-button]:appearance-none'
+      )
+      expect(content).not.toContain(
+        '[&::-webkit-inner-spin-button]:appearance-none'
+      )
     })
 
     it('prefixes number spinner classes in text-field component', async () => {
@@ -481,8 +502,12 @@ describe('Registry', () => {
 
       // text-field should also have prefixed spinner classes
       expect(content).toContain('tw-[appearance:textfield]')
-      expect(content).toContain('[&::-webkit-outer-spin-button]:tw-appearance-none')
-      expect(content).toContain('[&::-webkit-inner-spin-button]:tw-appearance-none')
+      expect(content).toContain(
+        '[&::-webkit-outer-spin-button]:tw-appearance-none'
+      )
+      expect(content).toContain(
+        '[&::-webkit-inner-spin-button]:tw-appearance-none'
+      )
     })
 
     it('does not produce invalid tw-! prefix pattern in registry output', async () => {
@@ -521,7 +546,7 @@ describe('Registry', () => {
       expect(eventSelector.isMultiFile).toBe(true)
       expect(eventSelector.directory).toBe('event-selector')
       expect(eventSelector.mainFile).toBe('event-selector.tsx')
-      expect(eventSelector.files.length).toBe(5)  // main, group, item, types, index
+      expect(eventSelector.files.length).toBe(5) // main, group, item, types, index
       expect(eventSelector.internalDependencies).toContain('checkbox')
       expect(eventSelector.internalDependencies).toContain('accordion')
     })
@@ -534,7 +559,7 @@ describe('Registry', () => {
       expect(keyValueInput.isMultiFile).toBe(true)
       expect(keyValueInput.directory).toBe('key-value-input')
       expect(keyValueInput.mainFile).toBe('key-value-input.tsx')
-      expect(keyValueInput.files.length).toBe(4)  // main, row, types, index
+      expect(keyValueInput.files.length).toBe(4) // main, row, types, index
       expect(keyValueInput.internalDependencies).toContain('button')
       expect(keyValueInput.internalDependencies).toContain('input')
     })
@@ -544,7 +569,9 @@ describe('Registry', () => {
       const eventSelector = registry['event-selector']
 
       // Find the event-item file which imports Checkbox
-      const eventItem = eventSelector.files.find(f => f.name === 'event-item.tsx')
+      const eventItem = eventSelector.files.find(
+        (f) => f.name === 'event-item.tsx'
+      )
       expect(eventItem).toBeDefined()
 
       // Multi-file components are installed to src/components/ui/event-selector/
@@ -556,7 +583,9 @@ describe('Registry', () => {
       const registry = await getRegistry('tw-')
       const eventSelector = registry['event-selector']
 
-      const mainFile = eventSelector.files.find(f => f.name === 'event-selector.tsx')
+      const mainFile = eventSelector.files.find(
+        (f) => f.name === 'event-selector.tsx'
+      )
       expect(mainFile).toBeDefined()
 
       // Classes should be prefixed
@@ -569,7 +598,9 @@ describe('Registry', () => {
       const registry = await getRegistry()
       const eventSelector = registry['event-selector']
 
-      const mainFile = eventSelector.files.find(f => f.name === 'event-selector.tsx')
+      const mainFile = eventSelector.files.find(
+        (f) => f.name === 'event-selector.tsx'
+      )
       expect(mainFile).toBeDefined()
 
       // Should use ../../../lib/utils (going up from ui/event-selector/ to src/lib/)
@@ -590,7 +621,9 @@ describe('Registry', () => {
           expect(component.files.length).toBeGreaterThan(1)
 
           // mainFile should be in files array
-          const mainFileExists = component.files.some(f => f.name === component.mainFile)
+          const mainFileExists = component.files.some(
+            (f) => f.name === component.mainFile
+          )
           expect(mainFileExists).toBe(true)
         }
       }
@@ -631,9 +664,12 @@ describe('Registry', () => {
   describe('className={...} JSX expression prefixing', () => {
     describe('prefixClassNameExpression', () => {
       it('prefixes bare string literals in ternary', () => {
-        const expr = 'active ? "border-b-2 border-primary" : "text-muted-foreground"'
+        const expr =
+          'active ? "border-b-2 border-primary" : "text-muted-foreground"'
         const result = prefixClassNameExpression(expr, 'tw-')
-        expect(result).toContain('"tw-border-b-2 tw-border-primary tw-border-solid"')
+        expect(result).toContain(
+          '"tw-border-b-2 tw-border-primary tw-border-solid"'
+        )
         expect(result).toContain('"tw-text-muted-foreground"')
       })
 
@@ -644,7 +680,8 @@ describe('Registry', () => {
       })
 
       it('prefixes template literal static parts and expression strings', () => {
-        const expr = '`flex items-center ${active ? "bg-primary" : "bg-gray-500"}`'
+        const expr =
+          '`flex items-center ${active ? "bg-primary" : "bg-gray-500"}`'
         const result = prefixClassNameExpression(expr, 'tw-')
         expect(result).toContain('tw-flex tw-items-center')
         expect(result).toContain('"tw-bg-primary"')
@@ -652,7 +689,8 @@ describe('Registry', () => {
       })
 
       it('handles template literal with multiple expressions', () => {
-        const expr = '`flex ${a ? "gap-2" : "gap-4"} border-b ${b ? "px-4" : ""}`'
+        const expr =
+          '`flex ${a ? "gap-2" : "gap-4"} border-b ${b ? "px-4" : ""}`'
         const result = prefixClassNameExpression(expr, 'tw-')
         expect(result).toContain('tw-flex')
         expect(result).toContain('"tw-gap-2"')
@@ -684,7 +722,8 @@ describe('Registry', () => {
       })
 
       it('handles complex hover/focus variant classes', () => {
-        const expr = '`flex ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`'
+        const expr =
+          '`flex ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`'
         const result = prefixClassNameExpression(expr, 'tw-')
         expect(result).toContain('tw-flex')
         expect(result).toContain('"tw-opacity-0 group-hover:tw-opacity-100"')
@@ -694,9 +733,12 @@ describe('Registry', () => {
 
     describe('prefixTailwindClasses with className={...}', () => {
       it('prefixes className with ternary expression', () => {
-        const input = '<div className={active ? "border-b-2 border-primary" : "text-muted"}></div>'
+        const input =
+          '<div className={active ? "border-b-2 border-primary" : "text-muted"}></div>'
         const result = prefixTailwindClasses(input, 'tw-')
-        expect(result).toContain('"tw-border-b-2 tw-border-primary tw-border-solid"')
+        expect(result).toContain(
+          '"tw-border-b-2 tw-border-primary tw-border-solid"'
+        )
         expect(result).toContain('"tw-text-muted"')
       })
 
@@ -707,14 +749,18 @@ describe('Registry', () => {
       })
 
       it('prefixes className with template literal and expressions', () => {
-        const input = '<div className={`flex items-center ${i < 5 ? "border-b border-border" : ""}`}></div>'
+        const input =
+          '<div className={`flex items-center ${i < 5 ? "border-b border-border" : ""}`}></div>'
         const result = prefixTailwindClasses(input, 'tw-')
         expect(result).toContain('tw-flex tw-items-center')
-        expect(result).toContain('"tw-border-b tw-border-border tw-border-solid"')
+        expect(result).toContain(
+          '"tw-border-b tw-border-border tw-border-solid"'
+        )
       })
 
       it('does not double-prefix cn() args inside className expression', () => {
-        const input = '<div className={cn("flex items-center", active && "bg-primary")}></div>'
+        const input =
+          '<div className={cn("flex items-center", active && "bg-primary")}></div>'
         const result = prefixTailwindClasses(input, 'tw-')
         // cn() args are prefixed by pattern 2, then pattern 6 should NOT re-prefix
         expect(result).toContain('"tw-flex tw-items-center"')
@@ -731,7 +777,8 @@ describe('Registry', () => {
 
   describe('style={{}} property protection', () => {
     it('does not prefix CSS calc() values in style props', () => {
-      const input = 'style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }}'
+      const input =
+        'style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }}'
       const result = prefixTailwindClasses(input, 'tw-')
       expect(result).toContain('width: "calc(100% - 1px)"')
       expect(result).toContain('height: "calc(100% - 1px)"')
@@ -763,9 +810,23 @@ describe('Registry', () => {
       expect(result).toContain('fontSize: "1.5rem"')
     })
 
+    it('does not prefix Floating UI placement and strategy literals', () => {
+      const input = `
+        const floatingStrategy: "absolute" | "fixed" = usesContainerPortal ? "absolute" : "fixed"
+        useFloating({ placement: "bottom-start", strategy: "absolute" })
+      `
+      const result = prefixTailwindClasses(input, 'tw-')
+      expect(result).toContain('floatingStrategy: "absolute" | "fixed"')
+      expect(result).toContain('placement: "bottom-start"')
+      expect(result).toContain('strategy: "absolute"')
+      expect(result).not.toContain('tw-bottom-start')
+      expect(result).not.toContain('tw-absolute')
+    })
+
     it('still prefixes CVA variant values with conflicting key names', () => {
       // "outline" is both a CSS property and a CVA variant key — must still prefix the classes
-      const input = 'outline: "border border-semantic-border-layout bg-transparent"'
+      const input =
+        'outline: "border border-semantic-border-layout bg-transparent"'
       const result = prefixTailwindClasses(input, 'tw-')
       expect(result).toContain('tw-border')
       expect(result).toContain('tw-bg-transparent')

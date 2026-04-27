@@ -20,26 +20,40 @@ const __dirname = path.dirname(__filename)
 // Paths
 const CONFIG_FILE = path.resolve(__dirname, '../components.yaml')
 const UI_COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/ui')
-const CUSTOM_COMPONENTS_DIR = path.resolve(__dirname, '../../../src/components/custom')
+const CUSTOM_COMPONENTS_DIR = path.resolve(
+  __dirname,
+  '../../../src/components/custom'
+)
 const OUTPUT_DIR = path.resolve(__dirname, '../src/utils')
 
 // For backwards compatibility, also generate the combined registry.ts
 const LEGACY_OUTPUT_FILE = path.resolve(OUTPUT_DIR, 'registry.ts')
 
 // Single source of truth: read prefix arrays from prefix-utils.ts
-const PREFIX_UTILS_PATH = path.resolve(__dirname, '../src/utils/prefix-utils.ts')
+const PREFIX_UTILS_PATH = path.resolve(
+  __dirname,
+  '../src/utils/prefix-utils.ts'
+)
 const prefixUtilsSource = fs.readFileSync(PREFIX_UTILS_PATH, 'utf-8')
 
-const prefixArrayMatch = prefixUtilsSource.match(/const tailwindUtilityPrefixes = (\[.*?\])/)
+const prefixArrayMatch = prefixUtilsSource.match(
+  /const tailwindUtilityPrefixes = (\[[\s\S]*?\])/
+)
 if (!prefixArrayMatch) {
-  console.error('Error: Could not extract tailwindUtilityPrefixes from prefix-utils.ts')
+  console.error(
+    'Error: Could not extract tailwindUtilityPrefixes from prefix-utils.ts'
+  )
   process.exit(1)
 }
 const TAILWIND_UTILITY_PREFIXES_LITERAL = prefixArrayMatch[1]
 
-const singleWordMatch = prefixUtilsSource.match(/const singleWordUtilities = (\/\^.*?\$\/)/)
+const singleWordMatch = prefixUtilsSource.match(
+  /const singleWordUtilities\s*=\s*(\/\^.*?\$\/)/
+)
 if (!singleWordMatch) {
-  console.error('Error: Could not extract singleWordUtilities from prefix-utils.ts')
+  console.error(
+    'Error: Could not extract singleWordUtilities from prefix-utils.ts'
+  )
   process.exit(1)
 }
 const SINGLE_WORD_UTILITIES_LITERAL = singleWordMatch[1]
@@ -52,7 +66,9 @@ function extractFunctionFromSource(source, funcName) {
   const funcRegex = new RegExp(`(?:export )?function ${funcName}\\b`)
   const match = funcRegex.exec(source)
   if (!match) {
-    console.warn(`Warning: Could not find function ${funcName} in prefix-utils.ts`)
+    console.warn(
+      `Warning: Could not find function ${funcName} in prefix-utils.ts`
+    )
     return ''
   }
 
@@ -65,7 +81,8 @@ function extractFunctionFromSource(source, funcName) {
     }
     if (source[i] === '/' && source[i + 1] === '*') {
       i += 2
-      while (i < source.length && !(source[i] === '*' && source[i + 1] === '/')) i++
+      while (i < source.length && !(source[i] === '*' && source[i + 1] === '/'))
+        i++
       i += 2
       continue
     }
@@ -77,14 +94,21 @@ function extractFunctionFromSource(source, funcName) {
       while (j >= 0 && /\s/.test(source[j])) j--
       const prevChar = j >= 0 ? source[j] : ''
       // After these chars/keywords, '/' starts a regex (not division)
-      if ('=([!&|?:,;{}>~^%*/+-'.includes(prevChar) || prevChar === '' ||
-          source.slice(Math.max(0, j - 5), j + 1).match(/\breturn$/)) {
+      if (
+        '=([!&|?:,;{}>~^%*/+-'.includes(prevChar) ||
+        prevChar === '' ||
+        source.slice(Math.max(0, j - 5), j + 1).match(/\breturn$/)
+      ) {
         i++ // skip opening /
         while (i < source.length && source[i] !== '/') {
           if (source[i] === '\\') i++ // skip escaped char
-          if (source[i] === '[') { // character class
+          if (source[i] === '[') {
+            // character class
             i++
-            while (i < source.length && source[i] !== ']') { if (source[i] === '\\') i++; i++ }
+            while (i < source.length && source[i] !== ']') {
+              if (source[i] === '\\') i++
+              i++
+            }
           }
           i++
         }
@@ -96,7 +120,10 @@ function extractFunctionFromSource(source, funcName) {
     if (source[i] === "'" || source[i] === '"') {
       const quote = source[i]
       i++
-      while (i < source.length && source[i] !== quote) { if (source[i] === '\\') i++; i++ }
+      while (i < source.length && source[i] !== quote) {
+        if (source[i] === '\\') i++
+        i++
+      }
       i++
       continue
     }
@@ -104,10 +131,24 @@ function extractFunctionFromSource(source, funcName) {
       i++
       let tmplDepth = 0
       while (i < source.length) {
-        if (source[i] === '\\') { i += 2; continue }
-        if (source[i] === '`' && tmplDepth === 0) { i++; break }
-        if (source[i] === '$' && source[i + 1] === '{') { tmplDepth++; i += 2; continue }
-        if (source[i] === '}' && tmplDepth > 0) { tmplDepth--; i++; continue }
+        if (source[i] === '\\') {
+          i += 2
+          continue
+        }
+        if (source[i] === '`' && tmplDepth === 0) {
+          i++
+          break
+        }
+        if (source[i] === '$' && source[i + 1] === '{') {
+          tmplDepth++
+          i += 2
+          continue
+        }
+        if (source[i] === '}' && tmplDepth > 0) {
+          tmplDepth--
+          i++
+          continue
+        }
         i++
       }
       continue
@@ -115,7 +156,10 @@ function extractFunctionFromSource(source, funcName) {
     if (source[i] === '{') depth++
     else if (source[i] === '}') {
       depth--
-      if (depth === 0) { i++; break }
+      if (depth === 0) {
+        i++
+        break
+      }
     }
     i++
   }
@@ -131,8 +175,13 @@ const pattern6Match = prefixUtilsSource.match(
 )
 const PATTERN_6_CODE = pattern6Match ? pattern6Match[1].trimEnd() : ''
 
-const HELPER_FUNCTIONS = ['isAlreadyPrefixed', 'prefixStaticTemplatePart', 'prefixStringLiteralsInExpr', 'prefixClassNameExpression']
-  .map(name => extractFunctionFromSource(prefixUtilsSource, name))
+const HELPER_FUNCTIONS = [
+  'isAlreadyPrefixed',
+  'prefixStaticTemplatePart',
+  'prefixStringLiteralsInExpr',
+  'prefixClassNameExpression',
+]
+  .map((name) => extractFunctionFromSource(prefixUtilsSource, name))
   .filter(Boolean)
   .join('\n\n')
 
@@ -203,7 +252,9 @@ async function readMultiFileComponent(componentName, meta, allComponents) {
     // Transform @/lib/utils import for multi-file components
     // Without group: installed to src/components/ui/{component}/ → ../../../lib/
     // With group:    installed to src/components/ui/{group}/{component}/ → ../../../../lib/
-    const utilsDepth = meta.group ? '../../../../lib/utils' : '../../../lib/utils'
+    const utilsDepth = meta.group
+      ? '../../../../lib/utils'
+      : '../../../lib/utils'
     content = content.replace(
       /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
       `import { cn } from "${utilsDepth}"`
@@ -244,7 +295,11 @@ async function readMultiFileComponent(componentName, meta, allComponents) {
       const sameGroupDirs = new Set()
       if (allComponents) {
         for (const [, compMeta] of Object.entries(allComponents)) {
-          if (compMeta.group === meta.group && compMeta.isMultiFile && compMeta.directory) {
+          if (
+            compMeta.group === meta.group &&
+            compMeta.isMultiFile &&
+            compMeta.directory
+          ) {
             sameGroupDirs.add(compMeta.directory)
           }
         }
@@ -295,12 +350,14 @@ async function readMultiFileComponent(componentName, meta, allComponents) {
  * Read all components in parallel
  */
 async function readAllComponents(config) {
-  const readPromises = Object.entries(config.components).map(async ([name, meta]) => {
-    if (meta.isMultiFile) {
-      return readMultiFileComponent(name, meta, config.components)
+  const readPromises = Object.entries(config.components).map(
+    async ([name, meta]) => {
+      if (meta.isMultiFile) {
+        return readMultiFileComponent(name, meta, config.components)
+      }
+      return readSingleFileComponent(name, meta)
     }
-    return readSingleFileComponent(name, meta)
-  })
+  )
 
   const results = await Promise.all(readPromises)
   return results.filter(Boolean) // Remove nulls
@@ -322,7 +379,9 @@ function groupByCategory(components, categories) {
     if (grouped[comp.category]) {
       grouped[comp.category].push(comp)
     } else {
-      console.warn(`  Warning: Unknown category "${comp.category}" for component "${comp.name}"`)
+      console.warn(
+        `  Warning: Unknown category "${comp.category}" for component "${comp.name}"`
+      )
     }
   }
 
@@ -333,7 +392,10 @@ function groupByCategory(components, categories) {
  * Escape content for template literals
  */
 function escapeForTemplate(str) {
-  return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${')
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$\{/g, '\\${')
 }
 
 /**
@@ -800,6 +862,8 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   const nonClassKeys = [
     // HTML attributes
     'name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy',
+    // Library/API option values, not class values
+    'placement', 'strategy', 'floatingStrategy',
     // CSS style properties (camelCase — safe because they can't be CVA variant keys)
     'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
     'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
@@ -927,7 +991,11 @@ function prefixTailwindClasses(content: string, prefix: string): string {
     const anchorIndex = code.lastIndexOf(anchor)
     if (anchorIndex !== -1) {
       const insertPos = anchorIndex + '  )\n\n'.length
-      code = code.slice(0, insertPos) + PATTERN_6_CODE + '\n\n  return content\n}' + code.slice(anchorIndex + anchor.length)
+      code =
+        code.slice(0, insertPos) +
+        PATTERN_6_CODE +
+        '\n\n  return content\n}' +
+        code.slice(anchorIndex + anchor.length)
     }
   }
 
@@ -943,22 +1011,36 @@ function prefixTailwindClasses(content: string, prefix: string): string {
  * Generate a category registry file
  */
 function generateCategoryFile(category, components) {
-  const componentEntries = components.map(comp => {
-    const deps = JSON.stringify(comp.dependencies, null, 6).replace(/\n/g, '\n      ')
+  const componentEntries = components
+    .map((comp) => {
+      const deps = JSON.stringify(comp.dependencies, null, 6).replace(
+        /\n/g,
+        '\n      '
+      )
 
-    if (comp.isMultiFile) {
-      const internalDeps = JSON.stringify(comp.internalDependencies || [], null, 6).replace(/\n/g, '\n      ')
-      const filesArray = comp.files.map(file => {
-        const escapedContent = escapeForTemplate(file.content)
-        return `        {
+      if (comp.isMultiFile) {
+        const internalDeps = JSON.stringify(
+          comp.internalDependencies || [],
+          null,
+          6
+        ).replace(/\n/g, '\n      ')
+        const filesArray = comp.files
+          .map((file) => {
+            const escapedContent = escapeForTemplate(file.content)
+            return `        {
           name: ${JSON.stringify(file.name)},
           content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
         }`
-      }).join(',\n')
+          })
+          .join(',\n')
 
-      const groupLine = comp.group ? `\n      group: ${JSON.stringify(comp.group)},` : ''
-      const templateOnlyLine = comp.templateOnly ? `\n      templateOnly: true,` : ''
-      return `    ${JSON.stringify(comp.name)}: {
+        const groupLine = comp.group
+          ? `\n      group: ${JSON.stringify(comp.group)},`
+          : ''
+        const templateOnlyLine = comp.templateOnly
+          ? `\n      templateOnly: true,`
+          : ''
+        return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
       category: ${JSON.stringify(comp.category)},
@@ -971,19 +1053,27 @@ function generateCategoryFile(category, components) {
 ${filesArray}
       ],
     }`
-    }
+      }
 
-    const escapedContent = escapeForTemplate(comp.content)
-    const internalDeps = comp.internalDependencies && comp.internalDependencies.length > 0
-      ? JSON.stringify(comp.internalDependencies, null, 6).replace(/\n/g, '\n      ')
-      : null
+      const escapedContent = escapeForTemplate(comp.content)
+      const internalDeps =
+        comp.internalDependencies && comp.internalDependencies.length > 0
+          ? JSON.stringify(comp.internalDependencies, null, 6).replace(
+              /\n/g,
+              '\n      '
+            )
+          : null
 
-    return `    ${JSON.stringify(comp.name)}: {
+      return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
       category: ${JSON.stringify(comp.category)},
-      dependencies: ${deps},${internalDeps ? `
-      internalDependencies: ${internalDeps},` : ''}
+      dependencies: ${deps},${
+        internalDeps
+          ? `
+      internalDependencies: ${internalDeps},`
+          : ''
+      }
       files: [
         {
           name: ${JSON.stringify(comp.fileName)},
@@ -991,7 +1081,8 @@ ${filesArray}
         },
       ],
     }`
-  }).join(',\n')
+    })
+    .join(',\n')
 
   return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
 // Run: npm run generate-registry
@@ -1056,29 +1147,36 @@ function generateIndexFile(config, components) {
   const categories = Object.keys(config.categories)
 
   // Generate metadata object
-  const metaEntries = components.map(comp => {
-    const internalDeps = comp.internalDependencies
-      ? JSON.stringify(comp.internalDependencies)
-      : '[]'
+  const metaEntries = components
+    .map((comp) => {
+      const internalDeps = comp.internalDependencies
+        ? JSON.stringify(comp.internalDependencies)
+        : '[]'
 
-    return `  ${JSON.stringify(comp.name)}: {
+      return `  ${JSON.stringify(comp.name)}: {
     name: ${JSON.stringify(comp.name)},
     description: ${JSON.stringify(comp.description)},
     dependencies: ${JSON.stringify(comp.dependencies)},
     category: ${JSON.stringify(comp.category)},
     internalDependencies: ${internalDeps},
   }`
-  }).join(',\n')
+    })
+    .join(',\n')
 
   // Generate category imports
-  const categoryImports = categories.map(cat =>
-    `import { get${capitalize(cat)}Registry } from './registry-${cat}'`
-  ).join('\n')
+  const categoryImports = categories
+    .map(
+      (cat) =>
+        `import { get${capitalize(cat)}Registry } from './registry-${cat}'`
+    )
+    .join('\n')
 
   // Generate category getter switch
-  const categoryGetters = categories.map(cat =>
-    `    case '${cat}': return get${capitalize(cat)}Registry(prefix)`
-  ).join('\n')
+  const categoryGetters = categories
+    .map(
+      (cat) => `    case '${cat}': return get${capitalize(cat)}Registry(prefix)`
+    )
+    .join('\n')
 
   return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
 // Run: npm run generate-registry
@@ -1159,22 +1257,36 @@ export type { Registry, ComponentDefinition, ComponentMeta, ComponentFile } from
  * Generate legacy combined registry.ts for backwards compatibility
  */
 function generateLegacyRegistryFile(components) {
-  const componentEntries = components.map(comp => {
-    const deps = JSON.stringify(comp.dependencies, null, 6).replace(/\n/g, '\n      ')
+  const componentEntries = components
+    .map((comp) => {
+      const deps = JSON.stringify(comp.dependencies, null, 6).replace(
+        /\n/g,
+        '\n      '
+      )
 
-    if (comp.isMultiFile) {
-      const internalDeps = JSON.stringify(comp.internalDependencies || [], null, 6).replace(/\n/g, '\n      ')
-      const filesArray = comp.files.map(file => {
-        const escapedContent = escapeForTemplate(file.content)
-        return `        {
+      if (comp.isMultiFile) {
+        const internalDeps = JSON.stringify(
+          comp.internalDependencies || [],
+          null,
+          6
+        ).replace(/\n/g, '\n      ')
+        const filesArray = comp.files
+          .map((file) => {
+            const escapedContent = escapeForTemplate(file.content)
+            return `        {
           name: ${JSON.stringify(file.name)},
           content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
         }`
-      }).join(',\n')
+          })
+          .join(',\n')
 
-      const groupLine = comp.group ? `\n      group: ${JSON.stringify(comp.group)},` : ''
-      const templateOnlyLine = comp.templateOnly ? `\n      templateOnly: true,` : ''
-      return `    ${JSON.stringify(comp.name)}: {
+        const groupLine = comp.group
+          ? `\n      group: ${JSON.stringify(comp.group)},`
+          : ''
+        const templateOnlyLine = comp.templateOnly
+          ? `\n      templateOnly: true,`
+          : ''
+        return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
       category: ${JSON.stringify(comp.category)},
@@ -1187,19 +1299,27 @@ function generateLegacyRegistryFile(components) {
 ${filesArray}
       ],
     }`
-    }
+      }
 
-    const escapedContent = escapeForTemplate(comp.content)
-    const internalDeps = comp.internalDependencies && comp.internalDependencies.length > 0
-      ? JSON.stringify(comp.internalDependencies, null, 6).replace(/\n/g, '\n      ')
-      : null
+      const escapedContent = escapeForTemplate(comp.content)
+      const internalDeps =
+        comp.internalDependencies && comp.internalDependencies.length > 0
+          ? JSON.stringify(comp.internalDependencies, null, 6).replace(
+              /\n/g,
+              '\n      '
+            )
+          : null
 
-    return `    ${JSON.stringify(comp.name)}: {
+      return `    ${JSON.stringify(comp.name)}: {
       name: ${JSON.stringify(comp.name)},
       description: ${JSON.stringify(comp.description)},
       category: ${JSON.stringify(comp.category)},
-      dependencies: ${deps},${internalDeps ? `
-      internalDependencies: ${internalDeps},` : ''}
+      dependencies: ${deps},${
+        internalDeps
+          ? `
+      internalDependencies: ${internalDeps},`
+          : ''
+      }
       files: [
         {
           name: ${JSON.stringify(comp.fileName)},
@@ -1207,7 +1327,8 @@ ${filesArray}
         },
       ],
     }`
-  }).join(',\n')
+    })
+    .join(',\n')
 
   return `// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY.
 // Run: npm run generate-registry
@@ -1265,7 +1386,9 @@ async function main() {
 
   // Load configuration
   const config = loadConfig()
-  console.log(`\nLoaded ${Object.keys(config.components).length} component definitions`)
+  console.log(
+    `\nLoaded ${Object.keys(config.components).length} component definitions`
+  )
   console.log(`Categories: ${Object.keys(config.categories).join(', ')}`)
 
   // Read all components in parallel
@@ -1288,18 +1411,22 @@ async function main() {
   console.log(`✓ Generated: registry-types.ts`)
 
   // Generate category files in parallel
-  const categoryWrites = Object.entries(grouped).map(([category, categoryComponents]) => {
-    if (categoryComponents.length === 0) {
-      console.log(`  Skipping empty category: ${category}`)
+  const categoryWrites = Object.entries(grouped).map(
+    ([category, categoryComponents]) => {
+      if (categoryComponents.length === 0) {
+        console.log(`  Skipping empty category: ${category}`)
+        return Promise.resolve()
+      }
+
+      const content = generateCategoryFile(category, categoryComponents)
+      const filePath = path.join(OUTPUT_DIR, `registry-${category}.ts`)
+      fs.writeFileSync(filePath, content)
+      console.log(
+        `✓ Generated: registry-${category}.ts (${categoryComponents.length} components)`
+      )
       return Promise.resolve()
     }
-
-    const content = generateCategoryFile(category, categoryComponents)
-    const filePath = path.join(OUTPUT_DIR, `registry-${category}.ts`)
-    fs.writeFileSync(filePath, content)
-    console.log(`✓ Generated: registry-${category}.ts (${categoryComponents.length} components)`)
-    return Promise.resolve()
-  })
+  )
 
   await Promise.all(categoryWrites)
 
@@ -1316,7 +1443,9 @@ async function main() {
 
   console.log('\n✅ Registry generation complete!')
   console.log(`   Total components: ${components.length}`)
-  console.log(`   Categories: ${Object.keys(grouped).filter(c => grouped[c].length > 0).length}`)
+  console.log(
+    `   Categories: ${Object.keys(grouped).filter((c) => grouped[c].length > 0).length}`
+  )
 }
 
 // Run

@@ -32,7 +32,7 @@ const TAILWIND_PREFIXES = [
 ]
 
 // Derive SINGLE_WORD_UTILITIES from singleWordUtilities regex
-const singleWordMatch = prefixUtilsSource.match(/const singleWordUtilities = \/\^\(([^)]+)\)\$\//)
+const singleWordMatch = prefixUtilsSource.match(/const singleWordUtilities\s*=\s*\/\^\(([^)]+)\)\$\//)
 if (!singleWordMatch) {
   console.error('Error: Could not extract singleWordUtilities from prefix-utils.ts')
   process.exit(1)

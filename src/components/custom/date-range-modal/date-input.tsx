@@ -7,6 +7,8 @@ import {
   shift,
   size,
   useFloating,
+  type Placement,
+  type Strategy,
 } from "@floating-ui/react-dom";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "../../../lib/utils";
@@ -41,6 +43,7 @@ const POPOVER_MARGIN = 8;
 const POPOVER_GAP = 4;
 const MAX_POPOVER_HEIGHT = 340;
 const POPOVER_SCROLL_HEIGHT_VAR = "--date-range-calendar-scroll-height";
+const CALENDAR_PLACEMENT: Placement = "bottom-start";
 
 /** Scrollbar hits often don't set target inside the scrollable node; bbox + composedPath fixes that. */
 function isPointerInsideElement(
@@ -82,13 +85,11 @@ function DateInput({
 }: DateInputProps) {
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const popoverRef = React.useRef<HTMLDivElement>(null);
-  const popoverScrollRef = React.useRef<HTMLDivElement>(null);
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+  const popoverRef = React.useRef<HTMLDivElement | null>(null);
+  const popoverScrollRef = React.useRef<HTMLDivElement | null>(null);
   const usesContainerPortal = portalContainer !== undefined;
-  const floatingStrategy: "absolute" | "fixed" = usesContainerPortal
-    ? "absolute"
-    : "fixed";
+  const floatingStrategy: Strategy = usesContainerPortal ? "absolute" : "fixed";
   const floatingMiddleware = React.useMemo(
     () => [
       offset(POPOVER_GAP),
@@ -113,7 +114,7 @@ function DateInput({
   const { refs, floatingStyles, isPositioned } = useFloating<HTMLButtonElement>(
     {
       open,
-      placement: "bottom-start",
+      placement: CALENDAR_PLACEMENT,
       strategy: floatingStrategy,
       transform: false,
       middleware: floatingMiddleware,

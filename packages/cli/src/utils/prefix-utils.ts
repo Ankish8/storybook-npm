@@ -101,7 +101,9 @@ const SEMANTIC_FALLBACKS: Record<string, string> = {
  */
 function transformSemanticClass(cls: string): string {
   // Match patterns like bg-semantic-*, text-semantic-*, border-semantic-*, ring-semantic-*, etc.
-  const semanticMatch = cls.match(/^(bg|text|border|ring|outline|fill|stroke|from|to|via|divide|placeholder|caret|accent|shadow|decoration)-(semantic-[a-z-]+)$/)
+  const semanticMatch = cls.match(
+    /^(bg|text|border|ring|outline|fill|stroke|from|to|via|divide|placeholder|caret|accent|shadow|decoration)-(semantic-[a-z-]+)$/
+  )
 
   if (semanticMatch) {
     const [, utilityPrefix, semanticToken] = semanticMatch
@@ -126,7 +128,9 @@ export function transformSemanticClasses(classString: string): string {
       if (!cls) return cls
 
       // Handle variant prefixes (hover:, focus:, etc.)
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/)
+      const variantMatch = cls.match(
+        /^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/
+      )
       if (variantMatch) {
         const variants = variantMatch[0]
         const utility = cls.slice(variants.length)
@@ -146,7 +150,9 @@ export function transformSemanticClasses(classString: string): string {
 function transformSemanticClassesInContent(content: string): string {
   // Helper to check if string contains semantic classes worth transforming
   const hasSemanticClasses = (str: string): boolean => {
-    return /\b(bg|text|border|ring|outline|fill|stroke|from|to|via|divide|placeholder|caret|accent|shadow|decoration)-semantic-/.test(str)
+    return /\b(bg|text|border|ring|outline|fill|stroke|from|to|via|divide|placeholder|caret|accent|shadow|decoration)-semantic-/.test(
+      str
+    )
   }
 
   // 1. Handle cva() base classes
@@ -245,16 +251,76 @@ export function looksLikeTailwindClasses(str: string): boolean {
 
   // Skip obvious non-class values (common prop values)
   const nonClassValues = [
-    'button', 'submit', 'reset', 'text', 'email', 'password', 'number', 'tel', 'url', 'search',
-    'checkbox', 'radio', 'file', 'image', 'color', 'date', 'time', 'datetime-local',
-    'default', 'error', 'warning', 'success', 'info', 'primary', 'secondary', 'tertiary',
-    'destructive', 'outline', 'ghost', 'link', 'dashed', 'solid', 'none',
-    'open', 'closed', 'true', 'false', 'null', 'undefined',
-    'single', 'multiple', 'listbox', 'combobox', 'menu', 'menuitem', 'option', 'switch',
-    'small', 'medium', 'large', 'sm', 'md', 'lg', 'xl', '2xl',
-    'top', 'bottom', 'left', 'right', 'center', 'start', 'end',
-    'horizontal', 'vertical', 'both', 'auto',
-    'asc', 'desc', 'ascending', 'descending',
+    'button',
+    'submit',
+    'reset',
+    'text',
+    'email',
+    'password',
+    'number',
+    'tel',
+    'url',
+    'search',
+    'checkbox',
+    'radio',
+    'file',
+    'image',
+    'color',
+    'date',
+    'time',
+    'datetime-local',
+    'default',
+    'error',
+    'warning',
+    'success',
+    'info',
+    'primary',
+    'secondary',
+    'tertiary',
+    'destructive',
+    'outline',
+    'ghost',
+    'link',
+    'dashed',
+    'solid',
+    'none',
+    'open',
+    'closed',
+    'true',
+    'false',
+    'null',
+    'undefined',
+    'single',
+    'multiple',
+    'listbox',
+    'combobox',
+    'menu',
+    'menuitem',
+    'option',
+    'switch',
+    'small',
+    'medium',
+    'large',
+    'sm',
+    'md',
+    'lg',
+    'xl',
+    '2xl',
+    'top',
+    'bottom',
+    'left',
+    'right',
+    'center',
+    'start',
+    'end',
+    'horizontal',
+    'vertical',
+    'both',
+    'auto',
+    'asc',
+    'desc',
+    'ascending',
+    'descending',
   ]
   if (nonClassValues.includes(str.toLowerCase())) return false
 
@@ -264,45 +330,182 @@ export function looksLikeTailwindClasses(str: string): boolean {
   // Skip strings ending with punctuation (sentences)
   if (/[.!?]$/.test(str.trim())) return false
   // Skip strings with common English words that aren't Tailwind utilities
-  const sentenceWords = ['for', 'and', 'the', 'with', 'over', 'from', 'into', 'that', 'this', 'your', 'our']
+  const sentenceWords = [
+    'for',
+    'and',
+    'the',
+    'with',
+    'over',
+    'from',
+    'into',
+    'that',
+    'this',
+    'your',
+    'our',
+  ]
   const tokens = str.split(/\s+/)
-  if (tokens.length >= 3 && tokens.some(w => sentenceWords.includes(w.toLowerCase()))) return false
+  if (
+    tokens.length >= 3 &&
+    tokens.some((w) => sentenceWords.includes(w.toLowerCase()))
+  )
+    return false
 
   // Skip displayName values (PascalCase component names)
   if (/^[A-Z][a-zA-Z]*$/.test(str)) return false
 
   // Skip strings that look like paths or imports
   // Allow :: inside arbitrary selectors like [&::-webkit-inner-spin-button]
-  if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || (str.includes('::') && !str.includes('[&'))) return false
+  if (
+    str.startsWith('@') ||
+    str.startsWith('.') ||
+    str.startsWith('/') ||
+    (str.includes('::') && !str.includes('[&'))
+  )
+    return false
 
   // Skip npm package names - but NOT if they look like Tailwind utility classes
   // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)
-  const tailwindUtilityPrefixes = ['text', 'bg', 'p', 'm', 'px', 'py', 'mx', 'my', 'pt', 'pb', 'pl', 'pr', 'mt', 'mb', 'ml', 'mr', 'w', 'h', 'min', 'max', 'gap', 'space', 'border', 'rounded', 'shadow', 'opacity', 'font', 'leading', 'tracking', 'z', 'inset', 'top', 'bottom', 'left', 'right', 'flex', 'grid', 'col', 'row', 'justify', 'items', 'content', 'self', 'place', 'order', 'float', 'clear', 'object', 'overflow', 'overscroll', 'scroll', 'list', 'appearance', 'cursor', 'pointer', 'resize', 'select', 'fill', 'stroke', 'table', 'caption', 'transition', 'duration', 'ease', 'delay', 'animate', 'transform', 'origin', 'scale', 'rotate', 'translate', 'skew', 'accent', 'caret', 'outline', 'ring', 'blur', 'brightness', 'contrast', 'grayscale', 'hue', 'invert', 'saturate', 'sepia', 'backdrop', 'divide', 'sr', 'not', 'snap', 'touch', 'will', 'aspect', 'container', 'columns', 'break', 'box', 'isolation', 'mix', 'filter', 'drop', 'size', 'shrink', 'grow', 'basis', 'whitespace', 'decoration', 'indent']
+  const tailwindUtilityPrefixes = [
+    'text',
+    'bg',
+    'p',
+    'm',
+    'px',
+    'py',
+    'mx',
+    'my',
+    'pt',
+    'pb',
+    'pl',
+    'pr',
+    'mt',
+    'mb',
+    'ml',
+    'mr',
+    'w',
+    'h',
+    'min',
+    'max',
+    'gap',
+    'space',
+    'border',
+    'rounded',
+    'shadow',
+    'opacity',
+    'font',
+    'leading',
+    'tracking',
+    'z',
+    'inset',
+    'top',
+    'bottom',
+    'left',
+    'right',
+    'flex',
+    'grid',
+    'col',
+    'row',
+    'justify',
+    'items',
+    'content',
+    'self',
+    'place',
+    'order',
+    'float',
+    'clear',
+    'object',
+    'overflow',
+    'overscroll',
+    'scroll',
+    'list',
+    'appearance',
+    'cursor',
+    'pointer',
+    'resize',
+    'select',
+    'fill',
+    'stroke',
+    'table',
+    'caption',
+    'transition',
+    'duration',
+    'ease',
+    'delay',
+    'animate',
+    'transform',
+    'origin',
+    'scale',
+    'rotate',
+    'translate',
+    'skew',
+    'accent',
+    'caret',
+    'outline',
+    'ring',
+    'blur',
+    'brightness',
+    'contrast',
+    'grayscale',
+    'hue',
+    'invert',
+    'saturate',
+    'sepia',
+    'backdrop',
+    'divide',
+    'sr',
+    'not',
+    'snap',
+    'touch',
+    'will',
+    'aspect',
+    'container',
+    'columns',
+    'break',
+    'box',
+    'isolation',
+    'mix',
+    'filter',
+    'drop',
+    'size',
+    'shrink',
+    'grow',
+    'basis',
+    'whitespace',
+    'decoration',
+    'indent',
+  ]
 
   // Check if it looks like a Tailwind utility (prefix-value pattern) before npm check
   if (str.includes('-') && !str.includes(' ')) {
     const prefix = str.split('-')[0]
     if (tailwindUtilityPrefixes.includes(prefix)) {
-      return true  // This is a Tailwind class, not npm package
+      return true // This is a Tailwind class, not npm package
     }
   }
 
   // Single word utilities that are valid Tailwind classes — check BEFORE npm regex
   // so that words like "relative", "flex", "hidden" aren't misidentified as npm packages
-  const singleWordUtilities = /^(flex|inline-flex|grid|inline-grid|block|inline-block|inline-table|inline|contents|flow-root|hidden|invisible|visible|static|fixed|absolute|relative|sticky|isolate|isolation-auto|overflow-auto|overflow-hidden|overflow-clip|overflow-visible|overflow-scroll|overflow-x-auto|overflow-y-auto|overscroll-auto|overscroll-contain|overscroll-none|truncate|antialiased|subpixel-antialiased|italic|not-italic|underline|overline|line-through|no-underline|uppercase|lowercase|capitalize|normal-case|ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stacked-fractions|sr-only|not-sr-only|resize|resize-none|resize-x|resize-y|snap-start|snap-end|snap-center|snap-align-none|snap-normal|snap-always|touch-auto|touch-none|touch-pan-x|touch-pan-left|touch-pan-right|touch-pan-y|touch-pan-up|touch-pan-down|touch-pinch-zoom|touch-manipulation|select-none|select-text|select-all|select-auto|will-change-auto|will-change-scroll|will-change-contents|will-change-transform|grow|grow-0|shrink|shrink-0|transform|transform-cpu|transform-gpu|transform-none|transition|transition-none|transition-all|transition-colors|transition-opacity|transition-shadow|transition-transform|animate-none|animate-spin|animate-ping|animate-pulse|animate-bounce)$/
+  const singleWordUtilities =
+    /^(flex|inline-flex|grid|inline-grid|block|inline-block|inline-table|inline|contents|flow-root|hidden|invisible|visible|static|fixed|absolute|relative|sticky|isolate|isolation-auto|overflow-auto|overflow-hidden|overflow-clip|overflow-visible|overflow-scroll|overflow-x-auto|overflow-y-auto|overscroll-auto|overscroll-contain|overscroll-none|truncate|antialiased|subpixel-antialiased|italic|not-italic|underline|overline|line-through|no-underline|uppercase|lowercase|capitalize|normal-case|ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stacked-fractions|sr-only|not-sr-only|resize|resize-none|resize-x|resize-y|snap-start|snap-end|snap-center|snap-align-none|snap-normal|snap-always|touch-auto|touch-none|touch-pan-x|touch-pan-left|touch-pan-right|touch-pan-y|touch-pan-up|touch-pan-down|touch-pinch-zoom|touch-manipulation|select-none|select-text|select-all|select-auto|will-change-auto|will-change-scroll|will-change-contents|will-change-transform|grow|grow-0|shrink|shrink-0|transform|transform-cpu|transform-gpu|transform-none|transition|transition-none|transition-all|transition-colors|transition-opacity|transition-shadow|transition-transform|animate-none|animate-spin|animate-ping|animate-pulse|animate-bounce)$/
   if (!str.includes(' ') && singleWordUtilities.test(str)) return true
 
   // Skip npm package names (but we already caught Tailwind utilities above)
-  if (/^(@[a-z0-9-]+\/)?[a-z][a-z0-9-]*$/.test(str) && !str.includes(' ')) return false
+  if (/^(@[a-z0-9-]+\/)?[a-z][a-z0-9-]*$/.test(str) && !str.includes(' '))
+    return false
 
   // Check if any word looks like a Tailwind class
   const words = str.split(/\s+/)
-  return words.some(cls => {
+  return words.some((cls) => {
     if (!cls) return false
 
     // Skip aria-* and data-* ONLY if they look like HTML attribute values (no [ or :)
     // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
-    if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return false
+    if (
+      (cls.startsWith('aria-') || cls.startsWith('data-')) &&
+      !cls.includes('[') &&
+      !cls.includes(':')
+    )
+      return false
 
     // Single word utilities (reuse the same regex for multi-word strings)
     if (singleWordUtilities.test(cls)) return true
@@ -330,62 +533,67 @@ const BORDER_STYLE_RE = /^border-(solid|dashed|dotted|double|hidden|none)$/
 
 // Helper to prefix a single class string
 export function prefixClassString(classString: string, prefix: string): string {
-  const prefixed = classString
-    .split(' ')
-    .map((cls: string) => {
-      if (!cls) return cls
+  const prefixed = classString.split(' ').map((cls: string) => {
+    if (!cls) return cls
 
-      // Skip aria-* and data-* ONLY if they look like HTML attribute values (no [ or :)
-      // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
-      if ((cls.startsWith('aria-') || cls.startsWith('data-')) && !cls.includes('[') && !cls.includes(':')) return cls
+    // Skip aria-* and data-* ONLY if they look like HTML attribute values (no [ or :)
+    // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
+    if (
+      (cls.startsWith('aria-') || cls.startsWith('data-')) &&
+      !cls.includes('[') &&
+      !cls.includes(':')
+    )
+      return cls
 
-      // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
-      const variantMatch = cls.match(/^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/)
-      if (variantMatch) {
-        const variants = variantMatch[0]
-        let utility = cls.slice(variants.length)
+    // Handle variant prefixes like hover:, focus:, sm:, data-[state=open]:, aria-[checked]:, etc.
+    const variantMatch = cls.match(
+      /^(([a-z][a-z0-9]*(-[a-z0-9]+)*(\/[a-z][a-z0-9-]*)?:)|((data|aria)-\[[^\]]+\]:))+/
+    )
+    if (variantMatch) {
+      const variants = variantMatch[0]
+      let utility = cls.slice(variants.length)
+      if (!utility) return cls
+
+      // Handle ! important modifier: hover:!p-0 → hover:!tw-p-0
+      const isImportant = utility.startsWith('!')
+      if (isImportant) utility = utility.slice(1)
+
+      // Prefix the utility part, keep variants as-is
+      if (utility.startsWith('-')) {
+        return `${variants}${isImportant ? '!' : ''}-${prefix}${utility.slice(1)}`
+      }
+      return `${variants}${isImportant ? '!' : ''}${prefix}${utility}`
+    }
+
+    // Handle ! important modifier: !p-0 → !tw-p-0
+    if (cls.startsWith('!') && cls.length > 1) {
+      const rest = cls.slice(1)
+      if (rest.startsWith('-') && rest.length > 1) {
+        return `!-${prefix}${rest.slice(1)}`
+      }
+      return `!${prefix}${rest}`
+    }
+
+    // Handle negative values like -mt-4
+    if (cls.startsWith('-') && cls.length > 1) {
+      return `-${prefix}${cls.slice(1)}`
+    }
+
+    // Handle arbitrary selector values like [&_svg]:pointer-events-none
+    if (cls.startsWith('[&')) {
+      const closeBracket = cls.indexOf(']:')
+      if (closeBracket !== -1) {
+        const selector = cls.slice(0, closeBracket + 2)
+        const utility = cls.slice(closeBracket + 2)
         if (!utility) return cls
-
-        // Handle ! important modifier: hover:!p-0 → hover:!tw-p-0
-        const isImportant = utility.startsWith('!')
-        if (isImportant) utility = utility.slice(1)
-
-        // Prefix the utility part, keep variants as-is
-        if (utility.startsWith('-')) {
-          return `${variants}${isImportant ? '!' : ''}-${prefix}${utility.slice(1)}`
-        }
-        return `${variants}${isImportant ? '!' : ''}${prefix}${utility}`
+        return `${selector}${prefix}${utility}`
       }
+      return cls
+    }
 
-      // Handle ! important modifier: !p-0 → !tw-p-0
-      if (cls.startsWith('!') && cls.length > 1) {
-        const rest = cls.slice(1)
-        if (rest.startsWith('-') && rest.length > 1) {
-          return `!-${prefix}${rest.slice(1)}`
-        }
-        return `!${prefix}${rest}`
-      }
-
-      // Handle negative values like -mt-4
-      if (cls.startsWith('-') && cls.length > 1) {
-        return `-${prefix}${cls.slice(1)}`
-      }
-
-      // Handle arbitrary selector values like [&_svg]:pointer-events-none
-      if (cls.startsWith('[&')) {
-        const closeBracket = cls.indexOf(']:')
-        if (closeBracket !== -1) {
-          const selector = cls.slice(0, closeBracket + 2)
-          const utility = cls.slice(closeBracket + 2)
-          if (!utility) return cls
-          return `${selector}${prefix}${utility}`
-        }
-        return cls
-      }
-
-      // Regular class (including arbitrary values like bg-[#343E55])
-      return `${prefix}${cls}`
-    })
+    // Regular class (including arbitrary values like bg-[#343E55])
+    return `${prefix}${cls}`
+  })
 
   // Auto-inject border-solid when border-width classes are present without an explicit border-style.
   // Without Tailwind Preflight, the host app may not set border-style: solid on *, so
@@ -395,8 +603,10 @@ export function prefixClassString(classString: string, prefix: string): string {
   // since those explicitly remove borders and don't need a style.
   const origClasses = classString.split(' ')
   const BORDER_ZERO_RE = /^border(-[trblxy])?-0$/
-  const hasNonZeroBorderWidth = origClasses.some(c => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c))
-  const hasBorderStyle = origClasses.some(c => BORDER_STYLE_RE.test(c))
+  const hasNonZeroBorderWidth = origClasses.some(
+    (c) => BORDER_WIDTH_RE.test(c) && !BORDER_ZERO_RE.test(c)
+  )
+  const hasBorderStyle = origClasses.some((c) => BORDER_STYLE_RE.test(c))
   if (hasNonZeroBorderWidth && !hasBorderStyle) {
     prefixed.push(`${prefix}border-solid`)
   }
@@ -497,24 +707,109 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
   // For those ambiguous keys, we use `cssKeywordValues` below to detect CSS-only values.
   const nonClassKeys = [
     // HTML attributes
-    'name', 'description', 'displayName', 'type', 'role', 'id', 'htmlFor', 'for', 'placeholder', 'title', 'alt', 'src', 'href', 'target', 'rel', 'method', 'action', 'enctype', 'accept', 'pattern', 'autocomplete', 'value', 'defaultValue', 'label', 'message', 'helperText', 'ariaLabel', 'ariaDescribedBy',
+    'name',
+    'description',
+    'displayName',
+    'type',
+    'role',
+    'id',
+    'htmlFor',
+    'for',
+    'placeholder',
+    'title',
+    'alt',
+    'src',
+    'href',
+    'target',
+    'rel',
+    'method',
+    'action',
+    'enctype',
+    'accept',
+    'pattern',
+    'autocomplete',
+    'value',
+    'defaultValue',
+    'label',
+    'message',
+    'helperText',
+    'ariaLabel',
+    'ariaDescribedBy',
+    // Library/API option values, not class values
+    'placement',
+    'strategy',
+    'floatingStrategy',
     // CSS style properties (camelCase — safe because they can't be CVA variant keys)
-    'width', 'height', 'minWidth', 'maxWidth', 'minHeight', 'maxHeight',
-    'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
-    'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
-    'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'lineHeight', 'letterSpacing',
-    'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'borderRadius',
-    'zIndex', 'overflow', 'overflowX', 'overflowY', 'userSelect',
-    'transitionDuration', 'transitionProperty',
-    'boxShadow', 'textShadow', 'outlineOffset',
-    'rowGap', 'columnGap', 'gridTemplateColumns', 'gridTemplateRows',
-    'flexBasis', 'flexGrow', 'flexShrink', 'flexDirection', 'flexWrap',
-    'alignItems', 'alignSelf', 'justifyContent', 'justifyItems',
-    'textAlign', 'textDecoration', 'textTransform', 'whiteSpace', 'wordBreak', 'wordSpacing',
-    'aspectRatio', 'scrollbarWidth', 'scrollBehavior',
-    'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat',
-    'borderTop', 'borderRight', 'borderBottom', 'borderLeft',
-    'strokeWidth', 'strokeDasharray', 'strokeDashoffset',
+    'width',
+    'height',
+    'minWidth',
+    'maxWidth',
+    'minHeight',
+    'maxHeight',
+    'padding',
+    'paddingTop',
+    'paddingRight',
+    'paddingBottom',
+    'paddingLeft',
+    'margin',
+    'marginTop',
+    'marginRight',
+    'marginBottom',
+    'marginLeft',
+    'fontSize',
+    'fontWeight',
+    'fontFamily',
+    'fontStyle',
+    'lineHeight',
+    'letterSpacing',
+    'backgroundColor',
+    'borderColor',
+    'borderWidth',
+    'borderStyle',
+    'borderRadius',
+    'zIndex',
+    'overflow',
+    'overflowX',
+    'overflowY',
+    'userSelect',
+    'transitionDuration',
+    'transitionProperty',
+    'boxShadow',
+    'textShadow',
+    'outlineOffset',
+    'rowGap',
+    'columnGap',
+    'gridTemplateColumns',
+    'gridTemplateRows',
+    'flexBasis',
+    'flexGrow',
+    'flexShrink',
+    'flexDirection',
+    'flexWrap',
+    'alignItems',
+    'alignSelf',
+    'justifyContent',
+    'justifyItems',
+    'textAlign',
+    'textDecoration',
+    'textTransform',
+    'whiteSpace',
+    'wordBreak',
+    'wordSpacing',
+    'aspectRatio',
+    'scrollbarWidth',
+    'scrollBehavior',
+    'backgroundImage',
+    'backgroundSize',
+    'backgroundPosition',
+    'backgroundRepeat',
+    'borderTop',
+    'borderRight',
+    'borderBottom',
+    'borderLeft',
+    'strokeWidth',
+    'strokeDasharray',
+    'strokeDashoffset',
   ]
 
   // CSS style-object entries whose keys collide with common CVA variant names
@@ -526,9 +821,46 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
   // Only values that happen to also be single-word Tailwind utilities need
   // guarding (that's what creates the ambiguity in the first place).
   const cssKeywordValues: Record<string, string[]> = {
-    position: ['static', 'relative', 'absolute', 'fixed', 'sticky', 'inherit', 'initial', 'unset', 'revert'],
-    display: ['block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'table', 'inline-table', 'table-row', 'table-cell', 'table-caption', 'contents', 'flow-root', 'list-item', 'none', 'inherit', 'initial', 'unset'],
-    visibility: ['visible', 'hidden', 'collapse', 'inherit', 'initial', 'unset'],
+    position: [
+      'static',
+      'relative',
+      'absolute',
+      'fixed',
+      'sticky',
+      'inherit',
+      'initial',
+      'unset',
+      'revert',
+    ],
+    display: [
+      'block',
+      'inline',
+      'inline-block',
+      'flex',
+      'inline-flex',
+      'grid',
+      'inline-grid',
+      'table',
+      'inline-table',
+      'table-row',
+      'table-cell',
+      'table-caption',
+      'contents',
+      'flow-root',
+      'list-item',
+      'none',
+      'inherit',
+      'initial',
+      'unset',
+    ],
+    visibility: [
+      'visible',
+      'hidden',
+      'collapse',
+      'inherit',
+      'initial',
+      'unset',
+    ],
   }
 
   function isCSSStyleObjectEntry(key: string, value: string): boolean {
@@ -649,26 +981,60 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
 
       while (pos < content.length && depth > 0) {
         const ch = content[pos]
-        if (ch === '{') { depth++; pos++; continue }
-        if (ch === '}') { depth--; if (depth === 0) { pos++; break } pos++; continue }
+        if (ch === '{') {
+          depth++
+          pos++
+          continue
+        }
+        if (ch === '}') {
+          depth--
+          if (depth === 0) {
+            pos++
+            break
+          }
+          pos++
+          continue
+        }
         if (ch === '"') {
           pos++
-          while (pos < content.length && content[pos] !== '"') { if (content[pos] === '\\') pos++; pos++ }
-          pos++; continue
+          while (pos < content.length && content[pos] !== '"') {
+            if (content[pos] === '\\') pos++
+            pos++
+          }
+          pos++
+          continue
         }
         if (ch === "'") {
           pos++
-          while (pos < content.length && content[pos] !== "'") { if (content[pos] === '\\') pos++; pos++ }
-          pos++; continue
+          while (pos < content.length && content[pos] !== "'") {
+            if (content[pos] === '\\') pos++
+            pos++
+          }
+          pos++
+          continue
         }
         if (ch === '`') {
           pos++
           let tDepth = 0
           while (pos < content.length) {
-            if (content[pos] === '\\') { pos += 2; continue }
-            if (content[pos] === '`' && tDepth === 0) { pos++; break }
-            if (content[pos] === '$' && content[pos + 1] === '{') { tDepth++; pos += 2; continue }
-            if (content[pos] === '}' && tDepth > 0) { tDepth--; pos++; continue }
+            if (content[pos] === '\\') {
+              pos += 2
+              continue
+            }
+            if (content[pos] === '`' && tDepth === 0) {
+              pos++
+              break
+            }
+            if (content[pos] === '$' && content[pos + 1] === '{') {
+              tDepth++
+              pos += 2
+              continue
+            }
+            if (content[pos] === '}' && tDepth > 0) {
+              tDepth--
+              pos++
+              continue
+            }
             pos++
           }
           continue
@@ -704,13 +1070,20 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
 // Helper: Check if all classes in a string already have the prefix (to avoid double-prefixing)
 function isAlreadyPrefixed(classString: string, prefix: string): boolean {
   if (!classString.trim()) return false
-  return classString.trim().split(/\s+/).every(c => {
-    // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
-    const lastColon = c.lastIndexOf(':')
-    const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
-    return utility.startsWith(prefix) || utility.startsWith(`-${prefix}`) ||
-           utility.startsWith(`!${prefix}`) || utility.startsWith(`!-${prefix}`)
-  })
+  return classString
+    .trim()
+    .split(/\s+/)
+    .every((c) => {
+      // Strip variant prefixes (hover:, focus:, etc.) to get the utility part
+      const lastColon = c.lastIndexOf(':')
+      const utility = lastColon >= 0 ? c.slice(lastColon + 1) : c
+      return (
+        utility.startsWith(prefix) ||
+        utility.startsWith(`-${prefix}`) ||
+        utility.startsWith(`!${prefix}`) ||
+        utility.startsWith(`!-${prefix}`)
+      )
+    })
 }
 
 // Helper: Prefix a static part of a template literal (preserving whitespace)
@@ -725,11 +1098,21 @@ function prefixStaticTemplatePart(text: string, prefix: string): string {
 // Helper: Prefix string literals ("..." and '...') in a code expression
 function prefixStringLiteralsInExpr(code: string, prefix: string): string {
   let result = code.replace(/"([^"]*)"/g, (m: string, classes: string) => {
-    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    if (
+      !classes.trim() ||
+      !looksLikeTailwindClasses(classes) ||
+      isAlreadyPrefixed(classes, prefix)
+    )
+      return m
     return `"${prefixClassString(classes, prefix)}"`
   })
   result = result.replace(/'([^']*)'/g, (m: string, classes: string) => {
-    if (!classes.trim() || !looksLikeTailwindClasses(classes) || isAlreadyPrefixed(classes, prefix)) return m
+    if (
+      !classes.trim() ||
+      !looksLikeTailwindClasses(classes) ||
+      isAlreadyPrefixed(classes, prefix)
+    )
+      return m
     return `'${prefixClassString(classes, prefix)}'`
   })
   return result
@@ -739,7 +1122,10 @@ function prefixStringLiteralsInExpr(code: string, prefix: string): string {
  * Prefix class strings within a className={...} JSX expression.
  * Handles template literals (static parts + expressions), ternaries, and bare string literals.
  */
-export function prefixClassNameExpression(expr: string, prefix: string): string {
+export function prefixClassNameExpression(
+  expr: string,
+  prefix: string
+): string {
   let result = ''
   let i = 0
 
@@ -770,38 +1156,85 @@ export function prefixClassNameExpression(expr: string, prefix: string): string 
           while (i < expr.length && exprDepth > 0) {
             // Skip strings inside the expression to avoid brace-counting issues
             if (expr[i] === '"') {
-              exprContent += expr[i]; i++
+              exprContent += expr[i]
+              i++
               while (i < expr.length && expr[i] !== '"') {
-                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
-                exprContent += expr[i]; i++
+                if (expr[i] === '\\') {
+                  exprContent += expr[i]
+                  i++
+                }
+                exprContent += expr[i]
+                i++
               }
-              if (i < expr.length) { exprContent += expr[i]; i++ }
+              if (i < expr.length) {
+                exprContent += expr[i]
+                i++
+              }
               continue
             }
             if (expr[i] === "'") {
-              exprContent += expr[i]; i++
+              exprContent += expr[i]
+              i++
               while (i < expr.length && expr[i] !== "'") {
-                if (expr[i] === '\\') { exprContent += expr[i]; i++ }
-                exprContent += expr[i]; i++
+                if (expr[i] === '\\') {
+                  exprContent += expr[i]
+                  i++
+                }
+                exprContent += expr[i]
+                i++
               }
-              if (i < expr.length) { exprContent += expr[i]; i++ }
+              if (i < expr.length) {
+                exprContent += expr[i]
+                i++
+              }
               continue
             }
             if (expr[i] === '`') {
               // Nested template literal — skip as-is
-              exprContent += expr[i]; i++
+              exprContent += expr[i]
+              i++
               let nestedDepth = 0
               while (i < expr.length) {
-                if (expr[i] === '\\') { exprContent += expr[i]; i++; if (i < expr.length) { exprContent += expr[i]; i++ }; continue }
-                if (expr[i] === '`' && nestedDepth === 0) { exprContent += expr[i]; i++; break }
-                if (expr[i] === '$' && i + 1 < expr.length && expr[i + 1] === '{') { nestedDepth++; exprContent += '${'; i += 2; continue }
-                if (expr[i] === '}' && nestedDepth > 0) { nestedDepth-- }
-                exprContent += expr[i]; i++
+                if (expr[i] === '\\') {
+                  exprContent += expr[i]
+                  i++
+                  if (i < expr.length) {
+                    exprContent += expr[i]
+                    i++
+                  }
+                  continue
+                }
+                if (expr[i] === '`' && nestedDepth === 0) {
+                  exprContent += expr[i]
+                  i++
+                  break
+                }
+                if (
+                  expr[i] === '$' &&
+                  i + 1 < expr.length &&
+                  expr[i + 1] === '{'
+                ) {
+                  nestedDepth++
+                  exprContent += '${'
+                  i += 2
+                  continue
+                }
+                if (expr[i] === '}' && nestedDepth > 0) {
+                  nestedDepth--
+                }
+                exprContent += expr[i]
+                i++
               }
               continue
             }
             if (expr[i] === '{') exprDepth++
-            else if (expr[i] === '}') { exprDepth--; if (exprDepth === 0) { i++; break } }
+            else if (expr[i] === '}') {
+              exprDepth--
+              if (exprDepth === 0) {
+                i++
+                break
+              }
+            }
             exprContent += expr[i]
             i++
           }
@@ -827,13 +1260,21 @@ export function prefixClassNameExpression(expr: string, prefix: string): string 
       i++ // past opening quote
       let str = ''
       while (i < expr.length && expr[i] !== quote) {
-        if (expr[i] === '\\') { str += expr[i] + (expr[i + 1] || ''); i += 2; continue }
+        if (expr[i] === '\\') {
+          str += expr[i] + (expr[i + 1] || '')
+          i += 2
+          continue
+        }
         str += expr[i]
         i++
       }
       if (i < expr.length) i++ // past closing quote
 
-      if (str.trim() && looksLikeTailwindClasses(str) && !isAlreadyPrefixed(str, prefix)) {
+      if (
+        str.trim() &&
+        looksLikeTailwindClasses(str) &&
+        !isAlreadyPrefixed(str, prefix)
+      ) {
         result += quote + prefixClassString(str, prefix) + quote
       } else {
         result += expr.slice(strStart, i)
