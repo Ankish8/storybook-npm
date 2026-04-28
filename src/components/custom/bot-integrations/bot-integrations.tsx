@@ -149,9 +149,9 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
             {integrations.map((integration) => (
               <div
                 key={integration.id}
-                className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:gap-4"
+                className="flex flex-row items-center gap-3 py-4 sm:gap-4"
               >
-                <div className="flex min-w-0 flex-1 basis-0 items-start gap-3 sm:items-center">
+                <div className="flex min-w-0 flex-1 basis-0 items-center gap-3">
                   {/* Icon */}
                   <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-semantic-info-surface-subtle p-1.5">
                     {integration.icon}
@@ -178,7 +178,7 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                 </div>
 
                 {/* Actions */}
-                <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
+                <div className="flex shrink-0 items-center gap-2">
                   <Button
                     type="button"
                     variant="ghost"

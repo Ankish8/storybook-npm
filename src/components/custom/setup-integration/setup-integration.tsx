@@ -24,7 +24,7 @@ const SetupIntegration = React.forwardRef<
       emptyChatSecondary,
       inputValue = "",
       isInputDisabled = false,
-      inputPlaceholder = "Describe your action… (Shift+Enter for new line)",
+      inputPlaceholder = "Describe your action...",
       isActionLoading = false,
       actionLabel = "Test Integration",
       isActionDisabled = false,

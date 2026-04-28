@@ -67,7 +67,7 @@ const ChatInput = React.forwardRef<HTMLDivElement, ChatInputProps>(
             aria-multiline="true"
             className={cn(
               "max-h-[200px] min-h-12 flex-1 resize-none bg-transparent py-3 text-sm leading-relaxed text-semantic-text-primary outline-none",
-              "placeholder:text-semantic-text-placeholder",
+              "placeholder:text-semantic-text-placeholder placeholder:whitespace-nowrap placeholder:overflow-hidden placeholder:text-ellipsis",
               disabled && "cursor-not-allowed opacity-50"
             )}
           />

@@ -1,15 +1,15 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import { fn } from "storybook/test"
-import React, { useState } from "react"
-import { Plus } from "lucide-react"
-import { SetupIntegration } from "./setup-integration"
-import { SetupIntegrationView } from "./setup-integration-view"
-import { Button } from "../../ui/button"
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
+import React, { useState } from "react";
+import { Plus } from "lucide-react";
+import { SetupIntegration } from "./setup-integration";
+import { SetupIntegrationView } from "./setup-integration-view";
+import { Button } from "../../ui/button";
 import type {
   ChatMessage,
   SetupIntegrationProps,
   SetupIntegrationAction,
-} from "./types"
+} from "./types";
 
 /* ================================================================== */
 /* Sample message sets for each Figma state                            */
@@ -22,7 +22,7 @@ const defaultMessages: ChatMessage[] = [
     content:
       "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
   },
-]
+];
 
 const mappingMessages: ChatMessage[] = [
   {
@@ -42,7 +42,7 @@ const mappingMessages: ChatMessage[] = [
     content: "Mapping tool.",
     variant: "status",
   },
-]
+];
 
 const midConversationMessages: ChatMessage[] = [
   {
@@ -62,7 +62,7 @@ const midConversationMessages: ChatMessage[] = [
     content:
       "I've set up the Google Sheets 'Add Row' tool for you. You'll need to provide the Spreadsheet ID and Sheet Name once, and the bot will then ask the user for the data to be added to the columns during the conversation.",
   },
-]
+];
 
 const testingMessages: ChatMessage[] = [
   {
@@ -89,7 +89,7 @@ const testingMessages: ChatMessage[] = [
       "Welcome to the Test Phase. Let's verify the integration before publishing.\n\nPlease provide a test value for the variable: {{row_data}}",
     statusLabel: "Running test...",
   },
-]
+];
 
 const activeConfigMessages: ChatMessage[] = [
   {
@@ -128,7 +128,7 @@ const activeConfigMessages: ChatMessage[] = [
       "Test successful! The tool call was executed correctly. You can now publish the integration.",
     variant: "success",
   },
-]
+];
 
 /* ================================================================== */
 /* Trigger button                                                      */
@@ -139,7 +139,7 @@ const SetupTrigger = ({ onClick }: { onClick: () => void }) => (
     <Plus className="size-4" />
     Integrations
   </Button>
-)
+);
 
 /* ================================================================== */
 /* Modal wrapper for args-based stories                                */
@@ -147,13 +147,13 @@ const SetupTrigger = ({ onClick }: { onClick: () => void }) => (
 
 type ModalStoryProps = SetupIntegrationProps & {
   /** When true, the modal opens on load (useful for empty state / full-screen previews). */
-  initialOpen?: boolean
-}
+  initialOpen?: boolean;
+};
 
 const ModalStory = (props: ModalStoryProps) => {
-  const { initialOpen = false, ...setupProps } = props
-  const [open, setOpen] = useState(initialOpen)
-  const [inputValue, setInputValue] = useState(setupProps.inputValue ?? "")
+  const { initialOpen = false, ...setupProps } = props;
+  const [open, setOpen] = useState(initialOpen);
+  const [inputValue, setInputValue] = useState(setupProps.inputValue ?? "");
 
   return (
     <>
@@ -164,17 +164,17 @@ const ModalStory = (props: ModalStoryProps) => {
         onOpenChange={setOpen}
         inputValue={inputValue}
         onInputChange={(v) => {
-          setInputValue(v)
-          setupProps.onInputChange?.(v)
+          setInputValue(v);
+          setupProps.onInputChange?.(v);
         }}
         onClose={() => {
-          setupProps.onClose?.()
-          setOpen(false)
+          setupProps.onClose?.();
+          setOpen(false);
         }}
       />
     </>
-  )
-}
+  );
+};
 
 /* ================================================================== */
 /* Meta                                                                */
@@ -323,10 +323,10 @@ interface ChatMessage {
     onAction: fn(),
     onResetChat: fn(),
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 /* ================================================================== */
 /* Individual State Stories                                             */
@@ -351,7 +351,7 @@ export const Default: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Empty: No messages yet (empty hint + secondary tip) ----------
 export const Empty: Story = {
@@ -372,7 +372,7 @@ export const Empty: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Mapping: User sent action, AI is mapping ----------
 export const Mapping: Story = {
@@ -394,7 +394,7 @@ export const Mapping: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Mid-conversation: Ready to test ----------
 export const MidConversation: Story = {
@@ -415,7 +415,7 @@ export const MidConversation: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Testing: Running test with spinner ----------
 export const Testing: Story = {
@@ -437,7 +437,7 @@ export const Testing: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Active Configuration: Test passed, ready to publish ----------
 export const ActiveConfiguration: Story = {
@@ -458,7 +458,7 @@ export const ActiveConfiguration: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Setup Error: AI processing failure ----------
 const setupErrorMessages: ChatMessage[] = [
@@ -476,11 +476,10 @@ const setupErrorMessages: ChatMessage[] = [
   {
     id: "3",
     role: "assistant",
-    content:
-      "Something went wrong processing your message. Please try again.",
+    content: "Something went wrong processing your message. Please try again.",
     variant: "error",
   },
-]
+];
 
 export const SetupError: Story = {
   render: (args) => <ModalStory {...args} />,
@@ -500,7 +499,7 @@ export const SetupError: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Test Failed: Invalid test value ----------
 const testFailedMessages: ChatMessage[] = [
@@ -539,7 +538,7 @@ const testFailedMessages: ChatMessage[] = [
     content: "Invalid test value! Please try again.",
     variant: "error",
   },
-]
+];
 
 export const TestFailed: Story = {
   render: (args) => <ModalStory {...args} />,
@@ -559,14 +558,14 @@ export const TestFailed: Story = {
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario: Full interactive flow                                     */
 /* ================================================================== */
 
 const ScenarioFullFlowExample = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -574,21 +573,21 @@ const ScenarioFullFlowExample = () => {
       content:
         "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
     },
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const [isInputDisabled, setIsInputDisabled] = useState(false)
-  const [isActionDisabled, setIsActionDisabled] = useState(true)
-  const [isActionLoading, setIsActionLoading] = useState(false)
-  const [actionLabel, setActionLabel] = useState("Test Integration")
-  const [actionMode, setActionMode] = useState<SetupIntegrationAction>("test")
-  const [title, setTitle] = useState("Setup Integration")
-  const [subtitle, setSubtitle] = useState("Step 3 of 4")
-  const [hasConfigured, setHasConfigured] = useState(false)
-  const [hasTested, setHasTested] = useState(false)
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [isActionDisabled, setIsActionDisabled] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [actionLabel, setActionLabel] = useState("Test Integration");
+  const [actionMode, setActionMode] = useState<SetupIntegrationAction>("test");
+  const [title, setTitle] = useState("Setup Integration");
+  const [subtitle, setSubtitle] = useState("Step 3 of 4");
+  const [hasConfigured, setHasConfigured] = useState(false);
+  const [hasTested, setHasTested] = useState(false);
 
   const addMessage = (msg: ChatMessage) => {
-    setMessages((prev) => [...prev, msg])
-  }
+    setMessages((prev) => [...prev, msg]);
+  };
 
   const handleSendMessage = (text: string) => {
     // Add user message
@@ -596,9 +595,9 @@ const ScenarioFullFlowExample = () => {
       id: Date.now().toString(),
       role: "user",
       content: text,
-    })
-    setInputValue("")
-    setIsInputDisabled(true)
+    });
+    setInputValue("");
+    setIsInputDisabled(true);
 
     // Simulate mapping status
     setTimeout(() => {
@@ -607,8 +606,8 @@ const ScenarioFullFlowExample = () => {
         role: "assistant",
         content: "Mapping tool.",
         variant: "status",
-      })
-    }, 500)
+      });
+    }, 500);
 
     // Simulate assistant response
     setTimeout(() => {
@@ -616,20 +615,20 @@ const ScenarioFullFlowExample = () => {
         id: (Date.now() + 2).toString(),
         role: "assistant",
         content: `I've set up the Google Sheets '${text}' tool for you. You'll need to provide the Spreadsheet ID and Sheet Name once, and the bot will then ask the user for the data to be added to the columns during the conversation.`,
-      })
-      setIsInputDisabled(false)
-      setIsActionDisabled(false)
-      setHasConfigured(true)
-      setTitle("Test Integration")
-      setSubtitle("Step 4 of 4")
-    }, 2000)
-  }
+      });
+      setIsInputDisabled(false);
+      setIsActionDisabled(false);
+      setHasConfigured(true);
+      setTitle("Test Integration");
+      setSubtitle("Step 4 of 4");
+    }, 2000);
+  };
 
   const handleAction = () => {
     if (!hasTested && hasConfigured) {
       // Test flow
-      setIsActionLoading(true)
-      setIsInputDisabled(true)
+      setIsActionLoading(true);
+      setIsInputDisabled(true);
 
       addMessage({
         id: (Date.now() + 3).toString(),
@@ -637,14 +636,14 @@ const ScenarioFullFlowExample = () => {
         content:
           "Welcome to the Test Phase. Let's verify the integration before publishing.\n\nPlease provide a test value for the variable: {{row_data}}",
         statusLabel: "Running test...",
-      })
+      });
 
       setTimeout(() => {
-        setIsActionLoading(false)
-        setIsInputDisabled(false)
-        setHasTested(true)
-        setActionLabel("Publish Integration")
-        setActionMode("publish")
+        setIsActionLoading(false);
+        setIsInputDisabled(false);
+        setHasTested(true);
+        setActionLabel("Publish Integration");
+        setActionMode("publish");
 
         addMessage({
           id: (Date.now() + 4).toString(),
@@ -652,14 +651,14 @@ const ScenarioFullFlowExample = () => {
           content:
             "Test successful! The tool call was executed correctly. You can now publish the integration.",
           variant: "success",
-        })
-      }, 2500)
+        });
+      }, 2500);
     } else if (hasTested) {
       // Publish
-      setOpen(false)
-      console.log("Published!")
+      setOpen(false);
+      console.log("Published!");
     }
-  }
+  };
 
   const handleResetChat = () => {
     setMessages([
@@ -669,23 +668,23 @@ const ScenarioFullFlowExample = () => {
         content:
           "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
       },
-    ])
-    setInputValue("")
-    setIsInputDisabled(false)
-    setIsActionDisabled(true)
-    setIsActionLoading(false)
-    setActionLabel("Test Integration")
-    setActionMode("test")
-    setTitle("Setup Integration")
-    setSubtitle("Step 3 of 4")
-    setHasConfigured(false)
-    setHasTested(false)
-  }
+    ]);
+    setInputValue("");
+    setIsInputDisabled(false);
+    setIsActionDisabled(true);
+    setIsActionLoading(false);
+    setActionLabel("Test Integration");
+    setActionMode("test");
+    setTitle("Setup Integration");
+    setSubtitle("Step 3 of 4");
+    setHasConfigured(false);
+    setHasTested(false);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    handleResetChat()
-  }
+    setOpen(false);
+    handleResetChat();
+  };
 
   return (
     <>
@@ -710,8 +709,8 @@ const ScenarioFullFlowExample = () => {
         onBack={handleClose}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario_FullFlow: Story = {
   render: () => <ScenarioFullFlowExample />,
@@ -732,14 +731,14 @@ Flow: Greeting → Type action → Mapping → Configured → Test → Success �
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario 5: Setup Agent AI Failure                                  */
 /* ================================================================== */
 
 const Scenario5Example = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -747,31 +746,31 @@ const Scenario5Example = () => {
       content:
         "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
     },
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const [isInputDisabled, setIsInputDisabled] = useState(false)
-  const [isActionDisabled, setIsActionDisabled] = useState(true)
-  const [isActionLoading, setIsActionLoading] = useState(false)
-  const [actionLabel, setActionLabel] = useState("Test Integration")
-  const [actionMode, setActionMode] = useState<SetupIntegrationAction>("test")
-  const [title, setTitle] = useState("Setup Integration")
-  const [subtitle, setSubtitle] = useState("Step 3 of 4")
-  const [hasConfigured, setHasConfigured] = useState(false)
-  const [hasTested, setHasTested] = useState(false)
-  const [failCount, setFailCount] = useState(0)
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [isActionDisabled, setIsActionDisabled] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [actionLabel, setActionLabel] = useState("Test Integration");
+  const [actionMode, setActionMode] = useState<SetupIntegrationAction>("test");
+  const [title, setTitle] = useState("Setup Integration");
+  const [subtitle, setSubtitle] = useState("Step 3 of 4");
+  const [hasConfigured, setHasConfigured] = useState(false);
+  const [hasTested, setHasTested] = useState(false);
+  const [failCount, setFailCount] = useState(0);
 
   const addMessage = (msg: ChatMessage) => {
-    setMessages((prev) => [...prev, msg])
-  }
+    setMessages((prev) => [...prev, msg]);
+  };
 
   const handleSendMessage = (text: string) => {
     addMessage({
       id: Date.now().toString(),
       role: "user",
       content: text,
-    })
-    setInputValue("")
-    setIsInputDisabled(true)
+    });
+    setInputValue("");
+    setIsInputDisabled(true);
 
     // First attempt → AI failure
     if (failCount === 0) {
@@ -782,11 +781,11 @@ const Scenario5Example = () => {
           content:
             "Something went wrong processing your message. Please try again.",
           variant: "error",
-        })
-        setIsInputDisabled(false)
-        setFailCount(1)
-      }, 1000)
-      return
+        });
+        setIsInputDisabled(false);
+        setFailCount(1);
+      }, 1000);
+      return;
     }
 
     // Retry → mapping then success
@@ -796,27 +795,27 @@ const Scenario5Example = () => {
         role: "assistant",
         content: "Mapping tool.",
         variant: "status",
-      })
-    }, 500)
+      });
+    }, 500);
 
     setTimeout(() => {
       addMessage({
         id: (Date.now() + 2).toString(),
         role: "assistant",
         content: `I've set up the Google Sheets '${text}' tool for you. You'll need to provide the Spreadsheet ID and Sheet Name once, and the bot will then ask the user for the data to be added to the columns during the conversation.`,
-      })
-      setIsInputDisabled(false)
-      setIsActionDisabled(false)
-      setHasConfigured(true)
-      setTitle("Test Integration")
-      setSubtitle("Step 4 of 4")
-    }, 2000)
-  }
+      });
+      setIsInputDisabled(false);
+      setIsActionDisabled(false);
+      setHasConfigured(true);
+      setTitle("Test Integration");
+      setSubtitle("Step 4 of 4");
+    }, 2000);
+  };
 
   const handleAction = () => {
     if (!hasTested && hasConfigured) {
-      setIsActionLoading(true)
-      setIsInputDisabled(true)
+      setIsActionLoading(true);
+      setIsInputDisabled(true);
 
       addMessage({
         id: (Date.now() + 3).toString(),
@@ -824,14 +823,14 @@ const Scenario5Example = () => {
         content:
           "Welcome to the Test Phase. Let's verify the integration before publishing.\n\nPlease provide a test value for the variable: {{row_data}}",
         statusLabel: "Running test...",
-      })
+      });
 
       setTimeout(() => {
-        setIsActionLoading(false)
-        setIsInputDisabled(false)
-        setHasTested(true)
-        setActionLabel("Publish Integration")
-        setActionMode("publish")
+        setIsActionLoading(false);
+        setIsInputDisabled(false);
+        setHasTested(true);
+        setActionLabel("Publish Integration");
+        setActionMode("publish");
 
         addMessage({
           id: (Date.now() + 4).toString(),
@@ -839,12 +838,12 @@ const Scenario5Example = () => {
           content:
             "Test successful! The tool call was executed correctly. You can now publish the integration.",
           variant: "success",
-        })
-      }, 2500)
+        });
+      }, 2500);
     } else if (hasTested) {
-      setOpen(false)
+      setOpen(false);
     }
-  }
+  };
 
   const handleResetChat = () => {
     setMessages([
@@ -854,24 +853,24 @@ const Scenario5Example = () => {
         content:
           "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
       },
-    ])
-    setInputValue("")
-    setIsInputDisabled(false)
-    setIsActionDisabled(true)
-    setIsActionLoading(false)
-    setActionLabel("Test Integration")
-    setActionMode("test")
-    setTitle("Setup Integration")
-    setSubtitle("Step 3 of 4")
-    setHasConfigured(false)
-    setHasTested(false)
-    setFailCount(0)
-  }
+    ]);
+    setInputValue("");
+    setIsInputDisabled(false);
+    setIsActionDisabled(true);
+    setIsActionLoading(false);
+    setActionLabel("Test Integration");
+    setActionMode("test");
+    setTitle("Setup Integration");
+    setSubtitle("Step 3 of 4");
+    setHasConfigured(false);
+    setHasTested(false);
+    setFailCount(0);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    handleResetChat()
-  }
+    setOpen(false);
+    handleResetChat();
+  };
 
   return (
     <>
@@ -896,8 +895,8 @@ const Scenario5Example = () => {
         onBack={handleClose}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario5_SetupAgentAIFailure: Story = {
   render: () => <Scenario5Example />,
@@ -918,14 +917,14 @@ Flow: Greeting → User sends action → AI fails (error bubble) → User retrie
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario 6: Reset Chat                                              */
 /* ================================================================== */
 
 const Scenario6Example = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -944,11 +943,11 @@ const Scenario6Example = () => {
       content:
         "I've set up the Google Sheets 'Add Row' tool for you. You'll need to provide the Spreadsheet ID and Sheet Name once, and the bot will then ask the user for the data to be added to the columns during the conversation.",
     },
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const [isActionDisabled, setIsActionDisabled] = useState(false)
-  const [title, setTitle] = useState("Test Integration")
-  const [subtitle, setSubtitle] = useState("Step 4 of 4")
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isActionDisabled, setIsActionDisabled] = useState(false);
+  const [title, setTitle] = useState("Test Integration");
+  const [subtitle, setSubtitle] = useState("Step 4 of 4");
 
   const handleResetChat = () => {
     setMessages([
@@ -958,17 +957,17 @@ const Scenario6Example = () => {
         content:
           "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
       },
-    ])
-    setInputValue("")
-    setIsActionDisabled(true)
-    setTitle("Setup Integration")
-    setSubtitle("Step 3 of 4")
-  }
+    ]);
+    setInputValue("");
+    setIsActionDisabled(true);
+    setTitle("Setup Integration");
+    setSubtitle("Step 3 of 4");
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    handleResetChat()
-  }
+    setOpen(false);
+    handleResetChat();
+  };
 
   return (
     <>
@@ -989,8 +988,8 @@ const Scenario6Example = () => {
         onBack={handleClose}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario6_ResetChat: Story = {
   render: () => <Scenario6Example />,
@@ -1009,14 +1008,14 @@ Flow: Mid-conversation → Click "Reset Chat" → Confirmation modal → Confirm
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario 7: Test Failed                                             */
 /* ================================================================== */
 
 const Scenario7Example = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -1024,30 +1023,30 @@ const Scenario7Example = () => {
       content:
         "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
     },
-  ])
-  const [inputValue, setInputValue] = useState("")
-  const [isInputDisabled, setIsInputDisabled] = useState(false)
-  const [isActionDisabled, setIsActionDisabled] = useState(true)
-  const [isActionLoading, setIsActionLoading] = useState(false)
-  const [actionLabel, setActionLabel] = useState("Test Integration")
-  const [actionMode, setActionMode] = useState<SetupIntegrationAction>("test")
-  const [title, setTitle] = useState("Configure Integration")
-  const [subtitle, setSubtitle] = useState("Step 3 of 3")
-  const [hasConfigured, setHasConfigured] = useState(false)
-  const [testAttempts, setTestAttempts] = useState(0)
+  ]);
+  const [inputValue, setInputValue] = useState("");
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [isActionDisabled, setIsActionDisabled] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [actionLabel, setActionLabel] = useState("Test Integration");
+  const [actionMode, setActionMode] = useState<SetupIntegrationAction>("test");
+  const [title, setTitle] = useState("Configure Integration");
+  const [subtitle, setSubtitle] = useState("Step 3 of 3");
+  const [hasConfigured, setHasConfigured] = useState(false);
+  const [testAttempts, setTestAttempts] = useState(0);
 
   const addMessage = (msg: ChatMessage) => {
-    setMessages((prev) => [...prev, msg])
-  }
+    setMessages((prev) => [...prev, msg]);
+  };
 
   const handleSendMessage = (text: string) => {
     addMessage({
       id: Date.now().toString(),
       role: "user",
       content: text,
-    })
-    setInputValue("")
-    setIsInputDisabled(true)
+    });
+    setInputValue("");
+    setIsInputDisabled(true);
 
     if (!hasConfigured) {
       // Mapping → configured
@@ -1057,20 +1056,20 @@ const Scenario7Example = () => {
           role: "assistant",
           content: "Mapping tool.",
           variant: "status",
-        })
-      }, 500)
+        });
+      }, 500);
 
       setTimeout(() => {
         addMessage({
           id: (Date.now() + 2).toString(),
           role: "assistant",
           content: `I've set up the Google Sheets '${text}' tool for you. You'll need to provide the Spreadsheet ID and Sheet Name once, and the bot will then ask the user for the data to be added to the columns during the conversation.`,
-        })
-        setIsInputDisabled(false)
-        setIsActionDisabled(false)
-        setHasConfigured(true)
-      }, 2000)
-      return
+        });
+        setIsInputDisabled(false);
+        setIsActionDisabled(false);
+        setHasConfigured(true);
+      }, 2000);
+      return;
     }
 
     // Test value submitted — handle pass/fail based on attempt count
@@ -1082,9 +1081,9 @@ const Scenario7Example = () => {
           role: "assistant",
           content: "Invalid test value! Please try again.",
           variant: "error",
-        })
-        setIsInputDisabled(false)
-        setTestAttempts(1)
+        });
+        setIsInputDisabled(false);
+        setTestAttempts(1);
       } else {
         // Retry → success
         addMessage({
@@ -1093,19 +1092,19 @@ const Scenario7Example = () => {
           content:
             "Test successful! The tool call was executed correctly. You can now publish the integration.",
           variant: "success",
-        })
-        setIsInputDisabled(false)
-        setActionLabel("Publish Integration")
-        setActionMode("publish")
+        });
+        setIsInputDisabled(false);
+        setActionLabel("Publish Integration");
+        setActionMode("publish");
       }
-    }, 1500)
-  }
+    }, 1500);
+  };
 
   const handleAction = () => {
     if (hasConfigured && testAttempts === 0) {
       // Start test phase
-      setIsActionLoading(true)
-      setIsInputDisabled(true)
+      setIsActionLoading(true);
+      setIsInputDisabled(true);
 
       addMessage({
         id: (Date.now() + 3).toString(),
@@ -1113,16 +1112,16 @@ const Scenario7Example = () => {
         content:
           "Welcome to the Test Phase. Let's verify the integration before publishing.\n\nPlease provide a test value for the variable: {{row_data}}",
         statusLabel: "Running test...",
-      })
+      });
 
       setTimeout(() => {
-        setIsActionLoading(false)
-        setIsInputDisabled(false)
-      }, 1500)
+        setIsActionLoading(false);
+        setIsInputDisabled(false);
+      }, 1500);
     } else if (actionMode === "publish") {
-      setOpen(false)
+      setOpen(false);
     }
-  }
+  };
 
   const handleResetChat = () => {
     setMessages([
@@ -1132,23 +1131,23 @@ const Scenario7Example = () => {
         content:
           "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
       },
-    ])
-    setInputValue("")
-    setIsInputDisabled(false)
-    setIsActionDisabled(true)
-    setIsActionLoading(false)
-    setActionLabel("Test Integration")
-    setActionMode("test")
-    setTitle("Configure Integration")
-    setSubtitle("Step 3 of 3")
-    setHasConfigured(false)
-    setTestAttempts(0)
-  }
+    ]);
+    setInputValue("");
+    setIsInputDisabled(false);
+    setIsActionDisabled(true);
+    setIsActionLoading(false);
+    setActionLabel("Test Integration");
+    setActionMode("test");
+    setTitle("Configure Integration");
+    setSubtitle("Step 3 of 3");
+    setHasConfigured(false);
+    setTestAttempts(0);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    handleResetChat()
-  }
+    setOpen(false);
+    handleResetChat();
+  };
 
   return (
     <>
@@ -1173,8 +1172,8 @@ const Scenario7Example = () => {
         onBack={handleClose}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario7_TestFailed: Story = {
   render: () => <Scenario7Example />,
@@ -1195,14 +1194,14 @@ Flow: Greeting → Configure → Test → Fail → Retry → Success → Publish
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario 8: Close / Discard During Setup                            */
 /* ================================================================== */
 
 const Scenario8Example = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -1221,12 +1220,12 @@ const Scenario8Example = () => {
       content:
         "I've set up the Google Sheets 'Add Row' tool for you. You'll need to provide the Spreadsheet ID and Sheet Name once, and the bot will then ask the user for the data to be added to the columns during the conversation.",
     },
-  ])
-  const [inputValue, setInputValue] = useState("")
+  ]);
+  const [inputValue, setInputValue] = useState("");
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -1251,12 +1250,12 @@ const Scenario8Example = () => {
               content:
                 "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
             },
-          ])
+          ]);
         }}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario8_CloseDiscard: Story = {
   render: () => <Scenario8Example />,
@@ -1274,7 +1273,7 @@ Flow: Mid-conversation → Click Close (X) or Back (←) → Discard confirmatio
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario 9: Edit Integration                                        */
@@ -1317,7 +1316,7 @@ const editIntegrationMessages: ChatMessage[] = [
       "Test successful! The tool call was executed correctly. You can now publish the integration.",
     variant: "success",
   },
-]
+];
 
 // ---------- Static: Edit Integration view ----------
 export const EditIntegration: Story = {
@@ -1331,6 +1330,7 @@ export const EditIntegration: Story = {
     actionLabel: "Test Integration",
     isActionDisabled: false,
     actionMode: "test",
+    inputPlaceholder: "Somehitng is missing from it. no matter",
   },
   parameters: {
     docs: {
@@ -1340,16 +1340,16 @@ export const EditIntegration: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Interactive: Scenario 9 ----------
 const Scenario9Example = () => {
-  const [open, setOpen] = useState(false)
-  const [integrationName, setIntegrationName] = useState("Integration test 1")
+  const [open, setOpen] = useState(false);
+  const [integrationName, setIntegrationName] = useState("Integration test 1");
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -1370,8 +1370,8 @@ const Scenario9Example = () => {
         onResetChat={() => {}}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario9_EditIntegration: Story = {
   render: () => <Scenario9Example />,
@@ -1390,7 +1390,7 @@ Flow: Open in edit mode → Click pencil icon → Rename integration → Confirm
       },
     },
   },
-}
+};
 
 /** Same UI as the dialog, rendered as a plain panel (e.g. inside a custom modal or page). */
 export const StandaloneView: StoryObj<typeof SetupIntegrationView> = {
@@ -1416,4 +1416,4 @@ export const StandaloneView: StoryObj<typeof SetupIntegrationView> = {
       },
     },
   },
-}
+};
