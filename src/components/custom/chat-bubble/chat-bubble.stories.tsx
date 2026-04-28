@@ -1,4 +1,4 @@
-import { useEffect, type ComponentType, type ReactNode } from "react";
+import React, { useEffect, type ComponentType, type ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import type { ChatMessage } from "../chat-types";
@@ -158,50 +158,7 @@ const meta: Meta<typeof ChatBubble> = {
     layout: "centered",
     docs: {
       description: {
-        component: `
-**Two ways to use \`ChatBubble\`**
-
-1. **Manual** — do not pass \`message\`. Set \`variant\`, \`timestamp\`, optional \`status\`, \`senderName\`, \`reply\` / \`onReplyClick\`, \`media\`, \`maxWidth\`, \`senderIndicator\`, and \`children\`.
-2. **Payload** — pass \`message={…}\` (\`ChatMessage\`) for full template and media (same as list rows). Optional \`replyParticipantName\` and \`onReplyTo\` for customer rows.
-
-**Root** — \`className\` and all standard \`HTMLDivElement\` attributes spread to the outer row. \`ref\` targets that row.
-
-**Thread (list)** — \`ChatBubble.MessageList\` (alias: \`ChatMessageList\` from the same module). Needs \`ChatProvider\`. **Props:** \`onReplyTo?: (payload) => void\`, \`className?\` (merged on the **scroll root**), plus all **\`div\`** attributes (\`id\`, \`role\`, \`data-*\`, \`style\`, …). Message rows use \`message\` from context, with \`replyParticipantName\` from the selected chat.
-
-**Storybook** — the stories named *All new types (in one thread)*, *Minimal Conversation*, and the referral / location / contact / list reply entries exercise every \`ChatMessage\` shape from \`../chat-types\`.
-
-| Type | Message \`type\` | Data field | Optional fields |
-|------|------------------|------------|-----------------|
-| Referral (CTWA) | \`referral\` | \`referral\` | \`body\`, \`sourceUrl\`, \`thumbnailUrl\`, \`sourceType\` (\`ad\` \\| \`post\` \\| \`unknown\`) |
-| Location | \`location\` | \`location\` | \`name\`, \`address\` (lat/long always used) |
-| Contact | \`contact\` | \`contactCard\` | \`email\`, \`organization\` |
-| List reply | \`listReply\` | \`listReply\` | \`header\`, \`footer\`, \`sections\` (list UI shows header/body/footer/button) |
-
-### \`ChatMessage\` fields (payload mode)
-
-| Field | Notes |
-| --- | --- |
-| \`id\`, \`text\`, \`time\` | ids and display time string |
-| \`sender\`, \`senderName\` | \`customer\` or \`agent\`; name above bubble when set |
-| \`type\` | Drives media / referral / location / contact / list UI (see types) |
-| \`status\` | Delivery footer for agent messages |
-| \`replyTo\` | Quoted message above body |
-| \`media\`, \`referral\`, \`location\`, \`contactCard\`, \`listReply\` | Per-type payloads |
-| \`sentBy\` | On **agent** rows, a circular badge (Bot / megaphone / plug / initials) appears **in the header** next to \`senderName\`. See stories **Agent source · Bot / Campaign / API**. |
-| \`error\` | For \`loading\` / failed template state |
-
-### Agent source badge — \`message\` fields (bot / campaign / API)
-
-| Field | Values / shape | Role |
-| --- | --- | --- |
-| \`sender\` | \`"agent"\` or \`"customer"\` | Badge + header row only when the value is \`"agent"\`. |
-| \`senderName\` | \`string\` (optional) | Label in the header; shown before the badge. |
-| \`sentBy\` | \`{ type, name? }\` with \`type\` in \`agent\`, \`bot\`, \`campaign\`, \`api\` (optional) | \`bot\` / \`campaign\` / \`api\` use fixed icons; \`agent\` with \`name\` uses initials. Tooltips: \`getTooltipLabel\` in \`sender-indicator\`. |
-| (other) | \`id\`, \`text\`, \`time\`, \`type\`, \`status\`, … | Body, media, and delivery footer — unchanged by source. |
-
-**Top-level \`ChatBubble\` props** in message mode: \`message\` (required), \`replyParticipantName?\` (customer reply label), \`onReplyTo?\` (customer rows), \`className?\`, and div spread. \`sentBy\` is **not** a top-level prop — it lives on \`message.sentBy\`.
-
-### Installation
+        component: `### Installation
 
 \`\`\`bash
 npx myoperator-ui add chat-bubble
