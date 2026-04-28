@@ -157,6 +157,7 @@
     --semantic-border-layout: var(--color-neutral-200);
     --semantic-border-input: var(--color-neutral-200);
     --semantic-border-input-focus: var(--color-secondary-500);
+    --semantic-border-focus: var(--color-secondary-500);
 
     /* Disabled State */
     --semantic-disabled-primary: var(--color-primary-200);

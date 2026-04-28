@@ -90,6 +90,7 @@ export default {
         "semantic-border-layout": "var(--semantic-border-layout)",
         "semantic-border-input": "var(--semantic-border-input)",
         "semantic-border-input-focus": "var(--semantic-border-input-focus)",
+        "semantic-border-focus": "var(--semantic-border-focus)",
         // Semantic colors - Disabled
         "semantic-disabled-primary": "var(--semantic-disabled-primary)",
         "semantic-disabled-secondary": "var(--semantic-disabled-secondary)",

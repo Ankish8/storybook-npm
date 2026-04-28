@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import { execSync } from 'child_process'
 import fs from 'fs-extra'
 import path from 'path'
 import prompts from 'prompts'
@@ -12,6 +13,56 @@ interface AddOptions {
   yes: boolean
   overwrite: boolean
   path: string
+  install: boolean
+}
+
+type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun'
+
+function detectPackageManager(cwd: string): PackageManager {
+  if (fs.existsSync(path.join(cwd, 'pnpm-lock.yaml'))) return 'pnpm'
+  if (fs.existsSync(path.join(cwd, 'yarn.lock'))) return 'yarn'
+  if (fs.existsSync(path.join(cwd, 'bun.lockb'))) return 'bun'
+  return 'npm'
+}
+
+function installCommand(pm: PackageManager, deps: string[]): string {
+  const args = deps.map((d) => `"${d}"`).join(' ')
+  switch (pm) {
+    case 'yarn':
+      return `yarn add ${args}`
+    case 'pnpm':
+      return `pnpm add ${args}`
+    case 'bun':
+      return `bun add ${args}`
+    default:
+      return `npm install ${args}`
+  }
+}
+
+function bareName(spec: string): string {
+  // "tailwind-merge@^2.6.0" -> "tailwind-merge"; "@scope/pkg@1.0" -> "@scope/pkg"
+  if (spec.startsWith('@')) {
+    const idx = spec.indexOf('@', 1)
+    return idx === -1 ? spec : spec.slice(0, idx)
+  }
+  const idx = spec.indexOf('@')
+  return idx === -1 ? spec : spec.slice(0, idx)
+}
+
+async function filterMissingDeps(cwd: string, deps: string[]): Promise<string[]> {
+  const pkgPath = path.join(cwd, 'package.json')
+  if (!(await fs.pathExists(pkgPath))) return deps
+  try {
+    const pkg = await fs.readJson(pkgPath)
+    const installed = new Set([
+      ...Object.keys(pkg.dependencies || {}),
+      ...Object.keys(pkg.devDependencies || {}),
+      ...Object.keys(pkg.peerDependencies || {}),
+    ])
+    return deps.filter((d) => !installed.has(bareName(d)))
+  } catch {
+    return deps
+  }
 }
 
 export async function add(components: string[], options: AddOptions) {
@@ -233,8 +284,47 @@ export async function add(components: string[], options: AddOptions) {
     }
 
     if (dependencies.size > 0) {
-      console.log(chalk.yellow('\n  Required dependencies:'))
-      console.log(chalk.cyan(`    npm install ${Array.from(dependencies).join(' ')}`))
+      const allDeps = Array.from(dependencies)
+      const missing = await filterMissingDeps(cwd, allDeps)
+      const pm = detectPackageManager(cwd)
+      const pkgJsonExists = await fs.pathExists(path.join(cwd, 'package.json'))
+
+      if (missing.length === 0) {
+        console.log(chalk.gray('\n  All required npm dependencies are already installed.'))
+      } else if (!pkgJsonExists) {
+        console.log(chalk.yellow('\n  No package.json found — install these manually:'))
+        console.log(chalk.cyan(`    ${installCommand(pm, missing)}`))
+      } else if (options.install === false) {
+        console.log(chalk.yellow('\n  Required dependencies (install skipped):'))
+        console.log(chalk.cyan(`    ${installCommand(pm, missing)}`))
+      } else {
+        let shouldInstall = options.yes
+        if (!shouldInstall) {
+          const noun = missing.length === 1 ? 'dependency' : 'dependencies'
+          const { confirm } = await prompts({
+            type: 'confirm',
+            name: 'confirm',
+            message: `Install ${missing.length} npm ${noun} with ${pm}? (${missing.join(', ')})`,
+            initial: true,
+          })
+          shouldInstall = confirm === true
+        }
+
+        if (shouldInstall) {
+          const installSpinner = ora(`Installing ${missing.length} npm dependenc${missing.length === 1 ? 'y' : 'ies'} via ${pm}...`).start()
+          try {
+            execSync(installCommand(pm, missing), { cwd, stdio: 'pipe' })
+            installSpinner.succeed(`Installed: ${missing.join(', ')}`)
+          } catch {
+            installSpinner.fail(`Failed to install dependencies via ${pm}.`)
+            console.log(chalk.yellow('  Run manually:'))
+            console.log(chalk.cyan(`    ${installCommand(pm, missing)}`))
+          }
+        } else {
+          console.log(chalk.yellow('\n  Required dependencies (skipped):'))
+          console.log(chalk.cyan(`    ${installCommand(pm, missing)}`))
+        }
+      }
     }
 
     console.log('')

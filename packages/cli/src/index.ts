@@ -31,6 +31,7 @@ program
   .option('-y, --yes', 'Skip confirmation prompt', false)
   .option('-o, --overwrite', 'Overwrite existing files', false)
   .option('-p, --path <path>', 'Path to add components to', 'src/components/ui')
+  .option('--no-install', 'Skip auto-installing required npm dependencies')
   .action(add)
 
 program

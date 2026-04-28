@@ -443,6 +443,7 @@ const SEMANTIC_FALLBACKS: Record<string, string> = {
   'semantic-border-layout': '#E9EAEB',
   'semantic-border-input': '#E9EAEB',
   'semantic-border-input-focus': '#2BBCCA',
+  'semantic-border-focus': '#2BBCCA',
   // Disabled State
   'semantic-disabled-primary': '#A2A6B1',
   'semantic-disabled-secondary': '#EBECEE',
