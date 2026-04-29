@@ -399,6 +399,18 @@ function escapeForTemplate(str) {
 }
 
 /**
+ * Multi-file component sources: .css is emitted as a static string so it is not
+ * passed through prefixTailwindClasses (which would corrupt plain stylesheets).
+ */
+function registryFileContentExpr(file) {
+  const escapedContent = escapeForTemplate(file.content)
+  if (file.name && file.name.endsWith('.css')) {
+    return `\`${escapedContent}\``
+  }
+  return `prefixTailwindClasses(\`${escapedContent}\`, prefix)`
+}
+
+/**
  * Generate the prefix utils code that gets embedded in each registry file
  */
 function getPrefixUtilsCode() {
@@ -1032,10 +1044,9 @@ function generateCategoryFile(category, components) {
         ).replace(/\n/g, '\n      ')
         const filesArray = comp.files
           .map((file) => {
-            const escapedContent = escapeForTemplate(file.content)
             return `        {
           name: ${JSON.stringify(file.name)},
-          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+          content: ${registryFileContentExpr(file)},
         }`
           })
           .join(',\n')
@@ -1278,10 +1289,9 @@ function generateLegacyRegistryFile(components) {
         ).replace(/\n/g, '\n      ')
         const filesArray = comp.files
           .map((file) => {
-            const escapedContent = escapeForTemplate(file.content)
             return `        {
           name: ${JSON.stringify(file.name)},
-          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+          content: ${registryFileContentExpr(file)},
         }`
           })
           .join(',\n')

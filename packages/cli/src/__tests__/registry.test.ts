@@ -40,7 +40,7 @@ describe("Registry", () => {
 
         // Check file structure
         for (const file of component.files) {
-          expect(file.name).toMatch(/\.tsx?$/); // .tsx or .ts files
+          expect(file.name).toMatch(/\.(tsx?|css)$/); // .tsx, .ts, or co-located .css
           expect(file.content).toBeTruthy();
           expect(typeof file.content).toBe("string");
         }
