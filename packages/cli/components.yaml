@@ -1726,6 +1726,7 @@ components:
     directory: "setup-integration"
     files:
       - "types.ts"
+      - "bouncing-loader.tsx"
       - "markdown-content.tsx"
       - "chat-message.tsx"
       - "chat-input.tsx"
