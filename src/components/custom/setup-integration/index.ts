@@ -8,6 +8,8 @@ export { IntegrationChatMessages } from "./integration-chat-messages"
 export { IntegrationChatEmptyHint } from "./integration-chat-empty-hint"
 export { IntegrationChatEmptySecondary } from "./integration-chat-empty-secondary"
 export { IntegrationActions } from "./integration-actions"
+export { BouncingLoader } from "./bouncing-loader"
+export type { BouncingLoaderProps } from "./bouncing-loader"
 export { ChatMessageBubble } from "./chat-message"
 export { ChatInput } from "./chat-input"
 export type {

@@ -590,6 +590,52 @@ describe("ChatMessageBubble", () => {
     expect(container.querySelector(".bg-semantic-bg-ui")).toBeTruthy();
   });
 
+  it("renders assistant loading state with bouncing typing indicator and primary surface", () => {
+    const { container } = render(
+      <ChatMessageBubble
+        message={{
+          id: "asst-load",
+          role: "assistant",
+          content: "",
+          isLoading: true,
+        }}
+      />
+    );
+    expect(
+      screen.getByRole("status", { name: "Assistant is typing" })
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector("[data-slot='chat-message-typing']")
+    ).toBeTruthy();
+    expect(
+      container.querySelector(".bg-semantic-bg-ui")
+    ).toBeTruthy();
+    expect(container.querySelector(".bouncing-loader")).toBeTruthy();
+    expect(
+      container.querySelectorAll(".bouncing-loader__dot")
+    ).toHaveLength(3);
+  });
+
+  it("renders user loading state right-aligned with bouncing typing indicator", () => {
+    const { container } = render(
+      <ChatMessageBubble
+        message={{
+          id: "user-load",
+          role: "user",
+          content: "",
+          variant: "loading",
+        }}
+      />
+    );
+    expect(
+      screen.getByRole("status", { name: "Sending message" })
+    ).toBeInTheDocument();
+    expect(container.querySelector(".justify-end")).toBeTruthy();
+    expect(
+      container.querySelector("[data-slot='chat-message-typing']")
+    ).toBeTruthy();
+  });
+
   it("renders status variant as muted text without a bubble", () => {
     render(
       <ChatMessageBubble

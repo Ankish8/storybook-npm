@@ -64,6 +64,43 @@ const midConversationMessages: ChatMessage[] = [
   },
 ];
 
+/** Assistant is typing; optional muted line above via `statusLabel`. */
+const waitingForAssistantMessages: ChatMessage[] = [
+  {
+    id: "1",
+    role: "assistant",
+    content:
+      "Hi! I'll help you configure Google Sheets for your bot. Describe what you want the bot to do with Google Sheets and I'll set up the right tools and variables.",
+  },
+  {
+    id: "2",
+    role: "user",
+    content: "Add Row to my sales sheet",
+  },
+  {
+    id: "3",
+    role: "assistant",
+    content: "",
+    isLoading: true,
+    statusLabel: "Preparing your integration…",
+  },
+];
+
+/** User send is in flight (e.g. optimistic / awaiting ack). */
+const userMessageSendingMessages: ChatMessage[] = [
+  {
+    id: "1",
+    role: "assistant",
+    content: "What would you like the bot to do?",
+  },
+  {
+    id: "2",
+    role: "user",
+    content: "",
+    isLoading: true,
+  },
+];
+
 const testingMessages: ChatMessage[] = [
   {
     id: "1",
@@ -355,7 +392,7 @@ export const Default: Story = {
 
 // ---------- Empty: No messages yet (empty hint + secondary tip) ----------
 export const Empty: Story = {
-  render: (args) => <ModalStory {...args} initialOpen />,
+  render: (args) => <ModalStory {...args} />,
   args: {
     messages: [],
     title: "Setup Integration",
@@ -368,7 +405,7 @@ export const Empty: Story = {
     docs: {
       description: {
         story:
-          "No transcript yet — shows the empty state (icon, title, description) and the secondary tip panel. Modal opens by default so you can review the layout without clicking Integrations.",
+          "No transcript yet — shows the empty state (icon, title, description) and the secondary tip panel. Open the **Integrations** button to see it.",
       },
     },
   },
@@ -412,6 +449,49 @@ export const MidConversation: Story = {
       description: {
         story:
           "AI has finished configuring the action. Test Integration button is now enabled.",
+      },
+    },
+  },
+};
+
+// ---------- Waiting: typing indicator (assistant) ----------
+export const WaitingForAssistant: Story = {
+  render: (args) => <ModalStory {...args} />,
+  args: {
+    messages: waitingForAssistantMessages,
+    title: "Setup Integration",
+    subtitle: "Step 3 of 4",
+    actionLabel: "Test Integration",
+    isActionDisabled: true,
+    isInputDisabled: true,
+    actionMode: "test",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `isLoading: true` (or `variant: \"loading\"`) on a message to show the bouncing three-dot loading indicator. For assistant, optional `statusLabel` shows above it. Disable input while waiting if needed.",
+      },
+    },
+  },
+};
+
+// ---------- Waiting: user message sending (typing on user side) ----------
+export const UserMessageSending: Story = {
+  render: (args) => <ModalStory {...args} />,
+  args: {
+    messages: userMessageSendingMessages,
+    title: "Setup Integration",
+    subtitle: "Step 3 of 4",
+    actionLabel: "Test Integration",
+    isInputDisabled: true,
+    actionMode: "test",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Same bouncing loader, right-aligned for the user. Use for optimistic sends or when the client is waiting for a send acknowledgment.",
       },
     },
   },

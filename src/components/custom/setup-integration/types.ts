@@ -21,8 +21,16 @@ export interface ChatMessage {
    * - "success" — green success surface (assistant or user)
    * - "error" — red error surface (assistant or user-authored failure)
    * - "status" — no bubble, muted text only (e.g., "Mapping tool…", "Running test…")
+   * - "loading" — typing indicator (bouncing three-dot pill) instead of markdown; same as
+   *   `isLoading: true` with a non-loading variant, but keeps intent explicit in the model.
    */
-  variant?: "default" | "success" | "error" | "status"
+  variant?: "default" | "success" | "error" | "status" | "loading"
+  /**
+   * When true, renders a typing/loading state (bouncing three dots in a pill) instead of message
+   * body. Use while waiting for an assistant response or a user-originated send. Ignored
+   * when `variant` is `"status"`.
+   */
+  isLoading?: boolean
   /**
    * Optional label above the assistant bubble (no bubble on this line), e.g. "Running test…".
    * If `content` is empty/whitespace and this is set, only this line is shown (progress, no bubble below).
