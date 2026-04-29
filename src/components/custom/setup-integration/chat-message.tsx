@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "../../../lib/utils"
-import { BouncingLoader } from "./bouncing-loader"
+import { BouncingLoader } from "../../ui/bouncing-loader"
 import { MarkdownBubbleContent } from "./markdown-content"
 import type { MarkdownBubbleTone } from "./markdown-content"
 import type { ChatMessage, ChatMessageProps } from "./types"

@@ -206,6 +206,10 @@ export type { ReadableFieldProps } from "./components/ui/readable-field";
 export { Spinner, spinnerVariants } from "./components/ui/spinner";
 export type { SpinnerProps } from "./components/ui/spinner";
 
+// BouncingLoader
+export { BouncingLoader, bouncingLoaderVariants } from "./components/ui/bouncing-loader";
+export type { BouncingLoaderProps } from "./components/ui/bouncing-loader";
+
 // Skeleton
 export { Skeleton, skeletonVariants } from "./components/ui/skeleton";
 export type { SkeletonProps } from "./components/ui/skeleton";

@@ -60,6 +60,7 @@ categories:
       - alert
       - toast
       - spinner
+      - bouncing-loader
       - skeleton
       - empty-state
 
@@ -464,6 +465,14 @@ components:
 
   spinner:
     description: "A loading spinner component with customizable size and color variants for indicating progress"
+    category: feedback
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  bouncing-loader:
+    description: "Chat-style three-dot bouncing typing indicator with configurable size, spacing, and timing"
     category: feedback
     dependencies:
       - "class-variance-authority"
@@ -1719,6 +1728,7 @@ components:
       - "remark-gfm"
     internalDependencies:
       - spinner
+      - bouncing-loader
       - dialog
       - confirmation-modal
       - empty-state
@@ -1726,8 +1736,6 @@ components:
     directory: "setup-integration"
     files:
       - "types.ts"
-      - "bouncing-loader.css"
-      - "bouncing-loader.tsx"
       - "markdown-content.tsx"
       - "chat-message.tsx"
       - "chat-input.tsx"
