@@ -1737,6 +1737,7 @@ components:
     files:
       - "types.ts"
       - "markdown-content.tsx"
+      - "chat-typing-pill.tsx"
       - "chat-message.tsx"
       - "chat-input.tsx"
       - "integration-steps.tsx"

@@ -10,6 +10,7 @@ export { IntegrationChatEmptySecondary } from "./integration-chat-empty-secondar
 export { IntegrationActions } from "./integration-actions"
 export { BouncingLoader } from "../../ui/bouncing-loader"
 export type { BouncingLoaderProps } from "../../ui/bouncing-loader"
+export { ChatTypingPill } from "./chat-typing-pill"
 export { ChatMessageBubble } from "./chat-message"
 export { ChatInput } from "./chat-input"
 export type {

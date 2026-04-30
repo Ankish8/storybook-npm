@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "../../../lib/utils"
-import { BouncingLoader } from "../../ui/bouncing-loader"
+import { ChatTypingPill } from "./chat-typing-pill"
 import { MarkdownBubbleContent } from "./markdown-content"
 import type { MarkdownBubbleTone } from "./markdown-content"
 import type { ChatMessage, ChatMessageProps } from "./types"
@@ -28,22 +28,6 @@ function isChatLoading(message: ChatMessage): boolean {
   return isLoading === true || variant === "loading"
 }
 
-/** Bouncing three-dot typing indicator: light `bg-ui` pill with `BouncingLoader` dots. */
-function ChatMessageTypingPill() {
-  return (
-    <div
-      className="inline-flex min-w-[2.75rem] items-center justify-center rounded-full bg-semantic-bg-ui px-3.5 py-2.5"
-      data-slot="chat-message-typing"
-    >
-      <BouncingLoader
-        size={8}
-        spacing={6}
-        color="var(--semantic-text-placeholder)"
-      />
-    </div>
-  )
-}
-
 const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
   ({ message }, ref) => {
     const { role, content, variant = "default", statusLabel } = message
@@ -69,7 +53,7 @@ const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
             role="status"
             aria-label="Sending message"
           >
-            <ChatMessageTypingPill />
+            <ChatTypingPill />
           </div>
         )
       }
@@ -80,7 +64,7 @@ const ChatMessageBubble = React.forwardRef<HTMLDivElement, ChatMessageProps>(
               {statusLabel}
             </p>
           )}
-          <ChatMessageTypingPill />
+          <ChatTypingPill />
         </div>
       )
     }
