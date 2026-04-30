@@ -145,9 +145,9 @@ function NudgeCard({
         </span>
       </div>
 
-      {/* Set delay — hour : minute */}
+      {/* Set Delay — hour : minute */}
       <div className="flex min-w-0 flex-col gap-1.5">
-        <span className="text-xs text-semantic-text-muted">Set delay</span>
+        <span className="text-xs text-semantic-text-muted">Set Delay</span>
         <div className="flex min-w-0 w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:gap-x-2 sm:gap-y-2">
           <NumberStepField
             value={nudge.delayHours}

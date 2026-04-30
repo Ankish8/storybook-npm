@@ -302,7 +302,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                   {connectedAccounts.length > 0 && (
                     <div className="flex w-full min-h-0 flex-col gap-2.5">
                       <p className="m-0 shrink-0 text-sm font-semibold tracking-wide text-semantic-text-primary">
-                        Existing connected accounts
+                        Existing Connected Accounts
                       </p>
                       <div className="flex min-h-0 max-h-[min(270px,50vh)] flex-col gap-3 overflow-y-auto pr-1 [scrollbar-gutter:stable] sm:max-h-[270px] sm:gap-4">
                         {connectedAccounts.map((account) => {

@@ -80,7 +80,7 @@ export interface FrustrationHandoverCardProps {
   /** Called when the Prompt textarea loses focus (current value passed — use to persist via API). */
   onEscalationPromptBlur?: (value: string) => void;
   /**
-   * Called when the **Transfer to department** dropdown list fires `scrollend` near the bottom.
+   * Called when the **Transfer to Department** dropdown list fires `scrollend` near the bottom.
    * Use with a paginated department API to load the next page (e.g. when only the first 10 departments are loaded initially).
    */
   onDepartmentOptionsScrollEnd?: () => void;
@@ -253,7 +253,7 @@ const FrustrationHandoverCard = React.forwardRef(
                   </div>
                 ) : null}
                 <div className="px-4 pb-2 sm:px-6">
-                  <Field label="Transfer to department">
+                  <Field label="Transfer to Department">
                     <Select
                       value={data.escalationDepartment || undefined}
                       onValueChange={(v) => onChange({ escalationDepartment: v })}

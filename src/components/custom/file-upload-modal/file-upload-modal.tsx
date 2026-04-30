@@ -18,7 +18,7 @@ import { isFileExtensionAllowed } from "./file-upload-accept";
 
 const DEFAULT_ACCEPTED = ".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt";
 const DEFAULT_ALLOWED_FILE_TYPES_DESC =
-  "Supported Format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt";
+  "Supported format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt";
 const DEFAULT_DISALLOWED_TYPE_TOAST_TITLE = "Unsupported file type";
 const DEFAULT_DISALLOWED_TYPE_TOAST_DESCRIPTION =
   "Only files in the supported formats can be uploaded.";
@@ -84,7 +84,7 @@ const FileUploadModal = React.forwardRef(
       onSave,
       onCancel,
       onSampleDownload,
-      sampleDownloadLabel = "Download sample file",
+      sampleDownloadLabel = "Download Sample File",
       showSampleDownload,
       acceptedFormats = DEFAULT_ACCEPTED,
       formatDescription,
@@ -94,7 +94,7 @@ const FileUploadModal = React.forwardRef(
       maxFileSizeMB = 100,
       multiple = true,
       title = "File Upload",
-      uploadButtonLabel = "Upload from device",
+      uploadButtonLabel = "Upload from Device",
       dropDescription = "or drag and drop file here",
       saveLabel = "Save",
       cancelLabel = "Cancel",

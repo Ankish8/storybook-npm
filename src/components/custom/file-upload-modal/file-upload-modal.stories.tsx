@@ -37,13 +37,13 @@ import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/
 |---|---|
 | \`acceptedFormats\` | \`".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt"\` |
 | \`formatDescription\` | *unset* — line is \`Max file size {n} MB ({allowedFileTypesDescription})\` |
-| \`allowedFileTypesDescription\` | \`"Supported Format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt"\` |
+| \`allowedFileTypesDescription\` | \`"Supported format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt"\` |
 | \`disallowedFileTypeToastTitle\` | \`"Unsupported file type"\` |
-| \`disallowedFileTypeToastDescription\` | \`"Only files in the supported formats can be uploaded."\` |
+| \`disallowedFileTypeToastDescription\` | \`"Only files in the Supported formats can be uploaded."\` |
 | \`maxFileSizeMB\` | \`100\` |
 | \`multiple\` | \`true\` |
 | \`title\` | \`"File Upload"\` |
-| \`uploadButtonLabel\` | \`"Upload from device"\` |
+| \`uploadButtonLabel\` | \`"Upload from Device"\` |
 | \`dropDescription\` | \`"or drag and drop file here"\` |
 | \`saveLabel\` | \`"Save"\` |
 | \`cancelLabel\` | \`"Cancel"\` |

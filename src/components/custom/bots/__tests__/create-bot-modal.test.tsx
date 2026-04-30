@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom/vitest";
+import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -7,16 +9,16 @@ import { BOT_TYPE } from "../types";
 describe("CreateBotModal", () => {
   it("renders nothing when closed", () => {
     render(<CreateBotModal open={false} onOpenChange={vi.fn()} />);
-    expect(screen.queryByText("Create AI bot")).not.toBeInTheDocument();
+    expect(screen.queryByText("Create AI Bot")).not.toBeInTheDocument();
   });
 
   it("renders modal content when open", () => {
     render(<CreateBotModal open onOpenChange={vi.fn()} />);
-    expect(screen.getByText("Create AI bot")).toBeInTheDocument();
+    expect(screen.getByText("Create AI Bot")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter bot name")).toBeInTheDocument();
     expect(screen.getByText("Select Bot Type")).toBeInTheDocument();
-    expect(screen.getByText("Chat bot")).toBeInTheDocument();
-    expect(screen.getByText("Voice bot")).toBeInTheDocument();
+    expect(screen.getByText("Chat Bot")).toBeInTheDocument();
+    expect(screen.getByText("Voice Bot")).toBeInTheDocument();
   });
 
   it("shows both bot type options with descriptions", () => {
@@ -65,7 +67,7 @@ describe("CreateBotModal", () => {
   it("calls onSubmit with BOT_TYPE.VOICE when Voice bot is selected", () => {
     const handleSubmit = vi.fn();
     render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
-    fireEvent.click(screen.getByText("Voice bot").closest("button")!);
+    fireEvent.click(screen.getByText("Voice Bot").closest("button")!);
     fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
       target: { value: "Voice Bot" },
     });
@@ -147,15 +149,15 @@ describe("CreateBotModal", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
     );
-    expect(screen.getByText("Chat bot").closest("button")).toBeDisabled();
-    expect(screen.getByText("Voice bot").closest("button")).not.toBeDisabled();
+    expect(screen.getByText("Chat Bot").closest("button")).toBeDisabled();
+    expect(screen.getByText("Voice Bot").closest("button")).not.toBeDisabled();
   });
 
   it("selects Voice bot when Chat bot is disabled", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
     );
-    expect(screen.getByText("Voice bot").closest("button")).toHaveAttribute(
+    expect(screen.getByText("Voice Bot").closest("button")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
@@ -206,7 +208,7 @@ describe("CreateBotModal", () => {
         chatbotDisabledTooltip="Chat bots are unavailable."
       />
     );
-    const trigger = screen.getByText("Chat bot").closest("span");
+    const trigger = screen.getByText("Chat Bot").closest("span");
     expect(trigger).toBeTruthy();
     await user.hover(trigger!);
     await waitFor(

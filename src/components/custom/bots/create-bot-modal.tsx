@@ -25,12 +25,12 @@ interface BotTypeOption {
 const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   {
     id: "chatbot",
-    label: "Chat bot",
+    label: "Chat Bot",
     description: "Text-based routing for websites and WhatsApp.",
   },
   {
     id: "voicebot",
-    label: "Voice bot",
+    label: "Voice Bot",
     description: "Conversational spoken interactions over phone.",
   },
 ];
@@ -114,7 +114,7 @@ export const CreateBotModal = React.forwardRef(
           )}
         >
           <DialogHeader>
-            <DialogTitle>Create AI bot</DialogTitle>
+            <DialogTitle>Create AI Bot</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 sm:gap-6">

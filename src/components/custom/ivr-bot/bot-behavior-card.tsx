@@ -34,7 +34,7 @@ export interface BotBehaviorCardProps {
    * user is done editing, including any variables they just inserted.
    */
   onSystemPromptBlur?: (value: string) => void;
-  /** Session variables shown as insertable chips and in the {{ autocomplete dropdown */
+  /** Session Variables shown as insertable chips and in the {{ autocomplete dropdown */
   sessionVariables?: string[];
   /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
@@ -49,7 +49,7 @@ export interface BotBehaviorCardProps {
   className?: string;
 }
 
-// ─── Default session variables ──────────────────────────────────────────────
+// ─── Default Session Variables ──────────────────────────────────────────────
 
 const DEFAULT_SESSION_VARIABLES = [
   "{{Caller number}}",
@@ -465,7 +465,7 @@ const BotBehaviorCard = React.forwardRef(
             <div className="flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-semantic-text-secondary">
-                  Session variables:
+                  Session Variables:
                 </span>
                 {sessionVariables.map((v) => (
                   <button

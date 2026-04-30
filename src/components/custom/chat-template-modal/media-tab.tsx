@@ -89,7 +89,7 @@ export function MediaTab({
               />
               <div className="flex items-center gap-2 text-[14px] font-semibold text-semantic-text-primary">
                 <Upload className="size-4" />
-                Upload from device
+                Upload from Device
               </div>
               <p className="m-0 text-[13px] text-semantic-text-muted">
                 or drag and drop file here

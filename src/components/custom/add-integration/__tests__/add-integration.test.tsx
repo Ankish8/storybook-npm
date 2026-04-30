@@ -418,7 +418,7 @@ describe("AddIntegration", () => {
         />
       )
       expect(
-        screen.getByText("Existing connected accounts")
+        screen.getByText("Existing Connected Accounts")
       ).toBeInTheDocument()
       expect(screen.getByText("acc_89xv2m9")).toBeInTheDocument()
       expect(screen.getByText("acc_34pq7n1")).toBeInTheDocument()
@@ -844,7 +844,7 @@ describe("AddIntegration", () => {
     it("still renders the existing accounts list", () => {
       render(<AddIntegration {...inlineErrorProps} />)
       expect(
-        screen.getByText("Existing connected accounts")
+        screen.getByText("Existing Connected Accounts")
       ).toBeInTheDocument()
       expect(screen.getByText("acc_89xv2m9")).toBeInTheDocument()
       expect(screen.getByText("acc_34pq7n1")).toBeInTheDocument()

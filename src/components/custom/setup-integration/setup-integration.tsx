@@ -118,7 +118,7 @@ const SetupIntegration = React.forwardRef<
         <ConfirmationModal
           open={showDiscardConfirm}
           onOpenChange={setShowDiscardConfirm}
-          title="Discard integration?"
+          title="Discard Integration?"
           description="Are you sure you want to close this? Unsaved progress will be lost."
           variant="destructive"
           confirmButtonText="Discard"

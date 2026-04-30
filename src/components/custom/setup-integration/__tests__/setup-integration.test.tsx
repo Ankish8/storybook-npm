@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom/vitest";
+import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SetupIntegration } from "../setup-integration";
@@ -113,7 +115,7 @@ describe("SetupIntegration", () => {
       />
     );
     fireEvent.click(screen.getByLabelText("Close"));
-    expect(screen.getByText("Discard integration?")).toBeInTheDocument();
+    expect(screen.getByText("Discard Integration?")).toBeInTheDocument();
     expect(
       screen.getByText(
         "Are you sure you want to close this? Unsaved progress will be lost."
@@ -160,7 +162,7 @@ describe("SetupIntegration", () => {
       />
     );
     fireEvent.click(screen.getByLabelText("Go back"));
-    expect(screen.getByText("Discard integration?")).toBeInTheDocument();
+    expect(screen.getByText("Discard Integration?")).toBeInTheDocument();
     expect(onBack).not.toHaveBeenCalled();
   });
 

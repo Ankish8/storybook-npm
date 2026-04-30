@@ -389,7 +389,7 @@ export function ChatContactPanel({ name }: ChatContactPanelProps) {
       <ConfirmationModal
         open={showDiscardConfirm}
         onOpenChange={setShowDiscardConfirm}
-        title="Discard changes?"
+        title="Discard Changes?"
         description="Your unsaved edits will be lost."
         variant="destructive"
         confirmButtonText="Discard"

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { BotTest } from "./bot-test";
 import { Button } from "../../ui/button";
 
@@ -55,7 +55,7 @@ export const Default: Story = {
     return (
       <>
         <Button variant="outline" onClick={() => setOpen(true)}>
-          Test bot
+          Test Bot
         </Button>
         <BotTest
           open={open}
@@ -87,7 +87,7 @@ export const WithPrefilledValues: Story = {
     return (
       <>
         <Button variant="outline" onClick={() => setOpen(true)}>
-          Test bot
+          Test Bot
         </Button>
         <BotTest
           open={open}
@@ -111,7 +111,7 @@ export const Loading: Story = {
     return (
       <>
         <Button variant="outline" onClick={() => setOpen(true)}>
-          Test bot
+          Test Bot
         </Button>
         <BotTest
           open={open}
@@ -133,7 +133,7 @@ export const Disabled: Story = {
     return (
       <>
         <Button variant="outline" onClick={() => setOpen(true)}>
-          Test bot
+          Test Bot
         </Button>
         <BotTest
           open={open}
@@ -157,7 +157,7 @@ export const CustomDescription: Story = {
     return (
       <>
         <Button variant="outline" onClick={() => setOpen(true)}>
-          Test bot
+          Test Bot
         </Button>
         <BotTest
           open={open}

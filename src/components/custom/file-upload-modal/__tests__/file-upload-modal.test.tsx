@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom/vitest";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -20,7 +21,7 @@ describe("FileUploadModal", () => {
   it("renders title and buttons when open", () => {
     render(<FileUploadModal open={true} onOpenChange={vi.fn()} />);
     expect(screen.getByText("File Upload")).toBeInTheDocument();
-    expect(screen.getByText("Upload from device")).toBeInTheDocument();
+    expect(screen.getByText("Upload from Device")).toBeInTheDocument();
     expect(screen.getByText("Save")).toBeInTheDocument();
     expect(screen.getByText("Cancel")).toBeInTheDocument();
   });
@@ -36,12 +37,12 @@ describe("FileUploadModal", () => {
     render(
       <FileUploadModal open={true} onOpenChange={vi.fn()} onSampleDownload={vi.fn()} />
     );
-    expect(screen.getByText("Download sample file")).toBeInTheDocument();
+    expect(screen.getByText("Download Sample File")).toBeInTheDocument();
   });
 
   it("hides sample download link when not provided", () => {
     render(<FileUploadModal open={true} onOpenChange={vi.fn()} />);
-    expect(screen.queryByText("Download sample file")).not.toBeInTheDocument();
+    expect(screen.queryByText("Download Sample File")).not.toBeInTheDocument();
   });
 
   it("calls onSampleDownload when link is clicked", async () => {
@@ -50,7 +51,7 @@ describe("FileUploadModal", () => {
     render(
       <FileUploadModal open={true} onOpenChange={vi.fn()} onSampleDownload={onSampleDownload} />
     );
-    await user.click(screen.getByText("Download sample file"));
+    await user.click(screen.getByText("Download Sample File"));
     expect(onSampleDownload).toHaveBeenCalledTimes(1);
   });
 
