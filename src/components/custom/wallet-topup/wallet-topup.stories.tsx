@@ -15,8 +15,7 @@ import { WalletTopup } from "./wallet-topup";
  * | Token | CSS Variable | Usage |
  * |-------|--------------|-------|
  * | Info Surface | `--semantic-info-surface` | Header icon background |
- * | Neutral 50 | `--color-neutral-50` | Unselected amount tile fill |
- * | Primary Surface | `--semantic-primary-surface` | Selected amount tile fill |
+ * | Neutral 50 | `--color-neutral-50` | Amount tile fill (selected & unselected) |
  * | Brand | `--semantic-brand` | Selected amount border, hover border |
  * | Primary | `--semantic-primary` | Selected amount text |
  * | Warning Surface | `--semantic-warning-surface` | Recharge summary background |
