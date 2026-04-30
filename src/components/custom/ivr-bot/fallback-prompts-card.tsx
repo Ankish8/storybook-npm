@@ -91,8 +91,9 @@ function PromptField({
   onBlur?: (value: string) => void;
   rows?: number;
 }) {
-  const labelClasses =
-    "text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]";
+  const labelClasses = cn(
+    "text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
+  );
 
   return (
     <div className="flex flex-col gap-1.5">

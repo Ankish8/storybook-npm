@@ -604,6 +604,68 @@ describe("Registry", () => {
       expect(content).toContain("const Tag");
       expect(content).not.toContain("tw-const");
     });
+
+    // Pattern 7: indirected classname strings (variable assignments + JSX prop attrs).
+    // Regression net for the 12-instance prefix-leak we patched in Apr 2026.
+    describe("indirected classname strings (Pattern 7)", () => {
+      it("prefixes ClassName-suffixed const declarations", () => {
+        const src = `export const fooClassName = "flex items-center text-base"`;
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toContain('"tw-flex tw-items-center tw-text-base"');
+      });
+
+      it("prefixes arbitrary-name const declarations (cardShell, actionBtnClass)", () => {
+        const src = [
+          `const cardShell = "w-full max-w-md rounded-lg shadow-sm"`,
+          `const actionBtnClass = "h-8 px-4 sm:min-w-[96px] sm:w-auto"`,
+        ].join("\n");
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toContain("tw-w-full");
+        expect(out).toContain("tw-max-w-md");
+        expect(out).toContain("tw-rounded-lg");
+        expect(out).toContain("tw-shadow-sm");
+        expect(out).toContain("tw-h-8");
+        expect(out).toContain("sm:tw-min-w-[96px]");
+        expect(out).toContain("sm:tw-w-auto");
+      });
+
+      it("prefixes JSX attributes ending in ClassName/Class (e.g. labelClassName)", () => {
+        const src = `<Textarea labelClassName="font-semibold text-base" iconClass="size-4 text-muted" />`;
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toContain('labelClassName="tw-font-semibold tw-text-base"');
+        expect(out).toContain('iconClass="tw-size-4 tw-text-muted"');
+      });
+
+      it("does not double-prefix already-prefixed const RHS", () => {
+        const src = `const fooClassName = "tw-flex tw-items-center"`;
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toBe(src);
+      });
+
+      it("does not prefix non-Tailwind string literals (sentences, URLs, identifiers)", () => {
+        const src = [
+          `const errorMsg = "Failed to load the resource"`,
+          `const apiUrl = "https://example.com"`,
+          `const buttonText = "Submit"`,
+        ].join("\n");
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toBe(src);
+      });
+
+      it("delegates bare className= to pattern 3 (not double-handled by 7b)", () => {
+        const src = `<div className="flex items-center" />`;
+        const out = prefixTailwindClasses(src, "tw-");
+        // pattern 3 prefixes; pattern 7 must not interfere
+        expect(out).toBe(`<div className="tw-flex tw-items-center" />`);
+      });
+
+      it("does not touch cn(...) RHS — pattern 2 already handles inner literals", () => {
+        const src = `const fooCls = cn("flex items-center")`;
+        const out = prefixTailwindClasses(src, "tw-");
+        // pattern 2 prefixes inner literal; pattern 7 should leave the const wrapper alone
+        expect(out).toBe(`const fooCls = cn("tw-flex tw-items-center")`);
+      });
+    });
   });
 
   describe("multi-file components", () => {

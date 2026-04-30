@@ -35,8 +35,9 @@ const defaultDescription =
   "The chat is open in another tab. Switch to that tab to continue the conversation.";
 const defaultActionLabel = "Use here";
 
-const cardShell =
-  "w-full max-w-md overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm";
+const cardShell = cn(
+  "w-full max-w-md overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm"
+);
 
 type NoticeSectionsProps = {
   titleId: string;

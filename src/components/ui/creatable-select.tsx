@@ -23,20 +23,25 @@ const creatableSelectTriggerVariants = cva(
 
 /**
  * Tailwind classes for the "Enter ↵" hint in creatable dropdown headers (shared by Primary Role and Tone).
- * If your Tailwind config uses `prefix` (e.g. `"tw-"`), prefix every utility here or these strings will not compile.
+ *
+ * Wrapped in `cn(...)` so the CLI's prefixer transforms the inner literal at install time.
+ * If you copy this source manually (rather than via `npx myoperator-ui add ...`) and your
+ * Tailwind config uses `prefix` (e.g. `"tw-"`), prefix every utility yourself or these
+ * strings will not compile.
  */
-export const creatableEnterHintKbdClassName =
+export const creatableEnterHintKbdClassName = cn(
   "inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-semantic-text-muted"
+)
 
 /** Primary Role: hint row above the options list (custom role + Enter kbd). */
-export const creatablePrimaryRoleHintRowClassName =
+export const creatablePrimaryRoleHintRowClassName = cn(
   "flex items-center justify-between border-b border-solid border-semantic-border-layout px-4 py-2"
+)
 
-/**
- * Tone / CreatableMultiSelect: inner hint row (place inside a full-bleed wrapper with `-mx-4` + `border-b` on the panel).
- */
-export const creatableToneHintRowClassName =
+/** Tone / CreatableMultiSelect: inner hint row (place inside a full-bleed wrapper with `-mx-4` + `border-b` on the panel). */
+export const creatableToneHintRowClassName = cn(
   "flex min-h-[45px] shrink-0 items-center justify-between gap-2.5 px-4 py-2.5"
+)
 
 export interface CreatableSelectOption {
   value: string

@@ -38,10 +38,10 @@ import type {
 import { isChatBubbleMessageProps } from "./types";
 
 const maxWidthMap = {
-  text: "max-w-[65%]",
-  media: "max-w-[380px] w-full",
-  audio: "max-w-[340px] w-[340px]",
-  carousel: "max-w-[466px] w-full",
+  text: cn("max-w-[65%]"),
+  media: cn("max-w-[380px] w-full"),
+  audio: cn("max-w-[340px] w-[340px]"),
+  carousel: cn("max-w-[466px] w-full"),
 };
 
 function LegacyDeliveryFooter({
@@ -239,7 +239,7 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
 
   const bubbleWidth =
     msg.type === "carousel"
-      ? "max-w-[466px] w-full"
+      ? cn("max-w-[466px] w-full")
       : msg.type === "image" ||
           msg.type === "video" ||
           isTemplateWithMedia ||
@@ -249,12 +249,12 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
           msg.type === "loading" ||
           msg.type === "location" ||
           msg.type === "referral"
-        ? "max-w-[380px] w-full"
+        ? cn("max-w-[380px] w-full")
         : msg.type === "audio"
-          ? "max-w-[340px] w-[340px]"
+          ? cn("max-w-[340px] w-[340px]")
           : msg.type === "contact" || msg.type === "listReply"
-            ? "max-w-[320px] w-full"
-            : "max-w-[65%]";
+            ? cn("max-w-[320px] w-full")
+            : cn("max-w-[65%]");
 
   return {
     hasMedia,

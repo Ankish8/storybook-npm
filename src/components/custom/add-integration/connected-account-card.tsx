@@ -32,8 +32,9 @@ function StatusBadge({ status }: { status: ComposioAccountRowStatus }) {
   return null
 }
 
-const actionBtnClass =
+const actionBtnClass = cn(
   "h-8 min-h-8 w-full min-w-0 px-4 py-0 sm:min-w-[96px] sm:w-auto"
+)
 
 const ConnectedAccountCard = React.forwardRef<
   HTMLDivElement,

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronRight, Plus, Info, X } from "lucide-react"
+import { ChevronDown, Plus, Info, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -229,7 +229,7 @@ const CreatableMultiSelect = React.forwardRef(
               >
                 {summaryTriggerLabel}
               </span>
-              <ChevronRight
+              <ChevronDown
                 className="mt-1 size-5 shrink-0 self-start text-semantic-text-muted opacity-70"
                 aria-hidden
               />
@@ -319,7 +319,7 @@ const CreatableMultiSelect = React.forwardRef(
                   ))
                 )}
               </div>
-              <ChevronRight
+              <ChevronDown
                 className="mt-1 size-5 shrink-0 self-start text-semantic-text-muted opacity-70"
                 aria-hidden
               />

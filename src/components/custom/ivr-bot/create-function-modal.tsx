@@ -961,8 +961,9 @@ function KeyValueTable({
   };
 
   // Reusable delete row action — same placement and styling as KeyValueRow / knowledge-base-card
-  const deleteRowButtonClass =
-    "text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0";
+  const deleteRowButtonClass = cn(
+    "text-semantic-text-muted hover:text-semantic-error-primary hover:bg-semantic-error-surface transition-colors shrink-0"
+  );
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -1860,7 +1861,7 @@ export const CreateFunctionModal = React.forwardRef(
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="Enter the description of the function"
                   rows={5}
-                  labelClassName="font-semibold text-semantic-text-primary"
+                  labelClassName={cn("font-semibold text-semantic-text-primary")}
                   error={
                     prompt.length > 0 && prompt.trim().length < promptMinLength
                       ? `Minimum ${promptMinLength} characters required`

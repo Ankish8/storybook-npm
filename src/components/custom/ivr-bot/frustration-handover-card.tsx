@@ -218,7 +218,9 @@ const FrustrationHandoverCard = React.forwardRef(
                   <div className="px-4 sm:px-6">
                     <Textarea
                       label="Prompt"
-                      labelClassName="font-semibold text-semantic-text-secondary tracking-[0.014px]"
+                      labelClassName={cn(
+                        "font-semibold text-semantic-text-secondary tracking-[0.014px]"
+                      )}
                       placeholder="Executives are busy at the moment, we will connect you soon."
                       value={promptValue}
                       onChange={(e) => {

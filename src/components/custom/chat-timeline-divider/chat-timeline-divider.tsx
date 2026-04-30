@@ -37,7 +37,7 @@ const textStyles: Record<ChatTimelineDividerVariant, string> = {
   system: "text-[13px] text-semantic-text-muted",
 };
 
-const highlightSegmentClassName = "text-semantic-text-link font-medium";
+const highlightSegmentClassName = cn("text-semantic-text-link font-medium");
 
 /**
  * Splits a string on markdown-style `**label**` markers and returns nodes:

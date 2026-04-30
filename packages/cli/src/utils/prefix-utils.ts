@@ -236,6 +236,35 @@ function transformSemanticClassesInContent(content: string): string {
     }
   )
 
+  // 5. Indirected classname strings (mirrors Pattern 7 in prefixTailwindClasses).
+  // Without this, classes like `text-semantic-text-secondary` in a bare `const x = "..."`
+  // get prefixed but skip the CSS-var-with-fallback transform — they'd resolve correctly
+  // only if the consumer's stylesheet defines `--semantic-*` vars. This pass restores
+  // consistency with cva()/cn()/className= sites.
+
+  // 5a. Variable declarations with a string-literal RHS
+  content = content.replace(
+    /\b(?:const|let|var)\s+(\w+)\s*=\s*("[^"\n]+"|'[^'\n]+')/g,
+    (match: string, _name: string, quoted: string) => {
+      const isDouble = quoted.startsWith('"')
+      const value = quoted.slice(1, -1)
+      if (!hasSemanticClasses(value)) return match
+      const transformed = transformSemanticClasses(value)
+      const replacement = isDouble ? `"${transformed}"` : `'${transformed}'`
+      return match.slice(0, match.length - quoted.length) + replacement
+    }
+  )
+
+  // 5b. JSX attributes with ClassName/Class-suffixed names (excluding bare className)
+  content = content.replace(
+    /\b(\w+(?:ClassName|Class))\s*=\s*"([^"\n]+)"/g,
+    (match: string, name: string, classes: string) => {
+      if (name === 'className') return match
+      if (!hasSemanticClasses(classes)) return match
+      return `${name}="${transformSemanticClasses(classes)}"`
+    }
+  )
+
   return content
 }
 
@@ -362,6 +391,11 @@ export function looksLikeTailwindClasses(str: string): boolean {
     (str.includes('::') && !str.includes('[&'))
   )
     return false
+
+  // Skip URL-like strings — `://` appears in protocols (https://, mailto:, etc.) but
+  // never in Tailwind classes. Without this guard, the variant-prefix heuristic below
+  // (which treats any `:` as a Tailwind variant) lets URLs through.
+  if (str.includes('://')) return false
 
   // Skip npm package names - but NOT if they look like Tailwind utility classes
   // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)
@@ -1084,6 +1118,49 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
     content = jsxResult
   }
   // PATTERN-6-END
+
+  // PATTERN-7-START
+  // 7. Indirected classname strings the earlier patterns miss.
+  //
+  // Patterns 1-6 cover: cva(), cn(), className="", className={...}, helper-fn calls,
+  // and key:"..." inside object literals. They do NOT cover:
+  //   (a) `const x = "..."` / `export const x = "..."` — string-literal var assignments
+  //       (any name; not just *ClassName-suffixed)
+  //   (b) `<Comp xClassName="..." />` — JSX attributes whose name ends in ClassName/Class
+  //       but is not the bare `className` already handled by pattern 3
+  //
+  // Both gates run `looksLikeTailwindClasses()` to avoid prefixing non-Tailwind strings,
+  // and `isAlreadyPrefixed()` to avoid double-prefixing on idempotent re-runs.
+  //
+  // Known gap: ternary/expression RHS in var assignments (e.g. `const w = a ? "..." : "..."`)
+  // is NOT caught here. Wrap each branch in cn() at the source for those cases.
+
+  // 7a. Variable declarations with a string-literal RHS
+  content = content.replace(
+    /\b(?:const|let|var)\s+(\w+)\s*=\s*("[^"\n]+"|'[^'\n]+')/g,
+    (match: string, _name: string, quoted: string) => {
+      const isDouble = quoted.startsWith('"')
+      const value = quoted.slice(1, -1)
+      if (!looksLikeTailwindClasses(value)) return match
+      if (isAlreadyPrefixed(value, prefix)) return match
+      const prefixed = prefixClassString(value, prefix)
+      const replacement = isDouble ? `"${prefixed}"` : `'${prefixed}'`
+      return match.slice(0, match.length - quoted.length) + replacement
+    }
+  )
+
+  // 7b. JSX attributes with ClassName/Class-suffixed names (excluding bare className)
+  content = content.replace(
+    /\b(\w+(?:ClassName|Class))\s*=\s*"([^"\n]+)"/g,
+    (match: string, name: string, classes: string) => {
+      if (name === 'className') return match
+      if (!looksLikeTailwindClasses(classes)) return match
+      if (isAlreadyPrefixed(classes, prefix)) return match
+      const prefixed = prefixClassString(classes, prefix)
+      return `${name}="${prefixed}"`
+    }
+  )
+  // PATTERN-7-END
 
   return content
 }
