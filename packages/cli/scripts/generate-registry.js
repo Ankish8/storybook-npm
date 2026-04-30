@@ -318,6 +318,30 @@ async function readMultiFileComponent(componentName, meta, allComponents) {
           return `from "../../${importPath}"`
         }
       )
+    } else if (allComponents) {
+      // Inverse of the meta.group branch above: an UNGROUPED component (e.g. chat-bubble)
+      // may import a sibling that IS grouped (e.g. chat-provider with group: "chat").
+      // In source, both live flat under src/components/custom/, so `../chat-provider` works.
+      // In the consumer's tree, the grouped sibling lands at custom/chat/chat-provider/,
+      // so the import must become `../chat/chat-provider`.
+      const groupedDirs = new Map()
+      for (const [, compMeta] of Object.entries(allComponents)) {
+        if (compMeta.group && compMeta.isMultiFile && compMeta.directory) {
+          groupedDirs.set(compMeta.directory, compMeta.group)
+        }
+      }
+
+      if (groupedDirs.size > 0) {
+        content = content.replace(
+          /from\s*["']\.\.\/([^."'/][^"']*)["']/g,
+          (match, importPath) => {
+            const topDir = importPath.split('/')[0]
+            const targetGroup = groupedDirs.get(topDir)
+            if (!targetGroup) return match
+            return `from "../${targetGroup}/${importPath}"`
+          }
+        )
+      }
     }
 
     componentFiles.push({
