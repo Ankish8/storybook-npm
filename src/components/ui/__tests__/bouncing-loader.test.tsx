@@ -1,3 +1,5 @@
+import "@testing-library/jest-dom/vitest";
+import * as React from "react";
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 import { BouncingLoader } from "../bouncing-loader";

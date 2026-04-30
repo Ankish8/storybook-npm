@@ -89,7 +89,7 @@ describe("CreatableMultiSelect", () => {
     const input = screen.getByRole("combobox");
     await user.type(input, "angry");
     expect(
-      screen.getByText("Type to create a custom tone")
+      screen.getByPlaceholderText("Type to create a custom tone")
     ).toBeInTheDocument();
     expect(screen.getByText("Max selections allowed: 5")).toBeInTheDocument();
     expect(screen.getByText("Enter ↵")).toBeInTheDocument();
