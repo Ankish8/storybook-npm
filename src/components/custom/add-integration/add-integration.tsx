@@ -193,7 +193,7 @@ const AddIntegration = React.forwardRef<HTMLDivElement, AddIntegrationProps>(
                     <div className="relative">
                       <Search className="pointer-events-none absolute left-4 top-1/2 size-3.5 -translate-y-1/2 text-semantic-text-muted" />
                       <Input
-                        placeholder="Search Integration"
+                        placeholder="Search integrations"
                         className="pl-10"
                         value={searchQuery}
                         onChange={(e) => onSearchChange?.(e.target.value)}

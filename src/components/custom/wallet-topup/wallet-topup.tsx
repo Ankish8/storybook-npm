@@ -29,14 +29,25 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
   })}`;
 }
 
+/**
+ * Allow non-negative currency-style input: digits, optional one ".", up to 2 fraction digits.
+ * Permits intermediate states like "10." while typing.
+ */
 function isCustomAmountAllowed(value: string): boolean {
-  return /^\d*$/.test(value);
+  if (value === "") return true;
+  const parts = value.split(".");
+  if (parts.length > 2) return false;
+  if (parts.some((p) => p !== "" && !/^\d+$/.test(p))) return false;
+  if (parts[1] !== undefined && parts[1].length > 2) return false;
+  return true;
 }
 
 function parseCustomAmount(value: string): number | null {
   if (!value || !isCustomAmountAllowed(value)) return null;
+  if (value === "." || value.endsWith(".")) return null;
   const parsed = Number(value);
-  return Number.isSafeInteger(parsed) ? parsed : null;
+  if (!Number.isFinite(parsed) || parsed < 0) return null;
+  return parsed;
 }
 
 /**
@@ -219,6 +230,7 @@ export const WalletTopup = React.forwardRef(
       if (
         e.key.length === 1 &&
         !/^\d$/.test(e.key) &&
+        e.key !== "." &&
         !e.metaKey &&
         !e.ctrlKey
       ) {
@@ -398,8 +410,8 @@ export const WalletTopup = React.forwardRef(
                   </label>
                   <Input
                     type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
+                    inputMode="decimal"
+                    pattern="[0-9.]*"
                     placeholder={customAmountPlaceholder}
                     value={customValue}
                     onChange={handleCustomAmountChange}
