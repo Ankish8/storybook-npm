@@ -1,3 +1,5 @@
+import tailwindcssAnimate from "tailwindcss-animate"
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
@@ -14,10 +16,21 @@ export default {
         "2xl": "1400px",
       },
     },
-    fontFamily: {
-      sans: ['Source Sans Pro', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-    },
     extend: {
+      fontFamily: {
+        sans: [
+          "Source Sans Pro",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+      },
       colors: {
         // Legacy shadcn colors
         border: "hsl(var(--border))",
@@ -158,21 +171,32 @@ export default {
         "bouncing-bounce": {
           "0%, 100%": {
             transform: "translate3d(0, 0, 0)",
-            opacity: "0.5",
           },
           "50%": {
-            transform: "translate3d(0, -45%, 0)",
-            opacity: "1",
+            transform:
+              "translate3d(0, calc(-1 * var(--bouncing-loader-bounce, 0.25rem)), 0)",
           },
+        },
+        /** One lift per cycle, rest of cycle idle — staggered delays = typing “mexican wave” */
+        "bouncing-typing-wave": {
+          "0%": { transform: "translate3d(0, 0, 0)" },
+          "15%": {
+            transform:
+              "translate3d(0, calc(-1 * var(--bouncing-loader-bounce, 0.25rem)), 0)",
+          },
+          "30%": { transform: "translate3d(0, 0, 0)" },
+          "100%": { transform: "translate3d(0, 0, 0)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "bouncing-bounce":
-          "bouncing-bounce var(--bouncing-loader-duration, 0.55s) ease-in-out infinite",
+          "bouncing-bounce var(--bouncing-loader-duration, 0.55s) cubic-bezier(0.45, 0, 0.55, 1) infinite",
+        "bouncing-typing-wave":
+          "bouncing-typing-wave var(--bouncing-loader-duration, 0.6s) cubic-bezier(0.4, 0, 0.2, 1) infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 }
