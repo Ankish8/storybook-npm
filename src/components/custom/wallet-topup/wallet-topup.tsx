@@ -358,13 +358,13 @@ export const WalletTopup = React.forwardRef(
                           aria-checked={isSelected}
                           onClick={() => handleAmountSelect(option.value)}
                           className={cn(
-                            "flex px-4 rounded text-sm transition-all cursor-pointer",
+                            "flex px-4 rounded text-sm font-medium transition-all cursor-pointer border border-solid",
                             hasOutstanding
                               ? "flex-col items-start gap-0.5 h-auto py-3"
-                              : "items-center h-10 py-2.5",
+                              : "items-center justify-center h-10 py-2.5",
                             isSelected
-                              ? "border border-solid border-[var(--semantic-brand)] shadow-sm"
-                              : "border border-solid border-semantic-border-input hover:border-semantic-text-muted"
+                              ? "bg-semantic-primary-surface border-[var(--semantic-brand)]"
+                              : "bg-[var(--color-neutral-50)] border-semantic-border-input hover:border-[var(--semantic-brand)]"
                           )}
                         >
                           <span

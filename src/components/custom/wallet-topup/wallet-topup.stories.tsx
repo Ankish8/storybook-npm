@@ -15,13 +15,16 @@ import { WalletTopup } from "./wallet-topup";
  * | Token | CSS Variable | Usage |
  * |-------|--------------|-------|
  * | Info Surface | `--semantic-info-surface` | Header icon background |
- * | Primary | `--semantic-primary` | Selected amount border & text |
+ * | Neutral 50 | `--color-neutral-50` | Unselected amount tile fill |
+ * | Primary Surface | `--semantic-primary-surface` | Selected amount tile fill |
+ * | Brand | `--semantic-brand` | Selected amount border, hover border |
+ * | Primary | `--semantic-primary` | Selected amount text |
  * | Warning Surface | `--semantic-warning-surface` | Recharge summary background |
  * | Text Primary | `--semantic-text-primary` | Title, amount labels |
  * | Text Muted | `--semantic-text-muted` | Description, section labels |
  * | Text Link | `--semantic-text-link` | Voucher link text |
  * | Text Placeholder | `--semantic-text-placeholder` | Input placeholder |
- * | Border Input | `--semantic-border-input` | Unselected amount borders, input border |
+ * | Border Input | `--semantic-border-input` | Unselected amount border, custom amount input border |
  * | Border Layout | `--semantic-border-layout` | Card border, content separator |
  * | Success Primary | `--semantic-success-primary` | Redeem voucher CTA button |
  * | Success Hover | `--semantic-success-hover` | Redeem voucher CTA hover |
@@ -33,7 +36,7 @@ import { WalletTopup } from "./wallet-topup";
  * | Title | 14px | 600 (SemiBold) | 0.01px |
  * | Description | 12px | 400 (Regular) | 0.048px |
  * | Section Label | 12px | 400 (Regular) | 0.048px |
- * | Amount Text | 14px | 400 (Regular) | 0.035px |
+ * | Amount Text | 14px | 500 (Medium) | 0.035px |
  * | CTA Button | 14px | 600 (SemiBold) | 0.01px |
  *
  * ### Usage
