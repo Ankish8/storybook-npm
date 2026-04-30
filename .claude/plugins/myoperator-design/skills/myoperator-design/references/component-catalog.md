@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 101 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 102 components across 7 categories.
 
 ## Quick Reference
 
@@ -38,6 +38,7 @@
 | Alert | feedback | `npx myoperator-ui add alert` |
 | Toast | feedback | `npx myoperator-ui add toast` |
 | Spinner | feedback | `npx myoperator-ui add spinner` |
+| BouncingLoader | feedback | `npx myoperator-ui add bouncing-loader` |
 | Skeleton | feedback | `npx myoperator-ui add skeleton` |
 | EmptyState | feedback | `npx myoperator-ui add empty-state` |
 | Accordion | layout | `npx myoperator-ui add accordion` |
@@ -597,6 +598,13 @@ import { Mail } from "lucide-react"
 
 ---
 
+### BouncingLoader
+> Chat-style three-dot bouncing typing indicator with configurable size, spacing, and timing
+
+**Install**: `npx myoperator-ui add bouncing-loader`
+
+---
+
 ### Skeleton
 > A placeholder loading component with pulse animation for content loading states
 
@@ -688,7 +696,7 @@ import { Mail } from "lucide-react"
 > AI chat interface for setting up, testing, and publishing integrations after successful connection
 
 **Install**: `npx myoperator-ui add setup-integration`
-**Requires**: `spinner`, `dialog`, `confirmation-modal`, `empty-state` (auto-installed)
+**Requires**: `spinner`, `bouncing-loader`, `dialog`, `confirmation-modal`, `empty-state` (auto-installed)
 **Type**: Multi-file component
 
 ---
