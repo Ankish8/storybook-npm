@@ -167,7 +167,7 @@ MYOPERATOR_GIT_ALLOWED=1 git push
 
 #### 4c. Sync and Publish MCP
 ```bash
-node scripts/sync-mcp-metadata.js
+node scripts/sync-mcp-metadata.js --write
 cd packages/mcp && npm version patch --no-git-tag-version && npm run build && MYOPERATOR_PUBLISH_ALLOWED=1 npm publish
 ```
 

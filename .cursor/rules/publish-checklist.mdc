@@ -45,7 +45,7 @@ If you added or modified components, update the MCP package:
 
 ```bash
 # 1. Sync component metadata from components.yaml
-node scripts/sync-mcp-metadata.js
+node scripts/sync-mcp-metadata.js --write
 
 # 2. Build and publish MCP
 cd packages/mcp
