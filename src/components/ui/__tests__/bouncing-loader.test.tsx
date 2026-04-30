@@ -21,18 +21,21 @@ describe("BouncingLoader", () => {
     });
   });
 
-  it("applies the wave animation with staggered per-dot delay", () => {
+  it("applies the self-contained wave animation with staggered per-dot delay", () => {
     const { container } = render(<BouncingLoader />);
     const root = container.firstElementChild as HTMLElement;
     const dots = getDots(container);
 
     expect(root).toHaveClass("inline-flex");
-    expect(
-      dots.map((dot) => dot.style.getPropertyValue("--bouncing-loader-delay"))
-    ).toEqual(["0s", "0.2s", "0.4s"]);
-    dots.forEach((dot) => {
-      expect(dot).toHaveClass("animate-bouncing-typing-wave");
-    });
+
+    const styleEl = root.querySelector("style");
+    expect(styleEl?.textContent).toContain("@keyframes bouncing-typing-wave");
+
+    const animations = dots.map((dot) => dot.style.animation);
+    expect(animations[0]).toContain("bouncing-typing-wave");
+    expect(animations[0]).toContain("0s");
+    expect(animations[1]).toContain("0.2s");
+    expect(animations[2]).toContain("0.4s");
   });
 
   it("supports custom size, spacing, color, and className", () => {

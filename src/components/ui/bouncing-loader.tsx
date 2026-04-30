@@ -5,6 +5,12 @@ import { cn } from "@/lib/utils";
 
 const DOT_KEYS = [0, 1, 2] as const;
 const DOT_DELAYS_SEC = [0, 0.2, 0.4] as const;
+const ANIMATION_NAME = "bouncing-typing-wave";
+const KEYFRAMES_CSS = `
+@keyframes ${ANIMATION_NAME} {
+  0%, 60%, 100% { transform: translate3d(0, 0, 0); }
+  30% { transform: translate3d(0, -6px, 0); }
+}`;
 
 function toCssLength(value: number | string, unit: string): string {
   if (typeof value === "string") {
@@ -60,12 +66,13 @@ const BouncingLoader = React.forwardRef<HTMLSpanElement, BouncingLoaderProps>(
         style={mergedStyle}
         {...props}
       >
+        <style>{KEYFRAMES_CSS}</style>
         {DOT_KEYS.map((i) => (
           <span
             key={i}
-            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))] animate-bouncing-typing-wave"
+            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))]"
             style={{
-              ["--bouncing-loader-delay" as string]: `${DOT_DELAYS_SEC[i]}s`,
+              animation: `${ANIMATION_NAME} 1.4s cubic-bezier(0.4, 0, 0.2, 1) ${DOT_DELAYS_SEC[i]}s infinite`,
             }}
             aria-hidden
           />
