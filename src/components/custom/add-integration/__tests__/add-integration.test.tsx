@@ -84,7 +84,7 @@ describe("AddIntegration", () => {
     it("renders search input", () => {
       render(<AddIntegration {...modalProps} toolkits={mockToolkits} step="select-toolkit" />)
       expect(
-        screen.getByPlaceholderText("Search Integration")
+        screen.getByPlaceholderText("Search integrations")
       ).toBeInTheDocument()
     })
 
@@ -154,7 +154,7 @@ describe("AddIntegration", () => {
         />
       )
       fireEvent.change(
-        screen.getByPlaceholderText("Search Integration"),
+        screen.getByPlaceholderText("Search integrations"),
         { target: { value: "slack" } }
       )
       expect(onSearchChange).toHaveBeenCalledWith("slack")
