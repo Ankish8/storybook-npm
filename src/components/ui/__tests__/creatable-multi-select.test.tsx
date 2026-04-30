@@ -14,11 +14,18 @@ describe("CreatableMultiSelect", () => {
     expect(screen.getByText("Pick items")).toBeInTheDocument();
   });
 
-  it("renders selected values as comma-separated summary when closed", () => {
+  it("renders selected values as removable chips when closed", () => {
     render(
       <CreatableMultiSelect options={OPTIONS} value={["Alpha", "Beta"]} />
     );
-    expect(screen.getByText("Alpha, Beta")).toBeInTheDocument();
+    expect(screen.getByText("Alpha")).toBeInTheDocument();
+    expect(screen.getByText("Beta")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remove Alpha" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remove Beta" })
+    ).toBeInTheDocument();
   });
 
   it("calls onValueChange when removing last item with Backspace on empty input", async () => {
@@ -31,7 +38,7 @@ describe("CreatableMultiSelect", () => {
         onValueChange={onChange}
       />
     );
-    await user.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("combobox"));
     const input = screen.getByRole("combobox");
     await waitFor(() => {
       expect(input).toHaveFocus();
@@ -78,7 +85,7 @@ describe("CreatableMultiSelect", () => {
         onValueChange={onChange}
       />
     );
-    await user.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("combobox"));
     const input = screen.getByRole("combobox");
     await user.type(input, "angry");
     expect(
@@ -105,7 +112,7 @@ describe("CreatableMultiSelect", () => {
         maxLengthPerItem={20}
       />
     );
-    await user.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("combobox"));
     const input = screen.getByRole("combobox");
     await user.type(input, "a@");
     expect(onInvalid).toHaveBeenCalled();

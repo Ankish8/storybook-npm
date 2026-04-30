@@ -23,17 +23,20 @@ const creatableSelectTriggerVariants = cva(
 
 /**
  * Tailwind classes for the "Enter ↵" hint in creatable dropdown headers (shared by Primary Role and Tone).
+ * If your Tailwind config uses `prefix` (e.g. `"tw-"`), prefix every utility here or these strings will not compile.
  */
 export const creatableEnterHintKbdClassName =
   "inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-semantic-text-muted"
 
 /** Primary Role: hint row above the options list (custom role + Enter kbd). */
 export const creatablePrimaryRoleHintRowClassName =
-  "flex items-center justify-between px-4 py-2 border-b border-solid border-semantic-border-layout"
+  "flex items-center justify-between border-b border-solid border-semantic-border-layout px-4 py-2"
 
-/** Tone / CreatableMultiSelect: hint row inside the padded dropdown panel (-mx-4 full-bleed border). */
+/**
+ * Tone / CreatableMultiSelect: inner hint row (place inside a full-bleed wrapper with `-mx-4` + `border-b` on the panel).
+ */
 export const creatableToneHintRowClassName =
-  "-mx-4 flex min-h-[45px] shrink-0 items-center justify-between gap-2.5 border-b border-solid border-semantic-border-layout px-4 py-2.5"
+  "flex min-h-[45px] shrink-0 items-center justify-between gap-2.5 px-4 py-2.5"
 
 export interface CreatableSelectOption {
   value: string

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronRight, Plus, Info } from "lucide-react"
+import { ChevronRight, Plus, Info, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -68,6 +68,13 @@ function joinSelectedLabels(
   return values
     .map((val) => options.find((o) => o.value === val)?.label ?? val)
     .join(", ")
+}
+
+function labelForValue(
+  val: string,
+  options: CreatableMultiSelectOption[]
+): string {
+  return options.find((o) => o.value === val)?.label ?? val
 }
 
 const CreatableMultiSelect = React.forwardRef(
@@ -242,31 +249,82 @@ const CreatableMultiSelect = React.forwardRef(
               />
             </div>
           ) : (
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={handleOpen}
-              className={cn(
-                creatableSelectTriggerVariants({ state: derivedState }),
-                "cursor-pointer text-left"
-              )}
+            <div
+              role="combobox"
+              tabIndex={disabled ? -1 : 0}
               aria-haspopup="listbox"
               aria-expanded={false}
               aria-controls={listboxId}
+              aria-disabled={disabled || undefined}
+              onKeyDown={(e) => {
+                if (disabled) return
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault()
+                  handleOpen()
+                }
+              }}
+              onClick={(e) => {
+                if (disabled) return
+                if ((e.target as HTMLElement).closest("[data-chip-remove]")) {
+                  return
+                }
+                handleOpen()
+              }}
+              className={cn(
+                creatableSelectTriggerVariants({ state: derivedState }),
+                "flex min-h-[42px] cursor-pointer items-center gap-2 py-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-semantic-bg-primary",
+                disabled && "pointer-events-none cursor-not-allowed"
+              )}
             >
-              <span
-                className={cn(
-                  "flex-1 min-w-0 line-clamp-2 text-base",
-                  !selectedSummary && "text-semantic-text-muted"
+              <div className="flex min-h-0 min-w-0 flex-1 flex-wrap items-center gap-1.5">
+                {value.length === 0 ? (
+                  <span
+                    className={cn(
+                      "line-clamp-2 flex-1 text-base",
+                      "text-semantic-text-muted"
+                    )}
+                  >
+                    {placeholder}
+                  </span>
+                ) : (
+                  value.map((val) => (
+                    <span
+                      key={val}
+                      className="inline-flex max-w-full items-center gap-0.5 rounded bg-semantic-bg-ui py-1 pl-2 pr-0.5 text-sm text-semantic-text-primary"
+                    >
+                      <span className="min-w-0 truncate">
+                        {labelForValue(val, options)}
+                      </span>
+                      <button
+                        type="button"
+                        data-chip-remove
+                        disabled={disabled}
+                        aria-label={`Remove ${labelForValue(val, options)}`}
+                        className={cn(
+                          "inline-flex size-6 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
+                          !disabled &&
+                            "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                        )}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (!disabled) removeValue(val)
+                        }}
+                      >
+                        <X className="size-3.5" strokeWidth={2} aria-hidden />
+                      </button>
+                    </span>
+                  ))
                 )}
-              >
-                {selectedSummary || placeholder}
-              </span>
+              </div>
               <ChevronRight
-                className="size-5 text-semantic-text-muted shrink-0 opacity-70"
+                className="size-5 shrink-0 text-semantic-text-muted opacity-70"
                 aria-hidden
               />
-            </button>
+            </div>
           )}
 
           {/* Dropdown panel */}
@@ -277,7 +335,7 @@ const CreatableMultiSelect = React.forwardRef(
               className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col gap-2.5 overflow-hidden rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 pb-4 pt-0 shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200"
             >
               {showHintsSection && (
-                <>
+                <div className="-mx-4 flex shrink-0 flex-col border-b border-solid border-semantic-border-layout">
                   <div className={creatableToneHintRowClassName}>
                     {createHintText ? (
                       <span className="text-sm text-semantic-text-muted">
@@ -291,11 +349,11 @@ const CreatableMultiSelect = React.forwardRef(
                     </kbd>
                   </div>
                   {maxItems != null ? (
-                    <p className="m-0 text-left text-sm text-semantic-text-muted">
+                    <div className="border-t border-solid border-semantic-border-layout bg-semantic-bg-ui px-4 py-2 text-left text-sm text-semantic-text-muted">
                       Max selections allowed: {maxItems}
-                    </p>
+                    </div>
                   ) : null}
-                </>
+                </div>
               )}
 
               {filteredPresets.length > 0 && (
