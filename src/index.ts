@@ -208,11 +208,7 @@ export type { SpinnerProps } from "./components/ui/spinner";
 
 // BouncingLoader
 export { BouncingLoader, bouncingLoaderVariants } from "./components/ui/bouncing-loader";
-export type {
-  BouncingLoaderProps,
-  BouncingLoaderType,
-  BouncingLoaderFrame,
-} from "./components/ui/bouncing-loader";
+export type { BouncingLoaderProps } from "./components/ui/bouncing-loader";
 
 // Skeleton
 export { Skeleton, skeletonVariants } from "./components/ui/skeleton";
