@@ -183,21 +183,6 @@ const CreatableMultiSelect = React.forwardRef(
         )
       : availablePresets
 
-    const afterSanitizeDraft = sanitizeInput
-      ? sanitizeInput(inputValue)
-      : inputValue
-    const trimmedDraft = afterSanitizeDraft.trim()
-    const draftForCreate = trimmedDraft
-      ? maxLengthPerItem != null
-        ? trimmedDraft.slice(0, maxLengthPerItem)
-        : trimmedDraft
-      : ""
-
-    const canShowEnterAffordance =
-      Boolean(draftForCreate) &&
-      !value.includes(draftForCreate) &&
-      (maxItems == null || value.length < maxItems)
-
     const panelInputPlaceholder = createHintText ?? placeholder
 
     const summaryTriggerLabel =
@@ -216,21 +201,71 @@ const CreatableMultiSelect = React.forwardRef(
                 creatableSelectTriggerVariants({ state: derivedState }),
                 "flex h-auto min-h-[42px] cursor-text items-start gap-2 py-2 text-left"
               )}
-              onClick={() => !disabled && inputRef.current?.focus()}
-              aria-hidden="true"
+              onClick={(e) => {
+                if (disabled) return
+                if ((e.target as HTMLElement).closest("[data-chip-remove]")) {
+                  return
+                }
+                inputRef.current?.focus()
+              }}
             >
-              <span
-                className={cn(
-                  "line-clamp-2 min-w-0 flex-1 text-base",
-                  value.length === 0
-                    ? "text-semantic-text-muted"
-                    : "text-semantic-text-primary"
+              <div className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5">
+                {triggerDisplay === "summary" ? (
+                  <span
+                    className={cn(
+                      "line-clamp-2 flex-1 text-base",
+                      value.length === 0
+                        ? "text-semantic-text-muted"
+                        : "text-semantic-text-primary"
+                    )}
+                  >
+                    {summaryTriggerLabel}
+                  </span>
+                ) : value.length === 0 ? (
+                  <span
+                    className={cn(
+                      "line-clamp-2 flex-1 text-base",
+                      "text-semantic-text-muted"
+                    )}
+                  >
+                    {placeholder}
+                  </span>
+                ) : (
+                  value.map((val) => (
+                    <span
+                      key={val}
+                      className="inline-flex max-w-full items-center gap-0.5 rounded bg-semantic-bg-ui py-1 pl-2 pr-0.5 text-sm text-semantic-text-primary"
+                    >
+                      <span className="min-w-0 truncate">
+                        {labelForValue(val, options)}
+                      </span>
+                      <button
+                        type="button"
+                        data-chip-remove
+                        disabled={disabled}
+                        aria-label={`Remove ${labelForValue(val, options)}`}
+                        className={cn(
+                          "inline-flex size-6 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
+                          !disabled &&
+                            "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                        )}
+                        onMouseDown={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          if (!disabled) removeValue(val)
+                        }}
+                      >
+                        <X className="size-3.5" strokeWidth={2} aria-hidden />
+                      </button>
+                    </span>
+                  ))
                 )}
-              >
-                {summaryTriggerLabel}
-              </span>
+              </div>
               <ChevronDown
-                className="mt-1 size-5 shrink-0 self-start text-semantic-text-muted opacity-70"
+                className="mt-1 size-4 shrink-0 self-start rotate-180 text-semantic-text-muted opacity-70 transition-transform"
                 aria-hidden
               />
             </div>
@@ -320,7 +355,7 @@ const CreatableMultiSelect = React.forwardRef(
                 )}
               </div>
               <ChevronDown
-                className="mt-1 size-5 shrink-0 self-start text-semantic-text-muted opacity-70"
+                className="mt-1 size-4 shrink-0 self-start text-semantic-text-muted opacity-70 transition-transform"
                 aria-hidden
               />
             </div>
@@ -354,29 +389,16 @@ const CreatableMultiSelect = React.forwardRef(
                     onKeyDown={handleKeyDown}
                     disabled={disabled}
                     placeholder={panelInputPlaceholder}
-                    className="min-w-0 flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-muted"
+                    className="min-w-0 flex-1 bg-transparent text-sm text-semantic-text-primary outline-none placeholder:text-semantic-text-muted"
                     role="combobox"
                     aria-expanded={isOpen}
                     aria-controls={listboxId}
                     aria-haspopup="listbox"
                     aria-autocomplete="list"
                   />
-                  <button
-                    type="button"
-                    disabled={disabled || !canShowEnterAffordance}
-                    onMouseDown={(e) => {
-                      e.preventDefault()
-                    }}
-                    onClick={() => {
-                      if (draftForCreate) addValue(inputValue)
-                    }}
-                    className={cn(
-                      creatableEnterHintKbdClassName,
-                      "shrink-0 enabled:cursor-pointer enabled:hover:bg-semantic-bg-hover disabled:opacity-50"
-                    )}
-                  >
+                  <kbd className={cn(creatableEnterHintKbdClassName, "shrink-0")}>
                     Enter ↵
-                  </button>
+                  </kbd>
                 </div>
               </div>
 
@@ -385,45 +407,6 @@ const CreatableMultiSelect = React.forwardRef(
                   <p className="m-0 py-1 text-sm text-semantic-text-muted">
                     Max selections allowed: {maxItems}
                   </p>
-                ) : null}
-
-                {value.length > 0 ? (
-                  <div
-                    className="flex flex-wrap gap-1.5 border-b border-solid border-semantic-border-layout pb-2.5"
-                    aria-label="Selected values"
-                  >
-                    {value.map((val) => (
-                      <span
-                        key={val}
-                        className="inline-flex max-w-full items-center gap-0.5 rounded bg-semantic-bg-ui py-1 pl-2 pr-0.5 text-sm text-semantic-text-primary"
-                      >
-                        <span className="min-w-0 truncate">
-                          {labelForValue(val, options)}
-                        </span>
-                        <button
-                          type="button"
-                          data-chip-remove
-                          disabled={disabled}
-                          aria-label={`Remove ${labelForValue(val, options)}`}
-                          className={cn(
-                            "inline-flex size-6 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
-                            !disabled &&
-                              "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
-                          )}
-                          onMouseDown={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (!disabled) removeValue(val)
-                          }}
-                        >
-                          <X className="size-3.5" strokeWidth={2} aria-hidden />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
                 ) : null}
 
                 <div

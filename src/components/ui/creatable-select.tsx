@@ -38,9 +38,9 @@ export const creatablePrimaryRoleHintRowClassName = cn(
   "flex items-center justify-between border-b border-solid border-semantic-border-layout px-4 py-2"
 )
 
-/** Tone / CreatableMultiSelect: inner hint row (place inside a full-bleed wrapper with `-mx-4` + `border-b` on the panel). */
+/** Tone / CreatableMultiSelect: inner hint row (place inside a full-bleed wrapper with `-mx-4` + `border-b` on the panel). Matches Roles' row dimensions for visual parity. */
 export const creatableToneHintRowClassName = cn(
-  "flex min-h-[45px] shrink-0 items-center justify-between gap-2.5 px-4 py-2.5"
+  "flex shrink-0 items-center justify-between gap-2 px-4 py-2"
 )
 
 export interface CreatableSelectOption {
