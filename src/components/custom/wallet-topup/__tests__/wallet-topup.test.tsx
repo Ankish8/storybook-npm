@@ -53,7 +53,7 @@ describe("WalletTopup", () => {
     expect(input).toBeInTheDocument();
     expect(input).toHaveAttribute("type", "text");
     expect(input).toHaveAttribute("inputmode", "decimal");
-    expect(input).toHaveAttribute("pattern", "[0-9.]*");
+    expect(input).toHaveAttribute("pattern", "[0-9.,]*");
   });
 
   it("renders voucher link by default", () => {
@@ -156,6 +156,22 @@ describe("WalletTopup", () => {
     expect(onCustomAmountChange).toHaveBeenCalledWith("99.50");
     expect(input).toHaveValue("99.50");
     expect(screen.getByText("Recharge amount")).toBeInTheDocument();
+    expect(screen.getByText("₹99.50")).toBeInTheDocument();
+  });
+
+  it("normalizes comma decimal separator to a dot in the custom amount input", () => {
+    const onCustomAmountChange = vi.fn();
+    render(
+      <WalletTopup
+        onCustomAmountChange={onCustomAmountChange}
+        taxAmount={18}
+      />
+    );
+
+    const input = screen.getByPlaceholderText("Enter amount");
+    fireEvent.change(input, { target: { value: "99,50" } });
+    expect(onCustomAmountChange).toHaveBeenCalledWith("99.50");
+    expect(input).toHaveValue("99.50");
     expect(screen.getByText("₹99.50")).toBeInTheDocument();
   });
 

@@ -30,12 +30,20 @@ function formatCurrency(amount: number, symbol: string = "₹"): string {
 }
 
 /**
- * Allow non-negative currency-style input: digits, optional one ".", up to 2 fraction digits.
- * Permits intermediate states like "10." while typing.
+ * Allow non-negative currency-style input: digits, optional one decimal separator
+ * ("." or "," but not both), up to 2 fraction digits.
+ * Permits intermediate states like "10." or "10," while typing.
  */
 function isCustomAmountAllowed(value: string): boolean {
   if (value === "") return true;
-  const parts = value.split(".");
+  const hasDot = value.includes(".");
+  const hasComma = value.includes(",");
+  if (hasDot && hasComma) return false;
+  const sep = hasDot ? "." : hasComma ? "," : null;
+  if (!sep) {
+    return /^\d+$/.test(value);
+  }
+  const parts = value.split(sep);
   if (parts.length > 2) return false;
   if (parts.some((p) => p !== "" && !/^\d+$/.test(p))) return false;
   if (parts[1] !== undefined && parts[1].length > 2) return false;
@@ -44,8 +52,9 @@ function isCustomAmountAllowed(value: string): boolean {
 
 function parseCustomAmount(value: string): number | null {
   if (!value || !isCustomAmountAllowed(value)) return null;
-  if (value === "." || value.endsWith(".")) return null;
-  const parsed = Number(value);
+  const withDot = value.replace(",", ".");
+  if (withDot === "." || withDot.endsWith(".")) return null;
+  const parsed = Number(withDot);
   if (!Number.isFinite(parsed) || parsed < 0) return null;
   return parsed;
 }
@@ -207,9 +216,13 @@ export const WalletTopup = React.forwardRef(
     const handleCustomAmountChange = (
       e: React.ChangeEvent<HTMLInputElement>
     ) => {
-      const value = e.target.value;
+      let value = e.target.value;
       if (!isCustomAmountAllowed(value)) {
         return;
+      }
+      // Normalize locale decimal comma to "." for consistent display and parsing.
+      if (value.includes(",") && !value.includes(".")) {
+        value = value.replace(",", ".");
       }
       if (!isCustomControlled) {
         setInternalCustom(value);
@@ -231,6 +244,7 @@ export const WalletTopup = React.forwardRef(
         e.key.length === 1 &&
         !/^\d$/.test(e.key) &&
         e.key !== "." &&
+        e.key !== "," &&
         !e.metaKey &&
         !e.ctrlKey
       ) {
@@ -411,7 +425,7 @@ export const WalletTopup = React.forwardRef(
                   <Input
                     type="text"
                     inputMode="decimal"
-                    pattern="[0-9.]*"
+                    pattern="[0-9.,]*"
                     placeholder={customAmountPlaceholder}
                     value={customValue}
                     onChange={handleCustomAmountChange}
