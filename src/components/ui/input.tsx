@@ -5,6 +5,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const blockedNumberKeys = new Set(["e", "E"]);
+const decimalSeparatorKeys = new Set([".", ","]);
 
 /**
  * Input variants for different visual states
@@ -53,6 +54,15 @@ export interface InputProps
    * Default `true` so amount-like fields cannot accept exponent values such as `2e22`.
    */
   preventNumberExponent?: boolean;
+  /**
+   * When `type="number"`, whether decimal separators (`.` / `,`) are allowed.
+   * Default `true`. Set `false` for whole-number-only fields; uses `inputMode="numeric"` on supported agents.
+   */
+  decimal?: boolean;
+  /**
+   * Same as `decimal` for whole-number-only fields. If both are set, this wins.
+   */
+  allowDecimal?: boolean;
 }
 
 const Input = React.forwardRef(
@@ -64,19 +74,25 @@ const Input = React.forwardRef(
       showCheckIcon,
       hideNumberSpinners = true,
       preventNumberExponent = true,
+      decimal = true,
+      allowDecimal,
       onFocus,
       onBlur,
       onWheel,
       onKeyDown,
       onPaste,
       onChange,
+      step,
       ...props
     }: InputProps,
     ref: React.Ref<HTMLInputElement>
   ) => {
     const [isFocused, setIsFocused] = React.useState(false);
+    const decimalAllowed = allowDecimal ?? decimal;
     const shouldPreventNumberExponent =
       type === "number" && preventNumberExponent;
+    const shouldBlockDecimals =
+      type === "number" && !decimalAllowed;
 
     const inputEl = (
       <input
@@ -89,6 +105,16 @@ const Input = React.forwardRef(
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
         ref={ref}
+        inputMode={
+          type === "number"
+            ? decimalAllowed
+              ? "decimal"
+              : "numeric"
+            : undefined
+        }
+        step={
+          type === "number" && !decimalAllowed ? (step ?? 1) : step
+        }
         onFocus={(e) => {
           setIsFocused(true);
           onFocus?.(e);
@@ -109,19 +135,29 @@ const Input = React.forwardRef(
           if (shouldPreventNumberExponent && blockedNumberKeys.has(e.key)) {
             e.preventDefault();
           }
+          if (
+            shouldBlockDecimals &&
+            decimalSeparatorKeys.has(e.key)
+          ) {
+            e.preventDefault();
+          }
           onKeyDown?.(e);
         }}
         onPaste={(e) => {
-          if (
-            shouldPreventNumberExponent &&
-            /[eE]/.test(e.clipboardData.getData("text"))
-          ) {
+          const text = e.clipboardData.getData("text");
+          if (shouldPreventNumberExponent && /[eE]/.test(text)) {
+            e.preventDefault();
+          }
+          if (shouldBlockDecimals && /[.,]/.test(text)) {
             e.preventDefault();
           }
           onPaste?.(e);
         }}
         onChange={(e) => {
           if (shouldPreventNumberExponent && /[eE]/.test(e.target.value)) {
+            return;
+          }
+          if (shouldBlockDecimals && /[.,]/.test(e.target.value)) {
             return;
           }
           onChange?.(e);
