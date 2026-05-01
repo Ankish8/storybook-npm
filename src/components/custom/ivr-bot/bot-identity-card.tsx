@@ -119,7 +119,6 @@ function Field({
   required,
   helperText,
   errorText,
-  characterCount,
   labelTooltip,
   children,
 }: {
@@ -128,8 +127,6 @@ function Field({
   helperText?: string;
   /** Validation error; takes precedence over helperText in the helper row. */
   errorText?: string;
-  /** e.g. { current: 0, max: 50 } to show "0/50" below right */
-  characterCount?: { current: number; max: number };
   /** Info icon beside label; hover shows tooltip (same pattern as Functions card). */
   labelTooltip?: string;
   children: React.ReactNode;
@@ -164,7 +161,7 @@ function Field({
         <label className={formFieldLabelClassName}>{labelBody}</label>
       )}
       {children}
-      {(errorText || helperText || characterCount) && (
+      {(errorText || helperText) && (
         <div className="flex items-center justify-between gap-2">
           {errorText ? (
             <div className="flex items-center gap-1.5 text-xs text-semantic-error-primary min-w-0">
@@ -176,14 +173,7 @@ function Field({
               <Info className="size-3.5 shrink-0" />
               <p className="m-0">{helperText}</p>
             </div>
-          ) : (
-            <span />
-          )}
-          {characterCount != null && (
-            <span className="text-sm text-semantic-text-muted shrink-0">
-              {characterCount.current}/{characterCount.max}
-            </span>
-          )}
+          ) : null}
         </div>
       )}
     </div>
@@ -204,6 +194,7 @@ function StyledInput({
   maxLength,
   invalid,
   className,
+  characterCount,
 }: {
   placeholder?: string;
   value?: string;
@@ -213,31 +204,46 @@ function StyledInput({
   maxLength?: number;
   invalid?: boolean;
   className?: string;
+  characterCount?: { current: number; max: number };
 }) {
+  const [isFocused, setIsFocused] = React.useState(false);
+  const showCount = characterCount != null && isFocused;
   return (
-    <input
-      type="text"
-      value={value ?? ""}
-      onChange={(e) => {
-        const v = e.target.value;
-        onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
-      }}
-      onBlur={onBlur}
-      placeholder={placeholder}
-      disabled={disabled}
-      maxLength={maxLength}
-      aria-invalid={invalid || undefined}
-      className={cn(
-        "w-full h-[42px] px-4 text-base rounded border border-solid",
-        "bg-semantic-bg-primary text-semantic-text-primary placeholder:text-semantic-text-muted",
-        "outline-none",
-        invalid
-          ? "border-semantic-error-primary/50 hover:border-semantic-error-primary/60 focus:border-semantic-error-primary/70 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
-          : "border-semantic-border-input hover:border-semantic-border-input-focus focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        disabled && "opacity-50 cursor-not-allowed",
-        className
+    <div className="relative w-full">
+      <input
+        type="text"
+        value={value ?? ""}
+        onChange={(e) => {
+          const v = e.target.value;
+          onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
+        }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          setIsFocused(false);
+          onBlur?.();
+        }}
+        placeholder={placeholder}
+        disabled={disabled}
+        maxLength={maxLength}
+        aria-invalid={invalid || undefined}
+        className={cn(
+          "w-full h-[42px] px-4 text-base rounded border border-solid",
+          "bg-semantic-bg-primary text-semantic-text-primary placeholder:text-semantic-text-muted",
+          "outline-none",
+          invalid
+            ? "border-semantic-error-primary/50 hover:border-semantic-error-primary/60 focus:border-semantic-error-primary/70 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
+            : "border-semantic-border-input hover:border-semantic-border-input-focus focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+          disabled && "opacity-50 cursor-not-allowed",
+          showCount && "pr-16",
+          className
+        )}
+      />
+      {showCount && (
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted">
+          {characterCount.current}/{characterCount.max}
+        </span>
       )}
-    />
+    </div>
   );
 }
 
@@ -334,10 +340,6 @@ const BotIdentityCard = React.forwardRef(
       if (trimmed !== cur) onChange({ botName: trimmed });
     }, [data.botName, onChange]);
 
-    const primaryRoleDisplayLabel =
-      roleOptions.find((o) => o.value === data.primaryRole)?.label ??
-      (data.primaryRole ?? "");
-
     const handlePrimaryRoleValueChange = React.useCallback(
       (v: string) => {
         setPrimaryRoleError(null);
@@ -379,10 +381,6 @@ const BotIdentityCard = React.forwardRef(
               label="Bot Name & Identity"
               labelTooltip={botNameIdentityTooltip}
               errorText={botNameError ?? undefined}
-              characterCount={{
-                current: botIdentityEffectiveValueLength(data.botName ?? ""),
-                max: BOT_NAME_MAX_LENGTH,
-              }}
             >
               <StyledInput
                 placeholder="e.g., Rhea from XYZ"
@@ -391,6 +389,11 @@ const BotIdentityCard = React.forwardRef(
                 onBlur={handleBotNameBlur}
                 disabled={disabled}
                 invalid={Boolean(botNameError)}
+                maxLength={BOT_NAME_MAX_LENGTH}
+                characterCount={{
+                  current: botIdentityEffectiveValueLength(data.botName ?? ""),
+                  max: BOT_NAME_MAX_LENGTH,
+                }}
               />
             </Field>
 
@@ -398,10 +401,6 @@ const BotIdentityCard = React.forwardRef(
               label="Primary Role"
               labelTooltip={primaryRoleTooltip}
               errorText={primaryRoleError ?? undefined}
-              characterCount={{
-                current: botIdentityEffectiveValueLength(primaryRoleDisplayLabel),
-                max: PRIMARY_ROLE_MAX_LENGTH,
-              }}
             >
               <CreatableSelect
                 value={data.primaryRole ?? ""}
@@ -410,6 +409,7 @@ const BotIdentityCard = React.forwardRef(
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
                 disabled={disabled}
+                maxLength={PRIMARY_ROLE_MAX_LENGTH}
                 sanitizeInput={filterBotIdentityText}
                 normalizeComboboxInput={(sanitized) =>
                   normalizeFilteredBotIdentityTyping(

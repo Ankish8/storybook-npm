@@ -72,7 +72,7 @@ describe("CreatableMultiSelect", () => {
     expect(screen.getByText("Select at least one")).toBeInTheDocument();
   });
 
-  it("shows dropdown hint, max selections, and Enter affordance when typing a custom value", async () => {
+  it("shows max-selections when presets match and the Create row plus Enter affordance when typing a non-matching value", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(
@@ -87,12 +87,14 @@ describe("CreatableMultiSelect", () => {
     );
     await user.click(screen.getByRole("combobox"));
     const input = screen.getByRole("combobox");
+    expect(screen.getByText("Max selections allowed: 5")).toBeInTheDocument();
     await user.type(input, "angry");
     expect(
-      screen.getByPlaceholderText("Type to create a custom tone")
+      screen.getByText("Type to create a custom tone")
     ).toBeInTheDocument();
-    expect(screen.getByText("Max selections allowed: 5")).toBeInTheDocument();
+    expect(screen.queryByText("Max selections allowed: 5")).not.toBeInTheDocument();
     expect(screen.getByText("Enter ↵")).toBeInTheDocument();
+    expect(screen.getByText('Create “angry”')).toBeInTheDocument();
     await user.keyboard("{Enter}");
     expect(onChange).toHaveBeenCalledWith(["angry"]);
   });

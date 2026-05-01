@@ -67,7 +67,7 @@ export interface CreatableSelectProps
   creatableHint?: string
   /** Whether the select is disabled */
   disabled?: boolean
-  /** Max character length for the value (enforced when open and when creating) */
+  /** Max character length for the value (enforced when open and when creating). When set, an in-field `current/max` counter renders before the chevron while the dropdown is open. */
   maxLength?: number
   /**
    * When set, combobox input is transformed (e.g. strip invalid characters).
@@ -281,6 +281,11 @@ const CreatableSelect = React.forwardRef(
               role="combobox"
               aria-autocomplete="list"
             />
+            {maxLength != null ? (
+              <span className="mr-2 shrink-0 text-sm text-semantic-text-muted">
+                {search.length}/{maxLength}
+              </span>
+            ) : null}
             <ChevronDown className="size-4 text-semantic-text-muted opacity-70 shrink-0 rotate-180 transition-transform" />
           </div>
         ) : (
