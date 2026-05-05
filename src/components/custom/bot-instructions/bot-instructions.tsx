@@ -143,7 +143,7 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
               </div>
             ))
           ) : (
-            <p className="m-0 text-sm text-semantic-text-muted">
+            <p className="m-0 w-full text-center text-sm text-semantic-text-muted">
               No instructions added yet. Click &quot;+ Instructions&quot; to add
               one.
             </p>

@@ -36,11 +36,14 @@ import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/
 | Prop | Default Value |
 |---|---|
 | \`acceptedFormats\` | \`".doc,.docx,.pdf,.csv,.xls,.xlsx,.txt"\` |
-| \`formatDescription\` | *unset* — line is \`Max file size {n} MB ({allowedFileTypesDescription})\` |
+| \`formatDescription\` | *unset* — line is \`Max file size {n} MB · Up to {maxUpload} files ({allowedFileTypesDescription})\` |
 | \`allowedFileTypesDescription\` | \`"Supported format: .doc, .docx, .pdf, .csv, .xls, .xlsx, .txt"\` |
 | \`disallowedFileTypeToastTitle\` | \`"Unsupported file type"\` |
 | \`disallowedFileTypeToastDescription\` | \`"Only files in the Supported formats can be uploaded."\` |
 | \`maxFileSizeMB\` | \`100\` |
+| \`maxUpload\` | \`5\` |
+| \`maxUploadAtCapacityMessage\` | *unset* — derived from \`maxUpload\` |
+| \`maxUploadOverflowMessage\` | *unset* — e.g. \`Max {max} files allowed…\`; placeholders \`{count}\`, \`{max}\` |
 | \`multiple\` | \`true\` |
 | \`title\` | \`"File Upload"\` |
 | \`uploadButtonLabel\` | \`"Upload from Device"\` |
@@ -49,7 +52,7 @@ import type { FileUploadModalProps, UploadProgressHandlers } from "@/components/
 | \`cancelLabel\` | \`"Cancel"\` |
 | \`loading\` | \`false\` |
 
-If no value is provided for \`acceptedFormats\`, all supported document types are accepted. If no \`maxFileSizeMB\` is provided, files up to 100 MB are allowed.
+If no value is provided for \`acceptedFormats\`, all supported document types are accepted. If no \`maxFileSizeMB\` is provided, files up to 100 MB are allowed. If no \`maxUpload\` is provided, up to 5 files may be queued at once.
 
 ### Design Tokens
 
@@ -69,6 +72,7 @@ If no value is provided for \`acceptedFormats\`, all supported document types ar
     open: { control: false },
     title: { control: "text" },
     maxFileSizeMB: { control: "number" },
+    maxUpload: { control: "number" },
     multiple: { control: "boolean" },
     loading: { control: "boolean" },
   },

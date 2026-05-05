@@ -22,6 +22,7 @@ const DEFAULT_ALLOWED_FILE_TYPES_DESC =
 const DEFAULT_DISALLOWED_TYPE_TOAST_TITLE = "Unsupported file type";
 const DEFAULT_DISALLOWED_TYPE_TOAST_DESCRIPTION =
   "Only files in the supported formats can be uploaded.";
+const DEFAULT_MAX_UPLOAD_TOAST_TITLE = "Too many files";
 
 function generateId() {
   return Math.random().toString(36).slice(2, 9);
@@ -92,6 +93,9 @@ const FileUploadModal = React.forwardRef(
       disallowedFileTypeToastTitle = DEFAULT_DISALLOWED_TYPE_TOAST_TITLE,
       disallowedFileTypeToastDescription = DEFAULT_DISALLOWED_TYPE_TOAST_DESCRIPTION,
       maxFileSizeMB = 100,
+      maxUpload = 5,
+      maxUploadAtCapacityMessage,
+      maxUploadOverflowMessage,
       multiple = true,
       title = "File Upload",
       uploadButtonLabel = "Upload from Device",
@@ -105,15 +109,77 @@ const FileUploadModal = React.forwardRef(
     ref: React.Ref<HTMLDivElement>
   ) => {
     const [items, setItems] = React.useState<UploadItem[]>([]);
+    const [maxUploadValidationMessage, setMaxUploadValidationMessage] =
+      React.useState<string | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
+    const maxUploadErrorId = React.useId();
     const fakeProgress = useFakeProgress();
+    const maxUploadToastDismissRef = React.useRef<(() => void) | null>(null);
+    const prevItemsLengthRef = React.useRef(0);
+
+    const dismissMaxUploadToast = React.useCallback(() => {
+      maxUploadToastDismissRef.current?.();
+      maxUploadToastDismissRef.current = null;
+    }, []);
+
+    React.useEffect(() => {
+      if (items.length < prevItemsLengthRef.current) {
+        dismissMaxUploadToast();
+        setMaxUploadValidationMessage(null);
+      }
+      prevItemsLengthRef.current = items.length;
+    }, [items.length, dismissMaxUploadToast]);
+
+    React.useEffect(() => {
+      if (!open) {
+        setMaxUploadValidationMessage(null);
+      }
+    }, [open]);
+
+    const showMaxUploadToast = React.useCallback(
+      (description: string) => {
+        dismissMaxUploadToast();
+        const handle = toast.error({
+          title: DEFAULT_MAX_UPLOAD_TOAST_TITLE,
+          description,
+        });
+        maxUploadToastDismissRef.current = handle.dismiss;
+      },
+      [dismissMaxUploadToast]
+    );
 
     const shouldShowSampleDownload =
       showSampleDownload ?? !!onSampleDownload;
 
     const resolvedFormatDescription =
       formatDescription ??
-      `Max file size ${maxFileSizeMB} MB (${allowedFileTypesDescription})`;
+      `Max file size ${maxFileSizeMB} MB · Up to ${maxUpload} files (${allowedFileTypesDescription})`;
+
+    const getAtCapacityCopy = React.useCallback(() => {
+      return (
+        maxUploadAtCapacityMessage ??
+        `You can upload up to ${maxUpload} file${maxUpload === 1 ? "" : "s"}. Remove a file to add another.`
+      );
+    }, [maxUpload, maxUploadAtCapacityMessage]);
+
+    const getOverflowCopy = React.useCallback(
+      (rejected: number) => {
+        const maxPhrase = `${maxUpload} file${maxUpload === 1 ? "" : "s"}`;
+        const remainingPhrase = `${rejected} file${rejected === 1 ? "" : "s"}`;
+        const verb = rejected === 1 ? "was" : "were";
+        const built = `Max ${maxPhrase} allowed. Remaining ${remainingPhrase} ${verb} not added.`;
+        if (!maxUploadOverflowMessage) return built;
+        let out = maxUploadOverflowMessage;
+        if (out.includes("{max}")) {
+          out = out.replaceAll("{max}", String(maxUpload));
+        }
+        if (out.includes("{count}")) {
+          out = out.replaceAll("{count}", String(rejected));
+        }
+        return out;
+      },
+      [maxUpload, maxUploadOverflowMessage]
+    );
 
     const addFiles = React.useCallback(
       (fileList: FileList | null) => {
@@ -141,28 +207,66 @@ const FileUploadModal = React.forwardRef(
           isFileExtensionAllowed(file.name, acceptedFormats)
         );
 
-        allowed.forEach((file) => {
-          if (file.size > maxFileSizeMB * 1024 * 1024) {
+        let needsAtCapacityToast = false;
+        let overflowRejected = 0;
+        const uploadJobs: { id: string; file: File }[] = [];
+        const idsToStartFakeProgress: string[] = [];
+
+        setItems((prev) => {
+          const remainingSlots = Math.max(0, maxUpload - prev.length);
+
+          if (allowed.length > 0 && remainingSlots <= 0) {
+            needsAtCapacityToast = true;
+            return prev;
+          }
+
+          const allowedToQueue = allowed.slice(0, remainingSlots);
+          if (allowed.length > allowedToQueue.length) {
+            overflowRejected = allowed.length - allowedToQueue.length;
+          }
+
+          const additions: UploadItem[] = [];
+
+          for (const file of allowedToQueue) {
             const id = generateId();
-            setItems((prev) => [
-              ...prev,
-              {
+            if (file.size > maxFileSizeMB * 1024 * 1024) {
+              additions.push({
                 id,
                 file,
                 progress: 0,
                 status: "error",
                 errorMessage: `File exceeds ${maxFileSizeMB} MB limit`,
-              },
-            ]);
-            return;
+              });
+            } else {
+              additions.push({
+                id,
+                file,
+                progress: 0,
+                status: "uploading",
+              });
+              uploadJobs.push({ id, file });
+              if (!onUpload) {
+                idsToStartFakeProgress.push(id);
+              }
+            }
           }
 
-          const id = generateId();
-          setItems((prev) => [
-            ...prev,
-            { id, file, progress: 0, status: "uploading" },
-          ]);
+          return [...prev, ...additions];
+        });
 
+        if (needsAtCapacityToast) {
+          const msg = getAtCapacityCopy();
+          setMaxUploadValidationMessage(msg);
+          showMaxUploadToast(msg);
+        } else if (overflowRejected > 0) {
+          const msg = getOverflowCopy(overflowRejected);
+          setMaxUploadValidationMessage(msg);
+          showMaxUploadToast(msg);
+        } else if (allowed.length > 0) {
+          setMaxUploadValidationMessage(null);
+        }
+
+        uploadJobs.forEach(({ id, file }) => {
           if (onUpload) {
             onUpload(file, {
               onProgress: (progress) => {
@@ -214,10 +318,12 @@ const FileUploadModal = React.forwardRef(
                 )
               );
             });
-          } else {
-            fakeProgress.start(id, setItems);
           }
         });
+
+        idsToStartFakeProgress.forEach((id) =>
+          fakeProgress.start(id, setItems)
+        );
       },
       [
         onUpload,
@@ -226,6 +332,10 @@ const FileUploadModal = React.forwardRef(
         acceptedFormats,
         disallowedFileTypeToastTitle,
         disallowedFileTypeToastDescription,
+        maxUpload,
+        showMaxUploadToast,
+        getAtCapacityCopy,
+        getOverflowCopy,
       ]
     );
 
@@ -235,6 +345,8 @@ const FileUploadModal = React.forwardRef(
     };
 
     const handleClose = () => {
+      dismissMaxUploadToast();
+      setMaxUploadValidationMessage(null);
       fakeProgress.cancelAll();
       setItems([]);
       onCancel?.();
@@ -246,6 +358,8 @@ const FileUploadModal = React.forwardRef(
         .filter((i) => i.status === "done")
         .map((i) => i.file);
       onSave?.(completedFiles);
+      dismissMaxUploadToast();
+      setMaxUploadValidationMessage(null);
       fakeProgress.cancelAll();
       setItems([]);
       onOpenChange(false);
@@ -297,43 +411,66 @@ const FileUploadModal = React.forwardRef(
               </button>
             )}
 
-            {/* Drop zone */}
-            <div
-              className="w-full min-w-0 max-w-full border border-dashed border-semantic-border-layout bg-semantic-bg-ui rounded p-4"
-              onDrop={(e) => {
-                e.preventDefault();
-                addFiles(e.dataTransfer.files);
-              }}
-              onDragOver={(e) => e.preventDefault()}
-            >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 min-w-0">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-[42px] px-4 rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
-                >
-                  {uploadButtonLabel}
-                </button>
-                <div className="flex flex-col gap-1 min-w-0 flex-1">
-                  <p className="m-0 text-sm text-semantic-text-secondary tracking-[0.035px] break-words">
-                    {dropDescription}
-                  </p>
-                  <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px] break-words">
-                    {resolvedFormatDescription}
-                  </p>
-                </div>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple={multiple}
-                accept={acceptedFormats}
-                className="hidden"
-                onChange={(e) => {
-                  addFiles(e.target.files);
-                  e.target.value = "";
+            {/* Drop zone — validation reads like a form field: red border + message below the box */}
+            <div className="flex flex-col gap-1.5 w-full min-w-0 max-w-full">
+              <div
+                className={cn(
+                  "w-full min-w-0 max-w-full border bg-semantic-bg-ui rounded p-4",
+                  maxUploadValidationMessage
+                    ? "border-solid border-semantic-error-primary"
+                    : "border-dashed border-semantic-border-layout"
+                )}
+                aria-invalid={maxUploadValidationMessage ? true : undefined}
+                aria-describedby={
+                  maxUploadValidationMessage ? maxUploadErrorId : undefined
+                }
+                onDrop={(e) => {
+                  e.preventDefault();
+                  addFiles(e.dataTransfer.files);
                 }}
-              />
+                onDragOver={(e) => e.preventDefault()}
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="h-[42px] px-4 rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary text-base font-semibold text-semantic-text-secondary shrink-0 hover:bg-semantic-bg-hover transition-colors w-full sm:w-auto"
+                  >
+                    {uploadButtonLabel}
+                  </button>
+                  <div className="flex flex-col gap-1 min-w-0 flex-1">
+                    <p className="m-0 text-sm text-semantic-text-secondary tracking-[0.035px] break-words">
+                      {dropDescription}
+                    </p>
+                    <p className="m-0 text-xs text-semantic-text-muted tracking-[0.048px] break-words">
+                      {resolvedFormatDescription}
+                    </p>
+                  </div>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple={multiple}
+                  accept={acceptedFormats}
+                  className="hidden"
+                  aria-describedby={
+                    maxUploadValidationMessage ? maxUploadErrorId : undefined
+                  }
+                  onChange={(e) => {
+                    addFiles(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              {maxUploadValidationMessage ? (
+                <p
+                  id={maxUploadErrorId}
+                  role="alert"
+                  className="m-0 text-sm font-normal text-semantic-error-primary tracking-[0.035px] leading-5 break-words"
+                >
+                  {maxUploadValidationMessage}
+                </p>
+              ) : null}
             </div>
 
             {/* Upload item list */}

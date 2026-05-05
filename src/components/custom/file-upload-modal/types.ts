@@ -44,6 +44,18 @@ export interface FileUploadModalProps
    */
   disallowedFileTypeToastDescription?: string;
   maxFileSizeMB?: number;
+  /** Maximum number of files allowed in the list at once. Defaults to 5. */
+  maxUpload?: number;
+  /**
+   * Shown inline (and in the max-upload toast) when the list already has {@link maxUpload} files and the user tries to add more.
+   * Defaults to copy derived from `maxUpload`.
+   */
+  maxUploadAtCapacityMessage?: string;
+  /**
+   * Shown inline (and in the toast) when a selection exceeds remaining slots.
+   * `{count}` → rejected count; `{max}` → {@link maxUpload}. Omit placeholders to use the string as-is.
+   */
+  maxUploadOverflowMessage?: string;
   multiple?: boolean;
   title?: string;
   uploadButtonLabel?: string;

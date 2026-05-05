@@ -5,17 +5,28 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { FileUploadModal } from "../file-upload-modal";
 
-const { toastError } = vi.hoisted(() => ({
+const { toastError, toastDismiss } = vi.hoisted(() => ({
   toastError: vi.fn(),
+  toastDismiss: vi.fn(),
 }));
 
 vi.mock("../../../ui/toast", () => ({
-  toast: Object.assign(vi.fn(), { error: toastError }),
+  toast: Object.assign(vi.fn(), {
+    error: (props: unknown) => {
+      toastError(props);
+      return {
+        id: "mock-toast",
+        dismiss: toastDismiss,
+        update: vi.fn(),
+      };
+    },
+  }),
 }));
 
 describe("FileUploadModal", () => {
   beforeEach(() => {
     toastError.mockClear();
+    toastDismiss.mockClear();
   });
 
   it("renders title and buttons when open", () => {
@@ -214,8 +225,129 @@ describe("FileUploadModal", () => {
       />
     );
     expect(
-      screen.getByText("Max file size 50 MB (Supported: PDF only)")
+      screen.getByText("Max file size 50 MB · Up to 5 files (Supported: PDF only)")
     ).toBeInTheDocument();
+  });
+
+  it("respects maxUpload and shows toast when at capacity", async () => {
+    const user = userEvent.setup();
+    const onUpload = vi.fn().mockResolvedValue(undefined);
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={onUpload}
+        maxUpload={2}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const pdf = (name: string) =>
+      new File(["x"], name, { type: "application/pdf" });
+    await user.upload(input, [pdf("one.pdf"), pdf("two.pdf")]);
+    await waitFor(() => expect(onUpload).toHaveBeenCalledTimes(2));
+
+    toastError.mockClear();
+    fireEvent.change(input, { target: { files: [pdf("three.pdf")] } });
+    expect(toastError).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Too many files",
+      description:
+        "You can upload up to 2 files. Remove a file to add another.",
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "You can upload up to 2 files. Remove a file to add another."
+    );
+    expect(onUpload).toHaveBeenCalledTimes(2);
+  });
+
+  it("queues only the first maxUpload files when six are selected at once", async () => {
+    render(
+      <FileUploadModal open={true} onOpenChange={vi.fn()} maxUpload={5} />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const files = Array.from({ length: 6 }, (_, i) =>
+      new File(["x"], `batch-${i + 1}.pdf`, { type: "application/pdf" })
+    );
+    fireEvent.change(input, { target: { files } });
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Too many files",
+      description: "Max 5 files allowed. Remaining 1 file was not added.",
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Max 5 files allowed. Remaining 1 file was not added."
+    );
+    // Filenames stay on `title` while rows show "Uploading..."
+    expect(document.querySelector('[title="batch-5.pdf"]')).toBeTruthy();
+    expect(document.querySelector('[title="batch-6.pdf"]')).toBeNull();
+  });
+
+  it("dismisses max-upload toast when user removes a file", async () => {
+    const user = userEvent.setup();
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={vi.fn().mockResolvedValue(undefined)}
+        maxUpload={2}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const pdf = (name: string) =>
+      new File(["x"], name, { type: "application/pdf" });
+    await user.upload(input, [pdf("one.pdf"), pdf("two.pdf")]);
+    await waitFor(() =>
+      expect(screen.getAllByRole("button", { name: "Remove file" })).toHaveLength(
+        2
+      )
+    );
+
+    toastDismiss.mockClear();
+    fireEvent.change(input, { target: { files: [pdf("three.pdf")] } });
+    expect(toastError).toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+
+    toastDismiss.mockClear();
+    await user.click(screen.getAllByRole("button", { name: "Remove file" })[0]);
+    expect(toastDismiss).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("truncates a batch to remaining slots and shows toast", async () => {
+    const user = userEvent.setup();
+    const onUpload = vi.fn().mockResolvedValue(undefined);
+    render(
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onUpload={onUpload}
+        maxUpload={3}
+      />
+    );
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+    const pdf = (name: string) =>
+      new File(["x"], name, { type: "application/pdf" });
+    await user.upload(input, pdf("one.pdf"));
+    await waitFor(() => expect(onUpload).toHaveBeenCalledTimes(1));
+    toastError.mockClear();
+
+    fireEvent.change(input, {
+      target: { files: [pdf("two.pdf"), pdf("three.pdf"), pdf("four.pdf")] },
+    });
+    expect(toastError).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith({
+      title: "Too many files",
+      description:
+        "Max 3 files allowed. Remaining 1 file was not added.",
+    });
+    await waitFor(() => expect(onUpload).toHaveBeenCalledTimes(3));
   });
 
   it("sets title on file name row for full name on hover", async () => {

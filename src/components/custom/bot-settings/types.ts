@@ -3,8 +3,9 @@ import type { MultiSelectOptionInput } from "../../ui/multi-select";
 import type { BotHumanHandoverProps } from "../bot-human-handover/types";
 
 /**
- * Settings card for bot configuration: fluid width (`min-w-0` / `max-w-full`), responsive padding,
- * and `overflow-visible` so the WhatsApp multi-select menu is not clipped.
+ * Settings card for bot configuration: fluid width (`min-w-0` / `max-w-full`), accordion shell
+ * aligned with Bot Follow-ups, and `overflow-visible` on the card so the WhatsApp multi-select
+ * menu is not clipped.
  */
 export interface BotSettingsProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
@@ -70,7 +71,8 @@ export interface BotSettingsProps
   /** Tooltip for the info icon next to "Connect WhatsApp" */
   infoTooltip?: string;
   /**
-   * @deprecated The Settings block is no longer collapsible; this value is ignored.
+   * Whether the Settings accordion starts expanded (uncontrolled).
+   * @default true
    */
   defaultOpen?: boolean;
   /** Disables the WhatsApp multi-select */

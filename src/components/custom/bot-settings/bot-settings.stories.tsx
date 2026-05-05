@@ -14,7 +14,7 @@ const meta: Meta<typeof BotSettings> = {
     layout: "padded",
     docs: {
       description: {
-        component: `**Settings** card (**Connect WhatsApp** + **Human Handover**): matches [Figma — Settings](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42915-85126). Rounded bordered container, header row with chevron, multi-select (tags, checkbox rows, secondary status, searchable list), then a divider and \`BotHumanHandover\` (title + description left, switch right). Pass \`humanHandover={false}\` to hide the handover block.
+        component: `**Settings** card (**Connect WhatsApp** + **Human Handover**): matches [Figma — Settings](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42915-85126). Same accordion shell as **Bot Follow-ups** (\`Accordion\` + bordered card): collapsible header with chevron, then multi-select (tags, checkbox rows, secondary status, searchable list), divider, and \`BotHumanHandover\` (title + description left, switch right). Pass \`humanHandover={false}\` to hide the handover block. Use \`defaultOpen={false}\` to start collapsed.
 
 **Story variants**
 
@@ -75,7 +75,7 @@ All WhatsApp multi-select behaviour uses the \`whatsapp*\` prefix. The underlyin
     infoTooltip: { control: "text" },
     defaultOpen: {
       control: "boolean",
-      description: "Deprecated — ignored; section is always visible.",
+      description: "Whether the Settings accordion starts expanded (uncontrolled). Default true.",
     },
     disabled: { control: "boolean" },
     className: { control: "text" },

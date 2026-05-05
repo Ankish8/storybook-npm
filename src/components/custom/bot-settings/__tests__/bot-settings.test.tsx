@@ -27,7 +27,7 @@ describe("BotSettings", () => {
     expect(screen.getByText("Settings")).toBeInTheDocument();
   });
 
-  it("always shows Connect WhatsApp and the multi-select (no accordion)", () => {
+  it("shows Connect WhatsApp and the multi-select when the accordion is open", () => {
     render(
       <BotSettings
         whatsappOptions={sampleOptions}
@@ -38,17 +38,20 @@ describe("BotSettings", () => {
 
     expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
     expect(screen.getByText("+91 9876543210")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Settings" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Settings" })
+    ).toBeInTheDocument();
   });
 
-  it("uses a card shell on the root (border, radius, background)", () => {
+  it("uses a card shell (border, radius, background) on the bordered wrapper", () => {
     const { container } = render(<BotSettings whatsappOptions={[]} />);
     const root = container.firstChild as HTMLElement;
-    expect(root).toHaveClass("rounded-lg");
-    expect(root).toHaveClass("border");
-    expect(root).toHaveClass("border-solid");
-    expect(root).toHaveClass("border-semantic-border-layout");
-    expect(root).toHaveClass("bg-semantic-bg-primary");
+    const card = root.firstChild as HTMLElement;
+    expect(card).toHaveClass("rounded-lg");
+    expect(card).toHaveClass("border");
+    expect(card).toHaveClass("border-solid");
+    expect(card).toHaveClass("border-semantic-border-layout");
+    expect(card).toHaveClass("bg-semantic-bg-primary");
   });
 
   it("renders Human Handover below Connect WhatsApp by default", () => {
@@ -78,7 +81,7 @@ describe("BotSettings", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("ignores defaultOpen (section is always visible)", () => {
+  it("starts collapsed when defaultOpen is false", () => {
     render(
       <BotSettings
         defaultOpen={false}
@@ -86,7 +89,10 @@ describe("BotSettings", () => {
         whatsappValue={[]}
       />
     );
-    expect(screen.getByText("Connect WhatsApp")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Settings" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    );
   });
 
   it("renders selected numbers as tags in the multi-select", () => {
