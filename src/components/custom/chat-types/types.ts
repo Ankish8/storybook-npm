@@ -132,6 +132,16 @@ export type ListReplyPayload = {
   }>
 }
 
+/**
+ * Button rendered inside a `template` bubble — quick-reply (sends text response),
+ * url (opens link), or phone (dials number). WhatsApp templates can mix kinds in a
+ * single message.
+ */
+export type ChatBubbleButton =
+  | { kind: "quickReply"; label: string; id?: string }
+  | { kind: "url"; label: string; url: string }
+  | { kind: "phone"; label: string; phone: string }
+
 export type ChatMessage = {
   id: string
   text: string
@@ -176,6 +186,12 @@ export type ChatMessage = {
   contactCard?: ContactPayload
   referral?: ReferralPayload
   listReply?: ListReplyPayload
+  /**
+   * Template-message buttons (quick-reply / url / phone). Only rendered when
+   * `type === "template"`. When present, the delivery footer renders **below**
+   * the button stack to match WhatsApp's template layout.
+   */
+  buttons?: ChatBubbleButton[]
 }
 
 export type Contact = {

@@ -5,7 +5,9 @@ import {
   Check,
   CheckCheck,
   CircleAlert,
+  ExternalLink,
   File,
+  Phone as PhoneIcon,
   Reply,
 } from "lucide-react";
 import {
@@ -32,10 +34,14 @@ import {
 import type {
   ChatBubbleProps,
   ChatBubbleManualProps,
+  ChatBubbleFlatProps,
   DeliveryStatus,
   ReplyToPayload,
 } from "./types";
-import { isChatBubbleMessageProps } from "./types";
+import {
+  isChatBubbleMessageProps,
+  isChatBubbleFlatProps,
+} from "./types";
 
 const maxWidthMap = {
   text: cn("max-w-[65%]"),
@@ -221,6 +227,59 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
   );
 }
 
+function TemplateButton({
+  button,
+}: {
+  button: NonNullable<ChatMessage["buttons"]>[number];
+}) {
+  const Icon =
+    button.kind === "url"
+      ? ExternalLink
+      : button.kind === "phone"
+        ? PhoneIcon
+        : null;
+  const handleClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
+    e.stopPropagation();
+  };
+  const label = (
+    <span className="inline-flex items-center justify-center gap-1.5">
+      {Icon && <Icon className="size-3.5" />}
+      {button.label}
+    </span>
+  );
+  const className = cn(
+    "block w-full text-center text-[14px] font-medium text-semantic-text-link",
+    "border-0 border-t border-solid border-semantic-border-layout",
+    "bg-transparent hover:bg-semantic-bg-hover transition-colors",
+    "py-2.5 cursor-pointer no-underline"
+  );
+  if (button.kind === "url") {
+    return (
+      <a
+        href={button.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        onClick={handleClick}
+      >
+        {label}
+      </a>
+    );
+  }
+  if (button.kind === "phone") {
+    return (
+      <a href={`tel:${button.phone}`} className={className} onClick={handleClick}>
+        {label}
+      </a>
+    );
+  }
+  return (
+    <button type="button" className={className} onClick={handleClick}>
+      {label}
+    </button>
+  );
+}
+
 function computeMessageBubbleLayout(msg: ChatMessage) {
   /**
    * True when the card has a full-bleed block above the text/footer (image, referral, or
@@ -236,6 +295,10 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
   const isDocWithMeta = msg.type === "otherDoc" && msg.media;
 
   const isTemplateWithMedia = msg.type === "template" && !!msg.media;
+  const isTemplateWithButtons =
+    msg.type === "template" &&
+    Array.isArray(msg.buttons) &&
+    msg.buttons.length > 0;
 
   const bubbleWidth =
     msg.type === "carousel"
@@ -243,6 +306,7 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
       : msg.type === "image" ||
           msg.type === "video" ||
           isTemplateWithMedia ||
+          isTemplateWithButtons ||
           msg.type === "docPreview" ||
           msg.type === "document" ||
           msg.type === "otherDoc" ||
@@ -256,12 +320,16 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
             ? cn("max-w-[320px] w-full")
             : cn("max-w-[65%]");
 
+  const hasButtons =
+    msg.type === "template" && Array.isArray(msg.buttons) && msg.buttons.length > 0;
+
   return {
     hasMedia,
     mediaCaption,
     hasText,
     isDocWithMeta,
     bubbleWidth,
+    hasButtons,
   };
 }
 
@@ -284,8 +352,14 @@ const ChatBubbleMessageMode = React.forwardRef<
   },
   ref
 ) {
-  const { hasMedia, mediaCaption, hasText, isDocWithMeta, bubbleWidth } =
-    computeMessageBubbleLayout(msg);
+  const {
+    hasMedia,
+    mediaCaption,
+    hasText,
+    isDocWithMeta,
+    bubbleWidth,
+    hasButtons,
+  } = computeMessageBubbleLayout(msg);
 
   return (
     <div
@@ -348,7 +422,7 @@ const ChatBubbleMessageMode = React.forwardRef<
               msg.type === "location" ||
               msg.type === "contact" ||
               msg.type === "listReply" ||
-              (msg.type === "template" && msg.media)
+              (msg.type === "template" && (msg.media || hasButtons))
               ? "w-full"
               : "",
             msg.sender === "agent"
@@ -424,8 +498,8 @@ const ChatBubbleMessageMode = React.forwardRef<
           <div
             className={cn(
               hasMedia
-                ? `px-3 pb-1.5 ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" ? "pt-3 mt-1" : "pt-2"}`
-                : "px-3 pt-3 pb-1.5"
+                ? `px-3 ${hasButtons ? "pb-2" : "pb-1.5"} ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" ? "pt-3 mt-1" : "pt-2"}`
+                : `px-3 pt-3 ${hasButtons ? "pb-2" : "pb-1.5"}`
             )}
           >
             {msg.replyTo && (
@@ -451,8 +525,18 @@ const ChatBubbleMessageMode = React.forwardRef<
                 </span>
               </div>
             )}
-            <MessageModeDeliveryFooter msg={msg} />
+            {!hasButtons && <MessageModeDeliveryFooter msg={msg} />}
           </div>
+          {hasButtons && (
+            <>
+              {msg.buttons!.map((btn, i) => (
+                <TemplateButton key={i} button={btn} />
+              ))}
+              <div className="px-3 pt-2 pb-1.5">
+                <MessageModeDeliveryFooter msg={msg} />
+              </div>
+            </>
+          )}
         </div>
       </div>
       {msg.sender === "customer" && onReplyTo && (
@@ -486,19 +570,84 @@ const ChatBubbleMessageMode = React.forwardRef<
 ChatBubbleMessageMode.displayName = "ChatBubbleMessageMode";
 
 /**
- * Single-message bubble. For the threaded scroll view (with `onReplyTo`, root `className` on the container) use **`ChatBubble.MessageList`**.
+ * Adapts flat-mode props (`type` discriminator + per-type payload) into a synthetic
+ * `ChatMessage` so the existing message-mode renderers handle every variant. Internal
+ * helper — exposed only for `ChatBubblePrimitive` dispatch.
+ */
+function flatPropsToMessage(props: ChatBubbleFlatProps): ChatMessage {
+  const sender = props.variant === "sender" ? "agent" : "customer";
+  const id = props.messageId ?? `flat-${Math.random().toString(36).slice(2, 10)}`;
+  const base: ChatMessage = {
+    id,
+    text: "",
+    time: props.timestamp,
+    sender,
+    type: props.type,
+    status: props.status,
+    senderName: props.senderName,
+    sentBy: props.sentBy,
+    replyTo: props.replyTo,
+  };
+  switch (props.type) {
+    case "text":
+      return { ...base, text: props.text };
+    case "image":
+    case "video":
+    case "document":
+    case "docPreview":
+    case "otherDoc":
+      return { ...base, media: props.media, text: props.text ?? "" };
+    case "audio":
+      return { ...base, media: props.media };
+    case "carousel":
+      return { ...base, media: props.media, text: props.text ?? "" };
+    case "loading":
+      return { ...base, error: props.error };
+    case "location":
+      return { ...base, location: props.location, text: props.text ?? "" };
+    case "contact":
+      return { ...base, contactCard: props.contactCard, text: props.text ?? "" };
+    case "referral":
+      return { ...base, referral: props.referral, text: props.text ?? "" };
+    case "listReply":
+      return { ...base, listReply: props.listReply, text: props.text ?? "" };
+    case "template":
+      return {
+        ...base,
+        text: props.text,
+        media: props.media,
+        buttons: props.buttons,
+      };
+  }
+}
+
+/**
+ * Single-message bubble. Three input modes — pick the one that matches your data:
  *
- * Displays sender/receiver alignment, optional sender name, reply quote, media slot, text, delivery status, and timestamp.
- * Pass **`message`** (`ChatMessage`) to render template media types — same rows as **`ChatBubble.MessageList`**.
+ * 1. **Flat mode (preferred for non-text types)** — pass `type` plus the matching payload prop:
+ *    ```tsx
+ *    <ChatBubble type="location" variant="receiver" timestamp="2:15 PM"
+ *      location={{ latitude: 28.6, longitude: 77.2, name: "Office" }} />
  *
- * @example
- * ```tsx
- * <ChatBubble variant="sender" timestamp="2:15 PM" status="sent">
- *   Hello, how can I help you?
- * </ChatBubble>
+ *    <ChatBubble type="template" variant="sender" timestamp="1:49 PM" status="read"
+ *      text="This is your sales report."
+ *      buttons={[
+ *        { kind: "quickReply", label: "Interested" },
+ *        { kind: "quickReply", label: "Not interested" },
+ *      ]} />
+ *    ```
  *
- * <ChatBubble message={msg} replyParticipantName={name} onReplyTo={...} />
- * ```
+ * 2. **Manual mode** — `variant`, `timestamp`, `children`, optional `media` slot:
+ *    ```tsx
+ *    <ChatBubble variant="sender" timestamp="2:15 PM" status="sent">
+ *      Hello, how can I help you?
+ *    </ChatBubble>
+ *    ```
+ *
+ * 3. **Message mode** (used by `ChatBubble.MessageList`) — pass a full `ChatMessage`:
+ *    ```tsx
+ *    <ChatBubble message={msg} replyParticipantName={name} onReplyTo={...} />
+ *    ```
  */
 const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
   (props, ref) => {
@@ -520,6 +669,47 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           senderIndicator={senderIndicator}
           className={className}
           {...rest}
+        />
+      );
+    }
+
+    if (isChatBubbleFlatProps(props)) {
+      const flat = props as ChatBubbleFlatProps;
+      const {
+        variant: _variant,
+        timestamp: _timestamp,
+        status: _status,
+        senderName: _senderName,
+        sentBy: _sentBy,
+        replyTo: _replyTo,
+        onReplyTo,
+        replyParticipantName,
+        messageId: _messageId,
+        type: _type,
+        className,
+        ...rest
+      } = flat as ChatBubbleFlatProps & {
+        className?: string;
+      };
+      // Drop type-specific payload fields from the spread so they don't leak as DOM attrs.
+      const restNoPayload = rest as Record<string, unknown>;
+      delete restNoPayload.text;
+      delete restNoPayload.media;
+      delete restNoPayload.location;
+      delete restNoPayload.contactCard;
+      delete restNoPayload.referral;
+      delete restNoPayload.listReply;
+      delete restNoPayload.buttons;
+      delete restNoPayload.error;
+      const message = flatPropsToMessage(flat);
+      return (
+        <ChatBubbleMessageMode
+          ref={ref}
+          message={message}
+          replyParticipantName={replyParticipantName}
+          onReplyTo={onReplyTo}
+          className={className}
+          {...(restNoPayload as React.HTMLAttributes<HTMLDivElement>)}
         />
       );
     }

@@ -68,6 +68,71 @@ const meta: Meta<typeof ChatBubble> = {
   component: ChatBubble,
   subcomponents: { MessageList: ChatMessageList },
   argTypes: {
+    type: {
+      control: "select",
+      options: [
+        "text",
+        "image",
+        "video",
+        "audio",
+        "document",
+        "docPreview",
+        "otherDoc",
+        "carousel",
+        "loading",
+        "location",
+        "contact",
+        "referral",
+        "listReply",
+        "template",
+      ],
+      table: { category: "Flat mode" },
+      description:
+        "**Preferred for non-text types.** Discriminator that selects which payload prop is used (e.g. `type=\"location\"` → `location` prop). Pair with `variant`.",
+    },
+    text: {
+      control: "text",
+      table: { category: "Flat mode" },
+      description: "Body text for `type: text` / `template`, optional caption for media types.",
+    },
+    location: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description: "`{ latitude, longitude, name?, address? }` — required for `type: location`.",
+    },
+    contactCard: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description: "`{ name, phone, email?, organization? }` — required for `type: contact`.",
+    },
+    referral: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description:
+        "`{ headline, body?, sourceUrl?, thumbnailUrl?, sourceType? }` — required for `type: referral`.",
+    },
+    listReply: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description:
+        "`{ header?, body, footer?, buttonText, sections? }` — required for `type: listReply`.",
+    },
+    buttons: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description:
+        "Quick-reply / url / phone buttons for `type: template`. When set, delivery footer renders below the button stack.",
+    },
+    messageId: {
+      control: "text",
+      table: { category: "Flat mode" },
+      description: "DOM anchor id for scroll-to-quote. Defaults to a random id if omitted.",
+    },
+    sentBy: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description: "Agent-row source badge: `{ type: \"bot\" | \"campaign\" | \"api\" | \"agent\", name? }`.",
+    },
     variant: {
       control: "select",
       options: ["sender", "receiver"],
@@ -165,6 +230,43 @@ npx myoperator-ui add chat-bubble
 \`\`\`
 
 ### Import
+
+\`\`\`tsx
+import { ChatBubble } from "@/components/custom/chat-bubble";
+\`\`\`
+
+### Usage — Flat mode (preferred for all message types)
+
+Pass \`type\` plus the matching payload prop. No need to construct a \`ChatMessage\`.
+
+\`\`\`tsx
+<ChatBubble type="text" variant="sender" timestamp="2:15 PM" status="sent"
+  text="Hello! How can I help you?" />
+
+<ChatBubble type="location" variant="receiver" timestamp="2:16 PM"
+  location={{ latitude: 28.6139, longitude: 77.209, name: "myOperator HQ", address: "Noida, India" }} />
+
+<ChatBubble type="contact" variant="receiver" timestamp="2:17 PM"
+  contactCard={{ name: "Priya Sharma", phone: "+91 98765 43210", email: "priya@acme.com" }} />
+
+<ChatBubble type="listReply" variant="sender" timestamp="2:18 PM" status="read"
+  listReply={{ header: "Pick a slot", body: "Available times this week", buttonText: "View slots" }} />
+
+<ChatBubble type="referral" variant="receiver" timestamp="2:19 PM"
+  referral={{ headline: "Cloud telephony & WhatsApp Business API", sourceType: "ad",
+    sourceUrl: "fb.me/myoperator-promo" }} />
+
+<ChatBubble type="template" variant="sender" timestamp="1:49 PM" status="read"
+  text="Hello sd, This is your Sales report of this years. Let us know if you need to send next year's report too?"
+  buttons={[
+    { kind: "quickReply", label: "Interested" },
+    { kind: "quickReply", label: "Not interested" },
+  ]} />
+\`\`\`
+
+### Threaded view
+
+For a scrollable conversation backed by \`ChatProvider\`, use \`ChatBubble.MessageList\`:
 
 \`\`\`tsx
 import { ChatBubble, ChatMessageList } from "@/components/custom/chat-bubble";
@@ -465,6 +567,239 @@ export const ListReplyFullVsMinimalListParity: Story = {
       messages={chatMessageListStoryThreadMessages.listReplyFullVsMinimal}
       replyParticipantName="Story: List reply"
     />
+  ),
+};
+
+/* ── Flat-mode stories — preferred API per message type ── */
+
+export const FlatText: Story = {
+  name: "Flat · Text",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`<ChatBubble type=\"text\" variant=\"sender\" text=\"…\" />` — same shape as manual mode but discriminated by `type`.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="text"
+        variant="sender"
+        timestamp="2:15 PM"
+        status="read"
+        text="Hello! How can I help you today?"
+      />
+      <ChatBubble
+        type="text"
+        variant="receiver"
+        timestamp="2:16 PM"
+        text="I need help with my recent order."
+      />
+    </div>
+  ),
+};
+
+export const FlatLocation: Story = {
+  name: "Flat · Location",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass `location` directly. First bubble shows name + address, second shows coordinates only.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="location"
+        variant="receiver"
+        timestamp="2:30 PM"
+        location={{
+          latitude: 28.6139,
+          longitude: 77.209,
+          name: "myOperator HQ",
+          address: "B-86, Sector 65, Noida, Uttar Pradesh 201301",
+        }}
+      />
+      <ChatBubble
+        type="location"
+        variant="receiver"
+        timestamp="2:31 PM"
+        location={{ latitude: 19.0760, longitude: 72.8777 }}
+      />
+    </div>
+  ),
+};
+
+export const FlatContact: Story = {
+  name: "Flat · Contact",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass `contactCard` directly. Renders avatar with initials, name, organization, and contact rows.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="contact"
+        variant="receiver"
+        timestamp="3:10 PM"
+        contactCard={{
+          name: "Priya Sharma",
+          phone: "+91 98765 43210",
+          email: "priya@acme.co.in",
+          organization: "Acme Corp",
+        }}
+      />
+      <ChatBubble
+        type="contact"
+        variant="receiver"
+        timestamp="3:11 PM"
+        contactCard={{
+          name: "Anonymous Caller",
+          phone: "+91 90000 00000",
+        }}
+      />
+    </div>
+  ),
+};
+
+export const FlatReferral: Story = {
+  name: "Flat · Referral",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Click-to-WhatsApp ad referral context. `sourceType` controls the small label (`AD` / `POST` / `REFERRAL`).",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="referral"
+        variant="receiver"
+        timestamp="10:00 AM"
+        text="I came from this ad (all optional fields set)."
+        referral={{
+          headline: "myOperator — Cloud telephony & WhatsApp Business API",
+          body: "Automate IVR, live chat, and campaigns. Book a free demo with our solutions team.",
+          sourceUrl: "https://fb.me/myoperator-promo",
+          sourceType: "ad",
+        }}
+      />
+      <ChatBubble
+        type="referral"
+        variant="receiver"
+        timestamp="10:02 AM"
+        text="This one is from a social post."
+        referral={{
+          headline: "Monsoon sale — 40% off annual plans",
+          body: "Limited time offer for SMB teams upgrading from legacy PBX.",
+          sourceUrl: "https://instagram.com/p/example",
+          sourceType: "post",
+        }}
+      />
+    </div>
+  ),
+};
+
+export const FlatListReply: Story = {
+  name: "Flat · List Reply",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Interactive list message (WhatsApp **List Message**). Pass `listReply` directly.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="listReply"
+        variant="sender"
+        timestamp="11:30 AM"
+        status="read"
+        listReply={{
+          header: "Pick an appointment slot",
+          body: "Choose a time that works for you and we'll confirm by SMS.",
+          footer: "Operating hours: 9 AM – 6 PM IST",
+          buttonText: "View available slots",
+        }}
+      />
+      <ChatBubble
+        type="listReply"
+        variant="sender"
+        timestamp="11:31 AM"
+        status="delivered"
+        listReply={{
+          body: "Tap below to see all open tickets.",
+          buttonText: "View tickets",
+        }}
+      />
+    </div>
+  ),
+};
+
+export const FlatTemplateWithButtons: Story = {
+  name: "Flat · Template with Quick-Reply Buttons",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "WhatsApp template message with stacked quick-reply buttons. The delivery footer renders **below** the button stack to match WhatsApp's layout.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="template"
+        variant="sender"
+        timestamp="1:49 PM"
+        status="read"
+        text="Hello sd, This is your Sales report of this years. Let us know if you need to send next year's report too?"
+        buttons={[
+          { kind: "quickReply", label: "Interested" },
+          { kind: "quickReply", label: "Not interested" },
+        ]}
+      />
+    </div>
+  ),
+};
+
+export const FlatTemplateMixedButtons: Story = {
+  name: "Flat · Template with Mixed Buttons (URL + Phone)",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Templates can mix `quickReply`, `url`, and `phone` button kinds. URL opens in a new tab, phone uses `tel:`.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <ChatBubble
+        type="template"
+        variant="sender"
+        timestamp="2:00 PM"
+        status="delivered"
+        text="Your appointment with Dr. Mehta is confirmed for tomorrow at 10:30 AM."
+        buttons={[
+          { kind: "url", label: "Reschedule online", url: "https://example.com/reschedule" },
+          { kind: "phone", label: "Call clinic", phone: "+919876543210" },
+          { kind: "quickReply", label: "Cancel" },
+        ]}
+      />
+    </div>
   ),
 };
 

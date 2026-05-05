@@ -28,10 +28,25 @@ export type {
   ChatBubbleProps,
   ChatBubbleManualProps,
   ChatBubbleMessageProps,
+  ChatBubbleFlatProps,
+  ChatBubbleFlatBase,
+  ChatBubbleFlatTextProps,
+  ChatBubbleFlatMediaProps,
+  ChatBubbleFlatAudioProps,
+  ChatBubbleFlatCarouselProps,
+  ChatBubbleFlatLoadingProps,
+  ChatBubbleFlatLocationProps,
+  ChatBubbleFlatContactProps,
+  ChatBubbleFlatReferralProps,
+  ChatBubbleFlatListReplyProps,
+  ChatBubbleFlatTemplateProps,
   ChatBubbleReply,
   DeliveryStatus,
   ReplyToPayload,
   ChatMessageListBubbleRowProps,
   ChatMessageListProps,
 } from "./types";
-export { isChatBubbleMessageProps } from "./types";
+export {
+  isChatBubbleMessageProps,
+  isChatBubbleFlatProps,
+} from "./types";

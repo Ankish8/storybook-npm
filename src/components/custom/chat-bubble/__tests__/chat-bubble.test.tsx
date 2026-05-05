@@ -254,4 +254,224 @@ describe("ChatBubble", () => {
       expect(headerRow?.querySelector("svg")).toBeTruthy();
     });
   });
+
+  describe("flat mode (type prop)", () => {
+    it("renders flat text variant with timestamp", () => {
+      render(
+        <ChatBubble
+          type="text"
+          variant="sender"
+          timestamp="4:00 PM"
+          status="read"
+          text="Flat hello"
+        />
+      );
+      expect(screen.getByText("Flat hello")).toBeInTheDocument();
+      expect(screen.getByText("4:00 PM")).toBeInTheDocument();
+      expect(screen.getByText("Read")).toBeInTheDocument();
+    });
+
+    it("renders location bubble with name and address", () => {
+      render(
+        <ChatBubble
+          type="location"
+          variant="receiver"
+          timestamp="4:01 PM"
+          location={{
+            latitude: 28.6139,
+            longitude: 77.209,
+            name: "myOperator HQ",
+            address: "Sector 65, Noida",
+          }}
+        />
+      );
+      expect(screen.getByText("myOperator HQ")).toBeInTheDocument();
+      expect(screen.getByText("Sector 65, Noida")).toBeInTheDocument();
+    });
+
+    it("falls back to coordinates when location has no name/address", () => {
+      render(
+        <ChatBubble
+          type="location"
+          variant="receiver"
+          timestamp="4:02 PM"
+          location={{ latitude: 19.076, longitude: 72.8777 }}
+        />
+      );
+      expect(screen.getByText("19.076000, 72.877700")).toBeInTheDocument();
+    });
+
+    it("renders contact bubble with phone and email", () => {
+      render(
+        <ChatBubble
+          type="contact"
+          variant="receiver"
+          timestamp="4:03 PM"
+          contactCard={{
+            name: "Priya Sharma",
+            phone: "+91 98765 43210",
+            email: "priya@acme.co.in",
+          }}
+        />
+      );
+      expect(screen.getByText("Priya Sharma")).toBeInTheDocument();
+      expect(screen.getByText("+91 98765 43210")).toBeInTheDocument();
+      expect(screen.getByText("priya@acme.co.in")).toBeInTheDocument();
+    });
+
+    it("renders referral bubble with sourceType label", () => {
+      render(
+        <ChatBubble
+          type="referral"
+          variant="receiver"
+          timestamp="4:04 PM"
+          referral={{
+            headline: "Monsoon sale — 40% off",
+            sourceType: "ad",
+          }}
+        />
+      );
+      expect(screen.getByText("Monsoon sale — 40% off")).toBeInTheDocument();
+      expect(screen.getByText("Ad")).toBeInTheDocument();
+    });
+
+    it("renders list reply bubble with header and button", () => {
+      render(
+        <ChatBubble
+          type="listReply"
+          variant="sender"
+          timestamp="4:05 PM"
+          status="read"
+          listReply={{
+            header: "Pick a slot",
+            body: "Choose a time",
+            buttonText: "View slots",
+          }}
+        />
+      );
+      expect(screen.getByText("Pick a slot")).toBeInTheDocument();
+      expect(screen.getByText("Choose a time")).toBeInTheDocument();
+      expect(screen.getByText("View slots")).toBeInTheDocument();
+    });
+
+    it("renders template bubble with quick-reply buttons", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="1:49 PM"
+          status="read"
+          text="This is your sales report."
+          buttons={[
+            { kind: "quickReply", label: "Interested" },
+            { kind: "quickReply", label: "Not interested" },
+          ]}
+        />
+      );
+      expect(screen.getByText("This is your sales report.")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Interested" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Not interested" })
+      ).toBeInTheDocument();
+      // Delivery footer renders BELOW the buttons — both still visible.
+      expect(screen.getByText("1:49 PM")).toBeInTheDocument();
+      expect(screen.getByText("Read")).toBeInTheDocument();
+    });
+
+    it("renders template url button as anchor with target=_blank", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:00 PM"
+          text="Confirm your appointment."
+          buttons={[
+            { kind: "url", label: "Reschedule", url: "https://example.com/r" },
+          ]}
+        />
+      );
+      const link = screen.getByRole("link", { name: /Reschedule/i });
+      expect(link).toHaveAttribute("href", "https://example.com/r");
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    it("renders template phone button as tel: link", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:01 PM"
+          text="Need help?"
+          buttons={[
+            { kind: "phone", label: "Call clinic", phone: "+919876543210" },
+          ]}
+        />
+      );
+      const link = screen.getByRole("link", { name: /Call clinic/i });
+      expect(link).toHaveAttribute("href", "tel:+919876543210");
+    });
+
+    it("template without buttons keeps delivery footer in body (no button stack)", () => {
+      const { container } = render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:10 PM"
+          status="delivered"
+          text="Plain template body."
+        />
+      );
+      expect(screen.getByText("Plain template body.")).toBeInTheDocument();
+      expect(screen.getByText("Delivered")).toBeInTheDocument();
+      // No template buttons rendered.
+      expect(container.querySelectorAll("button").length).toBe(0);
+    });
+
+    it("flat sender alignment matches manual sender", () => {
+      const { container } = render(
+        <ChatBubble
+          type="text"
+          variant="sender"
+          timestamp="4:10 PM"
+          text="Aligned right"
+        />
+      );
+      expect(container.firstElementChild).toHaveClass("justify-end");
+    });
+
+    it("invokes onReplyTo for flat customer bubble", () => {
+      const onReplyTo = vi.fn();
+      renderWithTooltip(
+        <ChatBubble
+          type="text"
+          variant="receiver"
+          timestamp="4:11 PM"
+          text="From customer"
+          messageId="cust-1"
+          replyParticipantName="Jane"
+          onReplyTo={onReplyTo}
+        />
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      expect(onReplyTo).toHaveBeenCalledWith({
+        messageId: "cust-1",
+        sender: "Jane",
+        text: "From customer",
+      });
+    });
+
+    it("anchors messageId for scroll-to-quote in flat mode", () => {
+      const { container } = render(
+        <ChatBubble
+          type="text"
+          variant="sender"
+          timestamp="4:12 PM"
+          text="Anchor me"
+          messageId="anchor-1"
+        />
+      );
+      expect(container.querySelector("#msg-anchor-1")).toBeInTheDocument();
+    });
+  });
 });
