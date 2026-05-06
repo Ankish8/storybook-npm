@@ -2,7 +2,13 @@ import * as React from "react";
 import { CircleAlert } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn, countNonWhitespaceChars } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+
+// Length of the string with all whitespace removed. Inlined so the component
+// is self-contained when distributed via the CLI (consumer's lib/utils.ts is
+// scaffolded once at init and not updated by `add`).
+const countNonWhitespaceChars = (value: string): number =>
+  String(value).replace(/\s/g, "").length;
 
 /**
  * Textarea variants for different visual states
@@ -63,7 +69,7 @@ export interface TextareaProps
   showCount?: boolean;
   /**
    * When set, the counter shows this number instead of the default non-whitespace length
-   * (see {@link countNonWhitespaceChars} in `@/lib/utils`).
+   * (see `countNonWhitespaceChars` defined in this file).
    * Does not change native `maxLength` or stored value — display only.
    */
   displayCharCount?: number;
