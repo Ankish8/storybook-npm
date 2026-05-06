@@ -71,7 +71,7 @@ export interface KnowledgeBaseFile {
 export interface CreateFunctionStep1Data {
   name: string;
   /** Optional caller-facing copy when the function runs (max length via `botMessageMaxLength` on the modal). */
-  botMessage: string;
+  botMessage?: string;
   prompt: string;
 }
 
