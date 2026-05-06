@@ -1,3 +1,4 @@
+import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { BotInstructions } from "../bot-instructions";
@@ -116,10 +117,8 @@ describe("BotInstructions", () => {
   });
 
   it("forwards ref to root element", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
-    render(
-      <BotInstructions ref={ref} instructions={mockInstructions} />
-    );
+    const ref = React.createRef<HTMLDivElement>();
+    render(<BotInstructions ref={ref} instructions={mockInstructions} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 

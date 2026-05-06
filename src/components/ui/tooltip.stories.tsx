@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Info, HelpCircle, Settings, Plus, Trash2 } from "lucide-react";
 import {
   Tooltip,
