@@ -53,7 +53,7 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
                   Instructions
                 </span>
                 {infoTooltip && (
-                  <TooltipProvider>
+                  <TooltipProvider delayDuration={0}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="inline-flex shrink-0 cursor-help text-semantic-text-muted">
