@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { cn, countNonWhitespaceChars } from "../../../lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -1554,7 +1554,7 @@ export const CreateFunctionModal = React.forwardRef(
     const isStep1Valid =
       name.trim().length > 0 &&
       FUNCTION_NAME_REGEX.test(name.trim()) &&
-      prompt.trim().length >= promptMinLength &&
+      countNonWhitespaceChars(prompt) >= promptMinLength &&
       (!showAgentMessage ||
         ((botMessageOptional || botMessage.trim().length > 0) &&
           botMessage.length <= botMessageMaxLength &&
@@ -1863,7 +1863,8 @@ export const CreateFunctionModal = React.forwardRef(
                   rows={5}
                   labelClassName={cn("font-semibold text-semantic-text-primary")}
                   error={
-                    prompt.length > 0 && prompt.trim().length < promptMinLength
+                    prompt.length > 0 &&
+                      countNonWhitespaceChars(prompt) < promptMinLength
                       ? `Minimum ${promptMinLength} characters required`
                       : undefined
                   }

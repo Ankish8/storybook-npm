@@ -1,5 +1,5 @@
 // Utils
-export { cn } from "./lib/utils";
+export { cn, countNonWhitespaceChars } from "./lib/utils";
 
 // Brand Icons
 export { MyOperatorChatIcon } from "./components/custom/talk-to-us-modal/icon";

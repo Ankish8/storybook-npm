@@ -2,7 +2,7 @@ import * as React from "react";
 import { CircleAlert } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
+import { cn, countNonWhitespaceChars } from "@/lib/utils";
 
 /**
  * Textarea variants for different visual states
@@ -31,6 +31,7 @@ const textareaVariants = cva(
 
 /**
  * A multi-line text input with label, error state, helper text, character counter, and resize control.
+ * With `showCount` and `maxLength`, the counter excludes all whitespace unless `displayCharCount` is set.
  *
  * @example
  * ```tsx
@@ -61,6 +62,12 @@ export interface TextareaProps
   /** Shows character count when maxLength is set */
   showCount?: boolean;
   /**
+   * When set, the counter shows this number instead of the default non-whitespace length
+   * (see {@link countNonWhitespaceChars} in `@/lib/utils`).
+   * Does not change native `maxLength` or stored value — display only.
+   */
+  displayCharCount?: number;
+  /**
    * When true (default), `maxLength` is applied to the native textarea (hard limit).
    * When false, the limit is only used for `showCount` / styling — pair with `error` or parent validation for soft limits.
    */
@@ -87,6 +94,7 @@ const Textarea = React.forwardRef(
       error,
       errorIcon = false,
       showCount,
+      displayCharCount,
       enforceMaxLength = true,
       resize = "none",
       maxLength,
@@ -120,8 +128,12 @@ const Textarea = React.forwardRef(
       onChange?.(e);
     };
 
-    // Character count
-    const charCount = String(currentValue).length;
+    const rawCharLength = String(currentValue).length;
+    // Counter excludes whitespace so spacing between words does not consume the budget.
+    const charCount =
+      displayCharCount !== undefined
+        ? displayCharCount
+        : countNonWhitespaceChars(String(currentValue));
 
     // Generate unique IDs for accessibility
     const generatedId = React.useId();
@@ -217,7 +229,7 @@ const Textarea = React.forwardRef(
               <span
                 className={cn(
                   "text-sm",
-                  charCount > maxLength
+                  rawCharLength > maxLength
                     ? "text-semantic-error-primary"
                     : "text-semantic-text-muted"
                 )}

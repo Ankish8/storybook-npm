@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Info, Plus } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { cn, countNonWhitespaceChars } from "../../../lib/utils";
 import { tagVariants } from "../../ui/tag";
 import {
   Tooltip,
@@ -276,6 +276,7 @@ const BotBehaviorCard = React.forwardRef(
     ref: React.Ref<HTMLDivElement>
   ) => {
     const prompt = data.systemPrompt ?? "";
+    const promptCharCount = countNonWhitespaceChars(prompt);
     const MAX = maxLength;
     const sectionRef = React.useRef<HTMLDivElement>(null);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -457,9 +458,9 @@ const BotBehaviorCard = React.forwardRef(
               <span
                 className="self-end text-sm text-semantic-text-muted"
                 aria-live="polite"
-                aria-label={`${prompt.length} of ${MAX} characters`}
+                aria-label={`${promptCharCount} of ${MAX} characters`}
               >
-                {prompt.length}/{MAX}
+                {promptCharCount}/{MAX}
               </span>
             </div>
             <div className="flex flex-col gap-3">

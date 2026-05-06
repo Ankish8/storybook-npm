@@ -63,6 +63,43 @@ describe("Textarea", () => {
     expect(screen.getByText("5/100")).toBeInTheDocument();
   });
 
+  it("uses displayCharCount for the counter when provided", () => {
+    render(
+      <Textarea
+        showCount
+        maxLength={100}
+        value={"   hi   "}
+        onChange={() => {}}
+        displayCharCount={2}
+      />
+    );
+    expect(screen.getByText("2/100")).toBeInTheDocument();
+  });
+
+  it("uses non-whitespace length for the counter when displayCharCount is omitted", () => {
+    render(
+      <Textarea
+        showCount
+        maxLength={100}
+        value={"   hi   "}
+        onChange={() => {}}
+      />
+    );
+    expect(screen.getByText("2/100")).toBeInTheDocument();
+  });
+
+  it("does not count spaces between letters toward the counter", () => {
+    render(
+      <Textarea
+        showCount
+        maxLength={100}
+        value={"a   b   c"}
+        onChange={() => {}}
+      />
+    );
+    expect(screen.getByText("3/100")).toBeInTheDocument();
+  });
+
   // 7b. enforceMaxLength=false omits native maxLength but keeps counter
   it("enforceMaxLength false does not set native maxLength", () => {
     render(
