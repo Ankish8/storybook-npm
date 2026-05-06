@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-04-20T11:54:23.804Z",
+  "generatedAt": "2026-05-06T08:12:01.599Z",
   "components": {
     "accordion": {
       "exports": [
@@ -168,6 +168,30 @@
       "variants": {
         "badgeVariants": {}
       }
+    },
+    "bouncing-loader": {
+      "exports": [
+        "BouncingLoader",
+        "BouncingLoaderProps",
+        "bouncingLoaderVariants"
+      ],
+      "interfaces": {
+        "BouncingLoaderProps": {
+          "size": {
+            "type": "number | string",
+            "optional": true
+          },
+          "color": {
+            "type": "string",
+            "optional": true
+          },
+          "spacing": {
+            "type": "number | string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
     },
     "button": {
       "exports": [
@@ -721,6 +745,18 @@
             "optional": true
           },
           "hideNumberSpinners": {
+            "type": "boolean",
+            "optional": true
+          },
+          "preventNumberExponent": {
+            "type": "boolean",
+            "optional": true
+          },
+          "decimal": {
+            "type": "boolean",
+            "optional": true
+          },
+          "allowDecimal": {
             "type": "boolean",
             "optional": true
           }
@@ -1732,22 +1768,6 @@
           },
           "showCount": {
             "type": "boolean",
-            "optional": true
-          },
-          "enforceMaxLength": {
-            "type": "boolean",
-            "optional": true
-          },
-          "resize": {
-            "type": "\"none\" | \"vertical\" | \"horizontal\" | \"both\"",
-            "optional": true
-          },
-          "wrapperClassName": {
-            "type": "string",
-            "optional": true
-          },
-          "labelClassName": {
-            "type": "string",
             "optional": true
           }
         }
