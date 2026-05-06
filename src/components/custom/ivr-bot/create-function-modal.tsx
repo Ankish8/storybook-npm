@@ -1116,7 +1116,7 @@ function CreateFunctionModalStep2Footer({
       <Button
         variant="outline"
         onClick={onBack}
-        disabled={Boolean(disabled) || submitBusy}
+        disabled={submitBusy}
       >
         Back
       </Button>
@@ -1572,7 +1572,8 @@ export const CreateFunctionModal = React.forwardRef(
       botMessageOverflowMessage;
 
     const handleNext = () => {
-      if (disabled || !isStep1Valid) return;
+      // View mode: fields are disabled but user must still browse steps (see types / stories).
+      if (!disabled && !isStep1Valid) return;
       setStep(2);
     };
 

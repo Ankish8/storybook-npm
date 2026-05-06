@@ -153,6 +153,54 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByRole("button", { name: /Back/i })).toBeInTheDocument();
   });
 
+  it("advances to step 2 on Next in read-only mode without step-1 validation", async () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        disabled
+        initialData={{
+          name: "ViewFunc",
+          botMessage: "",
+          prompt: "too short for edit mode",
+          method: "GET",
+          url: "https://example.com/",
+          headers: [],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+    const next = screen.getByRole("button", { name: /Next/i });
+    expect(next).not.toBeDisabled();
+    await user.click(next);
+    expect(screen.getByText(/API url/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Submit/i })).toBeDisabled();
+  });
+
+  it("allows Back from step 2 in read-only mode", async () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        disabled
+        initialStep={2}
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/",
+          headers: [],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+    expect(screen.getByRole("button", { name: /Back/i })).not.toBeDisabled();
+    await user.click(screen.getByRole("button", { name: /Back/i }));
+    expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
+  });
+
   it("disables Back and Submit when submitLoading prop is true", () => {
     render(
       <CreateFunctionModal
