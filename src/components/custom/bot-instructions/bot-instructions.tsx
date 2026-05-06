@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus, HelpCircle, Pencil, Trash2 } from "lucide-react";
+import { Plus, Info, Pencil, Trash2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../ui/button";
 import { Switch } from "../../ui/switch";
@@ -56,8 +56,8 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
                   <TooltipProvider delayDuration={0}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="inline-flex shrink-0 cursor-help text-semantic-text-muted">
-                          <HelpCircle
+                        <span className="inline-flex shrink-0 cursor-pointer text-semantic-text-muted">
+                          <Info
                             className="h-3.5 w-3.5"
                             aria-hidden
                           />

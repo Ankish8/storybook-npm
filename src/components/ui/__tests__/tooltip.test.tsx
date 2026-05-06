@@ -76,7 +76,9 @@ describe("Tooltip", () => {
         <TooltipContent>Tooltip content</TooltipContent>
       </Tooltip>
     );
-    expect(screen.getByText("Hover me")).toBeInTheDocument();
+    const trigger = screen.getByText("Hover me");
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveClass("cursor-pointer");
   });
 
   it("shows content on hover", async () => {
@@ -173,6 +175,9 @@ describe("Tooltip", () => {
 
     await waitFor(() => {
       const tooltip = getTooltipContent();
+      expect(tooltip).toHaveClass("pointer-events-none");
+      expect(tooltip).toHaveClass("data-[state=delayed-open]:pointer-events-auto");
+      expect(tooltip).toHaveClass("data-[state=instant-open]:pointer-events-auto");
       expect(tooltip).toHaveClass("bg-semantic-primary");
       expect(tooltip).toHaveClass("text-semantic-text-inverted");
       expect(tooltip).toHaveClass("text-xs");
@@ -195,6 +200,7 @@ describe("Tooltip", () => {
 
     const button = screen.getByRole("button", { name: "Custom Button" });
     expect(button).toHaveClass("custom-button");
+    expect(button).toHaveClass("cursor-pointer");
 
     await user.hover(button);
     await waitFor(() => {

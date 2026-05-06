@@ -96,7 +96,7 @@ const BotIntegrations = React.forwardRef<HTMLDivElement, BotIntegrationsProps>(
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="inline-flex shrink-0 cursor-help text-semantic-text-muted">
+                      <span className="inline-flex shrink-0 cursor-pointer text-semantic-text-muted">
                         <Info className="size-3.5" aria-hidden />
                       </span>
                     </TooltipTrigger>

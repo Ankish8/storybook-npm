@@ -184,7 +184,7 @@ const FrustrationHandoverCard = React.forwardRef(
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span
-                          className="inline-flex shrink-0 cursor-help"
+                          className="inline-flex shrink-0 cursor-pointer"
                           onPointerDown={(e) => e.stopPropagation()}
                           onClick={(e) => e.stopPropagation()}
                           aria-label="Escalate to Human: more information"

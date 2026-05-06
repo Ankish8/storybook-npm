@@ -1796,7 +1796,7 @@ export const CreateFunctionModal = React.forwardRef(
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span
-                                className="inline-flex shrink-0 cursor-help"
+                                className="inline-flex shrink-0 cursor-pointer"
                                 aria-label={
                                   botMessageOptional
                                     ? "Agent Message (Optional): more information"

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Info } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { cn, countNonWhitespaceChars } from "../../../lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -17,11 +17,15 @@ import {
   TooltipTrigger,
 } from "../../ui/tooltip";
 import {
+  DEFAULT_MAX_MESSAGE_LENGTH,
   DEFAULT_MAX_TOTAL_MINUTES,
   DEFAULT_MESSAGE_REQUIRED_ERROR,
+  defaultMessageMaxLengthError,
   type BotFollowUpsProps,
   type NudgeItem,
 } from "./types";
+
+type MessageFieldIssue = "required" | "maxLength";
 
 // ── Delay clamping ───────────────────────────────────────────────────────────
 
@@ -71,6 +75,7 @@ function NudgeCard({
   maxMinutes,
   minTotalMinutes,
   maxTotalMinutes,
+  maxMessageLength,
   disabled,
 }: {
   nudge: NudgeItem;
@@ -97,6 +102,7 @@ function NudgeCard({
   maxMinutes: number;
   minTotalMinutes: number;
   maxTotalMinutes: number;
+  maxMessageLength: number;
   disabled?: boolean;
 }) {
   const handleHoursChange = (next: number) => {
@@ -193,6 +199,9 @@ function NudgeCard({
           onBlur={(e) => onMessageBlur?.(nudge.id, e)}
           disabled={disabled}
           rows={3}
+          showCount
+          maxLength={maxMessageLength}
+          enforceMaxLength={false}
           error={messageError}
           errorIcon
           aria-label={`${displayLabel} message`}
@@ -221,6 +230,8 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       onMessageChange,
       onMessageBlur,
       messageRequiredError = DEFAULT_MESSAGE_REQUIRED_ERROR,
+      messageMaxLengthError,
+      maxMessageLength = DEFAULT_MAX_MESSAGE_LENGTH,
       tooltip,
       infoTooltip,
       minTotalMinutes = 0,
@@ -237,13 +248,23 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
   ) => {
     const tooltipContent = (tooltip ?? infoTooltip) || DEFAULT_TOOLTIP;
 
-    const [messageErrors, setMessageErrors] = React.useState<
-      Record<string, string>
+    const resolvedMaxLenMsg = React.useMemo(() => {
+      if (typeof messageMaxLengthError === "function") {
+        return messageMaxLengthError(maxMessageLength);
+      }
+      if (messageMaxLengthError !== undefined) {
+        return messageMaxLengthError;
+      }
+      return defaultMessageMaxLengthError(maxMessageLength);
+    }, [messageMaxLengthError, maxMessageLength]);
+
+    const [messageIssues, setMessageIssues] = React.useState<
+      Record<string, MessageFieldIssue | undefined>
     >({});
 
     React.useEffect(() => {
       const ids = new Set(nudges.map((n) => n.id));
-      setMessageErrors((prev) => {
+      setMessageIssues((prev) => {
         const next = { ...prev };
         let changed = false;
         for (const k of Object.keys(next)) {
@@ -256,40 +277,65 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       });
     }, [nudges]);
 
+    React.useEffect(() => {
+      setMessageIssues((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        for (const n of nudges) {
+          const over =
+            n.message.trim() !== "" &&
+            countNonWhitespaceChars(n.message) > maxMessageLength;
+          if (over) {
+            if (next[n.id] !== "maxLength") {
+              next[n.id] = "maxLength";
+              changed = true;
+            }
+          } else if (next[n.id] === "maxLength") {
+            delete next[n.id];
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+    }, [nudges, maxMessageLength]);
+
     const handleMessageChange = React.useCallback(
       (id: string, message: string) => {
-        if (message.trim()) {
-          setMessageErrors((prev) => {
-            if (!prev[id]) return prev;
-            const rest = { ...prev };
-            delete rest[id];
-            return rest;
-          });
-        }
         onMessageChange?.(id, message);
+
+        setMessageIssues((prev) => {
+          const next = { ...prev };
+          if (message.trim() && next[id] === "required") {
+            delete next[id];
+          }
+          if (countNonWhitespaceChars(message) > maxMessageLength) {
+            next[id] = "maxLength";
+          } else if (next[id] === "maxLength") {
+            delete next[id];
+          }
+          return next;
+        });
       },
-      [onMessageChange]
+      [onMessageChange, maxMessageLength]
     );
 
     const handleMessageBlur = React.useCallback(
       (id: string, event: React.FocusEvent<HTMLTextAreaElement>) => {
         const v = event.target.value;
-        if (!v.trim()) {
-          setMessageErrors((prev) => ({
-            ...prev,
-            [id]: messageRequiredError,
-          }));
-        } else {
-          setMessageErrors((prev) => {
-            if (!prev[id]) return prev;
-            const rest = { ...prev };
-            delete rest[id];
-            return rest;
-          });
-        }
+        setMessageIssues((prev) => {
+          const next = { ...prev };
+          if (!v.trim()) {
+            next[id] = "required";
+          } else if (countNonWhitespaceChars(v) > maxMessageLength) {
+            next[id] = "maxLength";
+          } else {
+            delete next[id];
+          }
+          return next;
+        });
         onMessageBlur?.(id, event);
       },
-      [onMessageBlur, messageRequiredError]
+      [onMessageBlur, maxMessageLength]
     );
 
     const accordionId = "follow-ups";
@@ -322,7 +368,7 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span
-                            className="inline-flex shrink-0 cursor-help"
+                            className="inline-flex shrink-0 cursor-pointer"
                             onPointerDown={(e) => e.stopPropagation()}
                             onClick={(e) => e.stopPropagation()}
                             aria-label={`${title}: more information`}
@@ -364,11 +410,18 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
                           onDelayMinutesBlur={onDelayMinutesBlur}
                           onMessageChange={handleMessageChange}
                           onMessageBlur={handleMessageBlur}
-                          messageError={messageErrors[nudge.id]}
+                          messageError={
+                            messageIssues[nudge.id] === "required"
+                              ? messageRequiredError
+                              : messageIssues[nudge.id] === "maxLength"
+                                ? resolvedMaxLenMsg
+                                : undefined
+                          }
                           maxHours={maxHours}
                           maxMinutes={maxMinutes}
                           minTotalMinutes={minTotalMinutes}
                           maxTotalMinutes={maxTotalMinutes}
+                          maxMessageLength={maxMessageLength}
                           disabled={disabled}
                         />
                       ))}

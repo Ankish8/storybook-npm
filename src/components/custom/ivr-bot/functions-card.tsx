@@ -61,7 +61,7 @@ const FunctionsCard = React.forwardRef(
               <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-help" />
+                    <Info className="size-3.5 text-semantic-text-muted shrink-0 cursor-pointer" />
                   </TooltipTrigger>
                   <TooltipContent>{infoTooltip}</TooltipContent>
                 </Tooltip>
@@ -98,7 +98,7 @@ const FunctionsCard = React.forwardRef(
                       <TooltipProvider delayDuration={200}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Info className="size-4 text-semantic-text-muted shrink-0 cursor-help" />
+                            <Info className="size-4 text-semantic-text-muted shrink-0 cursor-pointer" />
                           </TooltipTrigger>
                           <TooltipContent>{fn.tooltip}</TooltipContent>
                         </Tooltip>

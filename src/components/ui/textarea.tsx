@@ -128,7 +128,6 @@ const Textarea = React.forwardRef(
       onChange?.(e);
     };
 
-    const rawCharLength = String(currentValue).length;
     // Counter excludes whitespace so spacing between words does not consume the budget.
     const charCount =
       displayCharCount !== undefined
@@ -229,7 +228,7 @@ const Textarea = React.forwardRef(
               <span
                 className={cn(
                   "text-sm",
-                  rawCharLength > maxLength
+                  charCount > maxLength
                     ? "text-semantic-error-primary"
                     : "text-semantic-text-muted"
                 )}

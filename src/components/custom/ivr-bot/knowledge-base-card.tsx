@@ -96,7 +96,7 @@ const KnowledgeBaseCard = React.forwardRef(
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Info
-                        className="size-3.5 text-semantic-text-muted shrink-0 cursor-help"
+                        className="size-3.5 text-semantic-text-muted shrink-0 cursor-pointer"
                         aria-label="Knowledge Base: more information"
                       />
                     </TooltipTrigger>

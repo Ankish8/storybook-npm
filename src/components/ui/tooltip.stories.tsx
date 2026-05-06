@@ -538,7 +538,7 @@ export const TextTrigger: Story = {
       This is some text with a{" "}
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="underline decoration-dotted cursor-help">
+          <span className="underline decoration-dotted cursor-pointer">
             technical term
           </span>
         </TooltipTrigger>

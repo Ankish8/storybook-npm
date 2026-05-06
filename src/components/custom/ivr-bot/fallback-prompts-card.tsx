@@ -104,7 +104,7 @@ function PromptField({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  className="inline-flex shrink-0 cursor-help"
+                  className="inline-flex shrink-0 cursor-pointer"
                   aria-label={`${label}: more information`}
                 >
                   <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
@@ -189,7 +189,7 @@ const FallbackPromptsCard = React.forwardRef(
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span
-                          className="inline-flex shrink-0 cursor-help"
+                          className="inline-flex shrink-0 cursor-pointer"
                           onPointerDown={(e) => e.stopPropagation()}
                           onClick={(e) => e.stopPropagation()}
                           aria-label="Fallback Prompts: more information"

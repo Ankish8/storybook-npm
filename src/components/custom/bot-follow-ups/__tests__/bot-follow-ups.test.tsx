@@ -1,9 +1,13 @@
+import "@testing-library/jest-dom/vitest";
 import * as React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BotFollowUps } from "../bot-follow-ups";
-import type { NudgeItem } from "../types";
+import {
+  defaultMessageMaxLengthError,
+  type NudgeItem,
+} from "../types";
 
 const SAMPLE_NUDGES: NudgeItem[] = [
   {
@@ -123,6 +127,95 @@ describe("BotFollowUps", () => {
     const lastCall =
       onMessageChange.mock.calls[onMessageChange.mock.calls.length - 1];
     expect(lastCall[0]).toBe("1");
+  });
+
+  it("shows character count with default max message length", () => {
+    render(<BotFollowUps nudges={[SAMPLE_NUDGES[0]]} />);
+    // Matches Textarea counter: non-whitespace length vs max (17 for sample message).
+    expect(screen.getByText("17/250")).toBeInTheDocument();
+  });
+
+  it("shows character count with custom maxMessageLength", () => {
+    render(
+      <BotFollowUps nudges={[SAMPLE_NUDGES[0]]} maxMessageLength={100} />
+    );
+    expect(screen.getByText("17/100")).toBeInTheDocument();
+  });
+
+  it("shows max-length validation when message exceeds limit", () => {
+    const longMessage = "x".repeat(251);
+    render(
+      <BotFollowUps
+        nudges={[{ ...SAMPLE_NUDGES[0], message: longMessage }]}
+      />
+    );
+    expect(
+      screen.getByText(defaultMessageMaxLengthError(250))
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Followup 1 message")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
+
+  it("does not show max-length validation when only raw length exceeds limit (whitespace excluded)", () => {
+    const spacesOnlyOverRawLimit =
+      "x".repeat(200) + " ".repeat(60); // 260 chars total, 200 toward budget (matches counter)
+    render(
+      <BotFollowUps
+        nudges={[{ ...SAMPLE_NUDGES[0], message: spacesOnlyOverRawLimit }]}
+      />
+    );
+    expect(
+      screen.queryByText(defaultMessageMaxLengthError(250))
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Followup 1 message")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
+  });
+
+  it("shows max-length validation after typing past limit (controlled)", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulBotFollowUps
+        initialNudges={[{ ...SAMPLE_NUDGES[0], message: "" }]}
+        maxMessageLength={10}
+      />
+    );
+    const textarea = screen.getByLabelText("Followup 1 message");
+    await user.type(textarea, "12345678901");
+    expect(
+      screen.getByText(defaultMessageMaxLengthError(10))
+    ).toBeInTheDocument();
+  });
+
+  it("clears max-length validation when shortened below limit", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulBotFollowUps
+        initialNudges={[{ ...SAMPLE_NUDGES[0], message: "12345678901" }]}
+        maxMessageLength={10}
+      />
+    );
+    expect(
+      screen.getByText(defaultMessageMaxLengthError(10))
+    ).toBeInTheDocument();
+    const textarea = screen.getByLabelText("Followup 1 message");
+    await user.type(textarea, "{Backspace}");
+    expect(
+      screen.queryByText(defaultMessageMaxLengthError(10))
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses custom messageMaxLengthError copy", () => {
+    render(
+      <BotFollowUps
+        nudges={[{ ...SAMPLE_NUDGES[0], message: "x".repeat(251) }]}
+        messageMaxLengthError="Too long."
+      />
+    );
+    expect(screen.getByText("Too long.")).toBeInTheDocument();
   });
 
   it("message textarea calls onMessageBlur", async () => {

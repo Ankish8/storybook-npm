@@ -1,5 +1,5 @@
 import * as React from "react";
-import { HelpCircle } from "lucide-react";
+import { Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { BotHumanHandover } from "../bot-human-handover/bot-human-handover";
 import {
@@ -116,10 +116,10 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span
-                                className="inline-flex shrink-0 cursor-help text-semantic-text-muted"
+                                className="inline-flex shrink-0 cursor-pointer text-semantic-text-muted"
                                 aria-label="Connect WhatsApp: more information"
                               >
-                                <HelpCircle
+                                <Info
                                   className="size-3.5 pointer-events-none"
                                   aria-hidden
                                 />
@@ -130,7 +130,7 @@ const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
                         </TooltipProvider>
                       ) : (
                         <span className="inline-flex shrink-0 text-semantic-text-muted">
-                          <HelpCircle className="size-3.5" aria-hidden />
+                          <Info className="size-3.5" aria-hidden />
                         </span>
                       )}
                     </div>

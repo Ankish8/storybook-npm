@@ -47,7 +47,7 @@ const BotHumanHandover = React.forwardRef<HTMLDivElement, BotHumanHandoverProps>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span
-                        className="inline-flex shrink-0 cursor-help"
+                        className="inline-flex shrink-0 cursor-pointer"
                         aria-label="Human Handover: more information"
                       >
                         <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />

@@ -120,7 +120,7 @@ Tooltip.displayName = TooltipPrimitive.Root.displayName;
 const TooltipTrigger = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
->(({ onPointerDown, onClick, ...props }, ref) => {
+>(({ onPointerDown, onClick, className, ...props }, ref) => {
   const { tapMode, open, setOpen, isControlled, suppressFocusOpenRef } = useTooltipFieldContext();
 
   const onPointerDownForTap = React.useCallback(
@@ -155,6 +155,7 @@ const TooltipTrigger = React.forwardRef<
     <TooltipPrimitive.Trigger
       ref={ref}
       {...props}
+      className={cn("cursor-pointer", className)}
       onPointerDown={(e) => {
         onPointerDown?.(e);
         if (!e.defaultPrevented) {
@@ -178,7 +179,7 @@ const TooltipContent = React.forwardRef(({ className, sideOffset = 4, ...props }
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-[9999] overflow-hidden rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-xs whitespace-normal",
+        "z-[9999] pointer-events-none data-[state=delayed-open]:pointer-events-auto data-[state=instant-open]:pointer-events-auto overflow-hidden rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-xs whitespace-normal",
         className
       )}
       {...props}

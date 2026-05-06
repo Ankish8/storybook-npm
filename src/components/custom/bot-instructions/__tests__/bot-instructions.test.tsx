@@ -157,15 +157,15 @@ describe("BotInstructions", () => {
         infoTooltip="Helpful tooltip text"
       />
     );
-    const helpIcon = container.querySelector(".lucide-circle-question-mark");
-    expect(helpIcon).toBeInTheDocument();
+    const infoIcon = container.querySelector(".lucide-info");
+    expect(infoIcon).toBeInTheDocument();
   });
 
   it("does not render info icon when infoTooltip is not provided", () => {
     const { container } = render(
       <BotInstructions instructions={mockInstructions} />
     );
-    const helpIcon = container.querySelector(".lucide-circle-question-mark");
-    expect(helpIcon).not.toBeInTheDocument();
+    const infoIcon = container.querySelector(".lucide-info");
+    expect(infoIcon).not.toBeInTheDocument();
   });
 });

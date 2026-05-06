@@ -126,6 +126,20 @@ describe("Textarea", () => {
     expect(countEl).toHaveClass("text-semantic-error-primary");
   });
 
+  it("character count stays muted when raw length exceeds max but non-whitespace count does not", () => {
+    const withinBudgetWithLotsOfSpaces = "a".repeat(10) + " ".repeat(50);
+    render(
+      <Textarea
+        showCount
+        maxLength={10}
+        value={withinBudgetWithLotsOfSpaces}
+        onChange={() => {}}
+      />
+    );
+    const countEl = screen.getByText("10/10");
+    expect(countEl).toHaveClass("text-semantic-text-muted");
+  });
+
   // 8. All state variants render correct classes
   it.each([
     [

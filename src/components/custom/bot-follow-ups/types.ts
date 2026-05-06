@@ -17,6 +17,14 @@ export const DEFAULT_MAX_TOTAL_MINUTES = 23 * 60 + 59;
 /** Default empty-message validation copy (shown after blur). */
 export const DEFAULT_MESSAGE_REQUIRED_ERROR = "Message is required";
 
+/** Default maximum non-whitespace characters per follow-up message (matches counter + validation). */
+export const DEFAULT_MAX_MESSAGE_LENGTH = 250;
+
+/** Default copy when a message exceeds {@link BotFollowUpsProps.maxMessageLength}. */
+export function defaultMessageMaxLengthError(max: number): string {
+  return `Maximum ${max} characters allowed.`;
+}
+
 export interface BotFollowUpsProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onToggle"> {
   nudges: NudgeItem[];
@@ -46,6 +54,16 @@ export interface BotFollowUpsProps
    * Rendered below the field with an info icon and `text-semantic-error-primary` (same pattern as Bot Identity fields).
    */
   messageRequiredError?: string;
+  /**
+   * Maximum non-whitespace characters allowed per message (same rule as the textarea counter; whitespace does not count).
+   * Default: {@link DEFAULT_MAX_MESSAGE_LENGTH}.
+   */
+  maxMessageLength?: number;
+  /**
+   * Validation message when non-whitespace length exceeds {@link maxMessageLength}.
+   * Pass a string or a formatter; default is {@link defaultMessageMaxLengthError}.
+   */
+  messageMaxLengthError?: string | ((max: number) => string);
   /**
    * Tooltip shown next to the section title.
    * Takes precedence over `infoTooltip` when both are set.
