@@ -1,11 +1,6 @@
 import * as React from "react";
 import { Info, Plus } from "lucide-react";
 import { cn } from "../../../lib/utils";
-
-// Length of the string with all whitespace removed. Inlined so the component
-// is self-contained when distributed via the CLI.
-const countNonWhitespaceChars = (value: string): number =>
-  String(value).replace(/\s/g, "").length;
 import { tagVariants } from "../../ui/tag";
 import {
   Tooltip,
@@ -14,6 +9,11 @@ import {
   TooltipTrigger,
 } from "../../ui/tooltip";
 import { FormFieldLabel } from "./form-field-label";
+
+// Length of the string with all whitespace removed. Inlined so the component
+// is self-contained when distributed via the CLI.
+const countNonWhitespaceChars = (value: string): number =>
+  String(value).replace(/\s/g, "").length;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

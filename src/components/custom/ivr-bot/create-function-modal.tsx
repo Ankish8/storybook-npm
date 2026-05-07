@@ -1,11 +1,6 @@
 import * as React from "react";
 import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
-
-// Length of the string with all whitespace removed. Inlined so the component
-// is self-contained when distributed via the CLI.
-const countNonWhitespaceChars = (value: string): number =>
-  String(value).replace(/\s/g, "").length;
 import {
   Dialog,
   DialogContent,
@@ -55,6 +50,11 @@ import {
   hasInvalidPromptFieldChars,
   PROMPT_INVALID_CHARS_MESSAGE,
 } from "./prompt-field-validation";
+
+// Length of the string with all whitespace removed. Inlined so the component
+// is self-contained when distributed via the CLI.
+const countNonWhitespaceChars = (value: string): number =>
+  String(value).replace(/\s/g, "").length;
 
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
