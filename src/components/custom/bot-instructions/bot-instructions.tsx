@@ -35,6 +35,8 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
     },
     ref
   ) => {
+    const characterUsageTooltip = `Max ${maxCharacters} characters shared across all instruction types`;
+
     return (
       <div
         ref={ref}
@@ -68,13 +70,20 @@ const BotInstructions = React.forwardRef<HTMLDivElement, BotInstructionsProps>(
                   </TooltipProvider>
                 )}
               </div>
-              <span className="text-sm text-semantic-text-link">
-                <span>(</span>
-                <span className="font-semibold text-semantic-text-muted">
-                  {usedCharacters}
-                </span>
-                <span>{`/${maxCharacters} characters)`}</span>
-              </span>
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-pointer text-sm text-semantic-text-link">
+                      <span>(</span>
+                      <span className="font-semibold text-semantic-text-muted">
+                        {usedCharacters}
+                      </span>
+                      <span>{`/${maxCharacters} characters)`}</span>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>{characterUsageTooltip}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <Button
               type="button"
