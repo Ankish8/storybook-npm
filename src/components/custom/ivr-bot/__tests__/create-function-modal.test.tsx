@@ -1,7 +1,11 @@
+import * as React from "react";
+import "@testing-library/jest-dom/vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { CreateFunctionModal } from "../create-function-modal";
 import { HEADER_MAX_ROWS } from "../create-function-validation";
+import type { VariableGroup } from "../types";
 
 const noop = () => {};
 
@@ -335,8 +339,96 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Add row/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByText(/Header key is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/Header value is required/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Header key and value are required/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/^Header key is required$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Header value is required$/i)).not.toBeInTheDocument();
+  });
+
+  it("shows one consolidated header message when multiple rows have missing fields", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keysFirst = screen.getAllByPlaceholderText("Key");
+    await user.type(keysFirst[0]!, "s");
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(
+      screen.getByText(/Please fill all required header keys and values/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Header value is required/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Header key and value are required/i)).not.toBeInTheDocument();
+  });
+
+  it("shows granular header messages when only one row is invalid among several rows", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keys = screen.getAllByPlaceholderText("Key");
+    const vals = screen.getAllByPlaceholderText("Type {{ to add variables");
+    expect(keys).toHaveLength(2);
+    await user.type(keys[1]!, "fc-");
+    await user.type(vals[1]!, "cvcv");
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(
+      screen.getByText(/Header key and value are required/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Please fill all required header keys and values/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it("still shows invalid header key copy when multiple rows exist but a key fails format validation", async () => {
+    const onSubmit = vi.fn();
+    render(
+      <CreateFunctionModal open onOpenChange={noop} onSubmit={onSubmit} />
+    );
+    await user.type(screen.getByLabelText(/Function Name/i), "MyFunc");
+    await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
+    await user.click(screen.getByRole("button", { name: /Next/i }));
+    await user.type(
+      screen.getByPlaceholderText(/Enter URL or Type/i),
+      "https://api.example.com/"
+    );
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keys = screen.getAllByPlaceholderText("Key");
+    const vals = screen.getAllByPlaceholderText("Type {{ to add variables");
+    await user.type(keys[0]!, "x@y");
+    await user.type(vals[0]!, "v");
+    await user.click(screen.getByRole("button", { name: /Add row/i }));
+    const keysAfterAdd = screen.getAllByPlaceholderText("Key");
+    const valsAfterAdd = screen.getAllByPlaceholderText("Type {{ to add variables");
+    await user.type(keysAfterAdd[1]!, "k");
+    await user.type(valsAfterAdd[1]!, "w");
+    await user.click(screen.getByRole("button", { name: /Submit/i }));
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText(/Invalid header key/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Please fill all required header keys and values/i)
+    ).not.toBeInTheDocument();
   });
 
   it("blocks submit and shows errors when a query param row is added but left empty", async () => {
@@ -355,8 +447,11 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Add row/i }));
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(onSubmit).not.toHaveBeenCalled();
-    expect(screen.getByText(/Query param key is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Query param key and value are required/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/^Query param key is required$/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Query param value is required$/i)).not.toBeInTheDocument();
   });
 
   it("does not show submit validation on query rows added after a failed submit until Submit is clicked again", async () => {
@@ -382,13 +477,20 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Add row/i }));
     const keysAfterSecondAdd = screen.getAllByPlaceholderText("Key");
     expect(keysAfterSecondAdd).toHaveLength(2);
-    // New empty row: no "key required" until the next Submit
+    // New empty row: no submit errors on it yet; only one row has errors → granular message
     expect(screen.queryByText(/Query param key is required/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Please fill in all required query parameter keys and values/i)
+    ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /Submit/i }));
-    expect(screen.getByText(/Query param key is required/i)).toBeInTheDocument();
-    expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Please fill in all required query parameter keys and values/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Query param value is required/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Query param key and value are required/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Query param key is required$/i)).not.toBeInTheDocument();
   });
 
   it("calls onSubmit with complete data", async () => {
@@ -581,12 +683,12 @@ describe("CreateFunctionModal", () => {
     ).toBeInTheDocument();
   });
 
-  const requiredFnVarGroups = [
+  const requiredFnVarGroups: VariableGroup[] = [
     {
       label: "Function variables",
       items: [{ name: "test_yogesh124", required: true, editable: true }],
     },
-  ] as const;
+  ];
 
   it("shows required test variable error when parent omits variableGroups but user saved Required Yes on new variable", async () => {
     const onTestApi = vi.fn();
@@ -622,7 +724,7 @@ describe("CreateFunctionModal", () => {
         open
         onOpenChange={noop}
         onTestApi={onTestApi}
-        variableGroups={[...requiredFnVarGroups]}
+        variableGroups={requiredFnVarGroups}
         initialStep={2}
         initialTab="header"
         initialData={{
@@ -649,7 +751,7 @@ describe("CreateFunctionModal", () => {
         open
         onOpenChange={noop}
         onTestApi={onTestApi}
-        variableGroups={[...requiredFnVarGroups]}
+        variableGroups={requiredFnVarGroups}
         initialStep={2}
         initialTab="header"
         initialData={{
@@ -676,7 +778,7 @@ describe("CreateFunctionModal", () => {
         open
         onOpenChange={noop}
         onSubmit={onSubmit}
-        variableGroups={[...requiredFnVarGroups]}
+        variableGroups={requiredFnVarGroups}
         initialStep={2}
         initialTab="header"
         initialData={{

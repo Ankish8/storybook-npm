@@ -38,10 +38,13 @@ import {
   getQueryParamRowSubmitErrors,
   getUrlBlurValidationError,
   getUrlSubmitValidationError,
+  HEADER_MULTI_ROW_FILL_REQUIRED_MESSAGE,
   HEADER_OR_QUERY_PAIR_REQUIRED_MESSAGE,
+  keyValueErrorMessagesAreOnlyRequiredEmpty,
   hasAtLeastOneCompleteKeyValueRow,
   headerRowsHaveSubmitErrors,
   queryParamsHaveErrors,
+  QUERY_PARAM_MULTI_ROW_FILL_REQUIRED_MESSAGE,
   validateQueryParamKey,
   validateQueryParamValue,
   VARIABLE_DESCRIPTION_REQUIRED_MESSAGE,
@@ -918,6 +921,7 @@ function KeyValueTable({
   disabled = false,
   maxRows,
   maxRowsItemLabel = "rows",
+  bulkRequiredFillSummary,
 }: {
   rows: KeyValuePair[];
   onChange: (rows: KeyValuePair[]) => void;
@@ -937,6 +941,11 @@ function KeyValueTable({
   maxRows?: number;
   /** Noun for the row-limit tooltip, e.g. "headers" or "query parameters". */
   maxRowsItemLabel?: string;
+  /**
+   * When there are multiple rows, **more than one row has errors**, and every visible error is a
+   * missing key/value message, show this single line instead of stacking redundant per-row copy.
+   */
+  bulkRequiredFillSummary?: { message: string; kind: "header" | "query" };
 }) {
   const atRowLimit = maxRows !== undefined && rows.length >= maxRows;
 
@@ -1007,9 +1016,11 @@ function KeyValueTable({
                   maxLength={keyMaxLength}
                   disabled={disabled}
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
+                    "w-full px-3 py-2.5 text-base placeholder:text-semantic-text-muted outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    errors.key && "text-semantic-error-primary"
+                    errors.key
+                      ? "bg-semantic-error-surface text-semantic-error-primary"
+                      : "bg-semantic-bg-primary text-semantic-text-primary"
                   )}
                   aria-invalid={Boolean(errors.key)}
                 />
@@ -1035,9 +1046,11 @@ function KeyValueTable({
                   maxLength={valueMaxLength}
                   disabled={disabled}
                   className={cn(
-                    "w-full px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted bg-semantic-bg-primary outline-none",
+                    "w-full px-3 py-2.5 text-base placeholder:text-semantic-text-muted outline-none",
                     "disabled:opacity-50 disabled:cursor-not-allowed",
-                    errors.value && "text-semantic-error-primary"
+                    errors.value
+                      ? "bg-semantic-error-surface text-semantic-error-primary"
+                      : "bg-semantic-bg-primary text-semantic-text-primary"
                   )}
                   aria-invalid={Boolean(errors.value)}
                   onBlur={() => onValueBlur?.(row.id)}
@@ -1080,16 +1093,33 @@ function KeyValueTable({
 
       {/* Row errors — below the table (matches query/header validation UX) */}
       {(() => {
-        const allErrors = rows
-          .flatMap((row) => {
-            const errs = getErrors(row);
-            const msgs: string[] = [];
-            if (errs.key) msgs.push(errs.key);
-            if (errs.value) msgs.push(errs.value);
-            return msgs;
-          });
+        const rowsWithFieldErrors = rows.filter((row) => {
+          const errs = getErrors(row);
+          return Boolean(errs.key || errs.value);
+        });
+        const allErrors = rowsWithFieldErrors.flatMap((row) => {
+          const errs = getErrors(row);
+          const msgs: string[] = [];
+          if (errs.key) msgs.push(errs.key);
+          if (errs.value) msgs.push(errs.value);
+          return msgs;
+        });
         if (allErrors.length === 0) return null;
         const unique = Array.from(new Set(allErrors));
+
+        if (
+          bulkRequiredFillSummary &&
+          rows.length > 1 &&
+          rowsWithFieldErrors.length > 1 &&
+          keyValueErrorMessagesAreOnlyRequiredEmpty(unique, bulkRequiredFillSummary.kind)
+        ) {
+          return (
+            <p className="m-0 text-sm text-semantic-error-primary">
+              {bulkRequiredFillSummary.message}
+            </p>
+          );
+        }
+
         return (
           <div className="flex flex-col gap-0.5">
             {unique.map((msg) => (
@@ -2032,7 +2062,13 @@ export const CreateFunctionModal = React.forwardRef(
                         const keyT = row.key.trim();
                         const valT = row.value.trim();
                         const touched = headerFieldTouched[row.id] ?? {};
-                        if (!keyT && !valT) return {};
+                        if (!keyT && !valT) {
+                          if (touched.key || touched.value) {
+                            const msg = "Header key and value are required";
+                            return { key: msg, value: msg };
+                          }
+                          return {};
+                        }
                         const errors: RowErrors = {};
                         if (touched.key) {
                           if (!keyT) errors.key = "Header key is required";
@@ -2062,6 +2098,10 @@ export const CreateFunctionModal = React.forwardRef(
                       onAddVariable={handleAddVariableFromHeader}
                       onEditVariable={handleEditVariableClick}
                       disabled={disabled}
+                      bulkRequiredFillSummary={{
+                        message: HEADER_MULTI_ROW_FILL_REQUIRED_MESSAGE,
+                        kind: "header",
+                      }}
                     />
                   )}
                   {activeTab === "queryParams" && (
@@ -2083,8 +2123,13 @@ export const CreateFunctionModal = React.forwardRef(
                         const keyT = row.key.trim();
                         const valT = row.value.trim();
                         const touched = queryParamFieldTouched[row.id] ?? {};
-                        // Before any Submit: ignore fully empty rows until blur/touched.
-                        if (!keyT && !valT) return {};
+                        if (!keyT && !valT) {
+                          if (touched.key || touched.value) {
+                            const msg = "Query param key and value are required";
+                            return { key: msg, value: msg };
+                          }
+                          return {};
+                        }
                         const errors: RowErrors = {};
                         if (touched.key) {
                           const k = validateQueryParamKey(row.key);
@@ -2113,6 +2158,10 @@ export const CreateFunctionModal = React.forwardRef(
                       onAddVariable={handleAddVariableFromQuery}
                       onEditVariable={handleEditVariableClick}
                       disabled={disabled}
+                      bulkRequiredFillSummary={{
+                        message: QUERY_PARAM_MULTI_ROW_FILL_REQUIRED_MESSAGE,
+                        kind: "query",
+                      }}
                     />
                   )}
                   {activeTab === "body" && (

@@ -48,11 +48,29 @@ export function validateQueryParamValue(value: string): string | undefined {
  * Every row must have a non-empty key and value (including rows added via "Add row").
  */
 export function getQueryParamRowSubmitErrors(row: KeyValuePair): HeaderRowFieldErrors {
+  const keyT = row.key.trim();
+  const valT = row.value.trim();
   const errors: HeaderRowFieldErrors = {};
-  const keyErr = validateQueryParamKey(row.key);
-  const valErr = validateQueryParamValue(row.value);
-  if (keyErr) errors.key = keyErr;
-  if (valErr) errors.value = valErr;
+
+  if (!keyT && !valT) {
+    const msg = "Query param key and value are required";
+    errors.key = msg;
+    errors.value = msg;
+    return errors;
+  }
+
+  if (!keyT) errors.key = "Query param key is required";
+  else {
+    const keyErr = validateQueryParamKey(row.key);
+    if (keyErr) errors.key = keyErr;
+  }
+
+  if (!valT) errors.value = "Query param value is required";
+  else {
+    const valErr = validateQueryParamValue(row.value);
+    if (valErr) errors.value = valErr;
+  }
+
   return errors;
 }
 
@@ -108,6 +126,14 @@ export function getHeaderRowSubmitErrors(row: KeyValuePair): HeaderRowFieldError
   const keyT = row.key.trim();
   const valT = row.value.trim();
   const errors: HeaderRowFieldErrors = {};
+
+  if (!keyT && !valT) {
+    const msg = "Header key and value are required";
+    errors.key = msg;
+    errors.value = msg;
+    return errors;
+  }
+
   if (!keyT) errors.key = "Header key is required";
   else if (!HEADER_KEY_REGEX.test(row.key)) {
     errors.key = HEADER_KEY_INVALID_MESSAGE;
@@ -121,6 +147,40 @@ export function headerRowsHaveSubmitErrors(rows: KeyValuePair[]): boolean {
     const e = getHeaderRowSubmitErrors(row);
     return Boolean(e.key || e.value);
   });
+}
+
+/** When multiple rows have errors and only required/empty-field messages apply (see below). */
+export const HEADER_MULTI_ROW_FILL_REQUIRED_MESSAGE =
+  "Please fill all required header keys and values";
+
+/** When multiple rows have errors and only required/empty-field messages apply (see below). */
+export const QUERY_PARAM_MULTI_ROW_FILL_REQUIRED_MESSAGE =
+  "Please fill all required query parameter keys and values.";
+
+const HEADER_REQUIRED_EMPTY_MESSAGES = new Set<string>([
+  "Header key and value are required",
+  "Header key is required",
+  "Header value is required",
+]);
+
+const QUERY_REQUIRED_EMPTY_MESSAGES = new Set<string>([
+  "Query param key and value are required",
+  "Query param key is required",
+  "Query param value is required",
+]);
+
+/**
+ * Whether every validation line under the key/value table is a missing key/value message (not format/length).
+ * Used to swap multiple redundant lines for {@link HEADER_MULTI_ROW_FILL_REQUIRED_MESSAGE} /
+ * {@link QUERY_PARAM_MULTI_ROW_FILL_REQUIRED_MESSAGE} when more than one row has field errors.
+ */
+export function keyValueErrorMessagesAreOnlyRequiredEmpty(
+  messages: string[],
+  kind: "header" | "query"
+): boolean {
+  if (messages.length === 0) return false;
+  const allowed = kind === "header" ? HEADER_REQUIRED_EMPTY_MESSAGES : QUERY_REQUIRED_EMPTY_MESSAGES;
+  return messages.every((m) => allowed.has(m));
 }
 
 /**
