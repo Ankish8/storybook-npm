@@ -481,12 +481,12 @@ describe("CreateFunctionModal", () => {
     expect(screen.queryByText(/Query param key is required/i)).not.toBeInTheDocument();
     expect(screen.getByText(/Query param value is required/i)).toBeInTheDocument();
     expect(
-      screen.queryByText(/Please fill in all required query parameter keys and values/i)
+      screen.queryByText(/Please fill all required query parameter keys and values/i)
     ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /Submit/i }));
     expect(
-      screen.getByText(/Please fill in all required query parameter keys and values/i)
+      screen.getByText(/Please fill all required query parameter keys and values/i)
     ).toBeInTheDocument();
     expect(screen.queryByText(/Query param value is required/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Query param key and value are required/i)).not.toBeInTheDocument();
