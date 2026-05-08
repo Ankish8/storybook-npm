@@ -8,12 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import { Textarea } from "../../ui/textarea";
 import { FormFieldLabel } from "./form-field-label";
-
-// Length of the string with all whitespace removed. Inlined so the component
-// is self-contained when distributed via the CLI.
-const countNonWhitespaceChars = (value: string): number =>
-  String(value).replace(/\s/g, "").length;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -281,7 +277,8 @@ const BotBehaviorCard = React.forwardRef(
     ref: React.Ref<HTMLDivElement>
   ) => {
     const prompt = data.systemPrompt ?? "";
-    const promptCharCount = countNonWhitespaceChars(prompt);
+    /** Counter matches stored prompt length so spaces and newlines each count as one character. */
+    const promptCharCount = prompt.length;
     const MAX = maxLength;
     const sectionRef = React.useRef<HTMLDivElement>(null);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -434,39 +431,29 @@ const BotBehaviorCard = React.forwardRef(
             <FormFieldLabel>
               Define workflows, conditions and handover logic (System prompt)
             </FormFieldLabel>
-            <div className="flex flex-col gap-1">
-              <div className="relative">
-                <textarea
-                  ref={textareaRef}
-                  value={prompt}
-                  rows={6}
-                  onChange={handlePromptChange}
-                  onSelect={(e) => syncCaretFromTextarea(e.currentTarget)}
-                  onClick={(e) => syncCaretFromTextarea(e.currentTarget)}
-                  onKeyUp={(e) => syncCaretFromTextarea(e.currentTarget)}
-                  onBlur={(e) => syncCaretFromTextarea(e.currentTarget)}
-                  onFocus={(e) => syncCaretFromTextarea(e.currentTarget)}
-                  onKeyDown={handlePromptKeyDown}
-                  placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
-                  disabled={disabled}
-                  className={cn(
-                    "w-full px-4 py-2.5 text-base rounded border border-solid resize-none",
-                    "border-semantic-border-input bg-semantic-bg-primary",
-                    "text-semantic-text-primary placeholder:text-semantic-text-muted",
-                    "outline-none hover:border-semantic-border-input-focus",
-                    "focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-                    disabled && "opacity-50 cursor-not-allowed"
-                  )}
-                />
-                <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
-              </div>
-              <span
-                className="self-end text-sm text-semantic-text-muted"
-                aria-live="polite"
-                aria-label={`${promptCharCount} of ${MAX} characters`}
-              >
-                {promptCharCount}/{MAX}
-              </span>
+            <div className="relative">
+              <Textarea
+                ref={textareaRef}
+                value={prompt}
+                rows={6}
+                resize="none"
+                showCount
+                maxLength={MAX}
+                enforceMaxLength={false}
+                displayCharCount={promptCharCount}
+                onChange={handlePromptChange}
+                onSelect={(e) => syncCaretFromTextarea(e.currentTarget)}
+                onClick={(e) => syncCaretFromTextarea(e.currentTarget)}
+                onKeyUp={(e) => syncCaretFromTextarea(e.currentTarget)}
+                onBlur={(e) => syncCaretFromTextarea(e.currentTarget)}
+                onFocus={(e) => syncCaretFromTextarea(e.currentTarget)}
+                onKeyDown={handlePromptKeyDown}
+                placeholder="You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?'"
+                disabled={disabled}
+                wrapperClassName="gap-0"
+                className="placeholder:text-semantic-text-muted hover:border-semantic-border-input-focus"
+              />
+              <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
             </div>
             <div className="flex flex-col gap-3">
               <div className="flex flex-wrap items-center gap-2">
