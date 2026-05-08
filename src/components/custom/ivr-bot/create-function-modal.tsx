@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Trash2, ChevronDown, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
+import { Trash2, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Dialog,
@@ -15,6 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../ui/select";
 import type {
   CreateFunctionModalProps,
   CreateFunctionData,
@@ -1799,7 +1806,10 @@ export const CreateFunctionModal = React.forwardRef(
                         validateName(normalizeFunctionNameInput(e.target.value))
                       }
                       placeholder="Enter name of the function"
-                      className={cn(inputCls, "pr-16")}
+                      className={cn(
+                        inputCls,
+                        "pr-16 placeholder:text-semantic-text-placeholder"
+                      )}
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-semantic-text-muted pointer-events-none">
                       {name.length}/{nameMaxLength}
@@ -1815,7 +1825,7 @@ export const CreateFunctionModal = React.forwardRef(
                     <div className="flex items-center gap-1.5 min-w-0">
                       <label
                         htmlFor="fn-agent-message"
-                        className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]"
+                        className="text-sm font-semibold text-semantic-text-primary"
                       >
                         {botMessageOptional ? (
                           "Agent Message (Optional)"
@@ -1877,9 +1887,7 @@ export const CreateFunctionModal = React.forwardRef(
                       }}
                       placeholder={resolvedBotMessagePlaceholder}
                       required={!botMessageOptional}
-                      rows={4}
-                      size="sm"
-                      resize="vertical"
+                      rows={5}
                       error={botMessageErrorMessage}
                       errorIcon={Boolean(botMessageErrorMessage)}
                     />
@@ -1913,7 +1921,7 @@ export const CreateFunctionModal = React.forwardRef(
               <div className="flex flex-col gap-5">
                 {/* API URL — always a single combined row */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-sm text-semantic-text-muted tracking-[0.048px]">
+                  <span className="text-xs font-medium uppercase tracking-[0.06em] text-semantic-text-muted">
                     API URL
                   </span>
                     <div
@@ -1925,13 +1933,13 @@ export const CreateFunctionModal = React.forwardRef(
                         : "border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                     )}
                   >
-                    {/* Method selector */}
-                    <div className="relative shrink-0 border-r border-solid border-semantic-border-layout">
-                      <select
+                    {/* Method selector — Radix Select avoids native OS picker scaling on tablet/iPad */}
+                    <div className="relative shrink-0">
+                      <Select
                         value={method}
                         disabled={disabled}
-                        onChange={(e) => {
-                          const next = e.target.value as HttpMethod;
+                        onValueChange={(value) => {
+                          const next = value as HttpMethod;
                           setMethod(next);
                           if (!methodSupportsRequestBody(next)) {
                             setBodyError("");
@@ -1939,22 +1947,39 @@ export const CreateFunctionModal = React.forwardRef(
                             setBodyPopupStyle(undefined);
                           }
                         }}
-                        className={cn(
-                          "h-full w-[80px] pl-3 pr-7 text-base text-semantic-text-primary bg-transparent outline-none cursor-pointer appearance-none sm:w-[100px]",
-                          disabled && "opacity-50 cursor-not-allowed"
-                        )}
-                        aria-label="HTTP method"
                       >
-                        {HTTP_METHODS.map((m) => (
-                          <option key={m} value={m}>
-                            {m}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        className="absolute right-2 top-1/2 -translate-y-1/2 size-3 text-semantic-text-muted pointer-events-none"
-                        aria-hidden="true"
-                      />
+                        <SelectTrigger
+                          aria-label="HTTP method"
+                          state={urlError ? "error" : "default"}
+                          className={cn(
+                            "h-full min-h-0 w-[min(100px,30vw)] min-w-[80px] shrink-0 rounded-none border-0 border-r border-solid border-semantic-border-layout",
+                            "shadow-none focus:shadow-none focus-visible:ring-0 focus-visible:ring-offset-0",
+                            "[&>span]:line-clamp-1 [&>span]:uppercase",
+                            disabled && "cursor-not-allowed opacity-50"
+                          )}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent
+                          position="popper"
+                          align="start"
+                          sideOffset={2}
+                          className="min-w-[var(--radix-select-trigger-width)] w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)]"
+                        >
+                          {HTTP_METHODS.map((m) => (
+                            <SelectItem
+                              key={m}
+                              value={m}
+                              className={cn(
+                                "pr-4 [&>span:first-child]:hidden",
+                                "data-[state=checked]:bg-semantic-bg-ui data-[state=checked]:text-semantic-text-primary"
+                              )}
+                            >
+                              {m}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     {/* URL input with {{ trigger */}
                     <div className="relative flex-1 min-w-0">

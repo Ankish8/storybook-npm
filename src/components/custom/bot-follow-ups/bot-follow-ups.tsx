@@ -25,10 +25,16 @@ import {
   type NudgeItem,
 } from "./types";
 
-// Length of the string with all whitespace removed. Inlined so the component
-// is self-contained when distributed via the CLI.
+// Collapses runs of the space character (U+0020) so only a single space is allowed
+// between words. Newlines and other whitespace are unchanged.
+// Inlined so the component is self-contained when distributed via the CLI.
+const normalizeFollowUpMessageSpaces = (value: string): string =>
+  String(value).replace(/ {2,}/g, " ");
+
+// Character budget for validation and the counter: length after collapsing
+// duplicate spaces; ordinary spaces between words count toward the limit.
 const countNonWhitespaceChars = (value: string): number =>
-  String(value).replace(/\s/g, "").length;
+  normalizeFollowUpMessageSpaces(value).length;
 
 type MessageFieldIssue = "required" | "maxLength";
 
@@ -199,12 +205,18 @@ function NudgeCard({
       <div className="flex min-w-0 flex-col gap-1.5">
         <span className="text-xs text-semantic-text-muted">Message</span>
         <Textarea
-          value={nudge.message}
-          onChange={(e) => onMessageChange?.(nudge.id, e.target.value)}
+          value={normalizeFollowUpMessageSpaces(nudge.message)}
+          onChange={(e) =>
+            onMessageChange?.(
+              nudge.id,
+              normalizeFollowUpMessageSpaces(e.target.value)
+            )
+          }
           onBlur={(e) => onMessageBlur?.(nudge.id, e)}
           disabled={disabled}
           rows={3}
           showCount
+          displayCharCount={countNonWhitespaceChars(nudge.message)}
           maxLength={maxMessageLength}
           enforceMaxLength={false}
           error={messageError}
@@ -326,7 +338,7 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
 
     const handleMessageBlur = React.useCallback(
       (id: string, event: React.FocusEvent<HTMLTextAreaElement>) => {
-        const v = event.target.value;
+        const v = normalizeFollowUpMessageSpaces(event.target.value);
         setMessageIssues((prev) => {
           const next = { ...prev };
           if (!v.trim()) {

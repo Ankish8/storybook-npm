@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom/vitest";
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -77,7 +78,7 @@ describe("Textarea", () => {
     expect(screen.getByText("2/100")).toBeInTheDocument();
   });
 
-  it("uses non-whitespace length for the counter when displayCharCount is omitted", () => {
+  it("uses normalized length for the counter when displayCharCount is omitted", () => {
     render(
       <Textarea
         showCount
@@ -86,10 +87,11 @@ describe("Textarea", () => {
         onChange={() => {}}
       />
     );
-    expect(screen.getByText("2/100")).toBeInTheDocument();
+    // Collapses duplicate spaces; leading/trailing single spaces still count.
+    expect(screen.getByText(/^4\/100$/)).toBeInTheDocument();
   });
 
-  it("does not count spaces between letters toward the counter", () => {
+  it("counts single spaces between letters toward the counter", () => {
     render(
       <Textarea
         showCount
@@ -98,7 +100,7 @@ describe("Textarea", () => {
         onChange={() => {}}
       />
     );
-    expect(screen.getByText("3/100")).toBeInTheDocument();
+    expect(screen.getByText(/^5\/100$/)).toBeInTheDocument();
   });
 
   // 7b. enforceMaxLength=false omits native maxLength but keeps counter
@@ -127,18 +129,18 @@ describe("Textarea", () => {
     expect(countEl).toHaveClass("text-semantic-error-primary");
   });
 
-  it("character count stays muted when raw length exceeds max but non-whitespace count does not", () => {
-    const withinBudgetWithLotsOfSpaces = "a".repeat(10) + " ".repeat(50);
+  it("character count reflects normalized length when padding spaces collapse", () => {
+    const tenLettersPlusSpaces = "a".repeat(10) + " ".repeat(50);
     render(
       <Textarea
         showCount
         maxLength={10}
-        value={withinBudgetWithLotsOfSpaces}
+        value={tenLettersPlusSpaces}
         onChange={() => {}}
       />
     );
-    const countEl = screen.getByText("10/10");
-    expect(countEl).toHaveClass("text-semantic-text-muted");
+    const countEl = screen.getByText(/^11\/10$/);
+    expect(countEl).toHaveClass("text-semantic-error-primary");
   });
 
   // 8. All state variants render correct classes

@@ -306,10 +306,12 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText(/Query params \(0\)/)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Body$/ })).not.toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "DELETE");
+    await user.click(screen.getByRole("combobox", { name: /HTTP method/i }));
+    await user.click(screen.getByRole("option", { name: "DELETE" }));
     expect(screen.queryByRole("button", { name: /^Body$/ })).not.toBeInTheDocument();
 
-    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
+    await user.click(screen.getByRole("combobox", { name: /HTTP method/i }));
+    await user.click(screen.getByRole("option", { name: "POST" }));
     expect(screen.getByRole("button", { name: /^Body$/ })).toBeInTheDocument();
   });
 
@@ -318,7 +320,8 @@ describe("CreateFunctionModal", () => {
     await user.type(screen.getByLabelText(/Function Name/i), "TestFunc");
     await user.type(screen.getByLabelText(/Prompt/i), VALID_PROMPT);
     await user.click(screen.getByRole("button", { name: /Next/i }));
-    await user.selectOptions(screen.getByLabelText(/HTTP method/i), "POST");
+    await user.click(screen.getByRole("combobox", { name: /HTTP method/i }));
+    await user.click(screen.getByRole("option", { name: "POST" }));
     await user.click(screen.getByRole("button", { name: /^Body$/ }));
     expect(screen.getByPlaceholderText(/Enter request body/i)).toBeInTheDocument();
     expect(screen.getByText(/0\/4000/)).toBeInTheDocument();

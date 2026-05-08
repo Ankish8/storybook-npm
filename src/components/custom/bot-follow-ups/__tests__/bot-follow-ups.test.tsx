@@ -131,15 +131,15 @@ describe("BotFollowUps", () => {
 
   it("shows character count with default max message length", () => {
     render(<BotFollowUps nudges={[SAMPLE_NUDGES[0]]} />);
-    // Matches Textarea counter: non-whitespace length vs max (17 for sample message).
-    expect(screen.getByText("17/250")).toBeInTheDocument();
+    // Matches Textarea counter: length includes spaces (20 for sample message).
+    expect(screen.getByText("20/250")).toBeInTheDocument();
   });
 
   it("shows character count with custom maxMessageLength", () => {
     render(
       <BotFollowUps nudges={[SAMPLE_NUDGES[0]]} maxMessageLength={100} />
     );
-    expect(screen.getByText("17/100")).toBeInTheDocument();
+    expect(screen.getByText("20/100")).toBeInTheDocument();
   });
 
   it("shows max-length validation when message exceeds limit", () => {
@@ -158,21 +158,47 @@ describe("BotFollowUps", () => {
     );
   });
 
-  it("does not show max-length validation when only raw length exceeds limit (whitespace excluded)", () => {
-    const spacesOnlyOverRawLimit =
-      "x".repeat(200) + " ".repeat(60); // 260 chars total, 200 toward budget (matches counter)
+  it("shows max-length validation when length including spaces exceeds limit", () => {
+    const overLimitWithSpaces =
+      "x".repeat(240) + " " + "x".repeat(10); // 251 chars; spaces count toward budget
     render(
       <BotFollowUps
-        nudges={[{ ...SAMPLE_NUDGES[0], message: spacesOnlyOverRawLimit }]}
+        nudges={[{ ...SAMPLE_NUDGES[0], message: overLimitWithSpaces }]}
       />
     );
     expect(
-      screen.queryByText(defaultMessageMaxLengthError(250))
-    ).not.toBeInTheDocument();
+      screen.getByText(defaultMessageMaxLengthError(250))
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Followup 1 message")).toHaveAttribute(
       "aria-invalid",
-      "false"
+      "true"
     );
+  });
+
+  it("increments the displayed count when a space is typed after text", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulBotFollowUps
+        initialNudges={[{ ...SAMPLE_NUDGES[0], message: "" }]}
+      />
+    );
+    const textarea = screen.getByLabelText("Followup 1 message");
+    await user.type(textarea, "a");
+    expect(screen.getByText("1/250")).toBeInTheDocument();
+    await user.type(textarea, " ");
+    expect(screen.getByText("2/250")).toBeInTheDocument();
+  });
+
+  it("collapses consecutive spaces so duplicate spaces do not inflate the count", () => {
+    const padded =
+      "x".repeat(200) + " ".repeat(60); // raw 260 chars; normalized to 201
+    render(
+      <BotFollowUps nudges={[{ ...SAMPLE_NUDGES[0], message: padded }]} />
+    );
+    expect(screen.getByText("201/250")).toBeInTheDocument();
+    expect(
+      screen.queryByText(defaultMessageMaxLengthError(250))
+    ).not.toBeInTheDocument();
   });
 
   it("shows max-length validation after typing past limit (controlled)", async () => {

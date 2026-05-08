@@ -216,7 +216,7 @@ const FallbackPromptsCard = React.forwardRef(
                   disabled={disabled}
                   onChange={(v) => onChange({ agentBusyPrompt: v })}
                   onBlur={onAgentBusyPromptBlur}
-                  rows={2}
+                  rows={4}
                 />
                 <PromptField
                   label="No Extension Found"

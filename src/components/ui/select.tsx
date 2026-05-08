@@ -46,7 +46,7 @@ export interface SelectTriggerProps
 const SelectTrigger = React.forwardRef(({ className, state, children, ...props }: SelectTriggerProps, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Trigger>>) => (
   <SelectPrimitive.Trigger
     ref={ref}
-    className={cn(selectTriggerVariants({ state, className }))}
+    className={cn(selectTriggerVariants({ state }), className)}
     {...props}
   >
     {children}

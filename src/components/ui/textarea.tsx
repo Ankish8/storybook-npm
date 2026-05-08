@@ -4,11 +4,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-// Length of the string with all whitespace removed. Inlined so the component
-// is self-contained when distributed via the CLI (consumer's lib/utils.ts is
-// scaffolded once at init and not updated by `add`).
+// Collapses runs of the space character (U+0020) so only a single space is allowed
+// between segments. Newlines and other whitespace are unchanged.
+// Inlined so the component is self-contained when distributed via the CLI.
+const normalizeTextareaSpaces = (value: string): string =>
+  String(value).replace(/ {2,}/g, " ");
+
+// Default counter length: normalized text length (spaces count; duplicate spaces do not).
 const countNonWhitespaceChars = (value: string): number =>
-  String(value).replace(/\s/g, "").length;
+  normalizeTextareaSpaces(value).length;
 
 /**
  * Textarea variants for different visual states
@@ -37,7 +41,9 @@ const textareaVariants = cva(
 
 /**
  * A multi-line text input with label, error state, helper text, character counter, and resize control.
- * With `showCount` and `maxLength`, the counter excludes all whitespace unless `displayCharCount` is set.
+ * With `showCount` and `maxLength`, the counter uses normalized length (single spaces
+ * between words count toward the limit) unless `displayCharCount` is set. Duplicate
+ * spaces are collapsed on change and in the displayed value.
  *
  * @example
  * ```tsx
@@ -68,8 +74,8 @@ export interface TextareaProps
   /** Shows character count when maxLength is set */
   showCount?: boolean;
   /**
-   * When set, the counter shows this number instead of the default non-whitespace length
-   * (see `countNonWhitespaceChars` defined in this file).
+   * When set, the counter shows this number instead of the default normalized length
+   * (see `countNonWhitespaceChars` in this file).
    * Does not change native `maxLength` or stored value — display only.
    */
   displayCharCount?: number;
@@ -114,27 +120,38 @@ const Textarea = React.forwardRef(
     }: TextareaProps,
     ref: React.ForwardedRef<HTMLTextAreaElement>
   ) => {
-    // Internal state for character count in uncontrolled mode
-    const [internalValue, setInternalValue] = React.useState(
-      defaultValue ?? ""
+    // Internal state for character count in uncontrolled mode (normalized)
+    const [internalValue, setInternalValue] = React.useState(() =>
+      normalizeTextareaSpaces(String(defaultValue ?? ""))
     );
 
     // Determine if controlled
     const isControlled = value !== undefined;
-    const currentValue = isControlled ? value : internalValue;
+    const currentValue = isControlled
+      ? normalizeTextareaSpaces(String(value ?? ""))
+      : internalValue;
 
     // Derive state from props
     const derivedState = error ? "error" : (state ?? "default");
 
-    // Handle change for both controlled and uncontrolled
+    // Handle change for both controlled and uncontrolled — collapse duplicate spaces
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const normalized = normalizeTextareaSpaces(e.target.value);
       if (!isControlled) {
-        setInternalValue(e.target.value);
+        setInternalValue(normalized);
       }
-      onChange?.(e);
+      if (!onChange) return;
+      if (normalized === e.target.value) {
+        onChange(e);
+        return;
+      }
+      onChange({
+        ...e,
+        target: { ...e.target, value: normalized },
+        currentTarget: { ...e.currentTarget, value: normalized },
+      } as React.ChangeEvent<HTMLTextAreaElement>);
     };
 
-    // Counter excludes whitespace so spacing between words does not consume the budget.
     const charCount =
       displayCharCount !== undefined
         ? displayCharCount
@@ -189,8 +206,7 @@ const Textarea = React.forwardRef(
           maxLength={
             enforceMaxLength !== false ? maxLength : undefined
           }
-          value={isControlled ? value : undefined}
-          defaultValue={!isControlled ? defaultValue : undefined}
+          value={currentValue}
           onChange={handleChange}
           aria-invalid={!!error}
           aria-describedby={ariaDescribedBy}
