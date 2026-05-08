@@ -1,6 +1,6 @@
 {
   "name": "myoperator-mcp",
-  "version": "0.2.276",
+  "version": "0.2.277",
   "description": "MCP server for myOperator UI components - enables AI assistants to access component metadata, examples, and design tokens",
   "type": "module",
   "bin": "./dist/index.js",
