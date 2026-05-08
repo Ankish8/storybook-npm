@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../../ui/tooltip";
+import { Textarea } from "../../ui/textarea";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -117,23 +118,19 @@ function PromptField({
       ) : (
         <label className={labelClasses}>{label}</label>
       )}
-      <textarea
+      <Textarea
         value={value}
         placeholder={placeholder}
         maxLength={maxLength}
+        showCount
         disabled={disabled}
         rows={rows}
+        resize="none"
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onBlur?.(e.target.value)}
-        className={cn(
-          "w-full resize-none rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 py-2.5 text-base text-semantic-text-primary placeholder:text-semantic-text-muted outline-none transition-all",
-          "focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-          disabled && "cursor-not-allowed opacity-50"
-        )}
+        wrapperClassName="gap-1.5"
+        className="min-h-0"
       />
-      <p className="m-0 text-xs text-semantic-text-muted text-right">
-        {value.length}/{maxLength}
-      </p>
     </div>
   );
 }
