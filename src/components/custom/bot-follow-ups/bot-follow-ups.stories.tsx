@@ -52,6 +52,19 @@ import { BotFollowUps, DEFAULT_MAX_TOTAL_MINUTES } from "@/components/custom/bot
       description:
         "Optional override for row label (default: Followup 1, Followup 2, …)",
     },
+    maxMessageLength: {
+      control: { type: "number", min: 1 },
+      description: "Max characters per message (default: 250)",
+    },
+    showMaxLengthError: {
+      control: "boolean",
+      description:
+        "Show an inline error when the message exceeds maxMessageLength (default: false)",
+    },
+    messageMaxLengthError: {
+      control: "text",
+      description: "Custom error text when message exceeds max length",
+    },
     onDelayHoursBlur: { action: "onDelayHoursBlur" },
     onDelayMinutesBlur: { action: "onDelayMinutesBlur" },
     onMessageBlur: { action: "onMessageBlur" },
@@ -200,4 +213,30 @@ export const Disabled: Story = {
       <BotFollowUps nudges={MULTIPLE_NUDGES} disabled />
     </div>
   ),
+};
+
+export const WithMaxLengthError: Story = {
+  name: "Max-Length Validation",
+  render: function Render() {
+    const [nudges, setNudges] = useState<NudgeItem[]>([
+      {
+        ...SINGLE_NUDGE[0],
+        message: "x".repeat(260),
+      },
+    ]);
+
+    return (
+      <div className="w-full max-w-[560px]">
+        <BotFollowUps
+          nudges={nudges}
+          showMaxLengthError
+          onMessageChange={(id, message) =>
+            setNudges((prev) =>
+              prev.map((n) => (n.id === id ? { ...n, message } : n))
+            )
+          }
+        />
+      </div>
+    );
+  },
 };

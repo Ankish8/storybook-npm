@@ -147,6 +147,7 @@ describe("BotFollowUps", () => {
     render(
       <BotFollowUps
         nudges={[{ ...SAMPLE_NUDGES[0], message: longMessage }]}
+        showMaxLengthError
       />
     );
     expect(
@@ -164,6 +165,7 @@ describe("BotFollowUps", () => {
     render(
       <BotFollowUps
         nudges={[{ ...SAMPLE_NUDGES[0], message: overLimitWithSpaces }]}
+        showMaxLengthError
       />
     );
     expect(
@@ -207,6 +209,7 @@ describe("BotFollowUps", () => {
       <StatefulBotFollowUps
         initialNudges={[{ ...SAMPLE_NUDGES[0], message: "" }]}
         maxMessageLength={10}
+        showMaxLengthError
       />
     );
     const textarea = screen.getByLabelText("Followup 1 message");
@@ -222,6 +225,7 @@ describe("BotFollowUps", () => {
       <StatefulBotFollowUps
         initialNudges={[{ ...SAMPLE_NUDGES[0], message: "12345678901" }]}
         maxMessageLength={10}
+        showMaxLengthError
       />
     );
     expect(
@@ -239,6 +243,7 @@ describe("BotFollowUps", () => {
       <BotFollowUps
         nudges={[{ ...SAMPLE_NUDGES[0], message: "x".repeat(251) }]}
         messageMaxLengthError="Too long."
+        showMaxLengthError
       />
     );
     expect(screen.getByText("Too long.")).toBeInTheDocument();
