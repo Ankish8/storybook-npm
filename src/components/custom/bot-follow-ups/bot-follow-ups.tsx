@@ -248,6 +248,7 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
       onMessageBlur,
       messageRequiredError = DEFAULT_MESSAGE_REQUIRED_ERROR,
       messageMaxLengthError,
+      showMaxLengthError = false,
       maxMessageLength = DEFAULT_MAX_MESSAGE_LENGTH,
       tooltip,
       infoTooltip,
@@ -430,7 +431,8 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
                           messageError={
                             messageIssues[nudge.id] === "required"
                               ? messageRequiredError
-                              : messageIssues[nudge.id] === "maxLength"
+                              : showMaxLengthError &&
+                                  messageIssues[nudge.id] === "maxLength"
                                 ? resolvedMaxLenMsg
                                 : undefined
                           }

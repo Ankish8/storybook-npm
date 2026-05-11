@@ -65,6 +65,11 @@ export interface BotFollowUpsProps
    */
   messageMaxLengthError?: string | ((max: number) => string);
   /**
+   * Whether to display an error message when the message exceeds {@link maxMessageLength}.
+   * Default: `false`.
+   */
+  showMaxLengthError?: boolean;
+  /**
    * Tooltip shown next to the section title.
    * Takes precedence over `infoTooltip` when both are set.
    */
