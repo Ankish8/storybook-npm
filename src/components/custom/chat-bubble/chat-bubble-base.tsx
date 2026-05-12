@@ -5,6 +5,7 @@ import {
   Check,
   CheckCheck,
   CircleAlert,
+  Clock,
   ExternalLink,
   File,
   Phone as PhoneIcon,
@@ -68,7 +69,14 @@ function LegacyDeliveryFooter({
     >
       {variant === "sender" && status && (
         <>
-          {status === "failed" ? (
+          {status === "queued" ? (
+            <>
+              <Clock className="size-4 text-semantic-text-muted shrink-0" />
+              <span className="text-[12px] text-semantic-text-muted">
+                Queued
+              </span>
+            </>
+          ) : status === "failed" ? (
             <>
               <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
               <span className="text-[12px] text-semantic-error-primary font-medium">
@@ -160,7 +168,14 @@ function MessageModeReplyQuoteButton({
 function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
   return (
     <div
-      className={`flex items-center mt-1.5 ${msg.type === "audio" ? "justify-between" : msg.sender === "agent" ? "justify-end gap-1.5" : "justify-start gap-1.5"}`}
+      className={cn(
+        "flex items-center mt-1.5",
+        msg.type === "audio"
+          ? "justify-between"
+          : msg.sender === "agent"
+            ? "justify-end gap-1.5"
+            : "justify-start gap-1.5"
+      )}
       style={msg.type === "audio" ? { paddingLeft: 0 } : undefined}
     >
       {msg.type === "audio" && msg.media && (
@@ -174,7 +189,17 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
       <div className="flex items-center gap-1.5">
         {msg.sender === "agent" && msg.status && (
           <>
-            {msg.status === "failed" ? (
+            {msg.status === "queued" ? (
+              <>
+                <Clock className="size-4 text-semantic-text-muted shrink-0" />
+                <span
+                  style={{ fontSize: 12 }}
+                  className="text-semantic-text-muted"
+                >
+                  Queued
+                </span>
+              </>
+            ) : msg.status === "failed" ? (
               <span role="alert" className="inline-flex items-center gap-1.5">
                 <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
                 <span className="text-[13px] text-semantic-error-primary font-medium">
@@ -196,7 +221,12 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
                   <Check className="size-4 text-semantic-text-muted shrink-0" />
                 ) : (
                   <CheckCheck
-                    className={`size-4 shrink-0 ${msg.status === "read" ? "text-semantic-text-link" : "text-semantic-text-muted"}`}
+                    className={cn(
+                      "size-4 shrink-0",
+                      msg.status === "read"
+                        ? "text-semantic-text-link"
+                        : "text-semantic-text-muted"
+                    )}
                   />
                 )}
                 <span
@@ -224,6 +254,70 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
         </span>
       </div>
     </div>
+  );
+}
+
+function MessageModeDeliveryFooterInline({ msg }: { msg: ChatMessage }) {
+  const isFailed = msg.status === "failed";
+  const isQueued = msg.status === "queued";
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center align-bottom ml-2 whitespace-nowrap text-[12px] text-semantic-text-muted",
+        isFailed ? "gap-1.5" : "gap-1"
+      )}
+    >
+      {msg.sender === "agent" && msg.status && (
+        <>
+          {isQueued ? (
+            <>
+              <Clock className="size-4 text-semantic-text-muted shrink-0" />
+              <span>Queued</span>
+            </>
+          ) : isFailed ? (
+            <>
+              <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
+              <span className="text-semantic-error-primary font-medium">
+                Failed
+              </span>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="m-0 border-0 bg-transparent p-0 font-semibold text-semantic-text-link underline hover:no-underline cursor-pointer"
+              >
+                Retry
+              </button>
+            </>
+          ) : (
+            <>
+              {msg.status === "sent" ? (
+                <Check className="size-4 text-semantic-text-muted shrink-0" />
+              ) : (
+                <CheckCheck
+                  className={cn(
+                    "size-4 shrink-0",
+                    msg.status === "read"
+                      ? "text-semantic-text-link"
+                      : "text-semantic-text-muted"
+                  )}
+                />
+              )}
+              <span>
+                {msg.status === "sent"
+                  ? "Sent"
+                  : msg.status === "delivered"
+                    ? "Delivered"
+                    : "Read"}
+              </span>
+            </>
+          )}
+          <span className="font-semibold" style={{ fontSize: 10 }}>
+            &bull;
+          </span>
+        </>
+      )}
+      <span>{msg.time}</span>
+    </span>
   );
 }
 
@@ -361,6 +455,13 @@ const ChatBubbleMessageMode = React.forwardRef<
     hasButtons,
   } = computeMessageBubbleLayout(msg);
 
+  const shouldUseInlineFooter =
+    hasText &&
+    msg.type !== "carousel" &&
+    !hasMedia &&
+    !isDocWithMeta &&
+    !hasButtons;
+
   return (
     <div
       ref={ref}
@@ -379,39 +480,17 @@ const ChatBubbleMessageMode = React.forwardRef<
           msg.sender === "agent" ? "items-end" : "items-start"
         )}
       >
-        {msg.sender === "agent" &&
-          (msg.senderName || msg.sentBy || senderIndicator) && (
-            <div
-              className={cn(
-                "mb-1 flex w-full max-w-full items-center gap-1.5 px-1",
-                "justify-end"
-              )}
-            >
-              {msg.senderName && (
-                <span className="min-w-0 break-words text-right text-[12px] leading-5 text-semantic-text-muted">
-                  {msg.senderName}
-                </span>
-              )}
-              {msg.sentBy ? (
-                <SenderIndicator
-                  sentBy={msg.sentBy}
-                  withTooltip
-                  className="!size-6 !min-h-6 !min-w-6 shrink-0"
-                />
-              ) : (
-                senderIndicator && (
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
-                    {senderIndicator}
-                  </div>
-                )
-              )}
-            </div>
-          )}
         {msg.sender === "customer" && msg.senderName && (
           <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
             {msg.senderName}
           </span>
         )}
+        <div
+          className={cn(
+            "flex items-start gap-1.5 w-full",
+            msg.sender === "agent" ? "justify-end" : "justify-start"
+          )}
+        >
         <div
           className={cn(
             "rounded-lg overflow-hidden",
@@ -430,6 +509,29 @@ const ChatBubbleMessageMode = React.forwardRef<
               : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
           )}
         >
+          {msg.sender === "agent" &&
+            (msg.senderName || msg.sentBy || senderIndicator) && (
+              <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
+                {msg.sentBy ? (
+                  <SenderIndicator
+                    sentBy={msg.sentBy}
+                    withTooltip
+                    className="!size-6 !min-h-6 !min-w-6 shrink-0"
+                  />
+                ) : (
+                  senderIndicator && (
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+                      {senderIndicator}
+                    </div>
+                  )
+                )}
+                {msg.senderName && (
+                  <span className="min-w-0 truncate text-[12px] leading-5 text-semantic-text-muted">
+                    {msg.senderName}
+                  </span>
+                )}
+              </div>
+            )}
           {msg.type === "carousel" && hasText && (
             <div className="px-3 pt-3">
               <p className="text-[14px] leading-5 m-0">
@@ -497,9 +599,15 @@ const ChatBubbleMessageMode = React.forwardRef<
 
           <div
             className={cn(
+              "px-3",
+              hasButtons ? "pb-2" : "pb-1.5",
               hasMedia
-                ? `px-3 ${hasButtons ? "pb-2" : "pb-1.5"} ${msg.type === "audio" ? "pt-0" : msg.type === "otherDoc" ? "pt-3 mt-1" : "pt-2"}`
-                : `px-3 pt-3 ${hasButtons ? "pb-2" : "pb-1.5"}`
+                ? msg.type === "audio"
+                  ? "pt-0"
+                  : msg.type === "otherDoc"
+                    ? "pt-3 mt-1"
+                    : "pt-2"
+                : "pt-3"
             )}
           >
             {msg.replyTo && (
@@ -508,6 +616,9 @@ const ChatBubbleMessageMode = React.forwardRef<
             {hasText && msg.type !== "carousel" && (
               <p className="text-[14px] leading-5 m-0">
                 {msg.text || mediaCaption}
+                {shouldUseInlineFooter && (
+                  <MessageModeDeliveryFooterInline msg={msg} />
+                )}
               </p>
             )}
             {isDocWithMeta && (
@@ -525,7 +636,9 @@ const ChatBubbleMessageMode = React.forwardRef<
                 </span>
               </div>
             )}
-            {!hasButtons && <MessageModeDeliveryFooter msg={msg} />}
+            {!hasButtons && !shouldUseInlineFooter && (
+              <MessageModeDeliveryFooter msg={msg} />
+            )}
           </div>
           {hasButtons && (
             <>
@@ -538,32 +651,33 @@ const ChatBubbleMessageMode = React.forwardRef<
             </>
           )}
         </div>
+        {msg.sender === "customer" && onReplyTo && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Reply"
+                onClick={() =>
+                  onReplyTo({
+                    messageId: msg.id,
+                    sender: replyParticipantName ?? "",
+                    text: msg.text || msg.media?.caption || "",
+                  })
+                }
+                className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+              >
+                <Reply className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p className="m-0">Reply</p>
+              <TooltipArrow />
+            </TooltipContent>
+          </Tooltip>
+        )}
+        </div>
       </div>
-      {msg.sender === "customer" && onReplyTo && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Reply"
-              onClick={() =>
-                onReplyTo({
-                  messageId: msg.id,
-                  sender: replyParticipantName ?? "",
-                  text: msg.text || msg.media?.caption || "",
-                })
-              }
-              className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
-            >
-              <Reply className="size-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p className="m-0">Reply</p>
-            <TooltipArrow />
-          </TooltipContent>
-        </Tooltip>
-      )}
     </div>
   );
 });
@@ -748,25 +862,6 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             variant === "sender" ? "items-end" : "items-start"
           )}
         >
-          {variant === "sender" && (senderName || senderIndicator) && (
-            <div
-              className={cn(
-                "mb-1 flex w-full max-w-full items-center gap-1.5 px-1",
-                "justify-end"
-              )}
-            >
-              {senderName && (
-                <span className="min-w-0 break-words text-right text-[12px] leading-5 text-semantic-text-muted">
-                  {senderName}
-                </span>
-              )}
-              {senderIndicator && (
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
-                  {senderIndicator}
-                </div>
-              )}
-            </div>
-          )}
           {variant === "receiver" && senderName && (
             <span className="mb-1 px-1 text-[12px] text-semantic-text-muted">
               {senderName}
@@ -781,6 +876,25 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
             )}
           >
+            {variant === "sender" && (senderName || senderIndicator) && (
+              <div
+                className={cn(
+                  "flex items-center gap-2 pb-1",
+                  hasMedia ? "px-3 pt-2.5" : "pt-0"
+                )}
+              >
+                {senderIndicator && (
+                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+                    {senderIndicator}
+                  </div>
+                )}
+                {senderName && (
+                  <span className="min-w-0 truncate text-[12px] leading-5 text-semantic-text-muted">
+                    {senderName}
+                  </span>
+                )}
+              </div>
+            )}
             {media}
             <div className={hasMedia ? "px-3 pb-1.5 pt-2" : ""}>
               {reply && (

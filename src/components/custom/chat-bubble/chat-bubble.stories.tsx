@@ -377,6 +377,9 @@ export const AllStatuses: Story = {
   name: "All Delivery Statuses",
   render: () => (
     <div className="flex flex-col gap-4">
+      <ChatBubble variant="sender" timestamp="2:14 PM" status="queued">
+        This message is queued for delivery.
+      </ChatBubble>
       <ChatBubble variant="sender" timestamp="2:15 PM" status="sent">
         This message was sent.
       </ChatBubble>

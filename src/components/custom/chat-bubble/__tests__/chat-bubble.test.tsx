@@ -250,7 +250,7 @@ describe("ChatBubble", () => {
       renderWithTooltip(<ChatBubble message={msg} />);
       const name = screen.getByText("Alex Smith");
       const headerRow = name.parentElement;
-      expect(headerRow).toHaveClass("justify-end");
+      expect(headerRow).toHaveClass("flex", "items-center");
       expect(headerRow?.querySelector("svg")).toBeTruthy();
     });
   });

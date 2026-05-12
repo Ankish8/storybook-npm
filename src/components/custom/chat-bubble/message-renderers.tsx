@@ -26,6 +26,7 @@ import {
   DropdownMenuRadioItem,
 } from "../../ui/dropdown-menu"
 import { Spinner } from "../../ui/spinner"
+import { cn } from "../../../lib/utils"
 import type {
   MediaPayload,
   LocationPayload,
@@ -79,7 +80,10 @@ function VideoMedia({ media }: { media: MediaPayload }) {
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
       {/* Center play/pause */}
-      <div className={`absolute inset-0 flex items-center justify-center transition-opacity ${playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"}`}>
+      <div className={cn(
+        "absolute inset-0 flex items-center justify-center transition-opacity",
+        playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+      )}>
         <button type="button" aria-label={playing ? "Pause video" : "Play video"} className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors border-none cursor-pointer">
           {playing ? (
             <Pause className="size-7 text-white fill-white" />
@@ -318,7 +322,10 @@ function CarouselCardMedia({ item }: { item: CarouselCardItem }) {
         type="button"
         onClick={toggle}
         aria-label={playing ? "Pause video" : "Play video"}
-        className={`absolute inset-0 flex items-center justify-center cursor-pointer border-none bg-transparent p-0 transition-opacity ${playing ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
+        className={cn(
+          "absolute inset-0 flex items-center justify-center cursor-pointer border-none bg-transparent p-0 transition-opacity",
+          playing ? "opacity-0 hover:opacity-100" : "opacity-100"
+        )}
       >
         <span className="size-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
           {playing ? (

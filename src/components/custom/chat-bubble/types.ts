@@ -10,7 +10,7 @@ import type {
   SentByType,
 } from "../chat-types";
 
-export type DeliveryStatus = "sent" | "delivered" | "read" | "failed";
+export type DeliveryStatus = "queued" | "sent" | "delivered" | "read" | "failed";
 
 export interface ChatBubbleReply {
   /** Name of the person being replied to */

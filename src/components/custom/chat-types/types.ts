@@ -169,7 +169,7 @@ export type ChatMessage = {
     | "location"
     | "contact"
     | "listReply"
-  status?: "sent" | "delivered" | "read" | "failed"
+  status?: "queued" | "sent" | "delivered" | "read" | "failed"
   replyTo?: { sender: string; text: string; messageId?: string }
   media?: MediaPayload
   error?: string
