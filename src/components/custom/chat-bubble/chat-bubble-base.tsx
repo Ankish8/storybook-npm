@@ -600,13 +600,8 @@ const ChatBubbleMessageMode = React.forwardRef<
           msg.sender === "agent" ? "items-end" : "items-start"
         )}
       >
-        {msg.senderName && (
-          <span
-            className={cn(
-              "text-[12px] text-semantic-text-muted mb-1 px-1",
-              msg.sender === "agent" ? "text-right" : ""
-            )}
-          >
+        {msg.sender === "customer" && msg.senderName && (
+          <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
             {msg.senderName}
           </span>
         )}
@@ -996,13 +991,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             variant === "sender" ? "items-end" : "items-start"
           )}
         >
-          {senderName && (
-            <span
-              className={cn(
-                "mb-1 px-1 text-[12px] text-semantic-text-muted",
-                variant === "sender" ? "text-right" : ""
-              )}
-            >
+          {variant === "receiver" && senderName && (
+            <span className="mb-1 px-1 text-[12px] text-semantic-text-muted">
               {senderName}
             </span>
           )}

@@ -48,13 +48,22 @@ describe("ChatBubble", () => {
     expect(bubble).toBeInTheDocument();
   });
 
-  it("shows sender name when provided", () => {
+  it("shows sender name when provided (receiver variant; agent identity comes from sentBy tooltip)", () => {
+    render(
+      <ChatBubble variant="receiver" timestamp="2:15 PM" senderName="Alex Smith">
+        Test
+      </ChatBubble>
+    );
+    expect(screen.getByText("Alex Smith")).toBeInTheDocument();
+  });
+
+  it("does not render senderName text on sender variant (icon tooltip carries identity)", () => {
     render(
       <ChatBubble variant="sender" timestamp="2:15 PM" senderName="Alex Smith">
         Test
       </ChatBubble>
     );
-    expect(screen.getByText("Alex Smith")).toBeInTheDocument();
+    expect(screen.queryByText("Alex Smith")).not.toBeInTheDocument();
   });
 
   it("shows delivery status for sender variant", () => {
@@ -423,7 +432,7 @@ describe("ChatBubble", () => {
       expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
     });
 
-    it("renders sentBy source badge outside the bubble, with senderName above (agent)", () => {
+    it("renders sentBy badge outside the bubble; agent senderName is not displayed (icon tooltip carries identity)", () => {
       const msg: ChatMessage = {
         id: "m-agent-sentby",
         text: "Campaign line",
@@ -435,9 +444,9 @@ describe("ChatBubble", () => {
         sentBy: { type: "campaign" },
       };
       const { container } = renderWithTooltip(<ChatBubble message={msg} />);
-      // senderName renders as a span above the bubble (inside the column, not inside bubble).
-      const name = screen.getByText("Alex Smith");
-      expect(name.tagName).toBe("SPAN");
+      // Agent senderName is NOT displayed as visible text — identity comes from the
+      // sentBy icon's tooltip (`withTooltip`) instead.
+      expect(screen.queryByText("Alex Smith")).not.toBeInTheDocument();
       // sentBy badge is a sibling of the bubble div in the inner flex row (items-end → bottom-aligned).
       const innerRow = container.querySelector("div.items-end");
       expect(innerRow).not.toBeNull();
