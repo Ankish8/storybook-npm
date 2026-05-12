@@ -423,7 +423,7 @@ describe("ChatBubble", () => {
       expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
     });
 
-    it("renders sentBy source badge in the header row next to sender name (agent)", () => {
+    it("renders sentBy source badge outside the bubble, with senderName above (agent)", () => {
       const msg: ChatMessage = {
         id: "m-agent-sentby",
         text: "Campaign line",
@@ -434,11 +434,17 @@ describe("ChatBubble", () => {
         senderName: "Alex Smith",
         sentBy: { type: "campaign" },
       };
-      renderWithTooltip(<ChatBubble message={msg} />);
+      const { container } = renderWithTooltip(<ChatBubble message={msg} />);
+      // senderName renders as a span above the bubble (inside the column, not inside bubble).
       const name = screen.getByText("Alex Smith");
-      const headerRow = name.parentElement;
-      expect(headerRow).toHaveClass("flex", "items-center");
-      expect(headerRow?.querySelector("svg")).toBeTruthy();
+      expect(name.tagName).toBe("SPAN");
+      // sentBy badge is a sibling of the bubble div in the inner flex row (items-end → bottom-aligned).
+      const innerRow = container.querySelector("div.items-end");
+      expect(innerRow).not.toBeNull();
+      expect(innerRow?.querySelector("svg")).toBeTruthy();
+      // The badge is NOT inside the bubble div (which has the rounded-lg class).
+      const bubble = container.querySelector("div.rounded-lg");
+      expect(bubble?.querySelector("svg[class*='lucide-megaphone']")).toBeFalsy();
     });
   });
 

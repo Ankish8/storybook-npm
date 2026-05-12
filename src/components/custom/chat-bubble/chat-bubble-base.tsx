@@ -564,6 +564,24 @@ const ChatBubbleMessageMode = React.forwardRef<
     </Tooltip>
   ) : null;
 
+  // Sender indicator (bot / campaign / api / agent initials) renders OUTSIDE the
+  // bubble, vertically centered with it, on the bubble's outer edge (right side
+  // for agent messages). Mirrors how the reply icon sits on the opposite side.
+  const senderIcon =
+    msg.sender === "agent" && (msg.sentBy || senderIndicator) ? (
+      msg.sentBy ? (
+        <SenderIndicator
+          sentBy={msg.sentBy}
+          withTooltip
+          className="!size-6 !min-h-6 !min-w-6 shrink-0"
+        />
+      ) : (
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+          {senderIndicator}
+        </div>
+      )
+    ) : null;
+
   return (
     <div
       ref={ref}
@@ -582,14 +600,19 @@ const ChatBubbleMessageMode = React.forwardRef<
           msg.sender === "agent" ? "items-end" : "items-start"
         )}
       >
-        {msg.sender === "customer" && msg.senderName && (
-          <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
+        {msg.senderName && (
+          <span
+            className={cn(
+              "text-[12px] text-semantic-text-muted mb-1 px-1",
+              msg.sender === "agent" ? "text-right" : ""
+            )}
+          >
             {msg.senderName}
           </span>
         )}
         <div
           className={cn(
-            "flex items-start gap-1.5 w-full",
+            "flex items-end gap-1.5 w-full",
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
@@ -612,29 +635,6 @@ const ChatBubbleMessageMode = React.forwardRef<
               : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
           )}
         >
-          {msg.sender === "agent" &&
-            (msg.senderName || msg.sentBy || senderIndicator) && (
-              <div className="flex items-center gap-2 px-3 pt-2.5 pb-1">
-                {msg.sentBy ? (
-                  <SenderIndicator
-                    sentBy={msg.sentBy}
-                    withTooltip
-                    className="!size-6 !min-h-6 !min-w-6 shrink-0"
-                  />
-                ) : (
-                  senderIndicator && (
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
-                      {senderIndicator}
-                    </div>
-                  )
-                )}
-                {msg.senderName && (
-                  <span className="min-w-0 truncate text-[12px] leading-5 text-semantic-text-muted">
-                    {msg.senderName}
-                  </span>
-                )}
-              </div>
-            )}
           {msg.type === "carousel" && hasText && (
             <div className="px-3 pt-3">
               <p className="text-[14px] leading-5 m-0">
@@ -755,6 +755,7 @@ const ChatBubbleMessageMode = React.forwardRef<
           )}
         </div>
         {msg.sender === "customer" && replyButton}
+        {msg.sender === "agent" && senderIcon}
         </div>
       </div>
     </div>
@@ -995,14 +996,19 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             variant === "sender" ? "items-end" : "items-start"
           )}
         >
-          {variant === "receiver" && senderName && (
-            <span className="mb-1 px-1 text-[12px] text-semantic-text-muted">
+          {senderName && (
+            <span
+              className={cn(
+                "mb-1 px-1 text-[12px] text-semantic-text-muted",
+                variant === "sender" ? "text-right" : ""
+              )}
+            >
               {senderName}
             </span>
           )}
           <div
             className={cn(
-              "flex items-start gap-1.5 w-full",
+              "flex items-end gap-1.5 w-full",
               variant === "sender" ? "justify-end" : "justify-start"
             )}
           >
@@ -1016,25 +1022,6 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
             )}
           >
-            {variant === "sender" && (senderName || senderIndicator) && (
-              <div
-                className={cn(
-                  "flex items-center gap-2 pb-1",
-                  hasMedia ? "px-3 pt-2.5" : "pt-0"
-                )}
-              >
-                {senderIndicator && (
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
-                    {senderIndicator}
-                  </div>
-                )}
-                {senderName && (
-                  <span className="min-w-0 truncate text-[12px] leading-5 text-semantic-text-muted">
-                    {senderName}
-                  </span>
-                )}
-              </div>
-            )}
             {media}
             <div className={hasMedia ? "px-3 pb-1.5 pt-2" : ""}>
               {reply && (
@@ -1071,6 +1058,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             </div>
           </div>
           {variant === "receiver" && manualReplyButton}
+          {variant === "sender" && senderIndicator && (
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+              {senderIndicator}
+            </div>
+          )}
           </div>
         </div>
       </div>
