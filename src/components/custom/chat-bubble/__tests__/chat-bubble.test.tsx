@@ -210,6 +210,24 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
+    it("renders short text + timestamp inline (no LegacyDeliveryFooter block) for manual mode", () => {
+      const { container } = render(
+        <ChatBubble variant="receiver" timestamp="03:43 am">
+          Bhjg
+        </ChatBubble>
+      );
+      // Block footer (mt-1.5 div) should NOT render when inline footer is in use.
+      expect(container.querySelector("div.mt-1\\.5")).toBeNull();
+      // Inline footer span sits inside the same <p> as the children text.
+      const p = container.querySelector("p");
+      expect(p).not.toBeNull();
+      expect(p?.textContent).toContain("Bhjg");
+      expect(p?.textContent).toContain("03:43 am");
+      // The trailing footer span has whitespace-nowrap so the timestamp doesn't wrap.
+      const footerSpan = p?.querySelector("span.whitespace-nowrap");
+      expect(footerSpan).not.toBeNull();
+    });
+
     it("renders without a wrapping TooltipProvider (manual mode is self-contained)", () => {
       // Plain `render` — NO TooltipProvider in the tree. Catches the regression
       // where manual-mode reply button required an outer provider and threw at runtime.

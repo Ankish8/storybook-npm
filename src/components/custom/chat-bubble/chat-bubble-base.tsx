@@ -121,6 +121,71 @@ function LegacyDeliveryFooter({
   );
 }
 
+function LegacyDeliveryFooterInline({
+  status,
+  timestamp,
+  variant,
+}: {
+  status?: DeliveryStatus;
+  timestamp: string;
+  variant: "sender" | "receiver";
+}) {
+  const isFailed = status === "failed";
+  const isQueued = status === "queued";
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center align-bottom ml-2 whitespace-nowrap text-[12px] text-semantic-text-muted",
+        isFailed ? "gap-1.5" : "gap-1"
+      )}
+    >
+      {variant === "sender" && status && (
+        <>
+          {isQueued ? (
+            <>
+              <Clock className="size-4 text-semantic-text-muted shrink-0" />
+              <span>Queued</span>
+            </>
+          ) : isFailed ? (
+            <>
+              <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
+              <span className="text-semantic-error-primary font-medium">
+                Failed to send
+              </span>
+            </>
+          ) : (
+            <>
+              {status === "sent" ? (
+                <Check className="size-4 text-semantic-text-muted shrink-0" />
+              ) : (
+                <CheckCheck
+                  className={cn(
+                    "size-4 shrink-0",
+                    status === "read"
+                      ? "text-semantic-text-link"
+                      : "text-semantic-text-muted"
+                  )}
+                />
+              )}
+              <span>
+                {status === "sent"
+                  ? "Sent"
+                  : status === "delivered"
+                    ? "Delivered"
+                    : "Read"}
+              </span>
+            </>
+          )}
+          <span className="font-semibold" style={{ fontSize: 10 }}>
+            &bull;
+          </span>
+        </>
+      )}
+      <span>{timestamp}</span>
+    </span>
+  );
+}
+
 function MessageModeReplyQuoteButton({
   replyTo,
 }: {
@@ -866,6 +931,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     } = props as ChatBubbleManualProps;
 
     const hasMedia = !!media;
+    // Manual mode text-only case: trail the footer at the end of the paragraph
+    // (WhatsApp-style) so short children + timestamp share a line instead of the
+    // bubble collapsing and the timestamp wrapping. Parallels MessageModeDeliveryFooterInline.
+    const useManualInlineFooter = !hasMedia && !!children;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
     const manualSenderRole: "agent" | "customer" =
@@ -981,13 +1050,24 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 />
               )}
               {children && (
-                <p className="m-0 text-[14px] leading-5">{children}</p>
+                <p className="m-0 text-[14px] leading-5">
+                  {children}
+                  {useManualInlineFooter && (
+                    <LegacyDeliveryFooterInline
+                      status={status}
+                      timestamp={timestamp}
+                      variant={variant}
+                    />
+                  )}
+                </p>
               )}
-              <LegacyDeliveryFooter
-                status={status}
-                timestamp={timestamp}
-                variant={variant}
-              />
+              {!useManualInlineFooter && (
+                <LegacyDeliveryFooter
+                  status={status}
+                  timestamp={timestamp}
+                  variant={variant}
+                />
+              )}
             </div>
           </div>
           {variant === "receiver" && manualReplyButton}
