@@ -16,6 +16,7 @@ import {
   TooltipContent,
   TooltipTrigger,
   TooltipArrow,
+  TooltipProvider,
 } from "../../ui/tooltip";
 import { Button } from "../../ui/button";
 import { DocMedia } from "../doc-media";
@@ -873,34 +874,39 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       !!onReplyTo &&
       (showReplyOn === "both" || showReplyOn === manualSenderRole);
 
+    // Manual mode is used outside of ChatBubble.MessageList (which provides its own
+    // TooltipProvider). Wrap locally so consumers who don't have a TooltipProvider
+    // in their tree don't hit a runtime error. Nested providers are safe in Radix.
     const manualReplyButton = shouldShowManualReplyIcon ? (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Reply"
-            onClick={() =>
-              onReplyTo!({
-                messageId: messageId ?? "",
-                sender:
-                  variant === "sender"
-                    ? senderName ?? replyParticipantName ?? ""
-                    : replyParticipantName ?? senderName ?? "",
-                text:
-                  typeof children === "string" ? (children as string) : "",
-              })
-            }
-            className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
-          >
-            <Reply className="size-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <p className="m-0">Reply</p>
-          <TooltipArrow />
-        </TooltipContent>
-      </Tooltip>
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Reply"
+              onClick={() =>
+                onReplyTo!({
+                  messageId: messageId ?? "",
+                  sender:
+                    variant === "sender"
+                      ? senderName ?? replyParticipantName ?? ""
+                      : replyParticipantName ?? senderName ?? "",
+                  text:
+                    typeof children === "string" ? (children as string) : "",
+                })
+              }
+              className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+            >
+              <Reply className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p className="m-0">Reply</p>
+            <TooltipArrow />
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ) : null;
 
     return (

@@ -210,6 +210,26 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
+    it("renders without a wrapping TooltipProvider (manual mode is self-contained)", () => {
+      // Plain `render` — NO TooltipProvider in the tree. Catches the regression
+      // where manual-mode reply button required an outer provider and threw at runtime.
+      expect(() =>
+        render(
+          <ChatBubble
+            variant="receiver"
+            timestamp="2:16 PM"
+            messageId="m"
+            replyParticipantName="Aditi"
+            onReplyTo={vi.fn()}
+            showReplyOn="both"
+          >
+            Hello
+          </ChatBubble>
+        )
+      ).not.toThrow();
+      expect(screen.getByRole("button", { name: "Reply" })).toBeInTheDocument();
+    });
+
     it("shows Reply on receiver by default and forwards payload", () => {
       const onReplyTo = vi.fn();
       renderWithTooltip(
