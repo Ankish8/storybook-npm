@@ -428,6 +428,63 @@ export const FromChatMessagePayload: Story = {
   ),
 };
 
+/**
+ * `showReplyOn` controls which message sides expose the Reply action. Default is
+ * `"customer"` (incoming-only) — pass `"both"` for bilateral reply on agent rows too.
+ * The icon anchors to the bubble's outer edge (left of agent, right of customer).
+ */
+export const BilateralReply: Story = {
+  name: "Reply on both sides (showReplyOn=both)",
+  render: () => (
+    <TooltipProvider delayDuration={200}>
+      <div className="flex w-full max-w-[560px] flex-col gap-3">
+        <ChatBubble
+          message={{
+            id: "br-1",
+            text: "Hey, can you help me with my order?",
+            time: "10:01 AM",
+            sender: "customer",
+            type: "text",
+            senderName: "Aditi Kumar",
+          }}
+          replyParticipantName="Aditi Kumar"
+          onReplyTo={fn()}
+          showReplyOn="both"
+        />
+        <ChatBubble
+          message={{
+            id: "br-2",
+            text: "Of course — what's the order number?",
+            time: "10:02 AM",
+            sender: "agent",
+            type: "text",
+            status: "read",
+            senderName: "Alex Smith",
+            sentBy: { type: "agent", name: "Alex Smith" },
+          }}
+          replyParticipantName="Aditi Kumar"
+          onReplyTo={fn()}
+          showReplyOn="both"
+        />
+        <ChatBubble
+          message={{
+            id: "br-3",
+            text: "hi",
+            time: "10:03 AM",
+            sender: "agent",
+            type: "text",
+            status: "queued",
+            senderName: "Alex Smith",
+          }}
+          replyParticipantName="Aditi Kumar"
+          onReplyTo={fn()}
+          showReplyOn="both"
+        />
+      </div>
+    </TooltipProvider>
+  ),
+};
+
 /** `sentBy.type: bot` — Bot icon in the header row (same row as `senderName`). */
 export const AgentMessageSourceBot: Story = {
   name: "Agent source · Bot",

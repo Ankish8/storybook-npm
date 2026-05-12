@@ -236,6 +236,83 @@ describe("ChatBubble", () => {
       });
     });
 
+    it("hides Reply on agent messages by default (showReplyOn defaults to customer)", () => {
+      const agentMsg: ChatMessage = {
+        id: "m-agent",
+        text: "Agent message",
+        time: "3:00 PM",
+        sender: "agent",
+        type: "text",
+        status: "read",
+      };
+      renderWithTooltip(
+        <ChatBubble message={agentMsg} onReplyTo={vi.fn()} />
+      );
+      expect(
+        screen.queryByRole("button", { name: "Reply" })
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows Reply on agent messages when showReplyOn='agent'", () => {
+      const onReplyTo = vi.fn();
+      const agentMsg: ChatMessage = {
+        id: "m-agent-2",
+        text: "Outgoing line",
+        time: "3:00 PM",
+        sender: "agent",
+        type: "text",
+        status: "read",
+        senderName: "Alex",
+      };
+      renderWithTooltip(
+        <ChatBubble
+          message={agentMsg}
+          onReplyTo={onReplyTo}
+          showReplyOn="agent"
+        />
+      );
+      const replyBtn = screen.getByRole("button", { name: "Reply" });
+      fireEvent.click(replyBtn);
+      expect(onReplyTo).toHaveBeenCalledWith({
+        messageId: "m-agent-2",
+        sender: "Alex",
+        text: "Outgoing line",
+      });
+    });
+
+    it("shows Reply on both sides when showReplyOn='both'", () => {
+      const customerMsg: ChatMessage = {
+        id: "m-c",
+        text: "From customer",
+        time: "3:00 PM",
+        sender: "customer",
+        type: "text",
+      };
+      const agentMsg: ChatMessage = {
+        id: "m-a",
+        text: "From agent",
+        time: "3:01 PM",
+        sender: "agent",
+        type: "text",
+        status: "sent",
+      };
+      renderWithTooltip(
+        <>
+          <ChatBubble
+            message={customerMsg}
+            onReplyTo={vi.fn()}
+            showReplyOn="both"
+          />
+          <ChatBubble
+            message={agentMsg}
+            onReplyTo={vi.fn()}
+            showReplyOn="both"
+          />
+        </>
+      );
+      expect(screen.getAllByRole("button", { name: "Reply" })).toHaveLength(2);
+    });
+
     it("renders sentBy source badge in the header row next to sender name (agent)", () => {
       const msg: ChatMessage = {
         id: "m-agent-sentby",

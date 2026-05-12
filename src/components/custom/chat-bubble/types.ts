@@ -12,6 +12,13 @@ import type {
 
 export type DeliveryStatus = "queued" | "sent" | "delivered" | "read" | "failed";
 
+/**
+ * Which message sides expose the Reply action. Default is `"customer"`
+ * (incoming-only) to preserve historical behavior. Set to `"agent"` or
+ * `"both"` to enable Reply on agent (outgoing) messages too.
+ */
+export type ShowReplyOn = "customer" | "agent" | "both";
+
 export interface ChatBubbleReply {
   /** Name of the person being replied to */
   sender: string;
@@ -61,8 +68,14 @@ export interface ChatBubbleManualProps extends HtmlDiv {
  * `className` merges onto the **root** wrapper around the scroll region; `onReplyTo` fires for customer bubbles only.
  */
 export interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Fires when the customer-message reply control is activated (customer bubble only). */
+  /** Fires when the reply control is activated. Sender side(s) controlled by `showReplyOn`. */
   onReplyTo?: (payload: ReplyToPayload) => void;
+  /**
+   * Which message sides surface the Reply action. Defaults to `"customer"`
+   * (incoming-only). Use `"both"` for bilateral reply (e.g., WhatsApp-style
+   * threads where users can reply to their own messages too).
+   */
+  showReplyOn?: ShowReplyOn;
 }
 
 /** Full template message: renders text, media, documents, carousel, location, contact, etc. */
@@ -81,9 +94,14 @@ export interface ChatBubbleMessageProps extends HtmlDiv {
    */
   replyParticipantName?: string;
   /**
-   * Customer-message reply control; mirrors `ChatMessageList`’s `onReplyTo`.
+   * Reply control callback; fires for the side(s) selected by `showReplyOn`.
    */
   onReplyTo?: (payload: ReplyToPayload) => void;
+  /**
+   * Which message sides surface the Reply action. Defaults to `"customer"`
+   * (incoming-only). Use `"both"` to enable bilateral reply.
+   */
+  showReplyOn?: ShowReplyOn;
   /**
    * Optional custom header slot when `sentBy` is not set; otherwise `SenderIndicator` uses `message.sentBy`.
    */
@@ -114,8 +132,13 @@ export interface ChatBubbleFlatBase
   sentBy?: { type: SentByType; name?: string };
   /** Optional reply-quote block (rendered above body). */
   replyTo?: { sender: string; text: string; messageId?: string };
-  /** Customer-row reply control payload (`onReplyTo` shows the Reply button). */
+  /** Reply control callback; fires for the side(s) selected by `showReplyOn`. */
   onReplyTo?: (payload: ReplyToPayload) => void;
+  /**
+   * Which message sides surface the Reply action. Defaults to `"customer"`
+   * (incoming-only). Use `"both"` to enable bilateral reply.
+   */
+  showReplyOn?: ShowReplyOn;
   /** Display name passed into the `onReplyTo` payload. */
   replyParticipantName?: string;
   /**

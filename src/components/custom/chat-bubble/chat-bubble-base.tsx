@@ -38,6 +38,7 @@ import type {
   ChatBubbleFlatProps,
   DeliveryStatus,
   ReplyToPayload,
+  ShowReplyOn,
 } from "./types";
 import {
   isChatBubbleMessageProps,
@@ -433,6 +434,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     message: ChatMessage;
     replyParticipantName?: string;
     onReplyTo?: (payload: ReplyToPayload) => void;
+    showReplyOn?: ShowReplyOn;
     senderIndicator?: React.ReactNode;
   } & Omit<React.HTMLAttributes<HTMLDivElement>, "children">
 >(function ChatBubbleMessageMode(
@@ -440,6 +442,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     message: msg,
     replyParticipantName,
     onReplyTo,
+    showReplyOn = "customer",
     senderIndicator,
     className,
     ...rest
@@ -461,6 +464,39 @@ const ChatBubbleMessageMode = React.forwardRef<
     !hasMedia &&
     !isDocWithMeta &&
     !hasButtons;
+
+  const shouldShowReplyIcon =
+    !!onReplyTo &&
+    (showReplyOn === "both" || showReplyOn === msg.sender);
+
+  const replyButton = shouldShowReplyIcon ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Reply"
+          onClick={() =>
+            onReplyTo!({
+              messageId: msg.id,
+              sender:
+                msg.sender === "agent"
+                  ? msg.senderName ?? replyParticipantName ?? ""
+                  : replyParticipantName ?? "",
+              text: msg.text || msg.media?.caption || "",
+            })
+          }
+          className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+        >
+          <Reply className="size-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <p className="m-0">Reply</p>
+        <TooltipArrow />
+      </TooltipContent>
+    </Tooltip>
+  ) : null;
 
   return (
     <div
@@ -491,6 +527,7 @@ const ChatBubbleMessageMode = React.forwardRef<
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
+        {msg.sender === "agent" && replyButton}
         <div
           className={cn(
             "rounded-lg overflow-hidden",
@@ -651,31 +688,7 @@ const ChatBubbleMessageMode = React.forwardRef<
             </>
           )}
         </div>
-        {msg.sender === "customer" && onReplyTo && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                aria-label="Reply"
-                onClick={() =>
-                  onReplyTo({
-                    messageId: msg.id,
-                    sender: replyParticipantName ?? "",
-                    text: msg.text || msg.media?.caption || "",
-                  })
-                }
-                className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
-              >
-                <Reply className="size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              <p className="m-0">Reply</p>
-              <TooltipArrow />
-            </TooltipContent>
-          </Tooltip>
-        )}
+        {msg.sender === "customer" && replyButton}
         </div>
       </div>
     </div>
@@ -770,6 +783,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         message,
         replyParticipantName,
         onReplyTo,
+        showReplyOn,
         senderIndicator,
         className,
         ...rest
@@ -780,6 +794,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           message={message}
           replyParticipantName={replyParticipantName}
           onReplyTo={onReplyTo}
+          showReplyOn={showReplyOn}
           senderIndicator={senderIndicator}
           className={className}
           {...rest}
@@ -797,6 +812,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         sentBy: _sentBy,
         replyTo: _replyTo,
         onReplyTo,
+        showReplyOn,
         replyParticipantName,
         messageId: _messageId,
         type: _type,
@@ -822,6 +838,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           message={message}
           replyParticipantName={replyParticipantName}
           onReplyTo={onReplyTo}
+          showReplyOn={showReplyOn}
           className={className}
           {...(restNoPayload as React.HTMLAttributes<HTMLDivElement>)}
         />
