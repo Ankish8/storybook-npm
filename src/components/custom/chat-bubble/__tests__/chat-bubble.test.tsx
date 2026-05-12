@@ -198,6 +198,78 @@ describe("ChatBubble", () => {
     expect(root).toHaveClass("justify-start");
   });
 
+  describe("manual mode reply (onReplyTo + showReplyOn)", () => {
+    it("does not render Reply when onReplyTo is omitted", () => {
+      renderWithTooltip(
+        <ChatBubble variant="receiver" timestamp="2:16 PM">
+          Hey
+        </ChatBubble>
+      );
+      expect(
+        screen.queryByRole("button", { name: "Reply" })
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows Reply on receiver by default and forwards payload", () => {
+      const onReplyTo = vi.fn();
+      renderWithTooltip(
+        <ChatBubble
+          variant="receiver"
+          timestamp="2:16 PM"
+          messageId="manual-1"
+          senderName="Aditi"
+          replyParticipantName="Aditi"
+          onReplyTo={onReplyTo}
+        >
+          Hey there
+        </ChatBubble>
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      expect(onReplyTo).toHaveBeenCalledWith({
+        messageId: "manual-1",
+        sender: "Aditi",
+        text: "Hey there",
+      });
+    });
+
+    it("hides Reply on sender variant by default", () => {
+      renderWithTooltip(
+        <ChatBubble
+          variant="sender"
+          timestamp="2:16 PM"
+          onReplyTo={vi.fn()}
+        >
+          Outgoing
+        </ChatBubble>
+      );
+      expect(
+        screen.queryByRole("button", { name: "Reply" })
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows Reply on sender when showReplyOn='agent' or 'both'", () => {
+      const onReplyTo = vi.fn();
+      renderWithTooltip(
+        <ChatBubble
+          variant="sender"
+          timestamp="2:16 PM"
+          messageId="manual-2"
+          senderName="Alex"
+          onReplyTo={onReplyTo}
+          showReplyOn="agent"
+        >
+          Outgoing line
+        </ChatBubble>
+      );
+      fireEvent.click(screen.getByRole("button", { name: "Reply" }));
+      expect(onReplyTo).toHaveBeenCalledWith({
+        messageId: "manual-2",
+        sender: "Alex",
+        text: "Outgoing line",
+      });
+    });
+  });
+
   describe("message mode (ChatMessage)", () => {
     const baseMsg: ChatMessage = {
       id: "m1",

@@ -855,6 +855,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       media,
       maxWidth = "text",
       senderIndicator,
+      onReplyTo,
+      showReplyOn = "customer",
+      replyParticipantName,
+      messageId,
       children,
       className,
       ...rest
@@ -862,11 +866,48 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
 
     const hasMedia = !!media;
 
+    // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
+    const manualSenderRole: "agent" | "customer" =
+      variant === "sender" ? "agent" : "customer";
+    const shouldShowManualReplyIcon =
+      !!onReplyTo &&
+      (showReplyOn === "both" || showReplyOn === manualSenderRole);
+
+    const manualReplyButton = shouldShowManualReplyIcon ? (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Reply"
+            onClick={() =>
+              onReplyTo!({
+                messageId: messageId ?? "",
+                sender:
+                  variant === "sender"
+                    ? senderName ?? replyParticipantName ?? ""
+                    : replyParticipantName ?? senderName ?? "",
+                text:
+                  typeof children === "string" ? (children as string) : "",
+              })
+            }
+            className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+          >
+            <Reply className="size-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          <p className="m-0">Reply</p>
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+    ) : null;
+
     return (
       <div
         ref={ref}
         className={cn(
-          "flex items-start gap-1.5",
+          "group/msg flex items-start gap-1.5",
           variant === "sender" ? "justify-end" : "justify-start",
           className
         )}
@@ -884,6 +925,13 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               {senderName}
             </span>
           )}
+          <div
+            className={cn(
+              "flex items-start gap-1.5 w-full",
+              variant === "sender" ? "justify-end" : "justify-start"
+            )}
+          >
+          {variant === "sender" && manualReplyButton}
           <div
             className={cn(
               "overflow-hidden rounded",
@@ -935,6 +983,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 variant={variant}
               />
             </div>
+          </div>
+          {variant === "receiver" && manualReplyButton}
           </div>
         </div>
       </div>

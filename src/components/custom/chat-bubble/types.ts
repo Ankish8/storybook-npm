@@ -61,6 +61,20 @@ export interface ChatBubbleManualProps extends HtmlDiv {
    * header, not this prop.
    */
   senderIndicator?: React.ReactNode;
+  /** Reply control callback; fires for the side(s) selected by `showReplyOn`. */
+  onReplyTo?: (payload: ReplyToPayload) => void;
+  /**
+   * Which message sides surface the Reply action. Defaults to `"customer"`
+   * (receiver-only). Use `"both"` to enable bilateral reply.
+   */
+  showReplyOn?: ShowReplyOn;
+  /** Display name passed into the `onReplyTo` payload. */
+  replyParticipantName?: string;
+  /**
+   * Identifier passed into the `onReplyTo` payload's `messageId` field. Optional;
+   * defaults to an empty string if omitted.
+   */
+  messageId?: string;
 }
 
 /**
