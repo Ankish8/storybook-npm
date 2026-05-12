@@ -219,22 +219,19 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("renders short text + timestamp inline (no LegacyDeliveryFooter block) for manual mode", () => {
+    it("short text keeps timestamp on one line via whitespace-nowrap (no internal wrap)", () => {
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
         </ChatBubble>
       );
-      // Block footer (mt-1.5 div) should NOT render when inline footer is in use.
-      expect(container.querySelector("div.mt-1\\.5")).toBeNull();
-      // Inline footer span sits inside the same <p> as the children text.
-      const p = container.querySelector("p");
-      expect(p).not.toBeNull();
-      expect(p?.textContent).toContain("Bhjg");
-      expect(p?.textContent).toContain("03:43 am");
-      // The trailing footer span has whitespace-nowrap so the timestamp doesn't wrap.
-      const footerSpan = p?.querySelector("span.whitespace-nowrap");
-      expect(footerSpan).not.toBeNull();
+      // Block footer renders (right-aligned for sender, left for receiver — variant=receiver here).
+      const blockFooter = container.querySelector("div.mt-1\\.5");
+      expect(blockFooter).not.toBeNull();
+      // Timestamp span has whitespace-nowrap so "03:43 am" never breaks across lines.
+      const timestampSpan = blockFooter?.querySelector("span.whitespace-nowrap");
+      expect(timestampSpan).not.toBeNull();
+      expect(timestampSpan?.textContent).toBe("03:43 am");
     });
 
     it("renders without a wrapping TooltipProvider (manual mode is self-contained)", () => {

@@ -74,14 +74,14 @@ function LegacyDeliveryFooter({
           {status === "queued" ? (
             <>
               <Clock className="size-4 text-semantic-text-muted shrink-0" />
-              <span className="text-[12px] text-semantic-text-muted">
+              <span className="text-[12px] text-semantic-text-muted whitespace-nowrap">
                 Queued
               </span>
             </>
           ) : status === "failed" ? (
             <>
               <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
-              <span className="text-[12px] text-semantic-error-primary font-medium">
+              <span className="text-[12px] text-semantic-error-primary font-medium whitespace-nowrap">
                 Failed to send
               </span>
             </>
@@ -99,7 +99,7 @@ function LegacyDeliveryFooter({
                   )}
                 />
               )}
-              <span className="text-[12px] text-semantic-text-muted">
+              <span className="text-[12px] text-semantic-text-muted whitespace-nowrap">
                 {status === "sent"
                   ? "Sent"
                   : status === "delivered"
@@ -116,7 +116,9 @@ function LegacyDeliveryFooter({
           </span>
         </>
       )}
-      <span className="text-[12px] text-semantic-text-muted">{timestamp}</span>
+      <span className="text-[12px] text-semantic-text-muted whitespace-nowrap">
+        {timestamp}
+      </span>
     </div>
   );
 }
@@ -261,13 +263,13 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
                 <Clock className="size-4 text-semantic-text-muted shrink-0" />
                 <span
                   style={{ fontSize: 12 }}
-                  className="text-semantic-text-muted"
+                  className="text-semantic-text-muted whitespace-nowrap"
                 >
                   Queued
                 </span>
               </>
             ) : msg.status === "failed" ? (
-              <span role="alert" className="inline-flex items-center gap-1.5">
+              <span role="alert" className="inline-flex items-center gap-1.5 whitespace-nowrap">
                 <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
                 <span className="text-[13px] text-semantic-error-primary font-medium">
                   Failed
@@ -298,7 +300,7 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
                 )}
                 <span
                   style={{ fontSize: 12 }}
-                  className="text-semantic-text-muted"
+                  className="text-semantic-text-muted whitespace-nowrap"
                 >
                   {msg.status === "sent"
                     ? "Sent"
@@ -316,7 +318,10 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
             </span>
           </>
         )}
-        <span style={{ fontSize: 12 }} className="text-semantic-text-muted">
+        <span
+          style={{ fontSize: 12 }}
+          className="text-semantic-text-muted whitespace-nowrap"
+        >
           {msg.time}
         </span>
       </div>
@@ -524,12 +529,10 @@ const ChatBubbleMessageMode = React.forwardRef<
     hasButtons,
   } = computeMessageBubbleLayout(msg);
 
-  const shouldUseInlineFooter =
-    hasText &&
-    msg.type !== "carousel" &&
-    !hasMedia &&
-    !isDocWithMeta &&
-    !hasButtons;
+  // Inline footer is disabled in favor of block footer (right-aligned for agent).
+  // The block footer's whitespace-nowrap on its spans prevents internal wrap, and
+  // the bubble grows to accommodate the footer width when text is shorter than it.
+  const shouldUseInlineFooter = false;
 
   const shouldShowReplyIcon =
     !!onReplyTo &&
@@ -927,10 +930,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     } = props as ChatBubbleManualProps;
 
     const hasMedia = !!media;
-    // Manual mode text-only case: trail the footer at the end of the paragraph
-    // (WhatsApp-style) so short children + timestamp share a line instead of the
-    // bubble collapsing and the timestamp wrapping. Parallels MessageModeDeliveryFooterInline.
-    const useManualInlineFooter = !hasMedia && !!children;
+    // Inline footer disabled — block footer (justify-end for sender) keeps the
+    // status row right-aligned. whitespace-nowrap on the timestamp/label spans
+    // prevents the wrap-within-time bug from short messages.
+    const useManualInlineFooter = false;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
     const manualSenderRole: "agent" | "customer" =
