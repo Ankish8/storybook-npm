@@ -219,19 +219,39 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("short text keeps timestamp on one line via whitespace-nowrap (no internal wrap)", () => {
+    it("receiver text-only bubble: inline footer keeps timestamp on same line as text (no clipping)", () => {
+      // Receiver text bubbles route through the INLINE footer so the bubble's
+      // w-fit width calculation includes the timestamp (no overflow-hidden clip).
+      // Sender bubbles continue using the block footer (covered below).
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
         </ChatBubble>
       );
-      // Block footer renders (right-aligned for sender, left for receiver — variant=receiver here).
+      // No block footer div for receiver text-only.
+      expect(container.querySelector("div.mt-1\\.5")).toBeNull();
+      // Inline footer span sits at the end of the same <p> as the text.
+      const p = container.querySelector("p");
+      expect(p?.textContent).toContain("Bhjg");
+      expect(p?.textContent).toContain("03:43 am");
+      const inlineFooter = p?.querySelector("span.whitespace-nowrap");
+      expect(inlineFooter).not.toBeNull();
+    });
+
+    it("sender bubble keeps block footer (status icons + right-aligned)", () => {
+      const { container } = render(
+        <ChatBubble variant="sender" timestamp="03:43 am" status="read">
+          Outgoing
+        </ChatBubble>
+      );
+      // Block footer present.
       const blockFooter = container.querySelector("div.mt-1\\.5");
       expect(blockFooter).not.toBeNull();
-      // Timestamp span has whitespace-nowrap so "03:43 am" never breaks across lines.
-      const timestampSpan = blockFooter?.querySelector("span.whitespace-nowrap");
-      expect(timestampSpan).not.toBeNull();
-      expect(timestampSpan?.textContent).toBe("03:43 am");
+      // Status label + timestamp present; both have whitespace-nowrap so neither breaks.
+      expect(blockFooter?.textContent).toContain("Read");
+      expect(blockFooter?.textContent).toContain("03:43 am");
+      // Footer is right-aligned for sender.
+      expect(blockFooter).toHaveClass("justify-end");
     });
 
     it("renders without a wrapping TooltipProvider (manual mode is self-contained)", () => {

@@ -932,10 +932,14 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     } = props as ChatBubbleManualProps;
 
     const hasMedia = !!media;
-    // Inline footer disabled — block footer (justify-end for sender) keeps the
-    // status row right-aligned. whitespace-nowrap on the timestamp/label spans
-    // prevents the wrap-within-time bug from short messages.
-    const useManualInlineFooter = false;
+    // Inline footer ONLY for receiver text-only bubbles. Reason: w-fit on the
+    // bubble computes width from the text <p>, and the block footer in a separate
+    // row doesn't reliably extend the bubble's width — so short receiver text
+    // like "Bhjg" gets clipped by overflow-hidden on the bubble.
+    //
+    // Sender bubbles keep the block footer because they carry status icons +
+    // label and need to right-align the delivery metadata.
+    const useManualInlineFooter = variant === "receiver" && !hasMedia && !!children;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
     const manualSenderRole: "agent" | "customer" =
