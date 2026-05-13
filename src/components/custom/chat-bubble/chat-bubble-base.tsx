@@ -627,7 +627,7 @@ const ChatBubbleMessageMode = React.forwardRef<
               msg.type === "listReply" ||
               (msg.type === "template" && (msg.media || hasButtons))
               ? "w-full"
-              : "",
+              : "w-fit",
             msg.sender === "agent"
               ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
               : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
@@ -1009,7 +1009,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           <div
             className={cn(
               "overflow-hidden rounded",
-              !hasMedia && "px-3 pb-1.5 pt-3",
+              !hasMedia && "px-3 pb-1.5 pt-3 w-fit",
               variant === "sender"
                 ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
                 : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
