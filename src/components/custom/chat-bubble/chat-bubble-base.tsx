@@ -568,18 +568,18 @@ const ChatBubbleMessageMode = React.forwardRef<
   ) : null;
 
   // Sender indicator (bot / campaign / api / agent initials) renders OUTSIDE the
-  // bubble, vertically centered with it, on the bubble's outer edge (right side
-  // for agent messages). Mirrors how the reply icon sits on the opposite side.
+  // bubble, bottom-aligned with the bubble (self-end), on the right side for agent
+  // messages. The reply icon stays top-aligned on the opposite side.
   const senderIcon =
     msg.sender === "agent" && (msg.sentBy || senderIndicator) ? (
       msg.sentBy ? (
         <SenderIndicator
           sentBy={msg.sentBy}
           withTooltip
-          className="!size-6 !min-h-6 !min-w-6 shrink-0"
+          className="!size-6 !min-h-6 !min-w-6 shrink-0 self-end"
         />
       ) : (
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+        <div className="flex size-7 shrink-0 self-end items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
           {senderIndicator}
         </div>
       )
@@ -610,7 +610,7 @@ const ChatBubbleMessageMode = React.forwardRef<
         )}
         <div
           className={cn(
-            "flex items-end gap-1.5 w-full",
+            "flex items-start gap-1.5 w-full",
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
@@ -1001,7 +1001,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           )}
           <div
             className={cn(
-              "flex items-end gap-1.5 w-full",
+              "flex items-start gap-1.5 w-full",
               variant === "sender" ? "justify-end" : "justify-start"
             )}
           >
@@ -1052,7 +1052,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           </div>
           {variant === "receiver" && manualReplyButton}
           {variant === "sender" && senderIndicator && (
-            <div className="flex size-7 shrink-0 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+            <div className="flex size-7 shrink-0 self-end items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
               {senderIndicator}
             </div>
           )}
