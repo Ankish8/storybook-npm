@@ -555,7 +555,10 @@ const ChatBubbleMessageMode = React.forwardRef<
               text: msg.text || msg.media?.caption || "",
             })
           }
-          className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+          className={cn(
+            "absolute top-0 opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover",
+            msg.sender === "agent" ? "right-full mr-1.5" : "left-full ml-1.5"
+          )}
         >
           <Reply className="size-4" />
         </Button>
@@ -610,11 +613,11 @@ const ChatBubbleMessageMode = React.forwardRef<
         )}
         <div
           className={cn(
-            "flex items-start gap-1.5 w-full",
+            "relative flex items-start gap-1.5 w-full",
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
-        {msg.sender === "agent" && replyButton}
+        {replyButton}
         <div
           className={cn(
             "rounded-lg overflow-hidden",
@@ -752,7 +755,6 @@ const ChatBubbleMessageMode = React.forwardRef<
             </>
           )}
         </div>
-        {msg.sender === "customer" && replyButton}
         {msg.sender === "agent" && senderIcon}
         </div>
       </div>
@@ -964,7 +966,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                     typeof children === "string" ? (children as string) : "",
                 })
               }
-              className="opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover"
+              className={cn(
+                "absolute top-0 opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover",
+                variant === "sender" ? "right-full mr-1.5" : "left-full ml-1.5"
+              )}
             >
               <Reply className="size-4" />
             </Button>
@@ -1001,11 +1006,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           )}
           <div
             className={cn(
-              "flex items-start gap-1.5 w-full",
+              "relative flex items-start gap-1.5 w-full",
               variant === "sender" ? "justify-end" : "justify-start"
             )}
           >
-          {variant === "sender" && manualReplyButton}
+          {manualReplyButton}
           <div
             className={cn(
               "overflow-hidden rounded",
@@ -1050,7 +1055,6 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               )}
             </div>
           </div>
-          {variant === "receiver" && manualReplyButton}
           {variant === "sender" && senderIndicator && (
             <div className="flex size-7 shrink-0 self-end items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
               {senderIndicator}
