@@ -238,6 +238,35 @@ describe("ChatBubble", () => {
       expect(inlineFooter).not.toBeNull();
     });
 
+    it("reserves column padding when senderIndicator is present so the avatar stays inside the box", () => {
+      // Without this padding, the absolutely-positioned senderIndicator overflows
+      // the column's right edge and gets clipped by any ancestor with overflow:hidden.
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="2:15 PM"
+          senderIndicator={<span data-testid="avatar">A</span>}
+        >
+          Short
+        </ChatBubble>
+      );
+      // The column is the second-level wrapper; it should carry pr-9 in this case.
+      const column = container.querySelector("div.flex.flex-col");
+      expect(column).not.toBeNull();
+      expect(column).toHaveClass("pr-9");
+    });
+
+    it("does NOT reserve avatar padding when senderIndicator is absent", () => {
+      const { container } = render(
+        <ChatBubble variant="sender" timestamp="2:15 PM">
+          Short
+        </ChatBubble>
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      expect(column).not.toBeNull();
+      expect(column).not.toHaveClass("pr-9");
+    });
+
     it("sender bubble keeps block footer (status icons + right-aligned)", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="read">

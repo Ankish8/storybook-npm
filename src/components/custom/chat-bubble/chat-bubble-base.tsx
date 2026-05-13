@@ -603,7 +603,13 @@ const ChatBubbleMessageMode = React.forwardRef<
         className={cn(
           "flex flex-col",
           bubbleWidth,
-          msg.sender === "agent" ? "items-end" : "items-start"
+          msg.sender === "agent" ? "items-end" : "items-start",
+          // Reserve 36px inside the column so the absolutely-positioned sender
+          // icon (sentBy badge or custom senderIndicator) stays within the box.
+          // Prevents avatar clipping by ancestor overflow:hidden / tight padding.
+          msg.sender === "agent" &&
+            (msg.sentBy || senderIndicator) &&
+            "pr-9"
         )}
       >
         {msg.sender === "customer" && msg.senderName && (
@@ -1000,7 +1006,12 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           className={cn(
             "flex flex-col",
             maxWidthMap[maxWidth],
-            variant === "sender" ? "items-end" : "items-start"
+            variant === "sender" ? "items-end" : "items-start",
+            // Reserve 36px (28px avatar + 6px ml + 2px buffer) inside the column
+            // so the absolutely-positioned senderIndicator stays within the box.
+            // Prevents avatar clipping when consumers wrap the bubble in a container
+            // with overflow:hidden or tight right/left padding.
+            senderIndicator && variant === "sender" && "pr-9"
           )}
         >
           {variant === "receiver" && senderName && (
