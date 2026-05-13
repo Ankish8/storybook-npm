@@ -570,19 +570,19 @@ const ChatBubbleMessageMode = React.forwardRef<
     </Tooltip>
   ) : null;
 
-  // Sender indicator (bot / campaign / api / agent initials) renders OUTSIDE the
-  // bubble, bottom-aligned with the bubble (self-end), on the right side for agent
-  // messages. The reply icon stays top-aligned on the opposite side.
+  // Sender indicator renders OUTSIDE the bubble on the right side for agent messages,
+  // bottom-aligned with the bubble. Absolutely positioned so it doesn't take flex width
+  // from the bubble (same fix pattern as the reply button).
   const senderIcon =
     msg.sender === "agent" && (msg.sentBy || senderIndicator) ? (
       msg.sentBy ? (
         <SenderIndicator
           sentBy={msg.sentBy}
           withTooltip
-          className="!size-6 !min-h-6 !min-w-6 shrink-0 self-end"
+          className="!size-6 !min-h-6 !min-w-6 absolute bottom-0 left-full ml-1.5"
         />
       ) : (
-        <div className="flex size-7 shrink-0 self-end items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+        <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
           {senderIndicator}
         </div>
       )
@@ -1056,7 +1056,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             </div>
           </div>
           {variant === "sender" && senderIndicator && (
-            <div className="flex size-7 shrink-0 self-end items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+            <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
               {senderIndicator}
             </div>
           )}
