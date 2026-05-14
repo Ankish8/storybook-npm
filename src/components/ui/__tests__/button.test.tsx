@@ -32,11 +32,11 @@ describe("Button", () => {
   });
 
   it.each([
-    ["default", "py-2.5", "px-4"],
-    ["sm", "py-2.5", "px-4"],
-    ["lg", "py-3", "px-6"],
-    ["icon", "h-8", "w-8"],
-    ["icon-sm", "h-7", "w-7"],
+    ["default", "h-9", "px-4"],
+    ["sm", "h-8", "px-3"],
+    ["lg", "h-10", "px-6"],
+    ["icon", "h-9", "w-9"],
+    ["icon-sm", "h-8", "w-8"],
     ["icon-lg", "h-10", "w-10"],
   ] as const)("renders %s size", (size, ...expectedClasses) => {
     render(<Button size={size}>Test</Button>);

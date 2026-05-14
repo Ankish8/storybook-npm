@@ -219,20 +219,21 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("receiver short text uses block footer with min-w-min so bubble can't shrink below footer width", () => {
+    it("receiver short text bubble gets minWidth 7rem so footer can't be clipped", () => {
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
         </ChatBubble>
       );
-      // Block footer below text; receiver footer is left-aligned (justify-start).
+      // Block footer below text; receiver footer is right-aligned (justify-end).
       const blockFooter = container.querySelector("div.mt-1\\.5");
       expect(blockFooter).not.toBeNull();
       expect(blockFooter?.textContent).toContain("03:43 am");
-      // Bubble has min-w-min so it doesn't shrink below the footer's atomic width.
-      // Find the bubble div by its rounded class.
-      const bubble = container.querySelector("div.rounded");
-      expect(bubble).toHaveClass("min-w-min");
+      expect(blockFooter).toHaveClass("justify-end");
+      // Bubble (the overflow-hidden rounded box) has inline minWidth: 7rem.
+      const bubble = container.querySelector("div.rounded.overflow-hidden");
+      expect(bubble).not.toBeNull();
+      expect((bubble as HTMLElement).style.minWidth).toBe("7rem");
     });
 
     it("reserves column padding when senderIndicator is present so the avatar stays inside the box", () => {
