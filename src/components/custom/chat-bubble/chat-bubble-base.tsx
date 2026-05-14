@@ -643,7 +643,7 @@ const ChatBubbleMessageMode = React.forwardRef<
           )}
         >
           {msg.type === "carousel" && hasText && (
-            <div className="px-3 pt-3">
+            <div className="px-4 pt-3">
               <p className="text-[14px] leading-5 m-0">
                 {msg.text || mediaCaption}
               </p>
@@ -709,7 +709,7 @@ const ChatBubbleMessageMode = React.forwardRef<
 
           <div
             className={cn(
-              "px-3",
+              "px-4",
               hasButtons ? "pb-2" : "pb-1.5",
               hasMedia
                 ? msg.type === "audio"
@@ -755,7 +755,7 @@ const ChatBubbleMessageMode = React.forwardRef<
               {msg.buttons!.map((btn, i) => (
                 <TemplateButton key={i} button={btn} />
               ))}
-              <div className="px-3 pt-2 pb-1.5">
+              <div className="px-4 pt-2 pb-1.5">
                 <MessageModeDeliveryFooter msg={msg} />
               </div>
             </>
@@ -1029,14 +1029,14 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           <div
             className={cn(
               "overflow-hidden rounded",
-              !hasMedia && "px-3 pb-1.5 pt-3 w-fit",
+              !hasMedia && "px-4 pb-1.5 pt-3 w-fit",
               variant === "sender"
                 ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
                 : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
             )}
           >
             {media}
-            <div className={hasMedia ? "px-3 pb-1.5 pt-2" : ""}>
+            <div className={hasMedia ? "px-4 pb-1.5 pt-2" : ""}>
               {reply && (
                 <ReplyQuote
                   sender={reply.sender}

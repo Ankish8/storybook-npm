@@ -88,22 +88,25 @@ const meta: Meta<typeof ChatBubble> = {
       ],
       table: { category: "Flat mode" },
       description:
-        "**Preferred for non-text types.** Discriminator that selects which payload prop is used (e.g. `type=\"location\"` → `location` prop). Pair with `variant`.",
+        '**Preferred for non-text types.** Discriminator that selects which payload prop is used (e.g. `type="location"` → `location` prop). Pair with `variant`.',
     },
     text: {
       control: "text",
       table: { category: "Flat mode" },
-      description: "Body text for `type: text` / `template`, optional caption for media types.",
+      description:
+        "Body text for `type: text` / `template`, optional caption for media types.",
     },
     location: {
       control: "object",
       table: { category: "Flat mode" },
-      description: "`{ latitude, longitude, name?, address? }` — required for `type: location`.",
+      description:
+        "`{ latitude, longitude, name?, address? }` — required for `type: location`.",
     },
     contactCard: {
       control: "object",
       table: { category: "Flat mode" },
-      description: "`{ name, phone, email?, organization? }` — required for `type: contact`.",
+      description:
+        "`{ name, phone, email?, organization? }` — required for `type: contact`.",
     },
     referral: {
       control: "object",
@@ -126,12 +129,14 @@ const meta: Meta<typeof ChatBubble> = {
     messageId: {
       control: "text",
       table: { category: "Flat mode" },
-      description: "DOM anchor id for scroll-to-quote. Defaults to a random id if omitted.",
+      description:
+        "DOM anchor id for scroll-to-quote. Defaults to a random id if omitted.",
     },
     sentBy: {
       control: "object",
       table: { category: "Flat mode" },
-      description: "Agent-row source badge: `{ type: \"bot\" | \"campaign\" | \"api\" | \"agent\", name? }`.",
+      description:
+        'Agent-row source badge: `{ type: "bot" | "campaign" | "api" | "agent", name? }`.',
     },
     variant: {
       control: "select",
@@ -143,13 +148,15 @@ const meta: Meta<typeof ChatBubble> = {
     timestamp: {
       control: "text",
       table: { category: "Manual bubble" },
-      description: "Footer time label (e.g. `2:15 PM`). Not used when `message` is set (`message.time` is used).",
+      description:
+        "Footer time label (e.g. `2:15 PM`). Not used when `message` is set (`message.time` is used).",
     },
     status: {
       control: "select",
       options: ["sent", "delivered", "read", "failed"],
       table: { category: "Manual bubble" },
-      description: "Delivery row — **sender** only. Ignored when `message` is set (`message.status`).",
+      description:
+        "Delivery row — **sender** only. Ignored when `message` is set (`message.status`).",
     },
     senderName: {
       control: "text",
@@ -166,7 +173,8 @@ const meta: Meta<typeof ChatBubble> = {
     onReplyClick: {
       action: "onReplyClick",
       table: { category: "Manual bubble" },
-      description: "Fires when the reply quote is clicked and `reply.messageId` is defined.",
+      description:
+        "Fires when the reply quote is clicked and `reply.messageId` is defined.",
     },
     media: {
       control: false,
@@ -177,7 +185,8 @@ const meta: Meta<typeof ChatBubble> = {
       control: "select",
       options: ["text", "media", "audio", "carousel"],
       table: { category: "Manual bubble" },
-      description: "Bubble max width: text ≈ 65%, media 380px, audio 340px, carousel 466px.",
+      description:
+        "Bubble max width: text ≈ 65%, media 380px, audio 340px, carousel 466px.",
     },
     senderIndicator: {
       control: false,
@@ -317,7 +326,8 @@ export const ReceiverMessage: Story = {
   args: {
     variant: "receiver",
     timestamp: "2:16 PM",
-    children: "I need help with my recent order. The tracking shows it was delivered but I haven't received it yet.",
+    children:
+      "I need help with my recent order. The tracking shows it was delivered but I haven't received it yet.",
   },
 };
 
@@ -420,10 +430,7 @@ export const FromChatMessagePayload: Story = {
   name: "From ChatMessage (template)",
   render: () => (
     <TooltipProvider delayDuration={200}>
-      <ChatBubble
-        message={sampleTemplateMessage}
-        onReplyTo={fn()}
-      />
+      <ChatBubble message={sampleTemplateMessage} onReplyTo={fn()} />
     </TooltipProvider>
   ),
 };
@@ -508,7 +515,13 @@ export const AgentMessageSourceApi: Story = {
 
 /** Full threaded view: all supported bubble rows in one conversation (mock chat **1**). */
 export const MessageListScrollThread: Story = {
+  args: {
+    text: "hello",
+    type: "text",
+  },
+
   name: "All new types (in one thread)",
+
   parameters: {
     layout: "fullscreen",
     docs: {
@@ -518,6 +531,7 @@ export const MessageListScrollThread: Story = {
       },
     },
   },
+
   decorators: [
     (Story) => (
       <ChatProvider transport={new MockTransport()}>
@@ -529,6 +543,7 @@ export const MessageListScrollThread: Story = {
       </ChatProvider>
     ),
   ],
+
   render: () => (
     <ChatBubble.MessageList onReplyTo={fn()} className="flex-1 min-h-0" />
   ),
@@ -638,7 +653,7 @@ export const FlatText: Story = {
     docs: {
       description: {
         story:
-          "`<ChatBubble type=\"text\" variant=\"sender\" text=\"…\" />` — same shape as manual mode but discriminated by `type`.",
+          '`<ChatBubble type="text" variant="sender" text="…" />` — same shape as manual mode but discriminated by `type`.',
       },
     },
   },
@@ -688,7 +703,7 @@ export const FlatLocation: Story = {
         type="location"
         variant="receiver"
         timestamp="2:31 PM"
-        location={{ latitude: 19.0760, longitude: 72.8777 }}
+        location={{ latitude: 19.076, longitude: 72.8777 }}
       />
     </div>
   ),
@@ -854,7 +869,11 @@ export const FlatTemplateMixedButtons: Story = {
         status="delivered"
         text="Your appointment with Dr. Mehta is confirmed for tomorrow at 10:30 AM."
         buttons={[
-          { kind: "url", label: "Reschedule online", url: "https://example.com/reschedule" },
+          {
+            kind: "url",
+            label: "Reschedule online",
+            url: "https://example.com/reschedule",
+          },
           { kind: "phone", label: "Call clinic", phone: "+919876543210" },
           { kind: "quickReply", label: "Cancel" },
         ]}
