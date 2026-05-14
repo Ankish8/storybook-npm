@@ -47,7 +47,10 @@ import {
 } from "./types";
 
 const maxWidthMap = {
-  text: cn("max-w-[65%]"),
+  // Text bubbles defer their max-width to the consumer's wrapper (so a nested
+  // wrapper `max-w-[65%]` doesn't compound with a library cap). Media variants
+  // keep absolute caps because their layout depends on the media's own width.
+  text: cn("max-w-full"),
   media: cn("max-w-[380px] w-full"),
   audio: cn("max-w-[340px] w-[340px]"),
   carousel: cn("max-w-[466px] w-full"),
@@ -484,7 +487,9 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
           ? cn("max-w-[340px] w-[340px]")
           : msg.type === "contact" || msg.type === "listReply"
             ? cn("max-w-[320px] w-full")
-            : cn("max-w-[65%]");
+            // Text bubbles defer max-width to the consumer's wrapper to avoid
+            // a nested cap. See maxWidthMap.text comment above.
+            : cn("max-w-full");
 
   const hasButtons =
     msg.type === "template" && Array.isArray(msg.buttons) && msg.buttons.length > 0;
