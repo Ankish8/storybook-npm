@@ -219,18 +219,19 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("receiver short text bubble gets minWidth 7rem so footer can't be clipped", () => {
+    it("receiver short text bubble: minWidth 7rem + left-aligned footer (per Figma)", () => {
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
         </ChatBubble>
       );
-      // Block footer below text; receiver footer is right-aligned (justify-end).
+      // Block footer below text; receiver footer is LEFT-aligned (justify-start).
       const blockFooter = container.querySelector("div.mt-1\\.5");
       expect(blockFooter).not.toBeNull();
       expect(blockFooter?.textContent).toContain("03:43 am");
-      expect(blockFooter).toHaveClass("justify-end");
-      // Bubble (the overflow-hidden rounded box) has inline minWidth: 7rem.
+      expect(blockFooter).toHaveClass("justify-start");
+      // Bubble (the overflow-hidden rounded box) has inline minWidth: 7rem to
+      // prevent the wider timestamp footer from being clipped by overflow-hidden.
       const bubble = container.querySelector("div.rounded.overflow-hidden");
       expect(bubble).not.toBeNull();
       expect((bubble as HTMLElement).style.minWidth).toBe("7rem");

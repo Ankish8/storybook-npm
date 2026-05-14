@@ -65,7 +65,8 @@ function LegacyDeliveryFooter({
   return (
     <div
       className={cn(
-        "flex items-center mt-1.5 justify-end gap-1.5"
+        "flex items-center mt-1.5",
+        variant === "sender" ? "justify-end gap-1.5" : "justify-start gap-1.5"
       )}
     >
       {variant === "sender" && status && (
@@ -238,7 +239,11 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
     <div
       className={cn(
         "flex items-center mt-1.5",
-        msg.type === "audio" ? "justify-between" : "justify-end gap-1.5"
+        msg.type === "audio"
+          ? "justify-between"
+          : msg.sender === "agent"
+            ? "justify-end gap-1.5"
+            : "justify-start gap-1.5"
       )}
       style={msg.type === "audio" ? { paddingLeft: 0 } : undefined}
     >
