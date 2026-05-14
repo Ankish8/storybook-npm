@@ -219,23 +219,20 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("receiver text-only bubble: inline footer keeps timestamp on same line as text (no clipping)", () => {
-      // Receiver text bubbles route through the INLINE footer so the bubble's
-      // w-fit width calculation includes the timestamp (no overflow-hidden clip).
-      // Sender bubbles continue using the block footer (covered below).
+    it("receiver short text uses block footer with min-w-min so bubble can't shrink below footer width", () => {
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
         </ChatBubble>
       );
-      // No block footer div for receiver text-only.
-      expect(container.querySelector("div.mt-1\\.5")).toBeNull();
-      // Inline footer span sits at the end of the same <p> as the text.
-      const p = container.querySelector("p");
-      expect(p?.textContent).toContain("Bhjg");
-      expect(p?.textContent).toContain("03:43 am");
-      const inlineFooter = p?.querySelector("span.whitespace-nowrap");
-      expect(inlineFooter).not.toBeNull();
+      // Block footer below text; receiver footer is left-aligned (justify-start).
+      const blockFooter = container.querySelector("div.mt-1\\.5");
+      expect(blockFooter).not.toBeNull();
+      expect(blockFooter?.textContent).toContain("03:43 am");
+      // Bubble has min-w-min so it doesn't shrink below the footer's atomic width.
+      // Find the bubble div by its rounded class.
+      const bubble = container.querySelector("div.rounded");
+      expect(bubble).toHaveClass("min-w-min");
     });
 
     it("reserves column padding when senderIndicator is present so the avatar stays inside the box", () => {

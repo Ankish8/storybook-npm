@@ -636,7 +636,7 @@ const ChatBubbleMessageMode = React.forwardRef<
               msg.type === "listReply" ||
               (msg.type === "template" && (msg.media || hasButtons))
               ? "w-full"
-              : "w-fit",
+              : "w-fit min-w-min",
             msg.sender === "agent"
               ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
               : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
@@ -938,14 +938,14 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     } = props as ChatBubbleManualProps;
 
     const hasMedia = !!media;
-    // Inline footer ONLY for receiver text-only bubbles. Reason: w-fit on the
-    // bubble computes width from the text <p>, and the block footer in a separate
-    // row doesn't reliably extend the bubble's width — so short receiver text
-    // like "Bhjg" gets clipped by overflow-hidden on the bubble.
-    //
-    // Sender bubbles keep the block footer because they carry status icons +
-    // label and need to right-align the delivery metadata.
-    const useManualInlineFooter = variant === "receiver" && !hasMedia && !!children;
+    // Block footer everywhere. Inline-footer-in-<p> was previously enabled for
+    // receiver text bubbles to fix Bug #8's clipping, but inline-flow wraps the
+    // footer to a new line when bubble width is tight, producing a worse visual.
+    // Instead, the bubble's `min-w-min` (set on the bubble div below) ensures
+    // the bubble is at least as wide as the footer's atomic min-content — the
+    // bubble may extend past the column's max-w in extremely narrow chat panels,
+    // but content stays visible (no clipping).
+    const useManualInlineFooter = false;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
     const manualSenderRole: "agent" | "customer" =
@@ -1029,7 +1029,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           <div
             className={cn(
               "overflow-hidden rounded",
-              !hasMedia && "px-4 pb-1.5 pt-3 w-fit",
+              !hasMedia && "px-4 pb-1.5 pt-3 w-fit min-w-min",
               variant === "sender"
                 ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
                 : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
