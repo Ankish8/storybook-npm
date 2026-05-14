@@ -47,3 +47,6 @@ packages/cli/src/utils/registry-*.ts
 # CLI E2E test fixture (created by `cd packages/cli && npm run test:e2e`)
 tests/onboard
 .claude/scheduled_tasks.lock
+
+# Storybook design-tokens addon artifact — embeds absolute machine-local source paths
+public/design-tokens.source.json

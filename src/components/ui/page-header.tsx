@@ -183,7 +183,7 @@ const PageHeader = React.forwardRef(
           {/* Visible actions row - full width grid */}
           <div className="grid gap-2" style={{ gridTemplateColumns: gridCols }}>
             {visibleActions.map((action, index) => (
-              <div key={index} className="[&>*]:w-full [&>*]:h-9">
+              <div key={index} className="[&>*]:w-full [&>*]:min-h-9">
                 {action}
               </div>
             ))}
@@ -209,7 +209,7 @@ const PageHeader = React.forwardRef(
           {isOverflowExpanded && overflowActions.length > 0 && (
             <div className="flex flex-col gap-2">
               {overflowActions.map((action, index) => (
-                <div key={index} className="[&>*]:w-full [&>*]:h-9">
+                <div key={index} className="[&>*]:w-full [&>*]:min-h-9">
                   {action}
                 </div>
               ))}
