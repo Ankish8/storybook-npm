@@ -529,14 +529,28 @@ const ChatBubbleMessageMode = React.forwardRef<
     hasButtons,
   } = computeMessageBubbleLayout(msg);
 
-  // Inline footer is disabled in favor of block footer (right-aligned).
-  // The block footer's whitespace-nowrap on its spans prevents internal wrap.
-  // For customer text-only bubbles, a 7rem minWidth on the bubble prevents the
-  // wider footer timestamp from being clipped by overflow-hidden when the bubble
-  // would otherwise shrink to a shorter text width.
+  // Inline footer is disabled in favor of block footer.
+  // For text-only bubbles, the block footer can be wider than the text content.
+  // overflow-hidden on the bubble would clip the footer unless the bubble is
+  // forced to be at least as wide as the widest possible footer:
+  //   - receiver / customer: just a timestamp → 7rem
+  //   - sender / agent, failed: "Failed to send" + Retry + bullet + timestamp → 12rem
+  //   - sender / agent, any other status: icon + label + bullet + timestamp → 9.5rem
+  //   - sender / agent, no status: just a timestamp → 7rem
   const shouldUseInlineFooter = false;
   const isMessageReceiverTextOnly =
     msg.sender === "customer" && !hasMedia && hasText && !hasButtons;
+  const isMessageSenderTextOnly =
+    msg.sender === "agent" && !hasMedia && hasText && !hasButtons;
+  const messageTextOnlyMinWidth: string | undefined = isMessageReceiverTextOnly
+    ? "7rem"
+    : isMessageSenderTextOnly
+      ? msg.status === "failed"
+        ? "12rem"
+        : msg.status
+          ? "9.5rem"
+          : "7rem"
+      : undefined;
 
   const shouldShowReplyIcon =
     !!onReplyTo &&
@@ -646,7 +660,9 @@ const ChatBubbleMessageMode = React.forwardRef<
               : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
           )}
           style={
-            isMessageReceiverTextOnly ? { minWidth: "7rem" } : undefined
+            messageTextOnlyMinWidth
+              ? { minWidth: messageTextOnlyMinWidth }
+              : undefined
           }
         >
           {msg.type === "carousel" && hasText && (
@@ -945,14 +961,26 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     } = props as ChatBubbleManualProps;
 
     const hasMedia = !!media;
-    // Block footer everywhere. For receiver text-only bubbles, the bubble gets a
-    // 7rem minWidth so a short message + the wider footer timestamp don't trigger
-    // overflow-hidden clipping. The footer is right-aligned (LegacyDeliveryFooter),
-    // so on a wider-than-needed bubble the timestamp sits flush against the right
-    // padding, matching the sender-side visual.
+    // Block footer everywhere. For text-only bubbles, the bubble gets a minWidth
+    // sized to the widest possible footer so overflow-hidden never clips it:
+    //   - receiver: just a timestamp → 7rem
+    //   - sender, failed: "Failed to send" + Retry + bullet + timestamp → 12rem
+    //   - sender, any other status: icon + label + bullet + timestamp → 9.5rem
+    //   - sender, no status: just a timestamp → 7rem
     const useManualInlineFooter = false;
     const isManualReceiverTextOnly =
       variant === "receiver" && !hasMedia && !!children;
+    const isManualSenderTextOnly =
+      variant === "sender" && !hasMedia && !!children;
+    const manualTextOnlyMinWidth: string | undefined = isManualReceiverTextOnly
+      ? "7rem"
+      : isManualSenderTextOnly
+        ? status === "failed"
+          ? "12rem"
+          : status
+            ? "9.5rem"
+            : "7rem"
+        : undefined;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
     const manualSenderRole: "agent" | "customer" =
@@ -1042,7 +1070,9 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
             )}
             style={
-              isManualReceiverTextOnly ? { minWidth: "7rem" } : undefined
+              manualTextOnlyMinWidth
+                ? { minWidth: manualTextOnlyMinWidth }
+                : undefined
             }
           >
             {media}

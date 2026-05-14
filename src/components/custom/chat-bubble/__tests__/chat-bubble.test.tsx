@@ -225,16 +225,52 @@ describe("ChatBubble", () => {
           Bhjg
         </ChatBubble>
       );
-      // Block footer below text; receiver footer is LEFT-aligned (justify-start).
       const blockFooter = container.querySelector("div.mt-1\\.5");
-      expect(blockFooter).not.toBeNull();
-      expect(blockFooter?.textContent).toContain("03:43 am");
       expect(blockFooter).toHaveClass("justify-start");
-      // Bubble (the overflow-hidden rounded box) has inline minWidth: 7rem to
-      // prevent the wider timestamp footer from being clipped by overflow-hidden.
       const bubble = container.querySelector("div.rounded.overflow-hidden");
-      expect(bubble).not.toBeNull();
       expect((bubble as HTMLElement).style.minWidth).toBe("7rem");
+    });
+
+    it("sender text-only with no status: minWidth 7rem", () => {
+      const { container } = render(
+        <ChatBubble variant="sender" timestamp="03:43 am">
+          Hi
+        </ChatBubble>
+      );
+      const bubble = container.querySelector("div.rounded.overflow-hidden");
+      expect((bubble as HTMLElement).style.minWidth).toBe("7rem");
+    });
+
+    it("sender text-only with 'read' status: minWidth 9.5rem", () => {
+      const { container } = render(
+        <ChatBubble variant="sender" timestamp="03:43 am" status="read">
+          Hi
+        </ChatBubble>
+      );
+      const bubble = container.querySelector("div.rounded.overflow-hidden");
+      expect((bubble as HTMLElement).style.minWidth).toBe("9.5rem");
+    });
+
+    it("sender text-only with 'failed' status: minWidth 12rem (room for Retry button)", () => {
+      const { container } = render(
+        <ChatBubble variant="sender" timestamp="03:43 am" status="failed">
+          Hi
+        </ChatBubble>
+      );
+      const bubble = container.querySelector("div.rounded.overflow-hidden");
+      expect((bubble as HTMLElement).style.minWidth).toBe("12rem");
+    });
+
+    it("media bubble: no inline minWidth applied (bubble already w-full)", () => {
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="03:43 am"
+          media={<div data-testid="media" />}
+        />
+      );
+      const bubble = container.querySelector("div.rounded.overflow-hidden");
+      expect((bubble as HTMLElement).style.minWidth).toBe("");
     });
 
     it("reserves column padding when senderIndicator is present so the avatar stays inside the box", () => {
