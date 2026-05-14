@@ -1049,6 +1049,7 @@ components:
       - "message-renderers.tsx"
       - "agent-source-samples.tsx"
       - "chat-bubble-base.tsx"
+      - "chat-bubble.tsx"
       - "chat-message-list.tsx"
       - "types.ts"
       - "index.ts"
