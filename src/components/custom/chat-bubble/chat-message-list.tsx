@@ -12,7 +12,10 @@ import type { ChatMessageListProps } from "./types"
 /* ── ChatBubble.MessageList — scrollable thread (requires ChatProvider) ── */
 
 const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
-  ({ className, onReplyTo, showReplyOn, ...props }, ref) => {
+  (
+    { className, onReplyTo, showReplyOn, textMaxWidthClassName, ...props },
+    ref
+  ) => {
     const { messages, selectedChatId, chats } = useChatContext()
 
     const selectedChat = React.useMemo(
@@ -92,6 +95,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                       replyParticipantName={selectedChat.name}
                       onReplyTo={onReplyTo}
                       showReplyOn={showReplyOn}
+                      textMaxWidthClassName={textMaxWidthClassName}
                     />
                   </React.Fragment>
                 )

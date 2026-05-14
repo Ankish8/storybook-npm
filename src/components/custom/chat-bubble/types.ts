@@ -75,6 +75,15 @@ export interface ChatBubbleManualProps extends HtmlDiv {
    * defaults to an empty string if omitted.
    */
   messageId?: string;
+  /**
+   * Class hook for the **text bubble's outer max-width**. The library is the
+   * single source of truth — if you set this, do NOT also apply `max-w-*` on a
+   * wrapping element (that compounds with this one and shrinks the bubble).
+   * Default: `"max-w-[65%]"`. Override examples: `"max-w-[52%]"`, `"max-w-[80%]"`,
+   * `"max-w-[480px]"`. Ignored for media variants (audio/carousel/media), which
+   * use absolute-px caps internal to the component.
+   */
+  textMaxWidthClassName?: string;
 }
 
 /**
@@ -90,6 +99,11 @@ export interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElemen
    * threads where users can reply to their own messages too).
    */
   showReplyOn?: ShowReplyOn;
+  /**
+   * Class hook for each text bubble's outer max-width. Forwarded to every
+   * `ChatBubble` rendered inside the thread. Default: `"max-w-[65%]"`.
+   */
+  textMaxWidthClassName?: string;
 }
 
 /** Full template message: renders text, media, documents, carousel, location, contact, etc. */
@@ -120,6 +134,12 @@ export interface ChatBubbleMessageProps extends HtmlDiv {
    * Optional custom header slot when `sentBy` is not set; otherwise `SenderIndicator` uses `message.sentBy`.
    */
   senderIndicator?: React.ReactNode;
+  /**
+   * Class hook for the text bubble's outer max-width. Library is the single
+   * source of truth — don't also apply `max-w-*` on a wrapper. Default:
+   * `"max-w-[65%]"`. Ignored for media variants (image/video/audio/etc.).
+   */
+  textMaxWidthClassName?: string;
 }
 
 /**
@@ -160,6 +180,12 @@ export interface ChatBubbleFlatBase
    * `replyTo.messageId` matches this, clicking the quote scrolls here.
    */
   messageId?: string;
+  /**
+   * Class hook for the text bubble's outer max-width. Library is the single
+   * source of truth — don't also apply `max-w-*` on a wrapper. Default:
+   * `"max-w-[65%]"`. Ignored for media variants.
+   */
+  textMaxWidthClassName?: string;
 }
 
 /** Plain text bubble — same shape as manual mode but discriminated by `type`. */

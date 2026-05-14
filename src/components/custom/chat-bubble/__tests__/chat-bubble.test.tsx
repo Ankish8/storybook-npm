@@ -261,6 +261,62 @@ describe("ChatBubble", () => {
       expect((bubble as HTMLElement).style.minWidth).toBe("12rem");
     });
 
+    it("textMaxWidthClassName defaults to max-w-[65%] on the column (manual mode)", () => {
+      const { container } = render(
+        <ChatBubble variant="sender" timestamp="2:15 PM">
+          Hi
+        </ChatBubble>
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      expect(column).toHaveClass("max-w-[65%]");
+    });
+
+    it("textMaxWidthClassName override is applied on the column (manual mode)", () => {
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="2:15 PM"
+          textMaxWidthClassName="max-w-[52%]"
+        >
+          Hi
+        </ChatBubble>
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      expect(column).toHaveClass("max-w-[52%]");
+      expect(column).not.toHaveClass("max-w-[65%]");
+    });
+
+    it("textMaxWidthClassName override flows through message mode too", () => {
+      const msg: ChatMessage = {
+        id: "m-x",
+        text: "Hi",
+        time: "2:15 PM",
+        sender: "agent",
+        type: "text",
+      };
+      const { container } = render(
+        <ChatBubble message={msg} textMaxWidthClassName="max-w-[480px]" />
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      expect(column).toHaveClass("max-w-[480px]");
+    });
+
+    it("textMaxWidthClassName is ignored for media variants (manual mode)", () => {
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="2:15 PM"
+          maxWidth="media"
+          media={<div data-testid="m" />}
+          textMaxWidthClassName="max-w-[52%]"
+        />
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      // media variant keeps its absolute-px cap, not the prop's percentage.
+      expect(column).toHaveClass("max-w-[380px]");
+      expect(column).not.toHaveClass("max-w-[52%]");
+    });
+
     it("media bubble: no inline minWidth applied (bubble already w-full)", () => {
       const { container } = render(
         <ChatBubble

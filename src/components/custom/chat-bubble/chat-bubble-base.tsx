@@ -46,11 +46,13 @@ import {
   isChatBubbleFlatProps,
 } from "./types";
 
+// Default max-width for text bubbles. Consumers override via the
+// `textMaxWidthClassName` prop. Library is the single source of truth — do
+// NOT also apply `max-w-*` on a wrapping element (compounds with this one).
+const DEFAULT_TEXT_MAX_WIDTH = "max-w-[65%]";
+
 const maxWidthMap = {
-  // Text bubbles defer their max-width to the consumer's wrapper (so a nested
-  // wrapper `max-w-[65%]` doesn't compound with a library cap). Media variants
-  // keep absolute caps because their layout depends on the media's own width.
-  text: cn("max-w-full"),
+  text: cn(DEFAULT_TEXT_MAX_WIDTH),
   media: cn("max-w-[380px] w-full"),
   audio: cn("max-w-[340px] w-[340px]"),
   carousel: cn("max-w-[466px] w-full"),
@@ -449,7 +451,10 @@ function TemplateButton({
   );
 }
 
-function computeMessageBubbleLayout(msg: ChatMessage) {
+function computeMessageBubbleLayout(
+  msg: ChatMessage,
+  textMaxWidthClassName: string = "max-w-[65%]"
+) {
   /**
    * True when the card has a full-bleed block above the text/footer (image, referral, or
    * `template` with a header `media` payload). Plain `text` and text-only `template` use
@@ -487,9 +492,9 @@ function computeMessageBubbleLayout(msg: ChatMessage) {
           ? cn("max-w-[340px] w-[340px]")
           : msg.type === "contact" || msg.type === "listReply"
             ? cn("max-w-[320px] w-full")
-            // Text bubbles defer max-width to the consumer's wrapper to avoid
-            // a nested cap. See maxWidthMap.text comment above.
-            : cn("max-w-full");
+            // Text bubbles: library is single source of truth for max-width.
+            // Consumers override via the `textMaxWidthClassName` prop.
+            : cn(textMaxWidthClassName);
 
   const hasButtons =
     msg.type === "template" && Array.isArray(msg.buttons) && msg.buttons.length > 0;
@@ -512,6 +517,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     onReplyTo?: (payload: ReplyToPayload) => void;
     showReplyOn?: ShowReplyOn;
     senderIndicator?: React.ReactNode;
+    textMaxWidthClassName?: string;
   } & Omit<React.HTMLAttributes<HTMLDivElement>, "children">
 >(function ChatBubbleMessageMode(
   {
@@ -520,6 +526,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     onReplyTo,
     showReplyOn = "customer",
     senderIndicator,
+    textMaxWidthClassName = DEFAULT_TEXT_MAX_WIDTH,
     className,
     ...rest
   },
@@ -532,7 +539,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     isDocWithMeta,
     bubbleWidth,
     hasButtons,
-  } = computeMessageBubbleLayout(msg);
+  } = computeMessageBubbleLayout(msg, textMaxWidthClassName);
 
   // Inline footer is disabled in favor of block footer.
   // For text-only bubbles, the block footer can be wider than the text content.
@@ -886,6 +893,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         onReplyTo,
         showReplyOn,
         senderIndicator,
+        textMaxWidthClassName,
         className,
         ...rest
       } = props;
@@ -897,6 +905,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           onReplyTo={onReplyTo}
           showReplyOn={showReplyOn}
           senderIndicator={senderIndicator}
+          textMaxWidthClassName={textMaxWidthClassName}
           className={className}
           {...rest}
         />
@@ -917,6 +926,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         replyParticipantName,
         messageId: _messageId,
         type: _type,
+        textMaxWidthClassName,
         className,
         ...rest
       } = flat as ChatBubbleFlatProps & {
@@ -940,6 +950,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           replyParticipantName={replyParticipantName}
           onReplyTo={onReplyTo}
           showReplyOn={showReplyOn}
+          textMaxWidthClassName={textMaxWidthClassName}
           className={className}
           {...(restNoPayload as React.HTMLAttributes<HTMLDivElement>)}
         />
@@ -960,6 +971,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       showReplyOn = "customer",
       replyParticipantName,
       messageId,
+      textMaxWidthClassName = DEFAULT_TEXT_MAX_WIDTH,
       children,
       className,
       ...rest
@@ -1045,7 +1057,9 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         <div
           className={cn(
             "flex flex-col",
-            maxWidthMap[maxWidth],
+            // Text bubbles: prop-driven cap (library is single source of truth).
+            // Media variants: use the absolute-px caps from maxWidthMap.
+            maxWidth === "text" ? textMaxWidthClassName : maxWidthMap[maxWidth],
             variant === "sender" ? "items-end" : "items-start",
             // Reserve 36px (28px avatar + 6px ml + 2px buffer) inside the column
             // so the absolutely-positioned senderIndicator stays within the box.
