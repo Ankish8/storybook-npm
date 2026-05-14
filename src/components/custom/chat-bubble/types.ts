@@ -77,11 +77,20 @@ export interface ChatBubbleManualProps extends HtmlDiv {
   messageId?: string;
   /**
    * Class hook for the **text bubble's outer max-width**. The library is the
-   * single source of truth — if you set this, do NOT also apply `max-w-*` on a
-   * wrapping element (that compounds with this one and shrinks the bubble).
-   * Default: `"max-w-[65%]"`. Override examples: `"max-w-[52%]"`, `"max-w-[80%]"`,
-   * `"max-w-[480px]"`. Ignored for media variants (audio/carousel/media), which
-   * use absolute-px caps internal to the component.
+   * single source of truth for this cap.
+   *
+   * **⚠️ Do NOT also apply `max-w-*` on a wrapping element.** Two max-width
+   * declarations on nested elements compound (e.g. `max-w-[65%]` outside +
+   * `max-w-[65%]` inside = `~42%` effective width — bubbles will be too narrow).
+   * Either pass this prop OR set max-width on your wrapper, never both.
+   *
+   * **Prefix**: pass the class WITH your consumer's Tailwind prefix
+   * (e.g. `"tw-max-w-[52%]"` if your build adds a `tw-` prefix). The library
+   * applies whatever you pass as-is; it cannot guess your prefix.
+   *
+   * Default (after the CLI's `tw-` prefix transform): `"tw-max-w-[65%]"`.
+   * Ignored for media variants (audio/carousel/media), which use absolute-px
+   * caps internal to the component.
    */
   textMaxWidthClassName?: string;
 }
@@ -101,7 +110,11 @@ export interface ChatMessageListProps extends React.HTMLAttributes<HTMLDivElemen
   showReplyOn?: ShowReplyOn;
   /**
    * Class hook for each text bubble's outer max-width. Forwarded to every
-   * `ChatBubble` rendered inside the thread. Default: `"max-w-[65%]"`.
+   * `ChatBubble` rendered inside the thread. Same rules as on `ChatBubble`:
+   * library is the single source of truth, do not also set `max-w-*` on an
+   * ancestor (it compounds), and pass the class WITH your consumer's Tailwind
+   * prefix (e.g. `"tw-max-w-[52%]"`). Default (after CLI prefix transform):
+   * `"tw-max-w-[65%]"`.
    */
   textMaxWidthClassName?: string;
 }
@@ -181,9 +194,21 @@ export interface ChatBubbleFlatBase
    */
   messageId?: string;
   /**
-   * Class hook for the text bubble's outer max-width. Library is the single
-   * source of truth — don't also apply `max-w-*` on a wrapper. Default:
-   * `"max-w-[65%]"`. Ignored for media variants.
+   * Class hook for the **text bubble's outer max-width**. The library is the
+   * single source of truth for this cap.
+   *
+   * **⚠️ Do NOT also apply `max-w-*` on a wrapping element.** Two max-width
+   * declarations on nested elements compound (e.g. `max-w-[65%]` outside +
+   * `max-w-[65%]` inside = `~42%` effective width — bubbles will be too narrow).
+   * Either pass this prop OR set max-width on your wrapper, never both.
+   *
+   * **Prefix**: pass the class WITH your consumer's Tailwind prefix
+   * (e.g. `"tw-max-w-[52%]"` if your build adds a `tw-` prefix). The library
+   * applies whatever you pass as-is; it cannot guess your prefix.
+   *
+   * Default (after the CLI's `tw-` prefix transform): `"tw-max-w-[65%]"`.
+   * Ignored for media variants (image / video / audio / etc.) which use
+   * absolute-px caps internal to the component.
    */
   textMaxWidthClassName?: string;
 }

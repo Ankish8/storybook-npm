@@ -243,11 +243,58 @@ describe("PageHeader", () => {
       render(
         <PageHeader title="Title" layout="horizontal" data-testid="header" />
       );
-      expect(screen.getByTestId("header")).toHaveClass("flex-col");
-      expect(screen.getByTestId("header")).toHaveClass("sm:flex-row");
-      expect(screen.getByTestId("header")).toHaveClass("sm:items-center");
-      expect(screen.getByTestId("header")).toHaveClass("py-4");
-      expect(screen.getByTestId("header")).toHaveClass("lg:py-[18px]");
+      const header = screen.getByTestId("header");
+      expect(header).toHaveClass("flex-row");
+      expect(header).toHaveClass("items-center");
+      expect(header.className).not.toMatch(/(?:^|\s)flex-col(?:\s|$)/);
+      expect(header.className).not.toMatch(/sm:flex-row/);
+      expect(header).toHaveClass("py-4");
+      expect(header).toHaveClass("lg:py-[18px]");
+    });
+
+    it("renders horizontal layout actions inline at every breakpoint", () => {
+      render(
+        <PageHeader
+          title="Title"
+          layout="horizontal"
+          actions={<button data-testid="action">Action</button>}
+        />
+      );
+      // Horizontal layout renders actions once (no duplicate mobile grid)
+      const actions = screen.getAllByTestId("action");
+      expect(actions).toHaveLength(1);
+      // Actions container uses inline horizontal styling, not mobile-grid styling
+      const actionsWrapper = actions[0].parentElement;
+      expect(actionsWrapper).toHaveClass("ml-auto");
+      expect(actionsWrapper).toHaveClass("shrink-0");
+      // Should NOT render the mobile expandable overflow trigger
+      expect(
+        screen.queryByRole("button", { name: "More actions" })
+      ).not.toBeInTheDocument();
+    });
+
+    it("keeps horizontal actions inline even when count exceeds mobileOverflowLimit", () => {
+      render(
+        <PageHeader
+          title="Title"
+          layout="horizontal"
+          mobileOverflowLimit={2}
+          actions={
+            <>
+              <button>Action 1</button>
+              <button>Action 2</button>
+              <button>Action 3</button>
+            </>
+          }
+        />
+      );
+      // All three actions should be inline, no overflow menu in horizontal mode
+      expect(screen.getByRole("button", { name: "Action 1" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Action 2" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Action 3" })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "More actions" })
+      ).not.toBeInTheDocument();
     });
 
     it("applies vertical layout when specified", () => {
@@ -266,8 +313,10 @@ describe("PageHeader", () => {
           actions={<button data-testid="action">Action</button>}
         />
       );
-      const desktopAction = screen.getAllByTestId("action")[0];
-      expect(desktopAction.parentElement).toHaveClass("ml-6");
+      // Horizontal layout uses ml-auto on the actions container (right-aligned), not ml-6
+      const action = screen.getByTestId("action");
+      expect(action.parentElement).toHaveClass("ml-auto");
+      expect(action.parentElement).toHaveClass("gap-2");
     });
 
     it("applies correct action spacing for vertical layout", () => {

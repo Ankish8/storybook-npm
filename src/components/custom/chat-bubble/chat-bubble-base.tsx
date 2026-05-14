@@ -49,7 +49,12 @@ import {
 // Default max-width for text bubbles. Consumers override via the
 // `textMaxWidthClassName` prop. Library is the single source of truth — do
 // NOT also apply `max-w-*` on a wrapping element (compounds with this one).
-const DEFAULT_TEXT_MAX_WIDTH = "max-w-[65%]";
+//
+// IMPORTANT — wrapped in `cn(...)` so the CLI's `tw-` prefix transformer
+// rewrites the literal at install time. A bare `"max-w-[65%]"` outside any
+// recognized pattern would ship to consumers unprefixed (and not match their
+// tw-prefixed CSS), making the default a no-op.
+const DEFAULT_TEXT_MAX_WIDTH = cn("max-w-[65%]");
 
 const maxWidthMap = {
   text: cn(DEFAULT_TEXT_MAX_WIDTH),
@@ -453,7 +458,9 @@ function TemplateButton({
 
 function computeMessageBubbleLayout(
   msg: ChatMessage,
-  textMaxWidthClassName: string = "max-w-[65%]"
+  // Reference the module-level constant (which IS prefixed by the CLI transformer)
+  // rather than a bare string literal here (which the transformer would skip).
+  textMaxWidthClassName: string = DEFAULT_TEXT_MAX_WIDTH
 ) {
   /**
    * True when the card has a full-bleed block above the text/footer (image, referral, or

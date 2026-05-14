@@ -68,7 +68,7 @@ export interface PageHeaderProps
   actions?: React.ReactNode;
   /** Show bottom border (default: true) */
   showBorder?: boolean;
-  /** Layout mode: 'horizontal' (row on sm+, stacked on narrow), 'vertical' (stacked), 'responsive' (same as horizontal, default) */
+  /** Layout mode: 'horizontal' (always single row, actions inline even on mobile), 'vertical' (stacked), 'responsive' (row on sm+, stacked with expandable actions on narrow, default) */
   layout?: "horizontal" | "vertical" | "responsive";
   /** Max actions to show on mobile before overflow (default: 2) */
   mobileOverflowLimit?: number;
@@ -148,7 +148,7 @@ const PageHeader = React.forwardRef(
 
     // Layout classes based on prop
     const layoutClasses = {
-      horizontal: "flex-col sm:flex-row sm:items-center",
+      horizontal: "flex-row items-center",
       vertical: "flex-col",
       responsive: "flex-col sm:flex-row sm:items-center",
     };
@@ -226,7 +226,18 @@ const PageHeader = React.forwardRef(
         return renderExpandableActions("mt-3");
       }
 
-      // horizontal + responsive: stack actions below title on small screens
+      if (layout === "horizontal") {
+        // Always inline — single row at every breakpoint, no mobile expandable grid
+        return (
+          <div className="flex items-center gap-2 ml-auto shrink-0 [&>*]:w-auto">
+            {actionsArray.map((action, index) => (
+              <React.Fragment key={index}>{action}</React.Fragment>
+            ))}
+          </div>
+        );
+      }
+
+      // responsive: stack actions below title on small screens
       return (
         <>
           {renderDesktopActions()}
