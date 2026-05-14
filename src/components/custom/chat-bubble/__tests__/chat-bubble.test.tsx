@@ -219,7 +219,16 @@ describe("ChatBubble", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("receiver short text bubble: minWidth 7rem + left-aligned footer (per Figma)", () => {
+    // The bubble wrapper (the element with `relative` that contains the
+    // overflow-hidden bubble) is what carries minWidth — so the wrapper width
+    // matches the rendered bubble width and the absolute reply-button anchor
+    // lands at the bubble's edge.
+    // The bubble div uses either `rounded` (manual mode) or `rounded-lg`
+    // (message mode); both have `overflow-hidden`, which uniquely identifies it.
+    const getBubbleWrapper = (container: HTMLElement) =>
+      container.querySelector("div.overflow-hidden")?.parentElement;
+
+    it("receiver short text bubble: minWidth 7rem on the wrapper + left-aligned footer", () => {
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
@@ -227,38 +236,41 @@ describe("ChatBubble", () => {
       );
       const blockFooter = container.querySelector("div.mt-1\\.5");
       expect(blockFooter).toHaveClass("justify-start");
-      const bubble = container.querySelector("div.rounded.overflow-hidden");
-      expect((bubble as HTMLElement).style.minWidth).toBe("7rem");
+      const wrapper = getBubbleWrapper(container);
+      expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
+      // Wrapper is `relative w-fit` for text-only so the reply-button absolute
+      // anchor lands at the wrapper's (= rendered bubble's) edge.
+      expect(wrapper).toHaveClass("relative", "w-fit");
     });
 
-    it("sender text-only with no status: minWidth 7rem", () => {
+    it("sender text-only with no status: minWidth 7rem on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am">
           Hi
         </ChatBubble>
       );
-      const bubble = container.querySelector("div.rounded.overflow-hidden");
-      expect((bubble as HTMLElement).style.minWidth).toBe("7rem");
+      const wrapper = getBubbleWrapper(container);
+      expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
     });
 
-    it("sender text-only with 'read' status: minWidth 9.5rem", () => {
+    it("sender text-only with 'read' status: minWidth 9.5rem on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="read">
           Hi
         </ChatBubble>
       );
-      const bubble = container.querySelector("div.rounded.overflow-hidden");
-      expect((bubble as HTMLElement).style.minWidth).toBe("9.5rem");
+      const wrapper = getBubbleWrapper(container);
+      expect((wrapper as HTMLElement).style.minWidth).toBe("9.5rem");
     });
 
-    it("sender text-only with 'failed' status: minWidth 12rem (room for Retry button)", () => {
+    it("sender text-only with 'failed' status: minWidth 12rem on the wrapper (room for Retry)", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="failed">
           Hi
         </ChatBubble>
       );
-      const bubble = container.querySelector("div.rounded.overflow-hidden");
-      expect((bubble as HTMLElement).style.minWidth).toBe("12rem");
+      const wrapper = getBubbleWrapper(container);
+      expect((wrapper as HTMLElement).style.minWidth).toBe("12rem");
     });
 
     it("textMaxWidthClassName defaults to max-w-[65%] on the column (manual mode)", () => {
@@ -317,7 +329,48 @@ describe("ChatBubble", () => {
       expect(column).not.toHaveClass("max-w-[52%]");
     });
 
-    it("media bubble: no inline minWidth applied (bubble already w-full)", () => {
+    it("reply button is a sibling of the bubble inside the bubble wrapper (anchors to bubble edge, not row)", () => {
+      const onReplyTo = vi.fn();
+      const msg: ChatMessage = {
+        id: "m-anchor",
+        text: "Babw",
+        time: "03:00 PM",
+        sender: "customer",
+        type: "text",
+      };
+      const { container } = renderWithTooltip(
+        <ChatBubble message={msg} onReplyTo={onReplyTo} />
+      );
+      // The reply button (absolute positioned) must live inside the bubble
+      // wrapper, NOT inside the outer flex row. If it were on the row, its
+      // `left-full` / `right-full` anchor would land at the row's edge — which
+      // differs from the bubble's edge when minWidth applies, putting the icon
+      // inside/over the bubble. We verify by walking up from the button and
+      // confirming the wrapper ancestor is found before the bubble's sibling.
+      const bubble = container.querySelector("div.overflow-hidden");
+      const wrapper = bubble?.parentElement;
+      const replyBtn = screen.getByRole("button", { name: "Reply" });
+      expect(wrapper?.contains(replyBtn)).toBe(true);
+      // Wrapper carries the minWidth, so its width === rendered bubble width.
+      expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
+    });
+
+    it("reply button has z-10 so it floats above adjacent bubbles", () => {
+      const onReplyTo = vi.fn();
+      const msg: ChatMessage = {
+        id: "m-z",
+        text: "Hi",
+        time: "03:00 PM",
+        sender: "customer",
+        type: "text",
+      };
+      renderWithTooltip(<ChatBubble message={msg} onReplyTo={onReplyTo} />);
+      const replyBtn = screen.getByRole("button", { name: "Reply" });
+      // The button itself is the TooltipTrigger asChild — the class lands on it.
+      expect(replyBtn).toHaveClass("z-10");
+    });
+
+    it("media bubble: wrapper is w-full and has no inline minWidth", () => {
       const { container } = render(
         <ChatBubble
           variant="sender"
@@ -325,8 +378,12 @@ describe("ChatBubble", () => {
           media={<div data-testid="media" />}
         />
       );
-      const bubble = container.querySelector("div.rounded.overflow-hidden");
-      expect((bubble as HTMLElement).style.minWidth).toBe("");
+      // For media variants the wrapper is `relative w-full` (no shrink-to-fit)
+      // and has no minWidth — the column's max-w-[380px] caps the bubble width.
+      const wrapper = container
+        .querySelector("div.overflow-hidden")?.parentElement;
+      expect(wrapper).toHaveClass("relative", "w-full");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("");
     });
 
     it("reserves column padding when senderIndicator is present so the avatar stays inside the box", () => {

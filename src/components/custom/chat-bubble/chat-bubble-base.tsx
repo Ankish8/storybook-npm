@@ -561,6 +561,9 @@ const ChatBubbleMessageMode = React.forwardRef<
     msg.sender === "customer" && !hasMedia && hasText && !hasButtons;
   const isMessageSenderTextOnly =
     msg.sender === "agent" && !hasMedia && hasText && !hasButtons;
+  // Used to decide whether the bubble wrapper needs `w-fit` (text bubbles, so
+  // the reply-button absolute anchor matches the rendered bubble width).
+  const isMessageTextOnly = isMessageReceiverTextOnly || isMessageSenderTextOnly;
   const messageTextOnlyMinWidth: string | undefined = isMessageReceiverTextOnly
     ? "7rem"
     : isMessageSenderTextOnly
@@ -593,7 +596,7 @@ const ChatBubbleMessageMode = React.forwardRef<
             })
           }
           className={cn(
-            "absolute top-0 opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover",
+            "absolute top-0 z-10 opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover",
             msg.sender === "agent" ? "right-full mr-1.5" : "left-full ml-1.5"
           )}
         >
@@ -656,33 +659,38 @@ const ChatBubbleMessageMode = React.forwardRef<
         )}
         <div
           className={cn(
-            "relative flex items-start gap-1.5 w-full",
+            "flex items-start gap-1.5 w-full",
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
-        {replyButton}
+        {/*
+          Bubble wrapper: provides the positioning anchor for the absolutely-
+          positioned reply button + sender icon, AND owns the minWidth so the
+          wrapper's width === the rendered bubble width. Putting the absolute
+          children on an outer flex row would let them detach from the actual
+          bubble (since the bubble's minWidth doesn't propagate to the row).
+        */}
         <div
           className={cn(
-            "rounded-lg overflow-hidden",
-            msg.type === "audio" ||
-              msg.type === "otherDoc" ||
-              msg.type === "carousel" ||
-              msg.type === "loading" ||
-              msg.type === "location" ||
-              msg.type === "contact" ||
-              msg.type === "listReply" ||
-              (msg.type === "template" && (msg.media || hasButtons))
-              ? "w-full"
-              : "w-fit",
-            msg.sender === "agent"
-              ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
-              : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+            "relative",
+            // Text-only bubbles shrink the wrapper to content (+ minWidth);
+            // media variants let the column's max-w control width via w-full.
+            isMessageTextOnly ? "w-fit" : "w-full"
           )}
           style={
             messageTextOnlyMinWidth
               ? { minWidth: messageTextOnlyMinWidth }
               : undefined
           }
+        >
+        {replyButton}
+        <div
+          className={cn(
+            "rounded-lg overflow-hidden w-full",
+            msg.sender === "agent"
+              ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
+              : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+          )}
         >
           {msg.type === "carousel" && hasText && (
             <div className="px-4 pt-3">
@@ -804,6 +812,7 @@ const ChatBubbleMessageMode = React.forwardRef<
           )}
         </div>
         {msg.sender === "agent" && senderIcon}
+        </div>
         </div>
       </div>
     </div>
@@ -996,6 +1005,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       variant === "receiver" && !hasMedia && !!children;
     const isManualSenderTextOnly =
       variant === "sender" && !hasMedia && !!children;
+    const isManualTextOnly =
+      isManualReceiverTextOnly || isManualSenderTextOnly;
     const manualTextOnlyMinWidth: string | undefined = isManualReceiverTextOnly
       ? "7rem"
       : isManualSenderTextOnly
@@ -1036,7 +1047,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 })
               }
               className={cn(
-                "absolute top-0 opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover",
+                "absolute top-0 z-10 opacity-0 group-hover/msg:opacity-100 group-focus-within/msg:opacity-100 transition-opacity shrink-0 rounded-full text-semantic-text-muted hover:text-semantic-text-secondary hover:bg-semantic-bg-hover",
                 variant === "sender" ? "right-full mr-1.5" : "left-full ml-1.5"
               )}
             >
@@ -1082,24 +1093,34 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           )}
           <div
             className={cn(
-              "relative flex items-start gap-1.5 w-full",
+              "flex items-start gap-1.5 w-full",
               variant === "sender" ? "justify-end" : "justify-start"
             )}
           >
-          {manualReplyButton}
+          {/*
+            Bubble wrapper: positioning anchor for reply button + sender icon,
+            and owns the minWidth so the wrapper width === rendered bubble width.
+          */}
           <div
             className={cn(
-              "overflow-hidden rounded",
-              !hasMedia && "px-4 pb-1.5 pt-3 w-fit",
-              variant === "sender"
-                ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
-                : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+              "relative",
+              isManualTextOnly ? "w-fit" : "w-full"
             )}
             style={
               manualTextOnlyMinWidth
                 ? { minWidth: manualTextOnlyMinWidth }
                 : undefined
             }
+          >
+          {manualReplyButton}
+          <div
+            className={cn(
+              "overflow-hidden rounded w-full",
+              !hasMedia && "px-4 pb-1.5 pt-3",
+              variant === "sender"
+                ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
+                : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+            )}
           >
             {media}
             <div className={hasMedia ? "px-4 pb-1.5 pt-2" : ""}>
@@ -1141,6 +1162,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               {senderIndicator}
             </div>
           )}
+          </div>
           </div>
         </div>
       </div>
