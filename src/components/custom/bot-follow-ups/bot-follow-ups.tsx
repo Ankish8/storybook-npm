@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Info } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { clampToMaxLength, cn } from "../../../lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -209,7 +209,10 @@ function NudgeCard({
           onChange={(e) =>
             onMessageChange?.(
               nudge.id,
-              normalizeFollowUpMessageSpaces(e.target.value)
+              clampToMaxLength(
+                normalizeFollowUpMessageSpaces(e.target.value),
+                maxMessageLength
+              )
             )
           }
           onBlur={(e) => onMessageBlur?.(nudge.id, e)}
@@ -218,7 +221,6 @@ function NudgeCard({
           showCount
           displayCharCount={countNonWhitespaceChars(nudge.message)}
           maxLength={maxMessageLength}
-          enforceMaxLength={false}
           error={messageError}
           errorIcon
           aria-label={`${displayLabel} message`}

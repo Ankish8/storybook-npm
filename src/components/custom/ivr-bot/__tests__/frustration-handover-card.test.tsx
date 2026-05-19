@@ -147,6 +147,35 @@ describe("FrustrationHandoverCard", () => {
     expect(onDepartmentOptionsScrollEnd).not.toHaveBeenCalled();
   });
 
+  it("does not allow Prompt input beyond promptMaxLength", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    const max = 10;
+
+    render(
+      <FrustrationHandoverCard
+        data={{
+          frustrationHandoverEnabled: true,
+          escalationPrompt: "1234567890",
+          escalationDepartment: "",
+        }}
+        onChange={onChange}
+        promptMaxLength={max}
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
+    expect(prompt).toHaveValue("1234567890");
+    expect(prompt).toHaveAttribute("maxLength", String(max));
+
+    await user.type(prompt, "x");
+    expect(onChange).not.toHaveBeenCalledWith(
+      expect.objectContaining({ escalationPrompt: "1234567890x" })
+    );
+    expect(prompt).toHaveValue("1234567890");
+  });
+
   it("does not render Prompt when showEscalationPrompt is false", async () => {
     const user = userEvent.setup();
     render(

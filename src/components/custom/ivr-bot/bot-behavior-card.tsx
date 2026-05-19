@@ -439,7 +439,6 @@ const BotBehaviorCard = React.forwardRef(
                 resize="none"
                 showCount
                 maxLength={MAX}
-                enforceMaxLength={false}
                 displayCharCount={promptCharCount}
                 onChange={handlePromptChange}
                 onSelect={(e) => syncCaretFromTextarea(e.currentTarget)}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Info } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { clampToMaxLength, cn } from "../../../lib/utils";
 import {
   Select,
   SelectContent,
@@ -68,8 +68,8 @@ export interface FrustrationHandoverCardProps {
   /** Additional className */
   className?: string;
   /**
-   * Maximum characters for **Prompt** (default 5000). Uses soft validation: users can type past the limit;
-   * overflow styling applies unless `promptValidation` is set (parent message is shown instead).
+   * Maximum characters for **Prompt** (default 5000). Input is capped at this length (native `maxLength` + onChange clamp).
+   * If the parent supplies a longer value (e.g. legacy API data), overflow error styling still applies until trimmed.
    */
   promptMaxLength?: number;
   /**
@@ -137,9 +137,10 @@ const FrustrationHandoverCard = React.forwardRef(
 
     const [promptInvalidCharsError, setPromptInvalidCharsError] = React.useState("");
 
-    const promptValue = data.escalationPrompt ?? "";
+    const rawPromptValue = data.escalationPrompt ?? "";
+    const promptValue = clampToMaxLength(rawPromptValue, promptMaxLength);
     const promptLength = promptValue.length;
-    const overPromptLimit = promptLength > promptMaxLength;
+    const overPromptLimit = rawPromptValue.length > promptMaxLength;
     const promptOverflowMessage = overPromptLimit
       ? `Maximum ${promptMaxLength} characters allowed.`
       : undefined;
@@ -224,7 +225,10 @@ const FrustrationHandoverCard = React.forwardRef(
                       placeholder="Executives are busy at the moment, we will connect you soon."
                       value={promptValue}
                       onChange={(e) => {
-                        const v = e.target.value;
+                        const v = clampToMaxLength(
+                          e.target.value,
+                          promptMaxLength
+                        );
                         onChange({ escalationPrompt: v });
                         if (
                           promptInvalidCharsError &&
@@ -245,7 +249,7 @@ const FrustrationHandoverCard = React.forwardRef(
                       disabled={disabled}
                       showCount
                       maxLength={promptMaxLength}
-                      enforceMaxLength={false}
+                      displayCharCount={promptLength}
                       error={promptErrorMessage}
                       errorIcon={Boolean(promptErrorMessage)}
                       resize="vertical"

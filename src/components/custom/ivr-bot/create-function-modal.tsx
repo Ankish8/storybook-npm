@@ -1,6 +1,12 @@
 import * as React from "react";
 import { Trash2, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import {
+  clampToMaxLength,
+  clampToMaxNormalizedTextLength,
+  cn,
+  countNormalizedTextLength,
+  normalizeTextareaSpaces,
+} from "../../../lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -61,11 +67,6 @@ import {
   PROMPT_INVALID_CHARS_MESSAGE,
 } from "./prompt-field-validation";
 
-// Length of the string with all whitespace removed. Inlined so the component
-// is self-contained when distributed via the CLI.
-const countNonWhitespaceChars = (value: string): number =>
-  String(value).replace(/\s/g, "").length;
-
 const HTTP_METHODS: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
 /** GET/DELETE are rendered without a request body; POST, PUT, and PATCH show the body editor. */
@@ -85,9 +86,16 @@ const HEADER_VALUE_MAX = 2048;
 
 const FUNCTION_NAME_REGEX = /^(?!_+$)(?=.*[a-zA-Z])[a-zA-Z][a-zA-Z0-9_]*$/;
 
-/** Spaces → underscores so users can type natural phrases without invalid-name errors (function name, variable name). */
+/**
+ * One blank space at a time (duplicate spaces collapsed), each space becomes `_`,
+ * and consecutive `_` are collapsed so repeated space/underscore does not grow the name.
+ */
 function normalizeFunctionNameInput(value: string): string {
-  return value.replace(/ /g, "_");
+  return normalizeTextareaSpaces(value).replace(/ /g, "_").replace(/_+/g, "_");
+}
+
+function clampFunctionNameInput(value: string, maxLength: number): string {
+  return clampToMaxLength(normalizeFunctionNameInput(value), maxLength);
 }
 const VARIABLE_NAME_MAX = 30;
 /** Aligned with Chat Bot and other product modules that cap free-text descriptions at 2000 characters. */
@@ -500,7 +508,11 @@ function VariableFormModal({
   // Reset form when modal opens
   React.useEffect(() => {
     if (open) {
-      setName(normalizeFunctionNameInput(initialData?.name ?? ""));
+      setName(
+        nameMaxLen != null
+          ? clampFunctionNameInput(initialData?.name ?? "", nameMaxLen)
+          : normalizeFunctionNameInput(initialData?.name ?? "")
+      );
       setDescription(initialData?.description ?? "");
       setRequired(initialData?.required ?? false);
       setNameError("");
@@ -517,7 +529,10 @@ function VariableFormModal({
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const normalized = normalizeFunctionNameInput(e.target.value);
+    const normalized =
+      nameMaxLen != null
+        ? clampFunctionNameInput(e.target.value, nameMaxLen)
+        : normalizeFunctionNameInput(e.target.value);
     setName(normalized);
     setNameError(validateName(normalized));
   };
@@ -1470,9 +1485,18 @@ export const CreateFunctionModal = React.forwardRef(
     React.useEffect(() => {
       if (open) {
         setStep(initialStep);
-        setName(initialData?.name ?? "");
-        setBotMessage(initialData?.botMessage ?? "");
-        setPrompt(initialData?.prompt ?? "");
+        setName(
+          clampFunctionNameInput(initialData?.name ?? "", nameMaxLength)
+        );
+        setBotMessage(
+          clampToMaxLength(initialData?.botMessage ?? "", botMessageMaxLength)
+        );
+        setPrompt(
+          clampToMaxNormalizedTextLength(
+            initialData?.prompt ?? "",
+            promptMaxLength
+          )
+        );
         setMethod(initialData?.method ?? "GET");
         setUrl(initialData?.url ?? "");
         setActiveTab(resolveStep2TabForMethod(initialTab, initialData?.method ?? "GET"));
@@ -1507,9 +1531,13 @@ export const CreateFunctionModal = React.forwardRef(
 
     const reset = React.useCallback(() => {
       setStep(initialStep);
-      setName(initialData?.name ?? "");
-      setBotMessage(initialData?.botMessage ?? "");
-      setPrompt(initialData?.prompt ?? "");
+      setName(clampFunctionNameInput(initialData?.name ?? "", nameMaxLength));
+      setBotMessage(
+        clampToMaxLength(initialData?.botMessage ?? "", botMessageMaxLength)
+      );
+      setPrompt(
+        clampToMaxNormalizedTextLength(initialData?.prompt ?? "", promptMaxLength)
+      );
       setMethod(initialData?.method ?? "GET");
       setUrl(initialData?.url ?? "");
       setActiveTab(resolveStep2TabForMethod(initialTab, initialData?.method ?? "GET"));
@@ -1544,6 +1572,8 @@ export const CreateFunctionModal = React.forwardRef(
       variableGroups,
       maxHeaderRows,
       maxQueryParamRows,
+      botMessageMaxLength,
+      promptMaxLength,
     ]);
 
     const handleClose = React.useCallback(() => {
@@ -1593,16 +1623,18 @@ export const CreateFunctionModal = React.forwardRef(
         ? "This field is required."
         : undefined;
 
+    const promptCharCount = countNormalizedTextLength(prompt);
+
     const isStep1Valid =
       name.trim().length > 0 &&
       FUNCTION_NAME_REGEX.test(name.trim()) &&
-      countNonWhitespaceChars(prompt) >= promptMinLength &&
+      promptCharCount >= promptMinLength &&
+      promptCharCount <= promptMaxLength &&
       (!showAgentMessage ||
         ((botMessageOptional || botMessage.trim().length > 0) &&
           botMessage.length <= botMessageMaxLength &&
           !hasInvalidPromptFieldChars(botMessage)));
 
-    /** Soft limit + invalid-char (blur) + parent validation — aligned with Escalate to Human → Prompt. */
     const botMessageOverflowMessage =
       botMessage.length > botMessageMaxLength
         ? `Maximum ${botMessageMaxLength} characters allowed.`
@@ -1796,8 +1828,9 @@ export const CreateFunctionModal = React.forwardRef(
                       maxLength={nameMaxLength}
                       disabled={disabled}
                       onChange={(e) => {
-                        const normalized = normalizeFunctionNameInput(
-                          e.target.value
+                        const normalized = clampFunctionNameInput(
+                          e.target.value,
+                          nameMaxLength
                         );
                         setName(normalized);
                         if (nameError) validateName(normalized);
@@ -1860,11 +1893,14 @@ export const CreateFunctionModal = React.forwardRef(
                       id="fn-agent-message"
                       value={botMessage}
                       maxLength={botMessageMaxLength}
-                      enforceMaxLength={false}
+                      displayCharCount={botMessage.length}
                       showCount
                       disabled={disabled}
                       onChange={(e) => {
-                        const v = e.target.value;
+                        const v = clampToMaxLength(
+                          e.target.value,
+                          botMessageMaxLength
+                        );
                         setBotMessage(v);
                         if (
                           botMessageInvalidCharsError &&
@@ -1900,17 +1936,30 @@ export const CreateFunctionModal = React.forwardRef(
                   required
                   value={prompt}
                   maxLength={promptMaxLength}
+                  enforceMaxLength={false}
                   showCount
                   disabled={disabled}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  onChange={(e) =>
+                    setPrompt(
+                      clampToMaxNormalizedTextLength(
+                        e.target.value,
+                        promptMaxLength
+                      )
+                    )
+                  }
                   placeholder="Enter the description of the function"
                   rows={5}
                   labelClassName={cn("font-semibold text-semantic-text-primary")}
                   error={
-                    prompt.length > 0 &&
-                      countNonWhitespaceChars(prompt) < promptMinLength
-                      ? `Minimum ${promptMinLength} characters required`
-                      : undefined
+                    promptCharCount > promptMaxLength
+                      ? `Maximum ${promptMaxLength} characters allowed.`
+                      : prompt.length > 0 && promptCharCount < promptMinLength
+                        ? `Minimum ${promptMinLength} characters required`
+                        : undefined
+                  }
+                  errorIcon={
+                    promptCharCount > promptMaxLength ||
+                    (prompt.length > 0 && promptCharCount < promptMinLength)
                   }
                 />
               </div>

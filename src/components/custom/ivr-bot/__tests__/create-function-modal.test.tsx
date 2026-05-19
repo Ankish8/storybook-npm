@@ -98,6 +98,62 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByRole("button", { name: /Next/i })).not.toBeDisabled();
   });
 
+  it("does not allow Prompt input beyond promptMaxLength (non-whitespace count)", async () => {
+    render(
+      <CreateFunctionModal open onOpenChange={noop} promptMaxLength={10} />
+    );
+    const prompt = screen.getByLabelText(/Prompt/i);
+    await user.type(prompt, "1234567890");
+    expect(screen.getByText("10/10")).toBeInTheDocument();
+    await user.type(prompt, "x");
+    expect(screen.getByText("10/10")).toBeInTheDocument();
+    expect(screen.queryByText("11/10")).not.toBeInTheDocument();
+  });
+
+  it("does not allow Agent Message input beyond botMessageMaxLength", async () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        botMessageMaxLength={10}
+      />
+    );
+    const message = screen.getByRole("textbox", {
+      name: /Agent Message \(Optional\)/i,
+    });
+    await user.type(message, "1234567890");
+    expect(screen.getByText("10/10")).toBeInTheDocument();
+    await user.type(message, "x");
+    expect(screen.getByText("10/10")).toBeInTheDocument();
+    expect(screen.queryByText("11/10")).not.toBeInTheDocument();
+  });
+
+  it("aligns prompt counter with min-length validation (single spaces count)", () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const prompt = screen.getByLabelText(/Prompt/i);
+
+    const belowMinWithExtraSpaces = `${"a".repeat(80)}${" ".repeat(20)}`;
+    fireEvent.change(prompt, { target: { value: belowMinWithExtraSpaces } });
+    expect(screen.getByText(/81\/2000/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Minimum 100 characters required/i)
+    ).toBeInTheDocument();
+
+    const atMinWithWordSpaces = `${"a".repeat(50)} ${"a".repeat(49)}`;
+    fireEvent.change(prompt, { target: { value: atMinWithWordSpaces } });
+    expect(screen.getByText(/100\/2000/)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Minimum 100 characters required/i)
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(prompt, { target: { value: "" } });
+    fireEvent.change(prompt, { target: { value: atMinWithWordSpaces } });
+    expect(screen.getByText(/100\/2000/)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/Minimum 100 characters required/i)
+    ).not.toBeInTheDocument();
+  });
+
   it("shows character counter for function name", async () => {
     render(<CreateFunctionModal open onOpenChange={noop} />);
     await user.type(screen.getByLabelText(/Function Name/i), "Hello");
@@ -114,6 +170,26 @@ describe("CreateFunctionModal", () => {
         /Must start with a letter and contain only letters, numbers, and underscores/i
       )
     ).not.toBeInTheDocument();
+  });
+
+  it("collapses consecutive spaces to one underscore in function name counter", () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const input = screen.getByLabelText(/Function Name/i);
+    fireEvent.change(input, {
+      target: { value: `my${" ".repeat(25)}func` },
+    });
+    expect(input).toHaveValue("my_func");
+    expect(screen.getByText(/7\/30/)).toBeInTheDocument();
+  });
+
+  it("does not stack underscores when space is entered after an underscore", () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const input = screen.getByLabelText(/Function Name/i);
+    fireEvent.change(input, { target: { value: "my_func_" } });
+    fireEvent.change(input, { target: { value: "my_func___________" } });
+    fireEvent.change(input, { target: { value: "my_func_   " } });
+    expect(input).toHaveValue("my_func_");
+    expect(screen.getByText(/8\/30/)).toBeInTheDocument();
   });
 
   it("replaces spaces in variable name with underscores and saves normalized name", async () => {
