@@ -276,18 +276,23 @@ export interface ChatBubbleFlatListReplyProps extends ChatBubbleFlatBase {
 }
 
 /**
- * Template message — body text with optional media header and stacked buttons
- * (quick-reply, url, phone). When `buttons` is set, the delivery footer renders
- * below the button stack (matches WhatsApp's template layout).
+ * Template message — body text with optional media or text header, optional
+ * footer line, and stacked buttons (quick-reply, url, phone, copy-code). When
+ * `buttons` is set, the delivery footer renders below the button stack (matches
+ * WhatsApp's template layout).
  */
 export interface ChatBubbleFlatTemplateProps extends ChatBubbleFlatBase {
   type: "template";
   /** Body text — required for templates. */
   text: string;
-  /** Optional media header (image / video). */
+  /** Optional media header (image / video). Takes precedence over `templateHeaderText`. */
   media?: MediaPayload;
-  /** Quick-reply / url / phone buttons rendered full-width, stacked. */
+  /** Quick-reply / url / phone / copy-code buttons rendered full-width, stacked. */
   buttons?: ChatBubbleButton[];
+  /** Optional text header (max 60 chars per WhatsApp spec). Ignored if `media` is set. */
+  templateHeaderText?: string;
+  /** Optional footer text (plain text, max 60 chars per WhatsApp spec). */
+  templateFooterText?: string;
 }
 
 /**

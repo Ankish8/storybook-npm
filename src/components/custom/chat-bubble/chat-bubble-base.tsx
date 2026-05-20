@@ -6,6 +6,7 @@ import {
   CheckCheck,
   CircleAlert,
   Clock,
+  Copy,
   ExternalLink,
   File,
   Phone as PhoneIcon,
@@ -403,31 +404,75 @@ function MessageModeDeliveryFooterInline({ msg }: { msg: ChatMessage }) {
   );
 }
 
+const TEMPLATE_BUTTON_CLASSNAME = cn(
+  "block w-full text-center text-[14px] font-medium text-semantic-text-link",
+  "border-0 border-t border-solid border-semantic-border-layout",
+  "bg-transparent hover:bg-semantic-bg-hover transition-colors",
+  "py-2.5 cursor-pointer no-underline"
+);
+
+function CopyCodeButton({
+  label,
+  code,
+}: {
+  label: string;
+  code: string;
+}) {
+  const [copied, setCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
+
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(code).then(
+        () => setCopied(true),
+        () => setCopied(false),
+      );
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className={TEMPLATE_BUTTON_CLASSNAME}
+      onClick={handleClick}
+      aria-label={`Copy ${label}`}
+    >
+      <span className="inline-flex items-center justify-center gap-1.5">
+        <Copy className="size-3.5" />
+        {copied ? "Copied" : label}
+      </span>
+    </button>
+  );
+}
+
 function TemplateButton({
   button,
 }: {
   button: NonNullable<ChatMessage["buttons"]>[number];
 }) {
+  const handleClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
+    e.stopPropagation();
+  };
+  if (button.kind === "copyCode") {
+    return <CopyCodeButton label={button.label} code={button.code} />;
+  }
   const Icon =
     button.kind === "url"
       ? ExternalLink
       : button.kind === "phone"
         ? PhoneIcon
         : null;
-  const handleClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
-    e.stopPropagation();
-  };
   const label = (
     <span className="inline-flex items-center justify-center gap-1.5">
       {Icon && <Icon className="size-3.5" />}
       {button.label}
     </span>
-  );
-  const className = cn(
-    "block w-full text-center text-[14px] font-medium text-semantic-text-link",
-    "border-0 border-t border-solid border-semantic-border-layout",
-    "bg-transparent hover:bg-semantic-bg-hover transition-colors",
-    "py-2.5 cursor-pointer no-underline"
   );
   if (button.kind === "url") {
     return (
@@ -435,7 +480,7 @@ function TemplateButton({
         href={button.url}
         target="_blank"
         rel="noopener noreferrer"
-        className={className}
+        className={TEMPLATE_BUTTON_CLASSNAME}
         onClick={handleClick}
       >
         {label}
@@ -444,13 +489,13 @@ function TemplateButton({
   }
   if (button.kind === "phone") {
     return (
-      <a href={`tel:${button.phone}`} className={className} onClick={handleClick}>
+      <a href={`tel:${button.phone}`} className={TEMPLATE_BUTTON_CLASSNAME} onClick={handleClick}>
         {label}
       </a>
     );
   }
   return (
-    <button type="button" className={className} onClick={handleClick}>
+    <button type="button" className={TEMPLATE_BUTTON_CLASSNAME} onClick={handleClick}>
       {label}
     </button>
   );
@@ -773,12 +818,22 @@ const ChatBubbleMessageMode = React.forwardRef<
             {msg.replyTo && (
               <MessageModeReplyQuoteButton replyTo={msg.replyTo} />
             )}
+            {msg.type === "template" && msg.templateHeaderText && !msg.media && (
+              <p className="text-[14px] font-semibold text-semantic-text-primary m-0 mb-1">
+                {msg.templateHeaderText}
+              </p>
+            )}
             {hasText && msg.type !== "carousel" && (
               <p className="text-[14px] leading-5 m-0">
                 {msg.text || mediaCaption}
                 {shouldUseInlineFooter && (
                   <MessageModeDeliveryFooterInline msg={msg} />
                 )}
+              </p>
+            )}
+            {msg.type === "template" && msg.templateFooterText && (
+              <p className="text-[12px] text-semantic-text-muted m-0 mt-1">
+                {msg.templateFooterText}
               </p>
             )}
             {isDocWithMeta && (
@@ -868,6 +923,8 @@ function flatPropsToMessage(props: ChatBubbleFlatProps): ChatMessage {
         text: props.text,
         media: props.media,
         buttons: props.buttons,
+        templateHeaderText: props.templateHeaderText,
+        templateFooterText: props.templateFooterText,
       };
   }
 }
@@ -885,6 +942,14 @@ function flatPropsToMessage(props: ChatBubbleFlatProps): ChatMessage {
  *      buttons={[
  *        { kind: "quickReply", label: "Interested" },
  *        { kind: "quickReply", label: "Not interested" },
+ *      ]} />
+ *
+ *    <ChatBubble type="template" variant="sender" timestamp="1:50 PM" status="sent"
+ *      templateHeaderText="Verification code"
+ *      text="Your one-time code is 4Y5GX9. It expires in 10 minutes."
+ *      templateFooterText="Do not share this code with anyone."
+ *      buttons={[
+ *        { kind: "copyCode", label: "4Y5GX9", code: "4Y5GX9" },
  *      ]} />
  *    ```
  *
@@ -958,6 +1023,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       delete restNoPayload.listReply;
       delete restNoPayload.buttons;
       delete restNoPayload.error;
+      delete restNoPayload.templateHeaderText;
+      delete restNoPayload.templateFooterText;
       const message = flatPropsToMessage(flat);
       return (
         <ChatBubbleMessageMode

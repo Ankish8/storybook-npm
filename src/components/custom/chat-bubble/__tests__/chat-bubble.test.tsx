@@ -808,6 +808,71 @@ describe("ChatBubble", () => {
       expect(link).toHaveAttribute("href", "tel:+919876543210");
     });
 
+    it("renders template copyCode button and copies code on click", async () => {
+      const writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, "clipboard", {
+        value: { writeText },
+        configurable: true,
+      });
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:02 PM"
+          text="Your code is 4Y5GX9."
+          buttons={[
+            { kind: "copyCode", label: "4Y5GX9", code: "4Y5GX9" },
+          ]}
+        />
+      );
+      const btn = screen.getByRole("button", { name: /Copy 4Y5GX9/i });
+      fireEvent.click(btn);
+      expect(writeText).toHaveBeenCalledWith("4Y5GX9");
+      await screen.findByText("Copied");
+    });
+
+    it("renders templateHeaderText when set and media is not", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:03 PM"
+          templateHeaderText="Verification code"
+          text="Your one-time code is 4Y5GX9."
+        />
+      );
+      expect(screen.getByText("Verification code")).toBeInTheDocument();
+    });
+
+    it("hides templateHeaderText when media is set (media takes precedence)", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:04 PM"
+          templateHeaderText="Should not show"
+          media={{ kind: "image", url: "https://example.com/x.png" }}
+          text="Body."
+        />
+      );
+      expect(screen.queryByText("Should not show")).not.toBeInTheDocument();
+    });
+
+    it("renders templateFooterText after body text", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:05 PM"
+          text="Your code is 4Y5GX9."
+          templateFooterText="Do not share this code with anyone."
+        />
+      );
+      expect(
+        screen.getByText("Do not share this code with anyone."),
+      ).toBeInTheDocument();
+    });
+
     it("template without buttons keeps delivery footer in body (no button stack)", () => {
       const { container } = render(
         <ChatBubble

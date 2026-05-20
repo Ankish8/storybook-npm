@@ -134,13 +134,15 @@ export type ListReplyPayload = {
 
 /**
  * Button rendered inside a `template` bubble — quick-reply (sends text response),
- * url (opens link), or phone (dials number). WhatsApp templates can mix kinds in a
+ * url (opens link), phone (dials number), or copy-code (copies a one-time code /
+ * OTP / coupon to the user's clipboard). WhatsApp templates can mix kinds in a
  * single message.
  */
 export type ChatBubbleButton =
   | { kind: "quickReply"; label: string; id?: string }
   | { kind: "url"; label: string; url: string }
   | { kind: "phone"; label: string; phone: string }
+  | { kind: "copyCode"; label: string; code: string }
 
 export type ChatMessage = {
   id: string
@@ -187,11 +189,22 @@ export type ChatMessage = {
   referral?: ReferralPayload
   listReply?: ListReplyPayload
   /**
-   * Template-message buttons (quick-reply / url / phone). Only rendered when
-   * `type === "template"`. When present, the delivery footer renders **below**
+   * Template-message buttons (quick-reply / url / phone / copy-code). Only rendered
+   * when `type === "template"`. When present, the delivery footer renders **below**
    * the button stack to match WhatsApp's template layout.
    */
   buttons?: ChatBubbleButton[]
+  /**
+   * WhatsApp template header text (max 60 chars per WhatsApp spec). Only used when
+   * `type === "template"`. Mutually exclusive with media headers — if `media` is set
+   * on a template message, the media header takes precedence and this is ignored.
+   */
+  templateHeaderText?: string
+  /**
+   * WhatsApp template footer text (plain text, no placeholders, max 60 chars per
+   * WhatsApp spec). Only used when `type === "template"`.
+   */
+  templateFooterText?: string
 }
 
 export type Contact = {
