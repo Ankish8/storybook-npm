@@ -85,7 +85,7 @@ function LegacyDeliveryFooter({
             <>
               <Clock className="size-4 text-semantic-text-muted shrink-0" />
               <span className="text-[12px] text-semantic-text-muted whitespace-nowrap">
-                Queued
+                Sending
               </span>
             </>
           ) : status === "failed" ? (
@@ -156,7 +156,7 @@ function LegacyDeliveryFooterInline({
           {isQueued ? (
             <>
               <Clock className="size-4 text-semantic-text-muted shrink-0" />
-              <span>Queued</span>
+              <span>Sending</span>
             </>
           ) : isFailed ? (
             <>
@@ -275,7 +275,7 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
                   style={{ fontSize: 12 }}
                   className="text-semantic-text-muted whitespace-nowrap"
                 >
-                  Queued
+                  Sending
                 </span>
               </>
             ) : msg.status === "failed" ? (
@@ -354,7 +354,7 @@ function MessageModeDeliveryFooterInline({ msg }: { msg: ChatMessage }) {
           {isQueued ? (
             <>
               <Clock className="size-4 text-semantic-text-muted shrink-0" />
-              <span>Queued</span>
+              <span>Sending</span>
             </>
           ) : isFailed ? (
             <>
