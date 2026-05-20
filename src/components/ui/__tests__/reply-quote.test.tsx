@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ReplyQuote } from "../reply-quote";
+import { assertNoBootstrapMarginBleed } from "./utils/bootstrap-compat";
 
 describe("ReplyQuote", () => {
   it("renders sender and message text", () => {
@@ -18,8 +19,9 @@ describe("ReplyQuote", () => {
       />
     );
     expect(container.firstChild).toHaveClass("custom-class");
-    // Should still have base classes
-    expect(container.firstChild).toHaveClass("bg-semantic-bg-ui");
+    expect(container.firstChild?.className).toMatch(
+      /tw-bg-\[var\(--semantic-bg-ui/
+    );
   });
 
   it("forwards ref correctly", () => {
@@ -62,7 +64,7 @@ describe("ReplyQuote", () => {
     const paragraphs = container.querySelectorAll("p");
     expect(paragraphs).toHaveLength(2);
     paragraphs.forEach((p) => {
-      expect(p).toHaveClass("truncate");
+      expect(p.className).toMatch(/\btw-truncate\b/);
     });
   });
 
@@ -70,11 +72,7 @@ describe("ReplyQuote", () => {
     const { container } = render(
       <ReplyQuote sender="John" message="Test" />
     );
-    const paragraphs = container.querySelectorAll("p");
-    expect(paragraphs.length).toBeGreaterThan(0);
-    paragraphs.forEach((p) => {
-      expect(p).toHaveClass("m-0");
-    });
+    assertNoBootstrapMarginBleed(container);
   });
 
   // Accessibility tests

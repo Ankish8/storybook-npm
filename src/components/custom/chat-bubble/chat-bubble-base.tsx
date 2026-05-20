@@ -89,19 +89,19 @@ function FailedMessageFeedback({
   const toggleButtonClassName =
     "m-0 border-0 bg-transparent p-0 text-left text-[12px] font-semibold tracking-[0.06px] text-semantic-error-text underline hover:no-underline";
 
-  const measureToggleNeed = React.useCallback(() => {
-    const element = measureRef.current;
-    if (!element) {
-      return;
-    }
-
-    // leading-4 on text-[12px] => 16px line height; two lines => 32px (max-h-8).
-    const twoLineHeight = 32;
-    const overflows = element.scrollHeight > twoLineHeight + 1;
-    setNeedsToggle(overflows);
-  }, [trimmedText]);
-
   React.useLayoutEffect(() => {
+    const measureToggleNeed = () => {
+      const element = measureRef.current;
+      if (!element) {
+        return;
+      }
+
+      // leading-4 on text-[12px] => 16px line height; two lines => 32px (max-h-8).
+      const twoLineHeight = 32;
+      const overflows = element.scrollHeight > twoLineHeight + 1;
+      setNeedsToggle(overflows);
+    };
+
     measureToggleNeed();
 
     const element = measureRef.current;
@@ -113,7 +113,7 @@ function FailedMessageFeedback({
     resizeObserver.observe(element);
 
     return () => resizeObserver.disconnect();
-  }, [measureToggleNeed, isExpanded]);
+  }, [trimmedText, isExpanded]);
 
   if (!trimmedText) {
     return null;

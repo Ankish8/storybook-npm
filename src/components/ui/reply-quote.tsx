@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * ReplyQuote component for displaying a quoted message with a brand-accented left border.
