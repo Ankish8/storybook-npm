@@ -5,6 +5,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BotFollowUps } from "../bot-follow-ups";
 import {
+  clampToMaxNonWhitespaceChars,
+  countNonWhitespaceChars,
+} from "../message-length";
+import {
   defaultMessageMaxLengthError,
   type NudgeItem,
 } from "../types";
@@ -131,15 +135,15 @@ describe("BotFollowUps", () => {
 
   it("shows character count with default max message length", () => {
     render(<BotFollowUps nudges={[SAMPLE_NUDGES[0]]} />);
-    // Matches Textarea counter: length includes spaces (20 for sample message).
-    expect(screen.getByText("20/250")).toBeInTheDocument();
+    // Spaces do not use the message budget.
+    expect(screen.getByText("17/250")).toBeInTheDocument();
   });
 
   it("shows character count with custom maxMessageLength", () => {
     render(
       <BotFollowUps nudges={[SAMPLE_NUDGES[0]]} maxMessageLength={100} />
     );
-    expect(screen.getByText("20/100")).toBeInTheDocument();
+    expect(screen.getByText("17/100")).toBeInTheDocument();
   });
 
   it("shows max-length validation when message exceeds limit", () => {
@@ -159,25 +163,22 @@ describe("BotFollowUps", () => {
     );
   });
 
-  it("shows max-length validation when length including spaces exceeds limit", () => {
-    const overLimitWithSpaces =
-      "x".repeat(240) + " " + "x".repeat(10); // 251 chars; spaces count toward budget
+  it("does not show max-length validation when only whitespace exceeds limit", () => {
+    const atLimitWithSpaces =
+      "x".repeat(240) + " " + "x".repeat(10); // 250 non-whitespace chars
     render(
       <BotFollowUps
-        nudges={[{ ...SAMPLE_NUDGES[0], message: overLimitWithSpaces }]}
+        nudges={[{ ...SAMPLE_NUDGES[0], message: atLimitWithSpaces }]}
         showMaxLengthError
       />
     );
     expect(
-      screen.getByText(defaultMessageMaxLengthError(250))
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Followup 1 message")).toHaveAttribute(
-      "aria-invalid",
-      "true"
-    );
+      screen.queryByText(defaultMessageMaxLengthError(250))
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("250/250")).toBeInTheDocument();
   });
 
-  it("increments the displayed count when a space is typed after text", async () => {
+  it("does not increment the displayed count when whitespace is typed after text", async () => {
     const user = userEvent.setup();
     render(
       <StatefulBotFollowUps
@@ -188,22 +189,22 @@ describe("BotFollowUps", () => {
     await user.type(textarea, "a");
     expect(screen.getByText("1/250")).toBeInTheDocument();
     await user.type(textarea, " ");
-    expect(screen.getByText("2/250")).toBeInTheDocument();
+    expect(screen.getByText("1/250")).toBeInTheDocument();
   });
 
-  it("collapses consecutive spaces so duplicate spaces do not inflate the count", () => {
+  it("ignores consecutive spaces so duplicate spaces do not inflate the count", () => {
     const padded =
-      "x".repeat(200) + " ".repeat(60); // raw 260 chars; normalized to 201
+      "x".repeat(200) + " ".repeat(60); // raw 260 chars; 200 non-whitespace
     render(
       <BotFollowUps nudges={[{ ...SAMPLE_NUDGES[0], message: padded }]} />
     );
-    expect(screen.getByText("201/250")).toBeInTheDocument();
+    expect(screen.getByText("200/250")).toBeInTheDocument();
     expect(
       screen.queryByText(defaultMessageMaxLengthError(250))
     ).not.toBeInTheDocument();
   });
 
-  it("shows max-length validation after typing past limit (controlled)", async () => {
+  it("clamps typed messages at the non-whitespace limit", async () => {
     const user = userEvent.setup();
     render(
       <StatefulBotFollowUps
@@ -214,9 +215,11 @@ describe("BotFollowUps", () => {
     );
     const textarea = screen.getByLabelText("Followup 1 message");
     await user.type(textarea, "12345678901");
+    expect(textarea).toHaveValue("1234567890");
+    expect(screen.getByText("10/10")).toBeInTheDocument();
     expect(
-      screen.getByText(defaultMessageMaxLengthError(10))
-    ).toBeInTheDocument();
+      screen.queryByText(defaultMessageMaxLengthError(10))
+    ).not.toBeInTheDocument();
   });
 
   it("clears max-length validation when shortened below limit", async () => {
@@ -403,5 +406,20 @@ describe("BotFollowUps", () => {
     expect(screen.getByLabelText("Followup 1 delay minutes")).toBeDisabled();
     const messageTextarea = screen.getByLabelText("Followup 1 message");
     expect(messageTextarea).toBeDisabled();
+  });
+});
+
+describe("bot follow-up message length helpers", () => {
+  it("counts only non-whitespace characters", () => {
+    expect(countNonWhitespaceChars("   \n\t  ")).toBe(0);
+    expect(countNonWhitespaceChars("a b\nc\td")).toBe(4);
+  });
+
+  it("keeps whitespace while dropping extra non-whitespace characters", () => {
+    expect(clampToMaxNonWhitespaceChars("ab cd", 2)).toBe("ab ");
+    expect(clampToMaxNonWhitespaceChars("abcd", 2)).toBe("ab");
+    expect(
+      countNonWhitespaceChars(clampToMaxNonWhitespaceChars("abcd", 2))
+    ).toBe(2);
   });
 });

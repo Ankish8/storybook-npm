@@ -1293,6 +1293,7 @@ components:
     directory: "bot-follow-ups"
     files:
       - "types.ts"
+      - "message-length.ts"
       - "bot-follow-ups.tsx"
       - "index.ts"
     mainFile: "index.ts"
