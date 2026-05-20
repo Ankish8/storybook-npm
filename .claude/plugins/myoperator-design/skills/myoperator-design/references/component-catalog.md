@@ -748,6 +748,7 @@ import { Mail } from "lucide-react"
 > A chat list item showing contact name, message preview, timestamp, delivery status, and channel badge
 
 **Install**: `npx myoperator-ui add chat-list-item`
+**Requires**: `tooltip` (auto-installed)
 **Type**: Multi-file component
 
 ---
