@@ -39,7 +39,7 @@ function EmptyState({
           {title}
         </p>
         {description && (
-          <p className="m-0 text-sm text-semantic-text-muted max-w-xs">
+          <p className="m-0 text-sm text-semantic-text-muted">
             {description}
           </p>
         )}

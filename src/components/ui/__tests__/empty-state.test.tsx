@@ -84,4 +84,11 @@ describe("EmptyState", () => {
     );
     expect(screen.getByTestId("desc-node")).toBeInTheDocument();
   });
+
+  it("does not constrain description width with max-w-xs", () => {
+    render(
+      <EmptyState title="No results" description="Long description text" />
+    );
+    expect(screen.getByText("Long description text")).not.toHaveClass("max-w-xs");
+  });
 });

@@ -1062,6 +1062,9 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+      - "@radix-ui/react-tooltip"
+    internalDependencies:
+      - tooltip
     isMultiFile: true
     directory: "chat-list-item"
     files:

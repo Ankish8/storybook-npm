@@ -183,7 +183,7 @@ describe("ChatListItem", () => {
   });
 
   it.each([
-    ["queue", "Queued"],
+    ["queue", "Sending"],
     ["failed", "Failed"],
     ["received", "Received"],
   ] as const)("renders %s status with aria-label %s", (status, label) => {

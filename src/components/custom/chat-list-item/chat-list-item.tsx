@@ -1,6 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipArrow,
+} from "../../ui/tooltip";
+import {
   AudioLines,
   Bot,
   Check,
@@ -115,26 +122,54 @@ export interface ChatListItemProps
 
 /* ── Sub-components ── */
 
+function StatusTooltip({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            tabIndex={0}
+            aria-label={label}
+            className="inline-flex outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus rounded-sm"
+          >
+            {children}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="left">
+          <p className="m-0">{label}</p>
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 function StatusIndicator({ status }: { status: MessageStatus }) {
   if (status === "sent") {
     return (
-      <span aria-label="Sent">
+      <StatusTooltip label="Sent">
         <Check className="size-4 text-semantic-text-placeholder shrink-0" aria-hidden="true" />
-      </span>
+      </StatusTooltip>
     );
   }
   if (status === "delivered") {
     return (
-      <span aria-label="Delivered">
+      <StatusTooltip label="Delivered">
         <CheckCheck className="size-4 text-semantic-text-placeholder shrink-0" aria-hidden="true" />
-      </span>
+      </StatusTooltip>
     );
   }
   if (status === "read") {
     return (
-      <span aria-label="Read">
+      <StatusTooltip label="Read">
         <CheckCheck className="size-4 text-semantic-text-link shrink-0" aria-hidden="true" />
-      </span>
+      </StatusTooltip>
     );
   }
   if (status === "received") {
@@ -146,16 +181,16 @@ function StatusIndicator({ status }: { status: MessageStatus }) {
   }
   if (status === "queue") {
     return (
-      <span aria-label="Queued">
+      <StatusTooltip label="Sending">
         <Clock className="size-4 text-semantic-warning-primary shrink-0" aria-hidden="true" />
-      </span>
+      </StatusTooltip>
     );
   }
   // failed
   return (
-    <span aria-label="Failed">
+    <StatusTooltip label="Failed">
       <CircleAlert className="size-4 text-semantic-error-primary shrink-0" aria-hidden="true" />
-    </span>
+    </StatusTooltip>
   );
 }
 
