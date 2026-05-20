@@ -24,17 +24,10 @@ import {
   type BotFollowUpsProps,
   type NudgeItem,
 } from "./types";
-
-// Collapses runs of the space character (U+0020) so only a single space is allowed
-// between words. Newlines and other whitespace are unchanged.
-// Inlined so the component is self-contained when distributed via the CLI.
-const normalizeFollowUpMessageSpaces = (value: string): string =>
-  String(value).replace(/ {2,}/g, " ");
-
-// Character budget for validation and the counter: length after collapsing
-// duplicate spaces; ordinary spaces between words count toward the limit.
-const countNonWhitespaceChars = (value: string): number =>
-  normalizeFollowUpMessageSpaces(value).length;
+import {
+  clampToMaxNonWhitespaceChars,
+  countNonWhitespaceChars,
+} from "./message-length";
 
 type MessageFieldIssue = "required" | "maxLength";
 
@@ -205,11 +198,11 @@ function NudgeCard({
       <div className="flex min-w-0 flex-col gap-1.5">
         <span className="text-xs text-semantic-text-muted">Message</span>
         <Textarea
-          value={normalizeFollowUpMessageSpaces(nudge.message)}
+          value={nudge.message}
           onChange={(e) =>
             onMessageChange?.(
               nudge.id,
-              normalizeFollowUpMessageSpaces(e.target.value)
+              clampToMaxNonWhitespaceChars(e.target.value, maxMessageLength)
             )
           }
           onBlur={(e) => onMessageBlur?.(nudge.id, e)}
@@ -339,7 +332,7 @@ const BotFollowUps = React.forwardRef<HTMLDivElement, BotFollowUpsProps>(
 
     const handleMessageBlur = React.useCallback(
       (id: string, event: React.FocusEvent<HTMLTextAreaElement>) => {
-        const v = normalizeFollowUpMessageSpaces(event.target.value);
+        const v = event.target.value;
         setMessageIssues((prev) => {
           const next = { ...prev };
           if (!v.trim()) {

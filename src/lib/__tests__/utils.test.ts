@@ -2,10 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   clampToMaxLength,
   clampToMaxNormalizedTextLength,
-  clampToMaxNonWhitespaceChars,
   countNormalizedTextLength,
-  countNonWhitespaceChars,
-} from "../utils";
+} from "../../components/custom/ivr-bot/create-function-validation";
 
 describe("countNormalizedTextLength", () => {
   it("counts single spaces and collapses duplicate spaces", () => {
@@ -29,29 +27,8 @@ describe("clampToMaxNormalizedTextLength", () => {
   });
 });
 
-describe("countNonWhitespaceChars", () => {
-  it("returns 0 for whitespace-only strings", () => {
-    expect(countNonWhitespaceChars("   \n\t  ")).toBe(0);
-  });
-
-  it("strips all whitespace categories and counts the rest", () => {
-    expect(countNonWhitespaceChars("a b\nc\td")).toBe(4);
-  });
-});
-
 describe("clampToMaxLength", () => {
   it("truncates to max length", () => {
     expect(clampToMaxLength("abcdef", 3)).toBe("abc");
-  });
-});
-
-describe("clampToMaxNonWhitespaceChars", () => {
-  it("allows trailing whitespace after the non-whitespace cap is reached", () => {
-    expect(clampToMaxNonWhitespaceChars("ab cd", 2)).toBe("ab ");
-  });
-
-  it("drops extra non-whitespace characters", () => {
-    expect(clampToMaxNonWhitespaceChars("abcd", 2)).toBe("ab");
-    expect(countNonWhitespaceChars(clampToMaxNonWhitespaceChars("abcd", 2))).toBe(2);
   });
 });

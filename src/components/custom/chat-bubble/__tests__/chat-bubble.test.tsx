@@ -50,7 +50,11 @@ describe("ChatBubble", () => {
 
   it("shows sender name when provided (receiver variant; agent identity comes from sentBy tooltip)", () => {
     render(
-      <ChatBubble variant="receiver" timestamp="2:15 PM" senderName="Alex Smith">
+      <ChatBubble
+        variant="receiver"
+        timestamp="2:15 PM"
+        senderName="Alex Smith"
+      >
         Test
       </ChatBubble>
     );
@@ -123,11 +127,7 @@ describe("ChatBubble", () => {
 
   it("custom className is applied", () => {
     const { container } = render(
-      <ChatBubble
-        variant="sender"
-        timestamp="2:15 PM"
-        className="custom-class"
-      >
+      <ChatBubble variant="sender" timestamp="2:15 PM" className="custom-class">
         Test
       </ChatBubble>
     );
@@ -169,6 +169,119 @@ describe("ChatBubble", () => {
     expect(failedText).toHaveClass("text-semantic-error-primary");
   });
 
+  it("renders failed message detail with code below a failed sender bubble", () => {
+    const scrollHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(48);
+    const clientHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "clientHeight", "get")
+      .mockReturnValue(32);
+
+    render(
+      <ChatBubble
+        variant="sender"
+        timestamp="2:15 PM"
+        status="failed"
+        failedMessage={{
+          code: "131049",
+          text: "In order to maintain a healthy ecosystem management, the message failed to be delivered. Try a utility template or wait 24h before resending.",
+        }}
+      >
+        Test
+      </ChatBubble>
+    );
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(screen.getByText("131049")).toBeInTheDocument();
+    expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
+      /healthy ecosystem management/
+    );
+    expect(
+      screen.getByRole("button", { name: "Learn more" })
+    ).toBeInTheDocument();
+
+    scrollHeightSpy.mockRestore();
+    clientHeightSpy.mockRestore();
+  });
+
+  it("toggles long failed message detail between two-line and expanded states", () => {
+    const scrollHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(48);
+    const clientHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "clientHeight", "get")
+      .mockReturnValue(32);
+
+    render(
+      <ChatBubble
+        type="text"
+        variant="sender"
+        timestamp="2:15 PM"
+        status="failed"
+        text="Have a look at this document"
+        failedMessage={{
+          code: "131049",
+          text: "In order to maintain a healthy ecosystem management, the message failed to be delivered. Try a utility template or wait 24h before resending.",
+        }}
+      />
+    );
+
+    const alert = screen.getAllByRole("alert").at(-1)!;
+    expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
+      /Learn more/
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Learn more" }));
+    expect(alert.querySelector("p:not([aria-hidden])")).not.toHaveTextContent(
+      /Learn more/
+    );
+    expect(
+      screen.getByRole("button", { name: "Less more" })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Less more" }));
+    expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
+      /Learn more/
+    );
+    expect(
+      screen.getByRole("button", { name: "Learn more" })
+    ).toBeInTheDocument();
+
+    scrollHeightSpy.mockRestore();
+    clientHeightSpy.mockRestore();
+  });
+
+  it("does not show failed message toggle when detail fits within two lines", () => {
+    const scrollHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(32);
+    const clientHeightSpy = vi
+      .spyOn(HTMLElement.prototype, "clientHeight", "get")
+      .mockReturnValue(32);
+
+    render(
+      <ChatBubble
+        variant="sender"
+        timestamp="2:15 PM"
+        status="failed"
+        failedMessage={{
+          code: "131049",
+          text: "Short failed message.",
+        }}
+      >
+        Test
+      </ChatBubble>
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Learn more" })
+    ).not.toBeInTheDocument();
+
+    scrollHeightSpy.mockRestore();
+    clientHeightSpy.mockRestore();
+  });
+
   it("shows delivered status with correct text", () => {
     render(
       <ChatBubble variant="sender" timestamp="2:15 PM" status="delivered">
@@ -176,6 +289,21 @@ describe("ChatBubble", () => {
       </ChatBubble>
     );
     expect(screen.getByText("Delivered")).toBeInTheDocument();
+  });
+
+  it("keeps short sent message bubbles wide enough for the delivery footer", () => {
+    render(
+      <ChatBubble
+        type="text"
+        variant="sender"
+        timestamp="05:11 pm"
+        status="delivered"
+        text="Hi"
+      />
+    );
+
+    const bubble = screen.getByText("Hi").closest(".rounded-lg");
+    expect(bubble?.parentElement).toHaveStyle({ minWidth: "11.5rem" });
   });
 
   it("shows read status with correct text", () => {
@@ -253,24 +381,24 @@ describe("ChatBubble", () => {
       expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
     });
 
-    it("sender text-only with 'read' status: minWidth 9.5rem on the wrapper", () => {
+    it("sender text-only with 'read' status: minWidth 11.5rem on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="read">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("9.5rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("11.5rem");
     });
 
-    it("sender text-only with 'failed' status: minWidth 12rem on the wrapper (room for Retry)", () => {
+    it("sender text-only with 'failed' status: minWidth 14rem on the wrapper (room for Retry)", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="failed">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("12rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("14rem");
     });
 
     it("textMaxWidthClassName defaults to max-w-[65%] on the column (manual mode)", () => {
@@ -380,8 +508,9 @@ describe("ChatBubble", () => {
       );
       // For media variants the wrapper is `relative w-full` (no shrink-to-fit)
       // and has no minWidth — the column's max-w-[380px] caps the bubble width.
-      const wrapper = container
-        .querySelector("div.overflow-hidden")?.parentElement;
+      const wrapper = container.querySelector(
+        "div.overflow-hidden"
+      )?.parentElement;
       expect(wrapper).toHaveClass("relative", "w-full");
       expect((wrapper as HTMLElement).style.minWidth).toBe("");
     });
@@ -475,11 +604,7 @@ describe("ChatBubble", () => {
 
     it("hides Reply on sender variant by default", () => {
       renderWithTooltip(
-        <ChatBubble
-          variant="sender"
-          timestamp="2:16 PM"
-          onReplyTo={vi.fn()}
-        >
+        <ChatBubble variant="sender" timestamp="2:16 PM" onReplyTo={vi.fn()}>
           Outgoing
         </ChatBubble>
       );
@@ -558,9 +683,7 @@ describe("ChatBubble", () => {
         type: "text",
         status: "read",
       };
-      renderWithTooltip(
-        <ChatBubble message={agentMsg} onReplyTo={vi.fn()} />
-      );
+      renderWithTooltip(<ChatBubble message={agentMsg} onReplyTo={vi.fn()} />);
       expect(
         screen.queryByRole("button", { name: "Reply" })
       ).not.toBeInTheDocument();
@@ -647,7 +770,9 @@ describe("ChatBubble", () => {
       expect(innerRow?.querySelector("svg")).toBeTruthy();
       // The badge is NOT inside the bubble div (which has the rounded-lg class).
       const bubble = container.querySelector("div.rounded-lg");
-      expect(bubble?.querySelector("svg[class*='lucide-megaphone']")).toBeFalsy();
+      expect(
+        bubble?.querySelector("svg[class*='lucide-megaphone']")
+      ).toBeFalsy();
     });
   });
 
@@ -764,8 +889,12 @@ describe("ChatBubble", () => {
           ]}
         />
       );
-      expect(screen.getByText("This is your sales report.")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Interested" })).toBeInTheDocument();
+      expect(
+        screen.getByText("This is your sales report.")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Interested" })
+      ).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Not interested" })
       ).toBeInTheDocument();

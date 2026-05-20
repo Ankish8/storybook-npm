@@ -21,7 +21,7 @@ import {
 } from "../../ui/tooltip";
 import { Button } from "../../ui/button";
 import { DocMedia } from "../doc-media";
-import type { ChatMessage } from "../chat-types";
+import type { ChatFailedMessage, ChatMessage } from "../chat-types";
 import {
   ImageMedia,
   VideoMedia,
@@ -63,6 +63,128 @@ const maxWidthMap = {
   audio: cn("max-w-[340px] w-[340px]"),
   carousel: cn("max-w-[466px] w-full"),
 };
+
+function FailedMessageFeedback({
+  failedMessage,
+}: {
+  failedMessage?: ChatFailedMessage;
+}) {
+  const {
+    code,
+    text = "",
+    learnMoreLabel = "Learn more",
+    lessMoreLabel = "Less more",
+  } = failedMessage ?? {};
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [needsToggle, setNeedsToggle] = React.useState(false);
+  const measureRef = React.useRef<HTMLParagraphElement>(null);
+  const hasCode =
+    code !== undefined && code !== null && String(code).trim() !== "";
+  const trimmedText = text.trim();
+  const collapsedText =
+    needsToggle && !isExpanded
+      ? trimmedText.slice(0, 126).trimEnd()
+      : trimmedText;
+
+  const toggleButtonClassName =
+    "m-0 border-0 bg-transparent p-0 text-left text-[12px] font-semibold tracking-[0.06px] text-semantic-error-text underline hover:no-underline";
+
+  const measureToggleNeed = React.useCallback(() => {
+    const element = measureRef.current;
+    if (!element) {
+      return;
+    }
+
+    // leading-4 on text-[12px] => 16px line height; two lines => 32px (max-h-8).
+    const twoLineHeight = 32;
+    const overflows = element.scrollHeight > twoLineHeight + 1;
+    setNeedsToggle(overflows);
+  }, [trimmedText]);
+
+  React.useLayoutEffect(() => {
+    measureToggleNeed();
+
+    const element = measureRef.current;
+    if (!element || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const resizeObserver = new ResizeObserver(measureToggleNeed);
+    resizeObserver.observe(element);
+
+    return () => resizeObserver.disconnect();
+  }, [measureToggleNeed, isExpanded]);
+
+  if (!trimmedText) {
+    return null;
+  }
+
+  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIsExpanded((current) => !current);
+  };
+
+  return (
+    <div
+      className="mt-2 flex w-full max-w-[640px] items-start gap-2 text-semantic-error-text"
+      role="alert"
+    >
+      <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
+      <div className="flex min-w-0 flex-1 items-start gap-1 text-[12px] leading-4 tracking-normal">
+        {hasCode && (
+          <span className="shrink-0 text-[14px] font-semibold leading-4 tracking-[0.014px]">
+            <span>{code}</span>
+            <span>:</span>
+          </span>
+        )}
+        <div className="relative min-w-0 flex-1">
+          <p
+            ref={measureRef}
+            aria-hidden
+            className="pointer-events-none invisible absolute left-0 top-0 m-0 w-full break-words text-[12px] leading-4 tracking-normal"
+          >
+            {trimmedText}
+          </p>
+          {isExpanded ? (
+            <p className="m-0 min-w-0 break-words leading-4">
+              {trimmedText}
+              {needsToggle && (
+                <>
+                  {" "}
+                  <button
+                    type="button"
+                    className={toggleButtonClassName}
+                    onClick={handleToggle}
+                  >
+                    {lessMoreLabel}
+                  </button>
+                </>
+              )}
+            </p>
+          ) : (
+            <div>
+              <p className="m-0 min-w-0 break-words leading-4">
+                {collapsedText}
+                {needsToggle && (
+                  <>
+                    {" "}
+                    <button
+                      type="button"
+                      className={toggleButtonClassName}
+                      onClick={handleToggle}
+                    >
+                      {learnMoreLabel}
+                    </button>
+                  </>
+                )}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function LegacyDeliveryFooter({
   status,
@@ -592,14 +714,18 @@ const ChatBubbleMessageMode = React.forwardRef<
     bubbleWidth,
     hasButtons,
   } = computeMessageBubbleLayout(msg, textMaxWidthClassName);
+  const hasFailedFeedback =
+    msg.sender === "agent" &&
+    msg.status === "failed" &&
+    !!msg.failedMessage?.text;
 
   // Inline footer is disabled in favor of block footer.
   // For text-only bubbles, the block footer can be wider than the text content.
   // overflow-hidden on the bubble would clip the footer unless the bubble is
   // forced to be at least as wide as the widest possible footer:
   //   - receiver / customer: just a timestamp → 7rem
-  //   - sender / agent, failed: "Failed to send" + Retry + bullet + timestamp → 12rem
-  //   - sender / agent, any other status: icon + label + bullet + timestamp → 9.5rem
+  //   - sender / agent, failed: "Failed" + Retry + bullet + timestamp → 14rem
+  //   - sender / agent, any other status: icon + label + bullet + timestamp → 11.5rem
   //   - sender / agent, no status: just a timestamp → 7rem
   const shouldUseInlineFooter = false;
   const isMessageReceiverTextOnly =
@@ -613,9 +739,9 @@ const ChatBubbleMessageMode = React.forwardRef<
     ? "7rem"
     : isMessageSenderTextOnly
       ? msg.status === "failed"
-        ? "12rem"
+        ? "14rem"
         : msg.status
-          ? "9.5rem"
+          ? "11.5rem"
           : "7rem"
       : undefined;
 
@@ -687,7 +813,7 @@ const ChatBubbleMessageMode = React.forwardRef<
         id={`msg-${msg.id}`}
         className={cn(
           "flex flex-col",
-          bubbleWidth,
+          hasFailedFeedback ? "w-full max-w-[640px]" : bubbleWidth,
           msg.sender === "agent" ? "items-end" : "items-start",
           // Reserve 36px inside the column so the absolutely-positioned sender
           // icon (sentBy badge or custom senderIndicator) stays within the box.
@@ -869,6 +995,9 @@ const ChatBubbleMessageMode = React.forwardRef<
         {msg.sender === "agent" && senderIcon}
         </div>
         </div>
+        {hasFailedFeedback && (
+          <FailedMessageFeedback failedMessage={msg.failedMessage} />
+        )}
       </div>
     </div>
   );
@@ -890,6 +1019,7 @@ function flatPropsToMessage(props: ChatBubbleFlatProps): ChatMessage {
     sender,
     type: props.type,
     status: props.status,
+    failedMessage: props.failedMessage,
     senderName: props.senderName,
     sentBy: props.sentBy,
     replyTo: props.replyTo,
@@ -1002,6 +1132,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         senderName: _senderName,
         sentBy: _sentBy,
         replyTo: _replyTo,
+        failedMessage: _failedMessage,
         onReplyTo,
         showReplyOn,
         replyParticipantName,
@@ -1023,6 +1154,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       delete restNoPayload.listReply;
       delete restNoPayload.buttons;
       delete restNoPayload.error;
+      delete restNoPayload.failedMessage;
       delete restNoPayload.templateHeaderText;
       delete restNoPayload.templateFooterText;
       const message = flatPropsToMessage(flat);
@@ -1044,6 +1176,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       variant,
       timestamp,
       status,
+      failedMessage,
       senderName,
       reply,
       onReplyClick,
@@ -1064,8 +1197,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     // Block footer everywhere. For text-only bubbles, the bubble gets a minWidth
     // sized to the widest possible footer so overflow-hidden never clips it:
     //   - receiver: just a timestamp → 7rem
-    //   - sender, failed: "Failed to send" + Retry + bullet + timestamp → 12rem
-    //   - sender, any other status: icon + label + bullet + timestamp → 9.5rem
+    //   - sender, failed: "Failed" + Retry + bullet + timestamp → 14rem
+    //   - sender, any other status: icon + label + bullet + timestamp → 11.5rem
     //   - sender, no status: just a timestamp → 7rem
     const useManualInlineFooter = false;
     const isManualReceiverTextOnly =
@@ -1074,13 +1207,15 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       variant === "sender" && !hasMedia && !!children;
     const isManualTextOnly =
       isManualReceiverTextOnly || isManualSenderTextOnly;
+    const hasManualFailedFeedback =
+      variant === "sender" && status === "failed" && !!failedMessage?.text;
     const manualTextOnlyMinWidth: string | undefined = isManualReceiverTextOnly
       ? "7rem"
       : isManualSenderTextOnly
         ? status === "failed"
-          ? "12rem"
+          ? "14rem"
           : status
-            ? "9.5rem"
+            ? "11.5rem"
             : "7rem"
         : undefined;
 
@@ -1144,7 +1279,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             "flex flex-col",
             // Text bubbles: prop-driven cap (library is single source of truth).
             // Media variants: use the absolute-px caps from maxWidthMap.
-            maxWidth === "text" ? textMaxWidthClassName : maxWidthMap[maxWidth],
+            hasManualFailedFeedback
+              ? "w-full max-w-[640px]"
+              : maxWidth === "text"
+                ? textMaxWidthClassName
+                : maxWidthMap[maxWidth],
             variant === "sender" ? "items-end" : "items-start",
             // Reserve 36px (28px avatar + 6px ml + 2px buffer) inside the column
             // so the absolutely-positioned senderIndicator stays within the box.
@@ -1231,6 +1370,9 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           )}
           </div>
           </div>
+          {hasManualFailedFeedback && (
+            <FailedMessageFeedback failedMessage={failedMessage} />
+          )}
         </div>
       </div>
     );

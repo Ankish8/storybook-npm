@@ -1,12 +1,6 @@
 import * as React from "react";
 import { Trash2, X, Plus, Pencil, CircleAlert, Info } from "lucide-react";
-import {
-  clampToMaxLength,
-  clampToMaxNormalizedTextLength,
-  cn,
-  countNormalizedTextLength,
-  normalizeTextareaSpaces,
-} from "../../../lib/utils";
+import { cn } from "../../../lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +34,8 @@ import type {
   VariableFormData,
 } from "./types";
 import {
+  clampToMaxLength,
+  clampToMaxNormalizedTextLength,
   HEADER_KEY_INVALID_MESSAGE,
   HEADER_KEY_REGEX,
   HEADER_MAX_ROWS,
@@ -56,6 +52,8 @@ import {
   keyValueErrorMessagesAreOnlyRequiredEmpty,
   hasAtLeastOneCompleteKeyValueRow,
   headerRowsHaveSubmitErrors,
+  countNormalizedTextLength,
+  normalizeTextareaSpaces,
   queryParamsHaveErrors,
   QUERY_PARAM_MULTI_ROW_FILL_REQUIRED_MESSAGE,
   validateQueryParamKey,

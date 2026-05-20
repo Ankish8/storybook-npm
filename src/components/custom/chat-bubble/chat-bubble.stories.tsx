@@ -158,6 +158,12 @@ const meta: Meta<typeof ChatBubble> = {
       description:
         "Delivery row — **sender** only. Ignored when `message` is set (`message.status`).",
     },
+    failedMessage: {
+      control: "object",
+      table: { category: "Manual bubble" },
+      description:
+        "Failed delivery detail shown below sender failed bubbles: `{ code?: string | number, text: string }`. Long text is collapsed to two lines with a Learn more / Less more toggle.",
+    },
     senderName: {
       control: "text",
       table: { category: "Manual bubble" },
@@ -409,9 +415,13 @@ export const AllStatuses: Story = {
 export const FailedMessage: Story = {
   args: {
     variant: "sender",
-    timestamp: "2:20 PM",
+    timestamp: "2:30 PM",
     status: "failed",
-    children: "This message could not be delivered due to a network error.",
+    children: "Have a look at this document",
+    failedMessage: {
+      code: "131049",
+      text: "In order to maintain a healthy ecosystem management, the message failed to be delivered. Try a utility template or wait 24h before resending. Try a utility template or wait 24h before resending.",
+    },
   },
 };
 
