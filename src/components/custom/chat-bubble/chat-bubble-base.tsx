@@ -983,7 +983,7 @@ const ChatBubbleMessageMode = React.forwardRef<
           </div>
           {hasButtons && (
             <>
-              {msg.buttons!.map((btn, i) => (
+              {msg.buttons!.map((btn: NonNullable<ChatMessage["buttons"]>[number], i: number) => (
                 <TemplateButton key={i} button={btn} />
               ))}
               <div className="px-4 pt-2 pb-1.5">
