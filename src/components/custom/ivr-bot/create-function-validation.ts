@@ -6,6 +6,42 @@ export const URL_REGEX = /^https?:\/\//;
 export const HEADER_KEY_REGEX = /^[!#$%&'*+\-.^_`|~0-9a-zA-Z]+$/;
 
 /**
+ * Collapses runs of the space character (U+0020) so only a single space remains between segments.
+ * Newlines and other whitespace are unchanged.
+ */
+export function normalizeTextareaSpaces(value: string): string {
+  return String(value).replace(/ {2,}/g, " ");
+}
+
+/**
+ * Length after {@link normalizeTextareaSpaces}: letters, digits, newlines, tabs, and single
+ * spaces each count once; duplicate spaces do not add to the total.
+ */
+export function countNormalizedTextLength(value: string): number {
+  return normalizeTextareaSpaces(value).length;
+}
+
+/** Truncates a string to at most `maxLength` characters (Unicode code units). */
+export function clampToMaxLength(value: string, maxLength: number): string {
+  if (maxLength < 0) return String(value);
+  return String(value).slice(0, maxLength);
+}
+
+/**
+ * Normalizes duplicate spaces and truncates so {@link countNormalizedTextLength} is at most
+ * `maxLength`.
+ */
+export function clampToMaxNormalizedTextLength(
+  value: string,
+  maxLength: number
+): string {
+  if (maxLength < 0) return String(value);
+  const normalized = normalizeTextareaSpaces(value);
+  if (normalized.length <= maxLength) return normalized;
+  return normalized.slice(0, maxLength);
+}
+
+/**
  * Default max rows for headers and query params on CreateFunctionModal when the parent
  * omits `maxHeaderRows` / `maxQueryParamRows`.
  */

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Info } from "lucide-react";
-import { clampToMaxLength, cn } from "../../../lib/utils";
+import { cn } from "../../../lib/utils";
 import {
   Select,
   SelectContent,
@@ -26,6 +26,7 @@ import {
   hasInvalidPromptFieldChars,
   PROMPT_INVALID_CHARS_MESSAGE,
 } from "./prompt-field-validation";
+import { clampToMaxLength } from "./frustration-clamp-to-max-length";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

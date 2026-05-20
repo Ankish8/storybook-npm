@@ -2,8 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   clampToMaxLength,
   clampToMaxNormalizedTextLength,
-  clampToMaxNonWhitespaceChars,
   countNormalizedTextLength,
+} from "../../components/custom/ivr-bot/create-function-validation";
+import {
+  clampToMaxNonWhitespaceChars,
   countNonWhitespaceChars,
 } from "../utils";
 

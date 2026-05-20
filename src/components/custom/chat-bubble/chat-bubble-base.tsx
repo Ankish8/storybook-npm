@@ -20,7 +20,11 @@ import {
 } from "../../ui/tooltip";
 import { Button } from "../../ui/button";
 import { DocMedia } from "../doc-media";
-import type { ChatFailedMessage, ChatMessage } from "../chat-types";
+import type {
+  ChatBubbleButton,
+  ChatFailedMessage,
+  ChatMessage,
+} from "../chat-types";
 import {
   ImageMedia,
   VideoMedia,
@@ -935,7 +939,7 @@ const ChatBubbleMessageMode = React.forwardRef<
               </div>
               {hasButtons && (
                 <>
-                  {msg.buttons!.map((btn, i) => (
+                  {msg.buttons!.map((btn: ChatBubbleButton, i: number) => (
                     <TemplateButton key={i} button={btn} />
                   ))}
                   <div className="px-4 pt-2 pb-1.5">
