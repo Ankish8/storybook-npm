@@ -34,11 +34,11 @@ function SenderBadgeIcon({
 }: {
   sentBy: { type: SentByType; name?: string }
 }) {
-  const iconClass = "size-3.5 text-semantic-text-muted"
+  const iconClass = "size-3.5 shrink-0 text-semantic-text-muted"
 
   if (sentBy.type === "agent" && sentBy.name) {
     return (
-      <span className="text-[10px] font-medium text-semantic-text-secondary leading-none">
+      <span className="min-w-4 text-center text-[10px] font-medium text-semantic-text-secondary leading-none">
         {getInitials(sentBy.name)}
       </span>
     )
@@ -63,9 +63,9 @@ const SenderIndicator = React.forwardRef<HTMLDivElement, SenderIndicatorProps>(
   ({ sentBy, withTooltip, className }, ref) => {
     const badge = (
       <div
-        ref={withTooltip ? undefined : ref}
+        ref={ref}
         className={cn(
-          "size-7 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center cursor-default",
+          "size-7 min-h-7 min-w-7 shrink-0 rounded-full bg-white border border-solid border-semantic-border-layout flex items-center justify-center cursor-default",
           className,
         )}
       >
@@ -78,7 +78,7 @@ const SenderIndicator = React.forwardRef<HTMLDivElement, SenderIndicatorProps>(
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <div ref={ref}>{badge}</div>
+          {badge}
         </TooltipTrigger>
         <TooltipContent side="left">
           <p className="m-0">{getTooltipLabel(sentBy)}</p>

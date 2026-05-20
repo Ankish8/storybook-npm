@@ -553,8 +553,8 @@ const ChatBubbleMessageMode = React.forwardRef<
   // overflow-hidden on the bubble would clip the footer unless the bubble is
   // forced to be at least as wide as the widest possible footer:
   //   - receiver / customer: just a timestamp → 7rem
-  //   - sender / agent, failed: "Failed to send" + Retry + bullet + timestamp → 12rem
-  //   - sender / agent, any other status: icon + label + bullet + timestamp → 9.5rem
+  //   - sender / agent, failed: "Failed" + Retry + bullet + timestamp → 14rem
+  //   - sender / agent, any other status: icon + label + bullet + timestamp → 11.5rem
   //   - sender / agent, no status: just a timestamp → 7rem
   const shouldUseInlineFooter = false;
   const isMessageReceiverTextOnly =
@@ -568,9 +568,9 @@ const ChatBubbleMessageMode = React.forwardRef<
     ? "7rem"
     : isMessageSenderTextOnly
       ? msg.status === "failed"
-        ? "12rem"
+        ? "14rem"
         : msg.status
-          ? "9.5rem"
+          ? "11.5rem"
           : "7rem"
       : undefined;
 
@@ -997,8 +997,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     // Block footer everywhere. For text-only bubbles, the bubble gets a minWidth
     // sized to the widest possible footer so overflow-hidden never clips it:
     //   - receiver: just a timestamp → 7rem
-    //   - sender, failed: "Failed to send" + Retry + bullet + timestamp → 12rem
-    //   - sender, any other status: icon + label + bullet + timestamp → 9.5rem
+    //   - sender, failed: "Failed to send" + Retry + bullet + timestamp → 14rem
+    //   - sender, any other status: icon + label + bullet + timestamp → 11.5rem
     //   - sender, no status: just a timestamp → 7rem
     const useManualInlineFooter = false;
     const isManualReceiverTextOnly =
@@ -1011,9 +1011,9 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       ? "7rem"
       : isManualSenderTextOnly
         ? status === "failed"
-          ? "12rem"
+          ? "14rem"
           : status
-            ? "9.5rem"
+            ? "11.5rem"
             : "7rem"
         : undefined;
 

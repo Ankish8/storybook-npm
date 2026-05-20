@@ -178,6 +178,21 @@ describe("ChatBubble", () => {
     expect(screen.getByText("Delivered")).toBeInTheDocument();
   });
 
+  it("keeps short sent message bubbles wide enough for the delivery footer", () => {
+    render(
+      <ChatBubble
+        type="text"
+        variant="sender"
+        timestamp="05:11 pm"
+        status="delivered"
+        text="Hi"
+      />
+    );
+
+    const bubble = screen.getByText("Hi").closest(".rounded-lg");
+    expect(bubble?.parentElement).toHaveStyle({ minWidth: "11.5rem" });
+  });
+
   it("shows read status with correct text", () => {
     render(
       <ChatBubble variant="sender" timestamp="2:15 PM" status="read">
@@ -253,24 +268,24 @@ describe("ChatBubble", () => {
       expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
     });
 
-    it("sender text-only with 'read' status: minWidth 9.5rem on the wrapper", () => {
+    it("sender text-only with 'read' status: minWidth 11.5rem on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="read">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("9.5rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("11.5rem");
     });
 
-    it("sender text-only with 'failed' status: minWidth 12rem on the wrapper (room for Retry)", () => {
+    it("sender text-only with 'failed' status: minWidth 14rem on the wrapper (room for Retry)", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="failed">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("12rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("14rem");
     });
 
     it("textMaxWidthClassName defaults to max-w-[65%] on the column (manual mode)", () => {
