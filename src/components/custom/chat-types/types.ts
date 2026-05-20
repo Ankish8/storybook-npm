@@ -142,6 +142,17 @@ export type ChatBubbleButton =
   | { kind: "url"; label: string; url: string }
   | { kind: "phone"; label: string; phone: string }
 
+export type ChatFailedMessage = {
+  /** Optional error code shown before the message, e.g. "131049". */
+  code?: string | number
+  /** Detailed failed-delivery reason shown below the bubble. */
+  text: string
+  /** Label for expanding the two-line collapsed detail. Defaults to "Learn more". */
+  learnMoreLabel?: string
+  /** Label for collapsing the expanded detail. Defaults to "Less more". */
+  lessMoreLabel?: string
+}
+
 export type ChatMessage = {
   id: string
   text: string
@@ -170,6 +181,7 @@ export type ChatMessage = {
     | "contact"
     | "listReply"
   status?: "queued" | "sent" | "delivered" | "read" | "failed"
+  failedMessage?: ChatFailedMessage
   replyTo?: { sender: string; text: string; messageId?: string }
   media?: MediaPayload
   error?: string

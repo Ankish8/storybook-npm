@@ -7,10 +7,16 @@ import type {
   ReferralPayload,
   ListReplyPayload,
   ChatBubbleButton,
+  ChatFailedMessage,
   SentByType,
 } from "../chat-types";
 
-export type DeliveryStatus = "queued" | "sent" | "delivered" | "read" | "failed";
+export type DeliveryStatus =
+  | "queued"
+  | "sent"
+  | "delivered"
+  | "read"
+  | "failed";
 
 /**
  * Which message sides expose the Reply action. Default is `"customer"`
@@ -45,6 +51,8 @@ export interface ChatBubbleManualProps extends HtmlDiv {
   timestamp: string;
   /** Delivery status — only shown for sender variant */
   status?: DeliveryStatus;
+  /** Failed-delivery detail shown below the bubble when `status="failed"`. */
+  failedMessage?: ChatFailedMessage;
   /** Sender name displayed above the bubble */
   senderName?: string;
   /** Reply quote data */
@@ -162,14 +170,18 @@ export interface ChatBubbleMessageProps extends HtmlDiv {
  * Flat mode is the **preferred API for non-text message types** — pass `type` plus
  * the matching payload prop directly instead of wrapping data in a `ChatMessage`.
  */
-export interface ChatBubbleFlatBase
-  extends Omit<HtmlDiv, "children" | "onCopy" | "onCut" | "onPaste"> {
+export interface ChatBubbleFlatBase extends Omit<
+  HtmlDiv,
+  "children" | "onCopy" | "onCut" | "onPaste"
+> {
   /** Bubble alignment. `sender` = right (agent), `receiver` = left (customer). */
   variant: "sender" | "receiver";
   /** Footer time label (e.g. `"2:15 PM"`). */
   timestamp: string;
   /** Delivery status — only shown for `sender` variant. */
   status?: DeliveryStatus;
+  /** Failed-delivery detail shown below the bubble when `status="failed"`. */
+  failedMessage?: ChatFailedMessage;
   /** Sender name shown above the bubble. */
   senderName?: string;
   /**
@@ -333,7 +345,10 @@ export type ChatMessageListBubbleRowProps = ChatBubbleMessageProps;
 export function isChatBubbleMessageProps(
   props: ChatBubbleProps
 ): props is ChatBubbleMessageProps {
-  return "message" in props && (props as ChatBubbleMessageProps).message !== undefined;
+  return (
+    "message" in props &&
+    (props as ChatBubbleMessageProps).message !== undefined
+  );
 }
 
 /**
