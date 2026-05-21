@@ -107,6 +107,15 @@ import { SelectField } from "@/components/ui/select-field"
   searchable
   searchPlaceholder="Search countries..."
 />
+
+{/* Lazy-load on scroll — for paginated datasets (e.g. 1k–10k+ items) */}
+<SelectField
+  label="Template"
+  options={items}
+  onScrollEnd={loadNextPage}
+  loadingMore={isFetchingPage}
+  hasMore={hasMorePages}
+/>
 \`\`\`
 
 ## Design Tokens
@@ -297,6 +306,32 @@ import { SelectField } from "@/components/ui/select-field"
         "Intercept a value change before it commits. Return false to prevent onValueChange from firing (only onSelect fires). Useful for action items like 'Add custom…' that open a modal.",
       table: {
         type: { summary: "(value: string) => boolean" },
+      },
+    },
+    onScrollEnd: {
+      control: false,
+      description:
+        "Fires when the user scrolls to the bottom of the open dropdown. Forwarded to SelectContent's onViewportScrollEnd (debounced by the native scrollend event). Use to load the next page of options. Not forwarded when hasMore is false.",
+      table: {
+        type: { summary: "() => void" },
+      },
+    },
+    loadingMore: {
+      control: "boolean",
+      description:
+        "When true, renders a 'Loading more…' row at the bottom of the options list. Set while your API call is in flight.",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" },
+      },
+    },
+    hasMore: {
+      control: "boolean",
+      description:
+        "When false, prevents onScrollEnd from firing further and renders an 'End of list' footer row. Default behavior is to keep firing.",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "true" },
       },
     },
   },
