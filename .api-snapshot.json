@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-05-06T08:12:01.599Z",
+  "generatedAt": "2026-05-21T05:17:00.146Z",
   "components": {
     "accordion": {
       "exports": [
@@ -1269,7 +1269,7 @@
             "optional": false
           },
           "message": {
-            "type": "string",
+            "type": "React.ReactNode",
             "optional": false
           }
         }
@@ -1768,6 +1768,26 @@
           },
           "showCount": {
             "type": "boolean",
+            "optional": true
+          },
+          "displayCharCount": {
+            "type": "number",
+            "optional": true
+          },
+          "enforceMaxLength": {
+            "type": "boolean",
+            "optional": true
+          },
+          "resize": {
+            "type": "\"none\" | \"vertical\" | \"horizontal\" | \"both\"",
+            "optional": true
+          },
+          "wrapperClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "labelClassName": {
+            "type": "string",
             "optional": true
           }
         }
