@@ -5,10 +5,19 @@ export {
   defaultToneTooltip,
   defaultHowItSoundsTooltip,
   defaultLanguageModeTooltip,
+  defaultBotNameMinLengthMessage,
+  defaultPrimaryRoleMinLengthMessage,
+  defaultToneMinLengthMessage,
+  defaultVoiceRequiredMessage,
+  defaultLanguageRequiredMessage,
 } from "./bot-identity-card";
 export {
   BotBehaviorCard,
   defaultHowItBehavesTooltip,
+} from "./bot-behavior-card";
+export type {
+  BotBehaviorCardProps,
+  BotBehaviorData,
 } from "./bot-behavior-card";
 export {
   KnowledgeBaseCard,
@@ -37,6 +46,10 @@ export {
   defaultAgentBusyPromptTooltip,
   defaultNoExtensionFoundPromptTooltip,
   defaultFallbackPromptsInfoTooltip,
+  defaultAgentBusyPrompt,
+  defaultNoExtensionFoundPrompt,
+  defaultAgentBusyPromptRequiredMessage,
+  defaultNoExtensionFoundPromptRequiredMessage,
 } from "./fallback-prompts-card";
 export type {
   FallbackPromptsData,

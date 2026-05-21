@@ -16,6 +16,28 @@ function makeDepartments(count: number): DepartmentOption[] {
 }
 
 describe("FrustrationHandoverCard", () => {
+  function StatefulFrustrationHandoverCard(
+    props: Partial<React.ComponentProps<typeof FrustrationHandoverCard>> = {}
+  ) {
+    const [data, setData] = React.useState({
+      frustrationHandoverEnabled: true,
+      escalationPrompt: "",
+      escalationDepartment: "",
+      ...props.data,
+    });
+
+    return (
+      <FrustrationHandoverCard
+        {...props}
+        data={data}
+        onChange={(patch) => {
+          setData((prev) => ({ ...prev, ...patch }));
+          props.onChange?.(patch);
+        }}
+      />
+    );
+  }
+
   it("renders Transfer to department when escalation is enabled", async () => {
     const user = userEvent.setup();
     render(
@@ -176,6 +198,24 @@ describe("FrustrationHandoverCard", () => {
     expect(prompt).toHaveValue("1234567890");
   });
 
+  it("uses fixed-size Prompt textarea like other prompt fields", async () => {
+    const user = userEvent.setup();
+    render(
+      <FrustrationHandoverCard
+        data={{
+          frustrationHandoverEnabled: true,
+          escalationPrompt: "",
+          escalationDepartment: "",
+        }}
+        onChange={() => {}}
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
+    expect(prompt).toHaveClass("resize-none");
+  });
+
   it("does not render Prompt when showEscalationPrompt is false", async () => {
     const user = userEvent.setup();
     render(
@@ -192,6 +232,229 @@ describe("FrustrationHandoverCard", () => {
     await user.click(screen.getByText("Escalate to Human"));
     expect(
       screen.queryByRole("textbox", { name: /^prompt$/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show built-in Prompt validation on first view", async () => {
+    const user = userEvent.setup();
+    render(<StatefulFrustrationHandoverCard />);
+
+    await user.click(screen.getByText("Escalate to Human"));
+    expect(
+      screen.queryByText("Escalation prompt is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("validates Prompt after interaction and clears in real time while typing", async () => {
+    const user = userEvent.setup();
+    render(<StatefulFrustrationHandoverCard />);
+
+    await user.click(screen.getByText("Escalate to Human"));
+    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
+    await user.click(prompt);
+    await user.tab();
+
+    expect(screen.getByText("Escalation prompt is required")).toBeInTheDocument();
+
+    await user.click(prompt);
+    await user.type(prompt, "Connect caller to support");
+
+    expect(
+      screen.queryByText("Escalation prompt is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses custom Prompt validation message", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard
+        promptMinLengthMessage="Add an escalation prompt"
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
+    await user.click(prompt);
+    await user.tab();
+
+    expect(screen.getByText("Add an escalation prompt")).toBeInTheDocument();
+  });
+
+  it("lets external Prompt validation override the built-in message", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard promptValidation="Prompt is invalid" />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    expect(screen.getByText("Prompt is invalid")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Escalation prompt is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("can disable built-in Prompt validation", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard promptMinLengthValidation={false} />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
+    await user.click(prompt);
+    await user.tab();
+
+    expect(
+      screen.queryByText("Escalation prompt is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("can mark Prompt as optional", async () => {
+    const user = userEvent.setup();
+    render(<StatefulFrustrationHandoverCard promptOptional />);
+
+    await user.click(screen.getByText("Escalate to Human"));
+    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
+    await user.click(prompt);
+    await user.tab();
+
+    expect(
+      screen.queryByText("Escalation prompt is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show built-in Transfer to Department validation on first view", async () => {
+    const user = userEvent.setup();
+    render(<StatefulFrustrationHandoverCard />);
+
+    await user.click(screen.getByText("Escalate to Human"));
+    expect(
+      screen.queryByText("Escalation department is required")
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
+  });
+
+  it("does not show built-in Transfer to Department validation without message prop", async () => {
+    const user = userEvent.setup();
+    render(<StatefulFrustrationHandoverCard escalationDepartmentValidation />);
+
+    await user.click(screen.getByText("Escalate to Human"));
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByText("Escalation department is required")
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
+  });
+
+  it("validates Transfer to Department after interaction when message prop is provided", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard
+        escalationDepartmentValidation
+        escalationDepartmentValidationMessage="Escalation department is required"
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.getByText("Escalation department is required")
+    ).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("option", { name: "Support" }));
+
+    expect(
+      screen.queryByText("Escalation department is required")
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
+  });
+
+  it("uses custom Transfer to Department validation message", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard
+        escalationDepartmentValidation
+        escalationDepartmentValidationMessage="Choose a routing department"
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{Escape}");
+
+    expect(screen.getByText("Choose a routing department")).toBeInTheDocument();
+  });
+
+  it("does not show Transfer to Department validation when validation prop is false", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard
+        escalationDepartmentValidation={false}
+        escalationDepartmentValidationMessage="Department is unavailable"
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByText("Department is unavailable")
+    ).not.toBeInTheDocument();
+  });
+
+  it("can disable built-in Transfer to Department validation", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard
+        escalationDepartmentValidation={false}
+        escalationDepartmentValidationMessage="Escalation department is required"
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByText("Escalation department is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("can mark Transfer to Department as optional", async () => {
+    const user = userEvent.setup();
+    render(
+      <StatefulFrustrationHandoverCard
+        escalationDepartmentValidation
+        escalationDepartmentValidationMessage="Escalation department is required"
+        escalationDepartmentOptional
+      />
+    );
+
+    await user.click(screen.getByText("Escalate to Human"));
+    await user.click(screen.getByRole("combobox"));
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByText("Escalation department is required")
     ).not.toBeInTheDocument();
   });
 });

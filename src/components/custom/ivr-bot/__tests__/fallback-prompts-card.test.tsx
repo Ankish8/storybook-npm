@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { FallbackPromptsCard } from "../fallback-prompts-card";
@@ -150,6 +151,96 @@ describe("FallbackPromptsCard", () => {
       />
     );
     expect(screen.getByText("2/500")).toBeInTheDocument();
+  });
+
+  it("shows validation messages for empty fallback prompt fields", () => {
+    render(
+      <FallbackPromptsCard
+        data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
+        onChange={() => {}}
+        fallbackPromptsRequiredValidation
+        defaultOpen
+      />
+    );
+
+    expect(
+      screen.getByText("Agent busy prompt is required")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("No extension found prompt is required")
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("alert")).toHaveLength(2);
+  });
+
+  it("shows required validation after default prompt text is cleared", () => {
+    const { rerender } = render(
+      <FallbackPromptsCard
+        data={{
+          agentBusyPrompt:
+            "Executives are busy at the moment, we will connect you soon.",
+          noExtensionFoundPrompt:
+            "Sorry, the requested extension is currently unavailable. Let me help you directly.",
+        }}
+        onChange={() => {}}
+        fallbackPromptsRequiredValidation
+        defaultOpen
+      />
+    );
+
+    expect(
+      screen.queryByText("Agent busy prompt is required")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No extension found prompt is required")
+    ).not.toBeInTheDocument();
+
+    rerender(
+      <FallbackPromptsCard
+        data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
+        onChange={() => {}}
+        fallbackPromptsRequiredValidation
+        defaultOpen
+      />
+    );
+
+    expect(screen.getByText("Agent busy prompt is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("No extension found prompt is required")
+    ).toBeInTheDocument();
+  });
+
+  it("uses custom required validation messages when provided", () => {
+    render(
+      <FallbackPromptsCard
+        data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
+        onChange={() => {}}
+        fallbackPromptsRequiredValidation
+        agentBusyPromptRequiredMessage="Please add agent busy copy"
+        noExtensionFoundPromptRequiredMessage="Please add no extension copy"
+        defaultOpen
+      />
+    );
+
+    expect(screen.getByText("Please add agent busy copy")).toBeInTheDocument();
+    expect(screen.getByText("Please add no extension copy")).toBeInTheDocument();
+  });
+
+  it("does not show required validation when disabled by prop", () => {
+    render(
+      <FallbackPromptsCard
+        data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
+        onChange={() => {}}
+        defaultOpen
+        fallbackPromptsRequiredValidation={false}
+      />
+    );
+
+    expect(
+      screen.queryByText("Agent busy prompt is required")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No extension found prompt is required")
+    ).not.toBeInTheDocument();
   });
 
   it("disables textareas when disabled prop is true", () => {

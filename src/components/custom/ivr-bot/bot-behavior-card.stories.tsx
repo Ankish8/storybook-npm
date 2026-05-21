@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { BotBehaviorCard, type BotBehaviorData } from "./bot-behavior-card";
 
 const meta: Meta<typeof BotBehaviorCard> = {
@@ -9,7 +9,7 @@ const meta: Meta<typeof BotBehaviorCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it.
+        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it. Empty prompts show built-in real-time required validation by default, matching Fallback Prompts. Use \`minLength\` and \`minLengthMessage\` to customize it, pass \`minLengthValidation={false}\` to disable it, or pass \`validation\` for parent-driven errors.
 
 ### onSystemPromptBlur — section-level blur
 
@@ -86,6 +86,23 @@ export const CustomVariables: Story = {
             "{{Contact Details}}",
             "{{Account ID}}",
           ]}
+        />
+      </div>
+    );
+  },
+};
+
+export const WithValidation: Story = {
+  render: function Render() {
+    const [data, setData] = useState<Partial<BotBehaviorData>>({
+      systemPrompt: "",
+    });
+    return (
+      <div className="max-w-[800px]">
+        <BotBehaviorCard
+          data={data}
+          onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          minLengthMessage="System prompt is required"
         />
       </div>
     );

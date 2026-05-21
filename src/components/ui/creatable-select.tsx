@@ -12,7 +12,7 @@ const creatableSelectTriggerVariants = cva(
         default:
           "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus/50 focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary/60 focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
     },
     defaultVariants: {
@@ -86,6 +86,8 @@ export interface CreatableSelectProps
    * (nothing was stripped). Use to clear validation errors when the user corrects input.
    */
   onValidInput?: () => void
+  /** Fired with the current open-dropdown draft text so parents can validate while typing. */
+  onInputValueChange?: (value: string) => void
 }
 
 const CreatableSelect = React.forwardRef(
@@ -104,6 +106,7 @@ const CreatableSelect = React.forwardRef(
       normalizeComboboxInput,
       onInvalidCharacters,
       onValidInput,
+      onInputValueChange,
       ...props
     }: CreatableSelectProps,
     ref: React.Ref<HTMLDivElement>
@@ -138,6 +141,7 @@ const CreatableSelect = React.forwardRef(
       if (disabled) return
       setOpen(true)
       setSearch("")
+      onInputValueChange?.("")
       setHighlightIndex(-1)
       requestAnimationFrame(() => inputRef.current?.focus())
     }
@@ -147,8 +151,9 @@ const CreatableSelect = React.forwardRef(
         onValueChange?.(val)
         setOpen(false)
         setSearch("")
+        onInputValueChange?.("")
       },
-      [onValueChange]
+      [onInputValueChange, onValueChange]
     )
 
     const handleCreate = React.useCallback(() => {
@@ -162,10 +167,12 @@ const CreatableSelect = React.forwardRef(
         onValueChange?.(value)
         setOpen(false)
         setSearch("")
+        onInputValueChange?.("")
       }
     }, [
       search,
       onValueChange,
+      onInputValueChange,
       maxLength,
       sanitizeInput,
       normalizeComboboxInput,
@@ -175,6 +182,8 @@ const CreatableSelect = React.forwardRef(
       if (e.key === "Escape") {
         e.preventDefault()
         setOpen(false)
+        setSearch("")
+        onInputValueChange?.("")
         return
       }
 
@@ -227,11 +236,12 @@ const CreatableSelect = React.forwardRef(
           !containerRef.current.contains(e.target as Node)
         ) {
           setOpen(false)
+          onInputValueChange?.("")
         }
       }
       document.addEventListener("mousedown", handler)
       return () => document.removeEventListener("mousedown", handler)
-    }, [open])
+    }, [onInputValueChange, open])
 
     // Reset highlight when filter changes
     React.useEffect(() => {
@@ -267,9 +277,10 @@ const CreatableSelect = React.forwardRef(
                 const next = normalizeComboboxInput
                   ? normalizeComboboxInput(sanitized)
                   : sanitized
-                setSearch(
+                const nextSearch =
                   maxLength != null ? next.slice(0, maxLength) : next
-                )
+                setSearch(nextSearch)
+                onInputValueChange?.(nextSearch)
               }}
               maxLength={maxLength}
               onKeyDown={handleKeyDown}

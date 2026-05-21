@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { IvrBotConfig } from "../ivr-bot-config";
 import { BOT_KNOWLEDGE_STATUS } from "../types";
 
@@ -164,6 +164,136 @@ describe("IvrBotConfig", () => {
       "placeholder",
       "Executives are busy at the moment, we will connect you soon."
     );
+  });
+
+  it("passes fallback prompt validation messages to the fallback fields", async () => {
+    const user = userEvent.setup();
+    render(
+      <IvrBotConfig
+        initialData={{ agentBusyPrompt: "", noExtensionPrompt: "" }}
+        fallbackPromptsRequiredValidation
+        agentBusyPromptRequiredMessage="Agent busy prompt is required"
+        noExtensionFoundPromptRequiredMessage="No extension found prompt is required"
+      />
+    );
+
+    await user.click(screen.getByText("Fallback Prompts"));
+
+    expect(
+      screen.getByText("Agent busy prompt is required")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("No extension found prompt is required")
+    ).toBeInTheDocument();
+  });
+
+  it("shows default fallback prompt text before required validation is triggered", async () => {
+    const user = userEvent.setup();
+    render(<IvrBotConfig fallbackPromptsRequiredValidation />);
+
+    await user.click(screen.getByText("Fallback Prompts"));
+
+    expect(
+      screen.getByDisplayValue(
+        "Executives are busy at the moment, we will connect you soon."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue(
+        "Sorry, the requested extension is currently unavailable. Let me help you directly."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Agent busy prompt is required")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("No extension found prompt is required")
+    ).not.toBeInTheDocument();
+  });
+
+  it("passes How It Behaves min-length validation props to the system prompt", () => {
+    render(
+      <IvrBotConfig
+        initialData={{ systemPrompt: "" }}
+        systemPromptMinLength={1}
+        systemPromptMinLengthValidation
+        systemPromptMinLengthMessage="System prompt is required"
+      />
+    );
+
+    expect(screen.getByText("System prompt is required")).toBeInTheDocument();
+  });
+
+  it("passes Who The Bot Is validation props to identity fields in sequence", () => {
+    const { rerender } = render(
+      <IvrBotConfig
+        key="bot-name"
+        initialData={{ botName: "", primaryRole: "", tone: [] }}
+        botNameMinLength={2}
+        primaryRoleMinLength={2}
+        toneMinLength={2}
+        botIdentityMinLengthValidation
+        botNameMinLengthMessage="Bot name is too short"
+        primaryRoleMinLengthMessage="Primary role is too short"
+        toneMinLengthMessage="Tone is too short"
+      />
+    );
+
+    expect(screen.getByText("Bot name is too short")).toBeInTheDocument();
+    expect(screen.queryByText("Primary role is too short")).not.toBeInTheDocument();
+
+    rerender(
+      <IvrBotConfig
+        key="primary-role"
+        initialData={{ botName: "Rhea", primaryRole: "", tone: [] }}
+        botNameMinLength={2}
+        primaryRoleMinLength={2}
+        toneMinLength={2}
+        botIdentityMinLengthValidation
+        botNameMinLengthMessage="Bot name is too short"
+        primaryRoleMinLengthMessage="Primary role is too short"
+        toneMinLengthMessage="Tone is too short"
+      />
+    );
+
+    expect(screen.getByText("Primary role is too short")).toBeInTheDocument();
+
+    rerender(
+      <IvrBotConfig
+        key="tone"
+        initialData={{ botName: "Rhea", primaryRole: "Support", tone: [] }}
+        botNameMinLength={2}
+        primaryRoleMinLength={2}
+        toneMinLength={2}
+        botIdentityMinLengthValidation
+        botNameMinLengthMessage="Bot name is too short"
+        primaryRoleMinLengthMessage="Primary role is too short"
+        toneMinLengthMessage="Tone is too short"
+      />
+    );
+
+    expect(screen.getByText("Tone is too short")).toBeInTheDocument();
+  });
+
+  it("passes Who The Bot Is optional props to identity fields", () => {
+    render(
+      <IvrBotConfig
+        initialData={{
+          botName: "Rhea",
+          primaryRole: "",
+          tone: ["Friendly"],
+          voice: "",
+          language: "",
+        }}
+        primaryRoleOptional
+        voiceOptional
+        languageOptional
+      />
+    );
+
+    expect(screen.queryByText("Primary role is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Voice is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Language is required")).not.toBeInTheDocument();
   });
 
   it("calls onEscalationPromptBlur with prompt value when Prompt textarea blurs", async () => {

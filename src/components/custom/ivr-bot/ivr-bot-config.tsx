@@ -16,7 +16,11 @@ import type {
   IvrBotConfigData,
   CreateFunctionData,
 } from "./types";
-import { FallbackPromptsCard } from "./fallback-prompts-card";
+import {
+  FallbackPromptsCard,
+  defaultAgentBusyPrompt,
+  defaultNoExtensionFoundPrompt,
+} from "./fallback-prompts-card";
 
 
 // ─── Default data ─────────────────────────────────────────────────────────────
@@ -27,8 +31,8 @@ const DEFAULT_DATA: IvrBotConfigData = {
   voice: "",
   language: "",
   systemPrompt: "",
-  agentBusyPrompt: "",
-  noExtensionPrompt: "",
+  agentBusyPrompt: defaultAgentBusyPrompt,
+  noExtensionPrompt: defaultNoExtensionFoundPrompt,
   knowledgeBaseFiles: [],
   functions: [
     { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true },
@@ -72,14 +76,46 @@ export const IvrBotConfig = React.forwardRef(
       toneTooltip,
       howItSoundsTooltip,
       languageModeTooltip,
+      botNameValidation,
+      primaryRoleValidation,
+      toneValidation,
+      voiceValidation,
+      languageValidation,
+      botNameMinLength,
+      primaryRoleMinLength,
+      toneMinLength,
+      botIdentityMinLengthValidation,
+      botNameOptional,
+      primaryRoleOptional,
+      toneOptional,
+      voiceOptional,
+      languageOptional,
+      botNameMinLengthMessage,
+      primaryRoleMinLengthMessage,
+      toneMinLengthMessage,
+      voiceRequiredMessage,
+      languageRequiredMessage,
       howItBehavesTooltip,
       agentBusyPromptTooltip,
       noExtensionFoundPromptTooltip,
       fallbackPromptsInfoTooltip,
+      agentBusyPromptValidation,
+      noExtensionFoundPromptValidation,
+      fallbackPromptsRequiredValidation,
+      agentBusyPromptRequiredMessage,
+      noExtensionFoundPromptRequiredMessage,
       escalateToHumanInfoTooltip,
       showEscalationPrompt,
       escalationPromptMaxLength,
       escalationPromptValidation,
+      escalationPromptMinLength,
+      escalationPromptMinLengthValidation,
+      escalationPromptOptional,
+      escalationPromptMinLengthMessage,
+      escalationDepartmentValidation,
+      escalationDepartmentValidationMessage,
+      escalationDepartmentMinLength,
+      escalationDepartmentOptional,
       functionPromptMinLength,
       functionNameMaxLength,
       functionPromptMaxLength,
@@ -92,6 +128,10 @@ export const IvrBotConfig = React.forwardRef(
       showCreateFunctionAgentMessage,
       functionEditData,
       systemPromptMaxLength,
+      systemPromptValidation,
+      systemPromptMinLength,
+      systemPromptMinLengthValidation,
+      systemPromptMinLengthMessage,
       onSystemPromptBlur,
       onAgentBusyPromptBlur,
       onNoExtensionFoundPromptBlur,
@@ -213,12 +253,35 @@ export const IvrBotConfig = React.forwardRef(
               toneTooltip={toneTooltip}
               howItSoundsTooltip={howItSoundsTooltip}
               languageModeTooltip={languageModeTooltip}
+              botNameValidation={botNameValidation}
+              primaryRoleValidation={primaryRoleValidation}
+              toneValidation={toneValidation}
+              voiceValidation={voiceValidation}
+              languageValidation={languageValidation}
+              botNameMinLength={botNameMinLength}
+              primaryRoleMinLength={primaryRoleMinLength}
+              toneMinLength={toneMinLength}
+              botIdentityMinLengthValidation={botIdentityMinLengthValidation}
+              botNameOptional={botNameOptional}
+              primaryRoleOptional={primaryRoleOptional}
+              toneOptional={toneOptional}
+              voiceOptional={voiceOptional}
+              languageOptional={languageOptional}
+              botNameMinLengthMessage={botNameMinLengthMessage}
+              primaryRoleMinLengthMessage={primaryRoleMinLengthMessage}
+              toneMinLengthMessage={toneMinLengthMessage}
+              voiceRequiredMessage={voiceRequiredMessage}
+              languageRequiredMessage={languageRequiredMessage}
             />
             <BotBehaviorCard
               data={data}
               onChange={update}
               onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
+              validation={systemPromptValidation}
+              minLength={systemPromptMinLength}
+              minLengthValidation={systemPromptMinLengthValidation}
+              minLengthMessage={systemPromptMinLengthMessage}
               maxLength={systemPromptMaxLength}
               disabled={disabled}
               howItBehavesTooltip={howItBehavesTooltip}
@@ -236,6 +299,11 @@ export const IvrBotConfig = React.forwardRef(
               }
               onAgentBusyPromptBlur={onAgentBusyPromptBlur}
               onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur}
+              agentBusyPromptValidation={agentBusyPromptValidation}
+              noExtensionFoundPromptValidation={noExtensionFoundPromptValidation}
+              fallbackPromptsRequiredValidation={fallbackPromptsRequiredValidation}
+              agentBusyPromptRequiredMessage={agentBusyPromptRequiredMessage}
+              noExtensionFoundPromptRequiredMessage={noExtensionFoundPromptRequiredMessage}
               disabled={disabled}
               agentBusyPromptTooltip={agentBusyPromptTooltip}
               noExtensionFoundPromptTooltip={noExtensionFoundPromptTooltip}
@@ -289,6 +357,16 @@ export const IvrBotConfig = React.forwardRef(
               showEscalationPrompt={showEscalationPrompt}
               promptMaxLength={escalationPromptMaxLength}
               promptValidation={escalationPromptValidation}
+              promptMinLength={escalationPromptMinLength}
+              promptMinLengthValidation={escalationPromptMinLengthValidation}
+              promptOptional={escalationPromptOptional}
+              promptMinLengthMessage={escalationPromptMinLengthMessage}
+              escalationDepartmentValidation={escalationDepartmentValidation}
+              escalationDepartmentValidationMessage={
+                escalationDepartmentValidationMessage
+              }
+              escalationDepartmentMinLength={escalationDepartmentMinLength}
+              escalationDepartmentOptional={escalationDepartmentOptional}
               onEscalationPromptBlur={onEscalationPromptBlur}
             />
             <AdvancedSettingsCard

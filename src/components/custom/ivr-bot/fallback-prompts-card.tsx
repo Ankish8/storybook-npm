@@ -34,6 +34,18 @@ export const defaultNoExtensionFoundPromptTooltip =
 export const defaultFallbackPromptsInfoTooltip =
   "These prompts play when a transfer fails or no extension is found. Configure them to ensure callers always get a helpful response even when agents are unavailable.";
 
+export const defaultAgentBusyPrompt =
+  "Executives are busy at the moment, we will connect you soon.";
+
+export const defaultNoExtensionFoundPrompt =
+  "Sorry, the requested extension is currently unavailable. Let me help you directly.";
+
+export const defaultAgentBusyPromptRequiredMessage =
+  "Agent busy prompt is required";
+
+export const defaultNoExtensionFoundPromptRequiredMessage =
+  "No extension found prompt is required";
+
 export interface FallbackPromptsCardProps {
   /** Current prompt text values */
   data: Partial<FallbackPromptsData>;
@@ -43,6 +55,19 @@ export interface FallbackPromptsCardProps {
   onAgentBusyPromptBlur?: (value: string) => void;
   /** Called when the No Extension Found textarea loses focus */
   onNoExtensionFoundPromptBlur?: (value: string) => void;
+  /** External validation message for Agent Busy Prompt (e.g. from save/publish). */
+  agentBusyPromptValidation?: string;
+  /** External validation message for No Extension Found (e.g. from save/publish). */
+  noExtensionFoundPromptValidation?: string;
+  /**
+   * When true, empty fallback prompt fields show required validation messages.
+   * Defaults to true for real-time validation. Pass false to disable it.
+   */
+  fallbackPromptsRequiredValidation?: boolean;
+  /** Required validation message for Agent Busy Prompt. */
+  agentBusyPromptRequiredMessage?: string;
+  /** Required validation message for No Extension Found. */
+  noExtensionFoundPromptRequiredMessage?: string;
   /** Maximum character length for each prompt field (default: 25000) */
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
@@ -77,6 +102,7 @@ function PromptField({
   placeholder,
   maxLength,
   disabled,
+  validation,
   onChange,
   onBlur,
   rows = 2,
@@ -88,6 +114,7 @@ function PromptField({
   placeholder?: string;
   maxLength: number;
   disabled?: boolean;
+  validation?: string;
   onChange: (value: string) => void;
   onBlur?: (value: string) => void;
   rows?: number;
@@ -128,6 +155,8 @@ function PromptField({
         resize="none"
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => onBlur?.(e.target.value)}
+        error={validation}
+        errorIcon={Boolean(validation)}
         wrapperClassName="gap-1.5"
         className="min-h-0"
       />
@@ -144,6 +173,11 @@ const FallbackPromptsCard = React.forwardRef(
       onChange,
       onAgentBusyPromptBlur,
       onNoExtensionFoundPromptBlur,
+      agentBusyPromptValidation,
+      noExtensionFoundPromptValidation,
+      fallbackPromptsRequiredValidation = true,
+      agentBusyPromptRequiredMessage = defaultAgentBusyPromptRequiredMessage,
+      noExtensionFoundPromptRequiredMessage = defaultNoExtensionFoundPromptRequiredMessage,
       maxLength = 25000,
       disabled,
       defaultOpen = false,
@@ -164,6 +198,20 @@ const FallbackPromptsCard = React.forwardRef(
         : noExtensionFoundPromptTooltip;
     const resolvedSectionInfoTooltip =
       infoTooltip === undefined ? defaultFallbackPromptsInfoTooltip : infoTooltip;
+    const agentBusyPromptValue = data.agentBusyPrompt ?? "";
+    const noExtensionFoundPromptValue = data.noExtensionFoundPrompt ?? "";
+    const agentBusyRequiredError =
+      fallbackPromptsRequiredValidation && !agentBusyPromptValue.trim()
+        ? agentBusyPromptRequiredMessage
+        : undefined;
+    const noExtensionRequiredError =
+      fallbackPromptsRequiredValidation && !noExtensionFoundPromptValue.trim()
+        ? noExtensionFoundPromptRequiredMessage
+        : undefined;
+    const agentBusyPromptError =
+      agentBusyPromptValidation ?? agentBusyRequiredError;
+    const noExtensionFoundPromptError =
+      noExtensionFoundPromptValidation ?? noExtensionRequiredError;
 
     return (
       <div
@@ -207,10 +255,11 @@ const FallbackPromptsCard = React.forwardRef(
                 <PromptField
                   label="Agent Busy Prompt"
                   labelTooltip={resolvedAgentBusyTooltip || undefined}
-                  value={data.agentBusyPrompt ?? ""}
-                  placeholder="Executives are busy at the moment, we will connect you soon."
+                  value={agentBusyPromptValue}
+                  placeholder={defaultAgentBusyPrompt}
                   maxLength={maxLength}
                   disabled={disabled}
+                  validation={agentBusyPromptError}
                   onChange={(v) => onChange({ agentBusyPrompt: v })}
                   onBlur={onAgentBusyPromptBlur}
                   rows={4}
@@ -218,10 +267,11 @@ const FallbackPromptsCard = React.forwardRef(
                 <PromptField
                   label="No Extension Found"
                   labelTooltip={resolvedNoExtensionTooltip || undefined}
-                  value={data.noExtensionFoundPrompt ?? ""}
-                  placeholder="Sorry, the requested extension is currently unavailable. Let me help you directly."
+                  value={noExtensionFoundPromptValue}
+                  placeholder={defaultNoExtensionFoundPrompt}
                   maxLength={maxLength}
                   disabled={disabled}
+                  validation={noExtensionFoundPromptError}
                   onChange={(v) => onChange({ noExtensionFoundPrompt: v })}
                   onBlur={onNoExtensionFoundPromptBlur}
                   rows={4}

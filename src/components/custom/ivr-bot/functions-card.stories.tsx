@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FunctionsCard } from "./functions-card";
 import type { FunctionItem } from "./types";
 

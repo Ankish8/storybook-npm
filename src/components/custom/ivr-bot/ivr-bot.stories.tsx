@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { defaultHowItBehavesTooltip } from "./bot-behavior-card";
 import {
   defaultAgentBusyPromptTooltip,
@@ -22,20 +22,7 @@ const ivrBotMeta: Meta<typeof IvrBotConfig> = {
         component: `
 The **IvrBotConfig** is the full-page configuration view for an IVR/Voicebot. It organises settings into two columns:
 
-**Left column (always open)**
-- **Who The Bot Is** — Bot name, primary role, tone, voice, language
-- **How It Behaves** — System prompt with session variable chips (info tooltip on section title via \`howItBehavesTooltip\`)
 
-**Left column (accordion)**
-- **Fallback Prompts** — Section title info via \`fallbackPromptsInfoTooltip\`; field tooltips via \`agentBusyPromptTooltip\`, \`noExtensionFoundPromptTooltip\`
-
-**Right column (always open)**
-- **Knowledge Base** — File list with training status
-- **Functions** — Built-in & custom function list
-
-**Right column (accordion)**
-- **Escalate to Human** — Section title info via \`escalateToHumanInfoTooltip\`; auto-escalation toggle + transfer department selector
-- **Advanced Settings** — Silence timeout, call-end threshold, interruption handling
 
 ### Install
 \`\`\`bash
@@ -56,6 +43,27 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | \`agentBusyPromptTooltip\` | Info icon next to **Agent Busy Prompt** |
 | \`noExtensionFoundPromptTooltip\` | Info icon next to **No Extension Found** |
 | \`escalateToHumanInfoTooltip\` | Info icon next to **Escalate to Human** (accordion title) |
+| \`botIdentityMinLengthValidation\` | Enables built-in identity validation, shown one mandatory field at a time |
+| \`primaryRoleOptional\` | Skips built-in validation for **Primary Role** |
+| \`voiceOptional\` | Skips built-in validation for **How It Sounds** |
+| \`languageOptional\` | Skips built-in validation for **What Language It Speaks** |
+| \`botNameMinLengthMessage\` | Min-length message below **Bot Name & Identity** |
+| \`primaryRoleMinLengthMessage\` | Min-length message below **Primary Role** |
+| \`toneMinLengthMessage\` | Min-length message below **Tone** |
+| \`voiceRequiredMessage\` | Required message below **How It Sounds** |
+| \`languageRequiredMessage\` | Required message below **What Language It Speaks** |
+| \`fallbackPromptsRequiredValidation\` | Enables built-in required validation for both fallback fields |
+| \`agentBusyPromptRequiredMessage\` | Required message below **Agent Busy Prompt** |
+| \`noExtensionFoundPromptRequiredMessage\` | Required message below **No Extension Found** |
+| \`agentBusyPromptValidation\` | Validation below **Agent Busy Prompt** |
+| \`noExtensionFoundPromptValidation\` | Validation below **No Extension Found** |
+| \`escalationPromptMinLengthValidation\` | Enables built-in min-length validation for **Escalate to Human → Prompt** |
+| \`escalationPromptOptional\` | Skips built-in validation for **Escalate to Human → Prompt** |
+| \`escalationPromptMinLengthMessage\` | Min-length message below **Escalate to Human → Prompt** |
+| \`escalationPromptValidation\` | Validation below **Escalate to Human → Prompt** |
+| \`escalationDepartmentValidation\` | Enables validation for **Transfer to Department** |
+| \`escalationDepartmentOptional\` | Skips built-in validation for **Transfer to Department** |
+| \`escalationDepartmentValidationMessage\` | Validation message below **Transfer to Department** |
 
 Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field’s info icon, or (for section titles) to show a non-interactive icon only—same pattern as Knowledge Base.
 
@@ -120,10 +128,139 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field�
       description:
         "Tooltip for the Fallback Prompts accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
     },
+    botIdentityMinLengthValidation: {
+      control: "boolean",
+      description:
+        "Shows min-length validation for Bot Name & Identity, Primary Role, and Tone. Defaults to true.",
+    },
+    botNameMinLength: {
+      control: "number",
+      description: "Minimum text length for Bot Name & Identity.",
+    },
+    primaryRoleMinLength: {
+      control: "number",
+      description: "Minimum text length for Primary Role.",
+    },
+    toneMinLength: {
+      control: "number",
+      description: "Minimum text length across selected or draft Tone text.",
+    },
+    primaryRoleOptional: {
+      control: "boolean",
+      description: "Skips built-in Primary Role validation when true.",
+    },
+    voiceOptional: {
+      control: "boolean",
+      description: "Skips built-in How It Sounds validation when true.",
+    },
+    languageOptional: {
+      control: "boolean",
+      description: "Skips built-in What Language It Speaks validation when true.",
+    },
+    botNameMinLengthMessage: {
+      control: "text",
+      description: "Min-length validation message shown below Bot Name & Identity.",
+    },
+    primaryRoleMinLengthMessage: {
+      control: "text",
+      description: "Min-length validation message shown below Primary Role.",
+    },
+    toneMinLengthMessage: {
+      control: "text",
+      description: "Min-length validation message shown below Tone.",
+    },
+    voiceRequiredMessage: {
+      control: "text",
+      description: "Required validation message shown below How It Sounds.",
+    },
+    languageRequiredMessage: {
+      control: "text",
+      description: "Required validation message shown below What Language It Speaks.",
+    },
+    botNameValidation: {
+      control: "text",
+      description: "External validation message shown below Bot Name & Identity.",
+    },
+    primaryRoleValidation: {
+      control: "text",
+      description: "External validation message shown below Primary Role.",
+    },
+    toneValidation: {
+      control: "text",
+      description: "External validation message shown below Tone.",
+    },
+    voiceValidation: {
+      control: "text",
+      description: "External validation message shown below How It Sounds.",
+    },
+    languageValidation: {
+      control: "text",
+      description: "External validation message shown below What Language It Speaks.",
+    },
+    fallbackPromptsRequiredValidation: {
+      control: "boolean",
+      description:
+        "Shows required validation messages when Agent Busy Prompt or No Extension Found is empty. Defaults to true.",
+    },
+    agentBusyPromptRequiredMessage: {
+      control: "text",
+      description: "Required validation message shown below Agent Busy Prompt.",
+    },
+    noExtensionFoundPromptRequiredMessage: {
+      control: "text",
+      description: "Required validation message shown below No Extension Found.",
+    },
+    agentBusyPromptValidation: {
+      control: "text",
+      description: "Validation message shown below Agent Busy Prompt.",
+    },
+    noExtensionFoundPromptValidation: {
+      control: "text",
+      description: "Validation message shown below No Extension Found.",
+    },
     escalateToHumanInfoTooltip: {
       control: "text",
       description:
         "Tooltip for the Escalate to Human accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
+    },
+    escalationPromptValidation: {
+      control: "text",
+      description: "Validation message shown below Escalate to Human Prompt.",
+    },
+    escalationPromptMinLength: {
+      control: "number",
+      description: "Minimum text length for Escalate to Human Prompt.",
+    },
+    escalationPromptMinLengthValidation: {
+      control: "boolean",
+      description:
+        "Shows min-length validation for Escalate to Human Prompt after interaction. Defaults to true.",
+    },
+    escalationPromptOptional: {
+      control: "boolean",
+      description:
+        "Skips built-in Escalate to Human Prompt validation when true.",
+    },
+    escalationPromptMinLengthMessage: {
+      control: "text",
+      description:
+        "Min-length validation message shown below Escalate to Human Prompt.",
+    },
+    escalationDepartmentValidation: {
+      control: "boolean",
+      description: "Enables validation for Transfer to Department.",
+    },
+    escalationDepartmentValidationMessage: {
+      control: "text",
+      description: "Validation message shown below Transfer to Department.",
+    },
+    escalationDepartmentMinLength: {
+      control: "number",
+      description: "Minimum text length for Transfer to Department.",
+    },
+    escalationDepartmentOptional: {
+      control: "boolean",
+      description: "Skips built-in Transfer to Department validation when true.",
     },
   },
 };
@@ -146,6 +283,36 @@ export const Overview: Story = {
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
+        botIdentityMinLengthValidation={args.botIdentityMinLengthValidation}
+        botNameMinLength={args.botNameMinLength}
+        primaryRoleMinLength={args.primaryRoleMinLength}
+        toneMinLength={args.toneMinLength}
+        primaryRoleOptional={args.primaryRoleOptional}
+        voiceOptional={args.voiceOptional}
+        languageOptional={args.languageOptional}
+        botNameMinLengthMessage={args.botNameMinLengthMessage}
+        primaryRoleMinLengthMessage={args.primaryRoleMinLengthMessage}
+        toneMinLengthMessage={args.toneMinLengthMessage}
+        voiceRequiredMessage={args.voiceRequiredMessage}
+        languageRequiredMessage={args.languageRequiredMessage}
+        botNameValidation={args.botNameValidation}
+        primaryRoleValidation={args.primaryRoleValidation}
+        toneValidation={args.toneValidation}
+        voiceValidation={args.voiceValidation}
+        languageValidation={args.languageValidation}
+        escalationPromptValidation={args.escalationPromptValidation}
+        escalationPromptMinLength={args.escalationPromptMinLength}
+        escalationPromptMinLengthValidation={
+          args.escalationPromptMinLengthValidation
+        }
+        escalationPromptOptional={args.escalationPromptOptional}
+        escalationPromptMinLengthMessage={args.escalationPromptMinLengthMessage}
+        escalationDepartmentValidation={args.escalationDepartmentValidation}
+        escalationDepartmentValidationMessage={
+          args.escalationDepartmentValidationMessage
+        }
+        escalationDepartmentMinLength={args.escalationDepartmentMinLength}
+        escalationDepartmentOptional={args.escalationDepartmentOptional}
         initialData={{
           botName: "Rhea",
           primaryRole: "customer-support",
@@ -235,6 +402,23 @@ export const CustomDropdownOptions: Story = {
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
+        botIdentityMinLengthValidation={args.botIdentityMinLengthValidation}
+        botNameMinLength={args.botNameMinLength}
+        primaryRoleMinLength={args.primaryRoleMinLength}
+        toneMinLength={args.toneMinLength}
+        primaryRoleOptional={args.primaryRoleOptional}
+        voiceOptional={args.voiceOptional}
+        languageOptional={args.languageOptional}
+        botNameMinLengthMessage={args.botNameMinLengthMessage}
+        primaryRoleMinLengthMessage={args.primaryRoleMinLengthMessage}
+        toneMinLengthMessage={args.toneMinLengthMessage}
+        voiceRequiredMessage={args.voiceRequiredMessage}
+        languageRequiredMessage={args.languageRequiredMessage}
+        botNameValidation={args.botNameValidation}
+        primaryRoleValidation={args.primaryRoleValidation}
+        toneValidation={args.toneValidation}
+        voiceValidation={args.voiceValidation}
+        languageValidation={args.languageValidation}
         voiceOptions={[
           { value: "emma-us", label: "Emma - US Female" },
           { value: "james-us", label: "James - US Male" },

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Info } from "lucide-react";
+import { CircleAlert, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Select,
@@ -52,6 +52,9 @@ const DEFAULT_DEPARTMENT_OPTIONS: DepartmentOption[] = [
 export const defaultEscalateToHumanInfoTooltip =
   "When enabled, the bot automatically transfers the call to a human agent if a caller shows repeated signs of frustration. Select a department extension to route these escalations to.";
 
+export const defaultEscalationPromptMinLengthMessage =
+  "Escalation prompt is required";
+
 export interface FrustrationHandoverCardProps {
   /** Current form data */
   data: Partial<FrustrationHandoverData>;
@@ -78,6 +81,25 @@ export interface FrustrationHandoverCardProps {
    * When set, it replaces the built-in overflow message (overflow still uses error styling via length check in the shared Textarea).
    */
   promptValidation?: string;
+  /** Minimum text length for Prompt when min-length validation is enabled. Defaults to 1. */
+  promptMinLength?: number;
+  /**
+   * When true, Prompt shows min-length validation after the user interacts with it.
+   * Defaults to true. Pass false to disable built-in validation.
+   */
+  promptMinLengthValidation?: boolean;
+  /** When true, Prompt skips built-in min-length validation. */
+  promptOptional?: boolean;
+  /** Custom message shown when Prompt is shorter than `promptMinLength`. */
+  promptMinLengthMessage?: string;
+  /** When true, Transfer to Department shows validation after interaction. */
+  escalationDepartmentValidation?: boolean;
+  /** Validation message shown for Transfer to Department when validation is enabled. */
+  escalationDepartmentValidationMessage?: string;
+  /** Minimum text length for Transfer to Department when min-length validation is enabled. Defaults to 1. */
+  escalationDepartmentMinLength?: number;
+  /** When true, Transfer to Department skips built-in min-length validation. */
+  escalationDepartmentOptional?: boolean;
   /** Called when the Prompt textarea loses focus (current value passed — use to persist via API). */
   onEscalationPromptBlur?: (value: string) => void;
   /**
@@ -100,9 +122,13 @@ export interface FrustrationHandoverCardProps {
 
 function Field({
   label,
+  errorText,
+  errorId,
   children,
 }: {
   label: string;
+  errorText?: string;
+  errorId?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -111,6 +137,21 @@ function Field({
         {label}
       </label>
       {children}
+      {errorText ? (
+        <div
+          id={errorId}
+          role="alert"
+          className="flex items-center gap-1.5 min-w-0"
+        >
+          <CircleAlert
+            className="size-3.5 shrink-0 text-semantic-error-primary"
+            aria-hidden
+          />
+          <p className="m-0 text-sm text-semantic-error-primary">
+            {errorText}
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -127,6 +168,14 @@ const FrustrationHandoverCard = React.forwardRef(
     className,
     promptMaxLength = 5000,
     promptValidation,
+    promptMinLength = 1,
+    promptMinLengthValidation = true,
+    promptOptional = false,
+    promptMinLengthMessage,
+    escalationDepartmentValidation = false,
+    escalationDepartmentValidationMessage,
+    escalationDepartmentMinLength = 1,
+    escalationDepartmentOptional = false,
     onEscalationPromptBlur,
     onDepartmentOptionsScrollEnd,
     departmentOptionsHasMore,
@@ -137,6 +186,11 @@ const FrustrationHandoverCard = React.forwardRef(
       infoTooltip === undefined ? defaultEscalateToHumanInfoTooltip : infoTooltip;
 
     const [promptInvalidCharsError, setPromptInvalidCharsError] = React.useState("");
+    const [promptTouched, setPromptTouched] = React.useState(false);
+    const [departmentSelectOpened, setDepartmentSelectOpened] =
+      React.useState(false);
+    const [departmentTouched, setDepartmentTouched] = React.useState(false);
+    const departmentErrorId = React.useId();
 
     const rawPromptValue = data.escalationPrompt ?? "";
     const promptValue = clampToMaxLength(rawPromptValue, promptMaxLength);
@@ -145,10 +199,60 @@ const FrustrationHandoverCard = React.forwardRef(
     const promptOverflowMessage = overPromptLimit
       ? `Maximum ${promptMaxLength} characters allowed.`
       : undefined;
+    const promptMinLengthError =
+      promptTouched &&
+      data.frustrationHandoverEnabled &&
+      showEscalationPrompt &&
+      promptMinLengthValidation &&
+      !promptOptional &&
+      promptMinLength > 0 &&
+      promptValue.trim().length < promptMinLength
+        ? promptMinLengthMessage ??
+          (promptMinLength === 1
+            ? defaultEscalationPromptMinLengthMessage
+            : `Minimum ${promptMinLength} characters required`)
+        : undefined;
     const promptErrorMessage =
       promptValidation ??
       (promptInvalidCharsError || undefined) ??
+      promptMinLengthError ??
       promptOverflowMessage;
+    const departmentValue = data.escalationDepartment ?? "";
+    React.useEffect(() => {
+      if (!data.frustrationHandoverEnabled) {
+        setPromptTouched(false);
+        setDepartmentSelectOpened(false);
+        setDepartmentTouched(false);
+      }
+    }, [data.frustrationHandoverEnabled]);
+
+    React.useEffect(() => {
+      if (!showEscalationPrompt) {
+        setPromptTouched(false);
+      }
+    }, [showEscalationPrompt]);
+
+    const departmentMinLengthError =
+      departmentTouched &&
+      data.frustrationHandoverEnabled &&
+      escalationDepartmentValidation &&
+      !escalationDepartmentOptional &&
+      Boolean(escalationDepartmentValidationMessage) &&
+      escalationDepartmentMinLength > 0 &&
+      departmentValue.trim().length < escalationDepartmentMinLength
+        ? escalationDepartmentValidationMessage
+        : undefined;
+    const departmentErrorMessage = departmentMinLengthError;
+
+    const handleDepartmentOpenChange = React.useCallback((open: boolean) => {
+      if (open) {
+        setDepartmentSelectOpened(true);
+        return;
+      }
+
+      setDepartmentTouched((prev) => prev || departmentSelectOpened);
+      setDepartmentSelectOpened(false);
+    }, [departmentSelectOpened]);
 
     const handleDepartmentViewportScrollEnd = React.useCallback(
       (e: React.UIEvent<HTMLDivElement>) => {
@@ -226,19 +330,20 @@ const FrustrationHandoverCard = React.forwardRef(
                       placeholder="Executives are busy at the moment, we will connect you soon."
                       value={promptValue}
                       onChange={(e) => {
+                        setPromptTouched(true);
                         const v = clampToMaxLength(
                           e.target.value,
                           promptMaxLength
                         );
                         onChange({ escalationPrompt: v });
-                        if (
-                          promptInvalidCharsError &&
-                          !hasInvalidPromptFieldChars(v)
-                        ) {
-                          setPromptInvalidCharsError("");
-                        }
+                        setPromptInvalidCharsError(
+                          hasInvalidPromptFieldChars(v)
+                            ? PROMPT_INVALID_CHARS_MESSAGE
+                            : ""
+                        );
                       }}
                       onBlur={(e) => {
+                        setPromptTouched(true);
                         const v = e.target.value;
                         setPromptInvalidCharsError(
                           hasInvalidPromptFieldChars(v)
@@ -253,20 +358,33 @@ const FrustrationHandoverCard = React.forwardRef(
                       displayCharCount={promptLength}
                       error={promptErrorMessage}
                       errorIcon={Boolean(promptErrorMessage)}
-                      resize="vertical"
-                      rows={4}
+                      resize="none"
+                      rows={5}
                       size="sm"
                     />
                   </div>
                 ) : null}
                 <div className="px-4 pb-2 sm:px-6">
-                  <Field label="Transfer to Department">
+                  <Field
+                    label="Transfer to Department"
+                    errorText={departmentErrorMessage}
+                    errorId={departmentErrorId}
+                  >
                     <Select
-                      value={data.escalationDepartment || undefined}
-                      onValueChange={(v) => onChange({ escalationDepartment: v })}
+                      value={departmentValue}
+                      onValueChange={(v) =>
+                        onChange({ escalationDepartment: v })
+                      }
+                      onOpenChange={handleDepartmentOpenChange}
                       disabled={disabled || !data.frustrationHandoverEnabled}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger
+                        state={departmentErrorMessage ? "error" : "default"}
+                        aria-invalid={Boolean(departmentErrorMessage)}
+                        aria-describedby={
+                          departmentErrorMessage ? departmentErrorId : undefined
+                        }
+                      >
                         <SelectValue placeholder="Select a department" />
                       </SelectTrigger>
                       <SelectContent

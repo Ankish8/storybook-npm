@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Info, PlayCircle, PauseCircle } from "lucide-react";
+import { CircleAlert, Info, PlayCircle, PauseCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import {
   Select,
@@ -77,6 +77,12 @@ export const defaultHowItSoundsTooltip =
 export const defaultLanguageModeTooltip =
   "Sets the language mode for the bot's conversations.";
 
+export const defaultBotNameMinLengthMessage = "Bot name is required";
+export const defaultPrimaryRoleMinLengthMessage = "Primary role is required";
+export const defaultToneMinLengthMessage = "Tone is required";
+export const defaultVoiceRequiredMessage = "Voice is required";
+export const defaultLanguageRequiredMessage = "Language is required";
+
 export interface BotIdentityCardProps {
   /** Current form data */
   data: Partial<BotIdentityData>;
@@ -96,6 +102,47 @@ export interface BotIdentityCardProps {
   onPauseVoice?: (voiceValue: string) => void;
   /** The voice value currently being played. Controls play/pause icon state. */
   playingVoice?: string;
+  /** External validation message for Bot Name & Identity (e.g. from save/publish). */
+  botNameValidation?: string;
+  /** External validation message for Primary Role (e.g. from save/publish). */
+  primaryRoleValidation?: string;
+  /** External validation message for Tone (e.g. from save/publish). */
+  toneValidation?: string;
+  /** External validation message for How It Sounds (e.g. from save/publish). */
+  voiceValidation?: string;
+  /** External validation message for What Language It Speaks (e.g. from save/publish). */
+  languageValidation?: string;
+  /** Minimum text length for Bot Name & Identity when min-length validation is enabled. Defaults to 1. */
+  botNameMinLength?: number;
+  /** Minimum text length for Primary Role when min-length validation is enabled. Defaults to 1. */
+  primaryRoleMinLength?: number;
+  /** Minimum text length across selected/draft Tone text when min-length validation is enabled. Defaults to 1. */
+  toneMinLength?: number;
+  /**
+   * When true, Bot Name & Identity, Primary Role, and Tone show inline min-length errors.
+   * Defaults to true, matching Fallback Prompts required-field validation. Pass false to disable it.
+   */
+  botIdentityMinLengthValidation?: boolean;
+  /** When true, Bot Name & Identity skips built-in min-length validation. */
+  botNameOptional?: boolean;
+  /** When true, Primary Role skips built-in min-length validation. */
+  primaryRoleOptional?: boolean;
+  /** When true, Tone skips built-in min-length validation. */
+  toneOptional?: boolean;
+  /** When true, How It Sounds skips built-in required validation. */
+  voiceOptional?: boolean;
+  /** When true, What Language It Speaks skips built-in required validation. */
+  languageOptional?: boolean;
+  /** Custom message shown when Bot Name & Identity is shorter than `botNameMinLength`. */
+  botNameMinLengthMessage?: string;
+  /** Custom message shown when Primary Role is shorter than `primaryRoleMinLength`. */
+  primaryRoleMinLengthMessage?: string;
+  /** Custom message shown when Tone is shorter than `toneMinLength`. */
+  toneMinLengthMessage?: string;
+  /** Custom required validation message for How It Sounds. */
+  voiceRequiredMessage?: string;
+  /** Custom required validation message for What Language It Speaks. */
+  languageRequiredMessage?: string;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Hover text on the info icon next to "Bot Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
@@ -164,9 +211,17 @@ function Field({
       {(errorText || helperText) && (
         <div className="flex items-center justify-between gap-2">
           {errorText ? (
-            <div className="flex items-center gap-1.5 text-xs text-semantic-error-primary min-w-0">
-              <Info className="size-3.5 shrink-0" />
-              <p className="m-0">{errorText}</p>
+            <div
+              role="alert"
+              className="flex items-center gap-1.5 min-w-0"
+            >
+              <CircleAlert
+                className="size-3.5 shrink-0 text-semantic-error-primary"
+                aria-hidden
+              />
+              <p className="m-0 text-sm text-semantic-error-primary">
+                {errorText}
+              </p>
             </div>
           ) : helperText ? (
             <div className="flex items-center gap-1.5 text-xs text-semantic-text-muted min-w-0">
@@ -184,6 +239,30 @@ const BOT_NAME_MAX_LENGTH = 50;
 const PRIMARY_ROLE_MAX_LENGTH = 50;
 const TONE_MAX_ITEMS = 5;
 const TONE_MAX_LENGTH_PER_ITEM = 20;
+
+function getMinLengthError({
+  length,
+  minLength,
+  validationEnabled,
+  message,
+  requiredMessage,
+}: {
+  length: number;
+  minLength: number;
+  validationEnabled: boolean;
+  message?: string;
+  requiredMessage: string;
+}) {
+  if (!validationEnabled || minLength <= 0 || length >= minLength) {
+    return undefined;
+  }
+  return (
+    message ??
+    (minLength === 1
+      ? requiredMessage
+      : `Minimum ${minLength} characters required`)
+  );
+}
 
 function StyledInput({
   placeholder,
@@ -231,7 +310,7 @@ function StyledInput({
           "bg-semantic-bg-primary text-semantic-text-primary placeholder:text-semantic-text-muted",
           "outline-none",
           invalid
-            ? "border-semantic-error-primary/50 hover:border-semantic-error-primary/60 focus:border-semantic-error-primary/70 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
+            ? "border-semantic-error-primary hover:border-semantic-error-primary focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
             : "border-semantic-border-input hover:border-semantic-border-input-focus focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
           disabled && "opacity-50 cursor-not-allowed",
           showCount && "pr-16",
@@ -303,6 +382,25 @@ const BotIdentityCard = React.forwardRef(
       onPlayVoice,
       onPauseVoice,
       playingVoice,
+      botNameValidation,
+      primaryRoleValidation,
+      toneValidation,
+      voiceValidation,
+      languageValidation,
+      botNameMinLength = 1,
+      primaryRoleMinLength = 1,
+      toneMinLength = 1,
+      botIdentityMinLengthValidation = true,
+      botNameOptional = false,
+      primaryRoleOptional = false,
+      toneOptional = false,
+      voiceOptional = false,
+      languageOptional = false,
+      botNameMinLengthMessage,
+      primaryRoleMinLengthMessage,
+      toneMinLengthMessage,
+      voiceRequiredMessage = defaultVoiceRequiredMessage,
+      languageRequiredMessage = defaultLanguageRequiredMessage,
       disabled,
       botNameIdentityTooltip = defaultBotNameIdentityTooltip,
       primaryRoleTooltip = defaultPrimaryRoleTooltip,
@@ -318,6 +416,76 @@ const BotIdentityCard = React.forwardRef(
       string | null
     >(null);
     const [toneError, setToneError] = React.useState<string | null>(null);
+    const [primaryRoleDraft, setPrimaryRoleDraft] = React.useState("");
+    const [toneDraft, setToneDraft] = React.useState("");
+
+    const botNameValue = data.botName ?? "";
+    const primaryRoleValue = data.primaryRole ?? "";
+    const voiceValue = data.voice ?? "";
+    const languageValue = data.language ?? "";
+    const toneValue = Array.isArray(data.tone)
+      ? data.tone.slice(0, TONE_MAX_ITEMS)
+      : [];
+    const primaryRoleValidationValue =
+      primaryRoleDraft.trim() || primaryRoleValue;
+    const toneValidationValue =
+      toneDraft.trim() || toneValue.map((item) => item.trim()).join(" ");
+    const botNameMinLengthError = getMinLengthError({
+      length: botNameValue.trim().length,
+      minLength: botNameMinLength,
+      validationEnabled: botIdentityMinLengthValidation && !botNameOptional,
+      message: botNameMinLengthMessage,
+      requiredMessage: defaultBotNameMinLengthMessage,
+    });
+    const primaryRoleMinLengthError = getMinLengthError({
+      length: primaryRoleValidationValue.trim().length,
+      minLength: primaryRoleMinLength,
+      validationEnabled: botIdentityMinLengthValidation && !primaryRoleOptional,
+      message: primaryRoleMinLengthMessage,
+      requiredMessage: defaultPrimaryRoleMinLengthMessage,
+    });
+    const toneMinLengthError = getMinLengthError({
+      length: toneValidationValue.trim().length,
+      minLength: toneMinLength,
+      validationEnabled: botIdentityMinLengthValidation && !toneOptional,
+      message: toneMinLengthMessage,
+      requiredMessage: defaultToneMinLengthMessage,
+    });
+    const voiceRequiredError =
+      botIdentityMinLengthValidation && !voiceOptional && !voiceValue.trim()
+        ? voiceRequiredMessage
+        : undefined;
+    const languageRequiredError =
+      botIdentityMinLengthValidation && !languageOptional && !languageValue.trim()
+        ? languageRequiredMessage
+        : undefined;
+    const firstBuiltInErrorField =
+      botNameMinLengthError ? "botName" :
+      primaryRoleMinLengthError ? "primaryRole" :
+      toneMinLengthError ? "tone" :
+      voiceRequiredError ? "voice" :
+      languageRequiredError ? "language" :
+      undefined;
+    const botNameDisplayError =
+      botNameValidation ??
+      botNameError ??
+      (firstBuiltInErrorField === "botName" ? botNameMinLengthError : undefined);
+    const primaryRoleDisplayError =
+      primaryRoleValidation ??
+      primaryRoleError ??
+      (firstBuiltInErrorField === "primaryRole"
+        ? primaryRoleMinLengthError
+        : undefined);
+    const toneDisplayError =
+      toneValidation ??
+      toneError ??
+      (firstBuiltInErrorField === "tone" ? toneMinLengthError : undefined);
+    const voiceDisplayError =
+      voiceValidation ??
+      (firstBuiltInErrorField === "voice" ? voiceRequiredError : undefined);
+    const languageDisplayError =
+      languageValidation ??
+      (firstBuiltInErrorField === "language" ? languageRequiredError : undefined);
 
     const handleBotNameChange = React.useCallback(
       (raw: string) => {
@@ -335,10 +503,10 @@ const BotIdentityCard = React.forwardRef(
     );
 
     const handleBotNameBlur = React.useCallback(() => {
-      const cur = data.botName ?? "";
+      const cur = botNameValue;
       const trimmed = cur.trim();
       if (trimmed !== cur) onChange({ botName: trimmed });
-    }, [data.botName, onChange]);
+    }, [botNameValue, onChange]);
 
     const handlePrimaryRoleValueChange = React.useCallback(
       (v: string) => {
@@ -380,18 +548,18 @@ const BotIdentityCard = React.forwardRef(
             <Field
               label="Bot Name & Identity"
               labelTooltip={botNameIdentityTooltip}
-              errorText={botNameError ?? undefined}
+              errorText={botNameDisplayError}
             >
               <StyledInput
                 placeholder="e.g., Rhea from XYZ"
-                value={data.botName}
+                value={botNameValue}
                 onChange={handleBotNameChange}
                 onBlur={handleBotNameBlur}
                 disabled={disabled}
-                invalid={Boolean(botNameError)}
+                invalid={Boolean(botNameDisplayError)}
                 maxLength={BOT_NAME_MAX_LENGTH}
                 characterCount={{
-                  current: botIdentityEffectiveValueLength(data.botName ?? ""),
+                  current: botIdentityEffectiveValueLength(botNameValue),
                   max: BOT_NAME_MAX_LENGTH,
                 }}
               />
@@ -400,11 +568,12 @@ const BotIdentityCard = React.forwardRef(
             <Field
               label="Primary Role"
               labelTooltip={primaryRoleTooltip}
-              errorText={primaryRoleError ?? undefined}
+              errorText={primaryRoleDisplayError}
             >
               <CreatableSelect
-                value={data.primaryRole ?? ""}
+                value={primaryRoleValue}
                 onValueChange={handlePrimaryRoleValueChange}
+                onInputValueChange={setPrimaryRoleDraft}
                 options={roleOptions}
                 placeholder="e.g., Customer Support Agent"
                 creatableHint="Type to create a custom role"
@@ -421,21 +590,23 @@ const BotIdentityCard = React.forwardRef(
                   setPrimaryRoleError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
                 }
                 onValidInput={() => setPrimaryRoleError(null)}
-                state={primaryRoleError ? "error" : "default"}
+                state={primaryRoleDisplayError ? "error" : "default"}
               />
             </Field>
 
             <Field
               label="Tone"
               labelTooltip={toneTooltip}
-              errorText={toneError ?? undefined}
+              errorText={toneDisplayError}
             >
               <CreatableMultiSelect
-                value={(Array.isArray(data.tone) ? data.tone : []).slice(0, TONE_MAX_ITEMS)}
+                value={toneValue}
                 onValueChange={(v) => {
                   setToneError(null);
+                  setToneDraft("");
                   onChange({ tone: (v ?? []).slice(0, TONE_MAX_ITEMS) });
                 }}
+                onInputValueChange={setToneDraft}
                 options={toneOptions}
                 placeholder="Enter or select tone"
                 createHintText="Type to create a custom tone"
@@ -448,26 +619,30 @@ const BotIdentityCard = React.forwardRef(
                   setToneError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
                 }
                 onValidInput={() => setToneError(null)}
-                state={toneError ? "error" : "default"}
+                state={toneDisplayError ? "error" : "default"}
               />
             </Field>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label="How It Sounds" labelTooltip={howItSoundsTooltip}>
+              <Field
+                label="How It Sounds"
+                labelTooltip={howItSoundsTooltip}
+                errorText={voiceDisplayError}
+              >
                 <Select
-                  value={data.voice || undefined}
+                  value={voiceValue}
                   onValueChange={(v) => {
                     onChange({ voice: v });
                     onPauseVoice?.(v);
                   }}
                   disabled={disabled}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger state={voiceDisplayError ? "error" : "default"}>
                     <SelectValue placeholder="Select voice">
-                      {data.voice && (
+                      {voiceValue && (
                         <span className="inline-flex items-center gap-2">
                           <PlayCircle className="size-5 shrink-0 text-semantic-text-muted" />
-                          {voiceOptions.find((o) => o.value === data.voice)?.label ?? data.voice}
+                          {voiceOptions.find((o) => o.value === voiceValue)?.label ?? voiceValue}
                         </span>
                       )}
                     </SelectValue>
@@ -514,13 +689,14 @@ const BotIdentityCard = React.forwardRef(
               <Field
                 label="What Language It Speaks"
                 labelTooltip={languageModeTooltip}
+                errorText={languageDisplayError}
               >
                 <Select
-                  value={data.language || undefined}
+                  value={languageValue}
                   onValueChange={(v) => onChange({ language: v })}
                   disabled={disabled}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger state={languageDisplayError ? "error" : "default"}>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>

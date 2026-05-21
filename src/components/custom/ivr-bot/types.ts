@@ -284,6 +284,44 @@ export interface IvrBotConfigProps {
   howItSoundsTooltip?: string;
   /** Passed to BotIdentityCard — hover text on the info icon next to What Language It Speaks */
   languageModeTooltip?: string;
+  /** External validation message for Bot Name & Identity. */
+  botNameValidation?: string;
+  /** External validation message for Primary Role. */
+  primaryRoleValidation?: string;
+  /** External validation message for Tone. */
+  toneValidation?: string;
+  /** External validation message for How It Sounds. */
+  voiceValidation?: string;
+  /** External validation message for What Language It Speaks. */
+  languageValidation?: string;
+  /** Minimum text length for Bot Name & Identity when min-length validation is enabled. Defaults to 1. */
+  botNameMinLength?: number;
+  /** Minimum text length for Primary Role when min-length validation is enabled. Defaults to 1. */
+  primaryRoleMinLength?: number;
+  /** Minimum text length across selected/draft Tone text when min-length validation is enabled. Defaults to 1. */
+  toneMinLength?: number;
+  /** When true, Bot Name & Identity, Primary Role, and Tone show min-length validation messages. Defaults to true. */
+  botIdentityMinLengthValidation?: boolean;
+  /** When true, Bot Name & Identity skips built-in min-length validation. */
+  botNameOptional?: boolean;
+  /** When true, Primary Role skips built-in min-length validation. */
+  primaryRoleOptional?: boolean;
+  /** When true, Tone skips built-in min-length validation. */
+  toneOptional?: boolean;
+  /** When true, How It Sounds skips built-in required validation. */
+  voiceOptional?: boolean;
+  /** When true, What Language It Speaks skips built-in required validation. */
+  languageOptional?: boolean;
+  /** Custom min-length validation message for Bot Name & Identity. */
+  botNameMinLengthMessage?: string;
+  /** Custom min-length validation message for Primary Role. */
+  primaryRoleMinLengthMessage?: string;
+  /** Custom min-length validation message for Tone. */
+  toneMinLengthMessage?: string;
+  /** Custom required validation message for How It Sounds. */
+  voiceRequiredMessage?: string;
+  /** Custom required validation message for What Language It Speaks. */
+  languageRequiredMessage?: string;
   /**
    * Passed to BotBehaviorCard — hover text on the info icon next to How It Behaves.
    * When omitted, the card uses its built-in default. Pass `""` to hide the icon.
@@ -304,6 +342,16 @@ export interface IvrBotConfigProps {
    * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
    */
   fallbackPromptsInfoTooltip?: string;
+  /** External validation message for Fallback Prompts → Agent Busy Prompt. */
+  agentBusyPromptValidation?: string;
+  /** External validation message for Fallback Prompts → No Extension Found. */
+  noExtensionFoundPromptValidation?: string;
+  /** When true, empty fallback prompt fields show required validation messages. Defaults to true. */
+  fallbackPromptsRequiredValidation?: boolean;
+  /** Required validation message for Fallback Prompts → Agent Busy Prompt. */
+  agentBusyPromptRequiredMessage?: string;
+  /** Required validation message for Fallback Prompts → No Extension Found. */
+  noExtensionFoundPromptRequiredMessage?: string;
   /**
    * Passed to FrustrationHandoverCard — hover text on the info icon next to **Escalate to Human**.
    * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
@@ -318,6 +366,22 @@ export interface IvrBotConfigProps {
   escalationPromptMaxLength?: number;
   /** External validation message for Escalate to Human **Prompt** (e.g. from save/publish). */
   escalationPromptValidation?: string;
+  /** Minimum text length for Escalate to Human **Prompt** when min-length validation is enabled. Defaults to 1. */
+  escalationPromptMinLength?: number;
+  /** When true, Prompt shows built-in min-length validation after interaction. Defaults to true. */
+  escalationPromptMinLengthValidation?: boolean;
+  /** When true, Prompt skips built-in min-length validation. */
+  escalationPromptOptional?: boolean;
+  /** Custom min-length validation message for Escalate to Human **Prompt**. */
+  escalationPromptMinLengthMessage?: string;
+  /** When true, Escalate to Human **Transfer to Department** validation is enabled. */
+  escalationDepartmentValidation?: boolean;
+  /** Validation message for Escalate to Human **Transfer to Department**. */
+  escalationDepartmentValidationMessage?: string;
+  /** Minimum text length for Escalate to Human **Transfer to Department**. Defaults to 1. */
+  escalationDepartmentMinLength?: number;
+  /** When true, Transfer to Department skips built-in min-length validation. */
+  escalationDepartmentOptional?: boolean;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function name in Create/Edit Function (default: 30) */
@@ -355,6 +419,14 @@ export interface IvrBotConfigProps {
   functionEditData?: Partial<CreateFunctionData>;
   /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
+  /** External validation message for the "How It Behaves" system prompt (e.g. from save/publish). */
+  systemPromptValidation?: string;
+  /** Minimum character length for the "How It Behaves" system prompt when min validation is enabled. Defaults to 1. */
+  systemPromptMinLength?: number;
+  /** When true, the "How It Behaves" system prompt shows a min-length validation message. Defaults to true. */
+  systemPromptMinLengthValidation?: boolean;
+  /** Custom min-length validation message for the "How It Behaves" system prompt. */
+  systemPromptMinLengthMessage?: string;
   /**
    * Called when focus leaves the **entire** "How It Behaves" section
    * (textarea + session variable chips). Clicking a chip does NOT trigger
