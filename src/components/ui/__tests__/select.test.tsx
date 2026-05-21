@@ -98,7 +98,7 @@ describe("Select", () => {
   it("applies error state styling", () => {
     renderSelect({ triggerProps: { state: "error" } });
     expect(screen.getByTestId("trigger")).toHaveClass(
-      "border-semantic-error-primary/40"
+      "border-semantic-error-primary"
     );
   });
 

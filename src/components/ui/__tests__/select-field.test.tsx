@@ -93,7 +93,7 @@ describe("SelectField", () => {
   it("applies error state styling when error is set", () => {
     render(<SelectField options={defaultOptions} error="Error" />);
     expect(screen.getByRole("combobox")).toHaveClass(
-      "border-semantic-error-primary/40"
+      "border-semantic-error-primary"
     );
   });
 
