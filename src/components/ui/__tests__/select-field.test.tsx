@@ -379,4 +379,57 @@ describe("SelectField", () => {
       "test-error"
     );
   });
+
+  // Lazy-load / infinite scroll
+  it("renders 'Loading more…' row when loadingMore is true", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} loadingMore />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Loading more…")).toBeInTheDocument();
+  });
+
+  it("does not render 'Loading more…' row when loadingMore is false", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} loadingMore={false} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText("Loading more…")).not.toBeInTheDocument();
+  });
+
+  it("renders 'End of list' footer when hasMore is false", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} hasMore={false} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("End of list")).toBeInTheDocument();
+  });
+
+  it("hides 'End of list' footer while loadingMore is true (loader wins)", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField options={defaultOptions} hasMore={false} loadingMore />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Loading more…")).toBeInTheDocument();
+    expect(screen.queryByText("End of list")).not.toBeInTheDocument();
+  });
+
+  it("does not render 'End of list' footer when no options are visible", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={[]} hasMore={false} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText("End of list")).not.toBeInTheDocument();
+  });
+
+  it("does not render lazy-load rows by default (no regression)", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText("Loading more…")).not.toBeInTheDocument();
+    expect(screen.queryByText("End of list")).not.toBeInTheDocument();
+  });
 });

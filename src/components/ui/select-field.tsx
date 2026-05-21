@@ -70,6 +70,29 @@ export interface SelectFieldProps {
   id?: string;
   /** Name attribute for form submission */
   name?: string;
+  /**
+   * Fires when the user scrolls to the bottom of the open dropdown.
+   * Use this to load the next page from the server. The callback is
+   * forwarded to SelectContent's `onViewportScrollEnd` (debounced by
+   * the native `scrollend` event), so it won't fire while a scroll is
+   * still in progress.
+   *
+   * No virtualization is applied — all loaded items render to the DOM.
+   * For >2k items consumers may notice some lag; virtualization is a
+   * separate ticket if it becomes a real-world problem.
+   */
+  onScrollEnd?: () => void;
+  /**
+   * When true, renders a small "Loading more…" row at the bottom of
+   * the options list. Set this to true while your API call is in flight
+   * so the user knows more items are on the way.
+   */
+  loadingMore?: boolean;
+  /**
+   * When false, prevents `onScrollEnd` from firing further and renders
+   * an "End of list" footer row. Default true (keep firing).
+   */
+  hasMore?: boolean;
 }
 
 /**
@@ -86,6 +109,34 @@ export interface SelectFieldProps {
  *     { value: 'bearer', label: 'Bearer Token' },
  *   ]}
  *   required
+ * />
+ * ```
+ *
+ * @example Lazy-load on scroll
+ * ```tsx
+ * const [items, setItems] = useState<SelectOption[]>([]);
+ * const [loadingMore, setLoadingMore] = useState(false);
+ * const [hasMore, setHasMore] = useState(true);
+ * const page = useRef(0);
+ *
+ * const loadNext = async () => {
+ *   if (loadingMore || !hasMore) return;
+ *   setLoadingMore(true);
+ *   const { results, isLast } = await api.fetchTemplates(page.current);
+ *   setItems(prev => [...prev, ...results]);
+ *   setHasMore(!isLast);
+ *   page.current += 1;
+ *   setLoadingMore(false);
+ * };
+ *
+ * useEffect(() => { loadNext(); }, []);
+ *
+ * <SelectField
+ *   label="Template"
+ *   options={items}
+ *   onScrollEnd={loadNext}
+ *   loadingMore={loadingMore}
+ *   hasMore={hasMore}
  * />
  * ```
  */
@@ -112,6 +163,9 @@ const SelectField = React.forwardRef(
       labelClassName,
       id,
       name,
+      onScrollEnd,
+      loadingMore,
+      hasMore,
     }: SelectFieldProps,
     ref: React.Ref<HTMLButtonElement>
   ) => {
@@ -191,6 +245,15 @@ const SelectField = React.forwardRef(
 
     const hasGroups = Object.keys(groupedOptions.groups).length > 0;
 
+    // Count rendered options for the "End of list" footer (only show when at least one is visible).
+    const totalRendered =
+      groupedOptions.ungrouped.length +
+      Object.values(groupedOptions.groups).reduce(
+        (sum, items) => sum + items.length,
+        0
+      );
+    const showEndOfList = hasMore === false && totalRendered > 0 && !loadingMore;
+
     // Handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(e.target.value);
@@ -243,7 +306,9 @@ const SelectField = React.forwardRef(
               <Loader2 className="absolute right-8 size-4 animate-spin text-semantic-text-muted" />
             )}
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent
+            onViewportScrollEnd={hasMore !== false ? onScrollEnd : undefined}
+          >
             {/* Search input */}
             {searchable && (
               <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
@@ -302,6 +367,28 @@ const SelectField = React.forwardRef(
                   No results found
                 </div>
               )}
+
+            {/* Loading-more row (lazy-load) */}
+            {loadingMore && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex items-center justify-center gap-2 py-2 text-sm text-semantic-text-muted"
+              >
+                <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+                <span>Loading more…</span>
+              </div>
+            )}
+
+            {/* End-of-list footer (lazy-load) */}
+            {showEndOfList && (
+              <div
+                role="status"
+                className="py-2 text-center text-xs text-semantic-text-muted"
+              >
+                End of list
+              </div>
+            )}
           </SelectContent>
         </Select>
 

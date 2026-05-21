@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { SelectField, type SelectOption } from "./select-field";
 import { FormModal } from "./form-modal";
 import { Input } from "./input";
@@ -748,6 +748,61 @@ export const LoadingState: Story = {
       <SelectField {...args} />
     </div>
   ),
+};
+
+// Lazy-load (infinite scroll) — paginated dataset
+const PAGE_SIZE = 25;
+const TOTAL = 250;
+const generatePage = (page: number): SelectOption[] =>
+  Array.from({ length: PAGE_SIZE }, (_, i) => {
+    const idx = page * PAGE_SIZE + i + 1;
+    return { value: `tpl-${idx}`, label: `Template ${idx}` };
+  });
+
+const LazyLoadExample = () => {
+  // Pre-populate page 0 so the dropdown has rows to scroll past before triggering onScrollEnd.
+  const [items, setItems] = useState<SelectOption[]>(() => generatePage(0));
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const page = useRef(1);
+
+  const loadNext = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    await new Promise((r) => setTimeout(r, 600));
+    const next = generatePage(page.current);
+    setItems((prev) => [...prev, ...next]);
+    page.current += 1;
+    if (page.current * PAGE_SIZE >= TOTAL) setHasMore(false);
+    setLoadingMore(false);
+  };
+
+  return (
+    <div className="w-80">
+      <SelectField
+        label="Template"
+        placeholder="Select a template"
+        options={items}
+        onScrollEnd={loadNext}
+        loadingMore={loadingMore}
+        hasMore={hasMore}
+        helperText={`Loaded ${items.length} of ${TOTAL}`}
+      />
+    </div>
+  );
+};
+
+export const LazyLoad: Story = {
+  name: "Lazy-load (infinite scroll)",
+  render: () => <LazyLoadExample />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Scroll to the bottom of the open dropdown to load more options. `onScrollEnd` fires on the native `scrollend` event (naturally throttled). Set `loadingMore` while the API call is in flight to show the spinner row. Set `hasMore={false}` once exhausted to stop further calls and render an end-of-list footer.",
+      },
+    },
+  },
 };
 
 // Form Example
