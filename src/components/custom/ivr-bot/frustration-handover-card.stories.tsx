@@ -12,7 +12,7 @@ const meta: Meta<typeof FrustrationHandoverCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy** to show the **Prompt** textarea (shared Textarea with character count; input is capped at \`promptMaxLength\`, default 5000), then choose **Transfer to Department**. Use \`showEscalationPrompt={false}\` to hide the Prompt block when your product does not expose it. Use \`promptValidation\` for parent-driven prompt errors (e.g. on save). Built-in prompt validation is enabled by default after interaction. Department validation uses \`escalationDepartmentValidation\` as a boolean toggle and \`escalationDepartmentValidationMessage\` for the message; skip it with \`escalationDepartmentOptional\`. \`onEscalationPromptBlur\` fires when the Prompt field loses focus (current value passed).
+        component: `Accordion card for human escalation when callers are frustrated. The **Escalate to Human** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Toggle **Escalate when caller is unhappy** to show the **Prompt** textarea (shared Textarea with character count; input is capped at \`promptMaxLength\`, default 5000), then choose **Transfer to Department**. Use \`showEscalationPrompt={false}\` to hide the Prompt block when your product does not expose it. Use \`promptValidation\` for parent-driven prompt errors (e.g. on save). Built-in prompt validation is enabled by default after interaction. Department validation is enabled by default: pass \`escalationDepartmentValidationMessage\` and the error renders immediately for an empty department. Disable it with \`escalationDepartmentValidation={false}\` or skip it with \`escalationDepartmentOptional\`. \`onEscalationPromptBlur\` fires when the Prompt field loses focus (current value passed).
 
 For paginated department APIs, pass \`onDepartmentOptionsScrollEnd\` and append new pages to \`departmentOptions\`. Use \`departmentOptionsHasMore={false}\` when there are no further pages, and \`departmentOptionsLoadingMore\` while fetching to avoid duplicate requests.
 
@@ -146,7 +146,6 @@ export const DepartmentValidation: Story = {
         <FrustrationHandoverCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
-          escalationDepartmentValidation
           escalationDepartmentValidationMessage="Escalation department is required"
         />
       </div>
@@ -166,7 +165,7 @@ export const PromptValidation: Story = {
         <FrustrationHandoverCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
-          promptMinLengthMessage="Escalation prompt is required"
+          promptErrorMessage="Escalation prompt is required"
         />
       </div>
     );

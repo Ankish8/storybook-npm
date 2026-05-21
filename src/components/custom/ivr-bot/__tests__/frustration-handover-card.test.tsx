@@ -268,7 +268,7 @@ describe("FrustrationHandoverCard", () => {
     const user = userEvent.setup();
     render(
       <StatefulFrustrationHandoverCard
-        promptMinLengthMessage="Add an escalation prompt"
+        promptErrorMessage="Add an escalation prompt"
       />
     );
 
@@ -354,18 +354,15 @@ describe("FrustrationHandoverCard", () => {
     );
   });
 
-  it("validates Transfer to Department after interaction when message prop is provided", async () => {
+  it("shows Transfer to Department validation on render when message prop is provided", async () => {
     const user = userEvent.setup();
     render(
       <StatefulFrustrationHandoverCard
-        escalationDepartmentValidation
         escalationDepartmentValidationMessage="Escalation department is required"
       />
     );
 
     await user.click(screen.getByText("Escalate to Human"));
-    await user.click(screen.getByRole("combobox"));
-    await user.keyboard("{Escape}");
 
     expect(
       screen.getByText("Escalation department is required")
@@ -387,18 +384,15 @@ describe("FrustrationHandoverCard", () => {
     );
   });
 
-  it("uses custom Transfer to Department validation message", async () => {
+  it("uses custom Transfer to Department validation message on render", async () => {
     const user = userEvent.setup();
     render(
       <StatefulFrustrationHandoverCard
-        escalationDepartmentValidation
         escalationDepartmentValidationMessage="Choose a routing department"
       />
     );
 
     await user.click(screen.getByText("Escalate to Human"));
-    await user.click(screen.getByRole("combobox"));
-    await user.keyboard("{Escape}");
 
     expect(screen.getByText("Choose a routing department")).toBeInTheDocument();
   });
@@ -443,7 +437,6 @@ describe("FrustrationHandoverCard", () => {
     const user = userEvent.setup();
     render(
       <StatefulFrustrationHandoverCard
-        escalationDepartmentValidation
         escalationDepartmentValidationMessage="Escalation department is required"
         escalationDepartmentOptional
       />

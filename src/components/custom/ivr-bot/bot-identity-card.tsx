@@ -77,12 +77,6 @@ export const defaultHowItSoundsTooltip =
 export const defaultLanguageModeTooltip =
   "Sets the language mode for the bot's conversations.";
 
-export const defaultBotNameMinLengthMessage = "Bot name is required";
-export const defaultPrimaryRoleMinLengthMessage = "Primary role is required";
-export const defaultToneMinLengthMessage = "Tone is required";
-export const defaultVoiceRequiredMessage = "Voice is required";
-export const defaultLanguageRequiredMessage = "Language is required";
-
 export interface BotIdentityCardProps {
   /** Current form data */
   data: Partial<BotIdentityData>;
@@ -108,41 +102,23 @@ export interface BotIdentityCardProps {
   primaryRoleValidation?: string;
   /** External validation message for Tone (e.g. from save/publish). */
   toneValidation?: string;
-  /** External validation message for How It Sounds (e.g. from save/publish). */
-  voiceValidation?: string;
-  /** External validation message for What Language It Speaks (e.g. from save/publish). */
-  languageValidation?: string;
-  /** Minimum text length for Bot Name & Identity when min-length validation is enabled. Defaults to 1. */
-  botNameMinLength?: number;
-  /** Minimum text length for Primary Role when min-length validation is enabled. Defaults to 1. */
-  primaryRoleMinLength?: number;
-  /** Minimum text length across selected/draft Tone text when min-length validation is enabled. Defaults to 1. */
-  toneMinLength?: number;
   /**
-   * When true, Bot Name & Identity, Primary Role, and Tone show inline min-length errors.
-   * Defaults to true, matching Fallback Prompts required-field validation. Pass false to disable it.
+   * Allows Bot Name & Identity, Primary Role, and Tone to show inline errors
+   * when their matching error-message prop is provided. Defaults to true.
    */
   botIdentityMinLengthValidation?: boolean;
-  /** When true, Bot Name & Identity skips built-in min-length validation. */
+  /** When true, Bot Name & Identity skips built-in error-message validation. */
   botNameOptional?: boolean;
-  /** When true, Primary Role skips built-in min-length validation. */
+  /** When true, Primary Role skips built-in error-message validation. */
   primaryRoleOptional?: boolean;
-  /** When true, Tone skips built-in min-length validation. */
+  /** When true, Tone skips built-in error-message validation. */
   toneOptional?: boolean;
-  /** When true, How It Sounds skips built-in required validation. */
-  voiceOptional?: boolean;
-  /** When true, What Language It Speaks skips built-in required validation. */
-  languageOptional?: boolean;
-  /** Custom message shown when Bot Name & Identity is shorter than `botNameMinLength`. */
-  botNameMinLengthMessage?: string;
-  /** Custom message shown when Primary Role is shorter than `primaryRoleMinLength`. */
-  primaryRoleMinLengthMessage?: string;
-  /** Custom message shown when Tone is shorter than `toneMinLength`. */
-  toneMinLengthMessage?: string;
-  /** Custom required validation message for How It Sounds. */
-  voiceRequiredMessage?: string;
-  /** Custom required validation message for What Language It Speaks. */
-  languageRequiredMessage?: string;
+  /** Message shown when Bot Name & Identity is empty. Enables this validation when provided. */
+  botNameErrorMessage?: string;
+  /** Message shown when Primary Role is empty. Enables this validation when provided. */
+  primaryRoleErrorMessage?: string;
+  /** Message shown when Tone is empty. Enables this validation when provided. */
+  toneErrorMessage?: string;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Hover text on the info icon next to "Bot Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
@@ -240,28 +216,19 @@ const PRIMARY_ROLE_MAX_LENGTH = 50;
 const TONE_MAX_ITEMS = 5;
 const TONE_MAX_LENGTH_PER_ITEM = 20;
 
-function getMinLengthError({
-  length,
-  minLength,
+function getRequiredError({
+  value,
   validationEnabled,
   message,
-  requiredMessage,
 }: {
-  length: number;
-  minLength: number;
+  value: string;
   validationEnabled: boolean;
   message?: string;
-  requiredMessage: string;
 }) {
-  if (!validationEnabled || minLength <= 0 || length >= minLength) {
+  if (!validationEnabled || !message || value.trim()) {
     return undefined;
   }
-  return (
-    message ??
-    (minLength === 1
-      ? requiredMessage
-      : `Minimum ${minLength} characters required`)
-  );
+  return message;
 }
 
 function StyledInput({
@@ -385,22 +352,13 @@ const BotIdentityCard = React.forwardRef(
       botNameValidation,
       primaryRoleValidation,
       toneValidation,
-      voiceValidation,
-      languageValidation,
-      botNameMinLength = 1,
-      primaryRoleMinLength = 1,
-      toneMinLength = 1,
       botIdentityMinLengthValidation = true,
       botNameOptional = false,
       primaryRoleOptional = false,
       toneOptional = false,
-      voiceOptional = false,
-      languageOptional = false,
-      botNameMinLengthMessage,
-      primaryRoleMinLengthMessage,
-      toneMinLengthMessage,
-      voiceRequiredMessage = defaultVoiceRequiredMessage,
-      languageRequiredMessage = defaultLanguageRequiredMessage,
+      botNameErrorMessage,
+      primaryRoleErrorMessage,
+      toneErrorMessage,
       disabled,
       botNameIdentityTooltip = defaultBotNameIdentityTooltip,
       primaryRoleTooltip = defaultPrimaryRoleTooltip,
@@ -430,62 +388,47 @@ const BotIdentityCard = React.forwardRef(
       primaryRoleDraft.trim() || primaryRoleValue;
     const toneValidationValue =
       toneDraft.trim() || toneValue.map((item) => item.trim()).join(" ");
-    const botNameMinLengthError = getMinLengthError({
-      length: botNameValue.trim().length,
-      minLength: botNameMinLength,
+    const botNameRequiredError = getRequiredError({
+      value: botNameValue,
       validationEnabled: botIdentityMinLengthValidation && !botNameOptional,
-      message: botNameMinLengthMessage,
-      requiredMessage: defaultBotNameMinLengthMessage,
+      message: botNameErrorMessage,
     });
-    const primaryRoleMinLengthError = getMinLengthError({
-      length: primaryRoleValidationValue.trim().length,
-      minLength: primaryRoleMinLength,
+    const primaryRoleRequiredError = getRequiredError({
+      value: primaryRoleValidationValue,
       validationEnabled: botIdentityMinLengthValidation && !primaryRoleOptional,
-      message: primaryRoleMinLengthMessage,
-      requiredMessage: defaultPrimaryRoleMinLengthMessage,
+      message: primaryRoleErrorMessage,
     });
-    const toneMinLengthError = getMinLengthError({
-      length: toneValidationValue.trim().length,
-      minLength: toneMinLength,
+    const toneRequiredError = getRequiredError({
+      value: toneValidationValue,
       validationEnabled: botIdentityMinLengthValidation && !toneOptional,
-      message: toneMinLengthMessage,
-      requiredMessage: defaultToneMinLengthMessage,
+      message: toneErrorMessage,
     });
-    const voiceRequiredError =
-      botIdentityMinLengthValidation && !voiceOptional && !voiceValue.trim()
-        ? voiceRequiredMessage
-        : undefined;
-    const languageRequiredError =
-      botIdentityMinLengthValidation && !languageOptional && !languageValue.trim()
-        ? languageRequiredMessage
-        : undefined;
     const firstBuiltInErrorField =
-      botNameMinLengthError ? "botName" :
-      primaryRoleMinLengthError ? "primaryRole" :
-      toneMinLengthError ? "tone" :
-      voiceRequiredError ? "voice" :
-      languageRequiredError ? "language" :
+      botNameRequiredError ? "botName" :
+      primaryRoleRequiredError ? "primaryRole" :
+      toneRequiredError ? "tone" :
       undefined;
     const botNameDisplayError =
       botNameValidation ??
       botNameError ??
-      (firstBuiltInErrorField === "botName" ? botNameMinLengthError : undefined);
+      (firstBuiltInErrorField === "botName" ? botNameRequiredError : undefined);
     const primaryRoleDisplayError =
       primaryRoleValidation ??
       primaryRoleError ??
       (firstBuiltInErrorField === "primaryRole"
-        ? primaryRoleMinLengthError
+        ? primaryRoleRequiredError
         : undefined);
     const toneDisplayError =
       toneValidation ??
       toneError ??
-      (firstBuiltInErrorField === "tone" ? toneMinLengthError : undefined);
-    const voiceDisplayError =
-      voiceValidation ??
-      (firstBuiltInErrorField === "voice" ? voiceRequiredError : undefined);
-    const languageDisplayError =
-      languageValidation ??
-      (firstBuiltInErrorField === "language" ? languageRequiredError : undefined);
+      (firstBuiltInErrorField === "tone" ? toneRequiredError : undefined);
+    const botNameErrorText = botNameDisplayError
+      ? botNameDisplayError
+      : undefined;
+    const primaryRoleErrorText = primaryRoleDisplayError
+      ? primaryRoleDisplayError
+      : undefined;
+    const toneErrorText = toneDisplayError ? toneDisplayError : undefined;
 
     const handleBotNameChange = React.useCallback(
       (raw: string) => {
@@ -548,7 +491,7 @@ const BotIdentityCard = React.forwardRef(
             <Field
               label="Bot Name & Identity"
               labelTooltip={botNameIdentityTooltip}
-              errorText={botNameDisplayError}
+              errorText={botNameErrorText}
             >
               <StyledInput
                 placeholder="e.g., Rhea from XYZ"
@@ -556,7 +499,7 @@ const BotIdentityCard = React.forwardRef(
                 onChange={handleBotNameChange}
                 onBlur={handleBotNameBlur}
                 disabled={disabled}
-                invalid={Boolean(botNameDisplayError)}
+                invalid={Boolean(botNameErrorText)}
                 maxLength={BOT_NAME_MAX_LENGTH}
                 characterCount={{
                   current: botIdentityEffectiveValueLength(botNameValue),
@@ -568,7 +511,7 @@ const BotIdentityCard = React.forwardRef(
             <Field
               label="Primary Role"
               labelTooltip={primaryRoleTooltip}
-              errorText={primaryRoleDisplayError}
+              errorText={primaryRoleErrorText}
             >
               <CreatableSelect
                 value={primaryRoleValue}
@@ -590,14 +533,14 @@ const BotIdentityCard = React.forwardRef(
                   setPrimaryRoleError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
                 }
                 onValidInput={() => setPrimaryRoleError(null)}
-                state={primaryRoleDisplayError ? "error" : "default"}
+                state={primaryRoleErrorText ? "error" : "default"}
               />
             </Field>
 
             <Field
               label="Tone"
               labelTooltip={toneTooltip}
-              errorText={toneDisplayError}
+              errorText={toneErrorText}
             >
               <CreatableMultiSelect
                 value={toneValue}
@@ -619,7 +562,7 @@ const BotIdentityCard = React.forwardRef(
                   setToneError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
                 }
                 onValidInput={() => setToneError(null)}
-                state={toneDisplayError ? "error" : "default"}
+                state={toneErrorText ? "error" : "default"}
               />
             </Field>
 
@@ -627,7 +570,6 @@ const BotIdentityCard = React.forwardRef(
               <Field
                 label="How It Sounds"
                 labelTooltip={howItSoundsTooltip}
-                errorText={voiceDisplayError}
               >
                 <Select
                   value={voiceValue}
@@ -637,7 +579,7 @@ const BotIdentityCard = React.forwardRef(
                   }}
                   disabled={disabled}
                 >
-                  <SelectTrigger state={voiceDisplayError ? "error" : "default"}>
+                  <SelectTrigger>
                     <SelectValue placeholder="Select voice">
                       {voiceValue && (
                         <span className="inline-flex items-center gap-2">
@@ -689,14 +631,13 @@ const BotIdentityCard = React.forwardRef(
               <Field
                 label="What Language It Speaks"
                 labelTooltip={languageModeTooltip}
-                errorText={languageDisplayError}
               >
                 <Select
                   value={languageValue}
                   onValueChange={(v) => onChange({ language: v })}
                   disabled={disabled}
                 >
-                  <SelectTrigger state={languageDisplayError ? "error" : "default"}>
+                  <SelectTrigger>
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>

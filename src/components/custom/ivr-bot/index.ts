@@ -5,11 +5,6 @@ export {
   defaultToneTooltip,
   defaultHowItSoundsTooltip,
   defaultLanguageModeTooltip,
-  defaultBotNameMinLengthMessage,
-  defaultPrimaryRoleMinLengthMessage,
-  defaultToneMinLengthMessage,
-  defaultVoiceRequiredMessage,
-  defaultLanguageRequiredMessage,
 } from "./bot-identity-card";
 export {
   BotBehaviorCard,

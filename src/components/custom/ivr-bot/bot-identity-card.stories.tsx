@@ -13,7 +13,7 @@ const meta: Meta<typeof BotIdentityCard> = {
 
 Uses CreatableSelect for role (type-to-create), CreatableMultiSelect for tone (multi-chip + type-to-create), and Select with PlayCircle icons for voice profiles.
 
-Built-in validation is enabled by default and appears one mandatory field at a time in section order. Use \`botIdentityMinLengthValidation={false}\` to disable all built-in identity validation, or mark individual fields optional with props like \`primaryRoleOptional\`, \`voiceOptional\`, and \`languageOptional\`.
+Bot Name, Primary Role, and Tone validation appears one mandatory field at a time when the matching \`*ErrorMessage\` prop is provided. Use \`botIdentityMinLengthValidation={false}\` to disable those identity messages, or mark individual fields optional with props like \`primaryRoleOptional\`.
 
 **Install**
 \`\`\`bash
@@ -32,19 +32,7 @@ import { BotIdentityCard } from "@/components/custom/ivr-bot/bot-identity-card"
     botIdentityMinLengthValidation: {
       control: "boolean",
       description:
-        "Shows min-length validation for Bot Name & Identity, Primary Role, and Tone. Defaults to true.",
-    },
-    botNameMinLength: {
-      control: "number",
-      description: "Minimum text length for Bot Name & Identity.",
-    },
-    primaryRoleMinLength: {
-      control: "number",
-      description: "Minimum text length for Primary Role.",
-    },
-    toneMinLength: {
-      control: "number",
-      description: "Minimum text length across selected or draft Tone text.",
+        "Allows validation for Bot Name & Identity, Primary Role, and Tone when matching error-message props are provided. Defaults to true.",
     },
     botNameValidation: {
       control: "text",
@@ -58,45 +46,21 @@ import { BotIdentityCard } from "@/components/custom/ivr-bot/bot-identity-card"
       control: "text",
       description: "External validation message for Tone.",
     },
-    voiceValidation: {
+    botNameErrorMessage: {
       control: "text",
-      description: "External validation message for How It Sounds.",
+      description: "Validation message for Bot Name & Identity. Providing this enables validation for the field.",
     },
-    languageValidation: {
+    primaryRoleErrorMessage: {
       control: "text",
-      description: "External validation message for What Language It Speaks.",
+      description: "Validation message for Primary Role. Providing this enables validation for the field.",
     },
-    botNameMinLengthMessage: {
+    toneErrorMessage: {
       control: "text",
-      description: "Custom min-length validation message for Bot Name & Identity.",
-    },
-    primaryRoleMinLengthMessage: {
-      control: "text",
-      description: "Custom min-length validation message for Primary Role.",
-    },
-    toneMinLengthMessage: {
-      control: "text",
-      description: "Custom min-length validation message for Tone.",
+      description: "Validation message for Tone. Providing this enables validation for the field.",
     },
     primaryRoleOptional: {
       control: "boolean",
       description: "Skips built-in Primary Role validation when true.",
-    },
-    voiceOptional: {
-      control: "boolean",
-      description: "Skips built-in How It Sounds validation when true.",
-    },
-    languageOptional: {
-      control: "boolean",
-      description: "Skips built-in What Language It Speaks validation when true.",
-    },
-    voiceRequiredMessage: {
-      control: "text",
-      description: "Custom required validation message for How It Sounds.",
-    },
-    languageRequiredMessage: {
-      control: "text",
-      description: "Custom required validation message for What Language It Speaks.",
     },
   },
 };

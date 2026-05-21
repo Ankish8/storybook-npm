@@ -65,11 +65,29 @@ describe("BotIdentityCard", () => {
     expect(input).toHaveValue("Rhea");
   });
 
-  it("shows built-in validation one field at a time in mandatory field order", () => {
+  it("does not show identity validation unless error messages are provided", () => {
+    render(
+      <BotIdentityCard
+        data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
+        onChange={() => {}}
+      />
+    );
+
+    expect(screen.queryByText("Bot name is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Primary role is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tone is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Voice is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Language is required")).not.toBeInTheDocument();
+  });
+
+  it("shows error-message validation one field at a time in mandatory field order", () => {
     const { rerender } = render(
       <BotIdentityCard
         data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
+        botNameErrorMessage="Bot name is required"
+        primaryRoleErrorMessage="Primary role is required"
+        toneErrorMessage="Tone is required"
       />
     );
 
@@ -81,6 +99,9 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
+        botNameErrorMessage="Bot name is required"
+        primaryRoleErrorMessage="Primary role is required"
+        toneErrorMessage="Tone is required"
       />
     );
 
@@ -91,43 +112,19 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "support", tone: [], voice: "", language: "" }}
         onChange={() => {}}
+        botNameErrorMessage="Bot name is required"
+        primaryRoleErrorMessage="Primary role is required"
+        toneErrorMessage="Tone is required"
       />
     );
 
     expect(screen.getByText("Tone is required")).toBeInTheDocument();
 
-    rerender(
-      <BotIdentityCard
-        data={{
-          botName: "Rhea",
-          primaryRole: "support",
-          tone: ["Friendly"],
-          voice: "",
-          language: "",
-        }}
-        onChange={() => {}}
-      />
-    );
-
-    expect(screen.getByText("Voice is required")).toBeInTheDocument();
-
-    rerender(
-      <BotIdentityCard
-        data={{
-          botName: "Rhea",
-          primaryRole: "support",
-          tone: ["Friendly"],
-          voice: "rhea-female",
-          language: "",
-        }}
-        onChange={() => {}}
-      />
-    );
-
-    expect(screen.getByText("Language is required")).toBeInTheDocument();
+    expect(screen.queryByText("Voice is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Language is required")).not.toBeInTheDocument();
   });
 
-  it("updates bot name min-length validation in real time while typing", async () => {
+  it("updates bot name error-message validation in real time while typing", async () => {
     const user = userEvent.setup();
 
     function Controlled() {
@@ -136,8 +133,7 @@ describe("BotIdentityCard", () => {
         <BotIdentityCard
           data={data}
           onChange={(patch) => setData((d) => ({ ...d, ...patch }))}
-          botNameMinLength={3}
-          botNameMinLengthMessage="Bot name must be at least 3 characters"
+          botNameErrorMessage="Bot name is required"
         />
       );
     }
@@ -146,80 +142,69 @@ describe("BotIdentityCard", () => {
     const input = screen.getByPlaceholderText("e.g., Rhea from XYZ");
 
     expect(
-      screen.getByText("Bot name must be at least 3 characters")
+      screen.getByText("Bot name is required")
     ).toBeInTheDocument();
-    await user.type(input, "Rh");
+    await user.type(input, "R");
     expect(
-      screen.getByText("Bot name must be at least 3 characters")
-    ).toBeInTheDocument();
-    await user.type(input, "e");
-    expect(
-      screen.queryByText("Bot name must be at least 3 characters")
+      screen.queryByText("Bot name is required")
     ).not.toBeInTheDocument();
   });
 
-  it("updates primary role min-length validation while typing a custom role", async () => {
+  it("updates primary role error-message validation while typing a custom role", async () => {
     const user = userEvent.setup();
 
     render(
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "", tone: ["Friendly"] }}
         onChange={() => {}}
-        primaryRoleMinLength={3}
-        primaryRoleMinLengthMessage="Primary role must be at least 3 characters"
+        primaryRoleErrorMessage="Primary role is required"
       />
     );
 
     expect(
-      screen.getByText("Primary role must be at least 3 characters")
+      screen.getByText("Primary role is required")
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /Customer Support Agent/i }));
     const roleInput = screen
       .getAllByRole("combobox")
       .find((element) => element.tagName === "INPUT");
     expect(roleInput).toBeTruthy();
-    await user.type(roleInput as HTMLElement, "Sa");
+    await user.type(roleInput as HTMLElement, "S");
     expect(
-      screen.getByText("Primary role must be at least 3 characters")
-    ).toBeInTheDocument();
-    await user.type(roleInput as HTMLElement, "l");
-    expect(
-      screen.queryByText("Primary role must be at least 3 characters")
+      screen.queryByText("Primary role is required")
     ).not.toBeInTheDocument();
   });
 
-  it("updates tone min-length validation while typing a custom tone", async () => {
+  it("updates tone error-message validation while typing a custom tone", async () => {
     const user = userEvent.setup();
 
     render(
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "customer-support", tone: [] }}
         onChange={() => {}}
-        toneMinLength={4}
-        toneMinLengthMessage="Tone must be at least 4 characters"
+        toneErrorMessage="Tone is required"
       />
     );
 
-    expect(screen.getByText("Tone must be at least 4 characters")).toBeInTheDocument();
+    expect(screen.getByText("Tone is required")).toBeInTheDocument();
     await user.click(screen.getByText("Enter or select tone"));
     const toneInput = screen
       .getAllByRole("combobox")
       .find((element) => element.tagName === "INPUT");
     expect(toneInput).toBeTruthy();
-    await user.type(toneInput as HTMLElement, "Cal");
-    expect(screen.getByText("Tone must be at least 4 characters")).toBeInTheDocument();
-    await user.type(toneInput as HTMLElement, "m");
+    await user.type(toneInput as HTMLElement, "C");
     expect(
-      screen.queryByText("Tone must be at least 4 characters")
+      screen.queryByText("Tone is required")
     ).not.toBeInTheDocument();
   });
 
-  it("uses external validation before built-in min-length validation", () => {
+  it("uses external validation before built-in error-message validation", () => {
     render(
       <BotIdentityCard
         data={{ botName: "", primaryRole: "support", tone: ["Friendly"] }}
         onChange={() => {}}
         botNameValidation="Bot name failed server validation"
+        botNameErrorMessage="Bot name is required"
       />
     );
 
@@ -227,7 +212,7 @@ describe("BotIdentityCard", () => {
     expect(screen.queryByText("Bot name is required")).not.toBeInTheDocument();
   });
 
-  it("can mark primary role, voice, and language as optional for built-in validation", () => {
+  it("can mark primary role as optional for built-in validation", () => {
     render(
       <BotIdentityCard
         data={{
@@ -239,13 +224,10 @@ describe("BotIdentityCard", () => {
         }}
         onChange={() => {}}
         primaryRoleOptional
-        voiceOptional
-        languageOptional
+        primaryRoleErrorMessage="Primary role is required"
       />
     );
 
     expect(screen.queryByText("Primary role is required")).not.toBeInTheDocument();
-    expect(screen.queryByText("Voice is required")).not.toBeInTheDocument();
-    expect(screen.queryByText("Language is required")).not.toBeInTheDocument();
   });
 });

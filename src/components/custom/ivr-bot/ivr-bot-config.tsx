@@ -79,22 +79,13 @@ export const IvrBotConfig = React.forwardRef(
       botNameValidation,
       primaryRoleValidation,
       toneValidation,
-      voiceValidation,
-      languageValidation,
-      botNameMinLength,
-      primaryRoleMinLength,
-      toneMinLength,
       botIdentityMinLengthValidation,
       botNameOptional,
       primaryRoleOptional,
       toneOptional,
-      voiceOptional,
-      languageOptional,
-      botNameMinLengthMessage,
-      primaryRoleMinLengthMessage,
-      toneMinLengthMessage,
-      voiceRequiredMessage,
-      languageRequiredMessage,
+      botNameErrorMessage,
+      primaryRoleErrorMessage,
+      toneErrorMessage,
       howItBehavesTooltip,
       agentBusyPromptTooltip,
       noExtensionFoundPromptTooltip,
@@ -108,13 +99,10 @@ export const IvrBotConfig = React.forwardRef(
       showEscalationPrompt,
       escalationPromptMaxLength,
       escalationPromptValidation,
-      escalationPromptMinLength,
-      escalationPromptMinLengthValidation,
       escalationPromptOptional,
-      escalationPromptMinLengthMessage,
+      escalationPromptErrorMessage,
       escalationDepartmentValidation,
       escalationDepartmentValidationMessage,
-      escalationDepartmentMinLength,
       escalationDepartmentOptional,
       functionPromptMinLength,
       functionNameMaxLength,
@@ -129,8 +117,7 @@ export const IvrBotConfig = React.forwardRef(
       functionEditData,
       systemPromptMaxLength,
       systemPromptValidation,
-      systemPromptMinLength,
-      systemPromptMinLengthValidation,
+      systemPromptHowItBehavesErrorMessageValidation,
       systemPromptMinLengthMessage,
       onSystemPromptBlur,
       onAgentBusyPromptBlur,
@@ -256,22 +243,13 @@ export const IvrBotConfig = React.forwardRef(
               botNameValidation={botNameValidation}
               primaryRoleValidation={primaryRoleValidation}
               toneValidation={toneValidation}
-              voiceValidation={voiceValidation}
-              languageValidation={languageValidation}
-              botNameMinLength={botNameMinLength}
-              primaryRoleMinLength={primaryRoleMinLength}
-              toneMinLength={toneMinLength}
               botIdentityMinLengthValidation={botIdentityMinLengthValidation}
               botNameOptional={botNameOptional}
               primaryRoleOptional={primaryRoleOptional}
               toneOptional={toneOptional}
-              voiceOptional={voiceOptional}
-              languageOptional={languageOptional}
-              botNameMinLengthMessage={botNameMinLengthMessage}
-              primaryRoleMinLengthMessage={primaryRoleMinLengthMessage}
-              toneMinLengthMessage={toneMinLengthMessage}
-              voiceRequiredMessage={voiceRequiredMessage}
-              languageRequiredMessage={languageRequiredMessage}
+              botNameErrorMessage={botNameErrorMessage}
+              primaryRoleErrorMessage={primaryRoleErrorMessage}
+              toneErrorMessage={toneErrorMessage}
             />
             <BotBehaviorCard
               data={data}
@@ -279,8 +257,9 @@ export const IvrBotConfig = React.forwardRef(
               onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
               validation={systemPromptValidation}
-              minLength={systemPromptMinLength}
-              minLengthValidation={systemPromptMinLengthValidation}
+              HowItBehavesErrorMessageValidation={
+                systemPromptHowItBehavesErrorMessageValidation
+              }
               minLengthMessage={systemPromptMinLengthMessage}
               maxLength={systemPromptMaxLength}
               disabled={disabled}
@@ -357,15 +336,12 @@ export const IvrBotConfig = React.forwardRef(
               showEscalationPrompt={showEscalationPrompt}
               promptMaxLength={escalationPromptMaxLength}
               promptValidation={escalationPromptValidation}
-              promptMinLength={escalationPromptMinLength}
-              promptMinLengthValidation={escalationPromptMinLengthValidation}
               promptOptional={escalationPromptOptional}
-              promptMinLengthMessage={escalationPromptMinLengthMessage}
+              promptErrorMessage={escalationPromptErrorMessage}
               escalationDepartmentValidation={escalationDepartmentValidation}
               escalationDepartmentValidationMessage={
                 escalationDepartmentValidationMessage
               }
-              escalationDepartmentMinLength={escalationDepartmentMinLength}
               escalationDepartmentOptional={escalationDepartmentOptional}
               onEscalationPromptBlur={onEscalationPromptBlur}
             />

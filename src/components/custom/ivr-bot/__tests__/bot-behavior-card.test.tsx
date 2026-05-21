@@ -74,13 +74,12 @@ describe("BotBehaviorCard", () => {
     expect(prompt).toHaveAttribute("aria-invalid", "false");
   });
 
-  it("uses parent validation before built-in min-length validation", () => {
+  it("uses parent validation before built-in empty-value validation", () => {
     render(
       <BotBehaviorCard
         data={{ systemPrompt: "" }}
         onChange={() => {}}
         validation="Save failed validation"
-        minLength={100}
       />
     );
 

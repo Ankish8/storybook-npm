@@ -42,14 +42,12 @@ export interface BotBehaviorCardProps {
   sessionVariables?: string[];
   /** External validation message for the system prompt (e.g. from save/publish). */
   validation?: string;
-  /** Minimum character length for the system prompt when min-length validation is enabled. Defaults to 1. */
-  minLength?: number;
   /**
-   * When true, the system prompt shows an inline error while shorter than `minLength`.
+   * When true, the system prompt shows an inline error while empty.
    * Defaults to true, matching Fallback Prompts required-field validation. Pass false to disable it.
    */
-  minLengthValidation?: boolean;
-  /** Custom message shown when the system prompt is shorter than `minLength`. */
+  HowItBehavesErrorMessageValidation?: boolean;
+  /** Custom message shown when the system prompt is empty. */
   minLengthMessage?: string;
   /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
@@ -284,8 +282,7 @@ const BotBehaviorCard = React.forwardRef(
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       validation,
-      minLength = 1,
-      minLengthValidation = true,
+      HowItBehavesErrorMessageValidation = true,
       minLengthMessage,
       maxLength = 5000,
       disabled,
@@ -298,14 +295,11 @@ const BotBehaviorCard = React.forwardRef(
     /** Counter matches stored prompt length so spaces and newlines each count as one character. */
     const promptCharCount = prompt.length;
     const MAX = maxLength;
-    const minLengthError =
-      minLengthValidation && minLength > 0 && promptCharCount < minLength
-        ? (minLengthMessage ??
-          (minLength === 1
-            ? defaultSystemPromptRequiredMessage
-            : `Minimum ${minLength} characters required`))
+    const requiredError =
+      HowItBehavesErrorMessageValidation && promptCharCount < 1
+        ? (minLengthMessage ?? defaultSystemPromptRequiredMessage)
         : undefined;
-    const promptError = validation ?? minLengthError;
+    const promptError = validation ?? requiredError;
     const sectionRef = React.useRef<HTMLDivElement>(null);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     /** Last known textarea selection — used when chips are clicked (textarea may blur before onClick). */
