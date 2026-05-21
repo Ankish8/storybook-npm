@@ -40,15 +40,11 @@ export interface BotBehaviorCardProps {
   onSystemPromptBlur?: (value: string) => void;
   /** Session Variables shown as insertable chips and in the {{ autocomplete dropdown */
   sessionVariables?: string[];
-  /** External validation message for the system prompt (e.g. from save/publish). */
-  validation?: string;
   /**
    * When true, the system prompt shows an inline error while empty.
    * Defaults to true, matching Fallback Prompts required-field validation. Pass false to disable it.
    */
   HowItBehavesErrorMessageValidation?: boolean;
-  /** Custom message shown when the system prompt is empty. */
-  minLengthMessage?: string;
   /** Maximum character length for the system prompt textarea (default: 5000, per Figma) */
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
@@ -281,9 +277,7 @@ const BotBehaviorCard = React.forwardRef(
       onChange,
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
-      validation,
       HowItBehavesErrorMessageValidation = true,
-      minLengthMessage,
       maxLength = 5000,
       disabled,
       howItBehavesTooltip,
@@ -297,9 +291,9 @@ const BotBehaviorCard = React.forwardRef(
     const MAX = maxLength;
     const requiredError =
       HowItBehavesErrorMessageValidation && promptCharCount < 1
-        ? (minLengthMessage ?? defaultSystemPromptRequiredMessage)
+        ? defaultSystemPromptRequiredMessage
         : undefined;
-    const promptError = validation ?? requiredError;
+    const promptError = requiredError;
     const sectionRef = React.useRef<HTMLDivElement>(null);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     /** Last known textarea selection — used when chips are clicked (textarea may blur before onClick). */

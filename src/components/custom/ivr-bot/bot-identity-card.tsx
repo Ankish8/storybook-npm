@@ -77,6 +77,10 @@ export const defaultHowItSoundsTooltip =
 export const defaultLanguageModeTooltip =
   "Sets the language mode for the bot's conversations.";
 
+export const defaultBotNameErrorMessage = "Bot name is required";
+export const defaultPrimaryRoleErrorMessage = "Primary role is required";
+export const defaultToneErrorMessage = "Tone is required";
+
 export interface BotIdentityCardProps {
   /** Current form data */
   data: Partial<BotIdentityData>;
@@ -104,20 +108,20 @@ export interface BotIdentityCardProps {
   toneValidation?: string;
   /**
    * Allows Bot Name & Identity, Primary Role, and Tone to show inline errors
-   * when their matching error-message prop is provided. Defaults to true.
+   * Defaults to true.
    */
-  botIdentityMinLengthValidation?: boolean;
-  /** When true, Bot Name & Identity skips built-in error-message validation. */
-  botNameOptional?: boolean;
-  /** When true, Primary Role skips built-in error-message validation. */
-  primaryRoleOptional?: boolean;
-  /** When true, Tone skips built-in error-message validation. */
-  toneOptional?: boolean;
-  /** Message shown when Bot Name & Identity is empty. Enables this validation when provided. */
+  botIdentityErrorMessageValidation?: boolean;
+  /** When false, Bot Name & Identity skips built-in error-message validation. Defaults to true. */
+  botNameErrorMessageValidation?: boolean;
+  /** When false, Primary Role skips built-in error-message validation. Defaults to true. */
+  primaryRoleErrorMessageValidation?: boolean;
+  /** When false, Tone skips built-in error-message validation. Defaults to true. */
+  toneErrorMessageValidation?: boolean;
+  /** Message shown when Bot Name & Identity is empty. Defaults to "Bot name is required". */
   botNameErrorMessage?: string;
-  /** Message shown when Primary Role is empty. Enables this validation when provided. */
+  /** Message shown when Primary Role is empty. Defaults to "Primary role is required". */
   primaryRoleErrorMessage?: string;
-  /** Message shown when Tone is empty. Enables this validation when provided. */
+  /** Message shown when Tone is empty. Defaults to "Tone is required". */
   toneErrorMessage?: string;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
@@ -352,13 +356,13 @@ const BotIdentityCard = React.forwardRef(
       botNameValidation,
       primaryRoleValidation,
       toneValidation,
-      botIdentityMinLengthValidation = true,
-      botNameOptional = false,
-      primaryRoleOptional = false,
-      toneOptional = false,
-      botNameErrorMessage,
-      primaryRoleErrorMessage,
-      toneErrorMessage,
+      botIdentityErrorMessageValidation = true,
+      botNameErrorMessageValidation = true,
+      primaryRoleErrorMessageValidation = true,
+      toneErrorMessageValidation = true,
+      botNameErrorMessage = defaultBotNameErrorMessage,
+      primaryRoleErrorMessage = defaultPrimaryRoleErrorMessage,
+      toneErrorMessage = defaultToneErrorMessage,
       disabled,
       botNameIdentityTooltip = defaultBotNameIdentityTooltip,
       primaryRoleTooltip = defaultPrimaryRoleTooltip,
@@ -390,38 +394,34 @@ const BotIdentityCard = React.forwardRef(
       toneDraft.trim() || toneValue.map((item) => item.trim()).join(" ");
     const botNameRequiredError = getRequiredError({
       value: botNameValue,
-      validationEnabled: botIdentityMinLengthValidation && !botNameOptional,
+      validationEnabled:
+        botIdentityErrorMessageValidation && botNameErrorMessageValidation,
       message: botNameErrorMessage,
     });
     const primaryRoleRequiredError = getRequiredError({
       value: primaryRoleValidationValue,
-      validationEnabled: botIdentityMinLengthValidation && !primaryRoleOptional,
+      validationEnabled:
+        botIdentityErrorMessageValidation && primaryRoleErrorMessageValidation,
       message: primaryRoleErrorMessage,
     });
     const toneRequiredError = getRequiredError({
       value: toneValidationValue,
-      validationEnabled: botIdentityMinLengthValidation && !toneOptional,
+      validationEnabled:
+        botIdentityErrorMessageValidation && toneErrorMessageValidation,
       message: toneErrorMessage,
     });
-    const firstBuiltInErrorField =
-      botNameRequiredError ? "botName" :
-      primaryRoleRequiredError ? "primaryRole" :
-      toneRequiredError ? "tone" :
-      undefined;
     const botNameDisplayError =
       botNameValidation ??
       botNameError ??
-      (firstBuiltInErrorField === "botName" ? botNameRequiredError : undefined);
+      botNameRequiredError;
     const primaryRoleDisplayError =
       primaryRoleValidation ??
       primaryRoleError ??
-      (firstBuiltInErrorField === "primaryRole"
-        ? primaryRoleRequiredError
-        : undefined);
+      primaryRoleRequiredError;
     const toneDisplayError =
       toneValidation ??
       toneError ??
-      (firstBuiltInErrorField === "tone" ? toneRequiredError : undefined);
+      toneRequiredError;
     const botNameErrorText = botNameDisplayError
       ? botNameDisplayError
       : undefined;

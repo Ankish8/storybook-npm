@@ -290,19 +290,19 @@ export interface IvrBotConfigProps {
   primaryRoleValidation?: string;
   /** External validation message for Tone. */
   toneValidation?: string;
-  /** Allows Bot Name & Identity, Primary Role, and Tone validation when matching error-message props are provided. Defaults to true. */
-  botIdentityMinLengthValidation?: boolean;
-  /** When true, Bot Name & Identity skips built-in error-message validation. */
-  botNameOptional?: boolean;
-  /** When true, Primary Role skips built-in error-message validation. */
-  primaryRoleOptional?: boolean;
-  /** When true, Tone skips built-in error-message validation. */
-  toneOptional?: boolean;
-  /** Error message for Bot Name & Identity. Enables built-in empty-value validation when provided. */
+  /** Allows Bot Name & Identity, Primary Role, and Tone validation. Defaults to true. */
+  botIdentityErrorMessageValidation?: boolean;
+  /** When false, Bot Name & Identity skips built-in error-message validation. Defaults to true. */
+  botNameErrorMessageValidation?: boolean;
+  /** When false, Primary Role skips built-in error-message validation. Defaults to true. */
+  primaryRoleErrorMessageValidation?: boolean;
+  /** When false, Tone skips built-in error-message validation. Defaults to true. */
+  toneErrorMessageValidation?: boolean;
+  /** Error message for Bot Name & Identity. Defaults to "Bot name is required". */
   botNameErrorMessage?: string;
-  /** Error message for Primary Role. Enables built-in empty-value validation when provided. */
+  /** Error message for Primary Role. Defaults to "Primary role is required". */
   primaryRoleErrorMessage?: string;
-  /** Error message for Tone. Enables built-in empty-value validation when provided. */
+  /** Error message for Tone. Defaults to "Tone is required". */
   toneErrorMessage?: string;
   /**
    * Passed to BotBehaviorCard — hover text on the info icon next to How It Behaves.
@@ -348,16 +348,14 @@ export interface IvrBotConfigProps {
   escalationPromptMaxLength?: number;
   /** External validation message for Escalate to Human **Prompt** (e.g. from save/publish). */
   escalationPromptValidation?: string;
-  /** When true, Prompt skips built-in min-length validation. */
-  escalationPromptOptional?: boolean;
+  /** When false, Escalate to Human **Prompt** skips built-in required validation. Defaults to true. */
+  escalationPromptErrorMessageValidation?: boolean;
   /** Custom validation message for Escalate to Human **Prompt**. */
   escalationPromptErrorMessage?: string;
   /** When false, Escalate to Human **Transfer to Department** validation is disabled. Defaults to true. */
   escalationDepartmentValidation?: boolean;
   /** Validation message for Escalate to Human **Transfer to Department** when empty. */
   escalationDepartmentValidationMessage?: string;
-  /** When true, Transfer to Department skips built-in validation. */
-  escalationDepartmentOptional?: boolean;
   /** Minimum character length for the function prompt (default: 100) */
   functionPromptMinLength?: number;
   /** Maximum character length for the function name in Create/Edit Function (default: 30) */
@@ -395,12 +393,8 @@ export interface IvrBotConfigProps {
   functionEditData?: Partial<CreateFunctionData>;
   /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
-  /** External validation message for the "How It Behaves" system prompt (e.g. from save/publish). */
-  systemPromptValidation?: string;
   /** When true, the "How It Behaves" system prompt shows an empty-value validation message. Defaults to true. */
   systemPromptHowItBehavesErrorMessageValidation?: boolean;
-  /** Custom validation message for the "How It Behaves" system prompt. */
-  systemPromptMinLengthMessage?: string;
   /**
    * Called when focus leaves the **entire** "How It Behaves" section
    * (textarea + session variable chips). Clicking a chip does NOT trigger

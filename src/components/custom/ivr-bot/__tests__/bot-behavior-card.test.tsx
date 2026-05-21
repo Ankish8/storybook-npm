@@ -74,16 +74,15 @@ describe("BotBehaviorCard", () => {
     expect(prompt).toHaveAttribute("aria-invalid", "false");
   });
 
-  it("uses parent validation before built-in empty-value validation", () => {
+  it("can disable required validation", () => {
     render(
       <BotBehaviorCard
         data={{ systemPrompt: "" }}
         onChange={() => {}}
-        validation="Save failed validation"
+        HowItBehavesErrorMessageValidation={false}
       />
     );
 
-    expect(screen.getByText("Save failed validation")).toBeInTheDocument();
     expect(
       screen.queryByText("System prompt is required")
     ).not.toBeInTheDocument();

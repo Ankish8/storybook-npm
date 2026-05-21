@@ -79,10 +79,10 @@ export const IvrBotConfig = React.forwardRef(
       botNameValidation,
       primaryRoleValidation,
       toneValidation,
-      botIdentityMinLengthValidation,
-      botNameOptional,
-      primaryRoleOptional,
-      toneOptional,
+      botIdentityErrorMessageValidation,
+      botNameErrorMessageValidation,
+      primaryRoleErrorMessageValidation,
+      toneErrorMessageValidation,
       botNameErrorMessage,
       primaryRoleErrorMessage,
       toneErrorMessage,
@@ -99,11 +99,10 @@ export const IvrBotConfig = React.forwardRef(
       showEscalationPrompt,
       escalationPromptMaxLength,
       escalationPromptValidation,
-      escalationPromptOptional,
+      escalationPromptErrorMessageValidation,
       escalationPromptErrorMessage,
       escalationDepartmentValidation,
       escalationDepartmentValidationMessage,
-      escalationDepartmentOptional,
       functionPromptMinLength,
       functionNameMaxLength,
       functionPromptMaxLength,
@@ -116,9 +115,7 @@ export const IvrBotConfig = React.forwardRef(
       showCreateFunctionAgentMessage,
       functionEditData,
       systemPromptMaxLength,
-      systemPromptValidation,
       systemPromptHowItBehavesErrorMessageValidation,
-      systemPromptMinLengthMessage,
       onSystemPromptBlur,
       onAgentBusyPromptBlur,
       onNoExtensionFoundPromptBlur,
@@ -243,10 +240,14 @@ export const IvrBotConfig = React.forwardRef(
               botNameValidation={botNameValidation}
               primaryRoleValidation={primaryRoleValidation}
               toneValidation={toneValidation}
-              botIdentityMinLengthValidation={botIdentityMinLengthValidation}
-              botNameOptional={botNameOptional}
-              primaryRoleOptional={primaryRoleOptional}
-              toneOptional={toneOptional}
+              botIdentityErrorMessageValidation={
+                botIdentityErrorMessageValidation
+              }
+              botNameErrorMessageValidation={botNameErrorMessageValidation}
+              primaryRoleErrorMessageValidation={
+                primaryRoleErrorMessageValidation
+              }
+              toneErrorMessageValidation={toneErrorMessageValidation}
               botNameErrorMessage={botNameErrorMessage}
               primaryRoleErrorMessage={primaryRoleErrorMessage}
               toneErrorMessage={toneErrorMessage}
@@ -256,11 +257,9 @@ export const IvrBotConfig = React.forwardRef(
               onChange={update}
               onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
-              validation={systemPromptValidation}
               HowItBehavesErrorMessageValidation={
                 systemPromptHowItBehavesErrorMessageValidation
               }
-              minLengthMessage={systemPromptMinLengthMessage}
               maxLength={systemPromptMaxLength}
               disabled={disabled}
               howItBehavesTooltip={howItBehavesTooltip}
@@ -336,13 +335,12 @@ export const IvrBotConfig = React.forwardRef(
               showEscalationPrompt={showEscalationPrompt}
               promptMaxLength={escalationPromptMaxLength}
               promptValidation={escalationPromptValidation}
-              promptOptional={escalationPromptOptional}
+              promptErrorMessageValidation={escalationPromptErrorMessageValidation}
               promptErrorMessage={escalationPromptErrorMessage}
               escalationDepartmentValidation={escalationDepartmentValidation}
               escalationDepartmentValidationMessage={
                 escalationDepartmentValidationMessage
               }
-              escalationDepartmentOptional={escalationDepartmentOptional}
               onEscalationPromptBlur={onEscalationPromptBlur}
             />
             <AdvancedSettingsCard

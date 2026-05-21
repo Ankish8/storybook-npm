@@ -13,7 +13,7 @@ const meta: Meta<typeof BotIdentityCard> = {
 
 Uses CreatableSelect for role (type-to-create), CreatableMultiSelect for tone (multi-chip + type-to-create), and Select with PlayCircle icons for voice profiles.
 
-Bot Name, Primary Role, and Tone validation appears one mandatory field at a time when the matching \`*ErrorMessage\` prop is provided. Use \`botIdentityMinLengthValidation={false}\` to disable those identity messages, or mark individual fields optional with props like \`primaryRoleOptional\`.
+Bot Name, Primary Role, and Tone validation appears for all invalid mandatory fields by default. Use \`botIdentityErrorMessageValidation={false}\` to disable all identity messages, or set an individual field validation prop like \`primaryRoleErrorMessageValidation={false}\` to make that field optional.
 
 **Install**
 \`\`\`bash
@@ -29,10 +29,15 @@ import { BotIdentityCard } from "@/components/custom/ivr-bot/bot-identity-card"
   },
   tags: ["autodocs"],
   argTypes: {
-    botIdentityMinLengthValidation: {
+    botIdentityErrorMessageValidation: {
       control: "boolean",
       description:
-        "Allows validation for Bot Name & Identity, Primary Role, and Tone when matching error-message props are provided. Defaults to true.",
+        "Allows validation for Bot Name & Identity, Primary Role, and Tone. Defaults to true.",
+    },
+    botNameErrorMessageValidation: {
+      control: "boolean",
+      description:
+        "Enables Bot Name & Identity error-message validation. Pass false to make Bot Name & Identity optional.",
     },
     botNameValidation: {
       control: "text",
@@ -48,19 +53,25 @@ import { BotIdentityCard } from "@/components/custom/ivr-bot/bot-identity-card"
     },
     botNameErrorMessage: {
       control: "text",
-      description: "Validation message for Bot Name & Identity. Providing this enables validation for the field.",
+      description: "Validation message for Bot Name & Identity.",
     },
     primaryRoleErrorMessage: {
       control: "text",
-      description: "Validation message for Primary Role. Providing this enables validation for the field.",
+      description: "Validation message for Primary Role.",
     },
     toneErrorMessage: {
       control: "text",
-      description: "Validation message for Tone. Providing this enables validation for the field.",
+      description: "Validation message for Tone.",
     },
-    primaryRoleOptional: {
+    primaryRoleErrorMessageValidation: {
       control: "boolean",
-      description: "Skips built-in Primary Role validation when true.",
+      description:
+        "Enables Primary Role error-message validation. Pass false to make Primary Role optional.",
+    },
+    toneErrorMessageValidation: {
+      control: "boolean",
+      description:
+        "Enables Tone error-message validation. Pass false to make Tone optional.",
     },
   },
 };

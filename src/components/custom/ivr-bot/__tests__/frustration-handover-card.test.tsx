@@ -296,22 +296,8 @@ describe("FrustrationHandoverCard", () => {
   it("can disable built-in Prompt validation", async () => {
     const user = userEvent.setup();
     render(
-      <StatefulFrustrationHandoverCard promptMinLengthValidation={false} />
+      <StatefulFrustrationHandoverCard promptErrorMessageValidation={false} />
     );
-
-    await user.click(screen.getByText("Escalate to Human"));
-    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
-    await user.click(prompt);
-    await user.tab();
-
-    expect(
-      screen.queryByText("Escalation prompt is required")
-    ).not.toBeInTheDocument();
-  });
-
-  it("can mark Prompt as optional", async () => {
-    const user = userEvent.setup();
-    render(<StatefulFrustrationHandoverCard promptOptional />);
 
     await user.click(screen.getByText("Escalate to Human"));
     const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
@@ -433,21 +419,4 @@ describe("FrustrationHandoverCard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("can mark Transfer to Department as optional", async () => {
-    const user = userEvent.setup();
-    render(
-      <StatefulFrustrationHandoverCard
-        escalationDepartmentValidationMessage="Escalation department is required"
-        escalationDepartmentOptional
-      />
-    );
-
-    await user.click(screen.getByText("Escalate to Human"));
-    await user.click(screen.getByRole("combobox"));
-    await user.keyboard("{Escape}");
-
-    expect(
-      screen.queryByText("Escalation department is required")
-    ).not.toBeInTheDocument();
-  });
 });

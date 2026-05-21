@@ -65,11 +65,12 @@ describe("BotIdentityCard", () => {
     expect(input).toHaveValue("Rhea");
   });
 
-  it("does not show identity validation unless error messages are provided", () => {
+  it("can disable all identity error-message validation", () => {
     render(
       <BotIdentityCard
         data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
+        botIdentityErrorMessageValidation={false}
       />
     );
 
@@ -80,7 +81,20 @@ describe("BotIdentityCard", () => {
     expect(screen.queryByText("Language is required")).not.toBeInTheDocument();
   });
 
-  it("shows error-message validation one field at a time in mandatory field order", () => {
+  it("shows default identity validation messages when enabled", () => {
+    render(
+      <BotIdentityCard
+        data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
+        onChange={() => {}}
+      />
+    );
+
+    expect(screen.getByText("Bot name is required")).toBeInTheDocument();
+    expect(screen.getByText("Primary role is required")).toBeInTheDocument();
+    expect(screen.getByText("Tone is required")).toBeInTheDocument();
+  });
+
+  it("shows all enabled error-message validation messages at the same time", () => {
     const { rerender } = render(
       <BotIdentityCard
         data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
@@ -92,8 +106,8 @@ describe("BotIdentityCard", () => {
     );
 
     expect(screen.getByText("Bot name is required")).toBeInTheDocument();
-    expect(screen.queryByText("Primary role is required")).not.toBeInTheDocument();
-    expect(screen.queryByText("Tone is required")).not.toBeInTheDocument();
+    expect(screen.getByText("Primary role is required")).toBeInTheDocument();
+    expect(screen.getByText("Tone is required")).toBeInTheDocument();
 
     rerender(
       <BotIdentityCard
@@ -106,7 +120,7 @@ describe("BotIdentityCard", () => {
     );
 
     expect(screen.getByText("Primary role is required")).toBeInTheDocument();
-    expect(screen.queryByText("Tone is required")).not.toBeInTheDocument();
+    expect(screen.getByText("Tone is required")).toBeInTheDocument();
 
     rerender(
       <BotIdentityCard
@@ -212,7 +226,7 @@ describe("BotIdentityCard", () => {
     expect(screen.queryByText("Bot name is required")).not.toBeInTheDocument();
   });
 
-  it("can mark primary role as optional for built-in validation", () => {
+  it("can disable primary role error-message validation", () => {
     render(
       <BotIdentityCard
         data={{
@@ -223,7 +237,7 @@ describe("BotIdentityCard", () => {
           language: "",
         }}
         onChange={() => {}}
-        primaryRoleOptional
+        primaryRoleErrorMessageValidation={false}
         primaryRoleErrorMessage="Primary role is required"
       />
     );

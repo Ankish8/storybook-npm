@@ -52,7 +52,7 @@ const DEFAULT_DEPARTMENT_OPTIONS: DepartmentOption[] = [
 export const defaultEscalateToHumanInfoTooltip =
   "When enabled, the bot automatically transfers the call to a human agent if a caller shows repeated signs of frustration. Select a department extension to route these escalations to.";
 
-export const defaultEscalationPromptMinLengthMessage =
+export const defaultEscalationPromptErrorMessage =
   "Escalation prompt is required";
 
 export interface FrustrationHandoverCardProps {
@@ -81,23 +81,17 @@ export interface FrustrationHandoverCardProps {
    * When set, it replaces the built-in overflow message (overflow still uses error styling via length check in the shared Textarea).
    */
   promptValidation?: string;
-  /** Minimum text length for Prompt when min-length validation is enabled. Defaults to 1. */
-  promptMinLength?: number;
   /**
-   * When true, Prompt shows min-length validation after the user interacts with it.
+   * When true, Prompt shows required validation after the user interacts with it.
    * Defaults to true. Pass false to disable built-in validation.
    */
-  promptMinLengthValidation?: boolean;
-  /** When true, Prompt skips built-in min-length validation. */
-  promptOptional?: boolean;
+  promptErrorMessageValidation?: boolean;
   /** Custom validation message shown for Prompt when it is invalid. */
   promptErrorMessage?: string;
   /** When false, Transfer to Department validation is disabled. Defaults to true. */
   escalationDepartmentValidation?: boolean;
   /** Validation message shown for Transfer to Department when validation is enabled and the value is empty. */
   escalationDepartmentValidationMessage?: string;
-  /** When true, Transfer to Department skips built-in validation. */
-  escalationDepartmentOptional?: boolean;
   /** Called when the Prompt textarea loses focus (current value passed — use to persist via API). */
   onEscalationPromptBlur?: (value: string) => void;
   /**
@@ -166,13 +160,10 @@ const FrustrationHandoverCard = React.forwardRef(
     className,
     promptMaxLength = 5000,
     promptValidation,
-    promptMinLength = 1,
-    promptMinLengthValidation = true,
-    promptOptional = false,
+    promptErrorMessageValidation = true,
     promptErrorMessage: customPromptErrorMessage,
     escalationDepartmentValidation = true,
     escalationDepartmentValidationMessage,
-    escalationDepartmentOptional = false,
     onEscalationPromptBlur,
     onDepartmentOptionsScrollEnd,
     departmentOptionsHasMore,
@@ -193,23 +184,18 @@ const FrustrationHandoverCard = React.forwardRef(
     const promptOverflowMessage = overPromptLimit
       ? `Maximum ${promptMaxLength} characters allowed.`
       : undefined;
-    const promptMinLengthError =
+    const promptRequiredError =
       promptTouched &&
       data.frustrationHandoverEnabled &&
       showEscalationPrompt &&
-      promptMinLengthValidation &&
-      !promptOptional &&
-      promptMinLength > 0 &&
-      promptValue.trim().length < promptMinLength
-        ? customPromptErrorMessage ??
-          (promptMinLength === 1
-            ? defaultEscalationPromptMinLengthMessage
-            : `Minimum ${promptMinLength} characters required`)
+      promptErrorMessageValidation &&
+      !promptValue.trim()
+        ? customPromptErrorMessage ?? defaultEscalationPromptErrorMessage
         : undefined;
     const promptErrorMessage =
       promptValidation ??
       (promptInvalidCharsError || undefined) ??
-      promptMinLengthError ??
+      promptRequiredError ??
       promptOverflowMessage;
     const departmentValue = data.escalationDepartment ?? "";
     React.useEffect(() => {
@@ -227,7 +213,6 @@ const FrustrationHandoverCard = React.forwardRef(
     const departmentErrorMessage =
       data.frustrationHandoverEnabled &&
       escalationDepartmentValidation &&
-      !escalationDepartmentOptional &&
       Boolean(escalationDepartmentValidationMessage) &&
       !departmentValue.trim()
         ? escalationDepartmentValidationMessage

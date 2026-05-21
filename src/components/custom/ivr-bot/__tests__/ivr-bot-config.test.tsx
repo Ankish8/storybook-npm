@@ -216,19 +216,18 @@ describe("IvrBotConfig", () => {
       <IvrBotConfig
         initialData={{ systemPrompt: "" }}
         systemPromptHowItBehavesErrorMessageValidation
-        systemPromptMinLengthMessage="System prompt is required"
       />
     );
 
     expect(screen.getByText("System prompt is required")).toBeInTheDocument();
   });
 
-  it("passes Who The Bot Is error-message props to identity fields in sequence", () => {
+  it("passes Who The Bot Is error-message props to all invalid identity fields", () => {
     const { rerender } = render(
       <IvrBotConfig
         key="bot-name"
         initialData={{ botName: "", primaryRole: "", tone: [] }}
-        botIdentityMinLengthValidation
+        botIdentityErrorMessageValidation
         botNameErrorMessage="Bot name is too short"
         primaryRoleErrorMessage="Primary role is too short"
         toneErrorMessage="Tone is too short"
@@ -236,13 +235,14 @@ describe("IvrBotConfig", () => {
     );
 
     expect(screen.getByText("Bot name is too short")).toBeInTheDocument();
-    expect(screen.queryByText("Primary role is too short")).not.toBeInTheDocument();
+    expect(screen.getByText("Primary role is too short")).toBeInTheDocument();
+    expect(screen.getByText("Tone is too short")).toBeInTheDocument();
 
     rerender(
       <IvrBotConfig
         key="primary-role"
         initialData={{ botName: "Rhea", primaryRole: "", tone: [] }}
-        botIdentityMinLengthValidation
+        botIdentityErrorMessageValidation
         botNameErrorMessage="Bot name is too short"
         primaryRoleErrorMessage="Primary role is too short"
         toneErrorMessage="Tone is too short"
@@ -250,12 +250,13 @@ describe("IvrBotConfig", () => {
     );
 
     expect(screen.getByText("Primary role is too short")).toBeInTheDocument();
+    expect(screen.getByText("Tone is too short")).toBeInTheDocument();
 
     rerender(
       <IvrBotConfig
         key="tone"
         initialData={{ botName: "Rhea", primaryRole: "Support", tone: [] }}
-        botIdentityMinLengthValidation
+        botIdentityErrorMessageValidation
         botNameErrorMessage="Bot name is too short"
         primaryRoleErrorMessage="Primary role is too short"
         toneErrorMessage="Tone is too short"
@@ -265,7 +266,7 @@ describe("IvrBotConfig", () => {
     expect(screen.getByText("Tone is too short")).toBeInTheDocument();
   });
 
-  it("passes Who The Bot Is optional props to identity fields", () => {
+  it("passes Who The Bot Is field validation props to identity fields", () => {
     render(
       <IvrBotConfig
         initialData={{
@@ -275,7 +276,7 @@ describe("IvrBotConfig", () => {
           voice: "",
           language: "",
         }}
-        primaryRoleOptional
+        primaryRoleErrorMessageValidation={false}
         primaryRoleErrorMessage="Primary role is required"
       />
     );

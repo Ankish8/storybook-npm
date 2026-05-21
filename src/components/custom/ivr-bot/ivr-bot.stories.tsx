@@ -43,8 +43,10 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | \`agentBusyPromptTooltip\` | Info icon next to **Agent Busy Prompt** |
 | \`noExtensionFoundPromptTooltip\` | Info icon next to **No Extension Found** |
 | \`escalateToHumanInfoTooltip\` | Info icon next to **Escalate to Human** (accordion title) |
-| \`botIdentityMinLengthValidation\` | Allows identity validation when matching error-message props are provided |
-| \`primaryRoleOptional\` | Skips built-in validation for **Primary Role** |
+| \`botIdentityErrorMessageValidation\` | Allows identity validation for Bot Name, Primary Role, and Tone |
+| \`botNameErrorMessageValidation\` | Enables validation for **Bot Name & Identity**; pass \`false\` to make it optional |
+| \`primaryRoleErrorMessageValidation\` | Enables validation for **Primary Role**; pass \`false\` to make it optional |
+| \`toneErrorMessageValidation\` | Enables validation for **Tone**; pass \`false\` to make it optional |
 | \`botNameErrorMessage\` | Error message below **Bot Name & Identity** |
 | \`primaryRoleErrorMessage\` | Error message below **Primary Role** |
 | \`toneErrorMessage\` | Error message below **Tone** |
@@ -53,11 +55,10 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | \`noExtensionFoundPromptRequiredMessage\` | Required message below **No Extension Found** |
 | \`agentBusyPromptValidation\` | Validation below **Agent Busy Prompt** |
 | \`noExtensionFoundPromptValidation\` | Validation below **No Extension Found** |
-| \`escalationPromptOptional\` | Skips built-in validation for **Escalate to Human → Prompt** |
+| \`escalationPromptErrorMessageValidation\` | Enables built-in required validation for **Escalate to Human → Prompt**; pass \`false\` to make it optional |
 | \`escalationPromptErrorMessage\` | Error message below **Escalate to Human → Prompt** |
 | \`escalationPromptValidation\` | Validation below **Escalate to Human → Prompt** |
-| \`escalationDepartmentValidation\` | Disables validation for **Transfer to Department** when false |
-| \`escalationDepartmentOptional\` | Skips built-in validation for **Transfer to Department** |
+| \`escalationDepartmentValidation\` | Enables validation for **Transfer to Department**; pass \`false\` to make it optional |
 | \`escalationDepartmentValidationMessage\` | Validation message below **Transfer to Department** |
 
 Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field’s info icon, or (for section titles) to show a non-interactive icon only—same pattern as Knowledge Base.
@@ -123,26 +124,37 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field�
       description:
         "Tooltip for the Fallback Prompts accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
     },
-    botIdentityMinLengthValidation: {
+    botIdentityErrorMessageValidation: {
       control: "boolean",
       description:
-        "Allows validation for Bot Name & Identity, Primary Role, and Tone when matching error-message props are provided. Defaults to true.",
+        "Allows validation for Bot Name & Identity, Primary Role, and Tone. Defaults to true.",
     },
-    primaryRoleOptional: {
+    botNameErrorMessageValidation: {
       control: "boolean",
-      description: "Skips built-in Primary Role validation when true.",
+      description:
+        "Enables Bot Name & Identity error-message validation. Pass false to make Bot Name & Identity optional.",
+    },
+    primaryRoleErrorMessageValidation: {
+      control: "boolean",
+      description:
+        "Enables Primary Role error-message validation. Pass false to make Primary Role optional.",
+    },
+    toneErrorMessageValidation: {
+      control: "boolean",
+      description:
+        "Enables Tone error-message validation. Pass false to make Tone optional.",
     },
     botNameErrorMessage: {
       control: "text",
-      description: "Validation message shown below Bot Name & Identity. Providing this enables validation for the field.",
+      description: "Validation message shown below Bot Name & Identity.",
     },
     primaryRoleErrorMessage: {
       control: "text",
-      description: "Validation message shown below Primary Role. Providing this enables validation for the field.",
+      description: "Validation message shown below Primary Role.",
     },
     toneErrorMessage: {
       control: "text",
-      description: "Validation message shown below Tone. Providing this enables validation for the field.",
+      description: "Validation message shown below Tone.",
     },
     botNameValidation: {
       control: "text",
@@ -186,10 +198,10 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field�
       control: "text",
       description: "Validation message shown below Escalate to Human Prompt.",
     },
-    escalationPromptOptional: {
+    escalationPromptErrorMessageValidation: {
       control: "boolean",
       description:
-        "Skips built-in Escalate to Human Prompt validation when true.",
+        "Enables built-in Escalate to Human Prompt required validation. Pass false to make it optional.",
     },
     escalationPromptErrorMessage: {
       control: "text",
@@ -199,15 +211,11 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field�
     escalationDepartmentValidation: {
       control: "boolean",
       description:
-        "Disables Transfer to Department validation when false. Defaults to true.",
+        "Enables Transfer to Department validation. Pass false to make it optional. Defaults to true.",
     },
     escalationDepartmentValidationMessage: {
       control: "text",
       description: "Validation message shown below Transfer to Department.",
-    },
-    escalationDepartmentOptional: {
-      control: "boolean",
-      description: "Skips built-in Transfer to Department validation when true.",
     },
   },
 };
@@ -230,8 +238,12 @@ export const Overview: Story = {
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
-        botIdentityMinLengthValidation={args.botIdentityMinLengthValidation}
-        primaryRoleOptional={args.primaryRoleOptional}
+        botIdentityErrorMessageValidation={args.botIdentityErrorMessageValidation}
+        botNameErrorMessageValidation={args.botNameErrorMessageValidation}
+        primaryRoleErrorMessageValidation={
+          args.primaryRoleErrorMessageValidation
+        }
+        toneErrorMessageValidation={args.toneErrorMessageValidation}
         botNameErrorMessage={args.botNameErrorMessage}
         primaryRoleErrorMessage={args.primaryRoleErrorMessage}
         toneErrorMessage={args.toneErrorMessage}
@@ -239,13 +251,14 @@ export const Overview: Story = {
         primaryRoleValidation={args.primaryRoleValidation}
         toneValidation={args.toneValidation}
         escalationPromptValidation={args.escalationPromptValidation}
-        escalationPromptOptional={args.escalationPromptOptional}
+        escalationPromptErrorMessageValidation={
+          args.escalationPromptErrorMessageValidation
+        }
         escalationPromptErrorMessage={args.escalationPromptErrorMessage}
         escalationDepartmentValidation={args.escalationDepartmentValidation}
         escalationDepartmentValidationMessage={
           args.escalationDepartmentValidationMessage
         }
-        escalationDepartmentOptional={args.escalationDepartmentOptional}
         initialData={{
           botName: "Rhea",
           primaryRole: "customer-support",
@@ -335,8 +348,12 @@ export const CustomDropdownOptions: Story = {
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
-        botIdentityMinLengthValidation={args.botIdentityMinLengthValidation}
-        primaryRoleOptional={args.primaryRoleOptional}
+        botIdentityErrorMessageValidation={args.botIdentityErrorMessageValidation}
+        botNameErrorMessageValidation={args.botNameErrorMessageValidation}
+        primaryRoleErrorMessageValidation={
+          args.primaryRoleErrorMessageValidation
+        }
+        toneErrorMessageValidation={args.toneErrorMessageValidation}
         botNameErrorMessage={args.botNameErrorMessage}
         primaryRoleErrorMessage={args.primaryRoleErrorMessage}
         toneErrorMessage={args.toneErrorMessage}
