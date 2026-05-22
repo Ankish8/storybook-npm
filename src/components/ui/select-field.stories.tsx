@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { SelectField, type SelectOption } from "./select-field";
 import { FormModal } from "./form-modal";
 import { Input } from "./input";
@@ -332,6 +332,22 @@ import { SelectField } from "@/components/ui/select-field"
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "true" },
+      },
+    },
+    searchValue: {
+      control: false,
+      description:
+        "Controlled search value. When provided, the internal search state is bypassed and the client-side label filter is skipped — the consumer is trusted to filter options upstream (e.g. server-side). Pair with onSearchChange. Leave undefined for the default uncontrolled, client-side filtering behavior.",
+      table: {
+        type: { summary: "string" },
+      },
+    },
+    onSearchChange: {
+      control: false,
+      description:
+        "Fires on every keystroke in the search input. Also fires with an empty string when the dropdown closes (so consumers can reset their query state). Required when searchValue is provided.",
+      table: {
+        type: { summary: "(value: string) => void" },
       },
     },
   },
@@ -835,6 +851,95 @@ export const LazyLoad: Story = {
       description: {
         story:
           "Scroll to the bottom of the open dropdown to load more options. `onScrollEnd` fires on the native `scrollend` event (naturally throttled). Set `loadingMore` while the API call is in flight to show the spinner row. Set `hasMore={false}` once exhausted to stop further calls and render an end-of-list footer.",
+      },
+    },
+  },
+};
+
+const ServerSideSearchExample = () => {
+  // Simulates a paginated server: each "fetch" returns 20 of TOTAL items,
+  // filtered against the consumer-owned `searchQuery`.
+  const PAGE = 20;
+  const ALL_TEMPLATES = useMemo(
+    () =>
+      Array.from({ length: 120 }, (_, i) => ({
+        value: `tpl-${i + 1}`,
+        label: `Template ${i + 1}`,
+      })),
+    []
+  );
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [items, setItems] = useState<SelectOption[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const pageRef = useRef(0);
+
+  // Re-fetch from page 0 whenever the controlled search query changes.
+  useEffect(() => {
+    pageRef.current = 0;
+    setLoadingMore(true);
+    const timer = setTimeout(() => {
+      const filtered = ALL_TEMPLATES.filter((t) =>
+        t.label.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      const slice = filtered.slice(0, PAGE);
+      setItems(slice);
+      setHasMore(filtered.length > PAGE);
+      pageRef.current = 1;
+      setLoadingMore(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, ALL_TEMPLATES]);
+
+  const loadNext = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    await new Promise((r) => setTimeout(r, 400));
+    const filtered = ALL_TEMPLATES.filter((t) =>
+      t.label.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const nextSlice = filtered.slice(
+      pageRef.current * PAGE,
+      (pageRef.current + 1) * PAGE
+    );
+    setItems((prev) => [...prev, ...nextSlice]);
+    pageRef.current += 1;
+    if (pageRef.current * PAGE >= filtered.length) setHasMore(false);
+    setLoadingMore(false);
+  };
+
+  return (
+    <div className="w-80">
+      <SelectField
+        label="Template"
+        placeholder="Select a template"
+        searchable
+        searchPlaceholder="Search templates..."
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        options={items}
+        onScrollEnd={loadNext}
+        loadingMore={loadingMore}
+        hasMore={hasMore}
+        helperText={
+          searchQuery
+            ? `Matching "${searchQuery}" — ${items.length} loaded`
+            : `Loaded ${items.length}`
+        }
+      />
+    </div>
+  );
+};
+
+export const ServerSideSearch: Story = {
+  name: "Server-side search + lazy load",
+  render: () => <ServerSideSearchExample />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pair `searchValue` + `onSearchChange` with `onScrollEnd` to drive a paginated dropdown from a remote API. The library's internal client-side `option.label` filter is **disabled** in controlled mode — consumers are trusted to have filtered options upstream. Typing in the search input fires `onSearchChange` on every keystroke (debounce in your handler if needed), and reaching the bottom of the open dropdown fires `onScrollEnd` so you can fetch the next page.",
       },
     },
   },

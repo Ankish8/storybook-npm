@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -282,26 +282,93 @@ describe("Select", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "true");
   });
 
-  it("invokes onViewportScrollEnd when the list viewport fires scrollend", async () => {
-    const onViewportScrollEnd = vi.fn();
-    const user = userEvent.setup();
+  describe("onViewportScrollEnd", () => {
+    // Force feature detection to take the modern `scrollend` path. jsdom
+    // doesn't ship `onscrollend`, so without this stub the component falls
+    // through to the debounced `scroll` fallback.
+    beforeEach(() => {
+      Object.defineProperty(window, "onscrollend", {
+        configurable: true,
+        value: null,
+        writable: true,
+      });
+    });
 
-    render(
-      <Select>
-        <SelectTrigger data-testid="trigger">
-          <SelectValue placeholder="Select an option" />
-        </SelectTrigger>
-        <SelectContent onViewportScrollEnd={onViewportScrollEnd}>
-          <SelectItem value="option1">Option 1</SelectItem>
-          <SelectItem value="option2">Option 2</SelectItem>
-        </SelectContent>
-      </Select>
-    );
+    afterEach(() => {
+      // @ts-expect-error — cleanup of test-only property
+      delete window.onscrollend;
+    });
 
-    await user.click(screen.getByTestId("trigger"));
-    const viewport = document.querySelector("[data-select-viewport]");
-    expect(viewport).toBeTruthy();
-    viewport!.dispatchEvent(new Event("scrollend", { bubbles: true }));
-    expect(onViewportScrollEnd).toHaveBeenCalledTimes(1);
+    it("fires when the viewport scrolls to its bottom", async () => {
+      const onViewportScrollEnd = vi.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Select>
+          <SelectTrigger data-testid="trigger">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent onViewportScrollEnd={onViewportScrollEnd}>
+            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value="option2">Option 2</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+
+      await user.click(screen.getByTestId("trigger"));
+      const viewport = document.querySelector(
+        "[data-select-viewport]"
+      ) as HTMLDivElement | null;
+      expect(viewport).toBeTruthy();
+
+      Object.defineProperty(viewport, "scrollHeight", {
+        configurable: true,
+        value: 400,
+      });
+      Object.defineProperty(viewport, "clientHeight", {
+        configurable: true,
+        value: 200,
+      });
+      viewport!.scrollTop = 190;
+
+      viewport!.dispatchEvent(new Event("scrollend", { bubbles: true }));
+      expect(onViewportScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not fire when scrollend happens mid-list", async () => {
+      const onViewportScrollEnd = vi.fn();
+      const user = userEvent.setup();
+
+      render(
+        <Select>
+          <SelectTrigger data-testid="trigger">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent onViewportScrollEnd={onViewportScrollEnd}>
+            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value="option2">Option 2</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+
+      await user.click(screen.getByTestId("trigger"));
+      const viewport = document.querySelector(
+        "[data-select-viewport]"
+      ) as HTMLDivElement | null;
+      expect(viewport).toBeTruthy();
+
+      Object.defineProperty(viewport, "scrollHeight", {
+        configurable: true,
+        value: 400,
+      });
+      Object.defineProperty(viewport, "clientHeight", {
+        configurable: true,
+        value: 200,
+      });
+      viewport!.scrollTop = 50;
+
+      viewport!.dispatchEvent(new Event("scrollend", { bubbles: true }));
+      expect(onViewportScrollEnd).not.toHaveBeenCalled();
+    });
   });
 });

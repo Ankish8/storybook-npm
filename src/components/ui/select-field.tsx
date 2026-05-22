@@ -60,6 +60,22 @@ export interface SelectFieldProps {
   searchable?: boolean;
   /** Search placeholder text */
   searchPlaceholder?: string;
+  /**
+   * Controlled search value. When provided, internal search state is
+   * ignored and the consumer owns the value — typically used to drive
+   * server-side filtering against a paginated API. The client-side
+   * `option.label` filter is also skipped, since the consumer is expected
+   * to have already filtered the options upstream.
+   *
+   * Pair with `onSearchChange`. Leave both undefined for the default
+   * uncontrolled, client-side filtering behavior.
+   */
+  searchValue?: string;
+  /**
+   * Fires on every keystroke in the search input. Also fires with `""`
+   * when the dropdown closes (so consumers can reset their query state).
+   */
+  onSearchChange?: (value: string) => void;
   /** Additional class for wrapper */
   wrapperClassName?: string;
   /** Additional class for trigger */
@@ -158,6 +174,8 @@ const SelectField = React.forwardRef(
       options,
       searchable,
       searchPlaceholder = "Search...",
+      searchValue,
+      onSearchChange,
       wrapperClassName,
       triggerClassName,
       labelClassName,
@@ -169,8 +187,11 @@ const SelectField = React.forwardRef(
     }: SelectFieldProps,
     ref: React.Ref<HTMLButtonElement>
   ) => {
-    // Internal state for search
+    // Internal state for uncontrolled mode. When `searchValue` is provided,
+    // the consumer owns the value and this state is unused.
     const [searchQuery, setSearchQuery] = React.useState("");
+    const isSearchControlled = searchValue !== undefined;
+    const effectiveSearchQuery = isSearchControlled ? searchValue : searchQuery;
 
     // Combined value change handler that also fires onSelect with full option object.
     // When interceptValue returns false, onValueChange is skipped (only onSelect fires).
@@ -223,11 +244,16 @@ const SelectField = React.forwardRef(
       const ungrouped: SelectOption[] = [];
 
       options.forEach((option) => {
-        // Filter by search query if searchable
-        if (searchable && searchQuery) {
-          if (!option.label.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return;
-          }
+        // Client-side filter only in uncontrolled mode. In controlled mode
+        // the consumer has already filtered server-side; re-filtering here
+        // would mask items their API returned.
+        if (
+          searchable &&
+          !isSearchControlled &&
+          searchQuery &&
+          !option.label.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
+          return;
         }
 
         if (option.group) {
@@ -241,7 +267,7 @@ const SelectField = React.forwardRef(
       });
 
       return { groups, ungrouped };
-    }, [options, searchable, searchQuery]);
+    }, [options, searchable, isSearchControlled, searchQuery]);
 
     const hasGroups = Object.keys(groupedOptions.groups).length > 0;
 
@@ -256,13 +282,23 @@ const SelectField = React.forwardRef(
 
     // Handle search input change
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value);
+      const next = e.target.value;
+      if (!isSearchControlled) {
+        setSearchQuery(next);
+      }
+      onSearchChange?.(next);
     };
 
-    // Reset search when dropdown closes
+    // Reset search when dropdown closes. In controlled mode we notify the
+    // consumer so they can reset their state; in uncontrolled mode we clear
+    // our own state directly.
     const handleOpenChange = (open: boolean) => {
       if (!open) {
-        setSearchQuery("");
+        if (isSearchControlled) {
+          onSearchChange?.("");
+        } else {
+          setSearchQuery("");
+        }
       }
     };
 
@@ -316,7 +352,7 @@ const SelectField = React.forwardRef(
                 <input
                   type="text"
                   placeholder={searchPlaceholder}
-                  value={searchQuery}
+                  value={effectiveSearchQuery}
                   onChange={handleSearchChange}
                   className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
                   // Prevent closing dropdown when clicking input
@@ -360,7 +396,7 @@ const SelectField = React.forwardRef(
 
             {/* No results message */}
             {searchable &&
-              searchQuery &&
+              effectiveSearchQuery &&
               groupedOptions.ungrouped.length === 0 &&
               Object.keys(groupedOptions.groups).length === 0 && (
                 <div className="py-6 text-center text-sm text-semantic-text-muted">

@@ -304,6 +304,64 @@ describe("SelectField", () => {
     expect(screen.getByText("No results found")).toBeInTheDocument();
   });
 
+  it("fires onSearchChange on every keystroke in uncontrolled mode", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        onSearchChange={onSearchChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByPlaceholderText("Search..."), "ab");
+
+    expect(onSearchChange).toHaveBeenCalledWith("a");
+    expect(onSearchChange).toHaveBeenCalledWith("ab");
+  });
+
+  it("skips client-side filtering when search is controlled", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+
+    // searchValue=`xyz` would normally filter ALL options out in uncontrolled
+    // mode (none match), but in controlled mode the consumer is trusted to
+    // have already filtered, so the options passed in should still render.
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        searchValue="xyz"
+        onSearchChange={onSearchChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+    expect(screen.getByText("Option 3")).toBeInTheDocument();
+    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+  });
+
+  it("renders the controlled search value in the input", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        searchValue="hello"
+        onSearchChange={() => {}}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...") as HTMLInputElement;
+    expect(input.value).toBe("hello");
+  });
+
   it("uses custom search placeholder", async () => {
     const user = userEvent.setup();
     render(

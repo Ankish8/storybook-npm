@@ -133,11 +133,22 @@ export type SelectContentProps = React.ComponentPropsWithoutRef<
   typeof SelectPrimitive.Content
 > & {
   /**
-   * Fires on the scrollable list viewport when scrolling completes (`scrollend`).
-   * Use with paginated option lists (e.g. load the next page when the user reaches the bottom).
+   * Fires on the scrollable list viewport when the user reaches the bottom.
+   * React 18 has no synthetic event for `scrollend`, so the listener is
+   * attached imperatively to the viewport DOM node. On browsers that
+   * support the native `scrollend` event (Chrome/Edge 114+, Firefox 109+,
+   * Safari 17.4+) we use it directly; on older Safari we fall back to a
+   * debounced `scroll` listener with a 24px bottom threshold.
+   *
+   * The handler receives a native Event typed as React.UIEvent for
+   * back-compat — `event.currentTarget` is the viewport div, so consumers
+   * can still read scrollTop/scrollHeight/clientHeight from it.
    */
   onViewportScrollEnd?: (event: React.UIEvent<HTMLDivElement>) => void;
 };
+
+const BOTTOM_THRESHOLD_PX = 24;
+const SCROLL_DEBOUNCE_MS = 150;
 
 const SelectContent = React.forwardRef(
   (
@@ -151,6 +162,55 @@ const SelectContent = React.forwardRef(
     ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
   ) => {
     useUnlockBodyScroll();
+
+    // Use a state-backed ref so the effect re-runs when the viewport mounts.
+    // The viewport lives inside Radix's Portal and only attaches when the
+    // Select opens — a plain useRef wouldn't trigger the effect.
+    const [viewport, setViewport] = React.useState<HTMLDivElement | null>(null);
+
+    React.useEffect(() => {
+      if (!viewport || !onViewportScrollEnd) return;
+
+
+      const isAtBottom = () => {
+        const { scrollTop, scrollHeight, clientHeight } = viewport;
+        return (
+          scrollTop + clientHeight >= scrollHeight - BOTTOM_THRESHOLD_PX
+        );
+      };
+
+      const supportsScrollEnd =
+        typeof window !== "undefined" && "onscrollend" in window;
+
+      if (supportsScrollEnd) {
+        const handler = (event: Event) => {
+          if (isAtBottom()) {
+            onViewportScrollEnd(
+              event as unknown as React.UIEvent<HTMLDivElement>
+            );
+          }
+        };
+        viewport.addEventListener("scrollend", handler);
+        return () => viewport.removeEventListener("scrollend", handler);
+      }
+
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+      const handler = (event: Event) => {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          if (isAtBottom()) {
+            onViewportScrollEnd(
+              event as unknown as React.UIEvent<HTMLDivElement>
+            );
+          }
+        }, SCROLL_DEBOUNCE_MS);
+      };
+      viewport.addEventListener("scroll", handler, { passive: true });
+      return () => {
+        viewport.removeEventListener("scroll", handler);
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+    }, [viewport, onViewportScrollEnd]);
 
     return (
       <SelectPrimitive.Portal>
@@ -172,17 +232,13 @@ const SelectContent = React.forwardRef(
         >
           <SelectScrollUpButton />
           <SelectPrimitive.Viewport
+            ref={setViewport}
             data-select-viewport=""
             className={cn(
               "p-1",
               position === "popper" &&
                 "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
             )}
-            {...((onViewportScrollEnd
-              ? { onScrollEnd: onViewportScrollEnd }
-              : {}) as React.ComponentPropsWithoutRef<
-              typeof SelectPrimitive.Viewport
-            >)}
           >
             {children}
           </SelectPrimitive.Viewport>
