@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { SelectField, type SelectOption } from "./select-field";
 import { FormModal } from "./form-modal";
 import { Input } from "./input";
@@ -869,36 +869,52 @@ const ServerSideSearchExample = () => {
     []
   );
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [items, setItems] = useState<SelectOption[]>([]);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const pageRef = useRef(0);
+  const filterTemplates = useCallback(
+    (query: string) =>
+      ALL_TEMPLATES.filter((t) =>
+        t.label.toLowerCase().includes(query.toLowerCase())
+      ),
+    [ALL_TEMPLATES]
+  );
 
-  // Re-fetch from page 0 whenever the controlled search query changes.
-  useEffect(() => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [items, setItems] = useState<SelectOption[]>(() =>
+    filterTemplates("").slice(0, PAGE)
+  );
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(
+    () => filterTemplates("").length > PAGE
+  );
+  const pageRef = useRef(1);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
     pageRef.current = 0;
     setLoadingMore(true);
-    const timer = setTimeout(() => {
-      const filtered = ALL_TEMPLATES.filter((t) =>
-        t.label.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      const filtered = filterTemplates(query);
       const slice = filtered.slice(0, PAGE);
       setItems(slice);
       setHasMore(filtered.length > PAGE);
       pageRef.current = 1;
       setLoadingMore(false);
     }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery, ALL_TEMPLATES]);
+  };
+
+  useEffect(
+    () => () => {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    },
+    []
+  );
 
   const loadNext = async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     await new Promise((r) => setTimeout(r, 400));
-    const filtered = ALL_TEMPLATES.filter((t) =>
-      t.label.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filtered = filterTemplates(searchQuery);
     const nextSlice = filtered.slice(
       pageRef.current * PAGE,
       (pageRef.current + 1) * PAGE
@@ -917,7 +933,7 @@ const ServerSideSearchExample = () => {
         searchable
         searchPlaceholder="Search templates..."
         searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={handleSearchChange}
         options={items}
         onScrollEnd={loadNext}
         loadingMore={loadingMore}
