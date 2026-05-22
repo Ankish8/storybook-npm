@@ -158,7 +158,6 @@ describe("FallbackPromptsCard", () => {
       <FallbackPromptsCard
         data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
         onChange={() => {}}
-        fallbackPromptsRequiredValidation
         defaultOpen
       />
     );
@@ -182,7 +181,6 @@ describe("FallbackPromptsCard", () => {
             "Sorry, the requested extension is currently unavailable. Let me help you directly.",
         }}
         onChange={() => {}}
-        fallbackPromptsRequiredValidation
         defaultOpen
       />
     );
@@ -198,7 +196,6 @@ describe("FallbackPromptsCard", () => {
       <FallbackPromptsCard
         data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
         onChange={() => {}}
-        fallbackPromptsRequiredValidation
         defaultOpen
       />
     );
@@ -209,14 +206,13 @@ describe("FallbackPromptsCard", () => {
     ).toBeInTheDocument();
   });
 
-  it("uses custom required validation messages when provided", () => {
+  it("uses custom validation messages when provided", () => {
     render(
       <FallbackPromptsCard
         data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
         onChange={() => {}}
-        fallbackPromptsRequiredValidation
-        agentBusyPromptRequiredMessage="Please add agent busy copy"
-        noExtensionFoundPromptRequiredMessage="Please add no extension copy"
+        agentBusyPromptValidation="Please add agent busy copy"
+        noExtensionFoundPromptValidation="Please add no extension copy"
         defaultOpen
       />
     );
@@ -225,13 +221,14 @@ describe("FallbackPromptsCard", () => {
     expect(screen.getByText("Please add no extension copy")).toBeInTheDocument();
   });
 
-  it("does not show required validation when disabled by prop", () => {
+  it("can disable required validation for each fallback prompt field", () => {
     render(
       <FallbackPromptsCard
         data={{ agentBusyPrompt: "", noExtensionFoundPrompt: "" }}
         onChange={() => {}}
         defaultOpen
-        fallbackPromptsRequiredValidation={false}
+        agentBusyPromptErrorMessageValidation={false}
+        noExtensionFoundPromptErrorMessageValidation={false}
       />
     );
 

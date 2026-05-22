@@ -79,22 +79,17 @@ export const IvrBotConfig = React.forwardRef(
       botNameValidation,
       primaryRoleValidation,
       toneValidation,
-      botIdentityErrorMessageValidation,
       botNameErrorMessageValidation,
       primaryRoleErrorMessageValidation,
       toneErrorMessageValidation,
-      botNameErrorMessage,
-      primaryRoleErrorMessage,
-      toneErrorMessage,
       howItBehavesTooltip,
       agentBusyPromptTooltip,
       noExtensionFoundPromptTooltip,
       fallbackPromptsInfoTooltip,
       agentBusyPromptValidation,
       noExtensionFoundPromptValidation,
-      fallbackPromptsRequiredValidation,
-      agentBusyPromptRequiredMessage,
-      noExtensionFoundPromptRequiredMessage,
+      agentBusyPromptErrorMessageValidation,
+      noExtensionFoundPromptErrorMessageValidation,
       escalateToHumanInfoTooltip,
       showEscalationPrompt,
       escalationPromptMaxLength,
@@ -240,17 +235,11 @@ export const IvrBotConfig = React.forwardRef(
               botNameValidation={botNameValidation}
               primaryRoleValidation={primaryRoleValidation}
               toneValidation={toneValidation}
-              botIdentityErrorMessageValidation={
-                botIdentityErrorMessageValidation
-              }
               botNameErrorMessageValidation={botNameErrorMessageValidation}
               primaryRoleErrorMessageValidation={
                 primaryRoleErrorMessageValidation
               }
               toneErrorMessageValidation={toneErrorMessageValidation}
-              botNameErrorMessage={botNameErrorMessage}
-              primaryRoleErrorMessage={primaryRoleErrorMessage}
-              toneErrorMessage={toneErrorMessage}
             />
             <BotBehaviorCard
               data={data}
@@ -279,9 +268,12 @@ export const IvrBotConfig = React.forwardRef(
               onNoExtensionFoundPromptBlur={onNoExtensionFoundPromptBlur}
               agentBusyPromptValidation={agentBusyPromptValidation}
               noExtensionFoundPromptValidation={noExtensionFoundPromptValidation}
-              fallbackPromptsRequiredValidation={fallbackPromptsRequiredValidation}
-              agentBusyPromptRequiredMessage={agentBusyPromptRequiredMessage}
-              noExtensionFoundPromptRequiredMessage={noExtensionFoundPromptRequiredMessage}
+              agentBusyPromptErrorMessageValidation={
+                agentBusyPromptErrorMessageValidation
+              }
+              noExtensionFoundPromptErrorMessageValidation={
+                noExtensionFoundPromptErrorMessageValidation
+              }
               disabled={disabled}
               agentBusyPromptTooltip={agentBusyPromptTooltip}
               noExtensionFoundPromptTooltip={noExtensionFoundPromptTooltip}

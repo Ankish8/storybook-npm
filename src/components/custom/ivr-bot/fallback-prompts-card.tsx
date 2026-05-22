@@ -55,19 +55,14 @@ export interface FallbackPromptsCardProps {
   onAgentBusyPromptBlur?: (value: string) => void;
   /** Called when the No Extension Found textarea loses focus */
   onNoExtensionFoundPromptBlur?: (value: string) => void;
-  /** External validation message for Agent Busy Prompt (e.g. from save/publish). */
-  agentBusyPromptValidation?: string;
-  /** External validation message for No Extension Found (e.g. from save/publish). */
-  noExtensionFoundPromptValidation?: string;
-  /**
-   * When true, empty fallback prompt fields show required validation messages.
-   * Defaults to true for real-time validation. Pass false to disable it.
-   */
-  fallbackPromptsRequiredValidation?: boolean;
   /** Required validation message for Agent Busy Prompt. */
-  agentBusyPromptRequiredMessage?: string;
+  agentBusyPromptValidation?: string;
   /** Required validation message for No Extension Found. */
-  noExtensionFoundPromptRequiredMessage?: string;
+  noExtensionFoundPromptValidation?: string;
+  /** When false, Agent Busy Prompt skips built-in required validation. Defaults to true. */
+  agentBusyPromptErrorMessageValidation?: boolean;
+  /** When false, No Extension Found skips built-in required validation. Defaults to true. */
+  noExtensionFoundPromptErrorMessageValidation?: boolean;
   /** Maximum character length for each prompt field (default: 25000) */
   maxLength?: number;
   /** Disables all fields in the card (view mode) */
@@ -173,11 +168,10 @@ const FallbackPromptsCard = React.forwardRef(
       onChange,
       onAgentBusyPromptBlur,
       onNoExtensionFoundPromptBlur,
-      agentBusyPromptValidation,
-      noExtensionFoundPromptValidation,
-      fallbackPromptsRequiredValidation = true,
-      agentBusyPromptRequiredMessage = defaultAgentBusyPromptRequiredMessage,
-      noExtensionFoundPromptRequiredMessage = defaultNoExtensionFoundPromptRequiredMessage,
+      agentBusyPromptValidation = defaultAgentBusyPromptRequiredMessage,
+      noExtensionFoundPromptValidation = defaultNoExtensionFoundPromptRequiredMessage,
+      agentBusyPromptErrorMessageValidation = true,
+      noExtensionFoundPromptErrorMessageValidation = true,
       maxLength = 25000,
       disabled,
       defaultOpen = false,
@@ -200,18 +194,15 @@ const FallbackPromptsCard = React.forwardRef(
       infoTooltip === undefined ? defaultFallbackPromptsInfoTooltip : infoTooltip;
     const agentBusyPromptValue = data.agentBusyPrompt ?? "";
     const noExtensionFoundPromptValue = data.noExtensionFoundPrompt ?? "";
-    const agentBusyRequiredError =
-      fallbackPromptsRequiredValidation && !agentBusyPromptValue.trim()
-        ? agentBusyPromptRequiredMessage
-        : undefined;
-    const noExtensionRequiredError =
-      fallbackPromptsRequiredValidation && !noExtensionFoundPromptValue.trim()
-        ? noExtensionFoundPromptRequiredMessage
-        : undefined;
     const agentBusyPromptError =
-      agentBusyPromptValidation ?? agentBusyRequiredError;
+      agentBusyPromptErrorMessageValidation && !agentBusyPromptValue.trim()
+        ? agentBusyPromptValidation
+        : undefined;
     const noExtensionFoundPromptError =
-      noExtensionFoundPromptValidation ?? noExtensionRequiredError;
+      noExtensionFoundPromptErrorMessageValidation &&
+      !noExtensionFoundPromptValue.trim()
+        ? noExtensionFoundPromptValidation
+        : undefined;
 
     return (
       <div

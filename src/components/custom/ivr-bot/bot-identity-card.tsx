@@ -100,29 +100,18 @@ export interface BotIdentityCardProps {
   onPauseVoice?: (voiceValue: string) => void;
   /** The voice value currently being played. Controls play/pause icon state. */
   playingVoice?: string;
-  /** External validation message for Bot Name & Identity (e.g. from save/publish). */
+  /** Message shown when Bot Name & Identity is empty. Defaults to "Bot name is required". */
   botNameValidation?: string;
-  /** External validation message for Primary Role (e.g. from save/publish). */
+  /** Message shown when Primary Role is empty. Defaults to "Primary role is required". */
   primaryRoleValidation?: string;
-  /** External validation message for Tone (e.g. from save/publish). */
+  /** Message shown when Tone is empty. Defaults to "Tone is required". */
   toneValidation?: string;
-  /**
-   * Allows Bot Name & Identity, Primary Role, and Tone to show inline errors
-   * Defaults to true.
-   */
-  botIdentityErrorMessageValidation?: boolean;
   /** When false, Bot Name & Identity skips built-in error-message validation. Defaults to true. */
   botNameErrorMessageValidation?: boolean;
   /** When false, Primary Role skips built-in error-message validation. Defaults to true. */
   primaryRoleErrorMessageValidation?: boolean;
   /** When false, Tone skips built-in error-message validation. Defaults to true. */
   toneErrorMessageValidation?: boolean;
-  /** Message shown when Bot Name & Identity is empty. Defaults to "Bot name is required". */
-  botNameErrorMessage?: string;
-  /** Message shown when Primary Role is empty. Defaults to "Primary role is required". */
-  primaryRoleErrorMessage?: string;
-  /** Message shown when Tone is empty. Defaults to "Tone is required". */
-  toneErrorMessage?: string;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
   /** Hover text on the info icon next to "Bot Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
@@ -353,16 +342,12 @@ const BotIdentityCard = React.forwardRef(
       onPlayVoice,
       onPauseVoice,
       playingVoice,
-      botNameValidation,
-      primaryRoleValidation,
-      toneValidation,
-      botIdentityErrorMessageValidation = true,
+      botNameValidation = defaultBotNameErrorMessage,
+      primaryRoleValidation = defaultPrimaryRoleErrorMessage,
+      toneValidation = defaultToneErrorMessage,
       botNameErrorMessageValidation = true,
       primaryRoleErrorMessageValidation = true,
       toneErrorMessageValidation = true,
-      botNameErrorMessage = defaultBotNameErrorMessage,
-      primaryRoleErrorMessage = defaultPrimaryRoleErrorMessage,
-      toneErrorMessage = defaultToneErrorMessage,
       disabled,
       botNameIdentityTooltip = defaultBotNameIdentityTooltip,
       primaryRoleTooltip = defaultPrimaryRoleTooltip,
@@ -394,34 +379,23 @@ const BotIdentityCard = React.forwardRef(
       toneDraft.trim() || toneValue.map((item) => item.trim()).join(" ");
     const botNameRequiredError = getRequiredError({
       value: botNameValue,
-      validationEnabled:
-        botIdentityErrorMessageValidation && botNameErrorMessageValidation,
-      message: botNameErrorMessage,
+      validationEnabled: botNameErrorMessageValidation,
+      message: botNameValidation,
     });
     const primaryRoleRequiredError = getRequiredError({
       value: primaryRoleValidationValue,
-      validationEnabled:
-        botIdentityErrorMessageValidation && primaryRoleErrorMessageValidation,
-      message: primaryRoleErrorMessage,
+      validationEnabled: primaryRoleErrorMessageValidation,
+      message: primaryRoleValidation,
     });
     const toneRequiredError = getRequiredError({
       value: toneValidationValue,
-      validationEnabled:
-        botIdentityErrorMessageValidation && toneErrorMessageValidation,
-      message: toneErrorMessage,
+      validationEnabled: toneErrorMessageValidation,
+      message: toneValidation,
     });
-    const botNameDisplayError =
-      botNameValidation ??
-      botNameError ??
-      botNameRequiredError;
+    const botNameDisplayError = botNameError ?? botNameRequiredError;
     const primaryRoleDisplayError =
-      primaryRoleValidation ??
-      primaryRoleError ??
-      primaryRoleRequiredError;
-    const toneDisplayError =
-      toneValidation ??
-      toneError ??
-      toneRequiredError;
+      primaryRoleError ?? primaryRoleRequiredError;
+    const toneDisplayError = toneError ?? toneRequiredError;
     const botNameErrorText = botNameDisplayError
       ? botNameDisplayError
       : undefined;

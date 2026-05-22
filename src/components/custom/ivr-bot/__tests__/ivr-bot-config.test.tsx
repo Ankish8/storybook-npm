@@ -171,9 +171,8 @@ describe("IvrBotConfig", () => {
     render(
       <IvrBotConfig
         initialData={{ agentBusyPrompt: "", noExtensionPrompt: "" }}
-        fallbackPromptsRequiredValidation
-        agentBusyPromptRequiredMessage="Agent busy prompt is required"
-        noExtensionFoundPromptRequiredMessage="No extension found prompt is required"
+        agentBusyPromptValidation="Agent busy prompt is required"
+        noExtensionFoundPromptValidation="No extension found prompt is required"
       />
     );
 
@@ -189,7 +188,7 @@ describe("IvrBotConfig", () => {
 
   it("shows default fallback prompt text before required validation is triggered", async () => {
     const user = userEvent.setup();
-    render(<IvrBotConfig fallbackPromptsRequiredValidation />);
+    render(<IvrBotConfig />);
 
     await user.click(screen.getByText("Fallback Prompts"));
 
@@ -227,10 +226,9 @@ describe("IvrBotConfig", () => {
       <IvrBotConfig
         key="bot-name"
         initialData={{ botName: "", primaryRole: "", tone: [] }}
-        botIdentityErrorMessageValidation
-        botNameErrorMessage="Bot name is too short"
-        primaryRoleErrorMessage="Primary role is too short"
-        toneErrorMessage="Tone is too short"
+        botNameValidation="Bot name is too short"
+        primaryRoleValidation="Primary role is too short"
+        toneValidation="Tone is too short"
       />
     );
 
@@ -242,10 +240,9 @@ describe("IvrBotConfig", () => {
       <IvrBotConfig
         key="primary-role"
         initialData={{ botName: "Rhea", primaryRole: "", tone: [] }}
-        botIdentityErrorMessageValidation
-        botNameErrorMessage="Bot name is too short"
-        primaryRoleErrorMessage="Primary role is too short"
-        toneErrorMessage="Tone is too short"
+        botNameValidation="Bot name is too short"
+        primaryRoleValidation="Primary role is too short"
+        toneValidation="Tone is too short"
       />
     );
 
@@ -256,10 +253,9 @@ describe("IvrBotConfig", () => {
       <IvrBotConfig
         key="tone"
         initialData={{ botName: "Rhea", primaryRole: "Support", tone: [] }}
-        botIdentityErrorMessageValidation
-        botNameErrorMessage="Bot name is too short"
-        primaryRoleErrorMessage="Primary role is too short"
-        toneErrorMessage="Tone is too short"
+        botNameValidation="Bot name is too short"
+        primaryRoleValidation="Primary role is too short"
+        toneValidation="Tone is too short"
       />
     );
 
@@ -277,7 +273,7 @@ describe("IvrBotConfig", () => {
           language: "",
         }}
         primaryRoleErrorMessageValidation={false}
-        primaryRoleErrorMessage="Primary role is required"
+        primaryRoleValidation="Primary role is required"
       />
     );
 

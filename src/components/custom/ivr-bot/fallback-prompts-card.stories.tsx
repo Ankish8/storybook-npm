@@ -14,7 +14,7 @@ const meta: Meta<typeof FallbackPromptsCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `Accordion card for configuring voicebot fallback prompts. The **Fallback Prompts** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Inside the section, "Agent Busy" and "No Extension Found" fields each have an info icon next to the label; override via \`agentBusyPromptTooltip\` and \`noExtensionFoundPromptTooltip\` (pass \`""\` to hide those icons). Use \`fallbackPromptsRequiredValidation\` to show built-in required errors for empty fields, customize those with \`agentBusyPromptRequiredMessage\` and \`noExtensionFoundPromptRequiredMessage\`, or pass \`agentBusyPromptValidation\` / \`noExtensionFoundPromptValidation\` for fully parent-driven errors.
+        component: `Accordion card for configuring voicebot fallback prompts. The **Fallback Prompts** title has an info icon with tooltip (same pattern as Knowledge Base), via \`infoTooltip\` — pass \`""\` for a non-interactive icon only. Inside the section, "Agent Busy" and "No Extension Found" fields each have an info icon next to the label; override via \`agentBusyPromptTooltip\` and \`noExtensionFoundPromptTooltip\` (pass \`""\` to hide those icons). Empty prompt validation is enabled per field by default; pass \`agentBusyPromptErrorMessageValidation={false}\` or \`noExtensionFoundPromptErrorMessageValidation={false}\` to make a field optional. Customize messages with \`agentBusyPromptValidation\` / \`noExtensionFoundPromptValidation\`.
 
 **Install**
 \`\`\`bash
@@ -131,9 +131,8 @@ export const WithValidation: Story = {
         <FallbackPromptsCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
-          fallbackPromptsRequiredValidation
-          agentBusyPromptRequiredMessage="Agent busy prompt is required"
-          noExtensionFoundPromptRequiredMessage="No extension found prompt is required"
+          agentBusyPromptValidation="Agent busy prompt is required"
+          noExtensionFoundPromptValidation="No extension found prompt is required"
           defaultOpen
         />
       </div>

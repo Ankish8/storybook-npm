@@ -70,7 +70,9 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botIdentityErrorMessageValidation={false}
+        botNameErrorMessageValidation={false}
+        primaryRoleErrorMessageValidation={false}
+        toneErrorMessageValidation={false}
       />
     );
 
@@ -99,9 +101,9 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botNameErrorMessage="Bot name is required"
-        primaryRoleErrorMessage="Primary role is required"
-        toneErrorMessage="Tone is required"
+        botNameValidation="Bot name is required"
+        primaryRoleValidation="Primary role is required"
+        toneValidation="Tone is required"
       />
     );
 
@@ -113,9 +115,9 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botNameErrorMessage="Bot name is required"
-        primaryRoleErrorMessage="Primary role is required"
-        toneErrorMessage="Tone is required"
+        botNameValidation="Bot name is required"
+        primaryRoleValidation="Primary role is required"
+        toneValidation="Tone is required"
       />
     );
 
@@ -126,9 +128,9 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "support", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botNameErrorMessage="Bot name is required"
-        primaryRoleErrorMessage="Primary role is required"
-        toneErrorMessage="Tone is required"
+        botNameValidation="Bot name is required"
+        primaryRoleValidation="Primary role is required"
+        toneValidation="Tone is required"
       />
     );
 
@@ -147,7 +149,7 @@ describe("BotIdentityCard", () => {
         <BotIdentityCard
           data={data}
           onChange={(patch) => setData((d) => ({ ...d, ...patch }))}
-          botNameErrorMessage="Bot name is required"
+          botNameValidation="Bot name is required"
         />
       );
     }
@@ -171,7 +173,7 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "", tone: ["Friendly"] }}
         onChange={() => {}}
-        primaryRoleErrorMessage="Primary role is required"
+        primaryRoleValidation="Primary role is required"
       />
     );
 
@@ -196,7 +198,7 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "customer-support", tone: [] }}
         onChange={() => {}}
-        toneErrorMessage="Tone is required"
+        toneValidation="Tone is required"
       />
     );
 
@@ -212,17 +214,16 @@ describe("BotIdentityCard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("uses external validation before built-in error-message validation", () => {
+  it("uses field validation props as required messages", () => {
     render(
       <BotIdentityCard
         data={{ botName: "", primaryRole: "support", tone: ["Friendly"] }}
         onChange={() => {}}
-        botNameValidation="Bot name failed server validation"
-        botNameErrorMessage="Bot name is required"
+        botNameValidation="Bot name failed validation"
       />
     );
 
-    expect(screen.getByText("Bot name failed server validation")).toBeInTheDocument();
+    expect(screen.getByText("Bot name failed validation")).toBeInTheDocument();
     expect(screen.queryByText("Bot name is required")).not.toBeInTheDocument();
   });
 
@@ -238,7 +239,7 @@ describe("BotIdentityCard", () => {
         }}
         onChange={() => {}}
         primaryRoleErrorMessageValidation={false}
-        primaryRoleErrorMessage="Primary role is required"
+        primaryRoleValidation="Primary role is required"
       />
     );
 

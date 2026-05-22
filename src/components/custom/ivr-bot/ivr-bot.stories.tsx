@@ -43,18 +43,16 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | \`agentBusyPromptTooltip\` | Info icon next to **Agent Busy Prompt** |
 | \`noExtensionFoundPromptTooltip\` | Info icon next to **No Extension Found** |
 | \`escalateToHumanInfoTooltip\` | Info icon next to **Escalate to Human** (accordion title) |
-| \`botIdentityErrorMessageValidation\` | Allows identity validation for Bot Name, Primary Role, and Tone |
 | \`botNameErrorMessageValidation\` | Enables validation for **Bot Name & Identity**; pass \`false\` to make it optional |
 | \`primaryRoleErrorMessageValidation\` | Enables validation for **Primary Role**; pass \`false\` to make it optional |
 | \`toneErrorMessageValidation\` | Enables validation for **Tone**; pass \`false\` to make it optional |
-| \`botNameErrorMessage\` | Error message below **Bot Name & Identity** |
-| \`primaryRoleErrorMessage\` | Error message below **Primary Role** |
-| \`toneErrorMessage\` | Error message below **Tone** |
-| \`fallbackPromptsRequiredValidation\` | Enables built-in required validation for both fallback fields |
-| \`agentBusyPromptRequiredMessage\` | Required message below **Agent Busy Prompt** |
-| \`noExtensionFoundPromptRequiredMessage\` | Required message below **No Extension Found** |
-| \`agentBusyPromptValidation\` | Validation below **Agent Busy Prompt** |
-| \`noExtensionFoundPromptValidation\` | Validation below **No Extension Found** |
+| \`botNameValidation\` | Required message below **Bot Name & Identity** |
+| \`primaryRoleValidation\` | Required message below **Primary Role** |
+| \`toneValidation\` | Required message below **Tone** |
+| \`agentBusyPromptValidation\` | Required message below **Agent Busy Prompt** |
+| \`noExtensionFoundPromptValidation\` | Required message below **No Extension Found** |
+| \`agentBusyPromptErrorMessageValidation\` | Enables validation for **Agent Busy Prompt**; pass \`false\` to make it optional |
+| \`noExtensionFoundPromptErrorMessageValidation\` | Enables validation for **No Extension Found**; pass \`false\` to make it optional |
 | \`escalationPromptErrorMessageValidation\` | Enables built-in required validation for **Escalate to Human â†’ Prompt**; pass \`false\` to make it optional |
 | \`escalationPromptErrorMessage\` | Error message below **Escalate to Human â†’ Prompt** |
 | \`escalationPromptValidation\` | Validation below **Escalate to Human â†’ Prompt** |
@@ -124,11 +122,6 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
       description:
         "Tooltip for the Fallback Prompts accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
     },
-    botIdentityErrorMessageValidation: {
-      control: "boolean",
-      description:
-        "Allows validation for Bot Name & Identity, Primary Role, and Tone. Defaults to true.",
-    },
     botNameErrorMessageValidation: {
       control: "boolean",
       description:
@@ -144,50 +137,35 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
       description:
         "Enables Tone error-message validation. Pass false to make Tone optional.",
     },
-    botNameErrorMessage: {
-      control: "text",
-      description: "Validation message shown below Bot Name & Identity.",
-    },
-    primaryRoleErrorMessage: {
-      control: "text",
-      description: "Validation message shown below Primary Role.",
-    },
-    toneErrorMessage: {
-      control: "text",
-      description: "Validation message shown below Tone.",
-    },
     botNameValidation: {
       control: "text",
-      description: "External validation message shown below Bot Name & Identity.",
+      description: "Required message shown below Bot Name & Identity.",
     },
     primaryRoleValidation: {
       control: "text",
-      description: "External validation message shown below Primary Role.",
+      description: "Required message shown below Primary Role.",
     },
     toneValidation: {
       control: "text",
-      description: "External validation message shown below Tone.",
-    },
-    fallbackPromptsRequiredValidation: {
-      control: "boolean",
-      description:
-        "Shows required validation messages when Agent Busy Prompt or No Extension Found is empty. Defaults to true.",
-    },
-    agentBusyPromptRequiredMessage: {
-      control: "text",
-      description: "Required validation message shown below Agent Busy Prompt.",
-    },
-    noExtensionFoundPromptRequiredMessage: {
-      control: "text",
-      description: "Required validation message shown below No Extension Found.",
+      description: "Required message shown below Tone.",
     },
     agentBusyPromptValidation: {
       control: "text",
-      description: "Validation message shown below Agent Busy Prompt.",
+      description: "Required validation message shown below Agent Busy Prompt.",
     },
     noExtensionFoundPromptValidation: {
       control: "text",
-      description: "Validation message shown below No Extension Found.",
+      description: "Required validation message shown below No Extension Found.",
+    },
+    agentBusyPromptErrorMessageValidation: {
+      control: "boolean",
+      description:
+        "Enables Agent Busy Prompt required validation. Pass false to make it optional.",
+    },
+    noExtensionFoundPromptErrorMessageValidation: {
+      control: "boolean",
+      description:
+        "Enables No Extension Found required validation. Pass false to make it optional.",
     },
     escalateToHumanInfoTooltip: {
       control: "text",
@@ -238,18 +216,22 @@ export const Overview: Story = {
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
-        botIdentityErrorMessageValidation={args.botIdentityErrorMessageValidation}
         botNameErrorMessageValidation={args.botNameErrorMessageValidation}
         primaryRoleErrorMessageValidation={
           args.primaryRoleErrorMessageValidation
         }
         toneErrorMessageValidation={args.toneErrorMessageValidation}
-        botNameErrorMessage={args.botNameErrorMessage}
-        primaryRoleErrorMessage={args.primaryRoleErrorMessage}
-        toneErrorMessage={args.toneErrorMessage}
         botNameValidation={args.botNameValidation}
         primaryRoleValidation={args.primaryRoleValidation}
         toneValidation={args.toneValidation}
+        agentBusyPromptValidation={args.agentBusyPromptValidation}
+        noExtensionFoundPromptValidation={args.noExtensionFoundPromptValidation}
+        agentBusyPromptErrorMessageValidation={
+          args.agentBusyPromptErrorMessageValidation
+        }
+        noExtensionFoundPromptErrorMessageValidation={
+          args.noExtensionFoundPromptErrorMessageValidation
+        }
         escalationPromptValidation={args.escalationPromptValidation}
         escalationPromptErrorMessageValidation={
           args.escalationPromptErrorMessageValidation
@@ -348,18 +330,22 @@ export const CustomDropdownOptions: Story = {
         agentBusyPromptTooltip={args.agentBusyPromptTooltip}
         noExtensionFoundPromptTooltip={args.noExtensionFoundPromptTooltip}
         escalateToHumanInfoTooltip={args.escalateToHumanInfoTooltip}
-        botIdentityErrorMessageValidation={args.botIdentityErrorMessageValidation}
         botNameErrorMessageValidation={args.botNameErrorMessageValidation}
         primaryRoleErrorMessageValidation={
           args.primaryRoleErrorMessageValidation
         }
         toneErrorMessageValidation={args.toneErrorMessageValidation}
-        botNameErrorMessage={args.botNameErrorMessage}
-        primaryRoleErrorMessage={args.primaryRoleErrorMessage}
-        toneErrorMessage={args.toneErrorMessage}
         botNameValidation={args.botNameValidation}
         primaryRoleValidation={args.primaryRoleValidation}
         toneValidation={args.toneValidation}
+        agentBusyPromptValidation={args.agentBusyPromptValidation}
+        noExtensionFoundPromptValidation={args.noExtensionFoundPromptValidation}
+        agentBusyPromptErrorMessageValidation={
+          args.agentBusyPromptErrorMessageValidation
+        }
+        noExtensionFoundPromptErrorMessageValidation={
+          args.noExtensionFoundPromptErrorMessageValidation
+        }
         voiceOptions={[
           { value: "emma-us", label: "Emma - US Female" },
           { value: "james-us", label: "James - US Male" },

@@ -284,26 +284,18 @@ export interface IvrBotConfigProps {
   howItSoundsTooltip?: string;
   /** Passed to BotIdentityCard — hover text on the info icon next to What Language It Speaks */
   languageModeTooltip?: string;
-  /** External validation message for Bot Name & Identity. */
+  /** Message shown when Bot Name & Identity is empty. */
   botNameValidation?: string;
-  /** External validation message for Primary Role. */
+  /** Message shown when Primary Role is empty. */
   primaryRoleValidation?: string;
-  /** External validation message for Tone. */
+  /** Message shown when Tone is empty. */
   toneValidation?: string;
-  /** Allows Bot Name & Identity, Primary Role, and Tone validation. Defaults to true. */
-  botIdentityErrorMessageValidation?: boolean;
   /** When false, Bot Name & Identity skips built-in error-message validation. Defaults to true. */
   botNameErrorMessageValidation?: boolean;
   /** When false, Primary Role skips built-in error-message validation. Defaults to true. */
   primaryRoleErrorMessageValidation?: boolean;
   /** When false, Tone skips built-in error-message validation. Defaults to true. */
   toneErrorMessageValidation?: boolean;
-  /** Error message for Bot Name & Identity. Defaults to "Bot name is required". */
-  botNameErrorMessage?: string;
-  /** Error message for Primary Role. Defaults to "Primary role is required". */
-  primaryRoleErrorMessage?: string;
-  /** Error message for Tone. Defaults to "Tone is required". */
-  toneErrorMessage?: string;
   /**
    * Passed to BotBehaviorCard — hover text on the info icon next to How It Behaves.
    * When omitted, the card uses its built-in default. Pass `""` to hide the icon.
@@ -324,16 +316,14 @@ export interface IvrBotConfigProps {
    * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
    */
   fallbackPromptsInfoTooltip?: string;
-  /** External validation message for Fallback Prompts → Agent Busy Prompt. */
+  /** Message shown when Fallback Prompts → Agent Busy Prompt is empty. */
   agentBusyPromptValidation?: string;
-  /** External validation message for Fallback Prompts → No Extension Found. */
+  /** Message shown when Fallback Prompts → No Extension Found is empty. */
   noExtensionFoundPromptValidation?: string;
-  /** When true, empty fallback prompt fields show required validation messages. Defaults to true. */
-  fallbackPromptsRequiredValidation?: boolean;
-  /** Required validation message for Fallback Prompts → Agent Busy Prompt. */
-  agentBusyPromptRequiredMessage?: string;
-  /** Required validation message for Fallback Prompts → No Extension Found. */
-  noExtensionFoundPromptRequiredMessage?: string;
+  /** When false, Agent Busy Prompt skips built-in required validation. Defaults to true. */
+  agentBusyPromptErrorMessageValidation?: boolean;
+  /** When false, No Extension Found skips built-in required validation. Defaults to true. */
+  noExtensionFoundPromptErrorMessageValidation?: boolean;
   /**
    * Passed to FrustrationHandoverCard — hover text on the info icon next to **Escalate to Human**.
    * When omitted, the card uses its built-in default. Pass `""` for a non-interactive icon only.
