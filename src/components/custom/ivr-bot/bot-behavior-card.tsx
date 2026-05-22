@@ -280,7 +280,7 @@ const BotBehaviorCard = React.forwardRef(
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
       systemPromptValidation = defaultSystemPromptRequiredMessage,
-      HowItBehavesErrorMessageValidation = true,
+      HowItBehavesErrorMessageValidation = false,
       maxLength = 5000,
       disabled,
       howItBehavesTooltip,
