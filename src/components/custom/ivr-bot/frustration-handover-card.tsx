@@ -86,8 +86,6 @@ export interface FrustrationHandoverCardProps {
    * Defaults to true. Pass false to disable built-in validation.
    */
   promptErrorMessageValidation?: boolean;
-  /** Custom validation message shown for Prompt when it is invalid. */
-  promptErrorMessage?: string;
   /** When false, Transfer to Department validation is disabled. Defaults to true. */
   escalationDepartmentValidation?: boolean;
   /** Validation message shown for Transfer to Department when validation is enabled and the value is empty. */
@@ -161,9 +159,8 @@ const FrustrationHandoverCard = React.forwardRef(
     promptMaxLength = 5000,
     promptValidation,
     promptErrorMessageValidation = true,
-    promptErrorMessage: customPromptErrorMessage,
-    escalationDepartmentValidation = true,
     escalationDepartmentValidationMessage,
+    escalationDepartmentValidation = true,
     onEscalationPromptBlur,
     onDepartmentOptionsScrollEnd,
     departmentOptionsHasMore,
@@ -190,9 +187,9 @@ const FrustrationHandoverCard = React.forwardRef(
       showEscalationPrompt &&
       promptErrorMessageValidation &&
       !promptValue.trim()
-        ? customPromptErrorMessage ?? defaultEscalationPromptErrorMessage
+        ? defaultEscalationPromptErrorMessage
         : undefined;
-    const promptErrorMessage =
+    const promptValidationMessage =
       promptValidation ??
       (promptInvalidCharsError || undefined) ??
       promptRequiredError ??
@@ -320,8 +317,8 @@ const FrustrationHandoverCard = React.forwardRef(
                       showCount
                       maxLength={promptMaxLength}
                       displayCharCount={promptLength}
-                      error={promptErrorMessage}
-                      errorIcon={Boolean(promptErrorMessage)}
+                      error={promptValidationMessage}
+                      errorIcon={Boolean(promptValidationMessage)}
                       resize="none"
                       rows={5}
                       size="sm"

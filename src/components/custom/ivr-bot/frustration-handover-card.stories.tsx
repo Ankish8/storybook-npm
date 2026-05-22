@@ -165,7 +165,7 @@ export const PromptValidation: Story = {
         <FrustrationHandoverCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
-          promptErrorMessage="Escalation prompt is required"
+          promptValidation="Escalation prompt is required"
         />
       </div>
     );

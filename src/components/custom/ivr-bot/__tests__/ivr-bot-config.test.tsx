@@ -214,11 +214,12 @@ describe("IvrBotConfig", () => {
     render(
       <IvrBotConfig
         initialData={{ systemPrompt: "" }}
+        systemPromptValidation="How It Behaves is required"
         systemPromptHowItBehavesErrorMessageValidation
       />
     );
 
-    expect(screen.getByText("System prompt is required")).toBeInTheDocument();
+    expect(screen.getByText("How It Behaves is required")).toBeInTheDocument();
   });
 
   it("passes Who The Bot Is error-message props to all invalid identity fields", () => {

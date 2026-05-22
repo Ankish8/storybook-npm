@@ -95,7 +95,6 @@ export const IvrBotConfig = React.forwardRef(
       escalationPromptMaxLength,
       escalationPromptValidation,
       escalationPromptErrorMessageValidation,
-      escalationPromptErrorMessage,
       escalationDepartmentValidation,
       escalationDepartmentValidationMessage,
       functionPromptMinLength,
@@ -110,6 +109,7 @@ export const IvrBotConfig = React.forwardRef(
       showCreateFunctionAgentMessage,
       functionEditData,
       systemPromptMaxLength,
+      systemPromptValidation,
       systemPromptHowItBehavesErrorMessageValidation,
       onSystemPromptBlur,
       onAgentBusyPromptBlur,
@@ -246,6 +246,7 @@ export const IvrBotConfig = React.forwardRef(
               onChange={update}
               onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
+              systemPromptValidation={systemPromptValidation}
               HowItBehavesErrorMessageValidation={
                 systemPromptHowItBehavesErrorMessageValidation
               }
@@ -328,7 +329,6 @@ export const IvrBotConfig = React.forwardRef(
               promptMaxLength={escalationPromptMaxLength}
               promptValidation={escalationPromptValidation}
               promptErrorMessageValidation={escalationPromptErrorMessageValidation}
-              promptErrorMessage={escalationPromptErrorMessage}
               escalationDepartmentValidation={escalationDepartmentValidation}
               escalationDepartmentValidationMessage={
                 escalationDepartmentValidationMessage

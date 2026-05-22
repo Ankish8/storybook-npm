@@ -264,22 +264,6 @@ describe("FrustrationHandoverCard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("uses custom Prompt validation message", async () => {
-    const user = userEvent.setup();
-    render(
-      <StatefulFrustrationHandoverCard
-        promptErrorMessage="Add an escalation prompt"
-      />
-    );
-
-    await user.click(screen.getByText("Escalate to Human"));
-    const prompt = screen.getByRole("textbox", { name: /^prompt$/i });
-    await user.click(prompt);
-    await user.tab();
-
-    expect(screen.getByText("Add an escalation prompt")).toBeInTheDocument();
-  });
-
   it("lets external Prompt validation override the built-in message", async () => {
     const user = userEvent.setup();
     render(

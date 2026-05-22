@@ -49,12 +49,12 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | \`botNameValidation\` | Required message below **Bot Name & Identity** |
 | \`primaryRoleValidation\` | Required message below **Primary Role** |
 | \`toneValidation\` | Required message below **Tone** |
+| \`systemPromptValidation\` | Required message below **How It Behaves** |
 | \`agentBusyPromptValidation\` | Required message below **Agent Busy Prompt** |
 | \`noExtensionFoundPromptValidation\` | Required message below **No Extension Found** |
 | \`agentBusyPromptErrorMessageValidation\` | Enables validation for **Agent Busy Prompt**; pass \`false\` to make it optional |
 | \`noExtensionFoundPromptErrorMessageValidation\` | Enables validation for **No Extension Found**; pass \`false\` to make it optional |
 | \`escalationPromptErrorMessageValidation\` | Enables built-in required validation for **Escalate to Human â†’ Prompt**; pass \`false\` to make it optional |
-| \`escalationPromptErrorMessage\` | Error message below **Escalate to Human â†’ Prompt** |
 | \`escalationPromptValidation\` | Validation below **Escalate to Human â†’ Prompt** |
 | \`escalationDepartmentValidation\` | Enables validation for **Transfer to Department**; pass \`false\` to make it optional |
 | \`escalationDepartmentValidationMessage\` | Validation message below **Transfer to Department** |
@@ -149,6 +149,10 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
       control: "text",
       description: "Required message shown below Tone.",
     },
+    systemPromptValidation: {
+      control: "text",
+      description: "Required validation message shown below How It Behaves.",
+    },
     agentBusyPromptValidation: {
       control: "text",
       description: "Required validation message shown below Agent Busy Prompt.",
@@ -180,11 +184,6 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
       control: "boolean",
       description:
         "Enables built-in Escalate to Human Prompt required validation. Pass false to make it optional.",
-    },
-    escalationPromptErrorMessage: {
-      control: "text",
-      description:
-        "Error message shown below Escalate to Human Prompt.",
     },
     escalationDepartmentValidation: {
       control: "boolean",
@@ -224,6 +223,7 @@ export const Overview: Story = {
         botNameValidation={args.botNameValidation}
         primaryRoleValidation={args.primaryRoleValidation}
         toneValidation={args.toneValidation}
+        systemPromptValidation={args.systemPromptValidation}
         agentBusyPromptValidation={args.agentBusyPromptValidation}
         noExtensionFoundPromptValidation={args.noExtensionFoundPromptValidation}
         agentBusyPromptErrorMessageValidation={
@@ -236,7 +236,6 @@ export const Overview: Story = {
         escalationPromptErrorMessageValidation={
           args.escalationPromptErrorMessageValidation
         }
-        escalationPromptErrorMessage={args.escalationPromptErrorMessage}
         escalationDepartmentValidation={args.escalationDepartmentValidation}
         escalationDepartmentValidationMessage={
           args.escalationDepartmentValidationMessage
@@ -338,6 +337,7 @@ export const CustomDropdownOptions: Story = {
         botNameValidation={args.botNameValidation}
         primaryRoleValidation={args.primaryRoleValidation}
         toneValidation={args.toneValidation}
+        systemPromptValidation={args.systemPromptValidation}
         agentBusyPromptValidation={args.agentBusyPromptValidation}
         noExtensionFoundPromptValidation={args.noExtensionFoundPromptValidation}
         agentBusyPromptErrorMessageValidation={

@@ -9,7 +9,7 @@ const meta: Meta<typeof BotBehaviorCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it. Empty prompts show built-in real-time required validation by default, matching Fallback Prompts. Pass \`HowItBehavesErrorMessageValidation={false}\` to disable it.
+        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it. Empty prompts show built-in real-time required validation by default, matching Fallback Prompts. Pass \`HowItBehavesErrorMessageValidation={false}\` to disable it, or customize the message with \`systemPromptValidation\`.
 
 ### onSystemPromptBlur — section-level blur
 
@@ -64,6 +64,7 @@ export const Empty: Story = {
         <BotBehaviorCard
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          systemPromptValidation="Please add behavior instructions"
         />
       </div>
     );

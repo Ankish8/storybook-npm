@@ -340,8 +340,6 @@ export interface IvrBotConfigProps {
   escalationPromptValidation?: string;
   /** When false, Escalate to Human **Prompt** skips built-in required validation. Defaults to true. */
   escalationPromptErrorMessageValidation?: boolean;
-  /** Custom validation message for Escalate to Human **Prompt**. */
-  escalationPromptErrorMessage?: string;
   /** When false, Escalate to Human **Transfer to Department** validation is disabled. Defaults to true. */
   escalationDepartmentValidation?: boolean;
   /** Validation message for Escalate to Human **Transfer to Department** when empty. */
@@ -383,6 +381,8 @@ export interface IvrBotConfigProps {
   functionEditData?: Partial<CreateFunctionData>;
   /** Max character length for the "How It Behaves" system prompt (default: 5000, per Figma) */
   systemPromptMaxLength?: number;
+  /** Message shown when the "How It Behaves" system prompt is empty. */
+  systemPromptValidation?: string;
   /** When true, the "How It Behaves" system prompt shows an empty-value validation message. Defaults to true. */
   systemPromptHowItBehavesErrorMessageValidation?: boolean;
   /**

@@ -40,6 +40,8 @@ export interface BotBehaviorCardProps {
   onSystemPromptBlur?: (value: string) => void;
   /** Session Variables shown as insertable chips and in the {{ autocomplete dropdown */
   sessionVariables?: string[];
+  /** Required validation message for the "How It Behaves" system prompt. */
+  systemPromptValidation?: string;
   /**
    * When true, the system prompt shows an inline error while empty.
    * Defaults to true, matching Fallback Prompts required-field validation. Pass false to disable it.
@@ -277,6 +279,7 @@ const BotBehaviorCard = React.forwardRef(
       onChange,
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      systemPromptValidation = defaultSystemPromptRequiredMessage,
       HowItBehavesErrorMessageValidation = true,
       maxLength = 5000,
       disabled,
@@ -291,7 +294,7 @@ const BotBehaviorCard = React.forwardRef(
     const MAX = maxLength;
     const requiredError =
       HowItBehavesErrorMessageValidation && promptCharCount < 1
-        ? defaultSystemPromptRequiredMessage
+        ? systemPromptValidation
         : undefined;
     const promptError = requiredError;
     const sectionRef = React.useRef<HTMLDivElement>(null);

@@ -87,4 +87,18 @@ describe("BotBehaviorCard", () => {
       screen.queryByText("System prompt is required")
     ).not.toBeInTheDocument();
   });
+
+  it("uses a custom system prompt validation message", () => {
+    render(
+      <BotBehaviorCard
+        data={{ systemPrompt: "" }}
+        onChange={() => {}}
+        systemPromptValidation="Please add behavior instructions"
+      />
+    );
+
+    expect(
+      screen.getByText("Please add behavior instructions")
+    ).toBeInTheDocument();
+  });
 });
