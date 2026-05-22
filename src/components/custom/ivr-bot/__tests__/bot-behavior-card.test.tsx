@@ -35,7 +35,7 @@ describe("BotBehaviorCard", () => {
     expect(screen.getByText("9/5000")).toBeInTheDocument();
   });
 
-  it("shows required validation by default when prompt is empty", () => {
+  it("shows validation message when HowItBehavesErrorMessageValidation is enabled", () => {
     render(
       <BotBehaviorCard
         data={{ systemPrompt: "" }}
@@ -48,7 +48,7 @@ describe("BotBehaviorCard", () => {
     expect(prompt).toHaveAttribute("aria-invalid", "true");
   });
 
-  it("updates required validation in real time while typing", async () => {
+  it("keeps validation message while typing when validation is enabled", async () => {
     const user = userEvent.setup();
 
     function Controlled() {
@@ -68,10 +68,8 @@ describe("BotBehaviorCard", () => {
     expect(screen.getByText("System prompt is required")).toBeInTheDocument();
 
     await user.type(prompt, "hello");
-    expect(
-      screen.queryByText("System prompt is required")
-    ).not.toBeInTheDocument();
-    expect(prompt).toHaveAttribute("aria-invalid", "false");
+    expect(screen.getByText("System prompt is required")).toBeInTheDocument();
+    expect(prompt).toHaveAttribute("aria-invalid", "true");
   });
 
   it("can disable required validation", () => {
