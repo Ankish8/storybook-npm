@@ -76,16 +76,10 @@ export interface FrustrationHandoverCardProps {
    * If the parent supplies a longer value (e.g. legacy API data), overflow error styling still applies until trimmed.
    */
   promptMaxLength?: number;
-  /**
-   * External validation message for the Prompt field (e.g. from save/publish).
-   * When set, it replaces the built-in overflow message (overflow still uses error styling via length check in the shared Textarea).
-   */
-  promptValidation?: string;
-  /**
-   * When true, Prompt shows required validation after the user interacts with it.
-   * Defaults to true. Pass false to disable built-in validation.
-   */
-  promptErrorMessageValidation?: boolean;
+  /** When false, Prompt validation is disabled. Defaults to true. */
+  promptValidation?: boolean;
+  /** Validation message shown for Prompt when validation is enabled and the value is empty. */
+  promptValidationMessage?: string;
   /** When false, Transfer to Department validation is disabled. Defaults to true. */
   escalationDepartmentValidation?: boolean;
   /** Validation message shown for Transfer to Department when validation is enabled and the value is empty. */
@@ -157,8 +151,8 @@ const FrustrationHandoverCard = React.forwardRef(
     infoTooltip,
     className,
     promptMaxLength = 5000,
-    promptValidation,
-    promptErrorMessageValidation = true,
+    promptValidation = true,
+    promptValidationMessage,
     escalationDepartmentValidationMessage,
     escalationDepartmentValidation = true,
     onEscalationPromptBlur,
@@ -181,16 +175,16 @@ const FrustrationHandoverCard = React.forwardRef(
     const promptOverflowMessage = overPromptLimit
       ? `Maximum ${promptMaxLength} characters allowed.`
       : undefined;
+    const hasPromptValidationMessage = Boolean(promptValidationMessage);
     const promptRequiredError =
-      promptTouched &&
       data.frustrationHandoverEnabled &&
       showEscalationPrompt &&
-      promptErrorMessageValidation &&
-      !promptValue.trim()
-        ? defaultEscalationPromptErrorMessage
+      promptValidation &&
+      !promptValue.trim() &&
+      (promptTouched || hasPromptValidationMessage)
+        ? promptValidationMessage ?? defaultEscalationPromptErrorMessage
         : undefined;
-    const promptValidationMessage =
-      promptValidation ??
+    const promptErrorMessage =
       (promptInvalidCharsError || undefined) ??
       promptRequiredError ??
       promptOverflowMessage;
@@ -317,8 +311,8 @@ const FrustrationHandoverCard = React.forwardRef(
                       showCount
                       maxLength={promptMaxLength}
                       displayCharCount={promptLength}
-                      error={promptValidationMessage}
-                      errorIcon={Boolean(promptValidationMessage)}
+                      error={promptErrorMessage}
+                      errorIcon={Boolean(promptErrorMessage)}
                       resize="none"
                       rows={5}
                       size="sm"

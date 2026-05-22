@@ -336,10 +336,10 @@ export interface IvrBotConfigProps {
   showEscalationPrompt?: boolean;
   /** Maximum characters for Escalate to Human **Prompt** (default: 5000). */
   escalationPromptMaxLength?: number;
-  /** External validation message for Escalate to Human **Prompt** (e.g. from save/publish). */
-  escalationPromptValidation?: string;
-  /** When false, Escalate to Human **Prompt** skips built-in required validation. Defaults to true. */
-  escalationPromptErrorMessageValidation?: boolean;
+  /** When false, Escalate to Human **Prompt** validation is disabled. Defaults to true. */
+  escalationPromptValidation?: boolean;
+  /** Validation message for Escalate to Human **Prompt** when empty. */
+  escalationPromptValidationMessage?: string;
   /** When false, Escalate to Human **Transfer to Department** validation is disabled. Defaults to true. */
   escalationDepartmentValidation?: boolean;
   /** Validation message for Escalate to Human **Transfer to Department** when empty. */

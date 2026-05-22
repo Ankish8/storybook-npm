@@ -94,7 +94,7 @@ export const IvrBotConfig = React.forwardRef(
       showEscalationPrompt,
       escalationPromptMaxLength,
       escalationPromptValidation,
-      escalationPromptErrorMessageValidation,
+      escalationPromptValidationMessage,
       escalationDepartmentValidation,
       escalationDepartmentValidationMessage,
       functionPromptMinLength,
@@ -328,7 +328,7 @@ export const IvrBotConfig = React.forwardRef(
               showEscalationPrompt={showEscalationPrompt}
               promptMaxLength={escalationPromptMaxLength}
               promptValidation={escalationPromptValidation}
-              promptErrorMessageValidation={escalationPromptErrorMessageValidation}
+              promptValidationMessage={escalationPromptValidationMessage}
               escalationDepartmentValidation={escalationDepartmentValidation}
               escalationDepartmentValidationMessage={
                 escalationDepartmentValidationMessage

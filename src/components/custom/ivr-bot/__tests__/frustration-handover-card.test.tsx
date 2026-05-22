@@ -264,10 +264,10 @@ describe("FrustrationHandoverCard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("lets external Prompt validation override the built-in message", async () => {
+  it("uses custom Prompt validation message", async () => {
     const user = userEvent.setup();
     render(
-      <StatefulFrustrationHandoverCard promptValidation="Prompt is invalid" />
+      <StatefulFrustrationHandoverCard promptValidationMessage="Prompt is invalid" />
     );
 
     await user.click(screen.getByText("Escalate to Human"));
@@ -277,10 +277,10 @@ describe("FrustrationHandoverCard", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("can disable built-in Prompt validation", async () => {
+  it("can disable Prompt validation", async () => {
     const user = userEvent.setup();
     render(
-      <StatefulFrustrationHandoverCard promptErrorMessageValidation={false} />
+      <StatefulFrustrationHandoverCard promptValidation={false} />
     );
 
     await user.click(screen.getByText("Escalate to Human"));

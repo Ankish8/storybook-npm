@@ -54,8 +54,8 @@ import { IvrBotConfig } from "@/components/custom/ivr-bot";
 | \`noExtensionFoundPromptValidation\` | Required message below **No Extension Found** |
 | \`agentBusyPromptErrorMessageValidation\` | Enables validation for **Agent Busy Prompt**; pass \`false\` to make it optional |
 | \`noExtensionFoundPromptErrorMessageValidation\` | Enables validation for **No Extension Found**; pass \`false\` to make it optional |
-| \`escalationPromptErrorMessageValidation\` | Enables built-in required validation for **Escalate to Human → Prompt**; pass \`false\` to make it optional |
-| \`escalationPromptValidation\` | Validation below **Escalate to Human → Prompt** |
+| \`escalationPromptValidation\` | Enables validation for **Escalate to Human → Prompt**; pass \`false\` to make it optional |
+| \`escalationPromptValidationMessage\` | Validation message below **Escalate to Human → Prompt** |
 | \`escalationDepartmentValidation\` | Enables validation for **Transfer to Department**; pass \`false\` to make it optional |
 | \`escalationDepartmentValidationMessage\` | Validation message below **Transfer to Department** |
 
@@ -177,13 +177,13 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label field�
         "Tooltip for the Escalate to Human accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
     },
     escalationPromptValidation: {
-      control: "text",
-      description: "Validation message shown below Escalate to Human Prompt.",
-    },
-    escalationPromptErrorMessageValidation: {
       control: "boolean",
       description:
-        "Enables built-in Escalate to Human Prompt required validation. Pass false to make it optional.",
+        "Enables Escalate to Human Prompt validation. Pass false to make it optional.",
+    },
+    escalationPromptValidationMessage: {
+      control: "text",
+      description: "Validation message shown below Escalate to Human Prompt.",
     },
     escalationDepartmentValidation: {
       control: "boolean",
@@ -233,9 +233,7 @@ export const Overview: Story = {
           args.noExtensionFoundPromptErrorMessageValidation
         }
         escalationPromptValidation={args.escalationPromptValidation}
-        escalationPromptErrorMessageValidation={
-          args.escalationPromptErrorMessageValidation
-        }
+        escalationPromptValidationMessage={args.escalationPromptValidationMessage}
         escalationDepartmentValidation={args.escalationDepartmentValidation}
         escalationDepartmentValidationMessage={
           args.escalationDepartmentValidationMessage
