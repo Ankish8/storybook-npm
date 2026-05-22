@@ -292,10 +292,9 @@ const BotBehaviorCard = React.forwardRef(
     /** Counter matches stored prompt length so spaces and newlines each count as one character. */
     const promptCharCount = prompt.length;
     const MAX = maxLength;
-    const promptError =
-      HowItBehavesErrorMessageValidation
-        ? systemPromptValidation
-        : undefined;
+    const promptError = HowItBehavesErrorMessageValidation
+      ? systemPromptValidation
+      : undefined;
     const sectionRef = React.useRef<HTMLDivElement>(null);
     const textareaRef = React.useRef<HTMLTextAreaElement>(null);
     /** Last known textarea selection — used when chips are clicked (textarea may blur before onClick). */
