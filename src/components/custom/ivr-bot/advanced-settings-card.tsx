@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChevronUp, ChevronDown, Info } from "lucide-react";
+import { ChevronUp, ChevronDown, CircleAlert, Info } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Switch } from "../../ui/switch";
 import {
@@ -356,13 +356,17 @@ function ValidatedNumberSpinner({
         </div>
       </div>
       {error ? (
-        <p
+        <div
           id={errorId}
           role="alert"
-          className="m-0 text-xs text-semantic-error-primary"
+          className="flex items-center gap-1.5 min-w-0"
         >
-          {error}
-        </p>
+          <CircleAlert
+            className="size-3.5 shrink-0 text-semantic-error-primary"
+            aria-hidden
+          />
+          <span className="text-sm text-semantic-error-primary">{error}</span>
+        </div>
       ) : null}
     </div>
   );
