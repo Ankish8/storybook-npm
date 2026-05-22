@@ -293,7 +293,7 @@ const BotBehaviorCard = React.forwardRef(
     const promptCharCount = prompt.length;
     const MAX = maxLength;
     const requiredError =
-      HowItBehavesErrorMessageValidation && promptCharCount < 1
+      HowItBehavesErrorMessageValidation
         ? systemPromptValidation
         : undefined;
     const promptError = requiredError;
