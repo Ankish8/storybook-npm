@@ -108,7 +108,8 @@ const figmaBasePlanCards: PricingCardProps[] = [
     description:
       "For growing businesses that need more users & unlimited IVR+ calling.",
     features: figmaSedanFeatures,
-    ctaText: "Upgrade",
+    ctaText: "Current Plan",
+    isCurrentPlan: true,
     onCtaClick: fn(),
     onFeatureDetails: fn(),
     addon: figmaPlanAddon,

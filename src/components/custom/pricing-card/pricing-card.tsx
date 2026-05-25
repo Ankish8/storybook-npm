@@ -52,7 +52,16 @@ const PricingCard = React.forwardRef(
   ) => {
     const isFeaturedLayout = layout === "featured";
     const buttonText =
-      ctaText || (isCurrentPlan ? "Current plan" : "Select plan");
+      ctaText || (isCurrentPlan ? "Current Plan" : "Select plan");
+    const ctaVariant = isCurrentPlan ? "secondary" : "outline";
+    const ctaLeftIcon = isCurrentPlan ? (
+      <Check className="size-[18px]" aria-hidden />
+    ) : null;
+    /** Figma plan CTAs: 40px height, 14/20 semibold label; current plan keeps full opacity when disabled. */
+    const planCtaClassName = cn(
+      "h-10 w-full leading-5",
+      isCurrentPlan && "disabled:opacity-100"
+    );
 
     // Strip trailing decimal zeros: "500000000.000" → "500000000", "5,000.50" → "5,000.5"
     const cleanPrice = price.includes(".")
@@ -173,10 +182,11 @@ const PricingCard = React.forwardRef(
 
               <div className="flex flex-col gap-3.5">
                 <Button
-                  variant={showPopularBadge ? "default" : "outline"}
-                  className="w-full"
+                  variant={ctaVariant}
+                  className={planCtaClassName}
                   onClick={onCtaClick}
                   loading={ctaLoading}
+                  leftIcon={ctaLeftIcon}
                   disabled={ctaDisabled || isCurrentPlan}
                 >
                   {buttonText}
@@ -266,10 +276,11 @@ const PricingCard = React.forwardRef(
               </div>
               <div className="flex flex-col gap-3.5">
                 <Button
-                  variant={showPopularBadge ? "default" : "outline"}
-                  className="w-full"
+                  variant={ctaVariant}
+                  className={planCtaClassName}
                   onClick={onCtaClick}
                   loading={ctaLoading}
+                  leftIcon={ctaLeftIcon}
                   disabled={ctaDisabled || isCurrentPlan}
                 >
                   {buttonText}

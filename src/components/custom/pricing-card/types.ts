@@ -79,7 +79,7 @@ export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   showPopularBadge?: boolean;
   /** Custom badge text (defaults to "MOST POPULAR") */
   badgeText?: string;
-  /** Custom CTA button text (overrides default "Select plan" / "Current plan") */
+  /** Custom CTA button text (overrides default "Select plan" / "Current Plan") */
   ctaText?: string;
   /** Show loading spinner on CTA button and make it non-interactive. Reusable on any screen that renders PricingCard. */
   ctaLoading?: boolean;

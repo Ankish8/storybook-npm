@@ -87,10 +87,10 @@ describe("PricingCard", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders Current plan button when isCurrentPlan is true", () => {
+  it("renders Current Plan button when isCurrentPlan is true", () => {
     render(<PricingCard {...defaultProps} isCurrentPlan />);
     expect(
-      screen.getByRole("button", { name: "Current plan" })
+      screen.getByRole("button", { name: "Current Plan" })
     ).toBeInTheDocument();
   });
 
@@ -268,15 +268,18 @@ describe("PricingCard", () => {
 
   it("renders secondary disabled button for current plan", () => {
     render(<PricingCard {...defaultProps} isCurrentPlan data-testid="card" />);
-    const button = screen.getByRole("button", { name: "Current plan" });
+    const button = screen.getByRole("button", { name: "Current Plan" });
     expect(button.className).toContain("bg-semantic-primary-surface");
+    expect(button.className).toContain("h-10");
+    expect(button.className).toContain("disabled:opacity-100");
     expect(button).toBeDisabled();
   });
 
-  it("renders default button variant for selectable plan", () => {
+  it("renders outline button variant for selectable plan", () => {
     render(<PricingCard {...defaultProps} data-testid="card" />);
     const button = screen.getByRole("button", { name: "Select plan" });
-    expect(button.className).toContain("bg-semantic-primary");
+    expect(button.className).toContain("border-semantic-border-layout");
+    expect(button.className).toContain("bg-semantic-bg-primary");
   });
 
   it("renders usage details section", () => {
