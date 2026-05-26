@@ -108,6 +108,20 @@ describe("PricingCard", () => {
     );
   });
 
+  it("applies custom CTA area and group spacing classes", () => {
+    const { container } = render(
+      <PricingCard
+        {...defaultProps}
+        onFeatureDetails={vi.fn()}
+        ctaAreaClassName="custom-cta-area"
+        ctaGroupClassName="custom-cta-group"
+      />
+    );
+
+    expect(container.querySelector(".custom-cta-area")).toBeInTheDocument();
+    expect(container.querySelector(".custom-cta-group")).toBeInTheDocument();
+  });
+
   it("calls onCtaClick when CTA button is clicked", () => {
     const onCtaClick = vi.fn();
     render(<PricingCard {...defaultProps} onCtaClick={onCtaClick} />);

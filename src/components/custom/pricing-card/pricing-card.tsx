@@ -38,6 +38,8 @@ const PricingCard = React.forwardRef(
       badgeText = "Most Popular",
       ctaText,
       ctaClassName,
+      ctaAreaClassName,
+      ctaGroupClassName,
       ctaLoading = false,
       ctaDisabled = false,
       onCtaClick,
@@ -182,7 +184,7 @@ const PricingCard = React.forwardRef(
                 )}
               </div>
 
-              <div className="flex flex-col gap-3.5">
+              <div className={cn("flex flex-col gap-3.5", ctaGroupClassName)}>
                 <Button
                   variant={ctaVariant}
                   className={planCtaClassName}
@@ -257,7 +259,7 @@ const PricingCard = React.forwardRef(
             </div>
 
             {/* Price block (16px rhythm) + CTA block (14px between its parts); 14px from plan line → primary button. */}
-            <div className="flex flex-col gap-3.5">
+            <div className={cn("flex flex-col gap-3.5", ctaAreaClassName)}>
               <div className="flex min-w-0 flex-col gap-4">
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-1 gap-y-0.5">
                   <span className="text-4xl font-normal leading-[44px] text-semantic-text-primary">
@@ -276,7 +278,7 @@ const PricingCard = React.forwardRef(
                   </p>
                 )}
               </div>
-              <div className="flex flex-col gap-3.5">
+              <div className={cn("flex flex-col gap-3.5", ctaGroupClassName)}>
                 <Button
                   variant={ctaVariant}
                   className={planCtaClassName}

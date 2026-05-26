@@ -87,6 +87,10 @@ const pricingPageCurrentPlanCtaClassName = cn(
   "border-transparent bg-semantic-bg-grey text-semantic-text-secondary hover:bg-semantic-bg-grey disabled:bg-semantic-bg-grey disabled:text-semantic-text-secondary disabled:opacity-100"
 );
 
+/** Figma `43417:178025`: 24px above the CTA group and 16px from CTA to feature-details link. */
+const pricingPageCtaAreaClassName = cn("gap-6");
+const pricingPageCtaGroupClassName = cn("gap-4");
+
 /**
  * Figma: `60px` vertical padding on each band; scales down on small viewports.
  */
@@ -191,6 +195,8 @@ const PricingPage = React.forwardRef(
         className: cardClassName,
         layout,
         ctaClassName,
+        ctaAreaClassName,
+        ctaGroupClassName,
         ...cardRest
       } = merged;
       return (
@@ -205,6 +211,14 @@ const PricingPage = React.forwardRef(
               pricingPagePlanCtaClassName,
               cardRest.isCurrentPlan && pricingPageCurrentPlanCtaClassName,
               ctaClassName
+            )}
+            ctaAreaClassName={cn(
+              pricingPageCtaAreaClassName,
+              ctaAreaClassName
+            )}
+            ctaGroupClassName={cn(
+              pricingPageCtaGroupClassName,
+              ctaGroupClassName
             )}
             className={cn("min-h-0 w-full max-w-full flex-1", cardClassName)}
           />

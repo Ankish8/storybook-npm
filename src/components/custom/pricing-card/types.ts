@@ -83,6 +83,10 @@ export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   ctaText?: string;
   /** Optional className for the primary CTA button; lets composed screens style the CTA without changing Button defaults. */
   ctaClassName?: string;
+  /** Optional className for the stack between plan details and the CTA group. */
+  ctaAreaClassName?: string;
+  /** Optional className for the CTA button + feature details stack. */
+  ctaGroupClassName?: string;
   /** Show loading spinner on CTA button and make it non-interactive. Reusable on any screen that renders PricingCard. */
   ctaLoading?: boolean;
   /** Disable the CTA button (e.g. current plan or pending action). Reusable on any screen that renders PricingCard. */

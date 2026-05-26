@@ -127,6 +127,8 @@ describe("PricingPage", () => {
     expect(upgradeButton).toHaveClass("border-semantic-border-primary");
     expect(upgradeButton).toHaveClass("bg-semantic-bg-primary");
     expect(upgradeButton).toHaveClass("text-semantic-text-secondary");
+    expect(upgradeButton.parentElement).toHaveClass("gap-4");
+    expect(upgradeButton.parentElement?.parentElement).toHaveClass("gap-6");
   });
 
   it("renders planAlert above plan cards with title and description", () => {
