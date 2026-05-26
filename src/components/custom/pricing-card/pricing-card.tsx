@@ -37,6 +37,7 @@ const PricingCard = React.forwardRef(
       showPopularBadge = false,
       badgeText = "Most Popular",
       ctaText,
+      ctaClassName,
       ctaLoading = false,
       ctaDisabled = false,
       onCtaClick,
@@ -60,7 +61,8 @@ const PricingCard = React.forwardRef(
     /** Figma plan CTAs: 40px height, 14/20 semibold label; current plan keeps full opacity when disabled. */
     const planCtaClassName = cn(
       "h-10 w-full leading-5",
-      isCurrentPlan && "disabled:opacity-100"
+      isCurrentPlan && "disabled:opacity-100",
+      ctaClassName
     );
 
     // Strip trailing decimal zeros: "500000000.000" → "500000000", "5,000.50" → "5,000.5"

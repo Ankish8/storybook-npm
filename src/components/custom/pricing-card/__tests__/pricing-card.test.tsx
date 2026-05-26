@@ -101,6 +101,13 @@ describe("PricingCard", () => {
     ).toBeInTheDocument();
   });
 
+  it("applies custom ctaClassName to the CTA button", () => {
+    render(<PricingCard {...defaultProps} ctaClassName="custom-cta-class" />);
+    expect(screen.getByRole("button", { name: "Select plan" })).toHaveClass(
+      "custom-cta-class"
+    );
+  });
+
   it("calls onCtaClick when CTA button is clicked", () => {
     const onCtaClick = vi.fn();
     render(<PricingCard {...defaultProps} onCtaClick={onCtaClick} />);

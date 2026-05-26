@@ -77,6 +77,16 @@ const sectionTitleToGridGapClass = cn("gap-4");
 /** Figma `1119:9740` — **18px** between the plan alert and the plan cards row. */
 const planAlertToCardsGapClass = cn("gap-[18px]");
 
+/** Figma `43417:178025` plan CTAs: white outlined action buttons with primary border/text. */
+const pricingPagePlanCtaClassName = cn(
+  "border-semantic-border-primary bg-semantic-bg-primary text-semantic-text-secondary hover:bg-semantic-primary-surface"
+);
+
+/** Current-plan CTA in the pricing page uses a neutral disabled fill while keeping readable label/icon color. */
+const pricingPageCurrentPlanCtaClassName = cn(
+  "border-transparent bg-semantic-bg-grey text-semantic-text-secondary hover:bg-semantic-bg-grey disabled:bg-semantic-bg-grey disabled:text-semantic-text-secondary disabled:opacity-100"
+);
+
 /**
  * Figma: `60px` vertical padding on each band; scales down on small viewports.
  */
@@ -177,7 +187,12 @@ const PricingPage = React.forwardRef(
         if (ctaState.disabled !== undefined)
           merged.ctaDisabled = ctaState.disabled;
       }
-      const { className: cardClassName, layout, ...cardRest } = merged;
+      const {
+        className: cardClassName,
+        layout,
+        ctaClassName,
+        ...cardRest
+      } = merged;
       return (
         <div
           key={index}
@@ -186,6 +201,11 @@ const PricingPage = React.forwardRef(
           <PricingCard
             {...cardRest}
             layout={layout ?? (useFeaturedPlanCard ? "featured" : "default")}
+            ctaClassName={cn(
+              pricingPagePlanCtaClassName,
+              cardRest.isCurrentPlan && pricingPageCurrentPlanCtaClassName,
+              ctaClassName
+            )}
             className={cn("min-h-0 w-full max-w-full flex-1", cardClassName)}
           />
         </div>

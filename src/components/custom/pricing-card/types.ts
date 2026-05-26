@@ -81,6 +81,8 @@ export interface PricingCardProps extends React.HTMLAttributes<HTMLDivElement> {
   badgeText?: string;
   /** Custom CTA button text (overrides default "Select plan" / "Current Plan") */
   ctaText?: string;
+  /** Optional className for the primary CTA button; lets composed screens style the CTA without changing Button defaults. */
+  ctaClassName?: string;
   /** Show loading spinner on CTA button and make it non-interactive. Reusable on any screen that renders PricingCard. */
   ctaLoading?: boolean;
   /** Disable the CTA button (e.g. current plan or pending action). Reusable on any screen that renders PricingCard. */

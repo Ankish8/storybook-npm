@@ -111,6 +111,24 @@ describe("PricingPage", () => {
     expect(screen.getByText("Sedan")).toBeInTheDocument();
   });
 
+  it("applies pricing-page-only plan CTA styling", () => {
+    render(<PricingPage planCards={mockPlanCards} />);
+
+    const currentPlanButton = screen.getByRole("button", {
+      name: "Current plan",
+    });
+    const upgradeButton = screen.getAllByRole("button", {
+      name: "Upgrade plan",
+    })[0];
+
+    expect(currentPlanButton).toHaveClass("bg-semantic-bg-grey");
+    expect(currentPlanButton).toHaveClass("text-semantic-text-secondary");
+    expect(currentPlanButton).toHaveClass("disabled:opacity-100");
+    expect(upgradeButton).toHaveClass("border-semantic-border-primary");
+    expect(upgradeButton).toHaveClass("bg-semantic-bg-primary");
+    expect(upgradeButton).toHaveClass("text-semantic-text-secondary");
+  });
+
   it("renders planAlert above plan cards with title and description", () => {
     render(
       <PricingPage
