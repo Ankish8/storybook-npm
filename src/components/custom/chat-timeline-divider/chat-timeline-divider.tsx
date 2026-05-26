@@ -30,14 +30,14 @@ const containerStyles: Record<ChatTimelineDividerVariant, string> = {
   unread:
     "flex h-5 items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
   system:
-    "flex h-5 max-w-full items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
+    "flex min-h-5 max-w-full items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
 };
 
 const textStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "text-[13px] text-semantic-text-muted",
   unread: "text-[12px] font-semibold leading-none text-semantic-text-primary",
   system:
-    "min-w-0 truncate text-[12px] font-normal leading-none text-semantic-text-secondary",
+    "min-w-0 truncate text-[12px] font-normal leading-4 text-semantic-text-secondary",
 };
 
 const highlightSegmentClassName = cn(

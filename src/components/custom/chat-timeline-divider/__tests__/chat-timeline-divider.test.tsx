@@ -40,7 +40,8 @@ describe("ChatTimelineDivider", () => {
     const text = screen.getByText("Assigned to Alex Smith");
     expect(text.className).toContain("text-semantic-text-secondary");
     expect(text.className).toContain("text-[12px]");
-    expect(text.parentElement?.className).toContain("h-5");
+    expect(text.className).toContain("leading-4");
+    expect(text.parentElement?.className).toContain("min-h-5");
     expect(text.parentElement?.className).toContain("rounded");
     expect(text.parentElement?.className).toContain("bg-semantic-bg-primary");
     expect(text.parentElement?.className).toContain("shadow-sm");
