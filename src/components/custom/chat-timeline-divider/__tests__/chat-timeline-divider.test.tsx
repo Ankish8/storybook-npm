@@ -31,17 +31,19 @@ describe("ChatTimelineDivider", () => {
     expect(text.className).toContain("text-semantic-text-primary");
   });
 
-  it("renders system variant with muted styling and container", () => {
+  it("renders system variant with Figma action feedback styling", () => {
     render(
       <ChatTimelineDivider variant="system">
         Assigned to Alex Smith
       </ChatTimelineDivider>
     );
     const text = screen.getByText("Assigned to Alex Smith");
-    expect(text.className).toContain("text-semantic-text-muted");
-    // container has border
-    expect(text.parentElement?.className).toContain("border");
-    expect(text.parentElement?.className).toContain("rounded-full");
+    expect(text.className).toContain("text-semantic-text-secondary");
+    expect(text.className).toContain("text-[12px]");
+    expect(text.parentElement?.className).toContain("h-5");
+    expect(text.parentElement?.className).toContain("rounded");
+    expect(text.parentElement?.className).toContain("bg-semantic-bg-primary");
+    expect(text.parentElement?.className).toContain("shadow-sm");
   });
 
   it("renders horizontal lines on both sides", () => {
@@ -55,14 +57,13 @@ describe("ChatTimelineDivider", () => {
   it("supports ReactNode children", () => {
     render(
       <ChatTimelineDivider variant="system">
-        Assigned to{" "}
-        <span data-testid="link">Alex Smith</span>
+        Assigned to <span data-testid="link">Alex Smith</span>
       </ChatTimelineDivider>
     );
     expect(screen.getByTestId("link")).toHaveTextContent("Alex Smith");
   });
 
-  it("applies link color and weight to **segments** in string children", () => {
+  it("applies Figma emphasis style to **segments** in string children", () => {
     render(
       <ChatTimelineDivider variant="system">
         Assigned to **Alex Smith** by **Admin**
@@ -73,25 +74,23 @@ describe("ChatTimelineDivider", () => {
     );
     const alex = screen.getByText("Alex Smith");
     const admin = screen.getByText("Admin");
-    expect(alex.className).toContain("text-semantic-text-link");
-    expect(alex.className).toContain("font-medium");
-    expect(admin.className).toContain("text-semantic-text-link");
-    expect(admin.className).toContain("font-medium");
+    expect(alex.className).toContain("text-semantic-text-secondary");
+    expect(alex.className).toContain("font-semibold");
+    expect(alex.className).toContain("tracking-[0.06px]");
+    expect(admin.className).toContain("text-semantic-text-secondary");
+    expect(admin.className).toContain("font-semibold");
+    expect(admin.className).toContain("tracking-[0.06px]");
   });
 
   it("forwards ref", () => {
     const ref = { current: null } as React.RefObject<HTMLDivElement>;
-    render(
-      <ChatTimelineDivider ref={ref}>Today</ChatTimelineDivider>
-    );
+    render(<ChatTimelineDivider ref={ref}>Today</ChatTimelineDivider>);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 
   it("merges custom className", () => {
     render(
-      <ChatTimelineDivider className="custom-class">
-        Today
-      </ChatTimelineDivider>
+      <ChatTimelineDivider className="custom-class">Today</ChatTimelineDivider>
     );
     expect(screen.getByRole("separator").className).toContain("custom-class");
   });

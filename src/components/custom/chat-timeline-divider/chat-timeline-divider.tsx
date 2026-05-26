@@ -5,13 +5,15 @@ import { cn } from "../../../lib/utils";
 
 export type ChatTimelineDividerVariant = "default" | "unread" | "system";
 
-export interface ChatTimelineDividerProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+export interface ChatTimelineDividerProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "children"
+> {
   /**
    * Visual style of the divider.
    * - `default`: plain centered text between lines (e.g. "Today", "Yesterday")
-   * - `unread`: bold text in a white pill with border (e.g. "3 unread messages")
-   * - `system`: muted text in a white pill with border (e.g. "Assigned to Alex Smith")
+   * - `unread`: bold text in a compact white pill (e.g. "3 unread messages")
+   * - `system`: compact action feedback tag (e.g. "Assigned to Alex Smith")
    */
   variant?: ChatTimelineDividerVariant;
   /**
@@ -26,22 +28,26 @@ export interface ChatTimelineDividerProps
 const containerStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "",
   unread:
-    "bg-white px-2.5 py-0.5 rounded-full border border-solid border-semantic-border-layout shadow-sm",
+    "flex h-5 items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
   system:
-    "bg-white px-2.5 py-1 rounded-full border border-solid border-semantic-border-layout shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]",
+    "flex h-5 max-w-full items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
 };
 
 const textStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "text-[13px] text-semantic-text-muted",
-  unread: "text-[12px] font-semibold text-semantic-text-primary",
-  system: "text-[13px] text-semantic-text-muted",
+  unread: "text-[12px] font-semibold leading-none text-semantic-text-primary",
+  system:
+    "min-w-0 truncate text-[12px] font-normal leading-none text-semantic-text-secondary",
 };
 
-const highlightSegmentClassName = cn("text-semantic-text-link font-medium");
+const highlightSegmentClassName = cn(
+  "font-semibold tracking-[0.06px] text-semantic-text-secondary"
+);
 
 /**
  * Splits a string on markdown-style `**label**` markers and returns nodes:
- * text outside markers inherits the parent span; segments inside `**` use link color + medium weight.
+ * text outside markers inherits the parent span; segments inside `**` use the
+ * Figma action-feedback emphasis style.
  */
 function parseBoldMarkers(content: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
@@ -93,37 +99,26 @@ function parseBoldMarkers(content: string): React.ReactNode[] {
 const ChatTimelineDivider = React.forwardRef<
   HTMLDivElement,
   ChatTimelineDividerProps
->(
-  (
-    { variant = "default", children, className, ...props },
-    ref
-  ) => {
-    const showLines = true;
+>(({ variant = "default", children, className, ...props }, ref) => {
+  const showLines = true;
 
-    return (
-      <div
-        ref={ref}
-        role="separator"
-        className={cn("flex items-center gap-4 my-2", className)}
-        {...props}
-      >
-        {showLines && (
-          <div className="flex-1 h-px bg-semantic-border-layout" />
-        )}
-        <div className={cn(containerStyles[variant])}>
-          <span className={cn(textStyles[variant])}>
-            {typeof children === "string"
-              ? parseBoldMarkers(children)
-              : children}
-          </span>
-        </div>
-        {showLines && (
-          <div className="flex-1 h-px bg-semantic-border-layout" />
-        )}
+  return (
+    <div
+      ref={ref}
+      role="separator"
+      className={cn("my-2 flex min-w-0 items-center gap-3", className)}
+      {...props}
+    >
+      {showLines && <div className="flex-1 h-px bg-semantic-border-layout" />}
+      <div className={cn(containerStyles[variant])}>
+        <span className={cn(textStyles[variant])}>
+          {typeof children === "string" ? parseBoldMarkers(children) : children}
+        </span>
       </div>
-    );
-  }
-);
+      {showLines && <div className="flex-1 h-px bg-semantic-border-layout" />}
+    </div>
+  );
+});
 ChatTimelineDivider.displayName = "ChatTimelineDivider";
 
 export { ChatTimelineDivider };

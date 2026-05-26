@@ -8,12 +8,14 @@ const meta: Meta<typeof ChatTimelineDivider> = {
     layout: "padded",
     docs: {
       description: {
-        component: `
+        component:
+          `
 A timeline divider for chat message lists. Renders centered content between two horizontal lines.
 
 Use it to separate messages by date, mark unread boundaries, or display system events like agent assignments and conversation resolutions.
 
-For string children, wrap names or keywords in `**` for link-colored, medium-weight highlights (e.g. \`Assigned to **Alex Smith** by **Admin**\`).
+For string children, wrap names or keywords in ` **
+          ` for semibold action-feedback highlights (e.g. \`Assigned to **Alex Smith** by **Admin**\`).
 
 ### Installation
 
@@ -34,9 +36,9 @@ import { ChatTimelineDivider } from "@/components/custom/chat-timeline-divider"
 | Line color | \`--border/border-layout\` | Horizontal lines | <span style="color:#e9eaeb">■</span> \`#E9EAEB\` |
 | Default text | \`--text/text-muted\` | Date labels | <span style="color:#717680">■</span> \`#717680\` |
 | Unread text | \`--text/text-primary\` | Unread count | <span style="color:#181d27">■</span> \`#181D27\` |
-| System text | \`--text/text-muted\` | System events | <span style="color:#717680">■</span> \`#717680\` |
-| Container bg | white | Pill background | <span style="color:#ffffff; text-shadow: 0 0 1px #999">■</span> \`#FFFFFF\` |
-| Container border | \`--border/border-layout\` | Pill border | <span style="color:#e9eaeb">■</span> \`#E9EAEB\` |
+| System text | \`--semantic-text-secondary\` | Action feedback | <span style="color:#343e55">■</span> \`#343E55\` |
+| Container bg | \`--semantic-bg-primary\` | Action tag background | <span style="color:#ffffff; text-shadow: 0 0 1px #999">■</span> \`#FFFFFF\` |
+| Container shadow | \`shadow-sm\` | Action tag elevation | Figma shadow-sm |
         `,
       },
     },
@@ -44,7 +46,14 @@ import { ChatTimelineDivider } from "@/components/custom/chat-timeline-divider"
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div style={{ width: 500, background: "#f5f5f5", padding: "24px 16px", borderRadius: 8 }}>
+      <div
+        style={{
+          width: 500,
+          background: "#f5f5f5",
+          padding: "24px 16px",
+          borderRadius: 8,
+        }}
+      >
         <Story />
       </div>
     ),
@@ -88,7 +97,9 @@ export const ConversationResolved: Story = {
   render: () => (
     <ChatTimelineDivider variant="system">
       Conversation resolved by{" "}
-      <span className="text-semantic-text-link font-medium">Jane Doe</span>
+      <span className="font-semibold tracking-[0.06px] text-semantic-text-secondary">
+        Jane Doe
+      </span>
     </ChatTimelineDivider>
   ),
 };
@@ -99,15 +110,23 @@ export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-col gap-6">
       <div>
-        <p className="m-0 text-xs text-semantic-text-muted mb-2">default — date labels</p>
+        <p className="m-0 text-xs text-semantic-text-muted mb-2">
+          default — date labels
+        </p>
         <ChatTimelineDivider>Today</ChatTimelineDivider>
       </div>
       <div>
-        <p className="m-0 text-xs text-semantic-text-muted mb-2">unread — unread message count</p>
-        <ChatTimelineDivider variant="unread">1 unread message</ChatTimelineDivider>
+        <p className="m-0 text-xs text-semantic-text-muted mb-2">
+          unread — unread message count
+        </p>
+        <ChatTimelineDivider variant="unread">
+          1 unread message
+        </ChatTimelineDivider>
       </div>
       <div>
-        <p className="m-0 text-xs text-semantic-text-muted mb-2">system — action events</p>
+        <p className="m-0 text-xs text-semantic-text-muted mb-2">
+          system — action events
+        </p>
         <ChatTimelineDivider variant="system">
           Assigned to **Alex Smith** by **Admin**
         </ChatTimelineDivider>
@@ -122,7 +141,8 @@ export const InChatTimeline: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Shows how dividers look between chat messages in a typical timeline.",
+        story:
+          "Shows how dividers look between chat messages in a typical timeline.",
       },
     },
   },
@@ -140,7 +160,9 @@ export const InChatTimeline: Story = {
         Assigned to **Alex Smith** by **Admin**
       </ChatTimelineDivider>
 
-      <ChatTimelineDivider variant="unread">1 unread message</ChatTimelineDivider>
+      <ChatTimelineDivider variant="unread">
+        1 unread message
+      </ChatTimelineDivider>
 
       {/* Simulated message */}
       <div className="self-start bg-white rounded-lg px-3 py-2 shadow-sm max-w-[260px]">
