@@ -22,6 +22,7 @@ const preview: Preview = {
     },
     options: {
       storySort: {
+        method: 'alphabetical',
         order: [
           'Introduction',
           'Getting Started',
@@ -30,9 +31,7 @@ const preview: Preview = {
           'Foundations',
           ['Colors', 'Typography', 'Spacing', 'Accessibility'],
           'Components',
-          ['Button', 'Badge', 'Checkbox', 'Collapsible', 'Dropdown Menu', 'Input', 'MultiSelect', 'Select', 'SelectField', 'Table', 'Tag', 'TextField', 'Toggle'],
           'Custom',
-          ['AI Bot', 'Event Selector', 'Plan & Payment', ['Plan & Pricing', ['PricingPage', '*']]],
           '*',
         ],
       },
