@@ -1,7 +1,27 @@
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
+const phoneInputContainerVariants = cva(
+  "flex items-center border border-solid rounded transition-all",
+  {
+    variants: {
+      state: {
+        default:
+          "border-semantic-border-input focus-within:outline-none focus-within:border-semantic-border-input-focus focus-within:ring-1 focus-within:ring-semantic-border-input-focus/15",
+        empty:
+          "border-semantic-border-input focus-within:outline-none focus-within:border-semantic-border-input-focus focus-within:ring-1 focus-within:ring-semantic-border-input-focus/15",
+        error:
+          "border-semantic-error-primary focus-within:outline-none focus-within:border-semantic-error-primary focus-within:ring-1 focus-within:ring-semantic-error-primary/15",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+);
 
 /**
  * A phone number input with a country code prefix area.
@@ -11,11 +31,18 @@ import { cn } from "@/lib/utils";
  * <PhoneInput placeholder="Enter phone number" />
  * <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
  * <PhoneInput phoneMaxNumber={10} />
+ * <PhoneInput state="empty" />
+ * <PhoneInput validation="Enter a valid phone number" />
  * <PhoneInput onCountryClick={() => openCountryPicker()} />
  * ```
  */
 export interface PhoneInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">,
+    VariantProps<typeof phoneInputContainerVariants> {
+  /** Visual validation state of the phone input */
+  state?: "default" | "empty" | "error";
+  /** Validation message displayed below the input. Also applies error styling. */
+  validation?: string;
   /** Country flag emoji (e.g., "🇮🇳", "🇺🇸"). Defaults to "🇮🇳" */
   countryFlag?: string;
   /** Country dial code (e.g., "+91", "+1"). Defaults to "+91" */
@@ -34,6 +61,8 @@ const PhoneInput = React.forwardRef(
   (
     {
       className,
+      state,
+      validation,
       countryFlag = "🇮🇳",
       countryCode = "+91",
       showChevron = true,
@@ -47,11 +76,21 @@ const PhoneInput = React.forwardRef(
       onKeyDown,
       maxLength,
       phoneMaxNumber,
+      id,
+      "aria-describedby": ariaDescribedBy,
+      "aria-invalid": ariaInvalid,
       ...props
     }: PhoneInputProps,
     ref: React.Ref<HTMLInputElement>
   ) => {
     const effectiveMaxLength = phoneMaxNumber ?? maxLength;
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
+    const validationId = `${inputId}-validation`;
+    const derivedState = validation ? "error" : (state ?? "default");
+    const describedBy = [ariaDescribedBy, validation ? validationId : undefined]
+      .filter(Boolean)
+      .join(" ");
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       onKeyDown?.(event);
@@ -96,10 +135,12 @@ const PhoneInput = React.forwardRef(
       onChange?.(event);
     };
 
-    return (
+    const phoneInput = (
       <div
         className={cn(
-          "flex items-center border border-solid border-semantic-border-input rounded focus-within:outline-none focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] transition-all",
+          phoneInputContainerVariants({
+            state: derivedState,
+          }),
           disabled && "opacity-60 bg-semantic-bg-ui cursor-not-allowed",
           wrapperClassName
         )}
@@ -123,11 +164,14 @@ const PhoneInput = React.forwardRef(
         <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
         <input
           type="tel"
+          id={inputId}
           ref={ref}
           disabled={disabled}
           inputMode={inputMode}
           pattern={pattern}
           maxLength={effectiveMaxLength}
+          aria-invalid={ariaInvalid ?? derivedState === "error"}
+          aria-describedby={describedBy || undefined}
           className={cn(
             "flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent disabled:cursor-not-allowed",
             className
@@ -139,8 +183,21 @@ const PhoneInput = React.forwardRef(
         />
       </div>
     );
+
+    if (!validation) {
+      return phoneInput;
+    }
+
+    return (
+      <div className="flex flex-col gap-1.5">
+        {phoneInput}
+        <p id={validationId} className="m-0 text-sm text-semantic-error-primary">
+          {validation}
+        </p>
+      </div>
+    );
   }
 );
 PhoneInput.displayName = "PhoneInput";
 
-export { PhoneInput };
+export { PhoneInput, phoneInputContainerVariants };

@@ -170,6 +170,7 @@ components:
     description: "A phone number input with country code prefix, flag emoji, and optional country selector"
     category: core
     dependencies:
+      - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"

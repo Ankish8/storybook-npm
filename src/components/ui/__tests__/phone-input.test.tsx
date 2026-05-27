@@ -95,6 +95,50 @@ describe("PhoneInput", () => {
     expect(wrapper).toHaveClass("opacity-60");
   });
 
+  it("applies empty state classes", () => {
+    render(<PhoneInput state="empty" data-testid="phone" />);
+    const wrapper = screen
+      .getByTestId("phone")
+      .closest("div[class*='flex items-center border']");
+
+    expect(wrapper).toHaveClass("border-semantic-border-input");
+    expect(screen.getByTestId("phone")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
+  });
+
+  it("applies error state classes", () => {
+    render(<PhoneInput state="error" data-testid="phone" />);
+    const wrapper = screen
+      .getByTestId("phone")
+      .closest("div[class*='flex items-center border']");
+
+    expect(wrapper).toHaveClass("border-semantic-error-primary");
+    expect(screen.getByTestId("phone")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
+
+  it("renders validation message and connects it to the input", () => {
+    render(
+      <PhoneInput
+        validation="Enter a valid phone number"
+        data-testid="phone"
+      />
+    );
+
+    const input = screen.getByTestId("phone");
+    const validationMessage = screen.getByText("Enter a valid phone number");
+    const wrapper = input.closest("div[class*='flex items-center border']");
+
+    expect(wrapper).toHaveClass("border-semantic-error-primary");
+    expect(validationMessage).toHaveClass("m-0", "text-semantic-error-primary");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAttribute("aria-describedby", validationMessage.id);
+  });
+
   it("disables the input when disabled prop is set", () => {
     render(<PhoneInput disabled data-testid="phone" />);
     expect(screen.getByTestId("phone")).toBeDisabled();

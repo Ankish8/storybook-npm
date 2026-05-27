@@ -28,6 +28,8 @@ import { PhoneInput } from "@/components/ui/phone-input"
 <PhoneInput placeholder="Enter phone number" />
 <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
 <PhoneInput phoneMaxNumber={10} />
+<PhoneInput state="empty" placeholder="Phone number is required" />
+<PhoneInput validation="Enter a valid phone number" />
 <PhoneInput onCountryClick={() => openCountryPicker()} />
 \`\`\`
 
@@ -81,6 +83,17 @@ import { PhoneInput } from "@/components/ui/phone-input"
   },
   tags: ["autodocs"],
   argTypes: {
+    state: {
+      control: "select",
+      options: ["default", "empty", "error"],
+      description:
+        "Visual validation state. `validation` automatically applies the error state.",
+    },
+    validation: {
+      control: "text",
+      description:
+        "Validation message displayed below the phone input. Applies error styling and ARIA attributes.",
+    },
     phoneMaxNumber: {
       control: "number",
       description: "Maximum number of digits allowed in the phone number.",
@@ -169,6 +182,23 @@ export const WithMaxNumber: Story = {
       description: {
         story:
           "Limits the phone number to the provided maximum number of digits.",
+      },
+    },
+  },
+};
+
+export const EmptyState: Story = {
+  args: {
+    state: "empty",
+    value: "123",
+    placeholder: "Phone number is required",
+    validation: "Enter a valid phone number.",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows the empty state with validation styling, helper message, and ARIA invalid/describedby attributes.",
       },
     },
   },
