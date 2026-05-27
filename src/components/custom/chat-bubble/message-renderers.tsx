@@ -78,13 +78,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
         style={{ aspectRatio: "16/10" }}
       />
       {/* Gradient overlay */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to top, color-mix(in srgb, var(--semantic-bg-inverted) 70%, transparent), color-mix(in srgb, var(--semantic-bg-inverted) 10%, transparent), transparent)",
-        }}
-      />
+      <div className="absolute inset-0 bg-gradient-to-t from-semantic-bg-inverted/70 via-semantic-bg-inverted/10 to-transparent" />
       {/* Center play/pause */}
       <div className={cn(
         "absolute inset-0 flex items-center justify-center transition-opacity",
