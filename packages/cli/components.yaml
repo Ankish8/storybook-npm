@@ -315,6 +315,7 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+      - "@floating-ui/react-dom"
     internalDependencies:
       - checkbox
       - tooltip
