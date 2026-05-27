@@ -53,13 +53,13 @@ describe("ChatBubble", () => {
     expect(bubble).toBeInTheDocument();
   });
 
-  it("receiver variant has white background", () => {
+  it("receiver variant uses the primary background token", () => {
     const { container } = render(
       <ChatBubble variant="receiver" timestamp="2:16 PM">
         Test
       </ChatBubble>
     );
-    const bubble = container.querySelector(".bg-white");
+    const bubble = container.querySelector(".bg-semantic-bg-primary");
     expect(bubble).toBeInTheDocument();
   });
 

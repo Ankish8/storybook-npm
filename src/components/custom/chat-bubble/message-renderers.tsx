@@ -78,17 +78,23 @@ function VideoMedia({ media }: { media: MediaPayload }) {
         style={{ aspectRatio: "16/10" }}
       />
       {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to top, color-mix(in srgb, var(--semantic-bg-inverted) 70%, transparent), color-mix(in srgb, var(--semantic-bg-inverted) 10%, transparent), transparent)",
+        }}
+      />
       {/* Center play/pause */}
       <div className={cn(
         "absolute inset-0 flex items-center justify-center transition-opacity",
         playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"
       )}>
-        <button type="button" aria-label={playing ? "Pause video" : "Play video"} className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors border-none cursor-pointer">
+        <button type="button" aria-label={playing ? "Pause video" : "Play video"} className="size-[56px] rounded-full bg-semantic-bg-inverted/40 backdrop-blur-sm flex items-center justify-center hover:bg-semantic-bg-inverted/50 transition-colors border-none cursor-pointer">
           {playing ? (
-            <Pause className="size-7 text-white fill-white" />
+            <Pause className="size-7 text-semantic-text-inverted fill-semantic-text-inverted" />
           ) : (
-            <Play className="size-7 text-white fill-white ml-0.5" />
+            <Play className="size-7 text-semantic-text-inverted fill-semantic-text-inverted ml-0.5" />
           )}
         </button>
       </div>
@@ -103,15 +109,15 @@ function VideoMedia({ media }: { media: MediaPayload }) {
             aria-valuemax={100}
             aria-valuenow={15}
             tabIndex={0}
-            className="relative flex-1 h-[3px] rounded-full bg-white/30"
+            className="relative flex-1 h-[3px] rounded-full bg-semantic-text-inverted/30"
           >
-            <div className="absolute left-0 top-0 h-full w-[15%] rounded-full bg-white" />
-            <div className="absolute top-1/2 -translate-y-1/2 size-3 rounded-full bg-white shadow-md" style={{ left: "15%" }} />
+            <div className="absolute left-0 top-0 h-full w-[15%] rounded-full bg-semantic-text-inverted" />
+            <div className="absolute top-1/2 -translate-y-1/2 size-3 rounded-full bg-semantic-text-inverted shadow-md" style={{ left: "15%" }} />
           </div>
         </div>
         {/* Controls row */}
         <div className="flex items-center justify-between">
-          <span className="text-[12px] text-white tabular-nums">{media.duration || "0:00"}</span>
+          <span className="text-[12px] text-semantic-text-inverted tabular-nums">{media.duration || "0:00"}</span>
           <div className="flex items-center gap-2.5">
             {/* Speed dropdown */}
             <DropdownMenu>
@@ -119,7 +125,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
                 <button
                   aria-label={`Playback speed ${speed}x`}
                   onClick={(e) => e.stopPropagation()}
-                  className="text-[11px] font-semibold text-white bg-white/20 hover:bg-white/30 transition-colors px-2 py-0.5 rounded-full"
+                  className="text-[11px] font-semibold text-semantic-text-inverted bg-semantic-text-inverted/20 hover:bg-semantic-text-inverted/30 transition-colors px-2 py-0.5 rounded-full"
                 >
                   {speed}x
                 </button>
@@ -138,7 +144,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
             {/* Volume control */}
             <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
               <button aria-label={muted || volume === 0 ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)} className="hover:opacity-70 transition-opacity">
-                {muted || volume === 0 ? <VolumeX className="size-4 text-white/50" /> : <Volume2 className="size-4 text-white" />}
+                {muted || volume === 0 ? <VolumeX className="size-4 text-semantic-text-inverted/50" /> : <Volume2 className="size-4 text-semantic-text-inverted" />}
               </button>
               <div
                 role="slider"
@@ -162,17 +168,17 @@ function VideoMedia({ media }: { media: MediaPayload }) {
                   setMuted(false)
                 }}
               >
-                <div className="w-full h-[3px] rounded-full bg-white/30">
-                  <div className="h-full rounded-full bg-white" style={{ width: `${muted ? 0 : volume}%` }} />
+                <div className="w-full h-[3px] rounded-full bg-semantic-text-inverted/30">
+                  <div className="h-full rounded-full bg-semantic-text-inverted" style={{ width: `${muted ? 0 : volume}%` }} />
                 </div>
                 <div
-                  className="absolute top-1/2 size-2.5 rounded-full bg-white"
+                  className="absolute top-1/2 size-2.5 rounded-full bg-semantic-text-inverted"
                   style={{ left: `${muted ? 0 : volume}%`, transform: "translate(-50%, -50%)" }}
                 />
               </div>
             </div>
             <button aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
-              {fullscreen ? <Minimize className="size-4 text-white" /> : <Maximize className="size-4 text-white" />}
+              {fullscreen ? <Minimize className="size-4 text-semantic-text-inverted" /> : <Maximize className="size-4 text-semantic-text-inverted" />}
             </button>
           </div>
         </div>
@@ -212,12 +218,12 @@ function AudioMedia({ media: _media }: { media: MediaPayload }) {
         >
           {playing ? (
             <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-              <rect x="0" y="0" width="4" height="14" rx="1.2" fill="white" />
-              <rect x="8" y="0" width="4" height="14" rx="1.2" fill="white" />
+              <rect x="0" y="0" width="4" height="14" rx="1.2" fill="var(--semantic-text-inverted)" />
+              <rect x="8" y="0" width="4" height="14" rx="1.2" fill="var(--semantic-text-inverted)" />
             </svg>
           ) : (
             <svg width="14" height="16" viewBox="0 0 14 16" fill="none" style={{ marginLeft: 2 }}>
-              <path d="M1 1.87v12.26a1 1 0 001.5.86l10.5-6.13a1 1 0 000-1.72L2.5 1.01A1 1 0 001 1.87z" fill="white" />
+              <path d="M1 1.87v12.26a1 1 0 001.5.86l10.5-6.13a1 1 0 000-1.72L2.5 1.01A1 1 0 001 1.87z" fill="var(--semantic-text-inverted)" />
             </svg>
           )}
         </button>
@@ -240,7 +246,7 @@ function AudioMedia({ media: _media }: { media: MediaPayload }) {
                 width={barW}
                 height={h}
                 rx={1.5}
-                fill={i < playedBars ? "var(--semantic-brand-hover, #1F858F)" : "var(--semantic-text-muted, #C0C3CA)"}
+                fill={i < playedBars ? "var(--semantic-brand-hover)" : "var(--semantic-text-muted)"}
               />
             ))}
           </svg>
@@ -252,9 +258,9 @@ function AudioMedia({ media: _media }: { media: MediaPayload }) {
             <button
               aria-label={`Playback speed ${speed}x`}
               onClick={(e) => e.stopPropagation()}
-              className="shrink-0 min-w-[34px] h-[22px] px-2 flex items-center justify-center rounded-full bg-black/40 hover:opacity-80 transition-opacity"
+              className="shrink-0 min-w-[34px] h-[22px] px-2 flex items-center justify-center rounded-full bg-semantic-bg-inverted/40 hover:opacity-80 transition-opacity"
             >
-              <span className="text-[11px] font-semibold text-white leading-none">{speed}x</span>
+              <span className="text-[11px] font-semibold text-semantic-text-inverted leading-none">{speed}x</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[160px]">
@@ -327,11 +333,11 @@ function CarouselCardMedia({ item }: { item: CarouselCardItem }) {
           playing ? "opacity-0 hover:opacity-100" : "opacity-100"
         )}
       >
-        <span className="size-11 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+        <span className="size-11 rounded-full bg-semantic-bg-inverted/40 backdrop-blur-sm flex items-center justify-center">
           {playing ? (
-            <Pause className="size-5 text-white fill-white" />
+            <Pause className="size-5 text-semantic-text-inverted fill-semantic-text-inverted" />
           ) : (
-            <Play className="size-5 text-white fill-white ml-0.5" />
+            <Play className="size-5 text-semantic-text-inverted fill-semantic-text-inverted ml-0.5" />
           )}
         </span>
       </button>
@@ -359,7 +365,7 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
       {/* Scrollable card row */}
       <div ref={scrollRef} onScroll={updateScrollState} tabIndex={0} role="region" aria-label="Carousel" aria-roledescription="carousel" className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3" style={{ scrollbarWidth: "none" }}>
         {media.images?.map((item, i) => (
-          <div key={i} className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]" style={{ width: 260 }}>
+          <div key={i} className="shrink-0 bg-semantic-bg-primary rounded border border-solid border-semantic-border-layout overflow-hidden shadow-xs" style={{ width: 260 }}>
             {/* Card media — image or video */}
             <CarouselCardMedia item={item} />
             {/* Card title */}
@@ -383,12 +389,12 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
       </div>
       {/* Navigation arrows */}
       {canScrollLeft && (
-        <button aria-label="Scroll carousel left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+        <button aria-label="Scroll carousel left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-semantic-bg-primary shadow-md flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
           <ChevronLeft className="size-4 text-semantic-text-primary" />
         </button>
       )}
       {canScrollRight && (
-        <button aria-label="Scroll carousel right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+        <button aria-label="Scroll carousel right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-semantic-bg-primary shadow-md flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
           <ChevronRight className="size-4 text-semantic-text-primary" />
         </button>
       )}
@@ -565,8 +571,8 @@ function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
 function LoadingMedia({ error }: { error?: string }) {
   return (
     <div className="overflow-hidden">
-      {/* White preview area */}
-      <div className="bg-white flex items-center justify-center" style={{ aspectRatio: "442 / 308" }}>
+      {/* Preview area */}
+      <div className="bg-semantic-bg-primary flex items-center justify-center" style={{ aspectRatio: "442 / 308" }}>
         <Spinner size="xl" variant="muted" />
       </div>
       {/* Error banner */}

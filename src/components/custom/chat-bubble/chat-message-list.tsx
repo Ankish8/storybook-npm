@@ -110,11 +110,11 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
                 ? `Scroll to bottom, ${selectedChat.unreadCount} unread messages`
                 : "Scroll to bottom"
             }
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 shadow-md bg-white"
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 shadow-md bg-semantic-bg-primary"
           >
             <ArrowDown className="size-5" />
             {(selectedChat.unreadCount || 0) > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center size-5 rounded-full bg-semantic-border-accent text-white text-[11px] font-semibold">
+              <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center size-5 rounded-full bg-semantic-border-accent text-semantic-text-inverted text-[11px] font-semibold">
                 {selectedChat.unreadCount}
               </span>
             )}

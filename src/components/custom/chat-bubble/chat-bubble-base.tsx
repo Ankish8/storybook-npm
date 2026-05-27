@@ -348,7 +348,7 @@ function MessageModeReplyQuoteButton({
   return (
     <button
       type="button"
-      className="w-full bg-white border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors text-left border-t-0 border-r-0 border-b-0"
+      className="w-full bg-semantic-bg-primary border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors text-left border-t-0 border-r-0 border-b-0"
       aria-label={`Jump to quoted message from ${replyTo.sender}`}
       onClick={() => {
         if (replyTo.messageId) {
@@ -820,7 +820,7 @@ const ChatBubbleMessageMode = React.forwardRef<
           className="!size-6 !min-h-6 !min-w-6 absolute bottom-0 left-full ml-1.5"
         />
       ) : (
-        <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+        <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary">
           {senderIndicator}
         </div>
       )
@@ -884,7 +884,7 @@ const ChatBubbleMessageMode = React.forwardRef<
             "rounded-lg overflow-hidden w-full",
             msg.sender === "agent"
               ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
-              : "bg-white border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+              : "bg-semantic-bg-primary border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-xs"
           )}
         >
           {msg.type === "carousel" && hasText && (
@@ -1346,7 +1346,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               !hasMedia && "px-4 pb-1.5 pt-3",
               variant === "sender"
                 ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
-                : "border-[0.2px] border-solid border-semantic-border-layout bg-white text-semantic-text-primary shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)]"
+                : "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-xs"
             )}
           >
             {media}
@@ -1355,7 +1355,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 <ReplyQuote
                   sender={reply.sender}
                   message={reply.message}
-                  className="bg-white"
+                  className="bg-semantic-bg-primary"
                   onClick={() => {
                     if (reply.messageId && onReplyClick) {
                       onReplyClick(reply.messageId);
@@ -1385,7 +1385,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             </div>
           </div>
           {variant === "sender" && senderIndicator && (
-            <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-white">
+            <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary">
               {senderIndicator}
             </div>
           )}
