@@ -25,7 +25,7 @@ const textareaVariants = cva(
         default:
           "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+          "border border-solid border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
       size: {
         default: "px-4 py-2.5 text-base",
@@ -198,7 +198,10 @@ const Textarea = React.forwardRef(
           id={textareaId}
           rows={rows}
           className={cn(
-            textareaVariants({ state: derivedState, size, className }),
+            textareaVariants({ state: derivedState, size }),
+            className,
+            derivedState === "error" &&
+              "border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
             resizeClasses[resize]
           )}
           disabled={disabled}

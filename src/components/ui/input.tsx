@@ -18,7 +18,7 @@ const inputVariants = cva(
         default:
           "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+          "border border-solid border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
     },
     defaultVariants: {
@@ -98,7 +98,10 @@ const Input = React.forwardRef(
       <input
         type={type}
         className={cn(
-          inputVariants({ state, className }),
+          inputVariants({ state }),
+          className,
+          state === "error" &&
+            "border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
           showCheckIcon && "pr-9",
           type === "number" &&
             hideNumberSpinners &&

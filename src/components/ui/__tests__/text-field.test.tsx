@@ -46,6 +46,19 @@ describe("TextField", () => {
     );
   });
 
+  it("keeps error border when className overrides default border colors", () => {
+    render(
+      <TextField
+        error="Value can't be empty"
+        className="border-semantic-border-layout focus:border-semantic-border-layout focus:shadow-none"
+        data-testid="input"
+      />
+    );
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass("border-semantic-error-primary");
+    expect(input).toHaveClass("shadow-[0_0_0_1px_rgba(240,68,56,0.12)]");
+  });
+
   it("applies empty state styling", () => {
     render(<TextField state="empty" data-testid="input" />);
     expect(screen.getByTestId("input")).toHaveClass(

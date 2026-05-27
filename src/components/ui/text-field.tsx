@@ -17,7 +17,7 @@ const textFieldContainerVariants = cva(
         empty:
           "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+          "border border-solid border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
@@ -44,7 +44,7 @@ const textFieldInputVariants = cva(
         empty:
           "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+          "border border-solid border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
       size: {
         default: "h-[42px] px-4 py-2 text-base file:text-base",
@@ -212,7 +212,12 @@ const TextField = React.forwardRef(
                 "flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed",
                 size === "sm" ? "text-sm" : "text-base"
               )
-            : textFieldInputVariants({ state: derivedState, size, className }),
+            : cn(
+                textFieldInputVariants({ state: derivedState, size }),
+                className,
+                derivedState === "error" &&
+                  "border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
+              ),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         )}
@@ -262,7 +267,9 @@ const TextField = React.forwardRef(
                 disabled: disabled || loading,
               }),
               size === "sm" ? "h-9 px-3" : "h-[42px] px-4",
-              inputContainerClassName
+              inputContainerClassName,
+              derivedState === "error" &&
+                "border-semantic-error-primary shadow-[0_0_0_1px_rgba(240,68,56,0.12)] focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]"
             )}
           >
             {prefix && (
