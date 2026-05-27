@@ -40,13 +40,17 @@ export function VarRow({
   varName,
   value,
   onChange,
+  onBlur,
+  error,
 }: {
   varName: string
   value: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void
+  error?: string
 }) {
   return (
-    <div className="flex items-center gap-3 py-1.5">
+    <div className="flex items-start gap-3 py-1.5">
       <span className="text-[13px] text-semantic-text-secondary w-[148px] shrink-0 truncate font-mono">
         {varName}
       </span>
@@ -55,6 +59,8 @@ export function VarRow({
         placeholder="Enter value"
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
+        error={error}
       />
     </div>
   )

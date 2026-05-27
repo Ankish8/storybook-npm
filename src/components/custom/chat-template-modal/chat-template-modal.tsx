@@ -21,6 +21,12 @@ import { TemplatePreviewEmpty, TemplatePreviewBubble } from "./template-preview"
 import { VariablesTab } from "./variables-tab"
 import { MediaTab } from "./media-tab"
 
+type VarErrorMap = Record<string, boolean>
+type CardVarErrorMap = Record<
+  number,
+  { body: VarErrorMap; button: VarErrorMap }
+>
+
 const templateCategoryOptions: { id: TemplateCategory; label: string }[] = [
   { id: "all", label: "All" },
   { id: "marketing", label: "Marketing" },
@@ -52,7 +58,10 @@ export function ChatTemplateModal({
     "right",
   )
   const [varValues, setVarValues] = React.useState<VarMap>({})
+  const [varErrors, setVarErrors] = React.useState<VarErrorMap>({})
   const [cardVarValues, setCardVarValues] = React.useState<CardVarMap>({})
+  const [cardVarErrors, setCardVarErrors] =
+    React.useState<CardVarErrorMap>({})
   const [uploadedMedia, setUploadedMedia] = React.useState<
     Record<number, File | null>
   >({})
@@ -63,7 +72,9 @@ export function ChatTemplateModal({
   const handleSelectTemplate = (t: TemplateDef) => {
     setSelectedTemplate(t)
     setVarValues({})
+    setVarErrors({})
     setCardVarValues({})
+    setCardVarErrors({})
     setUploadedMedia({})
     setActiveTab("variables")
   }
@@ -126,6 +137,11 @@ export function ChatTemplateModal({
                       onValueChange={(v) => {
                         setSelectedCategory(v as TemplateCategory)
                         setSelectedTemplate(null)
+                        setVarValues({})
+                        setVarErrors({})
+                        setCardVarValues({})
+                        setCardVarErrors({})
+                        setUploadedMedia({})
                       }}
                     />
                   </div>
@@ -193,8 +209,12 @@ export function ChatTemplateModal({
                         template={selectedTemplate}
                         varValues={varValues}
                         setVarValues={setVarValues}
+                        varErrors={varErrors}
+                        setVarErrors={setVarErrors}
                         cardVarValues={cardVarValues}
                         setCardVarValues={setCardVarValues}
+                        cardVarErrors={cardVarErrors}
+                        setCardVarErrors={setCardVarErrors}
                       />
                     ) : (
                       <MediaTab

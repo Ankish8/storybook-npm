@@ -6,14 +6,32 @@ export function VariablesTab({
   template,
   varValues,
   setVarValues,
+  varErrors,
+  setVarErrors,
   cardVarValues,
   setCardVarValues,
+  cardVarErrors,
+  setCardVarErrors,
 }: {
   template: TemplateDef
   varValues: VarMap
   setVarValues: React.Dispatch<React.SetStateAction<VarMap>>
+  varErrors: Record<string, boolean>
+  setVarErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
   cardVarValues: CardVarMap
   setCardVarValues: React.Dispatch<React.SetStateAction<CardVarMap>>
+  cardVarErrors: Record<
+    number,
+    { body: Record<string, boolean>; button: Record<string, boolean> }
+  >
+  setCardVarErrors: React.Dispatch<
+    React.SetStateAction<
+      Record<
+        number,
+        { body: Record<string, boolean>; button: Record<string, boolean> }
+      >
+    >
+  >
 }) {
   const hasNoVars =
     template.bodyVariables.length === 0 &&
@@ -45,9 +63,20 @@ export function VariablesTab({
               key={v}
               varName={v}
               value={varValues[v] || ""}
-              onChange={(e) =>
+              onChange={(e) => {
+                const nextValue = e.target.value
                 setVarValues((p) => ({ ...p, [v]: e.target.value }))
+                if (nextValue.trim()) {
+                  setVarErrors((p) => ({ ...p, [v]: false }))
+                }
+              }}
+              onBlur={(e) =>
+                setVarErrors((p) => ({
+                  ...p,
+                  [v]: e.target.value.trim().length === 0,
+                }))
               }
+              error={varErrors[v] ? "This field is required." : undefined}
             />
           ))}
         </>
@@ -70,7 +99,8 @@ export function VariablesTab({
                   key={v}
                   varName={v}
                   value={cardVarValues[card.cardIndex]?.body?.[v] || ""}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const nextValue = e.target.value
                     setCardVarValues((p) => ({
                       ...p,
                       [card.cardIndex]: {
@@ -81,6 +111,35 @@ export function VariablesTab({
                         button: p[card.cardIndex]?.button || {},
                       },
                     }))
+                    if (nextValue.trim()) {
+                      setCardVarErrors((p) => ({
+                        ...p,
+                        [card.cardIndex]: {
+                          body: {
+                            ...(p[card.cardIndex]?.body || {}),
+                            [v]: false,
+                          },
+                          button: p[card.cardIndex]?.button || {},
+                        },
+                      }))
+                    }
+                  }}
+                  onBlur={(e) =>
+                    setCardVarErrors((p) => ({
+                      ...p,
+                      [card.cardIndex]: {
+                        body: {
+                          ...(p[card.cardIndex]?.body || {}),
+                          [v]: e.target.value.trim().length === 0,
+                        },
+                        button: p[card.cardIndex]?.button || {},
+                      },
+                    }))
+                  }
+                  error={
+                    cardVarErrors[card.cardIndex]?.body?.[v]
+                      ? "This field is required."
+                      : undefined
                   }
                 />
               ))}
@@ -94,7 +153,8 @@ export function VariablesTab({
                   key={v}
                   varName={v}
                   value={cardVarValues[card.cardIndex]?.button?.[v] || ""}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const nextValue = e.target.value
                     setCardVarValues((p) => ({
                       ...p,
                       [card.cardIndex]: {
@@ -105,6 +165,35 @@ export function VariablesTab({
                         },
                       },
                     }))
+                    if (nextValue.trim()) {
+                      setCardVarErrors((p) => ({
+                        ...p,
+                        [card.cardIndex]: {
+                          body: p[card.cardIndex]?.body || {},
+                          button: {
+                            ...(p[card.cardIndex]?.button || {}),
+                            [v]: false,
+                          },
+                        },
+                      }))
+                    }
+                  }}
+                  onBlur={(e) =>
+                    setCardVarErrors((p) => ({
+                      ...p,
+                      [card.cardIndex]: {
+                        body: p[card.cardIndex]?.body || {},
+                        button: {
+                          ...(p[card.cardIndex]?.button || {}),
+                          [v]: e.target.value.trim().length === 0,
+                        },
+                      },
+                    }))
+                  }
+                  error={
+                    cardVarErrors[card.cardIndex]?.button?.[v]
+                      ? "This field is required."
+                      : undefined
                   }
                 />
               ))}
