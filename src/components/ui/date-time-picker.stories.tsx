@@ -1,0 +1,159 @@
+import type { Meta, StoryObj } from "@storybook/react";
+
+import { DateTimePicker } from "./date-time-picker";
+
+const sampleValue = {
+  date: new Date(2026, 4, 12),
+  startTime: "10:30:00",
+  endTime: "12:30:00",
+};
+
+const meta: Meta<typeof DateTimePicker> = {
+  title: "Components/DateTimePicker",
+  component: DateTimePicker,
+  parameters: {
+    layout: "centered",
+    docs: {
+      description: {
+        component: `
+A date and time picker input with a calendar popover and start/end time fields.
+
+\`\`\`bash
+npx myoperator-ui add date-time-picker
+\`\`\`
+
+## Import
+
+\`\`\`tsx
+import { DateTimePicker } from "@/components/ui/date-time-picker"
+\`\`\`
+
+## Design Tokens
+
+<table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+  <thead>
+    <tr style="background-color: var(--color-neutral-50); border-bottom: 2px solid var(--semantic-border-layout);">
+      <th style="padding: 12px 16px; text-align: left;">Token</th>
+      <th style="padding: 12px 16px; text-align: left;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left;">Usage</th>
+      <th style="padding: 12px 16px; text-align: left;">Preview</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid var(--semantic-border-layout);">
+      <td style="padding: 12px 16px;">Primary</td>
+      <td style="padding: 12px 16px;"><code>--semantic-primary</code></td>
+      <td style="padding: 12px 16px;">Selected calendar day</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: var(--semantic-primary); border-radius: 6px;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--semantic-border-layout);">
+      <td style="padding: 12px 16px;">Input Border</td>
+      <td style="padding: 12px 16px;"><code>--semantic-border-input</code></td>
+      <td style="padding: 12px 16px;">Trigger and time input borders</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: var(--semantic-border-input); border-radius: 6px;"></div></td>
+    </tr>
+    <tr>
+      <td style="padding: 12px 16px;">Surface</td>
+      <td style="padding: 12px 16px;"><code>--semantic-bg-primary</code></td>
+      <td style="padding: 12px 16px;">Input and popover surface</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: var(--semantic-bg-primary); border: 1px solid var(--semantic-border-layout); border-radius: 6px;"></div></td>
+    </tr>
+  </tbody>
+</table>
+        `,
+      },
+    },
+  },
+  tags: ["autodocs"],
+  argTypes: {
+    size: {
+      control: "select",
+      options: ["sm", "default", "lg"],
+      description: "Width and trigger height of the picker",
+    },
+    state: {
+      control: "select",
+      options: ["default", "error"],
+      description: "Validation state for the trigger",
+    },
+    showEndTime: {
+      control: "boolean",
+      description: "Show or hide the end time field",
+    },
+    showClear: {
+      control: "boolean",
+      description: "Show or hide the clear action when a value is selected",
+    },
+    closeOnSelect: {
+      control: "boolean",
+      description: "Close the popover after selecting a calendar day",
+    },
+    disablePastDates: {
+      control: "boolean",
+      description: "Disable dates before today",
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Overview: Story = {
+  args: {
+    defaultValue: sampleValue,
+  },
+};
+
+export const Empty: Story = {
+  args: {},
+};
+
+export const Error: Story = {
+  args: {
+    defaultValue: sampleValue,
+    state: "error",
+  },
+};
+
+export const StartTimeOnly: Story = {
+  args: {
+    defaultValue: sampleValue,
+    showEndTime: false,
+  },
+};
+
+export const OpenByDefault: Story = {
+  args: {
+    defaultValue: sampleValue,
+    defaultOpen: true,
+  },
+};
+
+export const WithDateBounds: Story = {
+  args: {
+    defaultValue: sampleValue,
+    minDate: new Date(2026, 4, 10),
+    maxDate: new Date(2026, 4, 20),
+  },
+};
+
+export const AllSizes: Story = {
+  name: "All Sizes",
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <DateTimePicker size="sm" defaultValue={sampleValue} />
+      <DateTimePicker size="default" defaultValue={sampleValue} />
+      <DateTimePicker size="lg" defaultValue={sampleValue} />
+    </div>
+  ),
+};
+
+export const States: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <DateTimePicker defaultValue={sampleValue} />
+      <DateTimePicker defaultValue={sampleValue} state="error" />
+      <DateTimePicker defaultValue={sampleValue} disabled />
+    </div>
+  ),
+};

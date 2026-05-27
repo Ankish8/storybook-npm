@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-left text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
+  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-semantic-bg-primary px-4 py-2 text-left text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
@@ -51,7 +51,7 @@ const SelectTrigger = React.forwardRef(({ className, state, children, ...props }
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 text-semantic-text-muted opacity-70" />
+      <ChevronDown className="size-4 shrink-0 text-semantic-text-muted opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -278,7 +278,9 @@ const SelectItem = React.forwardRef(({ className, children, ...props }: React.Co
         <Check className="size-4 text-semantic-brand" />
       </SelectPrimitive.ItemIndicator>
     </span>
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    <SelectPrimitive.ItemText asChild>
+      <span className="min-w-0 flex-1 truncate">{children}</span>
+    </SelectPrimitive.ItemText>
   </SelectPrimitive.Item>
 ));
 SelectItem.displayName = SelectPrimitive.Item.displayName;

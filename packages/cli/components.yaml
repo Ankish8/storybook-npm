@@ -37,6 +37,7 @@ categories:
       - select-field
       - multi-select
       - readable-field
+      - date-time-picker
 
   data:
     description: "Data display components"
@@ -327,6 +328,16 @@ components:
       - "lucide-react"
     internalDependencies:
       - input
+
+  date-time-picker:
+    description: "A date and time picker input with a calendar popover and start/end time fields"
+    category: form
+    dependencies:
+      - "@floating-ui/react-dom@^2.1.6"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
 
   creatable-select:
     description: "A single-value select with type-to-search and type-to-create custom options"

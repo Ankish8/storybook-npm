@@ -86,6 +86,19 @@ export {
 } from "./components/ui/number-step-field";
 export type { NumberStepFieldProps } from "./components/ui/number-step-field";
 
+// DateTimePicker
+export {
+  DateTimePicker,
+  dateTimePickerTriggerVariants,
+  dateTimePickerVariants,
+  formatDateForDisplay,
+  formatTimeForDisplay,
+} from "./components/ui/date-time-picker";
+export type {
+  DateTimePickerProps,
+  DateTimePickerValue,
+} from "./components/ui/date-time-picker";
+
 // TextField
 export {
   TextField,

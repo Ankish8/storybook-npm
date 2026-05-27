@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   Select,
@@ -242,6 +242,36 @@ describe("Select", () => {
     expect(trigger).toHaveClass("rounded");
     expect(trigger).toHaveClass("px-4");
     expect(trigger).toHaveClass("py-2");
+  });
+
+  it("truncates long selected option text before the checkmark", async () => {
+    const user = userEvent.setup();
+    const longLabel =
+      "sadjkhurterqruwqcebrcqweurbuqweqrgwqwerqwerqwerqwer";
+
+    render(
+      <Select defaultValue="long">
+        <SelectTrigger data-testid="trigger">
+          <SelectValue placeholder="Select tags" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="long">{longLabel}</SelectItem>
+          <SelectItem value="short">Short tag</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+
+    const trigger = screen.getByTestId("trigger");
+    expect(trigger).toHaveClass("gap-2");
+    expect(trigger).toHaveClass("[&>span]:min-w-0");
+    expect(trigger).toHaveClass("[&>span]:truncate");
+
+    await user.click(trigger);
+    const selectedOption = screen.getByRole("option", { name: longLabel });
+    const optionText = within(selectedOption).getByText(longLabel);
+    expect(optionText).toHaveClass("min-w-0");
+    expect(optionText).toHaveClass("flex-1");
+    expect(optionText).toHaveClass("truncate");
   });
 
   // Keyboard navigation

@@ -87,7 +87,7 @@ export function ChatTemplateModal({
       >
         <DialogContent
           size="xl"
-          className="max-w-[1100px] h-[88vh] max-h-[800px] p-0 gap-0 flex flex-col"
+          className="w-full max-w-none h-[100dvh] max-h-[100dvh] rounded-none p-0 gap-0 flex flex-col overflow-hidden md:max-w-[1100px] md:h-[88vh] md:max-h-[800px] md:rounded-lg"
           hideCloseButton
         >
           <DialogDescription className="sr-only">
@@ -95,7 +95,7 @@ export function ChatTemplateModal({
           </DialogDescription>
 
           {/* ── Header: title + close ── */}
-          <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-solid border-semantic-border-layout shrink-0">
+          <div className="flex items-start justify-between px-4 pt-5 pb-4 border-b border-solid border-semantic-border-layout shrink-0 sm:px-6">
             <div>
               <DialogTitle>Select Template</DialogTitle>
               <p className="text-[13px] text-semantic-text-muted mt-0.5 m-0">
@@ -108,14 +108,14 @@ export function ChatTemplateModal({
           </div>
 
           {/* ── Body: LEFT (selectors + variables) | RIGHT (preview) ── */}
-          <div className="flex flex-1 min-h-0 overflow-hidden">
+          <div className="flex flex-1 min-h-0 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
             {/* ── Left column ── */}
-            <div className="flex-[1.25] border-r border-solid border-semantic-border-layout flex flex-col min-h-0">
+            <div className="shrink-0 border-b border-solid border-semantic-border-layout flex flex-col md:min-h-0 md:flex-[1.25] md:border-b-0 md:border-r">
               {/* Selectors section */}
-              <div className="px-5 pt-5 pb-4 border-b border-solid border-semantic-border-layout shrink-0">
-                <div className="flex items-start gap-3">
+              <div className="px-4 pt-5 pb-4 border-b border-solid border-semantic-border-layout shrink-0 sm:px-5">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-[160px_minmax(0,1fr)]">
                   {/* Category */}
-                  <div className="w-[160px] shrink-0">
+                  <div className="min-w-0">
                     <SelectField
                       label="Category"
                       options={templateCategoryOptions.map((c) => ({
@@ -131,13 +131,13 @@ export function ChatTemplateModal({
                   </div>
 
                   {/* Template selector */}
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0">
                     <SelectField
                       label="Template"
                       required
                       searchable
                       searchPlaceholder="Search templates..."
-                      placeholder="Select a template"
+                      placeholder="Select Template"
                       options={templates
                         .filter(
                           (t) =>
@@ -167,7 +167,7 @@ export function ChatTemplateModal({
 
               {/* Variables / Media section */}
               {selectedTemplate ? (
-                <div className="flex flex-col flex-1 min-h-0">
+                <div className="flex max-h-[45dvh] flex-col overflow-hidden md:flex-1 md:min-h-0 md:max-h-none">
                   {/* Tabs */}
                   <Tabs
                     value={activeTab}
@@ -209,7 +209,7 @@ export function ChatTemplateModal({
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center">
+                <div className="hidden flex-1 flex-col items-center justify-center gap-3 p-8 text-center md:flex">
                   <div className="size-14 rounded-xl bg-semantic-bg-ui flex items-center justify-center">
                     <FileSpreadsheet className="size-7 text-semantic-text-muted" />
                   </div>
@@ -226,14 +226,14 @@ export function ChatTemplateModal({
             </div>
 
             {/* ── Right column: preview + send button ── */}
-            <div className="flex-1 flex flex-col min-h-0">
-              <div className="px-5 pt-5 pb-3 shrink-0 border-b border-solid border-semantic-border-layout flex items-center gap-2">
+            <div className="flex min-h-[420px] flex-col md:min-h-0 md:flex-1">
+              <div className="px-4 pt-5 pb-3 shrink-0 border-b border-solid border-semantic-border-layout flex items-center gap-2 sm:px-5">
                 <Eye className="size-[14px] text-semantic-text-secondary" />
                 <p className="m-0 text-[12px] font-semibold tracking-wide uppercase text-semantic-text-secondary">
                   Preview
                 </p>
               </div>
-              <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start p-6 bg-semantic-bg-ui">
+              <div className="min-h-[320px] flex-1 overflow-y-auto flex flex-col items-center justify-start p-4 bg-semantic-bg-ui sm:p-6">
                 {selectedTemplate ? (
                   <div className="w-full flex flex-col items-end">
                     <TemplatePreviewBubble
@@ -245,7 +245,7 @@ export function ChatTemplateModal({
                   <TemplatePreviewEmpty illustrationSrc={illustrationSrc} />
                 )}
               </div>
-              <div className="px-5 py-4 shrink-0 border-t-2 border-solid border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)]">
+              <div className="px-4 py-4 shrink-0 border-t-2 border-solid border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)] sm:px-5">
                 <Button
                   onClick={handleSend}
                   disabled={!selectedTemplate}

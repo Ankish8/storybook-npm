@@ -141,7 +141,7 @@ export function TemplateCarouselPreview({
     <div className="bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout rounded-lg overflow-hidden w-full max-w-[360px]">
       {/* Body text */}
       <div className="px-3 pt-3">
-        <p className="text-[14px] leading-5 text-semantic-text-primary m-0">
+        <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5 text-semantic-text-primary">
           {resolveVars(template.body, varValues)}
         </p>
       </div>
@@ -185,7 +185,7 @@ export function TemplateCarouselPreview({
                   </div>
                 )}
                 <div className="px-3 pt-2.5 pb-2">
-                  <p className="text-[14px] font-semibold text-semantic-text-primary m-0">
+                  <p className="m-0 min-w-0 max-w-full break-words text-[14px] font-semibold text-semantic-text-primary">
                     {card.bodyVariables.length > 0
                       ? resolveVars(card.bodyVariables[0], varValues)
                       : `Card ${card.cardIndex}`}
@@ -193,7 +193,7 @@ export function TemplateCarouselPreview({
                   {card.bodyVariables.slice(1).map((v) => (
                     <p
                       key={v}
-                      className="text-[13px] text-semantic-text-muted m-0 mt-0.5"
+                      className="m-0 mt-0.5 min-w-0 max-w-full break-words text-[13px] text-semantic-text-muted"
                     >
                       {resolveVars(v, varValues)}
                     </p>
@@ -245,7 +245,7 @@ export function TemplateCarouselPreview({
       {/* Footer + delivery — bottom inset matches chat message list bubble */}
       <div className="px-3 pb-1.5">
         {template.footer && (
-          <p className="text-[12px] text-semantic-text-muted m-0 mb-1">
+          <p className="m-0 mb-1 min-w-0 max-w-full break-words text-[12px] text-semantic-text-muted">
             {template.footer}
           </p>
         )}
@@ -266,7 +266,7 @@ export function TemplatePreviewBubble({
   if (template.type === "text") {
     return (
       <div className="bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary rounded-lg overflow-hidden px-3 pt-3 pb-1.5 max-w-[280px] w-full">
-        <p className="m-0 text-[14px] leading-5 text-semantic-text-primary">
+        <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5 text-semantic-text-primary">
           {resolveVars(template.body, varValues)}
         </p>
         {template.button && (
@@ -289,7 +289,7 @@ export function TemplatePreviewBubble({
           className="w-full h-[160px] object-cover"
         />
         <div className="px-3 pb-1.5 pt-2">
-          <p className="m-0 text-[14px] leading-5 text-semantic-text-primary">
+          <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5 text-semantic-text-primary">
             {resolveVars(template.body, varValues)}
           </p>
           {template.button && (

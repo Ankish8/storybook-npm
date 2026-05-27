@@ -80,8 +80,13 @@ const SenderIndicator = React.forwardRef<HTMLDivElement, SenderIndicatorProps>(
         <TooltipTrigger asChild>
           {badge}
         </TooltipTrigger>
-        <TooltipContent side="left">
-          <p className="m-0">{getTooltipLabel(sentBy)}</p>
+        <TooltipContent
+          side="left"
+          sideOffset={8}
+          collisionPadding={12}
+          className="max-w-[calc(100vw-2rem)] break-words text-left"
+        >
+          <p className="m-0 max-w-full break-words">{getTooltipLabel(sentBy)}</p>
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>

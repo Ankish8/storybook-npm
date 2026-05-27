@@ -51,4 +51,29 @@ describe("SenderIndicator", () => {
       expect(screen.getByRole("tooltip")).toHaveTextContent("Alex Smith");
     });
   });
+
+  it("wraps long sender labels inside viewport-safe tooltip width", async () => {
+    const user = userEvent.setup();
+    const longName = "Nivet Customer Success Operations Manager";
+
+    renderWithTooltip(
+      <SenderIndicator sentBy={{ type: "agent", name: longName }} withTooltip />
+    );
+
+    await user.hover(screen.getByText("NC"));
+
+    await waitFor(() => {
+      expect(screen.getByRole("tooltip")).toHaveTextContent(longName);
+      const tooltipContent = document.querySelector("[data-side='left']");
+      expect(tooltipContent).toHaveTextContent(longName);
+      expect(tooltipContent).toHaveClass(
+        "max-w-[calc(100vw-2rem)]",
+        "break-words"
+      );
+      expect(tooltipContent?.querySelector("p")).toHaveClass(
+        "max-w-full",
+        "break-words"
+      );
+    });
+  });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   MultiSelect,
@@ -121,6 +121,34 @@ describe("MultiSelect", () => {
     const option2Tags = screen.getAllByText("Option 2");
     expect(option1Tags.length).toBeGreaterThan(0);
     expect(option2Tags.length).toBeGreaterThan(0);
+  });
+
+  it("wraps long selected option text before the check icon", async () => {
+    const user = userEvent.setup();
+    const longLabel =
+      "AngularAngularAngularAngularAngularAngularAngularAngularAngular";
+
+    render(
+      <MultiSelect
+        options={[
+          { value: "react", label: "React" },
+          { value: "angular", label: longLabel },
+          { value: "svelte", label: "Svelte" },
+        ]}
+        defaultValue={["angular"]}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    const selectedOption = screen.getByRole("option", { name: longLabel });
+    const optionText = within(selectedOption).getByText(longLabel);
+    expect(selectedOption).toHaveClass("min-w-0");
+    expect(optionText).toHaveClass("min-w-0");
+    expect(optionText).toHaveClass("flex-1");
+    expect(optionText).toHaveClass("whitespace-normal");
+    expect(optionText).toHaveClass("break-words");
+    expect(optionText).not.toHaveClass("truncate");
   });
 
   it("deselects option on second click", async () => {

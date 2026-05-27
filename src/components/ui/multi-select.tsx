@@ -632,7 +632,7 @@ const MultiSelect = React.forwardRef(
                     const secondaryLine = option.secondaryText ?? option.caption;
 
                     const rowClass = cn(
-                      "relative flex w-full cursor-pointer select-none items-center rounded-sm text-left text-semantic-text-primary outline-none",
+                      "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-semantic-text-primary outline-none",
                       optionVariant === "detailed"
                         ? "gap-2 px-2 py-2 text-sm"
                         : "py-2 pl-4 pr-8 text-base",
@@ -658,7 +658,9 @@ const MultiSelect = React.forwardRef(
                             <Check className="size-4 text-semantic-brand" />
                           )}
                         </span>
-                        {option.label}
+                        <span className="min-w-0 flex-1 whitespace-normal break-words text-left">
+                          {option.label}
+                        </span>
                       </button>
                     );
 
