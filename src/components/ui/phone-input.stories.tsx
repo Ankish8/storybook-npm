@@ -190,7 +190,7 @@ export const WithMaxNumber: Story = {
 export const EmptyState: Story = {
   args: {
     state: "empty",
-    value: "123",
+    value: "",
     placeholder: "Phone number is required",
     validation: "Enter a valid phone number.",
   },
