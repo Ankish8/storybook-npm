@@ -1006,7 +1006,7 @@ describe("ChatBubble", () => {
           variant="sender"
           timestamp="2:04 PM"
           templateHeaderText="Should not show"
-          media={{ kind: "image", url: "https://example.com/x.png" }}
+          media={{ url: "https://example.com/x.png" }}
           text="Body."
         />
       );

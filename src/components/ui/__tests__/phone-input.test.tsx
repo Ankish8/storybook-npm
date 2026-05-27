@@ -1,3 +1,4 @@
+import * as React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { PhoneInput } from "../phone-input";
@@ -16,10 +17,10 @@ describe("PhoneInput", () => {
   });
 
   it("forwards ref to the input element", () => {
-    const ref = { current: null };
+    const ref = React.createRef<HTMLInputElement>();
     render(<PhoneInput ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
-    expect(ref.current!.type).toBe("tel");
+    expect(ref.current?.type).toBe("tel");
   });
 
   it("fires onChange handler", () => {
