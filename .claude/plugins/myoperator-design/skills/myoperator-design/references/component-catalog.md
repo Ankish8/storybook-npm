@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 102 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 103 components across 7 categories.
 
 ## Quick Reference
 
@@ -27,6 +27,7 @@
 | SelectField | form | `npx myoperator-ui add select-field` |
 | MultiSelect | form | `npx myoperator-ui add multi-select` |
 | ReadableField | form | `npx myoperator-ui add readable-field` |
+| DateTimePicker | form | `npx myoperator-ui add date-time-picker` |
 | Table | data | `npx myoperator-ui add table` |
 | Dialog | overlay | `npx myoperator-ui add dialog` |
 | DropdownMenu | overlay | `npx myoperator-ui add dropdown-menu` |
@@ -445,6 +446,13 @@ import { Mail } from "lucide-react"
 > A read-only field with copy-to-clipboard functionality. Supports secret mode for sensitive data like API keys.
 
 **Install**: `npx myoperator-ui add readable-field`
+
+---
+
+### DateTimePicker
+> A date and time picker input with a calendar popover and start/end time fields
+
+**Install**: `npx myoperator-ui add date-time-picker`
 
 ---
 
