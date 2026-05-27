@@ -71,7 +71,7 @@ const PhoneInput = React.forwardRef(
     };
 
     const handleBeforeInput = (
-      event: React.FormEvent<HTMLInputElement>
+      event: React.InputEvent<HTMLInputElement>
     ) => {
       onBeforeInput?.(event);
       if (event.defaultPrevented) return;
