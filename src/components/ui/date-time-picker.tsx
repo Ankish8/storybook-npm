@@ -12,7 +12,6 @@ import {
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Clock2,
@@ -23,12 +22,13 @@ import { cn } from "@/lib/utils";
 
 const DEFAULT_START_TIME = "10:30:00";
 const DEFAULT_END_TIME = "12:30:00";
-const DEFAULT_PLACEHOLDER = "--/--/---- --:--";
-const POPOVER_WIDTH = 288;
+const DEFAULT_PLACEHOLDER = "--/--/-- -- : --";
+const POPOVER_WIDTH = 336;
 const POPOVER_MARGIN = 8;
 const POPOVER_GAP = 4;
 const MAX_POPOVER_HEIGHT = 420;
 const POPOVER_SCROLL_HEIGHT_VAR = "--date-time-picker-scroll-height";
+const POPOVER_WIDTH_VAR = "--date-time-picker-popover-width";
 const CALENDAR_PLACEMENT: Placement = "bottom-start";
 
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
@@ -37,12 +37,12 @@ const monthFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
 });
 
-const dateTimePickerVariants = cva("relative inline-block w-full", {
+const dateTimePickerVariants = cva("relative inline-block w-full max-w-full", {
   variants: {
     size: {
-      sm: "max-w-[360px]",
-      default: "max-w-none",
-      lg: "max-w-[640px]",
+      sm: "sm:w-[280px]",
+      default: "sm:w-[336px]",
+      lg: "sm:w-[360px]",
     },
   },
   defaultVariants: {
@@ -51,13 +51,13 @@ const dateTimePickerVariants = cva("relative inline-block w-full", {
 });
 
 const dateTimePickerTriggerVariants = cva(
-  "flex w-full items-center justify-between gap-2 rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary text-left text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full items-center justify-between border border-solid border-semantic-border-input bg-semantic-bg-primary text-left text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       size: {
-        sm: "px-3 py-1.5",
-        default: "px-3 py-2",
-        lg: "px-3 py-2.5",
+        sm: "h-9 gap-2 rounded-lg px-3 py-2 text-sm",
+        default: "h-10 gap-2 rounded-lg px-4 py-2.5 text-sm",
+        lg: "h-10 gap-2 rounded-lg px-4 py-2.5 text-sm",
       },
       state: {
         default: "",
@@ -204,6 +204,26 @@ function formatHiddenValue(value: DateTimePickerValue) {
   return `${year}-${month}-${day}T${value.startTime}`;
 }
 
+function FigmaCalendarIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M6 1.5V4.5M12 1.5V4.5M2.25 6.375H15.75M3.75 3H14.25C15.0784 3 15.75 3.67157 15.75 4.5V15C15.75 15.8284 15.0784 16.5 14.25 16.5H3.75C2.92157 16.5 2.25 15.8284 2.25 15V4.5C2.25 3.67157 2.92157 3 3.75 3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
   (
     {
@@ -263,7 +283,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         shift({ padding: POPOVER_MARGIN }),
         floatingSize({
           padding: POPOVER_MARGIN,
-          apply({ availableHeight, elements }) {
+          apply({ availableHeight, elements, rects }) {
             const maxHeight = Math.max(
               1,
               Math.min(MAX_POPOVER_HEIGHT, availableHeight)
@@ -271,6 +291,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             elements.floating.style.setProperty(
               POPOVER_SCROLL_HEIGHT_VAR,
               `${maxHeight}px`
+            );
+            elements.floating.style.setProperty(
+              POPOVER_WIDTH_VAR,
+              `${rects.reference.width}px`
             );
           },
         }),
@@ -410,7 +434,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           )}
           style={{
             ...floatingStyles,
-            width: POPOVER_WIDTH,
+            width: `var(${POPOVER_WIDTH_VAR}, ${POPOVER_WIDTH}px)`,
             maxHeight: `var(${POPOVER_SCROLL_HEIGHT_VAR}, min(${MAX_POPOVER_HEIGHT}px, calc(100dvh - ${
               POPOVER_MARGIN * 2
             }px)))`,
@@ -605,14 +629,14 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             open &&
               state !== "error" &&
               "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-            !displayValue && "text-semantic-text-muted"
+            !displayValue && "text-semantic-text-placeholder"
           )}
           onClick={() => setOpen(!open)}
         >
           <span
             className={cn(
               "min-w-0 flex-1 truncate",
-              !displayValue && "font-mono tracking-[0.08em]"
+              !displayValue && "font-normal"
             )}
           >
             {displayValue || placeholder}
@@ -626,9 +650,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <X className="size-4" aria-hidden="true" />
             </span>
           )}
-          <CalendarDays
-            className="size-4 shrink-0 text-semantic-text-muted"
-            aria-hidden="true"
+          <FigmaCalendarIcon
+            className={cn(
+              "shrink-0 text-semantic-text-muted",
+              size === "sm" ? "size-4" : "size-[18px]"
+            )}
           />
         </button>
 

@@ -30,7 +30,7 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker />);
 
     expect(
-      screen.getByRole("button", { name: /--\/--\/---- --:--/ })
+      screen.getByRole("button", { name: /--\/--\/-- -- : --/ })
     ).toBeInTheDocument();
   });
 
@@ -57,14 +57,16 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker />);
 
     const trigger = screen.getByRole("button", {
-      name: /--\/--\/---- --:--/,
+      name: /--\/--\/-- -- : --/,
     });
 
-    expect(trigger).toHaveClass("rounded-md");
-    expect(trigger).toHaveClass("px-3");
-    expect(trigger).toHaveClass("py-2");
+    expect(trigger).toHaveClass("h-10");
+    expect(trigger).toHaveClass("rounded-lg");
+    expect(trigger).toHaveClass("px-4");
+    expect(trigger).toHaveClass("py-2.5");
+    expect(trigger).toHaveClass("text-sm");
     expect(trigger).toHaveClass("border-semantic-border-input");
-    expect(trigger).toHaveClass("text-semantic-text-muted");
+    expect(trigger).toHaveClass("text-semantic-text-placeholder");
   });
 
   it("selects a day and reports value changes", () => {
@@ -124,13 +126,15 @@ describe("DateTimePicker", () => {
   });
 
   it.each([
-    ["sm", "max-w-[360px]"],
-    ["default", "max-w-none"],
-    ["lg", "max-w-[640px]"],
-  ] as const)("renders %s size", (size, expectedClass) => {
+    ["sm", "sm:w-[280px]"],
+    ["default", "sm:w-[336px]"],
+    ["lg", "sm:w-[360px]"],
+  ] as const)("renders responsive %s size", (size, expectedClass) => {
     render(<DateTimePicker size={size} data-testid="date-time-picker" />);
 
+    expect(screen.getByTestId("date-time-picker")).toHaveClass("w-full");
     expect(screen.getByTestId("date-time-picker")).toHaveClass(expectedClass);
+    expect(screen.getByTestId("date-time-picker")).toHaveClass("max-w-full");
   });
 
   it("applies error state styling to the trigger", () => {
@@ -147,7 +151,7 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker open={false} onOpenChange={handleOpenChange} />);
 
     fireEvent.click(
-      screen.getByRole("button", { name: /--\/--\/---- --:--/ })
+      screen.getByRole("button", { name: /--\/--\/-- -- : --/ })
     );
 
     expect(handleOpenChange).toHaveBeenCalledWith(true);
