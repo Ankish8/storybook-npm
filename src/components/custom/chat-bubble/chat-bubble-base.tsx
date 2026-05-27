@@ -865,7 +865,7 @@ const ChatBubbleMessageMode = React.forwardRef<
         >
           {msg.type === "carousel" && hasText && (
             <div className="px-4 pt-3">
-              <p className="text-[14px] leading-5 m-0">
+              <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5">
                 {msg.text || mediaCaption}
               </p>
             </div>
@@ -950,7 +950,7 @@ const ChatBubbleMessageMode = React.forwardRef<
               </p>
             )}
             {hasText && msg.type !== "carousel" && (
-              <p className="text-[14px] leading-5 m-0">
+              <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5">
                 {msg.text || mediaCaption}
                 {shouldUseInlineFooter && (
                   <MessageModeDeliveryFooterInline msg={msg} />
@@ -1343,7 +1343,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 />
               )}
               {children && (
-                <p className="m-0 text-[14px] leading-5">
+                <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5">
                   {children}
                   {useManualInlineFooter && (
                     <LegacyDeliveryFooterInline

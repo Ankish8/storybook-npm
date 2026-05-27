@@ -27,6 +27,7 @@ import { PhoneInput } from "@/components/ui/phone-input"
 \`\`\`tsx
 <PhoneInput placeholder="Enter phone number" />
 <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
+<PhoneInput phoneMaxNumber={10} />
 <PhoneInput onCountryClick={() => openCountryPicker()} />
 \`\`\`
 
@@ -79,6 +80,12 @@ import { PhoneInput } from "@/components/ui/phone-input"
     },
   },
   tags: ["autodocs"],
+  argTypes: {
+    phoneMaxNumber: {
+      control: "number",
+      description: "Maximum number of digits allowed in the phone number.",
+    },
+  },
   args: {
     placeholder: "Enter phone number",
     onCountryClick: fn(),
@@ -147,6 +154,21 @@ export const USNumber: Story = {
     docs: {
       description: {
         story: "Phone input configured for US country code.",
+      },
+    },
+  },
+};
+
+export const WithMaxNumber: Story = {
+  args: {
+    phoneMaxNumber: 10,
+    placeholder: "Enter up to 10 digits",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Limits the phone number to the provided maximum number of digits.",
       },
     },
   },

@@ -28,6 +28,21 @@ describe("ChatBubble", () => {
     expect(screen.getByText("Hello from customer")).toBeInTheDocument();
   });
 
+  it("allows long manual-mode URLs to wrap instead of being clipped", () => {
+    const url = "https://www.google.com/search?q=very-long-chat-message-url";
+    render(
+      <ChatBubble variant="receiver" timestamp="2:16 PM">
+        {url}
+      </ChatBubble>
+    );
+
+    expect(screen.getByText(url)).toHaveClass(
+      "min-w-0",
+      "max-w-full",
+      "break-words"
+    );
+  });
+
   it("sender variant has info surface background class", () => {
     const { container } = render(
       <ChatBubble variant="sender" timestamp="2:15 PM">
@@ -649,6 +664,17 @@ describe("ChatBubble", () => {
       render(<ChatBubble message={baseMsg} />);
       expect(screen.getByText("Hello from template")).toBeInTheDocument();
       expect(screen.getByText("3:00 PM")).toBeInTheDocument();
+    });
+
+    it("allows long message-mode URLs to wrap instead of being clipped", () => {
+      const url = "https://www.google.com/search?q=very-long-chat-message-url";
+      render(<ChatBubble message={{ ...baseMsg, text: url }} />);
+
+      expect(screen.getByText(url)).toHaveClass(
+        "min-w-0",
+        "max-w-full",
+        "break-words"
+      );
     });
 
     it("anchors dom id for scroll-to-quote", () => {

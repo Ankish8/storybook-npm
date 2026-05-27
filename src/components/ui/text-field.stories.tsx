@@ -37,6 +37,7 @@ import { TextField } from "@/components/ui/text-field"
 
 \`\`\`tsx
 <TextField label="Email" placeholder="Enter your email" required />
+<TextField label="Company" placeholder="No company selected" state="empty" />
 <TextField label="Username" error="Username is taken" />
 <TextField label="Website" prefix="https://" suffix=".com" />
 <TextField label="Bio" showCount maxLength={100} />
@@ -199,6 +200,15 @@ import { TextField } from "@/components/ui/text-field"
       table: {
         type: { summary: "boolean" },
         defaultValue: { summary: "false" },
+      },
+    },
+    state: {
+      control: "select",
+      options: ["default", "empty", "error"],
+      description: "Visual state of the text field",
+      table: {
+        type: { summary: '"default" | "empty" | "error"' },
+        defaultValue: { summary: "default" },
       },
     },
     placeholder: {
@@ -367,6 +377,7 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-6 w-80">
       <TextField label="Default" placeholder="Default state" />
+      <TextField label="Empty" placeholder="Empty state" state="empty" />
       <TextField label="Disabled" placeholder="Disabled state" disabled />
       <TextField
         label="Error"

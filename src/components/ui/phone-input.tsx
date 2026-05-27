@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
  * ```tsx
  * <PhoneInput placeholder="Enter phone number" />
  * <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
+ * <PhoneInput phoneMaxNumber={10} />
  * <PhoneInput onCountryClick={() => openCountryPicker()} />
  * ```
  */
@@ -25,6 +26,8 @@ export interface PhoneInputProps
   onCountryClick?: () => void;
   /** Additional className for the outer wrapper */
   wrapperClassName?: string;
+  /** Maximum number of digits allowed in the phone number */
+  phoneMaxNumber?: number;
 }
 
 const PhoneInput = React.forwardRef(
@@ -37,10 +40,62 @@ const PhoneInput = React.forwardRef(
       onCountryClick,
       wrapperClassName,
       disabled,
+      inputMode = "numeric",
+      pattern = "[0-9]*",
+      onBeforeInput,
+      onChange,
+      onKeyDown,
+      maxLength,
+      phoneMaxNumber,
       ...props
     }: PhoneInputProps,
     ref: React.Ref<HTMLInputElement>
   ) => {
+    const effectiveMaxLength = phoneMaxNumber ?? maxLength;
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      onKeyDown?.(event);
+      if (
+        event.defaultPrevented ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.key.length !== 1
+      ) {
+        return;
+      }
+
+      if (/\D/.test(event.key)) {
+        event.preventDefault();
+      }
+    };
+
+    const handleBeforeInput = (
+      event: React.FormEvent<HTMLInputElement>
+    ) => {
+      onBeforeInput?.(event);
+      if (event.defaultPrevented) return;
+
+      const inputEvent = event.nativeEvent as InputEvent;
+      if (inputEvent.data && /\D/.test(inputEvent.data)) {
+        event.preventDefault();
+      }
+    };
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const digitsOnlyValue = event.currentTarget.value.replace(/\D/g, "");
+      const sanitizedValue =
+        effectiveMaxLength != null
+          ? digitsOnlyValue.slice(0, effectiveMaxLength)
+          : digitsOnlyValue;
+
+      if (event.currentTarget.value !== sanitizedValue) {
+        event.currentTarget.value = sanitizedValue;
+      }
+
+      onChange?.(event);
+    };
+
     return (
       <div
         className={cn(
@@ -70,10 +125,16 @@ const PhoneInput = React.forwardRef(
           type="tel"
           ref={ref}
           disabled={disabled}
+          inputMode={inputMode}
+          pattern={pattern}
+          maxLength={effectiveMaxLength}
           className={cn(
             "flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent disabled:cursor-not-allowed",
             className
           )}
+          onBeforeInput={handleBeforeInput}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
           {...props}
         />
       </div>

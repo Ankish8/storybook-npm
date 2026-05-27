@@ -42,7 +42,14 @@ describe("TextField", () => {
   it("applies error state styling when error is set", () => {
     render(<TextField error="Error" data-testid="input" />);
     expect(screen.getByTestId("input")).toHaveClass(
-      "border-semantic-error-primary/40"
+      "border-semantic-error-primary"
+    );
+  });
+
+  it("applies empty state styling", () => {
+    render(<TextField state="empty" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveClass(
+      "border-semantic-border-input"
     );
   });
 
@@ -355,7 +362,17 @@ describe("TextField", () => {
       <TextField leftIcon={<span>L</span>} error="Error" />
     );
     const inputContainer = container.querySelector(
-      ".border-semantic-error-primary\\/40"
+      ".border-semantic-error-primary"
+    );
+    expect(inputContainer).toBeInTheDocument();
+  });
+
+  it("applies empty state to container when has addons", () => {
+    const { container } = render(
+      <TextField leftIcon={<span>L</span>} state="empty" />
+    );
+    const inputContainer = container.querySelector(
+      ".border-semantic-border-input"
     );
     expect(inputContainer).toBeInTheDocument();
   });

@@ -14,8 +14,10 @@ const textFieldContainerVariants = cva(
       state: {
         default:
           "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        empty:
+          "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
       disabled: {
         true: "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
@@ -39,8 +41,10 @@ const textFieldInputVariants = cva(
       state: {
         default:
           "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        empty:
+          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
         error:
-          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
       size: {
         default: "h-[42px] px-4 py-2 text-base file:text-base",
@@ -70,6 +74,8 @@ export interface TextFieldProps
     VariantProps<typeof textFieldInputVariants> {
   /** Size of the text field — `default` (42px) or `sm` (36px, compact) */
   size?: "default" | "sm";
+  /** Visual state of the text field */
+  state?: "default" | "empty" | "error";
   /** Label text displayed above the input */
   label?: string;
   /** Shows red asterisk next to label when true */

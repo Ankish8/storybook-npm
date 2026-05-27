@@ -31,6 +31,56 @@ describe("PhoneInput", () => {
     expect(handleChange).toHaveBeenCalledTimes(1);
   });
 
+  it("removes alphabetic and special characters before change handlers receive the value", () => {
+    const changedValues: string[] = [];
+    const handleChange = vi.fn((event) => {
+      changedValues.push(event.currentTarget.value);
+    });
+    render(<PhoneInput onChange={handleChange} data-testid="phone" />);
+
+    const input = screen.getByTestId("phone");
+    fireEvent.change(input, {
+      target: { value: "98abc76-54 3210" },
+    });
+
+    expect(input).toHaveValue("9876543210");
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(changedValues).toEqual(["9876543210"]);
+  });
+
+  it("limits sanitized phone numbers with phoneMaxNumber", () => {
+    const changedValues: string[] = [];
+    const handleChange = vi.fn((event) => {
+      changedValues.push(event.currentTarget.value);
+    });
+    render(
+      <PhoneInput
+        phoneMaxNumber={5}
+        onChange={handleChange}
+        data-testid="phone"
+      />
+    );
+
+    const input = screen.getByTestId("phone");
+    fireEvent.change(input, {
+      target: { value: "98abc76543210" },
+    });
+
+    expect(input).toHaveValue("98765");
+    expect(input).toHaveAttribute("maxLength", "5");
+    expect(changedValues).toEqual(["98765"]);
+  });
+
+  it("blocks non-digit key entry", () => {
+    render(<PhoneInput data-testid="phone" />);
+
+    const input = screen.getByTestId("phone");
+    expect(fireEvent.keyDown(input, { key: "a" })).toBe(false);
+    expect(fireEvent.keyDown(input, { key: "-" })).toBe(false);
+    expect(fireEvent.keyDown(input, { key: "1" })).toBe(true);
+    expect(fireEvent.keyDown(input, { key: "Backspace" })).toBe(true);
+  });
+
   it("fires onCountryClick when clicking country area", () => {
     const handleCountryClick = vi.fn();
     render(<PhoneInput onCountryClick={handleCountryClick} />);
@@ -87,6 +137,14 @@ describe("PhoneInput", () => {
   it("always sets type to tel", () => {
     render(<PhoneInput data-testid="phone" />);
     expect(screen.getByTestId("phone")).toHaveAttribute("type", "tel");
+  });
+
+  it("sets numeric input hints by default", () => {
+    render(<PhoneInput data-testid="phone" />);
+    const input = screen.getByTestId("phone");
+
+    expect(input).toHaveAttribute("inputmode", "numeric");
+    expect(input).toHaveAttribute("pattern", "[0-9]*");
   });
 
   it("renders with controlled value", () => {
