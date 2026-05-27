@@ -33,7 +33,7 @@ import type {
   ContactPayload,
   ReferralPayload,
   ListReplyPayload,
-} from "../chat-types"
+} from "./types"
 import {
   SenderIndicator,
   SenderBadgeIcon,

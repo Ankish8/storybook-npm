@@ -7,8 +7,35 @@ import type {
   ReferralPayload,
   ListReplyPayload,
   ChatBubbleButton,
-  ChatFailedMessage,
   SentByType,
+} from "../chat-types";
+
+export type {
+  Tab,
+  TabDef,
+  AssigneeItem,
+  ChannelItem,
+  ChatItem,
+  TemplateCategory,
+  TemplateType,
+  TemplateCardDef,
+  TemplateDef,
+  VarMap,
+  CardVarMap,
+  MediaPayload,
+  SentByType,
+  LocationPayload,
+  ContactPayload,
+  ReferralPayload,
+  ListReplyPayload,
+  ChatBubbleButton,
+  ChatMessage,
+  Contact,
+  ContactDetails,
+  CannedMessage,
+  ChatFilters,
+  TemplateSendPayload,
+  SendMessagePayload,
 } from "../chat-types";
 
 export type DeliveryStatus =
@@ -24,6 +51,17 @@ export type DeliveryStatus =
  * `"both"` to enable Reply on agent (outgoing) messages too.
  */
 export type ShowReplyOn = "customer" | "agent" | "both";
+
+export type ChatFailedMessage = {
+  /** Optional error code shown before the message, e.g. "131049". */
+  code?: string | number;
+  /** Detailed failed-delivery reason shown below the bubble. */
+  text: string;
+  /** Label for expanding the two-line collapsed detail. Defaults to "Learn more". */
+  learnMoreLabel?: string;
+  /** Label for collapsing the expanded detail. Defaults to "Less more". */
+  lessMoreLabel?: string;
+};
 
 export interface ChatBubbleReply {
   /** Name of the person being replied to */

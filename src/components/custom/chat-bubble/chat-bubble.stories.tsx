@@ -1,7 +1,7 @@
-import React, { useEffect, type ComponentType, type ReactNode } from "react";
+import { useEffect, type ComponentType, type ReactNode } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import type { ChatMessage } from "../chat-types";
+import type { ChatMessage } from "./types";
 import { ChatProvider, useChatContext } from "../chat-provider";
 import {
   MockTransport,
@@ -307,7 +307,7 @@ import { ChatBubble, ChatMessageList } from "@/components/custom/chat-bubble";
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div style={{ width: 500, padding: 16, background: "#fafafa" }}>
+      <div className="box-border w-full max-w-[500px] bg-semantic-bg-ui p-4">
         <Story />
       </div>
     ),

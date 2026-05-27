@@ -21,7 +21,6 @@ import {
 } from "../../ui/tooltip";
 import { Button } from "../../ui/button";
 import { DocMedia } from "../doc-media";
-import type { ChatFailedMessage, ChatMessage } from "../chat-types";
 import {
   ImageMedia,
   VideoMedia,
@@ -38,6 +37,8 @@ import type {
   ChatBubbleProps,
   ChatBubbleManualProps,
   ChatBubbleFlatProps,
+  ChatMessage,
+  ChatFailedMessage,
   DeliveryStatus,
   ReplyToPayload,
   ShowReplyOn,
@@ -60,8 +61,26 @@ const DEFAULT_TEXT_MAX_WIDTH = cn("max-w-[65%]");
 const maxWidthMap = {
   text: cn(DEFAULT_TEXT_MAX_WIDTH),
   media: cn("max-w-[380px] w-full"),
-  audio: cn("max-w-[340px] w-[340px]"),
+  audio: cn("max-w-[340px] w-full"),
   carousel: cn("max-w-[466px] w-full"),
+};
+
+function getTextOnlyMinWidthStyle(
+  minWidth?: string
+): React.CSSProperties | undefined {
+  if (!minWidth) {
+    return undefined;
+  }
+
+  return {
+    minWidth: `min(${minWidth}, 100%)`,
+    maxWidth: "100%",
+  };
+}
+
+const failedColumnStyle: React.CSSProperties = {
+  width: "100%",
+  maxWidth: "min(100%, 640px)",
 };
 
 function FailedMessageFeedback({
@@ -126,7 +145,7 @@ function FailedMessageFeedback({
 
   return (
     <div
-      className="mt-2 flex w-full max-w-[640px] items-start gap-2 text-semantic-error-text"
+      className="mt-2 flex w-full min-w-0 max-w-full items-start gap-2 text-semantic-error-text"
       role="alert"
     >
       <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
@@ -198,7 +217,7 @@ function LegacyDeliveryFooter({
   return (
     <div
       className={cn(
-        "flex items-center mt-1.5",
+        "mt-1.5 flex max-w-full flex-wrap items-center",
         variant === "sender" ? "justify-end gap-1.5" : "justify-start gap-1.5"
       )}
     >
@@ -371,7 +390,7 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
   return (
     <div
       className={cn(
-        "flex items-center mt-1.5",
+        "mt-1.5 flex max-w-full flex-wrap items-center",
         msg.type === "audio"
           ? "justify-between"
           : msg.sender === "agent"
@@ -388,7 +407,12 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
           {msg.media.duration || "0:00"}
         </span>
       )}
-      <div className="flex items-center gap-1.5">
+      <div
+        className={cn(
+          "flex min-w-0 max-w-full flex-wrap items-center gap-1.5",
+          msg.sender === "agent" ? "justify-end" : "justify-start"
+        )}
+      >
         {msg.sender === "agent" && msg.status && (
           <>
             {msg.status === "queued" ? (
@@ -402,7 +426,10 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
                 </span>
               </>
             ) : msg.status === "failed" ? (
-              <span role="alert" className="inline-flex items-center gap-1.5 whitespace-nowrap">
+              <span
+                role="alert"
+                className="inline-flex min-w-0 max-w-full flex-wrap items-center justify-end gap-1.5"
+              >
                 <CircleAlert className="size-4 text-semantic-error-primary shrink-0" />
                 <span className="text-[13px] text-semantic-error-primary font-medium">
                   Failed
@@ -663,7 +690,7 @@ function computeMessageBubbleLayout(
           msg.type === "referral"
         ? cn("max-w-[380px] w-full")
         : msg.type === "audio"
-          ? cn("max-w-[340px] w-[340px]")
+          ? cn("max-w-[340px] w-full")
           : msg.type === "contact" || msg.type === "listReply"
             ? cn("max-w-[320px] w-full")
             // Text bubbles: library is single source of truth for max-width.
@@ -803,7 +830,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "group/msg flex items-start gap-1.5",
+        "group/msg flex w-full min-w-0 max-w-full items-start gap-1.5",
         msg.sender === "agent" ? "justify-end" : "justify-start",
         className
       )}
@@ -812,8 +839,8 @@ const ChatBubbleMessageMode = React.forwardRef<
       <div
         id={`msg-${msg.id}`}
         className={cn(
-          "flex flex-col",
-          hasFailedFeedback ? "w-full max-w-[640px]" : bubbleWidth,
+          "flex min-w-0 flex-col",
+          hasFailedFeedback ? "w-full max-w-full" : bubbleWidth,
           msg.sender === "agent" ? "items-end" : "items-start",
           // Reserve 36px inside the column so the absolutely-positioned sender
           // icon (sentBy badge or custom senderIndicator) stays within the box.
@@ -822,6 +849,7 @@ const ChatBubbleMessageMode = React.forwardRef<
             (msg.sentBy || senderIndicator) &&
             "pr-9"
         )}
+        style={hasFailedFeedback ? failedColumnStyle : undefined}
       >
         {msg.sender === "customer" && msg.senderName && (
           <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
@@ -830,7 +858,7 @@ const ChatBubbleMessageMode = React.forwardRef<
         )}
         <div
           className={cn(
-            "flex items-start gap-1.5 w-full",
+            "flex w-full min-w-0 max-w-full items-start gap-1.5",
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
@@ -843,16 +871,12 @@ const ChatBubbleMessageMode = React.forwardRef<
         */}
         <div
           className={cn(
-            "relative",
+            "relative max-w-full",
             // Text-only bubbles shrink the wrapper to content (+ minWidth);
             // media variants let the column's max-w control width via w-full.
             isMessageTextOnly ? "w-fit" : "w-full"
           )}
-          style={
-            messageTextOnlyMinWidth
-              ? { minWidth: messageTextOnlyMinWidth }
-              : undefined
-          }
+          style={getTextOnlyMinWidthStyle(messageTextOnlyMinWidth)}
         >
         {replyButton}
         <div
@@ -1268,7 +1292,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       <div
         ref={ref}
         className={cn(
-          "group/msg flex items-start gap-1.5",
+          "group/msg flex w-full min-w-0 max-w-full items-start gap-1.5",
           variant === "sender" ? "justify-end" : "justify-start",
           className
         )}
@@ -1276,11 +1300,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       >
         <div
           className={cn(
-            "flex flex-col",
+            "flex min-w-0 flex-col",
             // Text bubbles: prop-driven cap (library is single source of truth).
             // Media variants: use the absolute-px caps from maxWidthMap.
             hasManualFailedFeedback
-              ? "w-full max-w-[640px]"
+              ? "w-full max-w-full"
               : maxWidth === "text"
                 ? textMaxWidthClassName
                 : maxWidthMap[maxWidth],
@@ -1291,6 +1315,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             // with overflow:hidden or tight right/left padding.
             senderIndicator && variant === "sender" && "pr-9"
           )}
+          style={hasManualFailedFeedback ? failedColumnStyle : undefined}
         >
           {variant === "receiver" && senderName && (
             <span className="mb-1 px-1 text-[12px] text-semantic-text-muted">
@@ -1299,7 +1324,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           )}
           <div
             className={cn(
-              "flex items-start gap-1.5 w-full",
+              "flex w-full min-w-0 max-w-full items-start gap-1.5",
               variant === "sender" ? "justify-end" : "justify-start"
             )}
           >
@@ -1309,14 +1334,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           */}
           <div
             className={cn(
-              "relative",
+              "relative max-w-full",
               isManualTextOnly ? "w-fit" : "w-full"
             )}
-            style={
-              manualTextOnlyMinWidth
-                ? { minWidth: manualTextOnlyMinWidth }
-                : undefined
-            }
+            style={getTextOnlyMinWidthStyle(manualTextOnlyMinWidth)}
           >
           {manualReplyButton}
           <div

@@ -4,7 +4,6 @@ export type {
   CardVarMap,
   ChannelItem,
   ChatBubbleButton,
-  ChatFailedMessage,
   ChatFilters,
   ChatItem,
   ChatMessage,

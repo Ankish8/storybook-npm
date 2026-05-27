@@ -1,8 +1,17 @@
 import * as React from "react";
+import { createPortal } from "react-dom";
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  size,
+  useFloating,
+} from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, CircleAlert, Loader2, X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import { Checkbox } from "./checkbox";
 import {
   Tooltip,
@@ -113,14 +122,12 @@ export function flattenMultiSelectOptions(
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+  "tw-flex tw-min-h-[42px] tw-w-full tw-items-center tw-justify-between tw-rounded tw-bg-[var(--semantic-bg-primary,#FFFFFF)] tw-px-4 tw-py-2 tw-text-base tw-text-[var(--semantic-text-primary,#181D27)] tw-transition-all disabled:tw-cursor-not-allowed disabled:tw-opacity-50 disabled:tw-bg-[var(--color-neutral-50)]",
   {
     variants: {
       state: {
-        default:
-          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error:
-          "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+        default: "tw-border tw-border-solid tw-border-[var(--semantic-border-input,#E9EAEB)] focus:tw-outline-none focus:tw-border-semantic-border-input-focus/50 focus:tw-shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "tw-border tw-border-solid tw-border-semantic-error-primary/40 focus:tw-outline-none focus:tw-border-semantic-error-primary/60 focus:tw-shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
       },
     },
     defaultVariants: {
@@ -252,7 +259,40 @@ const MultiSelect = React.forwardRef(
     const [searchQuery, setSearchQuery] = React.useState("");
 
     // Container ref for click outside detection
-    const containerRef = React.useRef<HTMLDivElement>(null);
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+    const { refs, floatingStyles, isPositioned } = useFloating({
+      open: isOpen,
+      placement: "bottom-start",
+      strategy: "fixed",
+      middleware: [
+        offset(4),
+        flip({ padding: 8 }),
+        shift({ padding: 8 }),
+        size({
+          padding: 8,
+          apply({ rects, elements }) {
+            elements.floating.style.width = `${rects.reference.width}px`;
+          },
+        }),
+      ],
+      whileElementsMounted: (reference, floating, update) =>
+        autoUpdate(reference, floating, update, { animationFrame: true }),
+    });
+
+    const setAnchorRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        refs.setReference(node);
+      },
+      [refs]
+    );
+
+    const setDropdownRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        refs.setFloating(node);
+      },
+      [refs]
+    );
 
     const flatOptions = React.useMemo(
       () => flattenMultiSelectOptions(options),
@@ -393,22 +433,31 @@ const MultiSelect = React.forwardRef(
       onValueChange?.([]);
     };
 
-    // Close dropdown when clicking outside
+    // Close dropdown when clicking outside (defer so opening click does not close immediately)
     React.useEffect(() => {
+      if (!isOpen) return;
+
       const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target as Node;
         if (
-          containerRef.current &&
-          !containerRef.current.contains(event.target as Node)
+          containerRef.current?.contains(target) ||
+          refs.floating.current?.contains(target)
         ) {
-          setIsOpen(false);
-          setSearchQuery("");
+          return;
         }
+        setIsOpen(false);
+        setSearchQuery("");
       };
 
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
+      const timeoutId = window.setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
         document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+      };
+    }, [isOpen, refs.floating]);
 
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -426,27 +475,29 @@ const MultiSelect = React.forwardRef(
     return (
       <div
         ref={containerRef}
-        className={cn("flex flex-col gap-1", wrapperClassName)}
+        className={cn("tw-flex tw-flex-col tw-gap-1", wrapperClassName)}
       >
         {/* Label */}
         {label && (
           <label
             htmlFor={selectId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "tw-text-xs tw-font-normal tw-text-[var(--semantic-text-muted,#717680)]",
               labelClassName
             )}
           >
             {label}
             {required && (
-              <span className="text-semantic-error-primary ml-0.5">*</span>
+              <span className="tw-text-[var(--semantic-error-primary,#F04438)] tw-ml-0.5">*</span>
             )}
           </label>
         )}
 
-        {/* Trigger + helper/error + listbox share one positioning context so the
-            menu opens directly under the field (and under helper text when present). */}
-        <div className="relative w-full min-w-0 flex flex-col gap-1">
+        {/* Anchor for floating menu (portaled to body to escape overflow:hidden scroll areas). */}
+        <div
+          ref={setAnchorRef}
+          className="tw-relative tw-w-full tw-min-w-0 tw-flex tw-flex-col tw-gap-1"
+        >
           {/* Trigger */}
           <button
             ref={ref}
@@ -463,20 +514,20 @@ const MultiSelect = React.forwardRef(
             onKeyDown={handleKeyDown}
             className={cn(
               multiSelectTriggerVariants({ state: derivedState }),
-              "text-left gap-2",
+              "tw-text-left tw-gap-2",
               triggerClassName
             )}
           >
-          <div className="flex-1 flex flex-wrap gap-1">
+          <div className="tw-flex-1 tw-flex tw-flex-wrap tw-gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-semantic-text-placeholder">
+              <span className="tw-text-[var(--semantic-text-placeholder,#A2A6B1)]">
                 {placeholder}
               </span>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-xs px-2 py-0.5 rounded"
+                  className="tw-inline-flex tw-items-center tw-gap-1 tw-bg-[var(--semantic-bg-ui,#F5F5F5)] tw-text-[var(--semantic-text-primary,#181D27)] tw-text-xs tw-px-2 tw-py-0.5 tw-rounded"
                 >
                   {label}
                   <span
@@ -492,16 +543,16 @@ const MultiSelect = React.forwardRef(
                         );
                       }
                     }}
-                    className="cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                    className="tw-cursor-pointer hover:tw-text-[var(--semantic-error-primary,#F04438)] focus:tw-outline-none"
                     aria-label={`Remove ${label}`}
                   >
-                    <X className="size-3" />
+                    <X className="tw-size-3" />
                   </span>
                 </span>
               ))
             )}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="tw-flex tw-items-center tw-gap-2 tw-shrink-0">
             {showClearAll && selectedValues.length > 0 && (
               <span
                 role="button"
@@ -513,25 +564,25 @@ const MultiSelect = React.forwardRef(
                     clearAll(e as unknown as React.MouseEvent);
                   }
                 }}
-                className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                className="tw-p-0.5 tw-cursor-pointer hover:tw-text-[var(--semantic-error-primary,#F04438)] focus:tw-outline-none"
                 aria-label="Clear all"
               >
-                <X className="size-4 text-semantic-text-muted" />
+                <X className="tw-size-4 tw-text-[var(--semantic-text-muted,#717680)]" />
               </span>
             )}
             {showSeparatorBeforeChevron && (
               <div
-                className="w-px h-5 self-center border-l border-solid border-semantic-border-layout shrink-0"
+                className="tw-w-px tw-h-5 tw-self-center tw-border-l tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-shrink-0"
                 aria-hidden
               />
             )}
             {loading ? (
-              <Loader2 className="size-4 animate-spin text-semantic-text-muted" />
+              <Loader2 className="tw-size-4 tw-animate-spin tw-text-[var(--semantic-text-muted,#717680)]" />
             ) : (
               <ChevronDown
                 className={cn(
-                  "size-4 text-semantic-text-muted transition-transform shrink-0",
-                  isOpen && "rotate-180"
+                  "tw-size-4 tw-text-[var(--semantic-text-muted,#717680)] tw-transition-transform tw-shrink-0",
+                  isOpen && "tw-rotate-180"
                 )}
               />
             )}
@@ -540,25 +591,25 @@ const MultiSelect = React.forwardRef(
 
           {/* Helper / error sits between trigger and dropdown (normal flow), matching Figma */}
           {(error || helperText) && (
-            <div className="flex justify-between items-start gap-2">
+            <div className="tw-flex tw-justify-between tw-items-start tw-gap-2">
               {error ? (
                 <div
                   id={errorId}
                   role="alert"
-                  className="flex items-center gap-1.5 min-w-0"
+                  className="tw-flex tw-items-center tw-gap-1.5 tw-min-w-0"
                 >
                   <CircleAlert
-                    className="size-3.5 shrink-0 text-semantic-error-primary"
+                    className="tw-size-3.5 tw-shrink-0 tw-text-[var(--semantic-error-primary,#F04438)]"
                     aria-hidden
                   />
-                  <span className="text-xs text-semantic-error-primary">
+                  <span className="tw-text-xs tw-text-[var(--semantic-error-primary,#F04438)]">
                     {error}
                   </span>
                 </div>
               ) : helperText ? (
                 <span
                   id={helperId}
-                  className="text-xs text-semantic-text-muted"
+                  className="tw-text-xs tw-text-[var(--semantic-text-muted,#717680)]"
                 >
                   {helperText}
                 </span>
@@ -566,36 +617,41 @@ const MultiSelect = React.forwardRef(
             </div>
           )}
 
-          {/* Dropdown */}
-          {isOpen && (
-            <TooltipProvider delayDuration={200}>
-              <div
-                id={listboxId}
-                className={cn(
-                  "absolute left-0 right-0 z-[100] mt-1 w-full rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
-                  "top-full"
-                )}
-                role="listbox"
-                aria-multiselectable="true"
-              >
+          {isOpen &&
+            typeof document !== "undefined" &&
+            createPortal(
+              <TooltipProvider delayDuration={200}>
+                <div
+                  ref={setDropdownRef}
+                  id={listboxId}
+                  role="listbox"
+                  aria-multiselectable="true"
+                  className="tw-rounded tw-bg-[var(--semantic-bg-primary,#FFFFFF)] tw-border tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-shadow-md"
+                  style={{
+                    ...floatingStyles,
+                    zIndex: 10050,
+                    visibility: isPositioned ? undefined : "hidden",
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
               {/* Search input */}
               {searchable && (
-                <div className="p-2 border-b border-solid border-semantic-border-layout">
+                <div className="tw-p-2 tw-border-b tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)]">
                   <input
                     type="text"
                     placeholder={searchPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-8 px-3 text-sm border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                    className="tw-w-full tw-h-8 tw-px-3 tw-text-sm tw-border tw-border-solid tw-border-[var(--semantic-border-input,#E9EAEB)] tw-rounded tw-bg-[var(--semantic-bg-primary,#FFFFFF)] placeholder:tw-text-[var(--semantic-text-placeholder,#A2A6B1)] focus:tw-outline-none focus:tw-border-semantic-border-input-focus/50"
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
               )}
 
               {/* Options */}
-              <div className="max-h-60 overflow-auto p-1">
+              <div className="tw-max-h-60 tw-overflow-auto tw-p-1">
                 {filteredOptions.length === 0 ? (
-                  <div className="py-6 text-center text-sm text-semantic-text-muted">
+                  <div className="tw-py-6 tw-text-center tw-text-sm tw-text-[var(--semantic-text-muted,#717680)]">
                     No results found
                   </div>
                 ) : (
@@ -605,7 +661,7 @@ const MultiSelect = React.forwardRef(
                         <div
                           key={`divider-${itemIndex}`}
                           role="separator"
-                          className="my-1 h-px bg-semantic-border-layout"
+                          className="tw-my-1 tw-h-px tw-bg-[var(--semantic-border-layout,#E9EAEB)]"
                         />
                       );
                     }
@@ -613,7 +669,7 @@ const MultiSelect = React.forwardRef(
                       return (
                         <div
                           key={`header-${item.label}-${itemIndex}`}
-                          className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-semantic-text-muted"
+                          className="tw-px-3 tw-pt-2 tw-pb-1 tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wide tw-text-[var(--semantic-text-muted,#717680)]"
                         >
                           {item.label}
                         </div>
@@ -632,14 +688,14 @@ const MultiSelect = React.forwardRef(
                     const secondaryLine = option.secondaryText ?? option.caption;
 
                     const rowClass = cn(
-                      "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-semantic-text-primary outline-none",
+                      "tw-relative tw-flex tw-w-full tw-min-w-0 tw-cursor-pointer tw-select-none tw-items-center tw-rounded-sm tw-text-left tw-text-[var(--semantic-text-primary,#181D27)] tw-outline-none",
                       optionVariant === "detailed"
-                        ? "gap-2 px-2 py-2 text-sm"
-                        : "py-2 pl-4 pr-8 text-base",
+                        ? "tw-gap-2 tw-px-2 tw-py-2 tw-text-sm"
+                        : "tw-py-2 tw-pl-4 tw-pr-8 tw-text-base",
                       !isSelected &&
-                        "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
-                      isDisabled && "opacity-50 cursor-not-allowed",
-                      option.isDeleted && "line-through opacity-70"
+                        "hover:tw-bg-[var(--semantic-bg-ui,#F5F5F5)] focus:tw-bg-[var(--semantic-bg-ui,#F5F5F5)]",
+                      isDisabled && "tw-opacity-50 tw-cursor-not-allowed",
+                      option.isDeleted && "tw-line-through tw-opacity-70"
                     );
 
                     const simpleRow = (
@@ -653,12 +709,12 @@ const MultiSelect = React.forwardRef(
                         }
                         className={rowClass}
                       >
-                        <span className="absolute right-2 flex size-4 items-center justify-center">
+                        <span className="tw-absolute tw-right-2 tw-flex tw-size-4 tw-items-center tw-justify-center">
                           {isSelected && (
-                            <Check className="size-4 text-semantic-brand" />
+                            <Check className="tw-size-4 tw-text-[var(--semantic-brand,#2BBCCA)]" />
                           )}
                         </span>
-                        <span className="min-w-0 flex-1 whitespace-normal break-words text-left">
+                        <span className="tw-min-w-0 tw-flex-1 tw-whitespace-normal tw-break-words tw-text-left">
                           {option.label}
                         </span>
                       </button>
@@ -686,15 +742,15 @@ const MultiSelect = React.forwardRef(
                           checked={isSelected}
                           disabled={isDisabled}
                           size="sm"
-                          className="pointer-events-none shrink-0"
+                          className="tw-pointer-events-none tw-shrink-0"
                           aria-hidden
                           tabIndex={-1}
                         />
-                        <span className="min-w-0 flex-1 truncate text-left">
+                        <span className="tw-min-w-0 tw-flex-1 tw-truncate tw-text-left">
                           {option.label}
                         </span>
                         {secondaryLine ? (
-                          <span className="shrink-0 max-w-[55%] truncate text-right text-xs text-semantic-text-muted">
+                          <span className="tw-shrink-0 tw-max-w-[55%] tw-truncate tw-text-right tw-text-xs tw-text-[var(--semantic-text-muted,#717680)]">
                             {secondaryLine}
                           </span>
                         ) : null}
@@ -708,13 +764,13 @@ const MultiSelect = React.forwardRef(
                       isDisabled && overlayCopy ? (
                         <Tooltip key={option.value}>
                           <TooltipTrigger asChild>
-                            <span className="block w-full cursor-default">
+                            <span className="tw-block tw-w-full tw-cursor-default">
                               {node}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent
                             side="top"
-                            className="max-w-xs bg-semantic-primary text-semantic-text-inverted border-semantic-primary"
+                            className="tw-max-w-xs tw-bg-[var(--semantic-primary,#343E55)] tw-text-[var(--semantic-text-inverted,#FFFFFF)] tw-border-[var(--semantic-primary,#343E55)] tw-border-solid"
                           >
                             {overlayCopy}
                           </TooltipContent>
@@ -736,13 +792,14 @@ const MultiSelect = React.forwardRef(
 
               {/* Footer with count */}
               {maxSelections && showSelectionFooter ? (
-                <div className="p-2 border-t border-solid border-semantic-border-layout text-xs text-semantic-text-muted">
+                <div className="tw-p-2 tw-border-t tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-text-xs tw-text-[var(--semantic-text-muted,#717680)]">
                   {selectedValues.length} / {maxSelections} selected
                 </div>
               ) : null}
-              </div>
-            </TooltipProvider>
-          )}
+                </div>
+              </TooltipProvider>,
+              document.body
+            )}
         </div>
 
         {/* Hidden input for form submission */}

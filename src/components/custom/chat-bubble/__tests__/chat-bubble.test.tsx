@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import type { ChatMessage } from "../../chat-types";
+import type { ChatMessage } from "../types";
 import { TooltipProvider } from "../../../ui/tooltip";
 import { ChatBubble } from "..";
 
@@ -208,6 +208,10 @@ describe("ChatBubble", () => {
 
     const alert = screen.getByRole("alert");
     expect(alert).toBeInTheDocument();
+    expect(alert.parentElement).toHaveStyle({
+      width: "100%",
+      maxWidth: "min(100%, 640px)",
+    });
     expect(screen.getByText("131049")).toBeInTheDocument();
     expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
       /healthy ecosystem management/
@@ -243,6 +247,11 @@ describe("ChatBubble", () => {
     );
 
     const alert = screen.getAllByRole("alert").at(-1)!;
+    expect(alert.parentElement?.parentElement).toHaveClass("w-full");
+    expect(alert.parentElement).toHaveStyle({
+      width: "100%",
+      maxWidth: "min(100%, 640px)",
+    });
     expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
       /Learn more/
     );
@@ -306,7 +315,7 @@ describe("ChatBubble", () => {
     expect(screen.getByText("Delivered")).toBeInTheDocument();
   });
 
-  it("keeps short sent message bubbles wide enough for the delivery footer", () => {
+  it("keeps short sent message bubbles wide enough for the delivery footer without overflowing", () => {
     render(
       <ChatBubble
         type="text"
@@ -318,7 +327,10 @@ describe("ChatBubble", () => {
     );
 
     const bubble = screen.getByText("Hi").closest(".rounded-lg");
-    expect(bubble?.parentElement).toHaveStyle({ minWidth: "11.5rem" });
+    expect(bubble?.parentElement).toHaveStyle({
+      minWidth: "min(11.5rem, 100%)",
+      maxWidth: "100%",
+    });
   });
 
   it("shows read status with correct text", () => {
@@ -371,7 +383,7 @@ describe("ChatBubble", () => {
     const getBubbleWrapper = (container: HTMLElement) =>
       container.querySelector("div.overflow-hidden")?.parentElement;
 
-    it("receiver short text bubble: minWidth 7rem on the wrapper + left-aligned footer", () => {
+    it("receiver short text bubble: responsive minWidth on the wrapper + left-aligned footer", () => {
       const { container } = render(
         <ChatBubble variant="receiver" timestamp="03:43 am">
           Bhjg
@@ -380,40 +392,47 @@ describe("ChatBubble", () => {
       const blockFooter = container.querySelector("div.mt-1\\.5");
       expect(blockFooter).toHaveClass("justify-start");
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
       // Wrapper is `relative w-fit` for text-only so the reply-button absolute
       // anchor lands at the wrapper's (= rendered bubble's) edge.
       expect(wrapper).toHaveClass("relative", "w-fit");
     });
 
-    it("sender text-only with no status: minWidth 7rem on the wrapper", () => {
+    it("sender text-only with no status: responsive minWidth on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
     });
 
-    it("sender text-only with 'read' status: minWidth 11.5rem on the wrapper", () => {
+    it("sender text-only with 'read' status: responsive minWidth on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="read">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("11.5rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(11.5rem, 100%)");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
     });
 
-    it("sender text-only with 'failed' status: minWidth 14rem on the wrapper (room for Retry)", () => {
+    it("sender text-only with 'failed' status: responsive minWidth on the wrapper", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="03:43 am" status="failed">
           Hi
         </ChatBubble>
       );
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("14rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(14rem, 100%)");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
+      expect(screen.getByText("Failed to send").closest("div")).toHaveClass(
+        "flex-wrap"
+      );
     });
 
     it("textMaxWidthClassName defaults to max-w-[65%] on the column (manual mode)", () => {
@@ -495,7 +514,8 @@ describe("ChatBubble", () => {
       const replyBtn = screen.getByRole("button", { name: "Reply" });
       expect(wrapper?.contains(replyBtn)).toBe(true);
       // Wrapper carries the minWidth, so its width === rendered bubble width.
-      expect((wrapper as HTMLElement).style.minWidth).toBe("7rem");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
     });
 
     it("reply button has z-10 so it floats above adjacent bubbles", () => {
@@ -528,6 +548,21 @@ describe("ChatBubble", () => {
       )?.parentElement;
       expect(wrapper).toHaveClass("relative", "w-full");
       expect((wrapper as HTMLElement).style.minWidth).toBe("");
+    });
+
+    it("audio media bubble can shrink to the available width", () => {
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="03:43 am"
+          maxWidth="audio"
+          media={<div data-testid="audio" />}
+        />
+      );
+
+      const column = container.querySelector("div.flex.flex-col");
+      expect(column).toHaveClass("max-w-[340px]", "w-full");
+      expect(column).not.toHaveClass("w-[340px]");
     });
 
     it("reserves column padding when senderIndicator is present so the avatar stays inside the box", () => {

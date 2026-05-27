@@ -6,8 +6,7 @@ import { ArrowDown } from "lucide-react"
 import { ChatTimelineDivider } from "../chat-timeline-divider"
 import { useChatContext } from "../chat-provider"
 import { ChatBubblePrimitive } from "./chat-bubble-base"
-import type { ChatItem, ChatMessage } from "../chat-types"
-import type { ChatMessageListProps } from "./types"
+import type { ChatItem, ChatMessage, ChatMessageListProps } from "./types"
 
 /* ── ChatBubble.MessageList — scrollable thread (requires ChatProvider) ── */
 
@@ -34,7 +33,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
         >
           <div
             key={selectedChatId}
-            className="absolute inset-0 overflow-y-auto bg-semantic-bg-ui px-6 py-4 animate-in fade-in duration-200 ease-out"
+            className="absolute inset-0 overflow-x-hidden overflow-y-auto bg-semantic-bg-ui px-3 py-4 animate-in fade-in duration-200 ease-out sm:px-6"
           >
             <ChatTimelineDivider className="my-4" aria-label="Today">
               Today

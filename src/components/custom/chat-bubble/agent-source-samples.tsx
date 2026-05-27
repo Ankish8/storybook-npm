@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { ChatMessage } from "../chat-types"
+import type { ChatMessage } from "./types"
 import { TooltipProvider } from "../../ui/tooltip"
 import { ChatBubblePrimitive as ChatBubble } from "./chat-bubble-base"
 

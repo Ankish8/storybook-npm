@@ -22,9 +22,32 @@ export {
 export { ChatProvider, ChatContext, useChatContext } from "../chat-provider";
 export type { ChatContextValue } from "../chat-provider/types";
 
-export * from "../chat-types";
-
 export type {
+  Tab,
+  TabDef,
+  AssigneeItem,
+  ChannelItem,
+  ChatItem,
+  TemplateCategory,
+  TemplateType,
+  TemplateCardDef,
+  TemplateDef,
+  VarMap,
+  CardVarMap,
+  MediaPayload,
+  SentByType,
+  LocationPayload,
+  ContactPayload,
+  ReferralPayload,
+  ListReplyPayload,
+  ChatBubbleButton,
+  ChatMessage,
+  Contact,
+  ContactDetails,
+  CannedMessage,
+  ChatFilters,
+  TemplateSendPayload,
+  SendMessagePayload,
   ChatBubbleProps,
   ChatBubbleManualProps,
   ChatBubbleMessageProps,
@@ -41,6 +64,7 @@ export type {
   ChatBubbleFlatListReplyProps,
   ChatBubbleFlatTemplateProps,
   ChatBubbleReply,
+  ChatFailedMessage,
   DeliveryStatus,
   ReplyToPayload,
   ChatMessageListBubbleRowProps,
