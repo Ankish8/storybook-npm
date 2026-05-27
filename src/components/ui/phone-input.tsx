@@ -109,9 +109,9 @@ const PhoneInput = React.forwardRef(
       }
     };
 
-    const handleBeforeInput = (
-      event: React.InputEvent<HTMLInputElement>
-    ) => {
+    const handleBeforeInput: NonNullable<
+      React.DOMAttributes<HTMLInputElement>["onBeforeInput"]
+    > = (event) => {
       onBeforeInput?.(event);
       if (event.defaultPrevented) return;
 
