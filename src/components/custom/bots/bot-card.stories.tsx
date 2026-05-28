@@ -85,6 +85,38 @@ export const ChatbotCard: Story = {
   ),
 };
 
+export const VoicebotCardWithPartnerPortal: Story = {
+  args: {
+    bot: sampleBots[0],
+    PartnerPortal: true,
+    typeLabels: undefined,
+    onEdit: fn(),
+    onDelete: fn(),
+    className: undefined,
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+};
+
+export const ChatbotCardWithPartnerPortal: Story = {
+  args: {
+    bot: sampleBots[1],
+    PartnerPortal: true,
+    typeLabels: undefined,
+    onEdit: fn(),
+    onDelete: fn(),
+    className: undefined,
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+};
+
 export const CardWithoutPublishInfo: Story = {
   args: {
     bot: {
@@ -167,10 +199,10 @@ export const CardWithCustomTypeLabels: Story = {
   ),
 };
 
-export const DisabledCard: Story = {
+export const ChatbotCardDisabled: Story = {
   args: {
     bot: sampleBots[1],
-    disabled: true,
+    "chatbotcard-disabled": true,
     disabledTooltip: "Disable the current chatbot before creating another one.",
     typeLabels: undefined,
     onEdit: fn(),

@@ -106,6 +106,21 @@ describe("BotCard", () => {
     expect(screen.getByText("Voicebot")).toBeInTheDocument();
   });
 
+  it("hides the Partner Portal badge by default", () => {
+    render(<BotCard bot={chatbot} />);
+    expect(screen.queryByText("Partner Portal")).not.toBeInTheDocument();
+  });
+
+  it("shows the Partner Portal badge for chatbot when PartnerPortal is true", () => {
+    render(<BotCard bot={chatbot} PartnerPortal />);
+    expect(screen.getByText("Partner Portal")).toBeInTheDocument();
+  });
+
+  it("shows the Partner Portal badge for voicebot when PartnerPortal is true", () => {
+    render(<BotCard bot={voicebot} PartnerPortal />);
+    expect(screen.getByText("Partner Portal")).toBeInTheDocument();
+  });
+
   it("uses typeLabels prop to override badge text", () => {
     render(
       <BotCard
@@ -176,7 +191,7 @@ describe("BotCard", () => {
     const user = userEvent.setup();
     const handleEdit = vi.fn();
     const { container } = render(
-      <BotCard bot={chatbot} disabled onEdit={handleEdit} />
+      <BotCard bot={chatbot} chatbotcard-disabled onEdit={handleEdit} />
     );
 
     const root = container.firstElementChild as HTMLElement;
@@ -201,7 +216,9 @@ describe("BotCard", () => {
     await user.hover(container.firstElementChild as HTMLElement);
     expect(screen.queryByText(tooltip)).not.toBeInTheDocument();
 
-    rerender(<BotCard bot={chatbot} disabled disabledTooltip={tooltip} />);
+    rerender(
+      <BotCard bot={chatbot} chatbotcard-disabled disabledTooltip={tooltip} />
+    );
     await user.hover(container.firstElementChild as HTMLElement);
 
     await waitFor(() => {

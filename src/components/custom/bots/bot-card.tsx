@@ -5,6 +5,7 @@ import {
   MoreVertical,
   Pencil,
   Trash2,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
@@ -28,6 +29,13 @@ const DEFAULT_TYPE_LABELS: Record<BotType, string> = {
   voicebot: "Voicebot",
 };
 
+const PartnerPortalBadge = () => (
+  <span className="inline-flex items-center gap-1 text-sm font-normal text-semantic-text-link">
+    <ShieldCheck className="size-4 shrink-0" aria-hidden />
+    <span>Partner Portal</span>
+  </span>
+);
+
 function getTypeLabel(
   bot: Bot,
   typeLabels?: Partial<Record<BotType, string>>
@@ -48,7 +56,8 @@ export const BotCard = React.forwardRef(
     {
       bot,
       typeLabels,
-      disabled = false,
+      PartnerPortal = false,
+      "chatbotcard-disabled": chatbotCardDisabled = false,
       disabledTooltip,
       onEdit,
       onDelete,
@@ -59,7 +68,7 @@ export const BotCard = React.forwardRef(
   ) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
-    const isDisabled = Boolean(disabled);
+    const isDisabled = Boolean(chatbotCardDisabled);
     const showDisabledTooltip =
       isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";
 
@@ -209,13 +218,23 @@ export const BotCard = React.forwardRef(
             </span>
           )}
           {bot.lastPublishedBy || bot.lastPublishedDate ? (
-            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted line-clamp-1">
-              {bot.lastPublishedBy
-                ? `${bot.lastPublishedBy} | ${bot.lastPublishedDate ?? "—"}`
-                : bot.lastPublishedDate}
-            </p>
+            <>
+              <p className="m-0 text-xs sm:text-sm text-semantic-text-muted line-clamp-1">
+                {bot.lastPublishedBy
+                  ? `${bot.lastPublishedBy} | ${bot.lastPublishedDate ?? "—"}`
+                  : bot.lastPublishedDate}
+              </p>
+              {PartnerPortal && <PartnerPortalBadge />}
+            </>
           ) : bot.status !== "draft" ? (
-            <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">—</p>
+            <>
+              <p className="m-0 text-xs sm:text-sm text-semantic-text-muted">
+                —
+              </p>
+              {PartnerPortal && <PartnerPortalBadge />}
+            </>
+          ) : PartnerPortal ? (
+            <PartnerPortalBadge />
           ) : null}
         </div>
       </div>

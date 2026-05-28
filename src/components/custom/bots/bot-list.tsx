@@ -13,6 +13,7 @@ export const BotList = React.forwardRef(
     {
       bots = [],
       typeLabels,
+      PartnerPortal = false,
       onCreateBot,
       onCreateBotSubmit,
       onBotEdit,
@@ -116,7 +117,8 @@ export const BotList = React.forwardRef(
                   key={bot.id}
                   bot={bot}
                   typeLabels={typeLabels}
-                  disabled={cardDisabled}
+                  PartnerPortal={PartnerPortal}
+                  chatbotcard-disabled={cardDisabled}
                   disabledTooltip={cardDisabledTooltip}
                   onEdit={onBotEdit}
                   onDelete={onBotDelete}

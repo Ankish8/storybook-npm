@@ -89,6 +89,13 @@ describe("BotList", () => {
     expect(menuButtons).toHaveLength(sampleBots.length);
   });
 
+  it("passes PartnerPortal badge visibility to all bot cards", () => {
+    render(<BotList bots={sampleBots} PartnerPortal />);
+    expect(screen.getAllByText("Partner Portal")).toHaveLength(
+      sampleBots.length
+    );
+  });
+
   it("disables bot cards that match disabled bot type props", () => {
     const handleEdit = vi.fn();
     render(

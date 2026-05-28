@@ -37,9 +37,11 @@ export interface BotCardProps extends Omit<
   bot: Bot;
   /** Override labels for bot types (e.g. { chatbot: "Chat", voicebot: "Voice" }). Ignored if bot.typeLabel is set. */
   typeLabels?: Partial<Record<BotType, string>>;
+  /** When true, shows the Partner Portal badge in the card's published info area. */
+  PartnerPortal?: boolean;
   /** When true, the card is visually muted and edit/delete interactions are disabled. */
-  disabled?: boolean;
-  /** Shown on hover/focus only when disabled is true. Tooltip is not rendered when omitted or empty. */
+  "chatbotcard-disabled"?: boolean;
+  /** Shown on hover/focus only when chatbotcard-disabled is true. Tooltip is not rendered when omitted or empty. */
   disabledTooltip?: string;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
@@ -167,6 +169,8 @@ export interface BotListProps
   bots?: Bot[];
   /** Override type badge labels for all cards (e.g. { chatbot: "Chat", voicebot: "Voice" }). Per-bot bot.typeLabel still wins. */
   typeLabels?: Partial<Record<BotType, string>>;
+  /** When true, shows the Partner Portal badge on every bot card. */
+  PartnerPortal?: boolean;
   /** Called when the "Create new bot" card is clicked (modal opens) */
   onCreateBot?: () => void;
   /** Called when the Create Bot modal is submitted with the new bot data (type is BOT_TYPE: CHAT = 1, VOICE = 2) */

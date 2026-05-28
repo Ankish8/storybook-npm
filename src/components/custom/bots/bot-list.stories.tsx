@@ -47,6 +47,13 @@ export const Default: Story = {
   },
 };
 
+export const WithPartnerPortalBadges: Story = {
+  args: {
+    bots: sampleBots,
+    PartnerPortal: true,
+  },
+};
+
 export const ChatbotDisabled: Story = {
   args: {
     bots: sampleBots,
