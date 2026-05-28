@@ -46,3 +46,11 @@ export const Default: Story = {
     bots: sampleBots,
   },
 };
+
+export const ChatbotDisabled: Story = {
+  args: {
+    bots: sampleBots,
+    chatbotDisabled: true,
+    chatbotDisabledTooltip: "Only one chatbot can be active at a time.",
+  },
+};

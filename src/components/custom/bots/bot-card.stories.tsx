@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React from "react";
 import { BotCard } from "./bot-card";
 import { botCardArgTypes } from "./docs/props";
 
@@ -157,6 +156,23 @@ export const CardWithCustomTypeLabels: Story = {
   args: {
     bot: sampleBots[0],
     typeLabels: { voicebot: "Voice", chatbot: "Chat" },
+    onEdit: fn(),
+    onDelete: fn(),
+    className: undefined,
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+};
+
+export const DisabledCard: Story = {
+  args: {
+    bot: sampleBots[1],
+    disabled: true,
+    disabledTooltip: "Disable the current chatbot before creating another one.",
+    typeLabels: undefined,
     onEdit: fn(),
     onDelete: fn(),
     className: undefined,

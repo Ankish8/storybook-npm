@@ -1,5 +1,11 @@
 import * as React from "react";
-import { MessageSquare, Phone, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import {
+  MessageSquare,
+  Phone,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
 import {
@@ -9,6 +15,12 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "../../ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 import type { Bot, BotCardProps, BotType } from "./types";
 
 const DEFAULT_TYPE_LABELS: Record<BotType, string> = {
@@ -32,18 +44,41 @@ function getTypeLabel(
  * Set bot.type to "chatbot" or "voicebot"; no separate card components needed.
  */
 export const BotCard = React.forwardRef(
-  ({ bot, typeLabels, onEdit, onDelete, className, ...props }: BotCardProps, ref: React.Ref<HTMLDivElement>) => {
+  (
+    {
+      bot,
+      typeLabels,
+      disabled = false,
+      disabledTooltip,
+      onEdit,
+      onDelete,
+      className,
+      ...props
+    }: BotCardProps,
+    ref: React.Ref<HTMLDivElement>
+  ) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
+    const isDisabled = Boolean(disabled);
+    const showDisabledTooltip =
+      isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";
 
     const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (onEdit && !(e.target as HTMLElement).closest("[data-bot-card-action]")) {
+      if (isDisabled) return;
+      if (
+        onEdit &&
+        !(e.target as HTMLElement).closest("[data-bot-card-action]")
+      ) {
         onEdit(bot.id);
       }
     };
 
     const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (onEdit && !(e.target as HTMLElement).closest("[data-bot-card-action]")) {
+      if (isDisabled) return;
+      if (
+        onEdit &&
+        !(e.target as HTMLElement).closest("[data-bot-card-action]")
+      ) {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onEdit(bot.id);
@@ -51,19 +86,24 @@ export const BotCard = React.forwardRef(
       }
     };
 
-    return (
+    const card = (
       <div
         ref={ref}
-        role={onEdit ? "button" : undefined}
-        tabIndex={onEdit ? 0 : undefined}
-        aria-label={onEdit ? `Edit ${bot.name}` : undefined}
-        onClick={onEdit ? handleCardClick : undefined}
-        onKeyDown={onEdit ? handleCardKeyDown : undefined}
+        role={!isDisabled && onEdit ? "button" : undefined}
+        tabIndex={
+          showDisabledTooltip ? 0 : !isDisabled && onEdit ? 0 : undefined
+        }
+        aria-label={!isDisabled && onEdit ? `Edit ${bot.name}` : undefined}
+        aria-disabled={isDisabled || undefined}
+        onClick={!isDisabled && onEdit ? handleCardClick : undefined}
+        onKeyDown={!isDisabled && onEdit ? handleCardKeyDown : undefined}
         className={cn(
           "relative bg-semantic-bg-primary border border-solid border-semantic-border-layout rounded-[5px] min-w-0 max-w-full overflow-hidden flex flex-col",
           "shadow-[0px_4px_15.1px_0px_rgba(0,0,0,0.06)] p-3 sm:p-4 md:p-5",
           "min-h-[180px] sm:min-h-[207px] h-full shrink-0",
-          onEdit && "cursor-pointer",
+          isDisabled
+            ? "cursor-not-allowed opacity-50"
+            : onEdit && "cursor-pointer",
           className
         )}
         {...props}
@@ -82,11 +122,17 @@ export const BotCard = React.forwardRef(
               {typeLabel}
             </Badge>
 
-            <span data-bot-card-action className="inline-flex" onClick={(e) => e.stopPropagation()}>
+            <span
+              data-bot-card-action
+              className="inline-flex"
+              onClick={(e) => e.stopPropagation()}
+            >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
+                    disabled={isDisabled}
+                    aria-disabled={isDisabled || undefined}
                     className="p-2 min-h-[44px] min-w-[44px] sm:p-1 sm:min-h-0 sm:min-w-0 rounded hover:bg-semantic-bg-hover text-semantic-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus flex items-center justify-center touch-manipulation"
                     aria-label="More options"
                   >
@@ -96,7 +142,11 @@ export const BotCard = React.forwardRef(
                 <DropdownMenuContent align="end" className="min-w-[160px]">
                   <DropdownMenuItem
                     className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm"
-                    onSelect={(e) => { e.preventDefault(); onEdit?.(bot.id); }}
+                    disabled={isDisabled}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      if (!isDisabled) onEdit?.(bot.id);
+                    }}
                   >
                     <Pencil className="size-4 shrink-0" />
                     <span>Edit</span>
@@ -106,7 +156,11 @@ export const BotCard = React.forwardRef(
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary focus:bg-semantic-error-surface focus:text-semantic-error-primary"
-                        onSelect={(e) => { e.preventDefault(); onDelete(bot.id); }}
+                        disabled={isDisabled}
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          if (!isDisabled) onDelete(bot.id);
+                        }}
                       >
                         <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
                         <span>Delete</span>
@@ -126,7 +180,8 @@ export const BotCard = React.forwardRef(
 
         {isChatbot ? (
           <p className="m-0 text-xs sm:text-sm text-semantic-text-muted mb-3 sm:mb-4 min-w-0 line-clamp-1">
-            {new Intl.NumberFormat("en-US").format(bot.conversationCount)} Conversations
+            {new Intl.NumberFormat("en-US").format(bot.conversationCount)}{" "}
+            Conversations
           </p>
         ) : (
           <div className="h-4 sm:h-5 mb-3 sm:mb-4 shrink-0" aria-hidden />
@@ -141,7 +196,10 @@ export const BotCard = React.forwardRef(
             <p className="m-0 text-xs font-normal text-semantic-text-secondary uppercase tracking-[0.048px] flex items-center justify-start gap-5">
               Last Published
               <span className="text-xs font-normal text-semantic-error-primary flex items-center gap-1.5 shrink-0">
-                <span className="size-1.5 rounded-full bg-semantic-error-primary shrink-0" aria-hidden />
+                <span
+                  className="size-1.5 rounded-full bg-semantic-error-primary shrink-0"
+                  aria-hidden
+                />
                 Unpublished changes
               </span>
             </p>
@@ -150,7 +208,7 @@ export const BotCard = React.forwardRef(
               Last Published
             </span>
           )}
-          {(bot.lastPublishedBy || bot.lastPublishedDate) ? (
+          {bot.lastPublishedBy || bot.lastPublishedDate ? (
             <p className="m-0 text-xs sm:text-sm text-semantic-text-muted line-clamp-1">
               {bot.lastPublishedBy
                 ? `${bot.lastPublishedBy} | ${bot.lastPublishedDate ?? "—"}`
@@ -161,6 +219,25 @@ export const BotCard = React.forwardRef(
           ) : null}
         </div>
       </div>
+    );
+
+    if (!showDisabledTooltip) {
+      return card;
+    }
+
+    return (
+      <TooltipProvider delayDuration={200}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="block h-full min-w-0 cursor-not-allowed">
+              {card}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p className="m-0">{disabledTooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   }
 );

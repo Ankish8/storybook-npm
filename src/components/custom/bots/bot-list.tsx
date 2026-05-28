@@ -84,7 +84,10 @@ export const BotList = React.forwardRef(
       <>
         <div
           ref={ref}
-          className={cn("flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border", className)}
+          className={cn(
+            "flex flex-col w-full min-w-0 max-w-full overflow-x-hidden box-border",
+            className
+          )}
           {...props}
         >
           <div className="flex flex-col gap-3 pb-4 mb-4 border-b border-solid border-semantic-border-layout sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:pb-5 sm:mb-6 min-w-0">
@@ -96,16 +99,30 @@ export const BotList = React.forwardRef(
             />
           </div>
           <BotListGrid>
-            <BotListCreateCard label={createCardLabel} onClick={handleCreateClick} />
-            {bots.map((bot) => (
-              <BotCard
-                key={bot.id}
-                bot={bot}
-                typeLabels={typeLabels}
-                onEdit={onBotEdit}
-                onDelete={onBotDelete}
-              />
-            ))}
+            <BotListCreateCard
+              label={createCardLabel}
+              onClick={handleCreateClick}
+            />
+            {bots.map((bot) => {
+              const cardDisabled =
+                bot.type === "chatbot" ? chatbotDisabled : voicebotDisabled;
+              const cardDisabledTooltip =
+                bot.type === "chatbot"
+                  ? chatbotDisabledTooltip
+                  : voicebotDisabledTooltip;
+
+              return (
+                <BotCard
+                  key={bot.id}
+                  bot={bot}
+                  typeLabels={typeLabels}
+                  disabled={cardDisabled}
+                  disabledTooltip={cardDisabledTooltip}
+                  onEdit={onBotEdit}
+                  onDelete={onBotDelete}
+                />
+              );
+            })}
           </BotListGrid>
         </div>
         <CreateBotModal

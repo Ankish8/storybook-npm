@@ -31,11 +31,7 @@ describe("BotList", () => {
 
   it("renders custom title and subtitle when bots are present", () => {
     render(
-      <BotList
-        bots={sampleBots}
-        title="My Bots"
-        subtitle="Manage your bots"
-      />
+      <BotList bots={sampleBots} title="My Bots" subtitle="Manage your bots" />
     );
     expect(screen.getByText("My Bots")).toBeInTheDocument();
     expect(screen.getByText("Manage your bots")).toBeInTheDocument();
@@ -91,5 +87,27 @@ describe("BotList", () => {
     render(<BotList bots={sampleBots} />);
     const menuButtons = screen.getAllByLabelText("More options");
     expect(menuButtons).toHaveLength(sampleBots.length);
+  });
+
+  it("disables bot cards that match disabled bot type props", () => {
+    const handleEdit = vi.fn();
+    render(
+      <BotList
+        bots={sampleBots}
+        chatbotDisabled
+        chatbotDisabledTooltip="Chatbot is disabled"
+        onBotEdit={handleEdit}
+      />
+    );
+
+    const chatbotName = screen.getByText("Excepteur sint occaecat cupidatat");
+    const chatbotCard = chatbotName.closest("[aria-disabled='true']");
+    expect(chatbotCard).toHaveClass("opacity-50", "cursor-not-allowed");
+    expect(
+      screen.getByRole("button", { name: "Edit Lead validation bot" })
+    ).toBeInTheDocument();
+
+    fireEvent.click(chatbotCard!);
+    expect(handleEdit).not.toHaveBeenCalledWith("bot-2");
   });
 });

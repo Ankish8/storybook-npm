@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BotCard } from "../bot-card";
 import type { Bot } from "../types";
@@ -49,20 +49,34 @@ describe("BotCard", () => {
   });
 
   it("renders fallback dash when no last published info", () => {
-    const bot: Bot = { ...chatbot, lastPublishedBy: undefined, lastPublishedDate: undefined };
+    const bot: Bot = {
+      ...chatbot,
+      lastPublishedBy: undefined,
+      lastPublishedDate: undefined,
+    };
     render(<BotCard bot={bot} />);
     expect(screen.getByText("—")).toBeInTheDocument();
   });
 
   it("shows Unpublished changes when status is draft", () => {
-    const bot: Bot = { ...voicebot, status: "draft", lastPublishedBy: undefined, lastPublishedDate: undefined };
+    const bot: Bot = {
+      ...voicebot,
+      status: "draft",
+      lastPublishedBy: undefined,
+      lastPublishedDate: undefined,
+    };
     render(<BotCard bot={bot} />);
     expect(screen.getByText("Unpublished changes")).toBeInTheDocument();
     expect(screen.getByText("Last Published")).toBeInTheDocument();
   });
 
   it("shows last published info when status is published even with draft data", () => {
-    const bot: Bot = { ...chatbot, status: "published", lastPublishedBy: "User", lastPublishedDate: "1 Jan, 2025" };
+    const bot: Bot = {
+      ...chatbot,
+      status: "published",
+      lastPublishedBy: "User",
+      lastPublishedDate: "1 Jan, 2025",
+    };
     render(<BotCard bot={bot} />);
     expect(screen.getByText(/User \| 1 Jan, 2025/)).toBeInTheDocument();
     expect(screen.queryByText("Unpublished changes")).not.toBeInTheDocument();
@@ -76,7 +90,9 @@ describe("BotCard", () => {
       lastPublishedDate: "15 Jan, 2025",
     };
     render(<BotCard bot={bot} />);
-    expect(screen.getByText(/Nandan Raikwar \| 15 Jan, 2025/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Nandan Raikwar \| 15 Jan, 2025/)
+    ).toBeInTheDocument();
     expect(screen.getByText("Unpublished changes")).toBeInTheDocument();
   });
 
@@ -102,9 +118,7 @@ describe("BotCard", () => {
 
   it("uses bot.typeLabel when set (overrides typeLabels)", () => {
     const bot: Bot = { ...chatbot, typeLabel: "Custom Bot" };
-    render(
-      <BotCard bot={bot} typeLabels={{ chatbot: "Chat" }} />
-    );
+    render(<BotCard bot={bot} typeLabels={{ chatbot: "Chat" }} />);
     expect(screen.getByText("Custom Bot")).toBeInTheDocument();
   });
 
@@ -133,7 +147,9 @@ describe("BotCard", () => {
     const user = userEvent.setup();
     const handleEdit = vi.fn();
     render(<BotCard bot={chatbot} onEdit={handleEdit} />);
-    await user.click(screen.getByRole("button", { name: "Edit Lead validation bot" }));
+    await user.click(
+      screen.getByRole("button", { name: "Edit Lead validation bot" })
+    );
     expect(handleEdit).toHaveBeenCalledWith("bot-1");
   });
 
@@ -154,6 +170,43 @@ describe("BotCard", () => {
     await user.click(screen.getByLabelText("More options"));
     await user.click(screen.getByText("Delete"));
     expect(handleDelete).toHaveBeenCalledWith("bot-1");
+  });
+
+  it("mutes disabled cards and blocks edit interactions", async () => {
+    const user = userEvent.setup();
+    const handleEdit = vi.fn();
+    const { container } = render(
+      <BotCard bot={chatbot} disabled onEdit={handleEdit} />
+    );
+
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveClass("opacity-50", "cursor-not-allowed");
+    expect(root).toHaveAttribute("aria-disabled", "true");
+    expect(
+      screen.queryByRole("button", { name: "Edit Lead validation bot" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("More options")).toBeDisabled();
+
+    await user.click(root);
+    expect(handleEdit).not.toHaveBeenCalled();
+  });
+
+  it("shows disabledTooltip only when the card is disabled", async () => {
+    const user = userEvent.setup();
+    const tooltip = "Disable the current chatbot first.";
+    const { container, rerender } = render(
+      <BotCard bot={chatbot} disabledTooltip={tooltip} />
+    );
+
+    await user.hover(container.firstElementChild as HTMLElement);
+    expect(screen.queryByText(tooltip)).not.toBeInTheDocument();
+
+    rerender(<BotCard bot={chatbot} disabled disabledTooltip={tooltip} />);
+    await user.hover(container.firstElementChild as HTMLElement);
+
+    await waitFor(() => {
+      expect(screen.getAllByText(tooltip).length).toBeGreaterThan(0);
+    });
   });
 
   it("does not throw when action callbacks are not provided", () => {

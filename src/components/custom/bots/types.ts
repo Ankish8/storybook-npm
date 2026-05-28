@@ -29,12 +29,18 @@ export interface Bot {
   status?: BotStatus;
 }
 
-export interface BotCardProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children"> {
+export interface BotCardProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "title" | "children"
+> {
   /** Single bot object: pass chatbot or voicebot data here; card renders based on bot.type and bot fields */
   bot: Bot;
   /** Override labels for bot types (e.g. { chatbot: "Chat", voicebot: "Voice" }). Ignored if bot.typeLabel is set. */
   typeLabels?: Partial<Record<BotType, string>>;
+  /** When true, the card is visually muted and edit/delete interactions are disabled. */
+  disabled?: boolean;
+  /** Shown on hover/focus only when disabled is true. Tooltip is not rendered when omitted or empty. */
+  disabledTooltip?: string;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
   /** Called when Delete action is selected */
@@ -67,8 +73,10 @@ export interface CreateBotModalProps {
   className?: string;
 }
 
-export interface BotListHeaderProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title"> {
+export interface BotListHeaderProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "title"
+> {
   /** Page title */
   title?: string;
   /** Optional subtitle below the title */
@@ -79,8 +87,10 @@ export interface BotListHeaderProps
   rightContent?: React.ReactNode;
 }
 
-export interface BotListSearchProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+export interface BotListSearchProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   /** Controlled value (use with onSearch) */
   value?: string;
   /** Placeholder text */
@@ -91,14 +101,12 @@ export interface BotListSearchProps
   defaultValue?: string;
 }
 
-export interface BotListCreateCardProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface BotListCreateCardProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Label for the create card (e.g. "Create new bot") */
   label?: string;
 }
 
-export interface BotListGridProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface BotListGridProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
@@ -114,7 +122,8 @@ export type CreateBotModalTypeOptionsProps = Pick<
 
 /** Props for CreateBotFlow: create card + Create Bot modal (no header). */
 export interface CreateBotFlowProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit">,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "onSubmit">,
     CreateBotModalTypeOptionsProps {
   /** Create new bot card label */
   createCardLabel?: string;
@@ -151,7 +160,8 @@ export interface EditBotFlowProps extends CreateBotModalTypeOptionsProps {
 }
 
 export interface BotListProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children">,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, "title" | "children">,
     CreateBotModalTypeOptionsProps {
   /** List of bots to display */
   bots?: Bot[];
