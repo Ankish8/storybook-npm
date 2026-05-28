@@ -57,7 +57,7 @@ export const BotCard = React.forwardRef(
       bot,
       typeLabels,
       PartnerPortal = false,
-      "chatbotcard-disabled": chatbotCardDisabled = false,
+      botCardDisabled = false,
       disabledTooltip,
       onEdit,
       onDelete,
@@ -68,7 +68,7 @@ export const BotCard = React.forwardRef(
   ) => {
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
-    const isDisabled = Boolean(chatbotCardDisabled);
+    const isDisabled = Boolean(botCardDisabled);
     const showDisabledTooltip =
       isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";
 

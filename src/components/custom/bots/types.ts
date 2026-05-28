@@ -40,8 +40,8 @@ export interface BotCardProps extends Omit<
   /** When true, shows the Partner Portal badge in the card's published info area. */
   PartnerPortal?: boolean;
   /** When true, the card is visually muted and edit/delete interactions are disabled. */
-  "chatbotcard-disabled"?: boolean;
-  /** Shown on hover/focus only when chatbotcard-disabled is true. Tooltip is not rendered when omitted or empty. */
+  botCardDisabled?: boolean;
+  /** Shown on hover/focus only when botCardDisabled is true. Tooltip is not rendered when omitted or empty. */
   disabledTooltip?: string;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;

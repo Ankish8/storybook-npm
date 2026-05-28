@@ -191,7 +191,7 @@ describe("BotCard", () => {
     const user = userEvent.setup();
     const handleEdit = vi.fn();
     const { container } = render(
-      <BotCard bot={chatbot} chatbotcard-disabled onEdit={handleEdit} />
+      <BotCard bot={chatbot} botCardDisabled onEdit={handleEdit} />
     );
 
     const root = container.firstElementChild as HTMLElement;
@@ -217,7 +217,7 @@ describe("BotCard", () => {
     expect(screen.queryByText(tooltip)).not.toBeInTheDocument();
 
     rerender(
-      <BotCard bot={chatbot} chatbotcard-disabled disabledTooltip={tooltip} />
+      <BotCard bot={chatbot} botCardDisabled disabledTooltip={tooltip} />
     );
     await user.hover(container.firstElementChild as HTMLElement);
 

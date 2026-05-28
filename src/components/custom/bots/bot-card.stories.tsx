@@ -202,7 +202,7 @@ export const CardWithCustomTypeLabels: Story = {
 export const ChatbotCardDisabled: Story = {
   args: {
     bot: sampleBots[1],
-    "chatbotcard-disabled": true,
+    botCardDisabled: true,
     disabledTooltip: "Disable the current chatbot before creating another one.",
     typeLabels: undefined,
     onEdit: fn(),
