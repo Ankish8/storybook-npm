@@ -25,12 +25,12 @@ interface BotTypeOption {
 const BOT_TYPE_OPTIONS: BotTypeOption[] = [
   {
     id: "chatbot",
-    label: "Chat Bot",
+    label: "Chat Agent",
     description: "Text-based routing for websites and WhatsApp.",
   },
   {
     id: "voicebot",
-    label: "Voice Bot",
+    label: "Voice Agent",
     description: "Conversational spoken interactions over phone.",
   },
 ];
@@ -114,7 +114,7 @@ export const CreateBotModal = React.forwardRef(
           )}
         >
           <DialogHeader>
-            <DialogTitle>Create AI Bot</DialogTitle>
+            <DialogTitle>Create AI Agent</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 sm:gap-6">
@@ -133,7 +133,7 @@ export const CreateBotModal = React.forwardRef(
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={botNameMaxLength}
-                placeholder="Enter bot name"
+                placeholder="Enter Agent name"
                 className={cn(
                   "w-full h-10 px-4 py-2.5 text-sm rounded border border-solid",
                   "border-semantic-border-input bg-semantic-bg-primary",
@@ -147,7 +147,7 @@ export const CreateBotModal = React.forwardRef(
             {/* Bot type selection */}
             <div className="flex flex-col gap-2">
               <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.014px]">
-                Select Bot Type
+                Select Agent Type
               </span>
               <TooltipProvider delayDuration={200}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:gap-3">
