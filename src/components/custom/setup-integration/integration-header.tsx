@@ -8,6 +8,8 @@ export interface IntegrationHeaderProps extends React.HTMLAttributes<HTMLDivElem
   title?: string;
   /** Step line shown under the title (e.g. "Step 3 of 4") */
   subtitle?: React.ReactNode;
+  /** Optional description shown below the title/name row */
+  description?: React.ReactNode;
   /** When set, shows "Title - {name}" with optional inline edit */
   integrationName?: string;
   onIntegrationNameChange?: (name: string) => void;
@@ -21,6 +23,10 @@ export interface IntegrationHeaderProps extends React.HTMLAttributes<HTMLDivElem
   onConfirmIntegrationName?: (name: string) => void;
   /** When true, the name field and confirm control are disabled and the check shows a spinner. */
   isLoading?: boolean;
+  /** Bot type identifier. Voice bot uses an external edit flow. */
+  botType?: string;
+  /** Called when the edit icon is clicked for external edit flows. */
+  onEditClick?: () => void;
   /** Invoked when the back control is activated */
   onBack?: () => void;
   /** Invoked when the close control is activated */
@@ -40,10 +46,13 @@ const IntegrationHeader = React.forwardRef<
       className,
       title = "Setup Integration",
       subtitle,
+      description,
       integrationName,
       onIntegrationNameChange,
       onConfirmIntegrationName,
       isLoading = false,
+      botType = "chatbot",
+      onEditClick,
       onBack,
       onClose,
       backIcon,
@@ -62,6 +71,11 @@ const IntegrationHeader = React.forwardRef<
     };
 
     const handleEditName = () => {
+      if (botType === "voicebot") {
+        onEditClick?.();
+        return;
+      }
+
       pendingAsyncNameSave.current = false;
       setEditNameDraft(integrationName ?? "");
       setIsEditingName(true);
@@ -125,7 +139,7 @@ const IntegrationHeader = React.forwardRef<
             {backIcon ?? <ArrowLeft className="size-5 shrink-0 sm:size-6" />}
           </button>
         )}
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           {integrationName !== undefined ? (
             <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
               <h2 className="m-0 shrink-0 text-base font-semibold text-semantic-text-primary sm:text-lg">
@@ -167,7 +181,9 @@ const IntegrationHeader = React.forwardRef<
                   <span className="min-w-0 max-w-full break-words text-base font-semibold text-semantic-text-primary sm:text-lg">
                     {integrationName}
                   </span>
-                  {(onIntegrationNameChange || onConfirmIntegrationName) && (
+                  {(onIntegrationNameChange ||
+                    onConfirmIntegrationName ||
+                    (botType === "voicebot" && onEditClick)) && (
                     <button
                       type="button"
                       onClick={handleEditName}
@@ -184,6 +200,11 @@ const IntegrationHeader = React.forwardRef<
             <h2 className="m-0 min-w-0 break-words text-base font-semibold text-semantic-text-primary sm:text-lg">
               {title}
             </h2>
+          )}
+          {description !== undefined && description !== null && (
+            <p className="m-0 min-w-0 break-words text-sm font-normal text-semantic-text-muted">
+              {description}
+            </p>
           )}
           {subtitle !== undefined && subtitle !== null && (
             <IntegrationSteps>{subtitle}</IntegrationSteps>

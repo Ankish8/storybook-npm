@@ -49,8 +49,12 @@ export interface SetupIntegrationProps
   onOpenChange: (open: boolean) => void
   /** Header title (e.g., "Setup Integration", "Test Integration") */
   title?: string
-  /** Step subtitle (e.g., "Step 3 of 4") */
-  subtitle?: string
+  /** Step subtitle (e.g., "Step 3 of 4"). Pass null to hide it. */
+  subtitle?: React.ReactNode
+  /** Optional header description shown below the title/name row */
+  description?: string
+  /** Bot type identifier. Defaults to "chatbot". */
+  botType?: string
   /** Chat messages to display */
   messages: ChatMessage[]
   /**
@@ -96,6 +100,8 @@ export interface SetupIntegrationProps
   onConfirmIntegrationName?: (name: string) => void
   /** While a confirm-name save is in progress (spinner on check, read-only field). */
   isIntegrationNameLoading?: boolean
+  /** Callback when the edit icon is clicked for non-inline edit flows (e.g., voice bot). */
+  onEditClick?: () => void
   /** Callback when close (X) is clicked */
   onClose?: () => void
   /** Callback when back arrow is clicked */

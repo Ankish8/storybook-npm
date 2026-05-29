@@ -16,6 +16,8 @@ const SetupIntegration = React.forwardRef<
       onOpenChange,
       title = "Setup Integration",
       subtitle = "Step 3 of 4",
+      description,
+      botType = "chatbot",
       messages,
       messagesAreaClassName,
       emptyChatTitle,
@@ -33,6 +35,7 @@ const SetupIntegration = React.forwardRef<
       onIntegrationNameChange,
       onConfirmIntegrationName,
       isIntegrationNameLoading = false,
+      onEditClick,
       onClose,
       onBack,
       onInputChange,
@@ -74,6 +77,8 @@ const SetupIntegration = React.forwardRef<
             className="w-full max-w-none border-0 shadow-none"
             title={title}
             subtitle={subtitle}
+            description={description}
+            botType={botType}
             messages={messages}
             messagesAreaClassName={messagesAreaClassName}
             emptyChatTitle={emptyChatTitle}
@@ -91,6 +96,7 @@ const SetupIntegration = React.forwardRef<
             onIntegrationNameChange={onIntegrationNameChange}
             onConfirmIntegrationName={onConfirmIntegrationName}
             isIntegrationNameLoading={isIntegrationNameLoading}
+            onEditClick={onEditClick}
             onClose={onClose ? handleDiscardRequest : undefined}
             onBack={onBack ? handleDiscardRequest : undefined}
             onInputChange={onInputChange}

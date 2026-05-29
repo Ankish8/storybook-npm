@@ -18,6 +18,8 @@ const SetupIntegrationView = React.forwardRef<
       className,
       title = "Setup Integration",
       subtitle = "Step 3 of 4",
+      description,
+      botType = "chatbot",
       messages,
       messagesAreaClassName,
       emptyChatTitle,
@@ -35,6 +37,7 @@ const SetupIntegrationView = React.forwardRef<
       onIntegrationNameChange,
       onConfirmIntegrationName,
       isIntegrationNameLoading = false,
+      onEditClick,
       onClose,
       onBack,
       onInputChange,
@@ -69,10 +72,13 @@ const SetupIntegrationView = React.forwardRef<
         <IntegrationHeader
           title={title}
           subtitle={subtitle}
+          description={description}
           integrationName={integrationName}
           onIntegrationNameChange={onIntegrationNameChange}
           onConfirmIntegrationName={onConfirmIntegrationName}
           isLoading={isIntegrationNameLoading}
+          botType={botType}
+          onEditClick={onEditClick}
           onBack={onBack}
           onClose={onClose}
         />

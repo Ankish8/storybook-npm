@@ -51,6 +51,22 @@ describe("SetupIntegration", () => {
     expect(screen.getByText("AI Assistant")).toBeInTheDocument();
   });
 
+  it("renders optional description in the header", () => {
+    render(
+      <SetupIntegration
+        {...modalProps}
+        messages={sampleMessages}
+        description="Use this integration to answer voice bot queries."
+      />
+    );
+    expect(
+      screen.getByText("Use this integration to answer voice bot queries.")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Use this integration to answer voice bot queries.")
+    ).toHaveClass("m-0", "text-semantic-text-muted");
+  });
+
   it("renders chat messages", () => {
     render(<SetupIntegration {...modalProps} messages={sampleMessages} />);
     expect(
@@ -322,6 +338,23 @@ describe("SetupIntegration", () => {
     fireEvent.click(screen.getByLabelText("Edit integration name"));
     expect(screen.getByLabelText("Integration name")).toBeInTheDocument();
     expect(screen.getByLabelText("Confirm name")).toBeInTheDocument();
+  });
+
+  it("calls onEditClick instead of entering edit mode for voicebot", () => {
+    const onEditClick = vi.fn();
+    render(
+      <SetupIntegration
+        {...modalProps}
+        messages={sampleMessages}
+        title="Edit Integration"
+        integrationName="Voice integration"
+        botType="voicebot"
+        onEditClick={onEditClick}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("Edit integration name"));
+    expect(onEditClick).toHaveBeenCalledOnce();
+    expect(screen.queryByLabelText("Integration name")).not.toBeInTheDocument();
   });
 
   it("calls onIntegrationNameChange when name is confirmed", () => {

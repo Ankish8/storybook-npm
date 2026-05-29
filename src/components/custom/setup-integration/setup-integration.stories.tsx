@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import { SetupIntegration } from "./setup-integration";
 import { SetupIntegrationView } from "./setup-integration-view";
 import { Button } from "../../ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../ui/dialog";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
 import type {
   ChatMessage,
   SetupIntegrationProps,
@@ -1467,6 +1475,136 @@ Flow: Open in edit mode → Click pencil icon → Rename integration → Confirm
 3. Click the pencil icon — name becomes an editable input field
 4. Type a new name and click ✓ (or press Enter) to confirm
 5. Press Escape to cancel the edit`,
+      },
+    },
+  },
+};
+
+/* ================================================================== */
+/* Scenario 10: Voice Bot Edit Details                                  */
+/* ================================================================== */
+
+const voicebotDescription = "“Please wait while I get the data for you...";
+
+const Scenario10Example = () => {
+  const [open, setOpen] = useState(false);
+  const [editDetailsOpen, setEditDetailsOpen] = useState(false);
+  const [integrationName, setIntegrationName] = useState("Integration test 1");
+  const [draftName, setDraftName] = useState("Integration test 1");
+  const [description, setDescription] = useState(voicebotDescription);
+  const [draftDescription, setDraftDescription] = useState(voicebotDescription);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleEditClick = () => {
+    setDraftName(integrationName);
+    setDraftDescription(description);
+    setEditDetailsOpen(true);
+  };
+
+  const handleSaveDetails = () => {
+    setIntegrationName(draftName.trim());
+    setDescription(draftDescription.trim());
+    setEditDetailsOpen(false);
+  };
+
+  return (
+    <>
+      <SetupTrigger onClick={() => setOpen(true)} />
+      <SetupIntegration
+        open={open}
+        onOpenChange={setOpen}
+        title="Edit Integration"
+        subtitle={null}
+        description={description}
+        integrationName={integrationName}
+        botType="voicebot"
+        onEditClick={handleEditClick}
+        messages={editIntegrationMessages}
+        inputValue=""
+        actionLabel="Test Integration"
+        actionMode="test"
+        onClose={handleClose}
+        onBack={handleClose}
+        onResetChat={() => {}}
+      />
+      <Dialog open={editDetailsOpen} onOpenChange={setEditDetailsOpen}>
+        <DialogContent
+          size="lg"
+          className="w-[min(calc(100vw-2rem),760px)] gap-0 overflow-hidden p-0"
+        >
+          <DialogHeader className="border-b border-solid border-semantic-border-layout px-8 py-6">
+            <DialogTitle className="text-lg font-semibold text-semantic-text-primary">
+              Edit Details
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-6 px-8 py-7">
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="voicebot-function-name"
+                className="text-sm font-semibold text-semantic-text-primary"
+              >
+                Functions Name <span className="text-semantic-error-primary">*</span>
+              </label>
+              <Input
+                id="voicebot-function-name"
+                value={draftName}
+                onChange={(event) => setDraftName(event.target.value)}
+                placeholder="Enter functions name"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="voicebot-agent-message"
+                className="flex items-center gap-1 text-sm font-semibold text-semantic-text-primary"
+              >
+                Agent Message (Optional)
+                <Info className="size-3.5 text-semantic-text-muted" aria-hidden />
+              </label>
+              <Textarea
+                id="voicebot-agent-message"
+                value={draftDescription}
+                onChange={(event) => setDraftDescription(event.target.value)}
+                rows={5}
+                placeholder="Enter agent message"
+                className="min-h-[112px] text-sm"
+              />
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <Button
+                onClick={handleSaveDetails}
+                disabled={!draftName.trim()}
+                className="min-w-[76px]"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+export const Scenario10_EditIntegrationVoicebotDetails: Story = {
+  render: () => <Scenario10Example />,
+  parameters: {
+    docs: {
+      description: {
+        story: `**Scenario 10 — Edit Integration with Voice Bot Details**
+
+Flow: Open voice bot edit integration → Click pencil icon → Edit Details dialog opens → Save function name and agent message
+
+1. Click **"+ Integrations"** to open the edit integration modal
+2. Header shows **"Edit Integration - Integration test 1"** and the agent message below it
+3. Click the pencil icon — voice bot edit flow opens an **Edit Details** dialog instead of inline rename
+4. Update **Functions Name** and **Agent Message (Optional)**, then click **"Save"**
+5. The integration name and agent message update in the header`,
       },
     },
   },
