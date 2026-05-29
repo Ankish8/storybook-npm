@@ -66,6 +66,7 @@ export type {
   ChatBubbleReply,
   ChatFailedMessage,
   DeliveryStatus,
+  ShowReplyOn,
   ReplyToPayload,
   ChatMessageListBubbleRowProps,
   ChatMessageListProps,
