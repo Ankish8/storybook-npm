@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { BotType } from "@/index";
+import type { BotType } from "../bots/types";
 
 /**
  * Chat message — OpenAI-compatible core fields (role, content)

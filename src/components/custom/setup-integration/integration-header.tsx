@@ -2,7 +2,7 @@ import * as React from "react";
 import { ArrowLeft, X, Pencil, Check, Loader2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { IntegrationSteps } from "./integration-steps";
-import type { BotType } from "@/index";
+import type { BotType } from "../bots/types";
 
 export interface IntegrationHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Main heading (e.g. "Setup Integration") */

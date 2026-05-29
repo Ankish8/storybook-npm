@@ -327,9 +327,13 @@ describe("ChatBubble", () => {
     );
 
     const bubble = screen.getByText("Hi").closest(".rounded-lg");
+    const wrapper = bubble?.parentElement;
+    const column = wrapper?.parentElement?.parentElement;
+    expect(column).toHaveStyle({
+      minWidth: "min(11.5rem, 100%)",
+    });
     expect(bubble?.parentElement).toHaveStyle({
       minWidth: "min(11.5rem, 100%)",
-      maxWidth: "100%",
     });
   });
 
@@ -391,9 +395,11 @@ describe("ChatBubble", () => {
       );
       const blockFooter = container.querySelector("div.mt-1\\.5");
       expect(blockFooter).toHaveClass("justify-start");
+      const column = container.querySelector("div.flex.flex-col");
+      expect((column as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
       const wrapper = getBubbleWrapper(container);
       expect((wrapper as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
-      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("");
       // Wrapper is `relative w-fit` for text-only so the reply-button absolute
       // anchor lands at the wrapper's (= rendered bubble's) edge.
       expect(wrapper).toHaveClass("relative", "w-fit");
@@ -405,9 +411,11 @@ describe("ChatBubble", () => {
           Hi
         </ChatBubble>
       );
+      const column = container.querySelector("div.flex.flex-col");
+      expect((column as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
       const wrapper = getBubbleWrapper(container);
       expect((wrapper as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
-      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("");
     });
 
     it("sender text-only with 'read' status: responsive minWidth on the wrapper", () => {
@@ -416,9 +424,11 @@ describe("ChatBubble", () => {
           Hi
         </ChatBubble>
       );
+      const column = container.querySelector("div.flex.flex-col");
+      expect((column as HTMLElement).style.minWidth).toBe("min(11.5rem, 100%)");
       const wrapper = getBubbleWrapper(container);
       expect((wrapper as HTMLElement).style.minWidth).toBe("min(11.5rem, 100%)");
-      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("");
     });
 
     it("sender text-only with 'failed' status: responsive minWidth on the wrapper", () => {
@@ -427,25 +437,29 @@ describe("ChatBubble", () => {
           Hi
         </ChatBubble>
       );
+      const column = container.querySelector("div.flex.flex-col");
+      expect((column as HTMLElement).style.minWidth).toBe("min(14rem, 100%)");
       const wrapper = getBubbleWrapper(container);
       expect((wrapper as HTMLElement).style.minWidth).toBe("min(14rem, 100%)");
-      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("");
       expect(screen.getByText("Failed to send").closest("div")).toHaveClass(
         "flex-wrap"
       );
     });
 
-    it("textMaxWidthClassName defaults to max-w-[65%] on the column (manual mode)", () => {
+    it("textMaxWidthClassName defaults to max-w-[65%] on the wrapper (manual mode)", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="2:15 PM">
           Hi
         </ChatBubble>
       );
       const column = container.querySelector("div.flex.flex-col");
-      expect(column).toHaveClass("max-w-[65%]");
+      const wrapper = getBubbleWrapper(container);
+      expect(column).toHaveClass("max-w-full");
+      expect(wrapper).toHaveClass("max-w-[65%]");
     });
 
-    it("textMaxWidthClassName override is applied on the column (manual mode)", () => {
+    it("textMaxWidthClassName override is applied on the wrapper (manual mode)", () => {
       const { container } = render(
         <ChatBubble
           variant="sender"
@@ -456,8 +470,10 @@ describe("ChatBubble", () => {
         </ChatBubble>
       );
       const column = container.querySelector("div.flex.flex-col");
-      expect(column).toHaveClass("max-w-[52%]");
-      expect(column).not.toHaveClass("max-w-[65%]");
+      const wrapper = getBubbleWrapper(container);
+      expect(column).toHaveClass("max-w-full");
+      expect(wrapper).toHaveClass("max-w-[52%]");
+      expect(wrapper).not.toHaveClass("max-w-[65%]");
     });
 
     it("textMaxWidthClassName override flows through message mode too", () => {
@@ -472,7 +488,9 @@ describe("ChatBubble", () => {
         <ChatBubble message={msg} textMaxWidthClassName="max-w-[480px]" />
       );
       const column = container.querySelector("div.flex.flex-col");
-      expect(column).toHaveClass("max-w-[480px]");
+      const wrapper = getBubbleWrapper(container);
+      expect(column).toHaveClass("max-w-full");
+      expect(wrapper).toHaveClass("max-w-[480px]");
     });
 
     it("textMaxWidthClassName is ignored for media variants (manual mode)", () => {
@@ -514,8 +532,10 @@ describe("ChatBubble", () => {
       const replyBtn = screen.getByRole("button", { name: "Reply" });
       expect(wrapper?.contains(replyBtn)).toBe(true);
       // Wrapper carries the minWidth, so its width === rendered bubble width.
+      const column = wrapper?.parentElement?.parentElement;
+      expect((column as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
       expect((wrapper as HTMLElement).style.minWidth).toBe("min(7rem, 100%)");
-      expect((wrapper as HTMLElement).style.maxWidth).toBe("100%");
+      expect((wrapper as HTMLElement).style.maxWidth).toBe("");
     });
 
     it("reply button has z-10 so it floats above adjacent bubbles", () => {

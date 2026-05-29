@@ -74,7 +74,18 @@ function getTextOnlyMinWidthStyle(
 
   return {
     minWidth: `min(${minWidth}, 100%)`,
-    maxWidth: "100%",
+  };
+}
+
+function getTextOnlyColumnMinWidthStyle(
+  minWidth?: string
+): React.CSSProperties | undefined {
+  if (!minWidth) {
+    return undefined;
+  }
+
+  return {
+    minWidth: `min(${minWidth}, 100%)`,
   };
 }
 
@@ -840,7 +851,11 @@ const ChatBubbleMessageMode = React.forwardRef<
         id={`msg-${msg.id}`}
         className={cn(
           "flex min-w-0 flex-col",
-          hasFailedFeedback ? "w-full max-w-full" : bubbleWidth,
+          hasFailedFeedback
+            ? "w-full max-w-full"
+            : isMessageTextOnly
+              ? "max-w-full"
+              : bubbleWidth,
           msg.sender === "agent" ? "items-end" : "items-start",
           // Reserve 36px inside the column so the absolutely-positioned sender
           // icon (sentBy badge or custom senderIndicator) stays within the box.
@@ -849,7 +864,11 @@ const ChatBubbleMessageMode = React.forwardRef<
             (msg.sentBy || senderIndicator) &&
             "pr-9"
         )}
-        style={hasFailedFeedback ? failedColumnStyle : undefined}
+        style={
+          hasFailedFeedback
+            ? failedColumnStyle
+            : getTextOnlyColumnMinWidthStyle(messageTextOnlyMinWidth)
+        }
       >
         {msg.sender === "customer" && msg.senderName && (
           <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
@@ -871,7 +890,8 @@ const ChatBubbleMessageMode = React.forwardRef<
         */}
         <div
           className={cn(
-            "relative max-w-full",
+            "relative",
+            isMessageTextOnly ? bubbleWidth : "max-w-full",
             // Text-only bubbles shrink the wrapper to content (+ minWidth);
             // media variants let the column's max-w control width via w-full.
             isMessageTextOnly ? "w-fit" : "w-full"
@@ -1305,9 +1325,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             // Media variants: use the absolute-px caps from maxWidthMap.
             hasManualFailedFeedback
               ? "w-full max-w-full"
-              : maxWidth === "text"
-                ? textMaxWidthClassName
-                : maxWidthMap[maxWidth],
+              : isManualTextOnly
+                ? "max-w-full"
+                : maxWidth === "text"
+                  ? textMaxWidthClassName
+                  : maxWidthMap[maxWidth],
             variant === "sender" ? "items-end" : "items-start",
             // Reserve 36px (28px avatar + 6px ml + 2px buffer) inside the column
             // so the absolutely-positioned senderIndicator stays within the box.
@@ -1315,7 +1337,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             // with overflow:hidden or tight right/left padding.
             senderIndicator && variant === "sender" && "pr-9"
           )}
-          style={hasManualFailedFeedback ? failedColumnStyle : undefined}
+          style={
+            hasManualFailedFeedback
+              ? failedColumnStyle
+              : getTextOnlyColumnMinWidthStyle(manualTextOnlyMinWidth)
+          }
         >
           {variant === "receiver" && senderName && (
             <span className="mb-1 px-1 text-[12px] text-semantic-text-muted">
@@ -1334,7 +1360,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           */}
           <div
             className={cn(
-              "relative max-w-full",
+              "relative",
+              isManualTextOnly ? textMaxWidthClassName : "max-w-full",
               isManualTextOnly ? "w-fit" : "w-full"
             )}
             style={getTextOnlyMinWidthStyle(manualTextOnlyMinWidth)}
