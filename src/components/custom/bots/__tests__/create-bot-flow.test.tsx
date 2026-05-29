@@ -18,7 +18,7 @@ describe("CreateBotFlow", () => {
     const onSubmit = vi.fn();
     render(<CreateBotFlow onSubmit={onSubmit} />);
     fireEvent.click(screen.getByText("Create new bot").closest("button")!);
-    const nameInput = screen.getByPlaceholderText("Enter bot name");
+    const nameInput = screen.getByPlaceholderText("Enter Agent name");
     fireEvent.change(nameInput, { target: { value: "My Bot" } });
     const createButton = screen.getByRole("button", { name: "Create" });
     fireEvent.click(createButton);

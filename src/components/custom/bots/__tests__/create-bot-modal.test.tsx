@@ -9,16 +9,16 @@ import { BOT_TYPE } from "../types";
 describe("CreateBotModal", () => {
   it("renders nothing when closed", () => {
     render(<CreateBotModal open={false} onOpenChange={vi.fn()} />);
-    expect(screen.queryByText("Create AI Bot")).not.toBeInTheDocument();
+    expect(screen.queryByText("Create AI Agent")).not.toBeInTheDocument();
   });
 
   it("renders modal content when open", () => {
     render(<CreateBotModal open onOpenChange={vi.fn()} />);
-    expect(screen.getByText("Create AI Bot")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter bot name")).toBeInTheDocument();
-    expect(screen.getByText("Select Bot Type")).toBeInTheDocument();
-    expect(screen.getByText("Chat Bot")).toBeInTheDocument();
-    expect(screen.getByText("Voice Bot")).toBeInTheDocument();
+    expect(screen.getByText("Create AI Agent")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter Agent name")).toBeInTheDocument();
+    expect(screen.getByText("Select Agent Type")).toBeInTheDocument();
+    expect(screen.getByText("Chat Agent")).toBeInTheDocument();
+    expect(screen.getByText("Voice Agent")).toBeInTheDocument();
   });
 
   it("shows both bot type options with descriptions", () => {
@@ -45,7 +45,7 @@ describe("CreateBotModal", () => {
 
   it("enables Create button when name is filled", () => {
     render(<CreateBotModal open onOpenChange={vi.fn()} />);
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
     });
     expect(screen.getByText("Create").closest("button")).not.toBeDisabled();
@@ -54,7 +54,7 @@ describe("CreateBotModal", () => {
   it("calls onSubmit with name and BOT_TYPE.CHAT when Chat bot is selected", () => {
     const handleSubmit = vi.fn();
     render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "Lead Bot" },
     });
     fireEvent.click(screen.getByText("Create"));
@@ -67,13 +67,13 @@ describe("CreateBotModal", () => {
   it("calls onSubmit with BOT_TYPE.VOICE when Voice bot is selected", () => {
     const handleSubmit = vi.fn();
     render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
-    fireEvent.click(screen.getByText("Voice Bot").closest("button")!);
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
-      target: { value: "Voice Bot" },
+    fireEvent.click(screen.getByText("Voice Agent").closest("button")!);
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
+      target: { value: "Voice Agent" },
     });
     fireEvent.click(screen.getByText("Create"));
     expect(handleSubmit).toHaveBeenCalledWith({
-      name: "Voice Bot",
+      name: "Voice Agent",
       type: BOT_TYPE.VOICE,
     });
   });
@@ -81,7 +81,7 @@ describe("CreateBotModal", () => {
   it("trims whitespace from bot name before submitting", () => {
     const handleSubmit = vi.fn();
     render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "  My Bot  " },
     });
     fireEvent.click(screen.getByText("Create"));
@@ -101,7 +101,7 @@ describe("CreateBotModal", () => {
   it("keeps form values after submitting while modal stays open", () => {
     const handleOpenChange = vi.fn();
     render(<CreateBotModal open onOpenChange={handleOpenChange} onSubmit={vi.fn()} />);
-    const input = screen.getByPlaceholderText("Enter bot name");
+    const input = screen.getByPlaceholderText("Enter Agent name");
     fireEvent.change(input, { target: { value: "Test Bot" } });
     fireEvent.click(screen.getByText("Create"));
     expect((input as HTMLInputElement).value).toBe("Test Bot");
@@ -117,7 +117,7 @@ describe("CreateBotModal", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} botNameMaxLength={64} />
     );
-    expect(screen.getByPlaceholderText("Enter bot name")).toHaveAttribute(
+    expect(screen.getByPlaceholderText("Enter Agent name")).toHaveAttribute(
       "maxLength",
       "64"
     );
@@ -127,7 +127,7 @@ describe("CreateBotModal", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} isLoading />
     );
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
     });
     expect(screen.getByText("Create").closest("button")).toBeDisabled();
@@ -138,7 +138,7 @@ describe("CreateBotModal", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} isLoading />
     );
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
     });
     fireEvent.click(screen.getByText("Create"));
@@ -149,15 +149,15 @@ describe("CreateBotModal", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
     );
-    expect(screen.getByText("Chat Bot").closest("button")).toBeDisabled();
-    expect(screen.getByText("Voice Bot").closest("button")).not.toBeDisabled();
+    expect(screen.getByText("Chat Agent").closest("button")).toBeDisabled();
+    expect(screen.getByText("Voice Agent").closest("button")).not.toBeDisabled();
   });
 
   it("selects Voice bot when Chat bot is disabled", () => {
     render(
       <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
     );
-    expect(screen.getByText("Voice Bot").closest("button")).toHaveAttribute(
+    expect(screen.getByText("Voice Agent").closest("button")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
@@ -173,7 +173,7 @@ describe("CreateBotModal", () => {
         chatbotDisabled
       />
     );
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
     });
     fireEvent.click(screen.getByText("Create"));
@@ -192,7 +192,7 @@ describe("CreateBotModal", () => {
         voicebotDisabled
       />
     );
-    fireEvent.change(screen.getByPlaceholderText("Enter bot name"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
     });
     expect(screen.getByText("Create").closest("button")).toBeDisabled();
@@ -208,7 +208,7 @@ describe("CreateBotModal", () => {
         chatbotDisabledTooltip="Chat bots are unavailable."
       />
     );
-    const trigger = screen.getByText("Chat Bot").closest("span");
+    const trigger = screen.getByText("Chat Agent").closest("span");
     expect(trigger).toBeTruthy();
     await user.hover(trigger!);
     await waitFor(
