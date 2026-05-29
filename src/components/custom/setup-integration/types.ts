@@ -1,4 +1,5 @@
 import * as React from "react"
+import type { BotType } from "@/index";
 
 /**
  * Chat message — OpenAI-compatible core fields (role, content)
@@ -54,7 +55,7 @@ export interface SetupIntegrationProps
   /** Optional header description shown below the title/name row */
   description?: string
   /** Bot type identifier. Defaults to "chatbot". */
-  botType?: string
+  botType?: BotType;
   /** Chat messages to display */
   messages: ChatMessage[]
   /**

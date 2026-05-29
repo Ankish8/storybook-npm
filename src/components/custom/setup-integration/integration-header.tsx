@@ -2,6 +2,7 @@ import * as React from "react";
 import { ArrowLeft, X, Pencil, Check, Loader2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { IntegrationSteps } from "./integration-steps";
+import type { BotType } from "@/index";
 
 export interface IntegrationHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Main heading (e.g. "Setup Integration") */
@@ -24,7 +25,7 @@ export interface IntegrationHeaderProps extends React.HTMLAttributes<HTMLDivElem
   /** When true, the name field and confirm control are disabled and the check shows a spinner. */
   isLoading?: boolean;
   /** Bot type identifier. Voice bot uses an external edit flow. */
-  botType?: string;
+  botType?: BotType;
   /** Called when the edit icon is clicked for external edit flows. */
   onEditClick?: () => void;
   /** Invoked when the back control is activated */
