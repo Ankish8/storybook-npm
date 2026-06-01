@@ -23,15 +23,15 @@ describe("DateTimePicker", () => {
       />
     );
 
-    expect(screen.getByRole("button")).toHaveTextContent("05/12/2026 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/05/2026 10:30 AM"
+    );
   });
 
   it("renders the placeholder when no date is selected", () => {
     render(<DateTimePicker />);
 
-    expect(
-      screen.getByRole("button", { name: /--\/--\/-- -- : --/ })
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("--/--/-- -- : --")).toBeInTheDocument();
   });
 
   it("opens the calendar popover from the input trigger", () => {
@@ -45,10 +45,11 @@ describe("DateTimePicker", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /05\/12\/2026/i }));
+    fireEvent.click(screen.getByLabelText("Date and time"));
 
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
-    expect(screen.getByText("May 2026")).toBeInTheDocument();
+    expect(screen.getByLabelText("Month")).toHaveValue("4");
+    expect(screen.getByLabelText("Year")).toHaveValue("2026");
     expect(screen.getByLabelText("Start Time")).toBeInTheDocument();
     expect(screen.getByLabelText("End Time")).toBeInTheDocument();
   });
@@ -56,9 +57,7 @@ describe("DateTimePicker", () => {
   it("uses DateRangeModal trigger styling", () => {
     render(<DateTimePicker />);
 
-    const trigger = screen.getByRole("button", {
-      name: /--\/--\/-- -- : --/,
-    });
+    const trigger = screen.getByLabelText("Date and time").parentElement;
 
     expect(trigger).toHaveClass("h-10");
     expect(trigger).toHaveClass("rounded-lg");
@@ -82,7 +81,7 @@ describe("DateTimePicker", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /05\/12\/2026/i }));
+    fireEvent.click(screen.getByLabelText("Date and time"));
     fireEvent.click(screen.getByLabelText("May 26, 2026"));
 
     expect(handleValueChange).toHaveBeenCalledWith({
@@ -105,7 +104,7 @@ describe("DateTimePicker", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /05\/12\/2026/i }));
+    fireEvent.click(screen.getByLabelText("Date and time"));
     fireEvent.change(screen.getByLabelText("Start Time"), {
       target: { value: "11:45:00" },
     });
@@ -140,7 +139,7 @@ describe("DateTimePicker", () => {
   it("applies error state styling to the trigger", () => {
     render(<DateTimePicker state="error" />);
 
-    expect(screen.getByRole("button")).toHaveClass(
+    expect(screen.getByLabelText("Date and time").parentElement).toHaveClass(
       "border-semantic-error-primary"
     );
   });
@@ -150,9 +149,7 @@ describe("DateTimePicker", () => {
 
     render(<DateTimePicker open={false} onOpenChange={handleOpenChange} />);
 
-    fireEvent.click(
-      screen.getByRole("button", { name: /--\/--\/-- -- : --/ })
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Open calendar" }));
 
     expect(handleOpenChange).toHaveBeenCalledWith(true);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -170,11 +167,9 @@ describe("DateTimePicker", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /05\/12\/2026/i }));
+    fireEvent.click(screen.getByLabelText("Date and time"));
 
-    expect(
-      screen.getByLabelText("May 11, 2026")
-    ).toBeDisabled();
+    expect(screen.getByLabelText("May 11, 2026")).toBeDisabled();
     expect(screen.getByLabelText("May 12, 2026")).not.toBeDisabled();
   });
 
@@ -190,7 +185,82 @@ describe("DateTimePicker", () => {
       />
     );
 
-    expect(screen.getByRole("button").querySelectorAll("svg")).toHaveLength(1);
+    expect(
+      screen.queryByRole("button", { name: "Clear date" })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Open calendar" })
+    ).toBeInTheDocument();
+  });
+
+  it("allows typing a date into the input", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText("Date and time"), {
+      target: { value: "15/06/2026" },
+    });
+
+    expect(handleValueChange).toHaveBeenCalledWith({
+      date: new Date(2026, 5, 15),
+      startTime: "10:30:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("allows typing date and start time into the input", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText("Date and time"), {
+      target: { value: "15/06/2026 11:45 PM" },
+    });
+
+    expect(handleValueChange).toHaveBeenCalledWith({
+      date: new Date(2026, 5, 15),
+      startTime: "23:45:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("navigates calendar months and years with dropdowns", () => {
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+    fireEvent.change(screen.getByLabelText("Month"), {
+      target: { value: "5" },
+    });
+    fireEvent.change(screen.getByLabelText("Year"), {
+      target: { value: "2027" },
+    });
+
+    expect(screen.getByLabelText("June 1, 2027")).toBeInTheDocument();
   });
 
   it("applies custom className", () => {
@@ -224,7 +294,7 @@ describe("DateTimePicker", () => {
     expect(formatTimeForDisplay("00:00:00")).toBe("12:00 AM");
     expect(formatTimeForDisplay("12:30:00")).toBe("12:30 PM");
     expect(formatDateForDisplay(mayTwelve, "23:05:00")).toBe(
-      "05/12/2026 11:05 PM"
+      "12/05/2026 11:05 PM"
     );
   });
 });
