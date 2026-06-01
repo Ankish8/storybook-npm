@@ -14,6 +14,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronLeft, ChevronRight, Clock2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 
 const DEFAULT_START_TIME = "10:30:00";
 const DEFAULT_END_TIME = "12:30:00";
@@ -27,6 +34,11 @@ const POPOVER_WIDTH_VAR = "--date-time-picker-popover-width";
 const CALENDAR_PLACEMENT: Placement = "bottom-start";
 const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
+const CALENDAR_SELECT_CONTENT_SELECTOR =
+  "[data-date-time-picker-calendar-select]";
+const CALENDAR_SELECT_TRIGGER_CLASS = "w-[clamp(4.75rem,28vw,6rem)]";
+const CALENDAR_SELECT_CONTENT_CLASS =
+  "z-[10060] w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)] max-h-[min(16rem,var(--radix-select-content-available-height))]";
 
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = Array.from({ length: 12 }, (_, monthIndex) =>
@@ -211,6 +223,12 @@ function isPointerInsideElement(
   }
 
   return false;
+}
+
+function isPointerInsideSelector(event: MouseEvent, selector: string) {
+  const target = event.target;
+
+  return target instanceof Element && target.closest(selector) !== null;
 }
 
 function formatTimeForDisplay(time: string) {
@@ -496,7 +514,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       const handlePointerDown = (event: MouseEvent) => {
         if (
           !isPointerInsideElement(event, rootRef.current) &&
-          !isPointerInsideElement(event, popoverRef.current)
+          !isPointerInsideElement(event, popoverRef.current) &&
+          !isPointerInsideSelector(event, CALENDAR_SELECT_CONTENT_SELECTOR)
         ) {
           setOpen(false);
         }
@@ -631,67 +650,85 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <label className="sr-only" htmlFor={`${triggerId}-month`}>
                   Month
                 </label>
-                <select
-                  id={`${triggerId}-month`}
-                  aria-label="Month"
-                  value={visibleMonth.getMonth()}
-                  className="h-8 rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-2 text-sm font-medium text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50"
-                  onChange={(event) =>
+                <Select
+                  value={visibleMonth.getMonth().toString()}
+                  onValueChange={(nextMonth) =>
                     updateVisibleMonth(
                       new Date(
                         visibleMonth.getFullYear(),
-                        Number(event.target.value),
+                        Number(nextMonth),
                         1
                       )
                     )
                   }
                 >
-                  {monthNames.map((monthName, monthIndex) => {
-                    const optionMonth = new Date(
-                      visibleMonth.getFullYear(),
-                      monthIndex,
-                      1
-                    );
-                    const isDisabled =
-                      (effectiveMinDate &&
-                        isMonthBefore(optionMonth, effectiveMinDate)) ||
-                      (maxDate && isMonthAfter(optionMonth, maxDate));
+                  <SelectTrigger
+                    id={`${triggerId}-month`}
+                    aria-label="Month"
+                    className={CALENDAR_SELECT_TRIGGER_CLASS}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent
+                    data-date-time-picker-calendar-select=""
+                    className={CALENDAR_SELECT_CONTENT_CLASS}
+                  >
+                    {monthNames.map((monthName, monthIndex) => {
+                      const optionMonth = new Date(
+                        visibleMonth.getFullYear(),
+                        monthIndex,
+                        1
+                      );
+                      const isDisabled =
+                        (effectiveMinDate &&
+                          isMonthBefore(optionMonth, effectiveMinDate)) ||
+                        (maxDate && isMonthAfter(optionMonth, maxDate));
 
-                    return (
-                      <option
-                        key={monthName}
-                        value={monthIndex}
-                        disabled={!!isDisabled}
-                      >
-                        {monthName}
-                      </option>
-                    );
-                  })}
-                </select>
+                      return (
+                        <SelectItem
+                          key={monthName}
+                          value={monthIndex.toString()}
+                          disabled={!!isDisabled}
+                        >
+                          {monthName}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
                 <label className="sr-only" htmlFor={`${triggerId}-year`}>
                   Year
                 </label>
-                <select
-                  id={`${triggerId}-year`}
-                  aria-label="Year"
-                  value={visibleMonth.getFullYear()}
-                  className="h-8 rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-2 text-sm font-medium text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50"
-                  onChange={(event) =>
+                <Select
+                  value={visibleMonth.getFullYear().toString()}
+                  onValueChange={(nextYear) =>
                     updateVisibleMonth(
                       new Date(
-                        Number(event.target.value),
+                        Number(nextYear),
                         visibleMonth.getMonth(),
                         1
                       )
                     )
                   }
                 >
-                  {yearOptions.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger
+                    id={`${triggerId}-year`}
+                    aria-label="Year"
+                    className={CALENDAR_SELECT_TRIGGER_CLASS}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent
+                    data-date-time-picker-calendar-select=""
+                    className={CALENDAR_SELECT_CONTENT_CLASS}
+                  >
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <div id={`${triggerId}-calendar-heading`} className="sr-only">
                   {monthFormatter.format(visibleMonth)}
                 </div>

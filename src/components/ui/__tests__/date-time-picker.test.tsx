@@ -1,6 +1,7 @@
 import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import {
   DateTimePicker,
@@ -48,8 +49,8 @@ describe("DateTimePicker", () => {
     fireEvent.click(screen.getByLabelText("Date and time"));
 
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
-    expect(screen.getByLabelText("Month")).toHaveValue("4");
-    expect(screen.getByLabelText("Year")).toHaveValue("2026");
+    expect(screen.getByLabelText("Month")).toHaveTextContent("May");
+    expect(screen.getByLabelText("Year")).toHaveTextContent("2026");
     expect(screen.getByLabelText("Start Time")).toBeInTheDocument();
     expect(screen.getByLabelText("End Time")).toBeInTheDocument();
   });
@@ -241,7 +242,9 @@ describe("DateTimePicker", () => {
     });
   });
 
-  it("navigates calendar months and years with dropdowns", () => {
+  it("navigates calendar months and years with dropdowns", async () => {
+    const user = userEvent.setup();
+
     render(
       <DateTimePicker
         defaultValue={{
@@ -253,12 +256,19 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    fireEvent.change(screen.getByLabelText("Month"), {
-      target: { value: "5" },
-    });
-    fireEvent.change(screen.getByLabelText("Year"), {
-      target: { value: "2027" },
-    });
+    await user.click(screen.getByLabelText("Month"));
+
+    expect(
+      document.querySelector("[data-date-time-picker-calendar-select]")
+    ).toHaveClass(
+      "w-[var(--radix-select-trigger-width)]",
+      "min-w-[var(--radix-select-trigger-width)]",
+      "max-h-[min(16rem,var(--radix-select-content-available-height))]"
+    );
+
+    await user.click(screen.getByRole("option", { name: "Jun" }));
+    await user.click(screen.getByLabelText("Year"));
+    await user.click(screen.getByRole("option", { name: "2027" }));
 
     expect(screen.getByLabelText("June 1, 2027")).toBeInTheDocument();
   });

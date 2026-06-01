@@ -340,6 +340,8 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+    internalDependencies:
+      - select
 
   creatable-select:
     description: "A single-value select with type-to-search and type-to-create custom options"
