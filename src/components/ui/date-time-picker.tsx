@@ -36,9 +36,17 @@ const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
 const CALENDAR_SELECT_CONTENT_SELECTOR =
   "[data-date-time-picker-calendar-select]";
-const CALENDAR_SELECT_TRIGGER_CLASS = "w-[clamp(4.75rem,28vw,6rem)]";
+const CALENDAR_SELECT_TRIGGER_CLASS = "!w-[90px] !gap-[6px]";
 const CALENDAR_SELECT_CONTENT_CLASS =
   "z-[10060] w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)] max-h-[min(16rem,var(--radix-select-content-available-height))]";
+const DATE_TIME_INPUT_SEGMENT_RANGES = {
+  day: [0, 2],
+  month: [3, 5],
+  year: [6, 10],
+  hour: [11, 13],
+  minute: [14, 16],
+  meridiem: [17, 19],
+} as const;
 
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = Array.from({ length: 12 }, (_, monthIndex) =>
@@ -308,6 +316,307 @@ function parseTimePart(timePart?: string) {
   return `${hour.toString().padStart(2, "0")}:${minuteValue}:${secondValue}`;
 }
 
+function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month, 0).getDate();
+}
+
+function getPotentialMaxDay(month: number, year?: number) {
+  if (month === 2 && year === undefined) return 29;
+  if (month === 2) return getDaysInMonth(year ?? 2000, month);
+  if ([4, 6, 9, 11].includes(month)) return 30;
+
+  return 31;
+}
+
+function isPotentiallyValidDateParts(
+  dayValue: string,
+  monthValue: string,
+  yearValue: string
+) {
+  const day = Number(dayValue);
+  const month = Number(monthValue);
+  const year = Number(yearValue);
+
+  if (dayValue.length === 1 && day > 3) return false;
+  if (dayValue.length === 2 && (day < 1 || day > 31)) return false;
+  if (monthValue.length === 1 && month > 1) return false;
+  if (monthValue.length === 2 && (month < 1 || month > 12)) return false;
+  if (yearValue.length === 4 && year < 1000) return false;
+
+  if (dayValue.length === 2 && monthValue.length === 2) {
+    const maxDay = getPotentialMaxDay(
+      month,
+      yearValue.length === 4 ? year : undefined
+    );
+    if (day > maxDay) return false;
+  }
+
+  return true;
+}
+
+function isPotentiallyValidDateDigits(dateDigits: string) {
+  return isPotentiallyValidDateParts(
+    dateDigits.slice(0, 2),
+    dateDigits.slice(2, 4),
+    dateDigits.slice(4, 8)
+  );
+}
+
+function formatDateDigits(dateDigits: string) {
+  const day = dateDigits.slice(0, 2);
+  const month = dateDigits.slice(2, 4);
+  const year = dateDigits.slice(4, 8);
+
+  if (dateDigits.length <= 2) {
+    return dateDigits.length === 2 ? `${day}/` : day;
+  }
+
+  if (dateDigits.length <= 4) {
+    return `${day}/${dateDigits.length === 4 ? `${month}/` : month}`;
+  }
+
+  return `${day}/${month}/${year}`;
+}
+
+function formatSegmentedDateInput(
+  dateSource: string,
+  day: string,
+  month: string,
+  year: string
+) {
+  const separatorCount = dateSource.match(/[/-]/g)?.length ?? 0;
+  const shouldShowMonth = separatorCount >= 1 || !!month || !!year;
+  const shouldShowYear = separatorCount >= 2 || !!year;
+
+  return [
+    day,
+    shouldShowMonth ? month : undefined,
+    shouldShowYear ? year : undefined,
+  ]
+    .filter((part): part is string => part !== undefined)
+    .join("/");
+}
+
+function consumeDigits(source: string, maxLength: number) {
+  let digits = "";
+  let endIndex = source.length;
+
+  for (let index = 0; index < source.length; index += 1) {
+    if (!/\d/.test(source[index])) continue;
+
+    digits += source[index];
+    if (digits.length === maxLength) {
+      endIndex = index + 1;
+      break;
+    }
+  }
+
+  return {
+    digits,
+    rest: source.slice(endIndex),
+  };
+}
+
+function splitTypedDateInput(value: string) {
+  const firstSpaceIndex = value.search(/\s/);
+  const dateSource =
+    firstSpaceIndex === -1 ? value : value.slice(0, firstSpaceIndex);
+  const restValue =
+    firstSpaceIndex === -1 ? "" : value.slice(firstSpaceIndex + 1);
+
+  if (/[/-]/.test(dateSource)) {
+    const [dayPart = "", monthPart = "", yearPart = ""] =
+      dateSource.split(/[/-]/);
+    const dayResult = consumeDigits(dayPart, 2);
+    const monthResult = consumeDigits(`${dayResult.rest}${monthPart}`, 2);
+    const yearResult = consumeDigits(
+      `${monthResult.rest}${yearPart}`,
+      4
+    );
+    const day = dayResult.digits;
+    const month = monthResult.digits;
+    const year = yearResult.digits;
+
+    return {
+      dateDigits: `${day}${month}${year}`,
+      dateValue: formatSegmentedDateInput(dateSource, day, month, year),
+      isComplete: !!day && !!month && year.length === 4,
+      isValid: isPotentiallyValidDateParts(day, month, year),
+      restValue: [yearResult.rest, restValue].filter(Boolean).join(" "),
+    };
+  }
+
+  let dateDigits = "";
+  let dateEndIndex = value.length;
+
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+
+    if (/\d/.test(character)) {
+      dateDigits += character;
+      if (dateDigits.length === 8) {
+        dateEndIndex = index + 1;
+        break;
+      }
+    }
+  }
+
+  return {
+    dateDigits,
+    dateValue: formatDateDigits(dateDigits),
+    isComplete: dateDigits.length === 8,
+    isValid: isPotentiallyValidDateDigits(dateDigits),
+    restValue: value.slice(dateEndIndex),
+  };
+}
+
+function isPotentiallyValidTimeDigits(timeDigits: string) {
+  const hourValue = timeDigits.slice(0, 2);
+  const minuteValue = timeDigits.slice(2, 4);
+  const hour = Number(hourValue);
+  const minute = Number(minuteValue);
+
+  if (hourValue.length === 1 && hour > 1) return false;
+  if (hourValue.length === 2 && (hour < 1 || hour > 12)) return false;
+  if (minuteValue.length === 1 && minute > 5) return false;
+  if (minuteValue.length === 2 && minute > 59) return false;
+
+  return true;
+}
+
+function formatMeridiemInput(letters: string) {
+  if (!letters) return "";
+  if ("AM".startsWith(letters)) return letters;
+  if ("PM".startsWith(letters)) return letters;
+
+  return null;
+}
+
+function formatTimeInput(restValue: string) {
+  const normalizedValue = restValue.toUpperCase();
+  const timeDigits = normalizedValue.replace(/\D/g, "").slice(0, 4);
+  const meridiemLetters = normalizedValue.replace(/[^A-Z]/g, "");
+  const meridiem = formatMeridiemInput(meridiemLetters.slice(0, 2));
+
+  if (!timeDigits && !meridiem) return "";
+  if (!isPotentiallyValidTimeDigits(timeDigits) || meridiem === null) {
+    return null;
+  }
+
+  const timeValue =
+    timeDigits.length <= 2
+      ? timeDigits
+      : `${timeDigits.slice(0, 2)}:${timeDigits.slice(2, 4)}`;
+
+  return [timeValue, meridiem].filter(Boolean).join(" ");
+}
+
+function sanitizeTypedDateTimeInput(value: string, previousValue: string) {
+  const trimmedValue = value.trimStart();
+  if (/^[A-Za-z]/.test(trimmedValue)) return previousValue;
+
+  const normalizedValue = value
+    .toUpperCase()
+    .replace(/[^0-9\s/:APM-]/g, "");
+  const { dateDigits, dateValue, isComplete, isValid, restValue } =
+    splitTypedDateInput(normalizedValue);
+  const limitedDateDigits = dateDigits.slice(0, 8);
+
+  if (!limitedDateDigits) return "";
+  if (!isValid) return previousValue;
+
+  const formattedTime = isComplete ? formatTimeInput(restValue) : "";
+  if (formattedTime === null) return previousValue;
+
+  return [dateValue, formattedTime].filter(Boolean).join(" ");
+}
+
+type DateTimeInputSegment = keyof typeof DATE_TIME_INPUT_SEGMENT_RANGES;
+
+function getDateTimeInputSegment(cursorPosition: number): DateTimeInputSegment {
+  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.day[1]) return "day";
+  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.month[1]) return "month";
+  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.year[1]) return "year";
+  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.hour[1]) return "hour";
+  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.minute[1]) {
+    return "minute";
+  }
+
+  return "meridiem";
+}
+
+function clampDateToMonth(year: number, month: number, day: number) {
+  return new Date(year, month, Math.min(day, getDaysInMonth(year, month + 1)));
+}
+
+function stepDateTimeInputValue(
+  value: string,
+  cursorPosition: number,
+  direction: 1 | -1,
+  fallbackTime: string
+) {
+  const typedDateTime = parseTypedDateTime(value);
+  if (!typedDateTime) return null;
+
+  const segment = getDateTimeInputSegment(cursorPosition);
+  const nextDate = new Date(typedDateTime.date);
+  const [hourValue = "0", minuteValue = "0", secondValue = "00"] = (
+    typedDateTime.startTime ?? fallbackTime
+  ).split(":");
+  nextDate.setHours(Number(hourValue), Number(minuteValue), Number(secondValue));
+
+  if (segment === "day") {
+    nextDate.setDate(nextDate.getDate() + direction);
+  } else if (segment === "month") {
+    const day = nextDate.getDate();
+    const steppedMonth = clampDateToMonth(
+      nextDate.getFullYear(),
+      nextDate.getMonth() + direction,
+      day
+    );
+    nextDate.setFullYear(
+      steppedMonth.getFullYear(),
+      steppedMonth.getMonth(),
+      steppedMonth.getDate()
+    );
+  } else if (segment === "year") {
+    const day = nextDate.getDate();
+    const steppedYear = clampDateToMonth(
+      nextDate.getFullYear() + direction,
+      nextDate.getMonth(),
+      day
+    );
+    nextDate.setFullYear(
+      steppedYear.getFullYear(),
+      steppedYear.getMonth(),
+      steppedYear.getDate()
+    );
+  } else if (segment === "hour") {
+    nextDate.setHours(nextDate.getHours() + direction);
+  } else if (segment === "minute") {
+    nextDate.setMinutes(nextDate.getMinutes() + direction);
+  } else {
+    nextDate.setHours(nextDate.getHours() + 12 * direction);
+  }
+
+  const startTime = `${nextDate
+    .getHours()
+    .toString()
+    .padStart(2, "0")}:${nextDate
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}:${nextDate
+    .getSeconds()
+    .toString()
+    .padStart(2, "0")}`;
+
+  return {
+    date: startOfDay(nextDate),
+    startTime,
+    segment,
+  };
+}
+
 function parseTypedDateTime(value: string) {
   const typedValue = value.trim();
   if (!typedValue) return undefined;
@@ -574,8 +883,19 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const handleTypedDateChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
-      const nextInputValue = event.target.value;
+      const nextInputValue = sanitizeTypedDateTimeInput(
+        event.target.value,
+        dateInputValue
+      );
       setDateInputValue(nextInputValue);
+
+      if (
+        nextInputValue === dateInputValue &&
+        event.target.value !== dateInputValue
+      ) {
+        event.currentTarget.value = nextInputValue;
+        return;
+      }
 
       const typedDateTime = parseTypedDateTime(nextInputValue);
       if (typedDateTime === undefined) {
@@ -597,6 +917,53 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         });
         updateVisibleMonth(typedDateTime.date);
       }
+    };
+
+    const handleTypedDateKeyDown = (
+      event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+
+      const direction = event.key === "ArrowUp" ? 1 : -1;
+      const cursorPosition =
+        event.currentTarget.selectionStart ?? dateInputValue.length;
+      const inputElement = event.currentTarget;
+      const steppedDateTime = stepDateTimeInputValue(
+        dateInputValue,
+        cursorPosition,
+        direction,
+        currentValue.startTime
+      );
+
+      if (!steppedDateTime) return;
+      if (
+        (effectiveMinDate &&
+          isBeforeDay(steppedDateTime.date, effectiveMinDate)) ||
+        (maxDate && isAfterDay(steppedDateTime.date, maxDate))
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const nextInputValue = formatDateForDisplay(
+        steppedDateTime.date,
+        steppedDateTime.startTime
+      );
+      const [selectionStart, selectionEnd] =
+        DATE_TIME_INPUT_SEGMENT_RANGES[steppedDateTime.segment];
+
+      setDateInputValue(nextInputValue);
+      updateValue({
+        ...currentValue,
+        date: steppedDateTime.date,
+        startTime: steppedDateTime.startTime,
+      });
+      updateVisibleMonth(steppedDateTime.date);
+
+      window.requestAnimationFrame(() => {
+        inputElement.setSelectionRange(selectionStart, selectionEnd);
+      });
     };
 
     const handleTypedDateBlur = () => {
@@ -646,7 +1013,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               >
                 <ChevronLeft className="size-4" aria-hidden="true" />
               </button>
-              <div className="flex min-w-0 items-center gap-2">
+              <div className="flex min-w-0 items-center gap-1.5">
                 <label className="sr-only" htmlFor={`${triggerId}-month`}>
                   Month
                 </label>
@@ -915,6 +1282,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             }}
             onClick={() => setOpen(true)}
             onChange={handleTypedDateChange}
+            onKeyDown={handleTypedDateKeyDown}
             onBlur={handleTypedDateBlur}
           />
           {showClear && displayValue && !disabled && !readOnly && (

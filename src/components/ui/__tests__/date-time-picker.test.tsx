@@ -242,6 +242,272 @@ describe("DateTimePicker", () => {
     });
   });
 
+  it("auto formats a continuously typed date", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    fireEvent.focus(input);
+    fireEvent.change(input, {
+      target: { value: "15062026" },
+    });
+
+    expect(input).toHaveValue("15/06/2026");
+    expect(handleValueChange).toHaveBeenCalledWith({
+      date: new Date(2026, 5, 15),
+      startTime: "10:30:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("auto formats continuously typed date and time input", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    fireEvent.focus(input);
+    fireEvent.change(input, {
+      target: { value: "150620261145pm" },
+    });
+
+    expect(input).toHaveValue("15/06/2026 11:45 PM");
+    expect(handleValueChange).toHaveBeenCalledWith({
+      date: new Date(2026, 5, 15),
+      startTime: "23:45:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("allows clearing and typing a full date-time character by character", async () => {
+    const user = userEvent.setup();
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    await user.clear(input);
+    await user.type(input, "121020261030pm");
+
+    expect(input).toHaveValue("12/10/2026 10:30 PM");
+    expect(handleValueChange).toHaveBeenLastCalledWith({
+      date: new Date(2026, 9, 12),
+      startTime: "22:30:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("allows in-place edits to formatted date segments", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "22:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    fireEvent.focus(input);
+    fireEvent.change(input, {
+      target: { value: "1/05/2026 10:30 PM" },
+    });
+
+    expect(input).toHaveValue("1/05/2026 10:30 PM");
+    expect(handleValueChange).toHaveBeenCalledWith({
+      date: new Date(2026, 4, 1),
+      startTime: "22:30:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("rejects invalid dates and unsupported alphabetic input", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    fireEvent.change(input, {
+      target: { value: "ddf/fdds/sddd 10:30 AM" },
+    });
+    fireEvent.change(input, {
+      target: { value: "31042026" },
+    });
+
+    expect(input).toHaveValue("12/05/2026 10:30 AM");
+    expect(handleValueChange).not.toHaveBeenCalled();
+  });
+
+  it("does not leave rejected continuous numeric input in the field", async () => {
+    const user = userEvent.setup();
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    await user.clear(input);
+    await user.type(input, "2323222222");
+
+    expect(input).toHaveValue("23/");
+    expect(handleValueChange).toHaveBeenLastCalledWith({
+      date: undefined,
+      startTime: "10:30:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("rejects invalid month, day, and time segments while typing", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    await user.clear(input);
+    await user.type(input, "1215");
+    expect(input).toHaveValue("12/1");
+
+    await user.clear(input);
+    await user.type(input, "3104");
+    expect(input).toHaveValue("31/0");
+
+    await user.clear(input);
+    await user.type(input, "1205202613");
+    expect(input).toHaveValue("12/05/2026 1");
+
+    await user.clear(input);
+    await user.type(input, "1205202612");
+    fireEvent.change(input, {
+      target: { value: "12/05/2026 12:6" },
+    });
+    expect(input).toHaveValue("12/05/2026 12");
+  });
+
+  it("rejects pasted overlong invalid numeric input", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time");
+
+    await user.clear(input);
+    fireEvent.change(input, {
+      target: { value: "120000666515151515151515215215151522" },
+    });
+
+    expect(input).toHaveValue("");
+  });
+
+  it("increments and decrements focused date and time segments with arrow keys", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const input = screen.getByLabelText("Date and time") as HTMLInputElement;
+
+    input.setSelectionRange(0, 2);
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+
+    expect(input).toHaveValue("13/05/2026 10:30 AM");
+    expect(handleValueChange).toHaveBeenLastCalledWith({
+      date: new Date(2026, 4, 13),
+      startTime: "10:30:00",
+      endTime: "12:30:00",
+    });
+
+    input.setSelectionRange(14, 16);
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+
+    expect(input).toHaveValue("13/05/2026 10:29 AM");
+    expect(handleValueChange).toHaveBeenLastCalledWith({
+      date: new Date(2026, 4, 13),
+      startTime: "10:29:00",
+      endTime: "12:30:00",
+    });
+
+    input.setSelectionRange(17, 19);
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+
+    expect(input).toHaveValue("13/05/2026 10:29 PM");
+    expect(handleValueChange).toHaveBeenLastCalledWith({
+      date: new Date(2026, 4, 13),
+      startTime: "22:29:00",
+      endTime: "12:30:00",
+    });
+  });
+
   it("navigates calendar months and years with dropdowns", async () => {
     const user = userEvent.setup();
 
@@ -257,6 +523,11 @@ describe("DateTimePicker", () => {
 
     fireEvent.click(screen.getByLabelText("Date and time"));
     await user.click(screen.getByLabelText("Month"));
+
+    expect(screen.getByLabelText("Month")).toHaveClass(
+      "!w-[90px]",
+      "!gap-[6px]"
+    );
 
     expect(
       document.querySelector("[data-date-time-picker-calendar-select]")
