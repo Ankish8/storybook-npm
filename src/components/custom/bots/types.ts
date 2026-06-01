@@ -11,6 +11,8 @@ export type BotType = "chatbot" | "voicebot";
 
 export type BotStatus = "draft" | "published";
 
+export type BotSource="external"|"partner";
+
 /**
  * Single bot shape for both Chatbot and Voicebot.
  * Use the same BotCard for both; set type to "chatbot" or "voicebot" and pass all data via this prop.
@@ -27,6 +29,7 @@ export interface Bot {
   typeLabel?: string;
   /** When "draft", card shows "Unpublished changes" with red indicator in the Last Published section */
   status?: BotStatus;
+  source?: BotSource;
 }
 
 export interface BotCardProps extends Omit<
