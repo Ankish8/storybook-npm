@@ -11,7 +11,7 @@ export type BotType = "chatbot" | "voicebot";
 
 export type BotStatus = "draft" | "published";
 
-export type BotSource="external"|"partner";
+export type BotSource = "internal" | "partner";
 
 /**
  * Single bot shape for both Chatbot and Voicebot.
