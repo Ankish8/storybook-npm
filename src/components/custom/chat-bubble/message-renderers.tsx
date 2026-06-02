@@ -810,7 +810,7 @@ function ListReplyRows({
                   key={row.id}
                   type="button"
                   variant="ghost"
-                  className="h-auto min-w-0 w-full flex-col items-start justify-start whitespace-normal rounded px-3 py-1.5 text-left font-normal text-semantic-text-primary hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                  className="h-auto min-w-0 w-full cursor-default flex-col items-start justify-start whitespace-normal rounded px-3 py-1.5 text-left font-normal text-semantic-text-primary hover:bg-transparent"
                 >
                   <span className="break-words text-[14px] font-normal leading-5">
                     {row.title}
@@ -847,7 +847,7 @@ function ListReplyRows({
                 key={row.id}
                 type="button"
                 variant="ghost"
-                className="h-auto min-w-0 w-full flex-col items-start justify-start whitespace-normal rounded-none px-3 py-3 text-left font-normal text-semantic-text-primary hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                className="h-auto min-w-0 w-full cursor-default flex-col items-start justify-start whitespace-normal rounded-none px-3 py-3 text-left font-normal text-semantic-text-primary hover:bg-transparent"
               >
                 <span className="break-words text-[14px] font-medium leading-5">
                   {row.title}

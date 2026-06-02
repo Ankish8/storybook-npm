@@ -1081,9 +1081,13 @@ describe("ChatBubble", () => {
       expect(screen.getByText("Available slots")).toBeInTheDocument();
       expect(screen.getByText("Choose one appointment slot.")).toBeInTheDocument();
       expect(screen.getByText("Morning")).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /10:00 AM Available today/i })
-      ).toBeInTheDocument();
+      const rowButton = screen.getByRole("button", {
+        name: /10:00 AM Available today/i,
+      });
+      expect(rowButton).toBeInTheDocument();
+      expect(rowButton).toHaveClass("cursor-default");
+      expect(rowButton).toHaveClass("hover:bg-transparent");
+      expect(rowButton).not.toHaveClass("hover:bg-semantic-bg-hover");
       expect(screen.getByText("Available today")).toBeInTheDocument();
     });
 
