@@ -1030,7 +1030,7 @@ describe("ChatBubble", () => {
       expect(screen.getByText("Ad")).toBeInTheDocument();
     });
 
-    it("renders list reply bubble with header and button", () => {
+    it("opens list reply rows in a modal by default", () => {
       render(
         <ChatBubble
           type="listReply"
@@ -1040,7 +1040,12 @@ describe("ChatBubble", () => {
           listReply={{
             header: "Pick a slot",
             body: "Choose a time",
+            required: true,
             buttonText: "View slots",
+            modal: {
+              title: "Available slots",
+              description: "Choose one appointment slot.",
+            },
             sections: [
               {
                 title: "Morning",
@@ -1058,10 +1063,53 @@ describe("ChatBubble", () => {
       );
       expect(screen.getByText("Pick a slot")).toBeInTheDocument();
       expect(screen.getByText("Choose a time")).toBeInTheDocument();
+      expect(screen.getByLabelText("required")).toBeInTheDocument();
       expect(screen.getByText("View slots")).toBeInTheDocument();
+      expect(screen.queryByText("Morning")).not.toBeInTheDocument();
+      const showListButton = screen.getByRole("button", { name: /view slots/i });
+      expect(showListButton).toHaveAttribute("aria-haspopup", "dialog");
+
+      fireEvent.click(showListButton);
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(screen.getByText("Available slots")).toBeInTheDocument();
+      expect(screen.getByText("Choose one appointment slot.")).toBeInTheDocument();
       expect(screen.getByText("Morning")).toBeInTheDocument();
-      expect(screen.getByText("10:00 AM")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /10:00 AM Available today/i })
+      ).toBeInTheDocument();
       expect(screen.getByText("Available today")).toBeInTheDocument();
+    });
+
+    it("can render list reply rows inline when modal is disabled", () => {
+      render(
+        <ChatBubble
+          type="listReply"
+          variant="sender"
+          timestamp="4:05 PM"
+          listReply={{
+            body: "Choose a meal",
+            buttonText: "Show list",
+            modal: false,
+            sections: [
+              {
+                title: "Menu",
+                rows: [
+                  { id: "meal-1", title: "Grilled salmon bowl" },
+                  { id: "meal-2", title: "Mushroom risotto (V)" },
+                  { id: "meal-3", title: "Beef burger & fries" },
+                ],
+              },
+            ],
+          }}
+        />
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /show list/i }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(screen.getByText("Menu")).toBeInTheDocument();
+      expect(screen.getByText("Grilled salmon bowl")).toBeInTheDocument();
+      expect(screen.getByText("Mushroom risotto (V)")).toBeInTheDocument();
+      expect(screen.getByText("Beef burger & fries")).toBeInTheDocument();
     });
 
     it("renders template bubble with quick-reply buttons", () => {

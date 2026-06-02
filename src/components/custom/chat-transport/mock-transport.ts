@@ -830,7 +830,44 @@ const chatMessages: Record<string, ChatMessage[]> = {
       type: "listReply",
       listReply: {
         body: "Which integration do you need help with?",
+        required: true,
         buttonText: "Show list",
+        modal: {
+          title: "List Title",
+        },
+        sections: [
+          {
+            title: "Starters",
+            rows: [
+              { id: "starter-1", title: "Soup of the day" },
+              { id: "starter-2", title: "House salad" },
+              { id: "starter-3", title: "Bruschetta trio" },
+            ],
+          },
+          {
+            title: "Mains",
+            rows: [
+              { id: "meal-1", title: "Grilled salmon bowl" },
+              { id: "meal-2", title: "Mushroom risotto (V)" },
+              { id: "meal-3", title: "Beef burger & fries" },
+            ],
+          },
+          {
+            title: "Desserts",
+            rows: [
+              { id: "dessert-1", title: "Chocolate fondant" },
+              { id: "dessert-2", title: "Seasonal fruit sorbet" },
+            ],
+          },
+          {
+            title: "Appetisers",
+            rows: [
+              { id: "appetiser-1", title: "Grilled salmon bowl" },
+              { id: "appetiser-2", title: "Mushroom risotto (V)" },
+              { id: "appetiser-3", title: "Beef burger & fries" },
+            ],
+          },
+        ],
       },
     },
   ],

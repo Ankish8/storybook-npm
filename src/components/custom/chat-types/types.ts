@@ -150,15 +150,36 @@ export type ReferralPayload = {
   sourceType?: "ad" | "post" | "unknown"
 }
 
+export type ListReplyRow = {
+  id: string
+  title: string
+  description?: string
+}
+
+export type ListReplySection = {
+  title: string
+  rows: ListReplyRow[]
+}
+
+export type ListReplyModalConfig = {
+  /** Modal title. Defaults to the list header, then the button label, then "Select an option". */
+  title?: string
+  /** Optional helper text shown below the modal title. */
+  description?: string
+}
+
 export type ListReplyPayload = {
   header?: string
   body: string
   footer?: string
+  /** Marks the list prompt as required, rendering a required indicator next to the body copy. */
+  required?: boolean
   buttonText: string
-  sections?: Array<{
-    title: string
-    rows: Array<{ id: string; title: string; description?: string }>
-  }>
+  /** When true, the built-in list UI starts open. */
+  showList?: boolean
+  /** Built-in list modal config. Pass `false` to keep the legacy inline row expansion. */
+  modal?: boolean | ListReplyModalConfig
+  sections?: ListReplySection[]
 }
 
 /**

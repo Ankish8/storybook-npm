@@ -32,6 +32,9 @@ export type {
   ContactListModalConfig,
   ContactPayload,
   ReferralPayload,
+  ListReplyRow,
+  ListReplySection,
+  ListReplyModalConfig,
   ListReplyPayload,
   ChatBubbleButton,
   ChatFailedMessage,
@@ -323,7 +326,7 @@ export interface ChatBubbleFlatReferralProps extends ChatBubbleFlatBase {
   text?: string;
 }
 
-/** Interactive list reply (WhatsApp List Message) — header, body, footer, button. */
+/** Interactive list reply (WhatsApp List Message) — header, body, footer, required marker, button, and expandable rows. */
 export interface ChatBubbleFlatListReplyProps extends ChatBubbleFlatBase {
   type: "listReply";
   listReply: ListReplyPayload;

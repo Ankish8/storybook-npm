@@ -136,7 +136,7 @@ const meta: Meta<typeof ChatBubble> = {
       control: "object",
       table: { category: "Flat mode" },
       description:
-        "`{ header?, body, footer?, buttonText, sections? }` — required for `type: listReply`.",
+        "`{ header?, body, footer?, required?, buttonText, showList?, modal?, sections? }` — required for `type: listReply`. Clicking the button opens the built-in list modal by default; pass `modal: false` for inline rows.",
     },
     buttons: {
       control: "object",
@@ -670,7 +670,7 @@ export const ListReplyFullVsMinimalListParity: Story = {
     docs: {
       description: {
         story:
-          "Full list reply (header, body, footer, button) vs minimal body + button (`listReplyFullVsMinimal`).",
+          "Full list reply (header, body, footer, button) vs minimal required body + `Show list` button. Click `Show list` to open the list modal (`listReplyFullVsMinimal`).",
       },
     },
   },
@@ -849,6 +849,15 @@ export const FlatListReply: Story = {
           body: "Choose a time that works for you and we'll confirm by SMS.",
           footer: "Operating hours: 9 AM – 6 PM IST",
           buttonText: "View available slots",
+          sections: [
+            {
+              title: "Morning",
+              rows: [
+                { id: "slot-10", title: "10:00 AM", description: "Available today" },
+                { id: "slot-11", title: "11:30 AM", description: "2 seats left" },
+              ],
+            },
+          ],
         }}
       />
       <ChatBubble
@@ -857,8 +866,45 @@ export const FlatListReply: Story = {
         timestamp="11:31 AM"
         status="delivered"
         listReply={{
-          body: "Tap below to see all open tickets.",
-          buttonText: "View tickets",
+          body: "Which meal should we prepare?",
+          required: true,
+          buttonText: "Show list",
+          modal: {
+            title: "List Title",
+          },
+          sections: [
+            {
+              title: "Starters",
+              rows: [
+                { id: "starter-1", title: "Soup of the day" },
+                { id: "starter-2", title: "House salad" },
+                { id: "starter-3", title: "Bruschetta trio" },
+              ],
+            },
+            {
+              title: "Mains",
+              rows: [
+                { id: "meal-1", title: "Grilled salmon bowl" },
+                { id: "meal-2", title: "Mushroom risotto (V)" },
+                { id: "meal-3", title: "Beef burger & fries" },
+              ],
+            },
+            {
+              title: "Desserts",
+              rows: [
+                { id: "dessert-1", title: "Chocolate fondant" },
+                { id: "dessert-2", title: "Seasonal fruit sorbet" },
+              ],
+            },
+            {
+              title: "Appetisers",
+              rows: [
+                { id: "appetiser-1", title: "Grilled salmon bowl" },
+                { id: "appetiser-2", title: "Mushroom risotto (V)" },
+                { id: "appetiser-3", title: "Beef burger & fries" },
+              ],
+            },
+          ],
         }}
       />
     </div>

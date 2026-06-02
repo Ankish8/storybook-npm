@@ -24,6 +24,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle,
 } from "../../ui/dialog"
 import { Button } from "../../ui/button"
@@ -36,6 +37,7 @@ import type {
   ContactListModalConfig,
   ContactPayload,
   ReferralPayload,
+  ListReplyModalConfig,
   ListReplyPayload,
 } from "./types"
 import {
@@ -759,10 +761,156 @@ function ContactMedia({ contact }: { contact: ContactPayload }) {
 
 /* ── ListReplyMedia ── */
 
+function getListReplyModalConfig(
+  modal: ListReplyPayload["modal"]
+): { enabled: boolean } & ListReplyModalConfig {
+  if (modal === false) {
+    return { enabled: false }
+  }
+
+  if (modal && typeof modal === "object") {
+    return { enabled: true, ...modal }
+  }
+
+  return { enabled: true }
+}
+
+function ListReplyRows({
+  listReply,
+  presentation = "inline",
+}: {
+  listReply: ListReplyPayload
+  presentation?: "inline" | "modal"
+}) {
+  if (presentation === "modal") {
+    return (
+      <div className="flex flex-col gap-5">
+        {listReply.sections?.map((section, sectionIndex) => (
+          <div key={`${section.title}-${sectionIndex}`}>
+            {section.title && (
+              <div className="flex items-center gap-3">
+                <p className="m-0 shrink-0 text-[13px] font-semibold uppercase leading-5 tracking-[0.02em] text-semantic-text-primary">
+                  {section.title}
+                </p>
+                <span className="h-px flex-1 bg-semantic-border-layout" />
+              </div>
+            )}
+            <div className={cn("flex flex-col", section.title ? "mt-3" : "")}>
+              {section.rows.map((row) => (
+                <Button
+                  key={row.id}
+                  type="button"
+                  variant="ghost"
+                  className="h-auto min-w-0 w-full flex-col items-start justify-start whitespace-normal rounded px-3 py-1.5 text-left font-normal text-semantic-text-primary hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                >
+                  <span className="break-words text-[14px] font-normal leading-5">
+                    {row.title}
+                  </span>
+                  {row.description && (
+                    <span className="mt-0.5 break-words text-[12px] leading-4 text-semantic-text-muted">
+                      {row.description}
+                    </span>
+                  )}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="overflow-hidden rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary">
+      {listReply.sections?.map((section, sectionIndex) => (
+        <div
+          key={`${section.title}-${sectionIndex}`}
+          className="border-b border-solid border-semantic-border-layout last:border-b-0"
+        >
+          {section.title && (
+            <p className="m-0 bg-semantic-bg-ui px-3 py-2 text-[12px] font-semibold uppercase tracking-wide text-semantic-text-muted">
+              {section.title}
+            </p>
+          )}
+          <div className="divide-y divide-solid divide-semantic-border-layout">
+            {section.rows.map((row) => (
+              <Button
+                key={row.id}
+                type="button"
+                variant="ghost"
+                className="h-auto min-w-0 w-full flex-col items-start justify-start whitespace-normal rounded-none px-3 py-3 text-left font-normal text-semantic-text-primary hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+              >
+                <span className="break-words text-[14px] font-medium leading-5">
+                  {row.title}
+                </span>
+                {row.description && (
+                  <span className="mt-0.5 break-words text-[12px] leading-4 text-semantic-text-muted">
+                    {row.description}
+                  </span>
+                )}
+              </Button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ListReplyModal({
+  open,
+  onOpenChange,
+  listReply,
+  title,
+  description,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  listReply: ListReplyPayload
+  title: React.ReactNode
+  description?: React.ReactNode
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        size="sm"
+        className="max-h-[456px] gap-0 overflow-hidden rounded border-semantic-border-layout bg-semantic-bg-primary p-0"
+      >
+        <div className="px-6 pb-4 pt-5">
+          <DialogTitle className="text-[18px] font-semibold leading-6 text-semantic-text-primary">
+            {title}
+          </DialogTitle>
+          {description && (
+            <DialogDescription className="m-0 mt-1 text-[13px] leading-5 text-semantic-text-muted">
+              {description}
+            </DialogDescription>
+          )}
+        </div>
+        <div className="max-h-[384px] overflow-y-auto px-6 pb-6 pr-3 [scrollbar-color:var(--semantic-text-muted)_transparent]">
+          <div className="pr-3">
+            <ListReplyRows listReply={listReply} presentation="modal" />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
+  const [isListOpen, setIsListOpen] = React.useState(Boolean(listReply.showList))
+  const modalConfig = getListReplyModalConfig(listReply.modal)
+  const modalEnabled = modalConfig.enabled
   const hasSections = Boolean(
     listReply.sections?.some((section) => section.rows.length > 0)
   )
+  const shouldShowInlineSections = hasSections && isListOpen && !modalEnabled
+  const modalTitle =
+    modalConfig.title ?? listReply.header ?? listReply.buttonText ?? "Select an option"
+  const modalDescription = modalConfig.description
+
+  React.useEffect(() => {
+    setIsListOpen(Boolean(listReply.showList))
+  }, [listReply.showList])
 
   return (
     <div className="px-3 pt-3 pb-1">
@@ -773,6 +921,11 @@ function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
       )}
       <p className="m-0 text-[14px] text-semantic-text-primary leading-5">
         {listReply.body}
+        {listReply.required && (
+          <span className="ml-0.5 text-semantic-error-primary" aria-label="required">
+            *
+          </span>
+        )}
       </p>
       {listReply.footer && (
         <p className="m-0 mt-1.5 text-[12px] text-semantic-text-muted">
@@ -782,40 +935,32 @@ function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
       {/* Action button */}
       <button
         type="button"
-        className="w-full mt-2 flex items-center justify-center gap-2 h-10 rounded border border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors cursor-default"
+        aria-expanded={hasSections && isListOpen}
+        aria-haspopup={modalEnabled ? "dialog" : undefined}
+        disabled={!hasSections}
+        onClick={() => {
+          if (hasSections) {
+            setIsListOpen((current) => (modalEnabled ? true : !current))
+          }
+        }}
+        className="w-full mt-2 flex items-center justify-center gap-2 h-10 rounded border border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors cursor-pointer disabled:cursor-default disabled:opacity-80"
       >
         <ListOrdered className="size-4" />
         {listReply.buttonText}
       </button>
-      {hasSections && (
-        <div className="mt-2 overflow-hidden rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary">
-          {listReply.sections?.map((section, sectionIndex) => (
-            <div
-              key={`${section.title}-${sectionIndex}`}
-              className="border-b border-solid border-semantic-border-layout last:border-b-0"
-            >
-              {section.title && (
-                <p className="m-0 bg-semantic-bg-ui px-3 py-2 text-[12px] font-semibold uppercase tracking-wide text-semantic-text-muted">
-                  {section.title}
-                </p>
-              )}
-              <div className="divide-y divide-solid divide-semantic-border-layout">
-                {section.rows.map((row) => (
-                  <div key={row.id} className="px-3 py-2.5">
-                    <p className="m-0 break-words text-[14px] font-medium leading-5 text-semantic-text-primary">
-                      {row.title}
-                    </p>
-                    {row.description && (
-                      <p className="m-0 mt-0.5 break-words text-[12px] leading-4 text-semantic-text-muted">
-                        {row.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+      {shouldShowInlineSections && (
+        <div className="mt-2">
+          <ListReplyRows listReply={listReply} />
         </div>
+      )}
+      {modalEnabled && hasSections && (
+        <ListReplyModal
+          open={isListOpen}
+          onOpenChange={setIsListOpen}
+          listReply={listReply}
+          title={modalTitle}
+          description={modalDescription}
+        />
       )}
     </div>
   )
