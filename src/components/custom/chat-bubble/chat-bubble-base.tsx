@@ -987,7 +987,7 @@ const ChatBubbleMessageMode = React.forwardRef<
                   "text-[14px] leading-5"
                 )}
               >
-                {renderMessageText(msg.text || mediaCaption)}
+                {renderMessageText(msg.text || mediaCaption || "")}
               </p>
             </div>
           )}
@@ -1082,7 +1082,7 @@ const ChatBubbleMessageMode = React.forwardRef<
                   "text-[14px] leading-5"
                 )}
               >
-                {renderMessageText(msg.text || mediaCaption)}
+                {renderMessageText(msg.text || mediaCaption || "")}
                 {shouldUseInlineFooter && (
                   <MessageModeDeliveryFooterInline msg={msg} />
                 )}
