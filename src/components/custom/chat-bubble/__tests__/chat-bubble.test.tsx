@@ -1011,6 +1011,13 @@ describe("ChatBubble", () => {
         { id: "4", name: "Nisha Rao", phone: "+91 98765 43213" },
       ]);
       expect(screen.getByText("Shared Contacts")).toBeInTheDocument();
+      expect(screen.getByText("Shared Contacts").closest("div")).toHaveClass(
+        "sticky",
+        "top-0"
+      );
+      expect(screen.getByRole("button", { name: "Close" })).toHaveClass(
+        "shrink-0"
+      );
       expect(screen.getByText("Nisha Rao")).toBeInTheDocument();
     });
 

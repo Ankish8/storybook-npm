@@ -12,6 +12,7 @@ import {
   Reply,
   ListOrdered,
   Megaphone as MegaphoneIcon,
+  X,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -24,6 +25,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogClose,
   DialogDescription,
   DialogTitle,
 } from "../../ui/dialog"
@@ -673,12 +675,19 @@ function ContactListModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="sm"
-        className="gap-0 border-semantic-border-layout bg-semantic-bg-primary p-6"
+        hideCloseButton
+        className="gap-0 border-semantic-border-layout bg-semantic-bg-primary p-0"
       >
-        <DialogTitle className="text-[16px] font-semibold leading-6 text-semantic-text-primary">
-          {title}
-        </DialogTitle>
-        <div className="mt-8">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-semantic-bg-primary px-6 pb-4 pt-6">
+          <DialogTitle className="text-[16px] font-semibold leading-6 text-semantic-text-primary">
+            {title}
+          </DialogTitle>
+          <DialogClose className="inline-flex size-7 shrink-0 items-center justify-center rounded-sm text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus focus-visible:ring-offset-2 focus-visible:ring-offset-semantic-bg-primary disabled:pointer-events-none">
+            <X className="size-4" />
+            <span className="sr-only">Close</span>
+          </DialogClose>
+        </div>
+        <div className="px-6 pb-6 pt-4">
           {contacts.map((item, index) => (
             <div
               key={item.id ?? `${item.name}-${index}`}
