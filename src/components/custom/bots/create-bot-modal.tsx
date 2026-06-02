@@ -54,7 +54,10 @@ function isBotTypeDisabled(
     (type === "voicebot" && voicebotDisabled)
   );
 }
-
+/**
+  * @deprecated
+  * we don't need this file anymore and frontend team not use this file 
+*/
 export const CreateBotModal = React.forwardRef(
   (
     {
