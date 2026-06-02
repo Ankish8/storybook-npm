@@ -57,27 +57,27 @@ export interface BotIdentityData {
   language: string;
 }
 
-/** Default hover text for the info icon next to "Bot Name & Identity" */
+/** Default hover text for the info icon next to "agent Name & Identity" */
 export const defaultBotNameIdentityTooltip =
-  "The name the bot uses to introduce itself during calls. This is different from the bot's system name set at creation.";
+  "The name the agent uses to introduce itself during calls. This is different from the agent's system name set at creation.";
 
 /** Default hover text for the info icon next to "Primary Role" */
 export const defaultPrimaryRoleTooltip =
-  "Defines what the bot does. Choose from the list or type a custom role. Only one role can be active at a time.";
+  "Defines what the agent does. Choose from the list or type a custom role. Only one role can be active at a time.";
 
 /** Default hover text for the info icon next to "Tone" */
 export const defaultToneTooltip =
-  "Sets how the bot communicates. You can pick up to 5 tones from the list or add your own.";
+  "Sets how the agent communicates. You can pick up to 5 tones from the list or add your own.";
 
 /** Default hover text for the info icon next to "How It Sounds" */
 export const defaultHowItSoundsTooltip =
-  "Select the voice profile the bot speaks in.";
+  "Select the voice profile the agent speaks in.";
 
 /** Default hover text for the info icon next to "What Language It Speaks" */
 export const defaultLanguageModeTooltip =
-  "Sets the language mode for the bot's conversations.";
+  "Sets the language mode for the agent's conversations.";
 
-export const defaultBotNameErrorMessage = "Bot name is required";
+export const defaultBotNameErrorMessage = "Agent name is required";
 export const defaultPrimaryRoleErrorMessage = "Primary role is required";
 export const defaultToneErrorMessage = "Tone is required";
 
@@ -100,13 +100,13 @@ export interface BotIdentityCardProps {
   onPauseVoice?: (voiceValue: string) => void;
   /** The voice value currently being played. Controls play/pause icon state. */
   playingVoice?: string;
-  /** Message shown when Bot Name & Identity is empty. Defaults to "Bot name is required". */
+  /** Message shown when Agent Name & Identity is empty. Defaults to "Agent name is required". */
   botNameValidation?: string;
   /** Message shown when Primary Role is empty. Defaults to "Primary role is required". */
   primaryRoleValidation?: string;
   /** Message shown when Tone is empty. Defaults to "Tone is required". */
   toneValidation?: string;
-  /** When false, Bot Name & Identity skips built-in error-message validation. Defaults to true. */
+  /** When false, Agent Name & Identity skips built-in error-message validation. Defaults to true. */
   botNameErrorMessageValidation?: boolean;
   /** When false, Primary Role skips built-in error-message validation. Defaults to true. */
   primaryRoleErrorMessageValidation?: boolean;
@@ -114,7 +114,7 @@ export interface BotIdentityCardProps {
   toneErrorMessageValidation?: boolean;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
-  /** Hover text on the info icon next to "Bot Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
+  /** Hover text on the info icon next to "Agent Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
   botNameIdentityTooltip?: string;
   /** Hover text on the info icon next to "Primary Role" (default: {@link defaultPrimaryRoleTooltip}) */
   primaryRoleTooltip?: string;
@@ -455,7 +455,7 @@ const BotIdentityCard = React.forwardRef(
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-solid border-semantic-border-layout sm:px-6">
           <h2 className="m-0 text-base font-semibold text-semantic-text-primary">
-            Who The Bot Is
+            Who The Agent Is
           </h2>
         </div>
 
@@ -463,7 +463,7 @@ const BotIdentityCard = React.forwardRef(
         <div className="px-4 py-4 sm:px-6 sm:py-5">
           <div className="flex flex-col gap-5">
             <Field
-              label="Bot Name & Identity"
+              label="Agent Name & Identity"
               labelTooltip={botNameIdentityTooltip}
               errorText={botNameErrorText}
             >
