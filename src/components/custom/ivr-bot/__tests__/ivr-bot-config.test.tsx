@@ -40,9 +40,9 @@ describe("IvrBotConfig", () => {
     expect(onPublish).toHaveBeenCalledTimes(1);
   });
 
-  it("renders always-open sections: Who The Bot Is, How It Behaves", () => {
+  it("renders always-open sections: Who The Agent Is, How It Behaves", () => {
     render(<IvrBotConfig />);
-    expect(screen.getByText("Who The Bot Is")).toBeInTheDocument();
+    expect(screen.getByText("Who The Agent Is")).toBeInTheDocument();
     expect(screen.getByText("How It Behaves")).toBeInTheDocument();
   });
 

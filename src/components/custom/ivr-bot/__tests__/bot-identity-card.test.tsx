@@ -6,9 +6,9 @@ import { BotIdentityCard } from "../bot-identity-card";
 import { BOT_IDENTITY_INVALID_CHARS_MESSAGE } from "../bot-identity-text";
 
 describe("BotIdentityCard", () => {
-  it("renders Who The Bot Is heading", () => {
+  it("renders Who The Agent Is heading", () => {
     render(<BotIdentityCard data={{}} onChange={() => {}} />);
-    expect(screen.getByText("Who The Bot Is")).toBeInTheDocument();
+    expect(screen.getByText("Who The Agent Is")).toBeInTheDocument();
   });
 
   it("strips invalid bot name characters and shows validation message", async () => {
@@ -76,7 +76,7 @@ describe("BotIdentityCard", () => {
       />
     );
 
-    expect(screen.queryByText("Bot name is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Agent name is required")).not.toBeInTheDocument();
     expect(screen.queryByText("Primary role is required")).not.toBeInTheDocument();
     expect(screen.queryByText("Tone is required")).not.toBeInTheDocument();
     expect(screen.queryByText("Voice is required")).not.toBeInTheDocument();
@@ -91,7 +91,7 @@ describe("BotIdentityCard", () => {
       />
     );
 
-    expect(screen.getByText("Bot name is required")).toBeInTheDocument();
+    expect(screen.getByText("Agent name is required")).toBeInTheDocument();
     expect(screen.getByText("Primary role is required")).toBeInTheDocument();
     expect(screen.getByText("Tone is required")).toBeInTheDocument();
   });
@@ -101,13 +101,13 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botNameValidation="Bot name is required"
+        botNameValidation="Agent name is required"
         primaryRoleValidation="Primary role is required"
         toneValidation="Tone is required"
       />
     );
 
-    expect(screen.getByText("Bot name is required")).toBeInTheDocument();
+    expect(screen.getByText("Agent name is required")).toBeInTheDocument();
     expect(screen.getByText("Primary role is required")).toBeInTheDocument();
     expect(screen.getByText("Tone is required")).toBeInTheDocument();
 
@@ -115,7 +115,7 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botNameValidation="Bot name is required"
+        botNameValidation="Agent name is required"
         primaryRoleValidation="Primary role is required"
         toneValidation="Tone is required"
       />
@@ -128,7 +128,7 @@ describe("BotIdentityCard", () => {
       <BotIdentityCard
         data={{ botName: "Rhea", primaryRole: "support", tone: [], voice: "", language: "" }}
         onChange={() => {}}
-        botNameValidation="Bot name is required"
+        botNameValidation="Agent name is required"
         primaryRoleValidation="Primary role is required"
         toneValidation="Tone is required"
       />
@@ -149,7 +149,7 @@ describe("BotIdentityCard", () => {
         <BotIdentityCard
           data={data}
           onChange={(patch) => setData((d) => ({ ...d, ...patch }))}
-          botNameValidation="Bot name is required"
+          botNameValidation="Agent name is required"
         />
       );
     }
@@ -158,11 +158,11 @@ describe("BotIdentityCard", () => {
     const input = screen.getByPlaceholderText("e.g., Rhea from XYZ");
 
     expect(
-      screen.getByText("Bot name is required")
+      screen.getByText("Agent name is required")
     ).toBeInTheDocument();
     await user.type(input, "R");
     expect(
-      screen.queryByText("Bot name is required")
+      screen.queryByText("Agent name is required")
     ).not.toBeInTheDocument();
   });
 
@@ -224,7 +224,7 @@ describe("BotIdentityCard", () => {
     );
 
     expect(screen.getByText("Bot name failed validation")).toBeInTheDocument();
-    expect(screen.queryByText("Bot name is required")).not.toBeInTheDocument();
+    expect(screen.queryByText("Agent name is required")).not.toBeInTheDocument();
   });
 
   it("can disable primary role error-message validation", () => {
