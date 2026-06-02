@@ -92,6 +92,12 @@ describe("ChatListItem", () => {
     expect(item).toHaveClass("border-l-semantic-border-accent");
   });
 
+  it("does not render unread badge when the item is selected", () => {
+    render(<ChatListItem {...defaultProps} unreadCount={3} isSelected />);
+    expect(screen.queryByLabelText("3 unread messages")).not.toBeInTheDocument();
+    expect(screen.getByRole("button")).not.toHaveAccessibleName(/3 unread/i);
+  });
+
   it("applies hover styles when not selected", () => {
     render(<ChatListItem {...defaultProps} />);
     const item = screen.getByRole("button");

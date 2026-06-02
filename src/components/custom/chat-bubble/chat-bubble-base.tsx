@@ -425,8 +425,10 @@ function LegacyDeliveryFooterInline({
 
 function MessageModeReplyQuoteButton({
   replyTo,
+  onReplyClick,
 }: {
   replyTo: NonNullable<ChatMessage["replyTo"]>;
+  onReplyClick?: (messageId: string) => void;
 }) {
   return (
     <button
@@ -434,28 +436,31 @@ function MessageModeReplyQuoteButton({
       className="w-full bg-semantic-bg-primary border-l-[3px] border-solid border-semantic-border-accent rounded-sm px-4 py-1.5 mb-2 h-[56px] flex flex-col justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors text-left border-t-0 border-r-0 border-b-0"
       aria-label={`Jump to quoted message from ${replyTo.sender}`}
       onClick={() => {
-        if (replyTo.messageId) {
-          const prefersReducedMotion = window.matchMedia?.(
-            "(prefers-reduced-motion: reduce)"
-          ).matches;
-          const el = document.getElementById(`msg-${replyTo.messageId}`);
-          if (el) {
-            el.scrollIntoView({
-              behavior: prefersReducedMotion ? "auto" : "smooth",
-              block: "center",
-            });
-            el.style.outline = "2px solid var(--semantic-border-accent)";
-            el.style.outlineOffset = "2px";
-            el.style.transition = "outline-color 0.3s ease-out";
+        if (!replyTo.messageId) return;
+        if (onReplyClick) {
+          onReplyClick(replyTo.messageId);
+          return;
+        }
+        const prefersReducedMotion = window.matchMedia?.(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+        const el = document.getElementById(`msg-${replyTo.messageId}`);
+        if (el) {
+          el.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "center",
+          });
+          el.style.outline = "2px solid var(--semantic-border-accent)";
+          el.style.outlineOffset = "2px";
+          el.style.transition = "outline-color 0.3s ease-out";
+          setTimeout(() => {
+            el.style.outlineColor = "transparent";
             setTimeout(() => {
-              el.style.outlineColor = "transparent";
-              setTimeout(() => {
-                el.style.outline = "";
-                el.style.outlineOffset = "";
-                el.style.transition = "";
-              }, 300);
-            }, 1700);
-          }
+              el.style.outline = "";
+              el.style.outlineOffset = "";
+              el.style.transition = "";
+            }, 300);
+          }, 1700);
         }
       }}
     >
@@ -798,6 +803,7 @@ const ChatBubbleMessageMode = React.forwardRef<
   {
     message: ChatMessage;
     replyParticipantName?: string;
+    onReplyClick?: (messageId: string) => void;
     onReplyTo?: (payload: ReplyToPayload) => void;
     showReplyOn?: ShowReplyOn;
     senderIndicator?: React.ReactNode;
@@ -807,6 +813,7 @@ const ChatBubbleMessageMode = React.forwardRef<
   {
     message: msg,
     replyParticipantName,
+    onReplyClick,
     onReplyTo,
     showReplyOn = "customer",
     senderIndicator,
@@ -1063,7 +1070,10 @@ const ChatBubbleMessageMode = React.forwardRef<
             )}
           >
             {msg.replyTo && (
-              <MessageModeReplyQuoteButton replyTo={msg.replyTo} />
+              <MessageModeReplyQuoteButton
+                replyTo={msg.replyTo}
+                onReplyClick={onReplyClick}
+              />
             )}
             {msg.type === "template" && msg.templateHeaderText && !msg.media && (
               <p
@@ -1237,6 +1247,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       const {
         message,
         replyParticipantName,
+        onReplyClick,
         onReplyTo,
         showReplyOn,
         senderIndicator,
@@ -1249,6 +1260,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
           ref={ref}
           message={message}
           replyParticipantName={replyParticipantName}
+          onReplyClick={onReplyClick}
           onReplyTo={onReplyTo}
           showReplyOn={showReplyOn}
           senderIndicator={senderIndicator}

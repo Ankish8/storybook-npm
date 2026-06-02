@@ -79,7 +79,7 @@ function ChatNewPanel({ onBack, onOpenAddContact }: ChatNewPanelProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[280px]">
-            <div className="max-h-[260px] overflow-y-auto">
+            <div className="max-h-[260px] overflow-y-auto overscroll-contain">
               {channels.map((ch) => (
                 <DropdownMenuItem
                   key={ch.id}

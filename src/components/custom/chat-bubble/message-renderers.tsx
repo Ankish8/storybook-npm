@@ -496,7 +496,8 @@ function StaticMapPreview() {
 
 function LocationMedia({ location }: { location: LocationPayload }) {
   const openGoogleMaps = React.useCallback(() => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`
+    const query = encodeURIComponent(`${location.latitude},${location.longitude}`)
+    const url = `https://www.google.com/maps/search/?api=1&query=${query}`
     window.open(url, "_blank", "noopener,noreferrer")
   }, [location.latitude, location.longitude])
 
@@ -514,8 +515,10 @@ function LocationMedia({ location }: { location: LocationPayload }) {
     <div
       role="button"
       tabIndex={0}
+      aria-label="Open location in Google Maps"
       onClick={openGoogleMaps}
       onKeyDown={handleKeyDown}
+      className="cursor-pointer"
     >
       <div
         className="w-full bg-semantic-bg-ui flex items-center justify-center relative overflow-hidden"

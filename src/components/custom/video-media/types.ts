@@ -13,4 +13,9 @@ export interface VideoMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   onPlayChange?: (playing: boolean) => void;
   /** Callback when speed changes */
   onSpeedChange?: (speed: number) => void;
+  /**
+   * When true, root click only invokes `onClick` (e.g. open fullscreen preview)
+   * without toggling the inline play/pause UI.
+   */
+  opensPreviewOnClick?: boolean;
 }

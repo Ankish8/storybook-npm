@@ -178,12 +178,6 @@ export function ChatTemplateModal({
     handleClose()
   }
 
-  const isSendDisabled = hasMissingTemplateValues(
-    selectedTemplate,
-    varValues,
-    cardVarValues,
-  )
-
   return (
     <>
       <Dialog
@@ -364,7 +358,7 @@ export function ChatTemplateModal({
               <div className="px-4 py-4 shrink-0 border-t-2 border-solid border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)] sm:px-5">
                 <Button
                   onClick={handleSend}
-                  disabled={!selectedTemplate || isSendDisabled}
+                  disabled={!selectedTemplate}
                   className="w-full gap-2"
                 >
                   Send Template

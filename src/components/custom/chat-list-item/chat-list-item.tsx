@@ -316,9 +316,10 @@ const ChatListItem = React.forwardRef(
     ref: React.Ref<HTMLDivElement>
   ) => {
     const showChannelPill = channelPillVisible(channel, agentName);
+    const visibleUnreadCount = isSelected ? 0 : unreadCount;
     const nameText = typeof name === "string" ? name : "";
     const messageText = typeof message === "string" ? message : "";
-    const defaultAriaLabel = `${nameText}. ${messageText}. ${timestamp}${unreadCount ? `. ${unreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
+    const defaultAriaLabel = `${nameText}. ${messageText}. ${timestamp}${visibleUnreadCount ? `. ${visibleUnreadCount} unread` : ""}${slaTimer ? `. SLA: ${slaTimer}` : ""}${messageStatus ? `. ${messageStatus}` : ""}`;
 
     return (
       <div
@@ -354,8 +355,8 @@ const ChatListItem = React.forwardRef(
             </div>
             {messageStatus ? (
               <StatusIndicator status={messageStatus} />
-            ) : unreadCount ? (
-              <UnreadBadge count={unreadCount} />
+            ) : visibleUnreadCount ? (
+              <UnreadBadge count={visibleUnreadCount} />
             ) : null}
           </div>
 

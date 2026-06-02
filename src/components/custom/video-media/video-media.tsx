@@ -31,6 +31,7 @@ const VideoMedia = React.forwardRef(
       progress = 0,
       onPlayChange,
       onSpeedChange,
+      opensPreviewOnClick = false,
       onClick,
       ...props
     }: VideoMediaProps,
@@ -43,6 +44,10 @@ const VideoMedia = React.forwardRef(
     const [volume, setVolume] = useState(75);
 
     const handleRootClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (opensPreviewOnClick) {
+        onClick?.(e);
+        return;
+      }
       const nextPlaying = !playing;
       setPlaying(nextPlaying);
       onPlayChange?.(nextPlaying);

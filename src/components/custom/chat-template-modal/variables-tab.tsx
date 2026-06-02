@@ -76,7 +76,7 @@ export function VariablesTab({
                   [v]: e.target.value.trim().length === 0,
                 }))
               }
-              error={varErrors[v] ? "This field is required." : undefined}
+              error={varErrors[v] ? "Value can't be empty" : undefined}
             />
           ))}
         </>
@@ -138,7 +138,7 @@ export function VariablesTab({
                   }
                   error={
                     cardVarErrors[card.cardIndex]?.body?.[v]
-                      ? "This field is required."
+                      ? "Value can't be empty"
                       : undefined
                   }
                 />
@@ -192,7 +192,7 @@ export function VariablesTab({
                   }
                   error={
                     cardVarErrors[card.cardIndex]?.button?.[v]
-                      ? "This field is required."
+                      ? "Value can't be empty"
                       : undefined
                   }
                 />

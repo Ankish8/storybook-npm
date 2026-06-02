@@ -913,6 +913,34 @@ describe("ChatBubble", () => {
       expect(screen.getByText("Sector 65, Noida")).toBeInTheDocument();
     });
 
+    it("opens location bubbles in Google Maps", () => {
+      const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+
+      render(
+        <ChatBubble
+          type="location"
+          variant="receiver"
+          timestamp="4:01 PM"
+          location={{
+            latitude: 28.6139,
+            longitude: 77.209,
+            name: "myOperator HQ",
+          }}
+        />
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", { name: "Open location in Google Maps" })
+      );
+      expect(openSpy).toHaveBeenCalledWith(
+        "https://www.google.com/maps/search/?api=1&query=28.6139%2C77.209",
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      openSpy.mockRestore();
+    });
+
     it("falls back to coordinates when location has no name/address", () => {
       render(
         <ChatBubble

@@ -171,6 +171,8 @@ export interface ChatBubbleMessageProps extends HtmlDiv {
    * payload. Not the same as `message.senderName` (agent display label in the row header).
    */
   replyParticipantName?: string;
+  /** Callback when the reply quote is clicked. */
+  onReplyClick?: (messageId: string) => void;
   /**
    * Reply control callback; fires for the side(s) selected by `showReplyOn`.
    */
