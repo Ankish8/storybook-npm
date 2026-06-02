@@ -1051,6 +1051,7 @@ components:
       - reply-quote
       - button
       - tooltip
+      - dialog
       - doc-media
       - dropdown-menu
       - spinner

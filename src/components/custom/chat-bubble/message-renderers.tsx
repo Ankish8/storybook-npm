@@ -10,9 +10,6 @@ import {
   ChevronRight,
   ExternalLink,
   Reply,
-  Phone,
-  Mail,
-  Building2,
   ListOrdered,
   Megaphone as MegaphoneIcon,
 } from "lucide-react"
@@ -24,11 +21,19 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "../../ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "../../ui/dialog"
+import { Button } from "../../ui/button"
 import { Spinner } from "../../ui/spinner"
 import { cn } from "../../../lib/utils"
 import type {
   MediaPayload,
   LocationPayload,
+  ContactCardItem,
+  ContactListModalConfig,
   ContactPayload,
   ReferralPayload,
   ListReplyPayload,
@@ -549,48 +554,205 @@ function LocationMedia({ location }: { location: LocationPayload }) {
 
 /* ── ContactMedia ── */
 
+function resolveContactList(contact: ContactPayload): ContactCardItem[] {
+  return contact.contacts?.length ? contact.contacts : [contact]
+}
+
+function getContactModalConfig(
+  modal: ContactPayload["modal"]
+): ContactListModalConfig {
+  if (modal === false) {
+    return { enabled: false }
+  }
+
+  if (modal && typeof modal === "object") {
+    return modal
+  }
+
+  return { enabled: true }
+}
+
+function getContactViewLabel(
+  contact: ContactPayload,
+  contacts: ContactCardItem[],
+  modalConfig: ContactListModalConfig
+) {
+  return (
+    contact.viewLabel ??
+    modalConfig.viewLabel ??
+    (contacts.length > 1 ? "View Contacts" : "View Contact")
+  )
+}
+
+function ContactAvatar({
+  contact,
+  size = "md",
+  className,
+}: {
+  contact: ContactCardItem
+  size?: "sm" | "md"
+  className?: string
+}) {
+  const initials = contact.initials ?? getInitials(contact.name)
+  return (
+    <div
+      className={cn(
+        "rounded-full bg-semantic-primary text-semantic-text-inverted flex items-center justify-center shrink-0 overflow-hidden",
+        size === "sm" ? "size-10 text-[13px]" : "size-12 text-[14px]",
+        className
+      )}
+      aria-hidden="true"
+    >
+      {contact.avatarUrl ? (
+        <img
+          src={contact.avatarUrl}
+          alt=""
+          className="size-full object-cover"
+        />
+      ) : (
+        <span className="font-semibold leading-none">{initials}</span>
+      )}
+    </div>
+  )
+}
+
+function ContactAvatarStack({ contacts }: { contacts: ContactCardItem[] }) {
+  if (contacts.length <= 1) {
+    return <ContactAvatar contact={contacts[0]} />
+  }
+
+  const visibleContacts = contacts.slice(0, 3)
+  const hiddenCount = contacts.length - visibleContacts.length
+
+  return (
+    <div className="relative flex items-center -space-x-2">
+      {visibleContacts.map((item, index) => (
+        <ContactAvatar
+          key={item.id ?? `${item.name}-${index}`}
+          contact={item}
+          size="sm"
+          className="border-2 border-solid border-semantic-bg-ui"
+        />
+      ))}
+      {hiddenCount > 0 && (
+        <div className="pointer-events-none absolute -bottom-0.5 -right-1 z-20 flex h-4 min-w-4 items-center justify-center rounded-full border border-solid border-semantic-bg-ui bg-semantic-bg-primary px-1 text-[8px] font-semibold leading-none text-semantic-text-primary shadow-sm">
+          +{hiddenCount}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function getContactSummary(contacts: ContactCardItem[]) {
+  if (contacts.length === 1) {
+    return contacts[0].name
+  }
+
+  const visibleNames = contacts.slice(0, 3).map((item) => item.name).join(", ")
+  const hiddenCount = contacts.length - 3
+
+  return hiddenCount > 0
+    ? `${visibleNames} + ${hiddenCount} more`
+    : visibleNames
+}
+
+function ContactListModal({
+  open,
+  onOpenChange,
+  contacts,
+  title,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  contacts: ContactCardItem[]
+  title: React.ReactNode
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        size="sm"
+        className="gap-0 border-semantic-border-layout bg-semantic-bg-primary p-6"
+      >
+        <DialogTitle className="text-[16px] font-semibold leading-6 text-semantic-text-primary">
+          {title}
+        </DialogTitle>
+        <div className="mt-8">
+          {contacts.map((item, index) => (
+            <div
+              key={item.id ?? `${item.name}-${index}`}
+              className="flex items-center gap-3 border-b border-solid border-semantic-border-layout py-4 first:pt-0 last:border-b-0"
+            >
+              <ContactAvatar
+                contact={item}
+                size="sm"
+                className="bg-semantic-bg-ui text-semantic-text-muted"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="m-0 truncate text-[14px] font-semibold leading-5 text-semantic-text-primary">
+                  {item.name}
+                </p>
+                <p className="m-0 truncate text-[12px] leading-4 text-semantic-text-muted">
+                  {item.phone}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 function ContactMedia({ contact }: { contact: ContactPayload }) {
-  const initials = getInitials(contact.name)
+  const contacts = resolveContactList(contact)
+  const modalConfig = getContactModalConfig(contact.modal)
+  const modalEnabled = modalConfig.enabled !== false
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const summary = getContactSummary(contacts)
+  const viewLabel = getContactViewLabel(contact, contacts, modalConfig)
+
+  const handleViewContacts = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    contact.onViewContacts?.(contacts)
+    if (modalEnabled) {
+      setIsModalOpen(true)
+    }
+  }
+
   return (
     <div className="px-3 pt-3 pb-1">
-      <div className="flex items-center gap-3 mb-2">
-        {/* Avatar */}
-        <div className="size-10 rounded-full bg-semantic-primary flex items-center justify-center shrink-0">
-          <span className="text-[14px] font-semibold text-semantic-text-inverted leading-none">
-            {initials}
-          </span>
-        </div>
-        {/* Name + org */}
-        <div className="flex-1 min-w-0">
-          <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5 truncate">
-            {contact.name}
-          </p>
-          {contact.organization && (
-            <p className="m-0 text-[12px] text-semantic-text-muted truncate">
-              {contact.organization}
+      <div className="flex items-center justify-between gap-4 rounded bg-semantic-bg-ui px-4 py-3">
+        <div className="flex min-w-0 items-center gap-4">
+          <ContactAvatarStack contacts={contacts} />
+          <div className="min-w-0 flex-1">
+            <p className="m-0 line-clamp-2 text-[14px] font-semibold leading-5 text-semantic-text-primary">
+              {summary}
             </p>
-          )}
-        </div>
-      </div>
-      {/* Contact details */}
-      <div className="border-t border-solid border-semantic-border-layout pt-2 flex flex-col gap-1.5">
-        <div className="flex items-center gap-2">
-          <Phone className="size-3.5 text-semantic-text-muted shrink-0" />
-          <span className="text-[13px] text-semantic-text-primary">{contact.phone}</span>
-        </div>
-        {contact.email && (
-          <div className="flex items-center gap-2">
-            <Mail className="size-3.5 text-semantic-text-muted shrink-0" />
-            <span className="text-[13px] text-semantic-text-link">{contact.email}</span>
+            {contacts.length === 1 && (
+              <p className="m-0 mt-1 truncate text-[12px] leading-4 text-semantic-text-muted">
+                {contacts[0].phone}
+              </p>
+            )}
           </div>
-        )}
-        {contact.organization && (
-          <div className="flex items-center gap-2">
-            <Building2 className="size-3.5 text-semantic-text-muted shrink-0" />
-            <span className="text-[13px] text-semantic-text-muted">{contact.organization}</span>
-          </div>
-        )}
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-auto min-w-0 shrink-0 bg-transparent px-0 py-0 text-[14px] font-semibold leading-5 text-semantic-text-muted hover:bg-transparent hover:text-semantic-text-primary focus-visible:ring-semantic-border-focus"
+          onClick={handleViewContacts}
+        >
+          {viewLabel}
+        </Button>
       </div>
+      {modalEnabled && (
+        <ContactListModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          contacts={contacts}
+          title={modalConfig.title ?? "Contact List"}
+        />
+      )}
     </div>
   )
 }

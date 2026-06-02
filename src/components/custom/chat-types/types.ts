@@ -115,11 +115,31 @@ export type LocationPayload = {
   address?: string
 }
 
-export type ContactPayload = {
+export type ContactCardItem = {
+  id?: string
   name: string
   phone: string
   email?: string
   organization?: string
+  avatarUrl?: string
+  initials?: string
+}
+
+export type ContactListModalConfig = {
+  enabled?: boolean
+  title?: ReactNode
+  viewLabel?: string
+}
+
+export type ContactPayload = ContactCardItem & {
+  /** Additional contacts for multi-contact messages. When omitted, the top-level contact is used as the single contact. */
+  contacts?: ContactCardItem[]
+  /** Set to `false` to disable the built-in contact-list modal, or pass labels/title to customize it. */
+  modal?: boolean | ContactListModalConfig
+  /** Overrides the card action label. Defaults to "View Contact" / "View Contacts". */
+  viewLabel?: string
+  /** Fires when the card action is clicked, before the optional built-in modal opens. */
+  onViewContacts?: (contacts: ContactCardItem[]) => void
 }
 
 export type ReferralPayload = {
@@ -160,7 +180,7 @@ export type ChatFailedMessage = {
   text: string
   /** Label for expanding the two-line collapsed detail. Defaults to "Learn more". */
   learnMoreLabel?: string
-  /** Label for collapsing the expanded detail. Defaults to "Less more". */
+  /** Label for collapsing the expanded detail. Defaults to "Show less". */
   lessMoreLabel?: string
 }
 

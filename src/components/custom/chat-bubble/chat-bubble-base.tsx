@@ -214,7 +214,7 @@ function FailedMessageFeedback({
     code,
     text = "",
     learnMoreLabel = "Learn more",
-    lessMoreLabel = "Less more",
+    lessMoreLabel = "Show less",
   } = failedMessage ?? {};
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [needsToggle, setNeedsToggle] = React.useState(false);
@@ -1270,7 +1270,18 @@ function flatPropsToMessage(props: ChatBubbleFlatProps): ChatMessage {
     case "location":
       return { ...base, location: props.location, text: props.text ?? "" };
     case "contact":
-      return { ...base, contactCard: props.contactCard, text: props.text ?? "" };
+      return {
+        ...base,
+        contactCard: {
+          ...props.contactCard,
+          contacts: props.contacts ?? props.contactCard.contacts,
+          modal: props.contactModal ?? props.contactCard.modal,
+          viewLabel: props.contactViewLabel ?? props.contactCard.viewLabel,
+          onViewContacts:
+            props.onViewContacts ?? props.contactCard.onViewContacts,
+        },
+        text: props.text ?? "",
+      };
     case "referral":
       return { ...base, referral: props.referral, text: props.text ?? "" };
     case "listReply":
@@ -1380,6 +1391,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       delete restNoPayload.media;
       delete restNoPayload.location;
       delete restNoPayload.contactCard;
+      delete restNoPayload.contacts;
+      delete restNoPayload.contactModal;
+      delete restNoPayload.contactViewLabel;
+      delete restNoPayload.onViewContacts;
       delete restNoPayload.referral;
       delete restNoPayload.listReply;
       delete restNoPayload.buttons;

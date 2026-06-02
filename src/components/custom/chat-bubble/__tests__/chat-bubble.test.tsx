@@ -278,10 +278,10 @@ describe("ChatBubble", () => {
       /Learn more/
     );
     expect(
-      screen.getByRole("button", { name: "Less more" })
+      screen.getByRole("button", { name: "Show less" })
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Less more" }));
+    fireEvent.click(screen.getByRole("button", { name: "Show less" }));
     expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
       /Learn more/
     );
@@ -953,7 +953,7 @@ describe("ChatBubble", () => {
       expect(screen.getByText("19.076000, 72.877700")).toBeInTheDocument();
     });
 
-    it("renders contact bubble with phone and email", () => {
+    it("renders a single contact bubble and opens the contact list modal", () => {
       render(
         <ChatBubble
           type="contact"
@@ -968,7 +968,50 @@ describe("ChatBubble", () => {
       );
       expect(screen.getByText("Priya Sharma")).toBeInTheDocument();
       expect(screen.getByText("+91 98765 43210")).toBeInTheDocument();
-      expect(screen.getByText("priya@acme.co.in")).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "View Contact" }));
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(screen.getByText("Contact List")).toBeInTheDocument();
+      expect(screen.getAllByText("Priya Sharma")).toHaveLength(2);
+    });
+
+    it("renders a multi-contact bubble with stacked avatars and custom modal label", () => {
+      const onViewContacts = vi.fn();
+
+      render(
+        <ChatBubble
+          type="contact"
+          variant="receiver"
+          timestamp="4:03 PM"
+          contactCard={{
+            name: "Sushant Arya",
+            phone: "+91 98765 43210",
+          }}
+          contacts={[
+            { id: "1", name: "Sushant Arya", phone: "+91 98765 43210" },
+            { id: "2", name: "Jane Doe", phone: "+91 98765 43211" },
+            { id: "3", name: "Amit Kumar", phone: "+91 98765 43212" },
+            { id: "4", name: "Nisha Rao", phone: "+91 98765 43213" },
+          ]}
+          contactModal={{ title: "Shared Contacts", viewLabel: "View Contacts" }}
+          onViewContacts={onViewContacts}
+        />
+      );
+
+      expect(
+        screen.getByText("Sushant Arya, Jane Doe, Amit Kumar + 1 more")
+      ).toBeInTheDocument();
+      expect(screen.getByText("+1")).toHaveClass("absolute", "-right-1");
+
+      fireEvent.click(screen.getByRole("button", { name: "View Contacts" }));
+
+      expect(onViewContacts).toHaveBeenCalledWith([
+        { id: "1", name: "Sushant Arya", phone: "+91 98765 43210" },
+        { id: "2", name: "Jane Doe", phone: "+91 98765 43211" },
+        { id: "3", name: "Amit Kumar", phone: "+91 98765 43212" },
+        { id: "4", name: "Nisha Rao", phone: "+91 98765 43213" },
+      ]);
+      expect(screen.getByText("Shared Contacts")).toBeInTheDocument();
+      expect(screen.getByText("Nisha Rao")).toBeInTheDocument();
     });
 
     it("renders referral bubble with sourceType label", () => {

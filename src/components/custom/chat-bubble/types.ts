@@ -3,6 +3,8 @@ import type {
   ChatMessage,
   MediaPayload,
   LocationPayload,
+  ContactCardItem,
+  ContactListModalConfig,
   ContactPayload,
   ReferralPayload,
   ListReplyPayload,
@@ -26,6 +28,8 @@ export type {
   MediaPayload,
   SentByType,
   LocationPayload,
+  ContactCardItem,
+  ContactListModalConfig,
   ContactPayload,
   ReferralPayload,
   ListReplyPayload,
@@ -301,6 +305,14 @@ export interface ChatBubbleFlatLocationProps extends ChatBubbleFlatBase {
 export interface ChatBubbleFlatContactProps extends ChatBubbleFlatBase {
   type: "contact";
   contactCard: ContactPayload;
+  /** Additional contacts for a multi-contact WhatsApp contact message. */
+  contacts?: ContactCardItem[];
+  /** Built-in contact-list modal config. Pass `false` to disable it. */
+  contactModal?: boolean | ContactListModalConfig;
+  /** Overrides the "View Contact(s)" action label. */
+  contactViewLabel?: string;
+  /** Fires when the view action is clicked, before the optional built-in modal opens. */
+  onViewContacts?: (contacts: ContactCardItem[]) => void;
   text?: string;
 }
 
@@ -348,7 +360,7 @@ export interface ChatBubbleFlatTemplateProps extends ChatBubbleFlatBase {
  *   location={{ latitude: 28.6, longitude: 77.2, name: "Office" }} />
  *
  * <ChatBubble type="template" variant="sender" timestamp="1:49 PM" status="read"
- *   text="Hello sd, This is your Sales report of this years."
+ *   text="Hello, this is your sales report for this year."
  *   buttons={[
  *     { kind: "quickReply", label: "Interested" },
  *     { kind: "quickReply", label: "Not interested" },

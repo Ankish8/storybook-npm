@@ -106,7 +106,25 @@ const meta: Meta<typeof ChatBubble> = {
       control: "object",
       table: { category: "Flat mode" },
       description:
-        "`{ name, phone, email?, organization? }` — required for `type: contact`.",
+        "`{ name, phone, contacts?, modal?, viewLabel? }` — required for `type: contact`. Use `contacts` for multi-contact messages.",
+    },
+    contacts: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description:
+        "`ContactCardItem[]` — optional multi-contact list for `type: contact`.",
+    },
+    contactModal: {
+      control: "object",
+      table: { category: "Flat mode" },
+      description:
+        "`false` disables the built-in contact-list modal, or pass `{ title?, viewLabel? }`.",
+    },
+    contactViewLabel: {
+      control: "text",
+      table: { category: "Flat mode" },
+      description:
+        "Overrides the `View Contact` / `View Contacts` action label for contact messages.",
     },
     referral: {
       control: "object",
@@ -162,7 +180,7 @@ const meta: Meta<typeof ChatBubble> = {
       control: "object",
       table: { category: "Manual bubble" },
       description:
-        "Failed delivery detail shown below sender failed bubbles: `{ code?: string | number, text: string }`. Long text is collapsed to two lines with a Learn more / Less more toggle.",
+        "Failed delivery detail shown below sender failed bubbles: `{ code?: string | number, text: string }`. Long text is collapsed to two lines with a Learn more / Show less toggle.",
     },
     senderName: {
       control: "text",
@@ -264,6 +282,15 @@ Pass \`type\` plus the matching payload prop. No need to construct a \`ChatMessa
 <ChatBubble type="contact" variant="receiver" timestamp="2:17 PM"
   contactCard={{ name: "Priya Sharma", phone: "+91 98765 43210", email: "priya@acme.com" }} />
 
+<ChatBubble type="contact" variant="receiver" timestamp="2:17 PM"
+  contactCard={{ name: "Sushant Arya", phone: "+91 98765 43210" }}
+  contacts={[
+    { id: "1", name: "Sushant Arya", phone: "+91 98765 43210" },
+    { id: "2", name: "Jane Doe", phone: "+91 98765 43211" },
+    { id: "3", name: "Amit Kumar", phone: "+91 98765 43212" },
+  ]}
+  contactModal={{ title: "Contact List" }} />
+
 <ChatBubble type="listReply" variant="sender" timestamp="2:18 PM" status="read"
   listReply={{ header: "Pick a slot", body: "Available times this week", buttonText: "View slots" }} />
 
@@ -272,7 +299,7 @@ Pass \`type\` plus the matching payload prop. No need to construct a \`ChatMessa
     sourceUrl: "fb.me/myoperator-promo" }} />
 
 <ChatBubble type="template" variant="sender" timestamp="1:49 PM" status="read"
-  text="Hello sd, This is your Sales report of this years. Let us know if you need to send next year's report too?"
+  text="Hello, this is your sales report for this year. Let us know if you need next year's report too."
   buttons={[
     { kind: "quickReply", label: "Interested" },
     { kind: "quickReply", label: "Not interested" },
@@ -720,12 +747,12 @@ export const FlatLocation: Story = {
 };
 
 export const FlatContact: Story = {
-  name: "Flat · Contact",
+  name: "Flat · Contact Messages",
   parameters: {
     docs: {
       description: {
         story:
-          "Pass `contactCard` directly. Renders avatar with initials, name, organization, and contact rows.",
+          "Pass `contactCard` for a single contact, or `contacts` for a multi-contact message. The `View Contact(s)` action opens the built-in contact-list modal unless `contactModal={false}`.",
       },
     },
   },
@@ -736,10 +763,8 @@ export const FlatContact: Story = {
         variant="receiver"
         timestamp="3:10 PM"
         contactCard={{
-          name: "Priya Sharma",
+          name: "Sushant Arya",
           phone: "+91 98765 43210",
-          email: "priya@acme.co.in",
-          organization: "Acme Corp",
         }}
       />
       <ChatBubble
@@ -747,9 +772,16 @@ export const FlatContact: Story = {
         variant="receiver"
         timestamp="3:11 PM"
         contactCard={{
-          name: "Anonymous Caller",
-          phone: "+91 90000 00000",
+          name: "Sushant Arya",
+          phone: "+91 98765 43210",
         }}
+        contacts={[
+          { id: "1", name: "Sushant Arya", phone: "+91 98765 43210" },
+          { id: "2", name: "Jane Doe", phone: "+91 98765 43211" },
+          { id: "3", name: "Amit Kumar", phone: "+91 98765 43212" },
+          { id: "4", name: "Nisha Rao", phone: "+91 98765 43213" },
+        ]}
+        contactModal={{ title: "Contact List" }}
       />
     </div>
   ),
@@ -850,7 +882,7 @@ export const FlatTemplateWithButtons: Story = {
         variant="sender"
         timestamp="1:49 PM"
         status="read"
-        text="Hello sd, This is your Sales report of this years. Let us know if you need to send next year's report too?"
+        text="Hello, this is your sales report for this year. Let us know if you need next year's report too."
         buttons={[
           { kind: "quickReply", label: "Interested" },
           { kind: "quickReply", label: "Not interested" },
