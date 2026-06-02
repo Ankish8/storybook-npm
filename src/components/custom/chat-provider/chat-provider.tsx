@@ -167,6 +167,15 @@ export function ChatProvider({ transport, children }: ChatProviderProps) {
   // ── Actions ─────────────────────────────────────────────────
   const selectChat = React.useCallback((chatId: string | null) => {
     setSelectedChatId(chatId)
+    if (chatId) {
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === chatId && chat.unreadCount
+            ? { ...chat, unreadCount: 0 }
+            : chat
+        )
+      )
+    }
   }, [])
 
   const applyFilters = React.useCallback(

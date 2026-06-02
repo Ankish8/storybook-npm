@@ -45,7 +45,7 @@ const ReplyQuote = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "tw-w-full tw-min-w-0 tw-bg-[var(--semantic-bg-ui,#F5F5F5)] tw-border-l-[3px] tw-border-solid tw-border-[var(--semantic-border-accent,#27ABB8)] tw-rounded-sm tw-px-4 tw-py-1.5 tw-mb-2 tw-h-[56px] tw-flex tw-flex-col tw-justify-center tw-gap-0 tw-overflow-hidden tw-cursor-pointer hover:tw-bg-[var(--semantic-bg-hover,#D5D7DA)] tw-transition-colors",
+          "tw-max-w-full tw-min-w-0 tw-bg-[var(--semantic-bg-ui,#F5F5F5)] tw-border-l-[3px] tw-border-solid tw-border-[var(--semantic-border-accent,#27ABB8)] tw-rounded-sm tw-px-4 tw-py-1.5 tw-mb-2 tw-h-[56px] tw-flex tw-flex-col tw-justify-center tw-gap-0 tw-overflow-hidden tw-cursor-pointer hover:tw-bg-[var(--semantic-bg-hover,#D5D7DA)] tw-transition-colors",
           isInteractive && "focus-visible:tw-ring-2 focus-visible:tw-ring-[var(--semantic-border-focus,#2BBCCA)] focus-visible:tw-ring-offset-1 focus-visible:tw-outline-none",
           className
         )}
@@ -59,9 +59,9 @@ const ReplyQuote = React.forwardRef(
         <p className="tw-m-0 tw-min-w-0 tw-shrink-0 tw-truncate tw-text-[14px] tw-font-semibold tw-leading-5 tw-tracking-[0.014px] tw-text-[var(--semantic-text-primary,#181D27)]">
           {sender}
         </p>
-        <p className="tw-m-0 tw-min-h-0 tw-min-w-0 tw-flex-1 tw-truncate tw-text-[14px] tw-leading-5 tw-text-[var(--semantic-text-muted,#717680)]">
+        <div className="tw-m-0 tw-min-h-0 tw-min-w-0 tw-flex-1 tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap tw-text-[14px] tw-leading-5 tw-text-[var(--semantic-text-muted,#717680)] [&_*]:tw-inline">
           {message}
-        </p>
+        </div>
       </div>
     );
   }

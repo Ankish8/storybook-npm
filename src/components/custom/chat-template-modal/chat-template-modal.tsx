@@ -34,6 +34,82 @@ const templateCategoryOptions: { id: TemplateCategory; label: string }[] = [
   { id: "authentication", label: "Authentication" },
 ]
 
+function buildInitialCardVarValues(template: TemplateDef): CardVarMap {
+  return (template.cards ?? []).reduce<CardVarMap>((acc, card) => {
+    acc[card.cardIndex] = {
+      body: {},
+      button: {},
+    }
+    return acc
+  }, {})
+}
+
+function hasMissingTemplateValues(
+  template: TemplateDef | null,
+  varValues: VarMap,
+  cardVarValues: CardVarMap,
+) {
+  if (!template) return true
+
+  const hasMissingBodyValue = template.bodyVariables.some(
+    (variable) => !varValues[variable]?.trim(),
+  )
+
+  if (hasMissingBodyValue) return true
+
+  return (template.cards ?? []).some((card) => {
+    const cardValues = cardVarValues[card.cardIndex]
+
+    return (
+      card.bodyVariables.some(
+        (variable) => !cardValues?.body?.[variable]?.trim(),
+      ) ||
+      card.buttonVariables.some(
+        (variable) => !cardValues?.button?.[variable]?.trim(),
+      )
+    )
+  })
+}
+
+function buildTemplateErrors(
+  template: TemplateDef,
+  varValues: VarMap,
+  cardVarValues: CardVarMap,
+) {
+  const varErrors = template.bodyVariables.reduce<VarErrorMap>(
+    (acc, variable) => {
+      acc[variable] = !varValues[variable]?.trim()
+      return acc
+    },
+    {},
+  )
+
+  const cardVarErrors = (template.cards ?? []).reduce<CardVarErrorMap>(
+    (acc, card) => {
+      const cardValues = cardVarValues[card.cardIndex]
+
+      acc[card.cardIndex] = {
+        body: card.bodyVariables.reduce<VarErrorMap>((bodyAcc, variable) => {
+          bodyAcc[variable] = !cardValues?.body?.[variable]?.trim()
+          return bodyAcc
+        }, {}),
+        button: card.buttonVariables.reduce<VarErrorMap>(
+          (buttonAcc, variable) => {
+            buttonAcc[variable] = !cardValues?.button?.[variable]?.trim()
+            return buttonAcc
+          },
+          {},
+        ),
+      }
+
+      return acc
+    },
+    {},
+  )
+
+  return { varErrors, cardVarErrors }
+}
+
 export interface ChatTemplateModalProps {
   /** Optional illustration image source for the empty preview state */
   illustrationSrc?: string
@@ -73,7 +149,7 @@ export function ChatTemplateModal({
     setSelectedTemplate(t)
     setVarValues({})
     setVarErrors({})
-    setCardVarValues({})
+    setCardVarValues(buildInitialCardVarValues(t))
     setCardVarErrors({})
     setUploadedMedia({})
     setActiveTab("variables")
@@ -82,11 +158,31 @@ export function ChatTemplateModal({
   const handleClose = () => setShowTemplateModal(false)
 
   const handleSend = () => {
-    if (selectedTemplate) {
-      sendTemplate(selectedTemplate.id, varValues, cardVarValues)
+    if (!selectedTemplate) return
+
+    const nextErrors = buildTemplateErrors(
+      selectedTemplate,
+      varValues,
+      cardVarValues,
+    )
+
+    setVarErrors(nextErrors.varErrors)
+    setCardVarErrors(nextErrors.cardVarErrors)
+
+    if (hasMissingTemplateValues(selectedTemplate, varValues, cardVarValues)) {
+      setActiveTab("variables")
+      return
     }
+
+    sendTemplate(selectedTemplate.id, varValues, cardVarValues)
     handleClose()
   }
+
+  const isSendDisabled = hasMissingTemplateValues(
+    selectedTemplate,
+    varValues,
+    cardVarValues,
+  )
 
   return (
     <>
@@ -268,7 +364,7 @@ export function ChatTemplateModal({
               <div className="px-4 py-4 shrink-0 border-t-2 border-solid border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)] sm:px-5">
                 <Button
                   onClick={handleSend}
-                  disabled={!selectedTemplate}
+                  disabled={!selectedTemplate || isSendDisabled}
                   className="w-full gap-2"
                 >
                   Send Template

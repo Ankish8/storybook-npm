@@ -1,3 +1,5 @@
+import type { ReactNode } from "react"
+
 export type Tab = "open" | "assigned" | "resolved"
 
 export type TabDef = { id: Tab; label: string; count: number }
@@ -184,16 +186,16 @@ export type ChatMessage = {
     | "listReply"
   status?: "queued" | "sent" | "delivered" | "read" | "failed"
   failedMessage?: ChatFailedMessage
-  replyTo?: { sender: string; text: string; messageId?: string }
+  replyTo?: { sender: string; text: ReactNode; messageId?: string }
   media?: MediaPayload
   error?: string
   /**
    * **Agent rows only** (`sender: "agent"`). Drives the header-row badge next to `senderName`
    * (see `SenderBadgeIcon` in `SenderIndicator`):
    * - `agent` + `name` → two-letter initials; if `name` is missing, the badge falls back to the plug icon.
-   * - `bot` → Bot icon; `name` used in the tooltip.
+   * - `bot` → Bot icon.
    * - `campaign` → megaphone; tooltip `"Campaign"`.
-   * - `api` → plug; tooltip is `name` or `"API"`.
+   * - `api` → plug; tooltip `"API"`.
    */
   sentBy?: { type: SentByType; name?: string }
   location?: LocationPayload

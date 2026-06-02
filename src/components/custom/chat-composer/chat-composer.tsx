@@ -109,12 +109,12 @@ const ChatComposer = React.forwardRef(
         <div className="bg-white rounded-lg shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.06)] px-4 py-3">
           {/* Reply preview */}
           {reply && (
-            <div className="flex items-center gap-2 mb-2">
+            <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mb-2">
               <ReplyQuote
                 sender={reply.sender}
                 message={reply.message}
                 onClick={onReplyClick}
-                className="flex-1"
+                className="tw-mb-0 tw-min-w-0 tw-w-full tw-max-w-full tw-overflow-hidden"
               />
               <Button
                 variant="ghost"

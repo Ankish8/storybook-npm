@@ -79,17 +79,19 @@ function ChatNewPanel({ onBack, onOpenAddContact }: ChatNewPanelProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[280px]">
-            {channels.map((ch) => (
-              <DropdownMenuItem
-                key={ch.id}
-                onSelect={() => setSelectedChannel(channels.find((c) => c.id === ch.id)!)}
-                description={ch.phone}
-                suffix={ch.badge}
-                className={cn(selectedChannel.id === ch.id && "bg-semantic-primary-surface text-semantic-primary font-medium")}
-              >
-                {ch.name}
-              </DropdownMenuItem>
-            ))}
+            <div className="max-h-[260px] overflow-y-auto">
+              {channels.map((ch) => (
+                <DropdownMenuItem
+                  key={ch.id}
+                  onSelect={() => setSelectedChannel(channels.find((c) => c.id === ch.id)!)}
+                  description={ch.phone}
+                  suffix={ch.badge}
+                  className={cn(selectedChannel.id === ch.id && "bg-semantic-primary-surface text-semantic-primary font-medium")}
+                >
+                  {ch.name}
+                </DropdownMenuItem>
+              ))}
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

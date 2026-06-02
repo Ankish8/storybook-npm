@@ -21,8 +21,8 @@ function getInitials(name: string): string {
 }
 
 function getTooltipLabel(sentBy: { type: SentByType; name?: string }): string {
-  if (sentBy.type === "agent") return sentBy.name || "Agent"
-  if (sentBy.type === "bot") return sentBy.name || "Bot"
+  if (sentBy.type === "agent") return "Agent"
+  if (sentBy.type === "bot") return "Bot"
   if (sentBy.type === "campaign") return "Campaign"
   return "API"
 }
@@ -34,7 +34,7 @@ function SenderBadgeIcon({
 }: {
   sentBy: { type: SentByType; name?: string }
 }) {
-  const iconClass = "size-3.5 shrink-0 text-semantic-text-muted"
+  const iconClass = cn("size-3.5 shrink-0 text-semantic-text-muted")
 
   if (sentBy.type === "agent" && sentBy.name) {
     return (
@@ -84,9 +84,9 @@ const SenderIndicator = React.forwardRef<HTMLDivElement, SenderIndicatorProps>(
           side="left"
           sideOffset={8}
           collisionPadding={12}
-          className="max-w-[calc(100vw-2rem)] break-words text-left"
+          className="whitespace-nowrap"
         >
-          <p className="m-0 max-w-full break-words">{getTooltipLabel(sentBy)}</p>
+          <p className="m-0">{getTooltipLabel(sentBy)}</p>
           <TooltipArrow />
         </TooltipContent>
       </Tooltip>

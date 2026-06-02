@@ -36,11 +36,28 @@ describe("ChatBubble", () => {
       </ChatBubble>
     );
 
-    expect(screen.getByText(url)).toHaveClass(
+    const link = screen.getByRole("link", { name: url });
+    expect(link).toHaveAttribute("href", url);
+    expect(link).toHaveAttribute("title", url);
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveClass(
       "min-w-0",
       "max-w-full",
-      "break-words"
+      "break-all",
+      "[overflow-wrap:anywhere]"
     );
+  });
+
+  it("keeps sentence punctuation outside manual-mode URL links", () => {
+    render(
+      <ChatBubble variant="receiver" timestamp="2:16 PM">
+        Open https://www.google.com.
+      </ChatBubble>
+    );
+
+    const link = screen.getByRole("link", { name: "https://www.google.com" });
+    expect(link).toHaveAttribute("href", "https://www.google.com");
+    expect(link.parentElement).toHaveTextContent("Open https://www.google.com.");
   });
 
   it("sender variant has info surface background class", () => {
@@ -330,10 +347,10 @@ describe("ChatBubble", () => {
     const wrapper = bubble?.parentElement;
     const column = wrapper?.parentElement?.parentElement;
     expect(column).toHaveStyle({
-      minWidth: "min(11.5rem, 100%)",
+      minWidth: "min(13rem, 100%)",
     });
     expect(bubble?.parentElement).toHaveStyle({
-      minWidth: "min(11.5rem, 100%)",
+      minWidth: "min(13rem, 100%)",
     });
   });
 
@@ -425,9 +442,9 @@ describe("ChatBubble", () => {
         </ChatBubble>
       );
       const column = container.querySelector("div.flex.flex-col");
-      expect((column as HTMLElement).style.minWidth).toBe("min(11.5rem, 100%)");
+      expect((column as HTMLElement).style.minWidth).toBe("min(13rem, 100%)");
       const wrapper = getBubbleWrapper(container);
-      expect((wrapper as HTMLElement).style.minWidth).toBe("min(11.5rem, 100%)");
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(13rem, 100%)");
       expect((wrapper as HTMLElement).style.maxWidth).toBe("");
     });
 
@@ -725,10 +742,15 @@ describe("ChatBubble", () => {
       const url = "https://www.google.com/search?q=very-long-chat-message-url";
       render(<ChatBubble message={{ ...baseMsg, text: url }} />);
 
-      expect(screen.getByText(url)).toHaveClass(
+      const link = screen.getByRole("link", { name: url });
+      expect(link).toHaveAttribute("href", url);
+      expect(link).toHaveAttribute("title", url);
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveClass(
         "min-w-0",
         "max-w-full",
-        "break-words"
+        "break-all",
+        "[overflow-wrap:anywhere]"
       );
     });
 
@@ -948,12 +970,27 @@ describe("ChatBubble", () => {
             header: "Pick a slot",
             body: "Choose a time",
             buttonText: "View slots",
+            sections: [
+              {
+                title: "Morning",
+                rows: [
+                  {
+                    id: "slot-1",
+                    title: "10:00 AM",
+                    description: "Available today",
+                  },
+                ],
+              },
+            ],
           }}
         />
       );
       expect(screen.getByText("Pick a slot")).toBeInTheDocument();
       expect(screen.getByText("Choose a time")).toBeInTheDocument();
       expect(screen.getByText("View slots")).toBeInTheDocument();
+      expect(screen.getByText("Morning")).toBeInTheDocument();
+      expect(screen.getByText("10:00 AM")).toBeInTheDocument();
+      expect(screen.getByText("Available today")).toBeInTheDocument();
     });
 
     it("renders template bubble with quick-reply buttons", () => {

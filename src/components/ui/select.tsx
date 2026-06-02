@@ -145,6 +145,7 @@ export type SelectContentProps = React.ComponentPropsWithoutRef<
    * can still read scrollTop/scrollHeight/clientHeight from it.
    */
   onViewportScrollEnd?: (event: React.UIEvent<HTMLDivElement>) => void;
+  hideScrollButtons?: boolean;
 };
 
 const BOTTOM_THRESHOLD_PX = 24;
@@ -157,6 +158,7 @@ const SelectContent = React.forwardRef(
       children,
       position = "popper",
       onViewportScrollEnd,
+      hideScrollButtons,
       ...props
     }: SelectContentProps,
     ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
@@ -230,7 +232,7 @@ const SelectContent = React.forwardRef(
           position={position}
           {...props}
         >
-          <SelectScrollUpButton />
+          {!hideScrollButtons && <SelectScrollUpButton />}
           <SelectPrimitive.Viewport
             ref={setViewport}
             data-select-viewport=""
@@ -242,7 +244,7 @@ const SelectContent = React.forwardRef(
           >
             {children}
           </SelectPrimitive.Viewport>
-          <SelectScrollDownButton />
+          {!hideScrollButtons && <SelectScrollDownButton />}
         </SelectPrimitive.Content>
       </SelectPrimitive.Portal>
     );

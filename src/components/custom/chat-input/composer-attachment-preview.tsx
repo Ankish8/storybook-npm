@@ -52,12 +52,13 @@ function ComposerAttachmentPreview({ file, onRemove }: ComposerAttachmentPreview
         </div>
       ) : isVideo ? (
         <div className="relative bg-black h-[200px]">
-          <video src={url} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-              <Play className="size-7 text-white fill-white ml-0.5" />
-            </div>
-          </div>
+          <video
+            src={url}
+            className="w-full h-full object-contain"
+            controls
+            playsInline
+            preload="metadata"
+          />
         </div>
       ) : isAudio ? (
         <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3 h-[80px]">

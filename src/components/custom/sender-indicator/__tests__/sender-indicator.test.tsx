@@ -39,7 +39,7 @@ describe("SenderIndicator", () => {
     expect(screen.getByText("AS")).toHaveClass("min-w-4", "text-center");
   });
 
-  it("shows the sender label when hovering the badge", async () => {
+  it("shows the source label when hovering the badge", async () => {
     const user = userEvent.setup();
     renderWithTooltip(
       <SenderIndicator sentBy={{ type: "agent", name: "Alex Smith" }} withTooltip />
@@ -48,11 +48,11 @@ describe("SenderIndicator", () => {
     await user.hover(screen.getByText("AS"));
 
     await waitFor(() => {
-      expect(screen.getByRole("tooltip")).toHaveTextContent("Alex Smith");
+      expect(screen.getByRole("tooltip")).toHaveTextContent("Agent");
     });
   });
 
-  it("wraps long sender labels inside viewport-safe tooltip width", async () => {
+  it("keeps source tooltips concise and non-wrapping", async () => {
     const user = userEvent.setup();
     const longName = "Nivet Customer Success Operations Manager";
 
@@ -63,17 +63,11 @@ describe("SenderIndicator", () => {
     await user.hover(screen.getByText("NC"));
 
     await waitFor(() => {
-      expect(screen.getByRole("tooltip")).toHaveTextContent(longName);
+      expect(screen.getByRole("tooltip")).toHaveTextContent("Agent");
       const tooltipContent = document.querySelector("[data-side='left']");
-      expect(tooltipContent).toHaveTextContent(longName);
-      expect(tooltipContent).toHaveClass(
-        "max-w-[calc(100vw-2rem)]",
-        "break-words"
-      );
-      expect(tooltipContent?.querySelector("p")).toHaveClass(
-        "max-w-full",
-        "break-words"
-      );
+      expect(tooltipContent).toHaveTextContent("Agent");
+      expect(tooltipContent).toHaveClass("whitespace-nowrap");
+      expect(tooltipContent?.querySelector("p")).toHaveClass("m-0");
     });
   });
 });

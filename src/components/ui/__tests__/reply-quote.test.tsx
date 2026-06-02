@@ -54,18 +54,31 @@ describe("ReplyQuote", () => {
     expect(screen.getByTestId("reply-quote")).toBeInTheDocument();
   });
 
-  it("truncates long text (has truncate class)", () => {
+  it("truncates long text inside a bounded quote", () => {
     const { container } = render(
       <ReplyQuote
         sender="A very long sender name that should be truncated"
         message="A very long message text that should also be truncated in the UI"
       />
     );
-    const paragraphs = container.querySelectorAll("p");
-    expect(paragraphs).toHaveLength(2);
-    paragraphs.forEach((p) => {
-      expect(p.className).toMatch(/\btw-truncate\b/);
-    });
+    expect(container.firstChild).toHaveClass("tw-max-w-full", "tw-min-w-0");
+    expect(container.querySelector("p")).toHaveClass("tw-truncate");
+    expect(screen.getByText(/A very long message text/)).toHaveClass(
+      "tw-overflow-hidden",
+      "tw-text-ellipsis",
+      "tw-whitespace-nowrap"
+    );
+  });
+
+  it("renders rich message content", () => {
+    render(
+      <ReplyQuote
+        sender="John"
+        message={<span data-testid="carousel-card-reply">Carousel card</span>}
+      />
+    );
+
+    expect(screen.getByTestId("carousel-card-reply")).toBeInTheDocument();
   });
 
   it("all <p> elements have m-0 for Bootstrap compatibility", () => {

@@ -48,6 +48,26 @@ function ChatInput({ expired = false, expiredMessage }: ChatInputProps) {
   const [replyingTo, setReplyingTo] = React.useState<{ messageId: string; sender: string; text: string } | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
+  const openFilePicker = React.useCallback((accept: string) => {
+    const input = fileInputRef.current
+    if (!input) return
+    input.accept = accept
+    input.value = ""
+    input.click()
+  }, [])
+
+  React.useEffect(() => {
+    const input = fileInputRef.current
+    if (!input) return undefined
+
+    const handleCancel = () => {
+      input.value = ""
+    }
+
+    input.addEventListener("cancel", handleCancel)
+    return () => input.removeEventListener("cancel", handleCancel)
+  }, [])
+
   /** Filter canned messages based on the current "/" query */
   const cannedQuery = composerText.startsWith("/") ? composerText.slice(1).toLowerCase() : ""
   const filteredCanned = React.useMemo(
@@ -186,40 +206,28 @@ function ChatInput({ expired = false, expiredMessage }: ChatInputProps) {
                 <DropdownMenuLabel>Attach Media</DropdownMenuLabel>
                 <DropdownMenuItem
                   onSelect={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.accept = "image/*"
-                      fileInputRef.current.click()
-                    }
+                    openFilePicker("image/*")
                   }}
                 >
                   <LucideImage className="size-4" /> Image
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.accept = "video/*"
-                      fileInputRef.current.click()
-                    }
+                    openFilePicker("video/*")
                   }}
                 >
                   <Play className="size-4" /> Video
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.accept = "audio/*"
-                      fileInputRef.current.click()
-                    }
+                    openFilePicker("audio/*")
                   }}
                 >
                   <Music className="size-4" /> Audio
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.accept = ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                      fileInputRef.current.click()
-                    }
+                    openFilePicker(".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx")
                   }}
                 >
                   <FileText className="size-4" /> Document

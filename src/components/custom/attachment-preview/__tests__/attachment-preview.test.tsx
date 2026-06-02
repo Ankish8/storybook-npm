@@ -34,8 +34,9 @@ describe("AttachmentPreview", () => {
     const video = container.querySelector("video");
     expect(video).toBeInTheDocument();
     expect(video).toHaveAttribute("src", "blob:mock-url");
-    // Should have the 0:00 timestamp
-    expect(screen.getByText("0:00")).toBeInTheDocument();
+    expect(video).toHaveAttribute("controls");
+    expect(video).toHaveAttribute("playsinline");
+    expect(video).toHaveAttribute("preload", "metadata");
   });
 
   it("renders audio preview for audio file", () => {

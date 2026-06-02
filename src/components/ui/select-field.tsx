@@ -344,6 +344,7 @@ const SelectField = React.forwardRef(
           </SelectTrigger>
           <SelectContent
             onViewportScrollEnd={hasMore !== false ? onScrollEnd : undefined}
+            hideScrollButtons={totalRendered === 0}
           >
             {/* Search input */}
             {searchable && (

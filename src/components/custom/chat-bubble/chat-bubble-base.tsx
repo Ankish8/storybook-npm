@@ -65,6 +65,78 @@ const maxWidthMap = {
   carousel: cn("max-w-[466px] w-full"),
 };
 
+const MESSAGE_BODY_TEXT_CLASS = cn(
+  "m-0 min-w-0 max-w-full break-all [overflow-wrap:anywhere]"
+);
+
+const URL_PATTERN = /https?:\/\/[^\s<]+/gi;
+const TRAILING_URL_PUNCTUATION = /[.,!?;:)\]}]+$/;
+
+const RECEIVER_TEXT_ONLY_MIN_WIDTH = "7rem";
+const SENDER_TEXT_ONLY_STATUS_MIN_WIDTH = "13rem";
+const SENDER_TEXT_ONLY_FAILED_MIN_WIDTH = "14rem";
+
+function splitTrailingUrlPunctuation(url: string): [string, string] {
+  const trailingPunctuation = url.match(TRAILING_URL_PUNCTUATION)?.[0] ?? "";
+
+  if (!trailingPunctuation) {
+    return [url, ""];
+  }
+
+  return [url.slice(0, -trailingPunctuation.length), trailingPunctuation];
+}
+
+function renderTextWithLinks(text: string, keyPrefix: string): React.ReactNode {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  URL_PATTERN.lastIndex = 0;
+
+  while ((match = URL_PATTERN.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    const [url, trailingPunctuation] = splitTrailingUrlPunctuation(match[0]);
+
+    nodes.push(
+      <a
+        key={`${keyPrefix}-url-${match.index}`}
+        href={url}
+        title={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="min-w-0 max-w-full break-all text-semantic-text-link underline [overflow-wrap:anywhere]"
+      >
+        {url}
+      </a>
+    );
+
+    if (trailingPunctuation) {
+      nodes.push(trailingPunctuation);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes.length ? nodes : text;
+}
+
+function renderMessageText(text: string): React.ReactNode {
+  return renderTextWithLinks(text, "message");
+}
+
+function renderManualContent(children: React.ReactNode): React.ReactNode {
+  return React.Children.map(children, (child, index) =>
+    typeof child === "string" ? renderTextWithLinks(child, `manual-${index}`) : child
+  );
+}
+
 function getTextOnlyMinWidthStyle(
   minWidth?: string
 ): React.CSSProperties | undefined {
@@ -390,9 +462,9 @@ function MessageModeReplyQuoteButton({
       <p className="text-[14px] font-semibold text-semantic-text-primary truncate leading-5 tracking-[0.014px] m-0">
         {replyTo.sender}
       </p>
-      <p className="text-[14px] text-semantic-text-muted truncate m-0">
+      <div className="text-[14px] text-semantic-text-muted truncate m-0">
         {replyTo.text}
-      </p>
+      </div>
     </button>
   );
 }
@@ -761,10 +833,10 @@ const ChatBubbleMessageMode = React.forwardRef<
   // For text-only bubbles, the block footer can be wider than the text content.
   // overflow-hidden on the bubble would clip the footer unless the bubble is
   // forced to be at least as wide as the widest possible footer:
-  //   - receiver / customer: just a timestamp → 7rem
+  //   - receiver / customer: just a timestamp
   //   - sender / agent, failed: "Failed" + Retry + bullet + timestamp → 14rem
-  //   - sender / agent, any other status: icon + label + bullet + timestamp → 11.5rem
-  //   - sender / agent, no status: just a timestamp → 7rem
+  //   - sender / agent, delivered/read: icon + label + bullet + timestamp → 13rem
+  //   - sender / agent, no status: just a timestamp
   const shouldUseInlineFooter = false;
   const isMessageReceiverTextOnly =
     msg.sender === "customer" && !hasMedia && hasText && !hasButtons;
@@ -774,13 +846,13 @@ const ChatBubbleMessageMode = React.forwardRef<
   // the reply-button absolute anchor matches the rendered bubble width).
   const isMessageTextOnly = isMessageReceiverTextOnly || isMessageSenderTextOnly;
   const messageTextOnlyMinWidth: string | undefined = isMessageReceiverTextOnly
-    ? "7rem"
+    ? RECEIVER_TEXT_ONLY_MIN_WIDTH
     : isMessageSenderTextOnly
       ? msg.status === "failed"
-        ? "14rem"
+        ? SENDER_TEXT_ONLY_FAILED_MIN_WIDTH
         : msg.status
-          ? "11.5rem"
-          : "7rem"
+          ? SENDER_TEXT_ONLY_STATUS_MIN_WIDTH
+          : RECEIVER_TEXT_ONLY_MIN_WIDTH
       : undefined;
 
   const shouldShowReplyIcon =
@@ -909,8 +981,13 @@ const ChatBubbleMessageMode = React.forwardRef<
         >
           {msg.type === "carousel" && hasText && (
             <div className="px-4 pt-3">
-              <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5">
-                {msg.text || mediaCaption}
+              <p
+                className={cn(
+                  MESSAGE_BODY_TEXT_CLASS,
+                  "text-[14px] leading-5"
+                )}
+              >
+                {renderMessageText(msg.text || mediaCaption)}
               </p>
             </div>
           )}
@@ -989,21 +1066,36 @@ const ChatBubbleMessageMode = React.forwardRef<
               <MessageModeReplyQuoteButton replyTo={msg.replyTo} />
             )}
             {msg.type === "template" && msg.templateHeaderText && !msg.media && (
-              <p className="text-[14px] font-semibold text-semantic-text-primary m-0 mb-1">
-                {msg.templateHeaderText}
+              <p
+                className={cn(
+                  MESSAGE_BODY_TEXT_CLASS,
+                  "mb-1 text-[14px] font-semibold text-semantic-text-primary"
+                )}
+              >
+                {renderMessageText(msg.templateHeaderText)}
               </p>
             )}
             {hasText && msg.type !== "carousel" && (
-              <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5">
-                {msg.text || mediaCaption}
+              <p
+                className={cn(
+                  MESSAGE_BODY_TEXT_CLASS,
+                  "text-[14px] leading-5"
+                )}
+              >
+                {renderMessageText(msg.text || mediaCaption)}
                 {shouldUseInlineFooter && (
                   <MessageModeDeliveryFooterInline msg={msg} />
                 )}
               </p>
             )}
             {msg.type === "template" && msg.templateFooterText && (
-              <p className="text-[12px] text-semantic-text-muted m-0 mt-1">
-                {msg.templateFooterText}
+              <p
+                className={cn(
+                  MESSAGE_BODY_TEXT_CLASS,
+                  "mt-1 text-[12px] text-semantic-text-muted"
+                )}
+              >
+                {renderMessageText(msg.templateFooterText)}
               </p>
             )}
             {isDocWithMeta && (
@@ -1240,10 +1332,10 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     const hasMedia = !!media;
     // Block footer everywhere. For text-only bubbles, the bubble gets a minWidth
     // sized to the widest possible footer so overflow-hidden never clips it:
-    //   - receiver: just a timestamp → 7rem
+    //   - receiver: just a timestamp
     //   - sender, failed: "Failed" + Retry + bullet + timestamp → 14rem
-    //   - sender, any other status: icon + label + bullet + timestamp → 11.5rem
-    //   - sender, no status: just a timestamp → 7rem
+    //   - sender, delivered/read: icon + label + bullet + timestamp → 13rem
+    //   - sender, no status: just a timestamp
     const useManualInlineFooter = false;
     const isManualReceiverTextOnly =
       variant === "receiver" && !hasMedia && !!children;
@@ -1254,13 +1346,13 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     const hasManualFailedFeedback =
       variant === "sender" && status === "failed" && !!failedMessage?.text;
     const manualTextOnlyMinWidth: string | undefined = isManualReceiverTextOnly
-      ? "7rem"
+      ? RECEIVER_TEXT_ONLY_MIN_WIDTH
       : isManualSenderTextOnly
         ? status === "failed"
-          ? "14rem"
+          ? SENDER_TEXT_ONLY_FAILED_MIN_WIDTH
           : status
-            ? "11.5rem"
-            : "7rem"
+            ? SENDER_TEXT_ONLY_STATUS_MIN_WIDTH
+            : RECEIVER_TEXT_ONLY_MIN_WIDTH
         : undefined;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
@@ -1391,8 +1483,13 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                 />
               )}
               {children && (
-                <p className="m-0 min-w-0 max-w-full break-words text-[14px] leading-5">
-                  {children}
+                <p
+                  className={cn(
+                    MESSAGE_BODY_TEXT_CLASS,
+                    "text-[14px] leading-5"
+                  )}
+                >
+                  {renderManualContent(children)}
                   {useManualInlineFooter && (
                     <LegacyDeliveryFooterInline
                       status={status}

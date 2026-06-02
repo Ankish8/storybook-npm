@@ -42,26 +42,13 @@ const AttachmentPreview = React.forwardRef(
             className="relative bg-[#0a0d12]"
             style={{ aspectRatio: "16/10" }}
           >
-            <video src={url} className="w-full h-full object-cover" />
-            {/* Center play overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="size-[56px] rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                <Play className="size-7 text-white fill-white ml-0.5" />
-              </div>
-            </div>
-            {/* Bottom timeline gradient */}
-            <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6 bg-gradient-to-t from-[#0a0d12]/70 to-transparent">
-              <div className="flex items-center gap-2">
-                <Play className="size-4 text-white" />
-                <span className="text-[12px] text-white/60" aria-hidden="true">
-                  &#9679;
-                </span>
-                <div className="flex-1 h-[3px] rounded-full bg-white/30" />
-                <span className="text-[12px] text-white tabular-nums">
-                  0:00
-                </span>
-              </div>
-            </div>
+            <video
+              src={url}
+              className="w-full h-full object-contain"
+              controls
+              playsInline
+              preload="metadata"
+            />
           </div>
         ) : isAudio ? (
           <div className="bg-semantic-bg-ui px-4 py-6 flex items-center gap-3">

@@ -200,6 +200,30 @@ describe("ChatComposer", () => {
     expect(dismissButton).toHaveAttribute("aria-label", "Dismiss reply");
   });
 
+  it("keeps dismiss reply button visible for long reply text", () => {
+    render(
+      <ChatComposer
+        reply={{
+          sender: "John",
+          message:
+            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ".repeat(
+              8
+            ),
+        }}
+        onDismissReply={() => {}}
+      />
+    );
+
+    const dismissButton = screen.getByRole("button", {
+      name: "Dismiss reply",
+    });
+
+    expect(dismissButton).toBeVisible();
+    expect(dismissButton.parentElement).toHaveClass(
+      "grid-cols-[minmax(0,1fr)_auto]"
+    );
+  });
+
   it("expired state has role=status", () => {
     render(<ChatComposer expired />);
     const statusRegion = screen.getByRole("status");

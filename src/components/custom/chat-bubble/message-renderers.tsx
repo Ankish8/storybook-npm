@@ -10,7 +10,6 @@ import {
   ChevronRight,
   ExternalLink,
   Reply,
-  MapPin,
   Phone,
   Mail,
   Building2,
@@ -441,26 +440,89 @@ function ReferralMedia({ referral }: { referral: ReferralPayload }) {
 
 /* ── LocationMedia ── */
 
-function LocationMedia({ location }: { location: LocationPayload }) {
+function StaticMapPreview() {
+  const filterId = React.useId().replace(/:/g, "")
+
   return (
-    <div>
-      {/* Static map placeholder */}
+    <svg
+      aria-hidden="true"
+      className="h-full w-full"
+      viewBox="0 0 388 303"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      <rect width="388" height="303" fill="var(--semantic-bg-ui)" />
+      <path d="M-22 168h58v36l85 52 58-70-49-64-99 48H-22z" fill="#D9E9B3" />
+      <path d="M243 109h101v51l-84-2-17-49z" fill="#F6E4CB" />
+      <path d="M176 67h54l17-41-54 13-17 28z" fill="#D7D6D6" />
+      <path d="M126 255 36 204v-34l99-48 49 64-58 69z" fill="#D7D6D6" />
+      <path
+        d="M-30 62h88l53 2h117l35-86 39-6v-40l35-25M-20 170h55l101-49 50 64 132 28 110 61M31 110l97-66v-92L66-134M36 204l89 51 116-16 65 77h102M118 357l107-12 12-106"
+        fill="none"
+        stroke="var(--semantic-bg-primary)"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M-30 62h88l53 2h117l35-86 39-6v-40l35-25M-20 170h55l101-49 50 64 132 28 110 61M31 110l97-66v-92L66-134M36 204l89 51 116-16 65 77h102M118 357l107-12 12-106"
+        fill="none"
+        stroke="#FFFFFF"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <g filter={`url(#${filterId})`}>
+        <path
+          d="M194 84c-22 0-40 18-40 40 0 30 40 78 40 78s40-48 40-78c0-22-18-40-40-40z"
+          fill="#F04438"
+        />
+        <circle cx="194" cy="124" r="14" fill="var(--semantic-bg-primary)" />
+      </g>
+      <defs>
+        <filter
+          id={filterId}
+          x="138"
+          y="76"
+          width="112"
+          height="142"
+          filterUnits="userSpaceOnUse"
+        >
+          <feDropShadow dx="0" dy="5" stdDeviation="5" floodOpacity="0.22" />
+        </filter>
+      </defs>
+    </svg>
+  )
+}
+
+function LocationMedia({ location }: { location: LocationPayload }) {
+  const openGoogleMaps = React.useCallback(() => {
+    const url = `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`
+    window.open(url, "_blank", "noopener,noreferrer")
+  }, [location.latitude, location.longitude])
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault()
+        openGoogleMaps()
+      }
+    },
+    [openGoogleMaps]
+  )
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={openGoogleMaps}
+      onKeyDown={handleKeyDown}
+    >
       <div
         className="w-full bg-semantic-bg-ui flex items-center justify-center relative overflow-hidden"
         style={{ height: 180 }}
       >
-        <div className="absolute inset-0 bg-semantic-bg-ui" />
-        {/* Crosshair grid lines to suggest a map */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-semantic-text-muted" />
-          <div className="absolute top-1/2 left-0 right-0 h-px bg-semantic-text-muted" />
-        </div>
-        <div className="relative flex flex-col items-center gap-1">
-          <MapPin className="size-8 text-semantic-error-primary fill-semantic-error-primary" />
-          <div className="size-2 rounded-full bg-semantic-error-primary/30" />
-        </div>
+        <StaticMapPreview />
       </div>
-      {/* Location details */}
       <div className="px-3 pt-2.5 pb-1">
         {location.name && (
           <p className="m-0 text-[14px] font-semibold text-semantic-text-primary leading-5">
@@ -533,6 +595,10 @@ function ContactMedia({ contact }: { contact: ContactPayload }) {
 /* ── ListReplyMedia ── */
 
 function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
+  const hasSections = Boolean(
+    listReply.sections?.some((section) => section.rows.length > 0)
+  )
+
   return (
     <div className="px-3 pt-3 pb-1">
       {listReply.header && (
@@ -556,6 +622,36 @@ function ListReplyMedia({ listReply }: { listReply: ListReplyPayload }) {
         <ListOrdered className="size-4" />
         {listReply.buttonText}
       </button>
+      {hasSections && (
+        <div className="mt-2 overflow-hidden rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary">
+          {listReply.sections?.map((section, sectionIndex) => (
+            <div
+              key={`${section.title}-${sectionIndex}`}
+              className="border-b border-solid border-semantic-border-layout last:border-b-0"
+            >
+              {section.title && (
+                <p className="m-0 bg-semantic-bg-ui px-3 py-2 text-[12px] font-semibold uppercase tracking-wide text-semantic-text-muted">
+                  {section.title}
+                </p>
+              )}
+              <div className="divide-y divide-solid divide-semantic-border-layout">
+                {section.rows.map((row) => (
+                  <div key={row.id} className="px-3 py-2.5">
+                    <p className="m-0 break-words text-[14px] font-medium leading-5 text-semantic-text-primary">
+                      {row.title}
+                    </p>
+                    {row.description && (
+                      <p className="m-0 mt-0.5 break-words text-[12px] leading-4 text-semantic-text-muted">
+                        {row.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

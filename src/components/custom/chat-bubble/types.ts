@@ -57,8 +57,8 @@ export type ShowReplyOn = "customer" | "agent" | "both";
 export interface ChatBubbleReply {
   /** Name of the person being replied to */
   sender: string;
-  /** The quoted message text */
-  message: string;
+  /** The quoted message content */
+  message: React.ReactNode;
   /** ID of the original message for scroll-to behavior */
   messageId?: string;
 }
@@ -162,7 +162,7 @@ export interface ChatBubbleMessageProps extends HtmlDiv {
    * `ChatMessage` from `../chat-types`. Relevant to **source badges** (bot / campaign / API):
    * - `sender` must be `"agent"` for a header badge; use `senderName?` and `sentBy?`.
    * - `sentBy.type` — `bot` | `campaign` | `api` | `agent` (see `SenderIndicator`).
-   * - `sentBy.name` — tooltips and, for `type: "agent"`, initials in the circle.
+   * - `sentBy.name` — for `type: "agent"`, initials in the circle.
    * All other fields (`id`, `text`, `time`, `type`, `status`, `media`, …) drive body and footer.
    */
   message: ChatMessage;
@@ -219,7 +219,7 @@ export interface ChatBubbleFlatBase extends Omit<
    */
   sentBy?: { type: SentByType; name?: string };
   /** Optional reply-quote block (rendered above body). */
-  replyTo?: { sender: string; text: string; messageId?: string };
+  replyTo?: { sender: string; text: React.ReactNode; messageId?: string };
   /** Reply control callback; fires for the side(s) selected by `showReplyOn`. */
   onReplyTo?: (payload: ReplyToPayload) => void;
   /**

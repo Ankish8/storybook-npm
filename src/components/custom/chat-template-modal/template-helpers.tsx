@@ -57,7 +57,7 @@ export function VarRow({
       <TextField
         wrapperClassName="flex-1"
         placeholder="Enter value"
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
         onBlur={onBlur}
         error={error}
