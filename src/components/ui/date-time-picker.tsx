@@ -809,6 +809,19 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       []
     );
 
+    const handleCalendarSelectTriggerPointerDown = React.useCallback(
+      (
+        select: CalendarSelect,
+        event: React.PointerEvent<HTMLButtonElement>
+      ) => {
+        if (openCalendarSelect !== select) return;
+
+        event.preventDefault();
+        setOpenCalendarSelect(null);
+      },
+      [openCalendarSelect]
+    );
+
     const setTriggerRef = React.useCallback(
       (node: HTMLDivElement | null) => {
         triggerRef.current = node;
@@ -1075,6 +1088,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     data-date-time-picker-calendar-select-trigger=""
                     aria-label="Month"
                     className={CALENDAR_SELECT_TRIGGER_CLASS}
+                  onPointerDown={(event) =>
+                    handleCalendarSelectTriggerPointerDown("month", event)
+                  }
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -1129,6 +1145,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     data-date-time-picker-calendar-select-trigger=""
                     aria-label="Year"
                     className={CALENDAR_SELECT_TRIGGER_CLASS}
+                  onPointerDown={(event) =>
+                    handleCalendarSelectTriggerPointerDown("year", event)
+                  }
                   >
                     <SelectValue />
                   </SelectTrigger>

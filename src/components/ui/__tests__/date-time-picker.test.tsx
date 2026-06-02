@@ -587,6 +587,35 @@ describe("DateTimePicker", () => {
     });
   });
 
+  it("toggles a calendar dropdown closed when its trigger is clicked again", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+
+    const yearTrigger = screen.getByLabelText("Year");
+
+    await user.click(yearTrigger);
+    expect(await screen.findByRole("option", { name: "2027" })).toBeInTheDocument();
+
+    fireEvent.pointerDown(yearTrigger);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("option", { name: "2027" })
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it("closes calendar dropdowns when clicking outside", async () => {
     const user = userEvent.setup();
 
