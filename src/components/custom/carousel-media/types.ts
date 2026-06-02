@@ -22,8 +22,8 @@ export interface CarouselCard {
   mediaType?: "image" | "video";
   /** Poster image shown before a video plays. Only applies when mediaType is "video" */
   thumbnailUrl?: string;
-  /** Card title text */
-  title: string;
+  /** Card title text or rich preview content */
+  title: string | React.ReactNode;
   /** Action buttons displayed below the title */
   buttons?: CarouselCardButton[];
 }

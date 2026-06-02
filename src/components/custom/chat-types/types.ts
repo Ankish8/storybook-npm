@@ -81,6 +81,9 @@ export type TemplateDef = {
 export type VarMap = Record<string, string>
 export type CardVarMap = Record<number, { body: VarMap; button: VarMap }>
 
+/** Attachment kind for media payloads (template headers, carousel cards, etc.). */
+export type MediaAttachmentType = "image" | "video" | "document"
+
 export type MediaPayload = {
   url: string
   thumbnailUrl?: string
@@ -89,6 +92,10 @@ export type MediaPayload = {
   fileSize?: string
   pageCount?: number
   duration?: string
+  /** Visual attachment kind when multiple renderers share one media slot (defaults to image). */
+  mediaType?: MediaAttachmentType
+  /** When set (e.g. Live Chat), click opens fullscreen preview (same intent as video-media `opensPreviewOnClick`). */
+  onActivate?: () => void
   caption?: string
   images?: Array<{
     url: string
@@ -219,6 +226,16 @@ export type ChatMessage = {
    * WhatsApp spec). Only used when `type === "template"`.
    */
   templateFooterText?: string
+  /**
+   * Rich body content for send-template preview (placeholder highlighting).
+   * When set, rendered instead of `text` for template messages.
+   */
+  textContent?: ReactNode
+  /**
+   * Rich text-header content for send-template preview. When set, rendered
+   * instead of `templateHeaderText` for template messages.
+   */
+  templateHeaderContent?: ReactNode
 }
 
 export type Contact = {

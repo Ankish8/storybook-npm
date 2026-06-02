@@ -76,6 +76,36 @@ const RECEIVER_TEXT_ONLY_MIN_WIDTH = "7rem";
 const SENDER_TEXT_ONLY_STATUS_MIN_WIDTH = "13rem";
 const SENDER_TEXT_ONLY_FAILED_MIN_WIDTH = "14rem";
 
+type ChatBubbleRenderableMessage = ChatMessage & {
+  textContent?: React.ReactNode;
+  templateHeaderContent?: React.ReactNode;
+  media?: ChatMessage["media"] & {
+    mediaType?: "image" | "video" | "document";
+  };
+};
+
+function shouldShowLegacyDeliveryFooter(
+  variant: "sender" | "receiver",
+  status: DeliveryStatus | undefined,
+  timestamp: string
+): boolean {
+  const hasTime = Boolean(timestamp?.trim());
+  if (variant === "sender") {
+    return hasTime || Boolean(status);
+  }
+  return hasTime;
+}
+
+function shouldShowMessageDeliveryFooter(
+  msg: ChatBubbleRenderableMessage
+): boolean {
+  const hasTime = Boolean(msg.time?.trim());
+  if (msg.sender === "agent") {
+    return hasTime || Boolean(msg.status);
+  }
+  return hasTime;
+}
+
 function splitTrailingUrlPunctuation(url: string): [string, string] {
   const trailingPunctuation = url.match(TRAILING_URL_PUNCTUATION)?.[0] ?? "";
 
@@ -129,6 +159,15 @@ function renderTextWithLinks(text: string, keyPrefix: string): React.ReactNode {
 
 function renderMessageText(text: string): React.ReactNode {
   return renderTextWithLinks(text, "message");
+}
+
+function renderMessageContent(
+  content: React.ReactNode,
+  keyPrefix: string
+): React.ReactNode {
+  return typeof content === "string"
+    ? renderTextWithLinks(content, keyPrefix)
+    : content;
 }
 
 function renderManualContent(children: React.ReactNode): React.ReactNode {
@@ -297,6 +336,10 @@ function LegacyDeliveryFooter({
   timestamp: string;
   variant: "sender" | "receiver";
 }) {
+  if (!shouldShowLegacyDeliveryFooter(variant, status, timestamp)) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
@@ -474,7 +517,15 @@ function MessageModeReplyQuoteButton({
   );
 }
 
-function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
+function MessageModeDeliveryFooter({
+  msg,
+}: {
+  msg: ChatBubbleRenderableMessage;
+}) {
+  if (!shouldShowMessageDeliveryFooter(msg)) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
@@ -577,7 +628,15 @@ function MessageModeDeliveryFooter({ msg }: { msg: ChatMessage }) {
   );
 }
 
-function MessageModeDeliveryFooterInline({ msg }: { msg: ChatMessage }) {
+function MessageModeDeliveryFooterInline({
+  msg,
+}: {
+  msg: ChatBubbleRenderableMessage;
+}) {
+  if (!shouldShowMessageDeliveryFooter(msg)) {
+    return null;
+  }
+
   const isFailed = msg.status === "failed";
   const isQueued = msg.status === "queued";
   return (
@@ -739,7 +798,7 @@ function TemplateButton({
 }
 
 function computeMessageBubbleLayout(
-  msg: ChatMessage,
+  msg: ChatBubbleRenderableMessage,
   // Reference the module-level constant (which IS prefixed by the CLI transformer)
   // rather than a bare string literal here (which the transformer would skip).
   textMaxWidthClassName: string = DEFAULT_TEXT_MAX_WIDTH
@@ -754,7 +813,7 @@ function computeMessageBubbleLayout(
     msg.type !== "text" &&
     (msg.type !== "template" || !!msg.media);
   const mediaCaption = msg.media?.caption;
-  const hasText = !!(msg.text || mediaCaption);
+  const hasText = !!(msg.text || msg.textContent || mediaCaption);
   const isDocWithMeta = msg.type === "otherDoc" && msg.media;
 
   const isTemplateWithMedia = msg.type === "template" && !!msg.media;
@@ -801,7 +860,7 @@ function computeMessageBubbleLayout(
 const ChatBubbleMessageMode = React.forwardRef<
   HTMLDivElement,
   {
-    message: ChatMessage;
+    message: ChatBubbleRenderableMessage;
     replyParticipantName?: string;
     onReplyClick?: (messageId: string) => void;
     onReplyTo?: (payload: ReplyToPayload) => void;
@@ -831,6 +890,10 @@ const ChatBubbleMessageMode = React.forwardRef<
     bubbleWidth,
     hasButtons,
   } = computeMessageBubbleLayout(msg, textMaxWidthClassName);
+  const messageBodyContent = msg.textContent ?? msg.text ?? mediaCaption ?? "";
+  const templateHeaderContent =
+    msg.templateHeaderContent ?? msg.templateHeaderText;
+  const templateMediaKind = msg.media?.mediaType;
   const hasFailedFeedback =
     msg.sender === "agent" &&
     msg.status === "failed" &&
@@ -994,18 +1057,37 @@ const ChatBubbleMessageMode = React.forwardRef<
                   "text-[14px] leading-5"
                 )}
               >
-                {renderMessageText(msg.text || mediaCaption || "")}
+                {renderMessageContent(messageBodyContent, "carousel-message")}
               </p>
             </div>
           )}
           {msg.type === "image" && msg.media && (
             <ImageMedia media={msg.media} />
           )}
-          {msg.type === "template" && msg.media && (msg.media.duration ? (
-            <VideoMedia media={msg.media} />
-          ) : (
-            <ImageMedia media={msg.media} />
-          ))}
+          {msg.type === "template" &&
+            msg.media &&
+            (templateMediaKind === "video" || msg.media.duration ? (
+              <VideoMedia media={msg.media} />
+            ) : templateMediaKind === "document" ? (
+              <DocMedia
+                variant="file"
+                filename={msg.media.filename}
+                fileType={msg.media.fileType}
+                pageCount={msg.media.pageCount}
+                fileSize={msg.media.fileSize}
+                onDownload={() => {
+                  if (msg.media?.url) {
+                    window.open(
+                      msg.media.url,
+                      "_blank",
+                      "noopener,noreferrer"
+                    );
+                  }
+                }}
+              />
+            ) : (
+              <ImageMedia media={msg.media} />
+            ))}
           {msg.type === "video" && msg.media && (
             <VideoMedia media={msg.media} />
           )}
@@ -1075,14 +1157,14 @@ const ChatBubbleMessageMode = React.forwardRef<
                 onReplyClick={onReplyClick}
               />
             )}
-            {msg.type === "template" && msg.templateHeaderText && !msg.media && (
+            {msg.type === "template" && templateHeaderContent && !msg.media && (
               <p
                 className={cn(
                   MESSAGE_BODY_TEXT_CLASS,
                   "mb-1 text-[14px] font-semibold text-semantic-text-primary"
                 )}
               >
-                {renderMessageText(msg.templateHeaderText)}
+                {renderMessageContent(templateHeaderContent, "template-header")}
               </p>
             )}
             {hasText && msg.type !== "carousel" && (
@@ -1092,7 +1174,7 @@ const ChatBubbleMessageMode = React.forwardRef<
                   "text-[14px] leading-5"
                 )}
               >
-                {renderMessageText(msg.text || mediaCaption || "")}
+                {renderMessageContent(messageBodyContent, "message")}
                 {shouldUseInlineFooter && (
                   <MessageModeDeliveryFooterInline msg={msg} />
                 )}

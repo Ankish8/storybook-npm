@@ -4,6 +4,10 @@ import { Reply, ExternalLink, ChevronLeft, ChevronRight, Play, Pause } from "luc
 import { cn } from "../../../lib/utils";
 import type { CarouselCard, CarouselMediaProps } from "./types";
 
+function carouselCardTitleLabel(title: CarouselCard["title"]): string {
+  return typeof title === "string" && title.trim() ? title : "Carousel card";
+}
+
 /* ── CardMedia ──
  * Per-card media renderer. Owns its own <video> ref + playing state so each
  * card plays independently — extracted as a subcomponent so the parent
@@ -18,7 +22,7 @@ function CardMedia({ card, height }: { card: CarouselCard; height: number }) {
     return (
       <img
         src={card.url}
-        alt={card.title}
+        alt={carouselCardTitleLabel(card.title)}
         className="w-full object-cover"
         style={{ height }}
       />
@@ -47,7 +51,7 @@ function CardMedia({ card, height }: { card: CarouselCard; height: number }) {
         playsInline
         muted
         onEnded={() => setPlaying(false)}
-        aria-label={card.title}
+        aria-label={carouselCardTitleLabel(card.title)}
         className="w-full h-full object-cover pointer-events-none"
       />
       <button
