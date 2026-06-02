@@ -1,6 +1,6 @@
 import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -526,6 +526,8 @@ describe("DateTimePicker", () => {
 
     expect(screen.getByLabelText("Month")).toHaveClass(
       "!w-[90px]",
+      "!min-w-[90px]",
+      "!px-3",
       "!gap-[6px]"
     );
 
@@ -538,10 +540,83 @@ describe("DateTimePicker", () => {
     );
 
     await user.click(screen.getByRole("option", { name: "Jun" }));
-    await user.click(screen.getByLabelText("Year"));
-    await user.click(screen.getByRole("option", { name: "2027" }));
+    fireEvent.click(screen.getByLabelText("Year"));
 
-    expect(screen.getByLabelText("June 1, 2027")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("option", { name: "2027" })
+    ).toBeInTheDocument();
+  });
+
+  it("keeps only one calendar dropdown open and closes it from calendar controls", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+    await user.click(screen.getByLabelText("Month"));
+
+    expect(screen.getByRole("option", { name: "Jun" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("Year"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("option", { name: "Jun" })
+      ).not.toBeInTheDocument();
+    });
+    expect(
+      await screen.findByRole("option", { name: "2027" })
+    ).toBeInTheDocument();
+
+    fireEvent.pointerDown(
+      screen.getByRole("button", { name: "Previous month", hidden: true })
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("option", { name: "2027" })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("closes calendar dropdowns when clicking outside", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <div>
+        <DateTimePicker
+          defaultValue={{
+            date: mayTwelve,
+            startTime: "10:30:00",
+            endTime: "12:30:00",
+          }}
+        />
+        <button type="button">Outside</button>
+      </div>
+    );
+
+    const outsideButton = screen.getByText("Outside");
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+    await user.click(screen.getByLabelText("Month"));
+
+    expect(screen.getByRole("option", { name: "Jun" })).toBeInTheDocument();
+
+    fireEvent.mouseDown(outsideButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("option", { name: "Jun" })
+      ).not.toBeInTheDocument();
+    });
   });
 
   it("applies custom className", () => {

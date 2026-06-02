@@ -36,9 +36,12 @@ const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
 const CALENDAR_SELECT_CONTENT_SELECTOR =
   "[data-date-time-picker-calendar-select]";
-const CALENDAR_SELECT_TRIGGER_CLASS = "!w-[90px] !gap-[6px]";
+const CALENDAR_SELECT_TRIGGER_SELECTOR =
+  "[data-date-time-picker-calendar-select-trigger]";
+const CALENDAR_SELECT_TRIGGER_CLASS = "!w-[90px] !min-w-[90px] !gap-[6px] !px-3";
 const CALENDAR_SELECT_CONTENT_CLASS =
   "z-[10060] w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)] max-h-[min(16rem,var(--radix-select-content-available-height))]";
+type CalendarSelect = "month" | "year";
 const DATE_TIME_INPUT_SEGMENT_RANGES = {
   day: [0, 2],
   month: [3, 5],
@@ -714,6 +717,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       formatDateForDisplay(currentValue.date, currentValue.startTime)
     );
     const [isDateInputFocused, setIsDateInputFocused] = React.useState(false);
+    const [openCalendarSelect, setOpenCalendarSelect] =
+      React.useState<CalendarSelect | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const triggerRef = React.useRef<HTMLDivElement | null>(null);
     const popoverRef = React.useRef<HTMLDivElement | null>(null);
@@ -784,9 +789,24 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           setInternalOpen(nextOpen);
         }
 
+        if (!nextOpen) {
+          setOpenCalendarSelect(null);
+        }
+
         onOpenChange?.(nextOpen);
       },
       [isOpenControlled, onOpenChange]
+    );
+
+    const handleCalendarSelectOpenChange = React.useCallback(
+      (select: CalendarSelect, nextOpen: boolean) => {
+        setOpenCalendarSelect((currentSelect) => {
+          if (nextOpen) return select;
+
+          return currentSelect === select ? null : currentSelect;
+        });
+      },
+      []
     );
 
     const setTriggerRef = React.useCallback(
@@ -818,6 +838,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     }, [displayValue, isDateInputFocused]);
 
     React.useEffect(() => {
+      if (!open) {
+        setOpenCalendarSelect(null);
+      }
+    }, [open]);
+
+    React.useEffect(() => {
       if (!open) return;
 
       const handlePointerDown = (event: MouseEvent) => {
@@ -826,12 +852,14 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           !isPointerInsideElement(event, popoverRef.current) &&
           !isPointerInsideSelector(event, CALENDAR_SELECT_CONTENT_SELECTOR)
         ) {
+          setOpenCalendarSelect(null);
           setOpen(false);
         }
       };
 
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "Escape") {
+          setOpenCalendarSelect(null);
           setOpen(false);
         }
       };
@@ -998,7 +1026,16 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             zIndex: 10050,
             visibility: isPositioned ? undefined : "hidden",
           }}
-          onPointerDown={(event) => event.stopPropagation()}
+          onPointerDown={(event) => {
+            if (
+              event.target instanceof Element &&
+              !event.target.closest(CALENDAR_SELECT_TRIGGER_SELECTOR)
+            ) {
+              setOpenCalendarSelect(null);
+            }
+
+            event.stopPropagation();
+          }}
           onMouseDown={(event) => event.stopPropagation()}
           onWheel={(event) => event.stopPropagation()}
           onTouchMove={(event) => event.stopPropagation()}
@@ -1018,6 +1055,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   Month
                 </label>
                 <Select
+                  open={openCalendarSelect === "month"}
+                  onOpenChange={(nextOpen) =>
+                    handleCalendarSelectOpenChange("month", nextOpen)
+                  }
                   value={visibleMonth.getMonth().toString()}
                   onValueChange={(nextMonth) =>
                     updateVisibleMonth(
@@ -1031,6 +1072,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 >
                   <SelectTrigger
                     id={`${triggerId}-month`}
+                    data-date-time-picker-calendar-select-trigger=""
                     aria-label="Month"
                     className={CALENDAR_SELECT_TRIGGER_CLASS}
                   >
@@ -1067,6 +1109,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   Year
                 </label>
                 <Select
+                  open={openCalendarSelect === "year"}
+                  onOpenChange={(nextOpen) =>
+                    handleCalendarSelectOpenChange("year", nextOpen)
+                  }
                   value={visibleMonth.getFullYear().toString()}
                   onValueChange={(nextYear) =>
                     updateVisibleMonth(
@@ -1080,6 +1126,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 >
                   <SelectTrigger
                     id={`${triggerId}-year`}
+                    data-date-time-picker-calendar-select-trigger=""
                     aria-label="Year"
                     className={CALENDAR_SELECT_TRIGGER_CLASS}
                   >
