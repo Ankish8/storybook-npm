@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Textarea } from "../textarea";
 
 describe("Textarea", () => {
@@ -228,6 +228,34 @@ describe("Textarea", () => {
     render(<Textarea defaultValue="default text" />);
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveValue("default text");
+  });
+
+  it("prevents consecutive spaces without moving the cursor to the end", async () => {
+    const ControlledTextarea = () => {
+      const [value, setValue] = React.useState("hello world again");
+
+      return <Textarea value={value} onChange={(e) => setValue(e.target.value)} />;
+    };
+
+    render(<ControlledTextarea />);
+
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    const setNativeValue = Object.getOwnPropertyDescriptor(
+      HTMLTextAreaElement.prototype,
+      "value"
+    )?.set;
+
+    expect(setNativeValue).toBeDefined();
+
+    setNativeValue?.call(textarea, "hello  world again");
+    textarea.setSelectionRange(7, 7);
+    fireEvent.change(textarea);
+
+    expect(textarea).toHaveValue("hello world again");
+    await waitFor(() => {
+      expect(textarea.selectionStart).toBe(6);
+      expect(textarea.selectionEnd).toBe(6);
+    });
   });
 
   // 16. Resize prop applies correct class

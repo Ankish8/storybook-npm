@@ -10,6 +10,11 @@ import { cn } from "@/lib/utils";
 const normalizeTextareaSpaces = (value: string): string =>
   String(value).replace(/ {2,}/g, " ");
 
+const getNormalizedSelectionOffset = (
+  value: string,
+  selectionOffset: number | null
+): number => normalizeTextareaSpaces(value.slice(0, selectionOffset ?? value.length)).length;
+
 // Default counter length: normalized text length (spaces count; duplicate spaces do not).
 const countNonWhitespaceChars = (value: string): number =>
   normalizeTextareaSpaces(value).length;
@@ -92,7 +97,7 @@ export interface TextareaProps
   labelClassName?: string;
 }
 
-const Textarea = React.forwardRef(
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       className,
@@ -118,8 +123,27 @@ const Textarea = React.forwardRef(
       id,
       ...props
     }: TextareaProps,
-    ref: React.ForwardedRef<HTMLTextAreaElement>
+    ref
   ) => {
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const pendingSelectionRef = React.useRef<[number, number] | null>(null);
+
+    const setTextareaRef = React.useCallback(
+      (node: HTMLTextAreaElement | null) => {
+        textareaRef.current = node;
+
+        if (typeof ref === "function") {
+          ref(node);
+          return;
+        }
+
+        if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref]
+    );
+
     // Internal state for character count in uncontrolled mode (normalized)
     const [internalValue, setInternalValue] = React.useState(() =>
       normalizeTextareaSpaces(String(defaultValue ?? ""))
@@ -131,12 +155,38 @@ const Textarea = React.forwardRef(
       ? normalizeTextareaSpaces(String(value ?? ""))
       : internalValue;
 
+    const restoreSelection = React.useCallback(() => {
+      const pendingSelection = pendingSelectionRef.current;
+      const textarea = textareaRef.current;
+
+      if (!pendingSelection || !textarea) return;
+
+      pendingSelectionRef.current = null;
+      textarea.setSelectionRange(...pendingSelection);
+    }, []);
+
+    React.useLayoutEffect(() => {
+      restoreSelection();
+    });
+
     // Derive state from props
     const derivedState = error ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled — collapse duplicate spaces
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const normalized = normalizeTextareaSpaces(e.target.value);
+      const nextValue = e.target.value;
+      const normalized = normalizeTextareaSpaces(nextValue);
+
+      if (normalized !== nextValue) {
+        const nextSelection: [number, number] = [
+          getNormalizedSelectionOffset(nextValue, e.target.selectionStart),
+          getNormalizedSelectionOffset(nextValue, e.target.selectionEnd),
+        ];
+        pendingSelectionRef.current = nextSelection;
+        e.target.setSelectionRange(...nextSelection);
+        requestAnimationFrame(restoreSelection);
+      }
+
       if (!isControlled) {
         setInternalValue(normalized);
       }
@@ -194,7 +244,7 @@ const Textarea = React.forwardRef(
 
         {/* Textarea */}
         <textarea
-          ref={ref}
+          ref={setTextareaRef}
           id={textareaId}
           rows={rows}
           className={cn(
