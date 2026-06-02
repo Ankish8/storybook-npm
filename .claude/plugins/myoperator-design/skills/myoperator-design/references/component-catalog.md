@@ -453,6 +453,7 @@ import { Mail } from "lucide-react"
 > A date and time picker input with a calendar popover and start/end time fields
 
 **Install**: `npx myoperator-ui add date-time-picker`
+**Requires**: `select` (auto-installed)
 
 ---
 
