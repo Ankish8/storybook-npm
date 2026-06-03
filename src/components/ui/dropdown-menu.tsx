@@ -23,6 +23,25 @@ const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
+const renderDropdownMenuItemChildren = (children: React.ReactNode) =>
+  React.Children.toArray(children).map((child, index) => {
+    if (React.isValidElement(child)) {
+      return child;
+    }
+
+    const content = typeof child === "string" ? child.trim() : child;
+    if (content === "") return null;
+
+    return (
+      <span
+        key={index}
+        className="min-w-0 flex-1 whitespace-normal break-words leading-normal"
+      >
+        {content}
+      </span>
+    );
+  });
+
 const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, ...props }: React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
     inset?: boolean;
   }, ref: React.Ref<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>>) => (
@@ -46,7 +65,7 @@ const DropdownMenuSubContent = React.forwardRef(({ className, ...props }: React.
   <DropdownMenuPrimitive.SubContent
     ref={ref}
     className={cn(
-      "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] min-w-[8rem] overflow-y-auto overscroll-contain rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[8rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className
     )}
     {...props}
@@ -61,7 +80,7 @@ const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...pr
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] min-w-[8rem] overflow-y-auto overscroll-contain rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md",
+        "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[8rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
@@ -81,19 +100,23 @@ const DropdownMenuItem = React.forwardRef(({ className, inset, children, descrip
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&>svg]:shrink-0",
       inset && "pl-8",
       className
     )}
     {...props}
   >
     {description ? (
-      <div className="flex flex-1 flex-col">
-        <span>{children}</span>
-        <span className="text-xs text-semantic-text-muted">{description}</span>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="min-w-0 whitespace-normal break-words leading-normal">
+          {renderDropdownMenuItemChildren(children)}
+        </span>
+        <span className="min-w-0 whitespace-normal break-words text-xs text-semantic-text-muted">
+          {description}
+        </span>
       </div>
     ) : (
-      children
+      renderDropdownMenuItemChildren(children)
     )}
     {suffix && (
       <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
@@ -111,7 +134,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checke
   <DropdownMenuPrimitive.CheckboxItem
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex min-w-0 cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     checked={checked}
@@ -123,12 +146,16 @@ const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checke
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {description ? (
-      <div className="flex flex-1 flex-col">
-        <span>{children}</span>
-        <span className="text-xs text-semantic-text-muted">{description}</span>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="min-w-0 whitespace-normal break-words leading-normal">
+          {renderDropdownMenuItemChildren(children)}
+        </span>
+        <span className="min-w-0 whitespace-normal break-words text-xs text-semantic-text-muted">
+          {description}
+        </span>
       </div>
     ) : (
-      children
+      renderDropdownMenuItemChildren(children)
     )}
     {suffix && (
       <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
@@ -147,7 +174,7 @@ const DropdownMenuRadioItem = React.forwardRef(({ className, children, descripti
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex min-w-0 cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
@@ -158,12 +185,16 @@ const DropdownMenuRadioItem = React.forwardRef(({ className, children, descripti
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {description ? (
-      <div className="flex flex-1 flex-col">
-        <span>{children}</span>
-        <span className="text-xs text-semantic-text-muted">{description}</span>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="min-w-0 whitespace-normal break-words leading-normal">
+          {renderDropdownMenuItemChildren(children)}
+        </span>
+        <span className="min-w-0 whitespace-normal break-words text-xs text-semantic-text-muted">
+          {description}
+        </span>
       </div>
     ) : (
-      children
+      renderDropdownMenuItemChildren(children)
     )}
     {suffix && (
       <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>

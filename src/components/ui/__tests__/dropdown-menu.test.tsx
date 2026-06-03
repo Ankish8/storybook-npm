@@ -133,6 +133,47 @@ describe("DropdownMenuItem", () => {
     await user.click(screen.getByText("Open"));
     expect(screen.getByTestId("inset-item")).toHaveClass("pl-8");
   });
+
+  it("wraps long item labels inside the menu width", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem data-testid="long-item">
+            Profile ProfileProfile ProfileProfile ProfileProfile
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    const text = screen.getByTestId("long-item").querySelector("span");
+    expect(text).toHaveClass("min-w-0");
+    expect(text).toHaveClass("whitespace-normal");
+    expect(text).toHaveClass("break-words");
+  });
+
+  it("keeps icons inline with short labels", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem data-testid="icon-item">
+            <svg data-testid="item-icon" />
+            Profile
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+    await user.click(screen.getByText("Open"));
+    const item = screen.getByTestId("icon-item");
+    expect(item).toHaveClass("items-center");
+    expect(screen.getByTestId("item-icon").parentElement).toBe(item);
+    expect(screen.getByText("Profile")).toHaveClass("break-words");
+  });
 });
 
 describe("DropdownMenuItem description and suffix", () => {
@@ -512,6 +553,10 @@ describe("DropdownMenuContent styling", () => {
     expect(content).toHaveClass(
       "max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))]"
     );
+    expect(content).toHaveClass(
+      "max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))]"
+    );
+    expect(content).toHaveClass("overflow-x-hidden");
     expect(content).toHaveClass("overflow-y-auto");
     expect(content).toHaveClass("overscroll-contain");
     expect(content).toHaveClass("rounded-md");
