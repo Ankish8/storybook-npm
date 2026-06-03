@@ -1,10 +1,123 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "storybook/test";
 import { DocMedia } from "./doc-media";
+
+const SAMPLE_PDF_CONTENT = `%PDF-1.1
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 144] /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 54 >>
+stream
+BT
+/F1 18 Tf
+24 92 Td
+(Doc Media sample file) Tj
+ET
+endstream
+endobj
+trailer
+<< /Root 1 0 R >>
+%%EOF`;
+
+const MIME_TYPE_BY_EXTENSION: Record<string, string> = {
+  csv: "text/csv;charset=utf-8",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  pdf: "application/pdf",
+  txt: "text/plain;charset=utf-8",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+};
+
+const EXTENSION_BY_FILE_TYPE: Record<string, string> = {
+  CSV: "csv",
+  DOC: "doc",
+  DOCX: "docx",
+  PDF: "pdf",
+  XLS: "xls",
+  XLSX: "xlsx",
+};
+
+function getFileExtension(filename?: string, fileType?: string) {
+  if (filename?.includes(".")) {
+    return filename.split(".").pop()?.toLowerCase() || "txt";
+  }
+
+  if (fileType) {
+    return EXTENSION_BY_FILE_TYPE[fileType.toUpperCase()] || fileType.toLowerCase();
+  }
+
+  return "txt";
+}
+
+function getDownloadFilename(filename?: string, fileType?: string) {
+  if (filename?.trim()) {
+    return filename;
+  }
+
+  return `sample-document.${getFileExtension(undefined, fileType)}`;
+}
+
+function createSampleFileBlob(filename?: string, fileType?: string) {
+  const extension = getFileExtension(filename, fileType);
+  const mimeType = MIME_TYPE_BY_EXTENSION[extension] || "application/octet-stream";
+  const downloadFilename = getDownloadFilename(filename, fileType);
+
+  if (extension === "pdf") {
+    return new Blob([SAMPLE_PDF_CONTENT], { type: mimeType });
+  }
+
+  const content = [
+    `Sample file generated for ${downloadFilename}`,
+    `File type: ${fileType || extension.toUpperCase()}`,
+    "",
+    "This file is used by the Doc Media Storybook preview.",
+  ].join("\n");
+
+  return new Blob([content], { type: mimeType });
+}
+
+function downloadSampleFile(filename?: string, fileType?: string) {
+  const downloadFilename = getDownloadFilename(filename, fileType);
+  const blob = createSampleFileBlob(downloadFilename, fileType);
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = objectUrl;
+  link.download = downloadFilename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  window.setTimeout(() => {
+    URL.revokeObjectURL(objectUrl);
+  }, 0);
+}
+
+function DocMediaStory(args: React.ComponentProps<typeof DocMedia>) {
+  const handleDownload = React.useCallback(() => {
+    downloadSampleFile(args.filename, args.fileType);
+  }, [args.fileType, args.filename]);
+
+  return (
+    <DocMedia
+      {...args}
+      onDownload={args.variant === "file" ? handleDownload : undefined}
+    />
+  );
+}
 
 const meta: Meta<typeof DocMedia> = {
   title: "Custom/Chat/Doc Media",
   component: DocMedia,
+  render: (args) => <DocMediaStory {...args} />,
   parameters: {
     layout: "centered",
     docs: {
@@ -81,7 +194,6 @@ export const SpreadsheetFile: Story = {
     variant: "file",
     filename: "Q4_Sales_Data.xlsx",
     fileType: "XLS",
-    onDownload: fn(),
   },
 };
 
@@ -90,7 +202,6 @@ export const GenericFile: Story = {
     variant: "file",
     filename: "Meeting_Notes.docx",
     fileType: "DOC",
-    onDownload: fn(),
   },
 };
 
