@@ -244,7 +244,7 @@ describe("Select", () => {
     expect(trigger).toHaveClass("py-2");
   });
 
-  it("truncates long selected option text before the checkmark", async () => {
+  it("wraps long dropdown option text within the trigger width", async () => {
     const user = userEvent.setup();
     const longLabel =
       "sadjkhurterqruwqcebrcqweurbuqweqrgwqwerqwerqwerqwer";
@@ -267,11 +267,21 @@ describe("Select", () => {
     expect(trigger).toHaveClass("[&>span]:truncate");
 
     await user.click(trigger);
+    const listbox = screen.getByRole("listbox");
+    expect(listbox).toHaveClass("w-[var(--radix-select-trigger-width)]");
+    expect(listbox).toHaveClass("max-w-[var(--radix-select-trigger-width)]");
+
+    const viewport = document.querySelector("[data-select-viewport]");
+    expect(viewport).toHaveClass("w-full");
+
     const selectedOption = screen.getByRole("option", { name: longLabel });
     const optionText = within(selectedOption).getByText(longLabel);
-    expect(optionText).toHaveClass("min-w-0");
-    expect(optionText).toHaveClass("flex-1");
-    expect(optionText).toHaveClass("truncate");
+    const optionTextWrapper = optionText.parentElement;
+    expect(selectedOption).toHaveClass("items-start");
+    expect(optionTextWrapper).toHaveClass("min-w-0");
+    expect(optionTextWrapper).toHaveClass("flex-1");
+    expect(optionTextWrapper).toHaveClass("whitespace-normal");
+    expect(optionTextWrapper).toHaveClass("break-words");
   });
 
   // Keyboard navigation
