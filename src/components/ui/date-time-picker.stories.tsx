@@ -66,6 +66,11 @@ import { DateTimePicker } from "@/components/ui/date-time-picker"
   },
   tags: ["autodocs"],
   argTypes: {
+    variant: {
+      control: "select",
+      options: ["date-time", "date-only", "time-only"],
+      description: "Controls whether the picker shows date, time, or both",
+    },
     size: {
       control: "select",
       options: ["sm", "default", "lg"],
@@ -115,6 +120,21 @@ export const Error: Story = {
   },
 };
 
+export const DateOnly: Story = {
+  args: {
+    defaultValue: sampleValue,
+    variant: "date-only",
+  },
+};
+
+export const TimeOnly: Story = {
+  args: {
+    defaultValue: sampleValue,
+    variant: "time-only",
+    showEndTime: false,
+  },
+};
+
 export const StartTimeOnly: Story = {
   args: {
     defaultValue: sampleValue,
@@ -144,6 +164,21 @@ export const AllSizes: Story = {
       <DateTimePicker size="sm" defaultValue={sampleValue} />
       <DateTimePicker size="default" defaultValue={sampleValue} />
       <DateTimePicker size="lg" defaultValue={sampleValue} />
+    </div>
+  ),
+};
+
+export const AllVariants: Story = {
+  name: "All Variants",
+  render: () => (
+    <div className="flex flex-col gap-4">
+      <DateTimePicker defaultValue={sampleValue} variant="date-time" />
+      <DateTimePicker defaultValue={sampleValue} variant="date-only" />
+      <DateTimePicker
+        defaultValue={sampleValue}
+        variant="time-only"
+        showEndTime={false}
+      />
     </div>
   ),
 };

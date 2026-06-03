@@ -35,6 +35,38 @@ describe("DateTimePicker", () => {
     expect(screen.getByPlaceholderText("--/--/-- -- : --")).toBeInTheDocument();
   });
 
+  it("renders a date-only variant", () => {
+    render(
+      <DateTimePicker
+        variant="date-only"
+        value={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={() => {}}
+      />
+    );
+
+    expect(screen.getByLabelText("Date")).toHaveValue("12/05/2026");
+  });
+
+  it("renders a time-only variant", () => {
+    render(
+      <DateTimePicker
+        variant="time-only"
+        showEndTime={false}
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText("Time")).toHaveValue("10:30 AM");
+  });
+
   it("opens the calendar popover from the input trigger", () => {
     render(
       <DateTimePicker
@@ -53,6 +85,47 @@ describe("DateTimePicker", () => {
     expect(screen.getByLabelText("Year")).toHaveTextContent("2026");
     expect(screen.getByLabelText("Start Time")).toBeInTheDocument();
     expect(screen.getByLabelText("End Time")).toBeInTheDocument();
+  });
+
+  it("shows only the calendar for the date-only variant", () => {
+    render(
+      <DateTimePicker
+        variant="date-only"
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Date"));
+
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+    expect(screen.getByLabelText("Month")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Start Time")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("End Time")).not.toBeInTheDocument();
+  });
+
+  it("shows only the time fields for the time-only variant", () => {
+    render(
+      <DateTimePicker
+        variant="time-only"
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Time"));
+
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+    expect(screen.getByLabelText("Start Time")).toBeInTheDocument();
+    expect(screen.getByLabelText("End Time")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Month")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Year")).not.toBeInTheDocument();
   });
 
   it("uses DateRangeModal trigger styling", () => {
@@ -508,9 +581,7 @@ describe("DateTimePicker", () => {
     });
   });
 
-  it("navigates calendar months and years with dropdowns", async () => {
-    const user = userEvent.setup();
-
+  it("navigates calendar months and years with dropdowns", () => {
     render(
       <DateTimePicker
         defaultValue={{
@@ -522,34 +593,30 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    await user.click(screen.getByLabelText("Month"));
-
-    expect(screen.getByLabelText("Month")).toHaveClass(
-      "!w-[90px]",
-      "!min-w-[90px]",
-      "!px-3",
-      "!gap-[6px]"
+    fireEvent.change(screen.getByLabelText("Month"), {
+      target: { value: "5" },
+    });
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+    expect(screen.getByLabelText("Month")).toHaveValue("5");
+    expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2026 10:30 AM");
+    expect(screen.getByLabelText("June 12, 2026")).toHaveAttribute(
+      "aria-pressed",
+      "true"
     );
 
-    expect(
-      document.querySelector("[data-date-time-picker-calendar-select]")
-    ).toHaveClass(
-      "w-[var(--radix-select-trigger-width)]",
-      "min-w-[var(--radix-select-trigger-width)]",
-      "max-h-[min(16rem,var(--radix-select-content-available-height))]"
+    fireEvent.change(screen.getByLabelText("Year"), {
+      target: { value: "2027" },
+    });
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+    expect(screen.getByLabelText("Year")).toHaveValue("2027");
+    expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2027 10:30 AM");
+    expect(screen.getByLabelText("June 12, 2027")).toHaveAttribute(
+      "aria-pressed",
+      "true"
     );
-
-    await user.click(screen.getByRole("option", { name: "Jun" }));
-    fireEvent.click(screen.getByLabelText("Year"));
-
-    expect(
-      await screen.findByRole("option", { name: "2027" })
-    ).toBeInTheDocument();
   });
 
-  it("keeps only one calendar dropdown open and closes it from calendar controls", async () => {
-    const user = userEvent.setup();
-
+  it("keeps the picker open when changing month and year", () => {
     render(
       <DateTimePicker
         defaultValue={{
@@ -561,35 +628,18 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    await user.click(screen.getByLabelText("Month"));
-
-    expect(screen.getByRole("option", { name: "Jun" })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText("Year"));
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("option", { name: "Jun" })
-      ).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Month"), {
+      target: { value: "5" },
     });
-    expect(
-      await screen.findByRole("option", { name: "2027" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
 
-    fireEvent.pointerDown(
-      screen.getByRole("button", { name: "Previous month", hidden: true })
-    );
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("option", { name: "2027" })
-      ).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Year"), {
+      target: { value: "2027" },
     });
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
   });
 
-  it("toggles a calendar dropdown closed when its trigger is clicked again", async () => {
-    const user = userEvent.setup();
-
+  it("applies month and year changes to the calendar grid", () => {
     render(
       <DateTimePicker
         defaultValue={{
@@ -601,24 +651,66 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-
-    const yearTrigger = screen.getByLabelText("Year");
-
-    await user.click(yearTrigger);
-    expect(await screen.findByRole("option", { name: "2027" })).toBeInTheDocument();
-
-    fireEvent.pointerDown(yearTrigger);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("option", { name: "2027" })
-      ).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Month"), {
+      target: { value: "5" },
     });
+    fireEvent.change(screen.getByLabelText("Year"), {
+      target: { value: "2027" },
+    });
+
+    expect(screen.getByLabelText("June 12, 2027")).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
   });
 
-  it("closes calendar dropdowns when clicking outside", async () => {
-    const user = userEvent.setup();
+  it("falls back to the first day when the target month cannot contain the selected date", () => {
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: new Date(2026, 0, 31),
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
 
+    fireEvent.click(screen.getByLabelText("Date and time"));
+    fireEvent.change(screen.getByLabelText("Month"), {
+      target: { value: "1" },
+    });
+
+    expect(screen.getByLabelText("Date and time")).toHaveValue("01/02/2026 10:30 AM");
+    expect(screen.getByLabelText("Month")).toHaveValue("1");
+    expect(screen.getByLabelText("February 1, 2026")).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+  });
+
+  it("keeps the selected day in sync when navigating with arrow buttons", () => {
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+    fireEvent.click(screen.getByLabelText("Next month"));
+
+    expect(screen.getByLabelText("Month")).toHaveValue("5");
+    expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2026 10:30 AM");
+    expect(screen.getByLabelText("June 12, 2026")).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+  });
+
+  it("closes the picker when clicking outside", async () => {
     render(
       <div>
         <DateTimePicker
@@ -635,16 +727,12 @@ describe("DateTimePicker", () => {
     const outsideButton = screen.getByText("Outside");
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    await user.click(screen.getByLabelText("Month"));
-
-    expect(screen.getByRole("option", { name: "Jun" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
 
     fireEvent.mouseDown(outsideButton);
 
     await waitFor(() => {
-      expect(
-        screen.queryByRole("option", { name: "Jun" })
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
 

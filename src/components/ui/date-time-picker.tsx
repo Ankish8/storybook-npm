@@ -14,13 +14,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronLeft, ChevronRight, Clock2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./select";
 
 const DEFAULT_START_TIME = "10:30:00";
 const DEFAULT_END_TIME = "12:30:00";
@@ -34,14 +27,8 @@ const POPOVER_WIDTH_VAR = "--date-time-picker-popover-width";
 const CALENDAR_PLACEMENT: Placement = "bottom-start";
 const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
-const CALENDAR_SELECT_CONTENT_SELECTOR =
-  "[data-date-time-picker-calendar-select]";
-const CALENDAR_SELECT_TRIGGER_SELECTOR =
-  "[data-date-time-picker-calendar-select-trigger]";
-const CALENDAR_SELECT_TRIGGER_CLASS = "!w-[90px] !min-w-[90px] !gap-[6px] !px-3";
-const CALENDAR_SELECT_CONTENT_CLASS =
-  "z-[10060] w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)] max-h-[min(16rem,var(--radix-select-content-available-height))]";
-type CalendarSelect = "month" | "year";
+const CALENDAR_NATIVE_SELECT_CLASS =
+  "h-9 min-w-[90px] rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]";
 const DATE_TIME_INPUT_SEGMENT_RANGES = {
   day: [0, 2],
   month: [3, 5],
@@ -64,6 +51,11 @@ const monthFormatter = new Intl.DateTimeFormat("en-US", {
 
 const dateTimePickerVariants = cva("relative inline-block w-full max-w-full", {
   variants: {
+    variant: {
+      "date-time": "",
+      "date-only": "",
+      "time-only": "",
+    },
     size: {
       sm: "sm:w-[280px]",
       default: "sm:w-[336px]",
@@ -71,6 +63,7 @@ const dateTimePickerVariants = cva("relative inline-block w-full max-w-full", {
     },
   },
   defaultVariants: {
+    variant: "date-time",
     size: "default",
   },
 });
@@ -128,6 +121,10 @@ export interface DateTimePickerProps
   onOpenChange?: (open: boolean) => void;
   portalContainer?: HTMLElement | null;
 }
+
+type DateTimePickerVariant = NonNullable<
+  VariantProps<typeof dateTimePickerVariants>["variant"]
+>;
 
 function normalizeValue(
   value?: Partial<DateTimePickerValue>
@@ -188,6 +185,13 @@ function clampMonth(date: Date, minDate?: Date, maxDate?: Date) {
   return startOfMonth(date);
 }
 
+function isSelectableDay(date: Date, minDate?: Date, maxDate?: Date) {
+  return (
+    !(minDate && isBeforeDay(date, minDate)) &&
+    !(maxDate && isAfterDay(date, maxDate))
+  );
+}
+
 function getYearOptions(visibleMonth: Date, minDate?: Date, maxDate?: Date) {
   const currentYear = new Date().getFullYear();
   const selectedYear = visibleMonth.getFullYear();
@@ -236,12 +240,6 @@ function isPointerInsideElement(
   return false;
 }
 
-function isPointerInsideSelector(event: MouseEvent, selector: string) {
-  const target = event.target;
-
-  return target instanceof Element && target.closest(selector) !== null;
-}
-
 function formatTimeForDisplay(time: string) {
   const [hour = "0", minute = "0"] = time.split(":");
   const hourNumber = Number(hour);
@@ -260,6 +258,44 @@ function formatDateForDisplay(date?: Date, time?: string) {
   const formattedTime = formatTimeForDisplay(time ?? DEFAULT_START_TIME);
 
   return `${day}/${month}/${year} ${formattedTime}`;
+}
+
+function formatDateOnlyForDisplay(date?: Date) {
+  if (!date) return "";
+
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
+
+function formatValueForDisplay(
+  value: DateTimePickerValue,
+  variant: DateTimePickerVariant,
+  showEndTime: boolean,
+  hasTimeValue: boolean
+) {
+  if (variant === "date-only") {
+    return formatDateOnlyForDisplay(value.date);
+  }
+
+  if (variant === "time-only") {
+    if (!hasTimeValue) return "";
+
+    return showEndTime
+      ? `${formatTimeForDisplay(value.startTime)} - ${formatTimeForDisplay(value.endTime)}`
+      : formatTimeForDisplay(value.startTime);
+  }
+
+  return formatDateForDisplay(value.date, value.startTime);
+}
+
+function getDefaultPlaceholder(variant: DateTimePickerVariant) {
+  if (variant === "date-only") return "--/--/----";
+  if (variant === "time-only") return "--:-- --";
+
+  return DEFAULT_PLACEHOLDER;
 }
 
 function parseDatePart(datePart: string) {
@@ -514,6 +550,33 @@ function formatTimeInput(restValue: string) {
   return [timeValue, meridiem].filter(Boolean).join(" ");
 }
 
+function sanitizeTypedDateInput(value: string, previousValue: string) {
+  const trimmedValue = value.trimStart();
+  if (/^[A-Za-z]/.test(trimmedValue)) return previousValue;
+
+  const normalizedValue = value.toUpperCase().replace(/[^0-9\s/-]/g, "");
+  const { dateDigits, dateValue, isValid } = splitTypedDateInput(normalizedValue);
+  const limitedDateDigits = dateDigits.slice(0, 8);
+
+  if (!limitedDateDigits) return "";
+  if (!isValid) return previousValue;
+
+  return dateValue;
+}
+
+function sanitizeTypedTimeInput(value: string, previousValue: string) {
+  const trimmedValue = value.trimStart();
+  if (/^[A-Za-z]/.test(trimmedValue) && !/^[AP]/i.test(trimmedValue)) {
+    return previousValue;
+  }
+
+  const normalizedValue = value.toUpperCase().replace(/[^0-9\s:APM]/g, "");
+  const formattedTime = formatTimeInput(normalizedValue);
+  if (formattedTime === null) return previousValue;
+
+  return formattedTime;
+}
+
 function sanitizeTypedDateTimeInput(value: string, previousValue: string) {
   const trimmedValue = value.trimStart();
   if (/^[A-Za-z]/.test(trimmedValue)) return previousValue;
@@ -638,8 +701,39 @@ function parseTypedDateTime(value: string) {
   return { date, startTime };
 }
 
-function formatHiddenValue(value: DateTimePickerValue) {
+function parseTypedDate(value: string) {
+  const typedValue = value.trim();
+  if (!typedValue) return undefined;
+
+  const typedMatch = typedValue.match(
+    /^(\d{4}-\d{1,2}-\d{1,2}|\d{1,2}[/-]\d{1,2}[/-]\d{4})$/
+  );
+  if (!typedMatch) return null;
+
+  return parseDatePart(typedValue);
+}
+
+function formatHiddenValue(
+  value: DateTimePickerValue,
+  variant: DateTimePickerVariant,
+  showEndTime: boolean,
+  hasTimeValue: boolean
+) {
+  if (variant === "time-only") {
+    if (!hasTimeValue) return "";
+
+    return showEndTime ? `${value.startTime}/${value.endTime}` : value.startTime;
+  }
+
   if (!value.date) return "";
+
+  if (variant === "date-only") {
+    const month = (value.date.getMonth() + 1).toString().padStart(2, "0");
+    const day = value.date.getDate().toString().padStart(2, "0");
+    const year = value.date.getFullYear();
+
+    return `${year}-${month}-${day}`;
+  }
 
   const month = (value.date.getMonth() + 1).toString().padStart(2, "0");
   const day = value.date.getDate().toString().padStart(2, "0");
@@ -672,12 +766,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
   (
     {
       className,
+      variant,
       size,
       state,
       value,
       defaultValue,
       onValueChange,
-      placeholder = DEFAULT_PLACEHOLDER,
+      placeholder: placeholderProp,
       disabled = false,
       readOnly = false,
       name,
@@ -700,15 +795,26 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
   ) => {
     const generatedId = React.useId();
     const triggerId = id ?? generatedId;
+    const pickerVariant = variant ?? "date-time";
+    const showCalendar = pickerVariant !== "time-only";
+    const showTimeFields = pickerVariant !== "date-only";
+    const resolvedShowEndTime = showTimeFields && showEndTime;
+    const placeholder = placeholderProp ?? getDefaultPlaceholder(pickerVariant);
     const isValueControlled = value !== undefined;
     const isOpenControlled = controlledOpen !== undefined;
     const [internalValue, setInternalValue] = React.useState(() =>
       normalizeValue(defaultValue)
     );
+    const [internalHasTimeValue, setInternalHasTimeValue] = React.useState(() =>
+      Boolean(defaultValue?.date || defaultValue?.startTime || defaultValue?.endTime)
+    );
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const currentValue = normalizeValue(
       isValueControlled ? value : internalValue
     );
+    const hasTimeValue = isValueControlled
+      ? Boolean(value?.date || value?.startTime || value?.endTime)
+      : internalHasTimeValue;
     const open = isOpenControlled ? controlledOpen : internalOpen;
     const [visibleMonth, setVisibleMonth] = React.useState(() =>
       startOfMonth(currentValue.date ?? new Date())
@@ -717,8 +823,6 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       formatDateForDisplay(currentValue.date, currentValue.startTime)
     );
     const [isDateInputFocused, setIsDateInputFocused] = React.useState(false);
-    const [openCalendarSelect, setOpenCalendarSelect] =
-      React.useState<CalendarSelect | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const triggerRef = React.useRef<HTMLDivElement | null>(null);
     const popoverRef = React.useRef<HTMLDivElement | null>(null);
@@ -764,9 +868,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       () => getCalendarDays(visibleMonth),
       [visibleMonth]
     );
-    const displayValue = formatDateForDisplay(
-      currentValue.date,
-      currentValue.startTime
+    const displayValue = formatValueForDisplay(
+      currentValue,
+      pickerVariant,
+      resolvedShowEndTime,
+      hasTimeValue
     );
     const effectiveMinDate = React.useMemo(() => {
       if (!disablePastDates) return minDate;
@@ -789,37 +895,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           setInternalOpen(nextOpen);
         }
 
-        if (!nextOpen) {
-          setOpenCalendarSelect(null);
-        }
-
         onOpenChange?.(nextOpen);
       },
       [isOpenControlled, onOpenChange]
-    );
-
-    const handleCalendarSelectOpenChange = React.useCallback(
-      (select: CalendarSelect, nextOpen: boolean) => {
-        setOpenCalendarSelect((currentSelect) => {
-          if (nextOpen) return select;
-
-          return currentSelect === select ? null : currentSelect;
-        });
-      },
-      []
-    );
-
-    const handleCalendarSelectTriggerPointerDown = React.useCallback(
-      (
-        select: CalendarSelect,
-        event: React.PointerEvent<HTMLButtonElement>
-      ) => {
-        if (openCalendarSelect !== select) return;
-
-        event.preventDefault();
-        setOpenCalendarSelect(null);
-      },
-      [openCalendarSelect]
     );
 
     const setTriggerRef = React.useCallback(
@@ -851,28 +929,19 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     }, [displayValue, isDateInputFocused]);
 
     React.useEffect(() => {
-      if (!open) {
-        setOpenCalendarSelect(null);
-      }
-    }, [open]);
-
-    React.useEffect(() => {
       if (!open) return;
 
       const handlePointerDown = (event: MouseEvent) => {
         if (
           !isPointerInsideElement(event, rootRef.current) &&
-          !isPointerInsideElement(event, popoverRef.current) &&
-          !isPointerInsideSelector(event, CALENDAR_SELECT_CONTENT_SELECTOR)
+          !isPointerInsideElement(event, popoverRef.current)
         ) {
-          setOpenCalendarSelect(null);
           setOpen(false);
         }
       };
 
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "Escape") {
-          setOpenCalendarSelect(null);
           setOpen(false);
         }
       };
@@ -887,9 +956,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     }, [open, setOpen]);
 
     const updateValue = React.useCallback(
-      (nextValue: DateTimePickerValue) => {
+      (
+        nextValue: DateTimePickerValue,
+        options?: { hasTimeValue?: boolean }
+      ) => {
         if (!isValueControlled) {
           setInternalValue(nextValue);
+          if (options?.hasTimeValue !== undefined) {
+            setInternalHasTimeValue(options.hasTimeValue);
+          }
         }
 
         onValueChange?.(nextValue);
@@ -906,7 +981,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         date: undefined,
         startTime: currentValue.startTime,
         endTime: currentValue.endTime,
-      });
+      }, { hasTimeValue: false });
     };
 
     const yearOptions = React.useMemo(
@@ -921,9 +996,129 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       [effectiveMinDate, maxDate]
     );
 
+    const syncCalendarMonthAndValue = React.useCallback(
+      (nextMonth: Date) => {
+        const clampedMonth = clampMonth(nextMonth, effectiveMinDate, maxDate);
+        setVisibleMonth(clampedMonth);
+
+        if (pickerVariant === "time-only" || !currentValue.date) return;
+
+        const selectedDay = currentValue.date.getDate();
+        const daysInTargetMonth = getDaysInMonth(
+          clampedMonth.getFullYear(),
+          clampedMonth.getMonth() + 1
+        );
+
+        if (selectedDay > daysInTargetMonth) {
+          const fallbackDate = new Date(
+            clampedMonth.getFullYear(),
+            clampedMonth.getMonth(),
+            1
+          );
+
+          if (!isSelectableDay(fallbackDate, effectiveMinDate, maxDate)) {
+            updateValue({ ...currentValue, date: undefined });
+            return;
+          }
+
+          updateValue({ ...currentValue, date: fallbackDate });
+          return;
+        }
+
+        const nextSelectedDate = new Date(
+          clampedMonth.getFullYear(),
+          clampedMonth.getMonth(),
+          selectedDay
+        );
+
+        if (!isSelectableDay(nextSelectedDate, effectiveMinDate, maxDate)) {
+          updateValue({ ...currentValue, date: undefined });
+          return;
+        }
+
+        if (!isSameDay(currentValue.date, nextSelectedDate)) {
+          updateValue({ ...currentValue, date: nextSelectedDate });
+        }
+      },
+      [
+        currentValue,
+        effectiveMinDate,
+        maxDate,
+        pickerVariant,
+        updateValue,
+      ]
+    );
+
     const handleTypedDateChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {
+      if (pickerVariant === "time-only") {
+        const nextInputValue = sanitizeTypedTimeInput(
+          event.target.value,
+          dateInputValue
+        );
+        setDateInputValue(nextInputValue);
+
+        if (
+          nextInputValue === dateInputValue &&
+          event.target.value !== dateInputValue
+        ) {
+          event.currentTarget.value = nextInputValue;
+          return;
+        }
+
+        const typedTime = parseTimePart(nextInputValue);
+        if (typedTime === undefined) {
+          updateValue({ ...currentValue, date: undefined }, { hasTimeValue: false });
+          return;
+        }
+
+        if (typedTime) {
+          updateValue(
+            {
+              ...currentValue,
+              startTime: typedTime,
+            },
+            { hasTimeValue: true }
+          );
+        }
+
+        return;
+      }
+
+      if (pickerVariant === "date-only") {
+        const nextInputValue = sanitizeTypedDateInput(
+          event.target.value,
+          dateInputValue
+        );
+        setDateInputValue(nextInputValue);
+
+        if (
+          nextInputValue === dateInputValue &&
+          event.target.value !== dateInputValue
+        ) {
+          event.currentTarget.value = nextInputValue;
+          return;
+        }
+
+        const typedDate = parseTypedDate(nextInputValue);
+        if (typedDate === undefined) {
+          updateValue({ ...currentValue, date: undefined });
+          return;
+        }
+
+        if (
+          typedDate &&
+          !(effectiveMinDate && isBeforeDay(typedDate, effectiveMinDate)) &&
+          !(maxDate && isAfterDay(typedDate, maxDate))
+        ) {
+          updateValue({ ...currentValue, date: typedDate });
+          updateVisibleMonth(typedDate);
+        }
+
+        return;
+      }
+
       const nextInputValue = sanitizeTypedDateTimeInput(
         event.target.value,
         dateInputValue
@@ -963,6 +1158,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const handleTypedDateKeyDown = (
       event: React.KeyboardEvent<HTMLInputElement>
     ) => {
+      if (pickerVariant === "time-only") return;
       if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
 
       const direction = event.key === "ArrowUp" ? 1 : -1;
@@ -993,12 +1189,19 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       );
       const [selectionStart, selectionEnd] =
         DATE_TIME_INPUT_SEGMENT_RANGES[steppedDateTime.segment];
+      const resolvedInputValue =
+        pickerVariant === "date-only"
+          ? formatDateOnlyForDisplay(steppedDateTime.date)
+          : nextInputValue;
 
-      setDateInputValue(nextInputValue);
+      setDateInputValue(resolvedInputValue);
       updateValue({
         ...currentValue,
         date: steppedDateTime.date,
-        startTime: steppedDateTime.startTime,
+        startTime:
+          pickerVariant === "date-only"
+            ? currentValue.startTime
+            : steppedDateTime.startTime,
       });
       updateVisibleMonth(steppedDateTime.date);
 
@@ -1010,7 +1213,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const handleTypedDateBlur = () => {
       setIsDateInputFocused(false);
       setDateInputValue(
-        formatDateForDisplay(currentValue.date, currentValue.startTime)
+        formatValueForDisplay(
+          currentValue,
+          pickerVariant,
+          resolvedShowEndTime,
+          hasTimeValue
+        )
       );
     };
 
@@ -1024,7 +1232,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           ref={setPopoverRef}
           role="dialog"
           aria-modal="false"
-          aria-labelledby={`${triggerId}-calendar-heading`}
+          aria-labelledby={showCalendar ? `${triggerId}-calendar-heading` : undefined}
+          aria-label={showCalendar ? undefined : "Time picker"}
           className={cn(
             "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
@@ -1039,64 +1248,42 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             zIndex: 10050,
             visibility: isPositioned ? undefined : "hidden",
           }}
-          onPointerDown={(event) => {
-            if (
-              event.target instanceof Element &&
-              !event.target.closest(CALENDAR_SELECT_TRIGGER_SELECTOR)
-            ) {
-              setOpenCalendarSelect(null);
-            }
-
-            event.stopPropagation();
-          }}
+          onPointerDown={(event) => event.stopPropagation()}
           onMouseDown={(event) => event.stopPropagation()}
           onWheel={(event) => event.stopPropagation()}
           onTouchMove={(event) => event.stopPropagation()}
         >
-          <div className="p-3 touch-pan-y">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                aria-label="Previous month"
-                className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
-                onClick={() => updateVisibleMonth(addMonths(visibleMonth, -1))}
-              >
-                <ChevronLeft className="size-4" aria-hidden="true" />
-              </button>
-              <div className="flex min-w-0 items-center gap-1.5">
-                <label className="sr-only" htmlFor={`${triggerId}-month`}>
-                  Month
-                </label>
-                <Select
-                  open={openCalendarSelect === "month"}
-                  onOpenChange={(nextOpen) =>
-                    handleCalendarSelectOpenChange("month", nextOpen)
-                  }
-                  value={visibleMonth.getMonth().toString()}
-                  onValueChange={(nextMonth) =>
-                    updateVisibleMonth(
-                      new Date(
-                        visibleMonth.getFullYear(),
-                        Number(nextMonth),
-                        1
-                      )
-                    )
+          {showCalendar && (
+            <div className="p-3 touch-pan-y">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  aria-label="Previous month"
+                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  onClick={() =>
+                    syncCalendarMonthAndValue(addMonths(visibleMonth, -1))
                   }
                 >
-                  <SelectTrigger
+                  <ChevronLeft className="size-4" aria-hidden="true" />
+                </button>
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <label className="sr-only" htmlFor={`${triggerId}-month`}>
+                    Month
+                  </label>
+                  <select
                     id={`${triggerId}-month`}
-                    data-date-time-picker-calendar-select-trigger=""
                     aria-label="Month"
-                    className={CALENDAR_SELECT_TRIGGER_CLASS}
-                  onPointerDown={(event) =>
-                    handleCalendarSelectTriggerPointerDown("month", event)
-                  }
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent
-                    data-date-time-picker-calendar-select=""
-                    className={CALENDAR_SELECT_CONTENT_CLASS}
+                    className={CALENDAR_NATIVE_SELECT_CLASS}
+                    value={visibleMonth.getMonth().toString()}
+                    onChange={(event) => {
+                      syncCalendarMonthAndValue(
+                        new Date(
+                          visibleMonth.getFullYear(),
+                          Number(event.target.value),
+                          1
+                        )
+                      );
+                    }}
                   >
                     {monthNames.map((monthName, monthIndex) => {
                       const optionMonth = new Date(
@@ -1110,133 +1297,125 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                         (maxDate && isMonthAfter(optionMonth, maxDate));
 
                       return (
-                        <SelectItem
+                        <option
                           key={monthName}
                           value={monthIndex.toString()}
                           disabled={!!isDisabled}
                         >
                           {monthName}
-                        </SelectItem>
+                        </option>
                       );
                     })}
-                  </SelectContent>
-                </Select>
-                <label className="sr-only" htmlFor={`${triggerId}-year`}>
-                  Year
-                </label>
-                <Select
-                  open={openCalendarSelect === "year"}
-                  onOpenChange={(nextOpen) =>
-                    handleCalendarSelectOpenChange("year", nextOpen)
-                  }
-                  value={visibleMonth.getFullYear().toString()}
-                  onValueChange={(nextYear) =>
-                    updateVisibleMonth(
-                      new Date(
-                        Number(nextYear),
-                        visibleMonth.getMonth(),
-                        1
-                      )
-                    )
-                  }
-                >
-                  <SelectTrigger
+                  </select>
+                  <label className="sr-only" htmlFor={`${triggerId}-year`}>
+                    Year
+                  </label>
+                  <select
                     id={`${triggerId}-year`}
-                    data-date-time-picker-calendar-select-trigger=""
                     aria-label="Year"
-                    className={CALENDAR_SELECT_TRIGGER_CLASS}
-                  onPointerDown={(event) =>
-                    handleCalendarSelectTriggerPointerDown("year", event)
-                  }
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent
-                    data-date-time-picker-calendar-select=""
-                    className={CALENDAR_SELECT_CONTENT_CLASS}
-                  >
-                    {yearOptions.map((year) => (
-                      <SelectItem key={year} value={year.toString()}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div id={`${triggerId}-calendar-heading`} className="sr-only">
-                  {monthFormatter.format(visibleMonth)}
-                </div>
-              </div>
-              <button
-                type="button"
-                aria-label="Next month"
-                className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
-                onClick={() => updateVisibleMonth(addMonths(visibleMonth, 1))}
-              >
-                <ChevronRight className="size-4" aria-hidden="true" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-7">
-              {weekDays.map((day) => (
-                <div
-                  key={day}
-                  className="flex size-8 items-center justify-center text-xs font-medium text-semantic-text-muted"
-                >
-                  {day}
-                </div>
-              ))}
-              {calendarDays.map((day) => {
-                const isCurrentMonth =
-                  day.getMonth() === visibleMonth.getMonth();
-                const isSelected = isSameDay(day, currentValue.date);
-                const isToday = isSameDay(day, new Date());
-                const isDisabled =
-                  (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
-                  (maxDate && isAfterDay(day, maxDate));
-                const dayLabel = day.toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                });
-
-                return (
-                  <button
-                    key={day.toISOString()}
-                    type="button"
-                    aria-label={dayLabel}
-                    aria-pressed={isSelected}
-                    aria-current={isToday ? "date" : undefined}
-                    disabled={!!isDisabled}
-                    className={cn(
-                      "relative flex items-center justify-center size-8 mx-auto rounded-full text-xs transition-colors",
-                      isSelected
-                        ? "bg-semantic-primary text-semantic-text-inverted font-semibold"
-                        : isCurrentMonth
-                          ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
-                          : "text-semantic-text-muted hover:bg-semantic-bg-hover",
-                      isDisabled &&
-                        "opacity-40 cursor-not-allowed pointer-events-none"
-                    )}
-                    onClick={() => {
-                      if (isDisabled) return;
-
-                      updateValue({ ...currentValue, date: day });
-                      if (closeOnSelect) {
-                        setOpen(false);
-                      }
+                    className={CALENDAR_NATIVE_SELECT_CLASS}
+                    value={visibleMonth.getFullYear().toString()}
+                    onChange={(event) => {
+                      syncCalendarMonthAndValue(
+                        new Date(
+                          Number(event.target.value),
+                          visibleMonth.getMonth(),
+                          1
+                        )
+                      );
                     }}
                   >
-                    {day.getDate()}
-                    {isToday && !isSelected && (
-                      <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 size-1 rounded-full bg-semantic-primary" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                    {yearOptions.map((year) => (
+                      <option key={year} value={year.toString()}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                  <div id={`${triggerId}-calendar-heading`} className="sr-only">
+                    {monthFormatter.format(visibleMonth)}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Next month"
+                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  onClick={() =>
+                    syncCalendarMonthAndValue(addMonths(visibleMonth, 1))
+                  }
+                >
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </button>
+              </div>
 
-          <div className="space-y-3 border-t border-solid border-semantic-border-layout bg-semantic-bg-primary p-3">
+              <div className="grid grid-cols-7">
+                {weekDays.map((day) => (
+                  <div
+                    key={day}
+                    className="flex size-8 items-center justify-center text-xs font-medium text-semantic-text-muted"
+                  >
+                    {day}
+                  </div>
+                ))}
+                {calendarDays.map((day) => {
+                  const isCurrentMonth =
+                    day.getMonth() === visibleMonth.getMonth();
+                  const isSelected = isSameDay(day, currentValue.date);
+                  const isToday = isSameDay(day, new Date());
+                  const isDisabled =
+                    (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
+                    (maxDate && isAfterDay(day, maxDate));
+                  const dayLabel = day.toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+
+                  return (
+                    <button
+                      key={day.toISOString()}
+                      type="button"
+                      aria-label={dayLabel}
+                      aria-pressed={isSelected}
+                      aria-current={isToday ? "date" : undefined}
+                      disabled={!!isDisabled}
+                      className={cn(
+                        "relative flex items-center justify-center size-8 mx-auto rounded-full text-xs transition-colors",
+                        isSelected
+                          ? "bg-semantic-primary text-semantic-text-inverted font-semibold"
+                          : isCurrentMonth
+                            ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
+                            : "text-semantic-text-muted hover:bg-semantic-bg-hover",
+                        isDisabled &&
+                          "opacity-40 cursor-not-allowed pointer-events-none"
+                      )}
+                      onClick={() => {
+                        if (isDisabled) return;
+
+                        updateValue({ ...currentValue, date: day });
+                        if (closeOnSelect) {
+                          setOpen(false);
+                        }
+                      }}
+                    >
+                      {day.getDate()}
+                      {isToday && !isSelected && (
+                        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 size-1 rounded-full bg-semantic-primary" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {showTimeFields && (
+            <div
+              className={cn(
+                "space-y-3 bg-semantic-bg-primary p-3",
+                showCalendar &&
+                  "border-t border-solid border-semantic-border-layout"
+              )}
+            >
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor={`${triggerId}-start-time`}
@@ -1256,16 +1435,19 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   value={currentValue.startTime}
                   className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                   onChange={(event) =>
-                    updateValue({
-                      ...currentValue,
-                      startTime: event.target.value,
-                    })
+                    updateValue(
+                      {
+                        ...currentValue,
+                        startTime: event.target.value,
+                      },
+                      { hasTimeValue: true }
+                    )
                   }
                 />
               </div>
             </div>
 
-            {showEndTime && (
+            {resolvedShowEndTime && (
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor={`${triggerId}-end-time`}
@@ -1285,16 +1467,20 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     value={currentValue.endTime}
                     className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                     onChange={(event) =>
-                      updateValue({
-                        ...currentValue,
-                        endTime: event.target.value,
-                      })
+                      updateValue(
+                        {
+                          ...currentValue,
+                          endTime: event.target.value,
+                        },
+                        { hasTimeValue: true }
+                      )
                     }
                   />
                 </div>
               </div>
             )}
-          </div>
+            </div>
+          )}
         </div>,
         portalMount
       );
@@ -1318,7 +1504,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           <input
             type="hidden"
             name={name}
-            value={formatHiddenValue(currentValue)}
+            value={formatHiddenValue(
+              currentValue,
+              pickerVariant,
+              resolvedShowEndTime,
+              hasTimeValue
+            )}
           />
         )}
         <div
@@ -1340,7 +1531,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             placeholder={placeholder}
             aria-haspopup="dialog"
             aria-expanded={open}
-            aria-label="Date and time"
+            aria-label={
+              pickerVariant === "date-only"
+                ? "Date"
+                : pickerVariant === "time-only"
+                  ? "Time"
+                  : "Date and time"
+            }
             className="min-w-0 flex-1 bg-transparent text-sm text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed read-only:cursor-not-allowed"
             onFocus={() => {
               setIsDateInputFocused(true);
@@ -1364,7 +1561,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           <button
             type="button"
             disabled={disabled || readOnly}
-            aria-label="Open calendar"
+            aria-label={showCalendar ? "Open calendar" : "Open time picker"}
             className="inline-flex shrink-0 items-center justify-center rounded text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary disabled:cursor-not-allowed"
             onClick={() => setOpen(!open)}
           >
