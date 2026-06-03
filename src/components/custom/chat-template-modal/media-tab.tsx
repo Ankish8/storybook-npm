@@ -63,6 +63,7 @@ export function MediaTab({
                 </p>
               </div>
               <Button
+                type="button"
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => onDeleteMedia(card.cardIndex)}

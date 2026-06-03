@@ -28,6 +28,7 @@ function ComposerAttachmentPreview({ file, onRemove }: ComposerAttachmentPreview
   return (
     <div className="relative border-b border-solid border-semantic-border-layout">
       <button
+        type="button"
         aria-label="Remove attachment"
         onClick={() => setShowConfirm(true)}
         className="absolute top-2 right-2 z-10 size-7 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"

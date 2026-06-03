@@ -126,6 +126,7 @@ const CarouselMedia = React.forwardRef(
               {card.buttons?.map((btn, j) => (
                 <button
                   key={j}
+                  type="button"
                   onClick={btn.onClick}
                   className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                   style={{ height: 40 }}
@@ -141,6 +142,7 @@ const CarouselMedia = React.forwardRef(
 
         {canScrollLeft && (
           <button
+            type="button"
             onClick={scroll("left")}
             aria-label="Scroll left"
             className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors"
@@ -151,6 +153,7 @@ const CarouselMedia = React.forwardRef(
 
         {canScrollRight && (
           <button
+            type="button"
             onClick={scroll("right")}
             aria-label="Scroll right"
             className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors"

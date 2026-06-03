@@ -44,7 +44,7 @@ function AssignmentDropdown({ defaultAgent }: AssignmentDropdownProps) {
   return (
     <DropdownMenu onOpenChange={() => setSearchQuery("")}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
+        <Button type="button" variant="outline">
           <span className="truncate">
             {value === "unassigned"
               ? "Unassigned"

@@ -933,6 +933,7 @@ const ChatBubbleMessageMode = React.forwardRef<
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
+          type="button"
           variant="ghost"
           size="icon-sm"
           aria-label="Reply"
@@ -1479,6 +1480,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
+              type="button"
               variant="ghost"
               size="icon-sm"
               aria-label="Reply"

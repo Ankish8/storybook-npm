@@ -64,7 +64,7 @@ function ChatNewPanel({ onBack, onOpenAddContact }: ChatNewPanelProps) {
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-solid border-semantic-border-layout shrink-0">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={onBack}>
+          <Button type="button" variant="ghost" size="icon" onClick={onBack}>
             <ArrowLeft className="size-5" />
           </Button>
           <span className="text-[16px] font-semibold text-semantic-text-primary">New Chat</span>
@@ -73,7 +73,7 @@ function ChatNewPanel({ onBack, onOpenAddContact }: ChatNewPanelProps) {
         {/* Channel selector */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">
+            <Button type="button" variant="outline">
               {selectedChannel.badge}
               <ChevronDown className="size-4" />
             </Button>
@@ -109,7 +109,7 @@ function ChatNewPanel({ onBack, onOpenAddContact }: ChatNewPanelProps) {
           clearable={!!contactSearch}
           onClear={() => setContactSearch("")}
         />
-        <Button variant="outline" size="icon-lg" onClick={onOpenAddContact} className="shrink-0" aria-label="Add new contact">
+        <Button type="button" variant="outline" size="icon-lg" onClick={onOpenAddContact} className="shrink-0" aria-label="Add new contact">
           <UserPlus className="size-4" />
         </Button>
       </div>

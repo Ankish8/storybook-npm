@@ -55,7 +55,7 @@ function AddNewContactModal({
           <div className="flex items-center gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline">
+                <Button type="button" variant="outline">
                   {channel.badge}
                   <ChevronDown className="size-4" />
                 </Button>
@@ -74,7 +74,7 @@ function AddNewContactModal({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button type="button" variant="ghost" size="icon" onClick={onClose}>
               <X className="size-5" />
             </Button>
           </div>
@@ -116,7 +116,7 @@ function AddNewContactModal({
 
           {/* Start Conversation button */}
           <div className="flex justify-end pt-2">
-            <Button onClick={handleStartConversation}>Start Conversation</Button>
+            <Button type="button" onClick={handleStartConversation}>Start Conversation</Button>
           </div>
         </div>
       </DialogContent>

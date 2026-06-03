@@ -202,6 +202,7 @@ export function TemplateCarouselPreview({
                 {card.buttonVariables.map((v, j) => (
                   <button
                     key={j}
+                    type="button"
                     className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                     style={{ height: 40 }}
                   >
@@ -211,6 +212,7 @@ export function TemplateCarouselPreview({
                 ))}
                 {card.buttonVariables.length === 0 && (
                   <button
+                    type="button"
                     className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-semibold text-semantic-text-primary hover:bg-semantic-bg-hover transition-colors"
                     style={{ height: 40 }}
                   >
@@ -224,6 +226,7 @@ export function TemplateCarouselPreview({
         </div>
         {canScrollLeft && (
           <button
+            type="button"
             aria-label="Scroll template preview left"
             onClick={scroll("left")}
             className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-semantic-bg-hover transition-colors"
@@ -233,6 +236,7 @@ export function TemplateCarouselPreview({
         )}
         {canScrollRight && (
           <button
+            type="button"
             aria-label="Scroll template preview right"
             onClick={scroll("right")}
             className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-white shadow-[0px_2px_6px_0px_rgba(10,13,18,0.12)] flex items-center justify-center hover:bg-semantic-bg-hover transition-colors"

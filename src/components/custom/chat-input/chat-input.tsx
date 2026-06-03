@@ -198,7 +198,7 @@ function ChatInput({ expired = false, expiredMessage }: ChatInputProps) {
           <>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm">
+                <Button type="button" variant="ghost" size="icon-sm">
                   <Paperclip className="size-[18px]" />
                 </Button>
               </DropdownMenuTrigger>
@@ -236,7 +236,7 @@ function ChatInput({ expired = false, expiredMessage }: ChatInputProps) {
             </DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon-sm" onClick={() => setShowTemplateModal(true)}>
+                <Button type="button" variant="ghost" size="icon-sm" onClick={() => setShowTemplateModal(true)}>
                   <LayoutGrid className="size-[18px]" />
                 </Button>
               </TooltipTrigger>
@@ -250,7 +250,7 @@ function ChatInput({ expired = false, expiredMessage }: ChatInputProps) {
         rightActions={
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon-sm">
+              <Button type="button" variant="ghost" size="icon-sm">
                 <Smile className="size-[18px]" />
               </Button>
             </TooltipTrigger>

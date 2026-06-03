@@ -137,6 +137,7 @@ function ChatSidebar({ children, chatAreaRef }: ChatSidebarProps) {
               Inbox
             </h1>
             <Button
+              type="button"
               variant="outline"
               className="h-10"
               leftIcon={<Plus className="size-5" />}
@@ -164,6 +165,7 @@ function ChatSidebar({ children, chatAreaRef }: ChatSidebarProps) {
               size="default"
             />
             <Button
+              type="button"
               variant="outline"
               size="icon-lg"
               onClick={openFilters}

@@ -103,6 +103,7 @@ const ChatMessageList = React.forwardRef<HTMLDivElement, ChatMessageListProps>(
           </div>
 
           <Button
+            type="button"
             variant="outline"
             size="icon-lg"
             aria-label={

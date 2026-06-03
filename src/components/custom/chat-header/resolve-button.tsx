@@ -15,6 +15,7 @@ function ResolveButton() {
 
   return (
     <Button
+      type="button"
       variant={resolved ? "success" : "default"}
       leftIcon={
         <Check

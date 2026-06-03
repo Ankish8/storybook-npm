@@ -203,7 +203,7 @@ export function ChatTemplateModal({
                 Select from pre-approved message templates
               </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={handleClose}>
+            <Button type="button" variant="ghost" size="icon" onClick={handleClose}>
               <X className="size-[18px]" />
             </Button>
           </div>
@@ -357,6 +357,7 @@ export function ChatTemplateModal({
               </div>
               <div className="px-4 py-4 shrink-0 border-t-2 border-solid border-semantic-border-layout bg-white shadow-[0_-4px_12px_0_rgba(10,13,18,0.06)] sm:px-5">
                 <Button
+                  type="button"
                   onClick={handleSend}
                   disabled={!selectedTemplate}
                   className="w-full gap-2"

@@ -90,6 +90,7 @@ export function ChatContactPanel({ name }: ChatContactPanelProps) {
   const editFooter = (
     <>
       <Button
+        type="button"
         variant="outline"
         className="flex-1"
         onClick={() => setShowDiscardConfirm(true)}
@@ -97,6 +98,7 @@ export function ChatContactPanel({ name }: ChatContactPanelProps) {
         Cancel
       </Button>
       <Button
+        type="button"
         className="flex-1"
         leftIcon={<Check className="size-4" />}
         onClick={() => setIsEditing(false)}
@@ -217,6 +219,7 @@ export function ChatContactPanel({ name }: ChatContactPanelProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
+                            type="button"
                             variant="outline"
                             className="w-full justify-between"
                           >
@@ -281,6 +284,7 @@ export function ChatContactPanel({ name }: ChatContactPanelProps) {
                 {displayName}
               </span>
               <Button
+                type="button"
                 variant="outline"
                 size="icon"
                 onClick={() => setIsEditing(true)}

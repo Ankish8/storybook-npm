@@ -90,7 +90,7 @@ const ChatComposer = React.forwardRef(
             <span className="text-sm text-semantic-text-muted">
               {expiredMessage}
             </span>
-            <Button onClick={onTemplateClick}>
+            <Button type="button" onClick={onTemplateClick}>
               Select Template
             </Button>
           </div>
@@ -117,6 +117,7 @@ const ChatComposer = React.forwardRef(
                 className="tw-mb-0 tw-min-w-0 tw-w-full tw-max-w-full tw-overflow-hidden"
               />
               <Button
+                type="button"
                 variant="ghost"
                 size="icon-sm"
                 onClick={handleDismissReply}
@@ -162,6 +163,7 @@ const ChatComposer = React.forwardRef(
 
             {/* Send button */}
             <Button
+              type="button"
               className="shrink-0"
               onClick={onSend}
               disabled={disabled}

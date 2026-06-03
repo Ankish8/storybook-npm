@@ -28,6 +28,7 @@ function ChatHeader() {
     <div className="flex items-center justify-between px-4 h-[72px] bg-white border-b border-solid border-semantic-border-layout shrink-0">
       <div className="flex items-center gap-3">
         <button
+          type="button"
           aria-label={`View contact details for ${selectedChat.name}`}
           onClick={() => setShowContactDetails(!showContactDetails)}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus focus-visible:outline-offset-2 rounded"

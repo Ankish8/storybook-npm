@@ -125,6 +125,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
+                  type="button"
                   aria-label={`Playback speed ${speed}x`}
                   onClick={(e) => e.stopPropagation()}
                   className="text-[11px] font-semibold text-semantic-text-inverted bg-semantic-text-inverted/20 hover:bg-semantic-text-inverted/30 transition-colors px-2 py-0.5 rounded-full"
@@ -145,7 +146,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
             </DropdownMenu>
             {/* Volume control */}
             <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-              <button aria-label={muted || volume === 0 ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)} className="hover:opacity-70 transition-opacity">
+              <button type="button" aria-label={muted || volume === 0 ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)} className="hover:opacity-70 transition-opacity">
                 {muted || volume === 0 ? <VolumeX className="size-4 text-semantic-text-inverted/50" /> : <Volume2 className="size-4 text-semantic-text-inverted" />}
               </button>
               <div
@@ -179,7 +180,7 @@ function VideoMedia({ media }: { media: MediaPayload }) {
                 />
               </div>
             </div>
-            <button aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
+            <button type="button" aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
               {fullscreen ? <Minimize className="size-4 text-semantic-text-inverted" /> : <Maximize className="size-4 text-semantic-text-inverted" />}
             </button>
           </div>
@@ -214,6 +215,7 @@ function AudioMedia({ media: _media }: { media: MediaPayload }) {
       <div className="flex items-center gap-3">
         {/* Play / Pause */}
         <button
+          type="button"
           aria-label={playing ? "Pause audio" : "Play audio"}
           onClick={(e) => { e.stopPropagation(); setPlaying(!playing) }}
           className="shrink-0 size-10 rounded-full bg-semantic-primary flex items-center justify-center hover:opacity-90 transition-opacity"
@@ -258,6 +260,7 @@ function AudioMedia({ media: _media }: { media: MediaPayload }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
+              type="button"
               aria-label={`Playback speed ${speed}x`}
               onClick={(e) => e.stopPropagation()}
               className="shrink-0 min-w-[34px] h-[22px] px-2 flex items-center justify-center rounded-full bg-semantic-bg-inverted/40 hover:opacity-80 transition-opacity"
@@ -378,6 +381,7 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
             {item.buttons?.map((btn, j) => (
               <button
                 key={j}
+                type="button"
                 className="flex items-center justify-center gap-2 w-full border-t border-solid border-semantic-border-layout text-[13px] font-normal text-semantic-text-muted hover:bg-semantic-bg-hover transition-colors"
                 style={{ height: 40 }}
               >
@@ -391,12 +395,12 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
       </div>
       {/* Navigation arrows */}
       {canScrollLeft && (
-        <button aria-label="Scroll carousel left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-semantic-bg-primary shadow-md flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+        <button type="button" aria-label="Scroll carousel left" onClick={scroll("left")} className="absolute left-2 top-[calc(50%-12px)] size-7 rounded-full bg-semantic-bg-primary shadow-md flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
           <ChevronLeft className="size-4 text-semantic-text-primary" />
         </button>
       )}
       {canScrollRight && (
-        <button aria-label="Scroll carousel right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-semantic-bg-primary shadow-md flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
+        <button type="button" aria-label="Scroll carousel right" onClick={scroll("right")} className="absolute right-2 top-[calc(50%-12px)] size-7 rounded-full bg-semantic-bg-primary shadow-md flex items-center justify-center cursor-pointer hover:bg-semantic-bg-hover transition-colors">
           <ChevronRight className="size-4 text-semantic-text-primary" />
         </button>
       )}
