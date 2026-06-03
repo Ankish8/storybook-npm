@@ -225,6 +225,11 @@ describe("ChatBubble", () => {
 
     const alert = screen.getByRole("alert");
     expect(alert).toBeInTheDocument();
+    expect(alert).toHaveClass("w-full", "justify-end");
+    expect(alert.firstElementChild).toHaveClass("w-fit", "max-w-full");
+    expect(alert.firstElementChild).toHaveStyle({
+      maxWidth: "min(100%, 640px)",
+    });
     expect(alert.parentElement).toHaveStyle({
       width: "100%",
       maxWidth: "min(100%, 640px)",
@@ -265,6 +270,11 @@ describe("ChatBubble", () => {
 
     const alert = screen.getAllByRole("alert").at(-1)!;
     expect(alert.parentElement?.parentElement).toHaveClass("w-full");
+    expect(alert).toHaveClass("w-full", "justify-end");
+    expect(alert.firstElementChild).toHaveClass("w-fit", "max-w-full");
+    expect(alert.firstElementChild).toHaveStyle({
+      maxWidth: "min(100%, 640px)",
+    });
     expect(alert.parentElement).toHaveStyle({
       width: "100%",
       maxWidth: "min(100%, 640px)",

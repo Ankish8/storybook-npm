@@ -205,6 +205,10 @@ const failedColumnStyle: React.CSSProperties = {
   maxWidth: "min(100%, 640px)",
 };
 
+const failedFeedbackStyle: React.CSSProperties = {
+  maxWidth: "min(100%, 640px)",
+};
+
 function FailedMessageFeedback({
   failedMessage,
 }: {
@@ -267,45 +271,32 @@ function FailedMessageFeedback({
 
   return (
     <div
-      className="mt-2 flex w-full min-w-0 max-w-full items-start gap-2 text-semantic-error-text"
+      className="mt-2 flex w-full min-w-0 justify-end"
       role="alert"
     >
-      <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
-      <div className="flex min-w-0 flex-1 items-start gap-1 text-[12px] leading-4 tracking-normal">
-        {hasCode && (
-          <span className="shrink-0 text-[14px] font-semibold leading-4 tracking-[0.014px]">
-            <span>{code}</span>
-            <span>:</span>
-          </span>
-        )}
-        <div className="relative min-w-0 flex-1">
-          <p
-            ref={measureRef}
-            aria-hidden
-            className="pointer-events-none invisible absolute left-0 top-0 m-0 w-full break-words text-[12px] leading-4 tracking-normal"
-          >
-            {trimmedText}
-          </p>
-          {isExpanded ? (
-            <p className="m-0 min-w-0 break-words leading-4">
+      <div
+        className="flex w-fit min-w-0 max-w-full items-start gap-2 text-semantic-error-text"
+        style={failedFeedbackStyle}
+      >
+        <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
+        <div className="flex min-w-0 flex-1 items-start gap-1 text-[12px] leading-4 tracking-normal">
+          {hasCode && (
+            <span className="shrink-0 text-[14px] font-semibold leading-4 tracking-[0.014px]">
+              <span>{code}</span>
+              <span>:</span>
+            </span>
+          )}
+          <div className="relative min-w-0 flex-1">
+            <p
+              ref={measureRef}
+              aria-hidden
+              className="pointer-events-none invisible absolute left-0 top-0 m-0 w-full break-words text-[12px] leading-4 tracking-normal"
+            >
               {trimmedText}
-              {needsToggle && (
-                <>
-                  {" "}
-                  <button
-                    type="button"
-                    className={toggleButtonClassName}
-                    onClick={handleToggle}
-                  >
-                    {lessMoreLabel}
-                  </button>
-                </>
-              )}
             </p>
-          ) : (
-            <div>
+            {isExpanded ? (
               <p className="m-0 min-w-0 break-words leading-4">
-                {collapsedText}
+                {trimmedText}
                 {needsToggle && (
                   <>
                     {" "}
@@ -314,13 +305,31 @@ function FailedMessageFeedback({
                       className={toggleButtonClassName}
                       onClick={handleToggle}
                     >
-                      {learnMoreLabel}
+                      {lessMoreLabel}
                     </button>
                   </>
                 )}
               </p>
-            </div>
-          )}
+            ) : (
+              <div>
+                <p className="m-0 min-w-0 break-words leading-4">
+                  {collapsedText}
+                  {needsToggle && (
+                    <>
+                      {" "}
+                      <button
+                        type="button"
+                        className={toggleButtonClassName}
+                        onClick={handleToggle}
+                      >
+                        {learnMoreLabel}
+                      </button>
+                    </>
+                  )}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
