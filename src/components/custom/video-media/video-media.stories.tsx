@@ -1,6 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { VideoMedia } from "./video-media";
 
+const sampleVideo =
+  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+const samplePoster =
+  "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=375&fit=crop";
+
 const meta: Meta<typeof VideoMedia> = {
   title: "Custom/Chat/Video Media",
   component: VideoMedia,
@@ -9,7 +14,7 @@ const meta: Meta<typeof VideoMedia> = {
     docs: {
       description: {
         component: `
-A video player overlay with thumbnail, play/pause controls, seek bar, speed dropdown, volume slider, and fullscreen toggle. Designed for chat message bubbles to display video content.
+A native video renderer for chat media. It accepts either a direct video URL or a media payload, resolves safe poster thumbnails, and keeps the video constrained inside message bubbles.
 
 ### Installation
 
@@ -25,13 +30,9 @@ import { VideoMedia } from "@/components/custom/video-media"
 
 ### Design Tokens
 
-| Token | CSS Variable | Usage | Preview |
-|-------|-------------|-------|---------|
-| Gradient overlay | \`#0a0d12\` | Dark overlay on video thumbnail | <span style="color:#0a0d12">&#9632;</span> \`#0A0D12\` |
-| Controls text | — | White text/icons on overlay | <span style="color:#ffffff">&#9632;</span> \`#FFFFFF\` |
-| Play button bg | — | Semi-transparent black | <span style="color:#000000">&#9632;</span> \`black/40\` |
-| Seek bar track | — | White at 30% opacity | <span style="color:#ffffff4d">&#9632;</span> \`white/30\` |
-| Seek bar fill | — | Solid white | <span style="color:#ffffff">&#9632;</span> \`#FFFFFF\` |
+| Token | CSS Variable | Usage |
+|-------|-------------|-------|
+| Video surface | \`--semantic-text-primary\` | Letterbox/background behind videos |
         `,
       },
     },
@@ -39,7 +40,7 @@ import { VideoMedia } from "@/components/custom/video-media"
   tags: ["autodocs"],
   decorators: [
     (Story) => (
-      <div style={{ maxWidth: 380 }}>
+      <div style={{ width: 380 }}>
         <Story />
       </div>
     ),
@@ -51,28 +52,33 @@ type Story = StoryObj<typeof VideoMedia>;
 
 export const Overview: Story = {
   args: {
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=375&fit=crop",
-    duration: "2:30",
-    progress: 15,
+    url: sampleVideo,
+    poster: samplePoster,
+    fileType: "video/mp4",
   },
 };
 
-export const WithDuration: Story = {
+export const MediaPayload: Story = {
   args: {
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=375&fit=crop",
-    duration: "1:05:30",
-    progress: 42,
+    media: {
+      url: sampleVideo,
+      thumbnailUrl: samplePoster,
+      fileType: "video/mp4",
+    },
   },
 };
 
-export const CustomSpeedOptions: Story = {
+export const CustomHeight: Story = {
   args: {
-    thumbnailUrl:
-      "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=375&fit=crop",
-    duration: "5:12",
-    speedOptions: [0.5, 1, 1.5, 2],
-    progress: 60,
+    url: sampleVideo,
+    poster: samplePoster,
+    wrapperStyle: { height: 220 },
+  },
+};
+
+export const WithoutPoster: Story = {
+  args: {
+    url: sampleVideo,
+    fileType: "video/mp4",
   },
 };

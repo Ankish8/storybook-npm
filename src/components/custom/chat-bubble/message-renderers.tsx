@@ -1,11 +1,5 @@
 import * as React from "react"
 import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Minimize,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -32,6 +26,7 @@ import {
 import { Button } from "../../ui/button"
 import { Spinner } from "../../ui/spinner"
 import { cn } from "../../../lib/utils"
+import { VideoMedia as BaseVideoMedia } from "../video-media"
 import type {
   MediaPayload,
   LocationPayload,
@@ -69,125 +64,8 @@ function ImageMedia({ media }: { media: MediaPayload }) {
   )
 }
 
-/* ── VideoMedia ── */
-
 function VideoMedia({ media }: { media: MediaPayload }) {
-  const [playing, setPlaying] = React.useState(false)
-  const [muted, setMuted] = React.useState(false)
-  const [fullscreen, setFullscreen] = React.useState(false)
-  const [speed, setSpeed] = React.useState(1)
-  const [volume, setVolume] = React.useState(75)
-  return (
-    <div className="relative rounded-t overflow-hidden cursor-pointer group" onClick={() => setPlaying(!playing)}>
-      <img
-        src={media.thumbnailUrl || media.url}
-        alt="Video thumbnail"
-        className="w-full object-cover"
-        style={{ aspectRatio: "16/10" }}
-      />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-semantic-bg-inverted/70 via-semantic-bg-inverted/10 to-transparent" />
-      {/* Center play/pause */}
-      <div className={cn(
-        "absolute inset-0 flex items-center justify-center transition-opacity",
-        playing ? "opacity-0 group-hover:opacity-100" : "opacity-100"
-      )}>
-        <button type="button" aria-label={playing ? "Pause video" : "Play video"} className="size-[56px] rounded-full bg-semantic-bg-inverted/40 backdrop-blur-sm flex items-center justify-center hover:bg-semantic-bg-inverted/50 transition-colors border-none cursor-pointer">
-          {playing ? (
-            <Pause className="size-7 text-semantic-text-inverted fill-semantic-text-inverted" />
-          ) : (
-            <Play className="size-7 text-semantic-text-inverted fill-semantic-text-inverted ml-0.5" />
-          )}
-        </button>
-      </div>
-      {/* Bottom controls */}
-      <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-8">
-        {/* Seek bar */}
-        <div className="flex items-center gap-2 mb-2">
-          <div
-            role="slider"
-            aria-label="Seek"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={15}
-            tabIndex={0}
-            className="relative flex-1 h-[3px] rounded-full bg-semantic-text-inverted/30"
-          >
-            <div className="absolute left-0 top-0 h-full w-[15%] rounded-full bg-semantic-text-inverted" />
-            <div className="absolute top-1/2 -translate-y-1/2 size-3 rounded-full bg-semantic-text-inverted shadow-md" style={{ left: "15%" }} />
-          </div>
-        </div>
-        {/* Controls row */}
-        <div className="flex items-center justify-between">
-          <span className="text-[12px] text-semantic-text-inverted tabular-nums">{media.duration || "0:00"}</span>
-          <div className="flex items-center gap-2.5">
-            {/* Speed dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  aria-label={`Playback speed ${speed}x`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-[11px] font-semibold text-semantic-text-inverted bg-semantic-text-inverted/20 hover:bg-semantic-text-inverted/30 transition-colors px-2 py-0.5 rounded-full"
-                >
-                  {speed}x
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]" onClick={(e) => e.stopPropagation()}>
-                <DropdownMenuLabel>Playback Speed</DropdownMenuLabel>
-                <DropdownMenuRadioGroup value={String(speed)} onValueChange={(v) => setSpeed(Number(v))}>
-                  {SPEED_OPTIONS.map((s) => (
-                    <DropdownMenuRadioItem key={s} value={String(s)}>
-                      {s === 1 ? "1x (Normal)" : `${s}x`}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {/* Volume control */}
-            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-              <button type="button" aria-label={muted || volume === 0 ? "Unmute" : "Mute"} onClick={() => setMuted(!muted)} className="hover:opacity-70 transition-opacity">
-                {muted || volume === 0 ? <VolumeX className="size-4 text-semantic-text-inverted/50" /> : <Volume2 className="size-4 text-semantic-text-inverted" />}
-              </button>
-              <div
-                role="slider"
-                aria-label="Volume"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={muted ? 0 : volume}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-                    e.preventDefault(); e.stopPropagation(); setVolume(v => Math.min(100, v + 5)); setMuted(false)
-                  } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-                    e.preventDefault(); e.stopPropagation(); setVolume(v => Math.max(0, v - 5)); setMuted(false)
-                  }
-                }}
-                className="relative w-[60px] h-4 flex items-center cursor-pointer"
-                onClick={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect()
-                  const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100)
-                  setVolume(Math.max(0, Math.min(100, pct)))
-                  setMuted(false)
-                }}
-              >
-                <div className="w-full h-[3px] rounded-full bg-semantic-text-inverted/30">
-                  <div className="h-full rounded-full bg-semantic-text-inverted" style={{ width: `${muted ? 0 : volume}%` }} />
-                </div>
-                <div
-                  className="absolute top-1/2 size-2.5 rounded-full bg-semantic-text-inverted"
-                  style={{ left: `${muted ? 0 : volume}%`, transform: "translate(-50%, -50%)" }}
-                />
-              </div>
-            </div>
-            <button type="button" aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={(e) => { e.stopPropagation(); setFullscreen(!fullscreen) }} className="hover:opacity-70 transition-opacity">
-              {fullscreen ? <Minimize className="size-4 text-semantic-text-inverted" /> : <Maximize className="size-4 text-semantic-text-inverted" />}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return <BaseVideoMedia media={media} />
 }
 
 /* ── AudioMedia ── */
@@ -290,8 +168,6 @@ type CarouselCardItem = NonNullable<MediaPayload["images"]>[number]
 
 function CarouselCardMedia({ item }: { item: CarouselCardItem }) {
   const isVideo = item.mediaType === "video"
-  const videoRef = React.useRef<HTMLVideoElement>(null)
-  const [playing, setPlaying] = React.useState(false)
 
   if (!isVideo) {
     return (
@@ -304,49 +180,14 @@ function CarouselCardMedia({ item }: { item: CarouselCardItem }) {
     )
   }
 
-  const toggle = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    const v = videoRef.current
-    if (!v) return
-    if (v.paused) {
-      void v.play()
-      setPlaying(true)
-    } else {
-      v.pause()
-      setPlaying(false)
-    }
-  }
-
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: 200 }}>
-      <video
-        ref={videoRef}
-        src={item.url}
-        poster={item.thumbnailUrl}
-        playsInline
-        muted
-        onEnded={() => setPlaying(false)}
-        aria-label={item.title}
-        className="w-full h-full object-cover pointer-events-none"
-      />
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={playing ? "Pause video" : "Play video"}
-        className={cn(
-          "absolute inset-0 flex items-center justify-center cursor-pointer border-none bg-transparent p-0 transition-opacity",
-          playing ? "opacity-0 hover:opacity-100" : "opacity-100"
-        )}
-      >
-        <span className="size-11 rounded-full bg-semantic-bg-inverted/40 backdrop-blur-sm flex items-center justify-center">
-          {playing ? (
-            <Pause className="size-5 text-semantic-text-inverted fill-semantic-text-inverted" />
-          ) : (
-            <Play className="size-5 text-semantic-text-inverted fill-semantic-text-inverted ml-0.5" />
-          )}
-        </span>
-      </button>
-    </div>
+    <BaseVideoMedia
+      url={item.url}
+      thumbnailUrl={item.thumbnailUrl || item.url}
+      wrapperStyle={{ height: 200 }}
+      aria-label={item.title}
+      data-testid="carousel-video-element"
+    />
   )
 }
 

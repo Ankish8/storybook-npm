@@ -1135,19 +1135,17 @@ components:
     mainFile: "doc-media.tsx"
 
   video-media:
-    description: "A video player with thumbnail overlay, play/pause, seek bar, speed dropdown, volume, and fullscreen"
+    description: "A native video renderer for chat media with poster thumbnail resolution"
     category: custom
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
-      - "lucide-react"
-    internalDependencies:
-      - dropdown-menu
     isMultiFile: true
     directory: "video-media"
     files:
       - "video-media.tsx"
       - "types.ts"
+      - "utils.ts"
       - "index.ts"
     mainFile: "video-media.tsx"
 

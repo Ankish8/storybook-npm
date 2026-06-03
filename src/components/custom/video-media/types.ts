@@ -1,21 +1,36 @@
-import * as React from "react";
+import type * as React from "react";
 
-export interface VideoMediaProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** URL for the video thumbnail image */
-  thumbnailUrl: string;
-  /** Video duration text (e.g., "2:30", "1:05:30") */
-  duration?: string;
-  /** Available speed options. Defaults to [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] */
-  speedOptions?: number[];
-  /** Initial progress percentage (0-100). Defaults to 0 */
-  progress?: number;
-  /** Callback when play state changes */
-  onPlayChange?: (playing: boolean) => void;
-  /** Callback when speed changes */
-  onSpeedChange?: (speed: number) => void;
-  /**
-   * When true, root click only invokes `onClick` (e.g. open fullscreen preview)
-   * without toggling the inline play/pause UI.
-   */
-  opensPreviewOnClick?: boolean;
-}
+export type VideoMediaPayload = {
+  url: string;
+  thumbnailUrl?: string;
+  fileType?: string;
+};
+
+type VideoElementProps = Omit<
+  React.VideoHTMLAttributes<HTMLVideoElement>,
+  "src" | "children" | "poster" | "className" | "style"
+>;
+
+type VideoMediaSharedProps = {
+  poster?: string;
+  /** Alias for `poster` (compose preview / legacy callers). */
+  thumbnailUrl?: string;
+  fileType?: string;
+  wrapperClassName?: string;
+  wrapperStyle?: React.CSSProperties;
+  /** Passed to the `<video>` element (e.g. maxHeight override for compose preview). */
+  style?: React.CSSProperties;
+};
+
+export type VideoMediaProps = VideoMediaSharedProps &
+  (
+    | ({
+        media: VideoMediaPayload;
+        url?: never;
+      } & Omit<React.HTMLAttributes<HTMLDivElement>, "children">)
+    | ({
+        media?: undefined;
+        url: string;
+        className?: string;
+      } & VideoElementProps)
+  );

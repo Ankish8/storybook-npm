@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "../../../lib/utils";
+import { isVideoMedia } from "./media-utils";
 import { ReplyQuote } from "../../ui/reply-quote";
 import {
   Check,
@@ -1076,7 +1077,8 @@ const ChatBubbleMessageMode = React.forwardRef<
           )}
           {msg.type === "template" &&
             msg.media &&
-            (templateMediaKind === "video" || msg.media.duration ? (
+            (templateMediaKind === "video" ||
+            isVideoMedia(undefined, msg.media.fileType, msg.media.url) ? (
               <VideoMedia media={msg.media} />
             ) : templateMediaKind === "document" ? (
               <DocMedia

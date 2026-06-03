@@ -1,81 +1,130 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { VideoMedia } from "../video-media";
-
-const defaultProps = {
-  thumbnailUrl: "https://example.com/thumb.jpg",
-};
+import { hasDisplayableVideoThumbnail, urlPathWithoutQuery } from "../utils";
 
 describe("VideoMedia", () => {
-  it("renders thumbnail image", () => {
-    render(<VideoMedia {...defaultProps} />);
-    const img = screen.getByAltText("Video thumbnail");
-    expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute("src", "https://example.com/thumb.jpg");
-  });
-
-  it("shows play button initially (not playing)", () => {
-    const { container } = render(<VideoMedia {...defaultProps} />);
-    // Play icon is present — the SVG for lucide Play
-    // The center play/pause wrapper should be fully visible (opacity-100)
-    const centerOverlay = container.querySelector(
-      ".absolute.inset-0.flex.items-center"
+  it("renders a native video from url props", () => {
+    render(
+      <VideoMedia
+        url="https://example.com/video.mp4"
+        poster="https://example.com/poster.jpg"
+        fileType="video/mp4"
+      />
     );
-    expect(centerOverlay).toHaveClass("opacity-100");
+
+    const video = screen.getByTestId("video-element");
+    expect(video).toBeInTheDocument();
+    expect(video).toHaveAttribute("src", "https://example.com/video.mp4");
+    expect(video).toHaveAttribute("poster", "https://example.com/poster.jpg");
+    expect(video).toHaveAttribute("controls");
+    expect(video).toHaveAttribute("playsinline");
+    expect(screen.getByTestId("video-media-source")).toHaveAttribute(
+      "type",
+      "video/mp4"
+    );
   });
 
-  it("applies custom className", () => {
+  it("uses media payload thumbnail when it is displayable", () => {
+    render(
+      <VideoMedia
+        media={{
+          url: "https://example.com/video.mp4",
+          thumbnailUrl: "https://example.com/thumb.jpg",
+        }}
+      />
+    );
+
+    expect(screen.getByTestId("video-element")).toHaveAttribute(
+      "poster",
+      "https://example.com/thumb.jpg"
+    );
+  });
+
+  it("falls back to poster when media thumbnail is the video url", () => {
+    render(
+      <VideoMedia
+        media={{
+          url: "https://example.com/video.mp4",
+          thumbnailUrl: "https://example.com/video.mp4",
+          fileType: "video/mp4",
+        }}
+        poster="https://example.com/fallback.jpg"
+      />
+    );
+
+    expect(screen.getByTestId("video-element")).toHaveAttribute(
+      "poster",
+      "https://example.com/fallback.jpg"
+    );
+  });
+
+  it("applies custom className to direct url wrapper", () => {
     const { container } = render(
-      <VideoMedia {...defaultProps} className="my-custom-class" />
+      <VideoMedia url="https://example.com/video.mp4" className="custom-class" />
     );
-    expect(container.firstChild).toHaveClass("my-custom-class");
+
+    expect(container.firstChild).toHaveClass("custom-class");
   });
 
-  it("forwards ref correctly", () => {
-    const ref = vi.fn() as unknown as React.RefObject<HTMLDivElement>;
-    const callbackRef = (node: HTMLDivElement | null) => {
-      (ref as unknown as { current: HTMLDivElement | null }).current = node;
-    };
-    render(<VideoMedia {...defaultProps} ref={callbackRef} />);
+  it("applies media payload props to the outer wrapper", () => {
+    render(
+      <VideoMedia
+        media={{ url: "https://example.com/video.mp4" }}
+        className="outer-class"
+        data-testid="video-wrapper"
+      />
+    );
+
+    const wrapper = screen.getByTestId("video-wrapper");
+    expect(wrapper).toHaveClass("outer-class");
+    expect(screen.getByTestId("video-element")).toBeInTheDocument();
+  });
+
+  it("passes video attributes through for direct url usage", () => {
+    render(
+      <VideoMedia
+        url="https://example.com/video.mp4"
+        data-testid="custom-video"
+        muted
+        loop
+      />
+    );
+
+    const video = screen.getByTestId("custom-video");
+    expect(video).toHaveProperty("muted", true);
+    expect(video).toHaveProperty("loop", true);
+  });
+
+  it("forwards ref to the rendered wrapper", () => {
+    const ref = vi.fn();
+
+    render(<VideoMedia url="https://example.com/video.mp4" ref={ref} />);
+
+    expect(ref).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+  });
+
+  it("does not render without a usable url", () => {
+    const { container } = render(<VideoMedia url="   " />);
+
+    expect(container.firstChild).toBeNull();
+  });
+});
+
+describe("video media utils", () => {
+  it("strips query and hash from a url path", () => {
+    expect(urlPathWithoutQuery(" https://example.com/video.mp4?token=1#x ")).toBe(
+      "https://example.com/video.mp4"
+    );
+  });
+
+  it("rejects video thumbnails that are not displayable images", () => {
     expect(
-      (ref as unknown as { current: HTMLDivElement | null }).current
-    ).toBeInstanceOf(HTMLDivElement);
-  });
-
-  it("spreads data-testid correctly", () => {
-    render(<VideoMedia {...defaultProps} data-testid="video-player" />);
-    expect(screen.getByTestId("video-player")).toBeInTheDocument();
-  });
-
-  it("renders duration text", () => {
-    render(<VideoMedia {...defaultProps} duration="2:30" />);
-    expect(screen.getByText("2:30")).toBeInTheDocument();
-  });
-
-  it("renders default duration when not provided", () => {
-    render(<VideoMedia {...defaultProps} />);
-    expect(screen.getByText("0:00")).toBeInTheDocument();
-  });
-
-  it("accepts custom speed options", () => {
-    const { container } = render(
-      <VideoMedia {...defaultProps} speedOptions={[0.5, 1, 2]} />
-    );
-    // The speed button should show default speed 1x
-    const speedButton = container.querySelector(
-      "button.rounded-full"
-    );
-    expect(speedButton).toHaveTextContent("1x");
-  });
-
-  it("applies progress to seek bar width", () => {
-    const { container } = render(
-      <VideoMedia {...defaultProps} progress={45} />
-    );
-    // The progress bar fill div
-    const progressFill = container.querySelector(
-      ".bg-white\\/30 .bg-white"
-    );
-    expect(progressFill).toHaveStyle({ width: "45%" });
+      hasDisplayableVideoThumbnail({
+        url: "https://example.com/video.mp4",
+        thumbnailUrl: "https://example.com/thumb.webm",
+        fileType: "video/mp4",
+      })
+    ).toBe(false);
   });
 });
