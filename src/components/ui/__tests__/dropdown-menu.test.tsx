@@ -509,6 +509,11 @@ describe("DropdownMenuContent styling", () => {
     await user.click(screen.getByText("Open"));
     const content = screen.getByTestId("content");
     expect(content).toHaveClass("z-[9999]");
+    expect(content).toHaveClass(
+      "max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))]"
+    );
+    expect(content).toHaveClass("overflow-y-auto");
+    expect(content).toHaveClass("overscroll-contain");
     expect(content).toHaveClass("rounded-md");
     expect(content).toHaveClass("border");
     expect(content).toHaveClass("bg-semantic-bg-primary");
