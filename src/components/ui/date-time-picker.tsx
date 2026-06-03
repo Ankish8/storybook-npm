@@ -1621,15 +1621,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             >
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor={`${triggerId}-start-time`}
+                id={`${triggerId}-start-time-label`}
                 className="block text-sm font-semibold text-semantic-text-primary"
               >
                 {startTimeLabel}
               </label>
-              <div
-                className="relative cursor-pointer"
-                onClick={() => openNativeTimePicker(startTimeInputRef.current)}
-              >
+              <div className="relative">
                 <Clock2
                   className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
                   aria-hidden="true"
@@ -1637,6 +1634,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <input
                   ref={startTimeInputRef}
                   id={`${triggerId}-start-time`}
+                  aria-labelledby={`${triggerId}-start-time-label`}
                   type="time"
                   step={resolvedShowSeconds ? "1" : "60"}
                   value={formatTimeForTimeInput(
@@ -1644,6 +1642,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     resolvedShowSeconds
                   )}
                   className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+                  onClick={() => openNativeTimePicker(startTimeInputRef.current)}
                   onChange={(event) =>
                     updateValue(
                       {
@@ -1663,15 +1662,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             {resolvedShowEndTime && (
               <div className="flex flex-col gap-1.5">
                 <label
-                  htmlFor={`${triggerId}-end-time`}
+                  id={`${triggerId}-end-time-label`}
                   className="block text-sm font-semibold text-semantic-text-primary"
                 >
                   {endTimeLabel}
                 </label>
-                <div
-                  className="relative cursor-pointer"
-                  onClick={() => openNativeTimePicker(endTimeInputRef.current)}
-                >
+                <div className="relative">
                   <Clock2
                     className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
                     aria-hidden="true"
@@ -1679,6 +1675,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   <input
                     ref={endTimeInputRef}
                     id={`${triggerId}-end-time`}
+                    aria-labelledby={`${triggerId}-end-time-label`}
                     type="time"
                     step={resolvedShowSeconds ? "1" : "60"}
                     value={formatTimeForTimeInput(
@@ -1686,6 +1683,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       resolvedShowSeconds
                     )}
                     className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+                    onClick={() => openNativeTimePicker(endTimeInputRef.current)}
                     onChange={(event) =>
                       updateValue(
                         {

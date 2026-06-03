@@ -128,7 +128,7 @@ describe("DateTimePicker", () => {
     expect(screen.queryByLabelText("Year")).not.toBeInTheDocument();
   });
 
-  it("opens the native time picker when clicking the whole time field", () => {
+  it("opens the native time picker only when clicking the time input", () => {
     const showPicker = vi.fn();
     const inputPrototype = HTMLInputElement.prototype as HTMLInputElement & {
       showPicker?: () => void;
@@ -152,7 +152,12 @@ describe("DateTimePicker", () => {
       );
 
       fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByText("Start Time"));
       fireEvent.click(screen.getByLabelText("Start Time").parentElement!);
+
+      expect(showPicker).not.toHaveBeenCalled();
+
+      fireEvent.click(screen.getByLabelText("Start Time"));
 
       expect(showPicker).toHaveBeenCalled();
     } finally {
