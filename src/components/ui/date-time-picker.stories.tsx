@@ -85,6 +85,11 @@ import { DateTimePicker } from "@/components/ui/date-time-picker"
       control: "boolean",
       description: "Show or hide the end time field",
     },
+    showSeconds: {
+      control: "boolean",
+      description:
+        "Force seconds on or off. When omitted, seconds appear automatically when a selected time includes non-zero seconds.",
+    },
     showClear: {
       control: "boolean",
       description: "Show or hide the clear action when a value is selected",
@@ -139,6 +144,27 @@ export const StartTimeOnly: Story = {
   args: {
     defaultValue: sampleValue,
     showEndTime: false,
+  },
+};
+
+export const WithSeconds: Story = {
+  args: {
+    defaultValue: {
+      date: new Date(2026, 4, 12),
+      startTime: "10:30:15",
+      endTime: "12:30:45",
+    },
+  },
+};
+
+export const WithoutSeconds: Story = {
+  args: {
+    defaultValue: {
+      date: new Date(2026, 4, 12),
+      startTime: "10:30:15",
+      endTime: "12:30:45",
+    },
+    showSeconds: false,
   },
 };
 

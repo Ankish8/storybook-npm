@@ -32,7 +32,7 @@ describe("DateTimePicker", () => {
   it("renders the placeholder when no date is selected", () => {
     render(<DateTimePicker />);
 
-    expect(screen.getByPlaceholderText("--/--/-- -- : --")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("--/--/---- --:-- --")).toBeInTheDocument();
   });
 
   it("renders a date-only variant", () => {
@@ -128,6 +128,45 @@ describe("DateTimePicker", () => {
     expect(screen.queryByLabelText("Year")).not.toBeInTheDocument();
   });
 
+  it("opens the native time picker when clicking the whole time field", () => {
+    const showPicker = vi.fn();
+    const inputPrototype = HTMLInputElement.prototype as HTMLInputElement & {
+      showPicker?: () => void;
+    };
+    const originalShowPicker = inputPrototype.showPicker;
+
+    Object.defineProperty(inputPrototype, "showPicker", {
+      configurable: true,
+      value: showPicker,
+    });
+
+    try {
+      render(
+        <DateTimePicker
+          defaultValue={{
+            date: mayTwelve,
+            startTime: "10:30:00",
+            endTime: "12:30:00",
+          }}
+        />
+      );
+
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByLabelText("Start Time").parentElement!);
+
+      expect(showPicker).toHaveBeenCalled();
+    } finally {
+      if (originalShowPicker) {
+        Object.defineProperty(inputPrototype, "showPicker", {
+          configurable: true,
+          value: originalShowPicker,
+        });
+      } else {
+        delete (inputPrototype as { showPicker?: () => void }).showPicker;
+      }
+    }
+  });
+
   it("uses DateRangeModal trigger styling", () => {
     render(<DateTimePicker />);
 
@@ -195,6 +234,59 @@ describe("DateTimePicker", () => {
       date: mayTwelve,
       startTime: "11:45:00",
       endTime: "13:15:00",
+    });
+  });
+
+  it("auto-shows seconds when the selected value includes them", () => {
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:15",
+          endTime: "12:30:45",
+        }}
+      />
+    );
+
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/05/2026 10:30:15 AM"
+    );
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+
+    expect(screen.getByLabelText("Start Time")).toHaveValue("10:30:15");
+    expect(screen.getByLabelText("End Time")).toHaveValue("12:30:45");
+  });
+
+  it("can hide seconds and normalizes time input changes to minute precision", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        showSeconds={false}
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:15",
+          endTime: "12:30:45",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    expect(screen.getByLabelText("Date and time")).toHaveValue("12/05/2026 10:30 AM");
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+
+    expect(screen.getByLabelText("Start Time")).toHaveValue("10:30");
+    expect(screen.getByLabelText("End Time")).toHaveValue("12:30");
+
+    fireEvent.change(screen.getByLabelText("Start Time"), {
+      target: { value: "11:45" },
+    });
+
+    expect(handleValueChange).toHaveBeenLastCalledWith({
+      date: mayTwelve,
+      startTime: "11:45:00",
+      endTime: "12:30:45",
     });
   });
 
@@ -311,6 +403,31 @@ describe("DateTimePicker", () => {
     expect(handleValueChange).toHaveBeenCalledWith({
       date: new Date(2026, 5, 15),
       startTime: "23:45:00",
+      endTime: "12:30:00",
+    });
+  });
+
+  it("allows typing date and start time with seconds into the input", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        showSeconds
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText("Date and time"), {
+      target: { value: "15/06/2026 11:45:30 PM" },
+    });
+
+    expect(handleValueChange).toHaveBeenCalledWith({
+      date: new Date(2026, 5, 15),
+      startTime: "23:45:30",
       endTime: "12:30:00",
     });
   });
@@ -593,22 +710,20 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    fireEvent.change(screen.getByLabelText("Month"), {
-      target: { value: "5" },
-    });
+    fireEvent.click(screen.getByLabelText("Month"));
+    fireEvent.click(screen.getByLabelText("Jun", { selector: "button" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
-    expect(screen.getByLabelText("Month")).toHaveValue("5");
+    expect(screen.getByLabelText("Month")).toHaveAttribute("data-value", "5");
     expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2026 10:30 AM");
     expect(screen.getByLabelText("June 12, 2026")).toHaveAttribute(
       "aria-pressed",
       "true"
     );
 
-    fireEvent.change(screen.getByLabelText("Year"), {
-      target: { value: "2027" },
-    });
+    fireEvent.click(screen.getByLabelText("Year"));
+    fireEvent.click(screen.getByLabelText("2027", { selector: "button" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
-    expect(screen.getByLabelText("Year")).toHaveValue("2027");
+    expect(screen.getByLabelText("Year")).toHaveAttribute("data-value", "2027");
     expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2027 10:30 AM");
     expect(screen.getByLabelText("June 12, 2027")).toHaveAttribute(
       "aria-pressed",
@@ -628,14 +743,12 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    fireEvent.change(screen.getByLabelText("Month"), {
-      target: { value: "5" },
-    });
+    fireEvent.click(screen.getByLabelText("Month"));
+    fireEvent.click(screen.getByLabelText("Jun", { selector: "button" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Year"), {
-      target: { value: "2027" },
-    });
+    fireEvent.click(screen.getByLabelText("Year"));
+    fireEvent.click(screen.getByLabelText("2027", { selector: "button" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
   });
 
@@ -651,12 +764,10 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    fireEvent.change(screen.getByLabelText("Month"), {
-      target: { value: "5" },
-    });
-    fireEvent.change(screen.getByLabelText("Year"), {
-      target: { value: "2027" },
-    });
+    fireEvent.click(screen.getByLabelText("Month"));
+    fireEvent.click(screen.getByLabelText("Jun", { selector: "button" }));
+    fireEvent.click(screen.getByLabelText("Year"));
+    fireEvent.click(screen.getByLabelText("2027", { selector: "button" }));
 
     expect(screen.getByLabelText("June 12, 2027")).toHaveAttribute(
       "aria-pressed",
@@ -676,12 +787,11 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    fireEvent.change(screen.getByLabelText("Month"), {
-      target: { value: "1" },
-    });
+    fireEvent.click(screen.getByLabelText("Month"));
+    fireEvent.click(screen.getByLabelText("Feb", { selector: "button" }));
 
     expect(screen.getByLabelText("Date and time")).toHaveValue("01/02/2026 10:30 AM");
-    expect(screen.getByLabelText("Month")).toHaveValue("1");
+    expect(screen.getByLabelText("Month")).toHaveAttribute("data-value", "1");
     expect(screen.getByLabelText("February 1, 2026")).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -702,7 +812,7 @@ describe("DateTimePicker", () => {
     fireEvent.click(screen.getByLabelText("Date and time"));
     fireEvent.click(screen.getByLabelText("Next month"));
 
-    expect(screen.getByLabelText("Month")).toHaveValue("5");
+    expect(screen.getByLabelText("Month")).toHaveAttribute("data-value", "5");
     expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2026 10:30 AM");
     expect(screen.getByLabelText("June 12, 2026")).toHaveAttribute(
       "aria-pressed",
@@ -765,9 +875,13 @@ describe("DateTimePicker", () => {
 
   it("formats display helpers", () => {
     expect(formatTimeForDisplay("00:00:00")).toBe("12:00 AM");
+    expect(formatTimeForDisplay("00:00:05", true)).toBe("12:00:05 AM");
     expect(formatTimeForDisplay("12:30:00")).toBe("12:30 PM");
     expect(formatDateForDisplay(mayTwelve, "23:05:00")).toBe(
       "12/05/2026 11:05 PM"
+    );
+    expect(formatDateForDisplay(mayTwelve, "23:05:07", true)).toBe(
+      "12/05/2026 11:05:07 PM"
     );
   });
 });

@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 const DEFAULT_START_TIME = "10:30:00";
 const DEFAULT_END_TIME = "12:30:00";
-const DEFAULT_PLACEHOLDER = "--/--/-- -- : --";
+const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --";
 const POPOVER_WIDTH = 336;
 const POPOVER_MARGIN = 8;
 const POPOVER_GAP = 4;
@@ -27,17 +27,8 @@ const POPOVER_WIDTH_VAR = "--date-time-picker-popover-width";
 const CALENDAR_PLACEMENT: Placement = "bottom-start";
 const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
-const CALENDAR_NATIVE_SELECT_CLASS =
+const CALENDAR_DROPDOWN_TRIGGER_CLASS =
   "h-9 min-w-[90px] rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]";
-const DATE_TIME_INPUT_SEGMENT_RANGES = {
-  day: [0, 2],
-  month: [3, 5],
-  year: [6, 10],
-  hour: [11, 13],
-  minute: [14, 16],
-  meridiem: [17, 19],
-} as const;
-
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = Array.from({ length: 12 }, (_, monthIndex) =>
   new Intl.DateTimeFormat("en-US", { month: "short" }).format(
@@ -109,6 +100,7 @@ export interface DateTimePickerProps
   readOnly?: boolean;
   name?: string;
   showEndTime?: boolean;
+  showSeconds?: boolean;
   showClear?: boolean;
   closeOnSelect?: boolean;
   startTimeLabel?: string;
@@ -125,6 +117,13 @@ export interface DateTimePickerProps
 type DateTimePickerVariant = NonNullable<
   VariantProps<typeof dateTimePickerVariants>["variant"]
 >;
+type CalendarDropdownKind = "month" | "year";
+
+interface CalendarDropdownOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
 
 function normalizeValue(
   value?: Partial<DateTimePickerValue>
@@ -240,22 +239,34 @@ function isPointerInsideElement(
   return false;
 }
 
-function formatTimeForDisplay(time: string) {
-  const [hour = "0", minute = "0"] = time.split(":");
+function timeHasVisibleSeconds(time?: string) {
+  const [, , second = "00"] = (time ?? "").split(":");
+  return /^\d{1,2}$/.test(second) && Number(second) !== 0;
+}
+
+function formatTimeForDisplay(time: string, showSeconds = false) {
+  const [hour = "0", minute = "0", second = "00"] = time.split(":");
   const hourNumber = Number(hour);
   const suffix = hourNumber >= 12 ? "PM" : "AM";
   const hour12 = hourNumber % 12 || 12;
+  const normalizedSecond = second.padStart(2, "0");
+  const formattedTime = showSeconds
+    ? `${hour12.toString().padStart(2, "0")}:${minute.padStart(2, "0")}:${normalizedSecond}`
+    : `${hour12.toString().padStart(2, "0")}:${minute.padStart(2, "0")}`;
 
-  return `${hour12.toString().padStart(2, "0")}:${minute.padStart(2, "0")} ${suffix}`;
+  return `${formattedTime} ${suffix}`;
 }
 
-function formatDateForDisplay(date?: Date, time?: string) {
+function formatDateForDisplay(date?: Date, time?: string, showSeconds = false) {
   if (!date) return "";
 
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const day = date.getDate().toString().padStart(2, "0");
   const year = date.getFullYear();
-  const formattedTime = formatTimeForDisplay(time ?? DEFAULT_START_TIME);
+  const formattedTime = formatTimeForDisplay(
+    time ?? DEFAULT_START_TIME,
+    showSeconds
+  );
 
   return `${day}/${month}/${year} ${formattedTime}`;
 }
@@ -274,7 +285,8 @@ function formatValueForDisplay(
   value: DateTimePickerValue,
   variant: DateTimePickerVariant,
   showEndTime: boolean,
-  hasTimeValue: boolean
+  hasTimeValue: boolean,
+  showSeconds: boolean
 ) {
   if (variant === "date-only") {
     return formatDateOnlyForDisplay(value.date);
@@ -284,16 +296,23 @@ function formatValueForDisplay(
     if (!hasTimeValue) return "";
 
     return showEndTime
-      ? `${formatTimeForDisplay(value.startTime)} - ${formatTimeForDisplay(value.endTime)}`
-      : formatTimeForDisplay(value.startTime);
+      ? `${formatTimeForDisplay(value.startTime, showSeconds)} - ${formatTimeForDisplay(value.endTime, showSeconds)}`
+      : formatTimeForDisplay(value.startTime, showSeconds);
   }
 
-  return formatDateForDisplay(value.date, value.startTime);
+  return formatDateForDisplay(value.date, value.startTime, showSeconds);
 }
 
-function getDefaultPlaceholder(variant: DateTimePickerVariant) {
+function getDefaultPlaceholder(
+  variant: DateTimePickerVariant,
+  showSeconds: boolean
+) {
   if (variant === "date-only") return "--/--/----";
-  if (variant === "time-only") return "--:-- --";
+  if (variant === "time-only") {
+    return showSeconds ? "--:--:-- --" : "--:-- --";
+  }
+
+  if (showSeconds) return "--/--/---- --:--:-- --";
 
   return DEFAULT_PLACEHOLDER;
 }
@@ -509,16 +528,20 @@ function splitTypedDateInput(value: string) {
   };
 }
 
-function isPotentiallyValidTimeDigits(timeDigits: string) {
+function isPotentiallyValidTimeDigits(timeDigits: string, showSeconds: boolean) {
   const hourValue = timeDigits.slice(0, 2);
   const minuteValue = timeDigits.slice(2, 4);
+  const secondValue = showSeconds ? timeDigits.slice(4, 6) : "";
   const hour = Number(hourValue);
   const minute = Number(minuteValue);
+  const second = Number(secondValue);
 
   if (hourValue.length === 1 && hour > 1) return false;
   if (hourValue.length === 2 && (hour < 1 || hour > 12)) return false;
   if (minuteValue.length === 1 && minute > 5) return false;
   if (minuteValue.length === 2 && minute > 59) return false;
+  if (showSeconds && secondValue.length === 1 && second > 5) return false;
+  if (showSeconds && secondValue.length === 2 && second > 59) return false;
 
   return true;
 }
@@ -531,21 +554,25 @@ function formatMeridiemInput(letters: string) {
   return null;
 }
 
-function formatTimeInput(restValue: string) {
+function formatTimeInput(restValue: string, showSeconds: boolean) {
   const normalizedValue = restValue.toUpperCase();
-  const timeDigits = normalizedValue.replace(/\D/g, "").slice(0, 4);
+  const maxTimeDigits = showSeconds ? 6 : 4;
+  const timeDigits = normalizedValue.replace(/\D/g, "").slice(0, maxTimeDigits);
   const meridiemLetters = normalizedValue.replace(/[^A-Z]/g, "");
   const meridiem = formatMeridiemInput(meridiemLetters.slice(0, 2));
 
   if (!timeDigits && !meridiem) return "";
-  if (!isPotentiallyValidTimeDigits(timeDigits) || meridiem === null) {
+  if (!isPotentiallyValidTimeDigits(timeDigits, showSeconds) || meridiem === null) {
     return null;
   }
 
-  const timeValue =
-    timeDigits.length <= 2
-      ? timeDigits
-      : `${timeDigits.slice(0, 2)}:${timeDigits.slice(2, 4)}`;
+  let timeValue = timeDigits.slice(0, 2);
+  if (timeDigits.length > 2) {
+    timeValue = `${timeValue}:${timeDigits.slice(2, 4)}`;
+  }
+  if (showSeconds && timeDigits.length > 4) {
+    timeValue = `${timeValue}:${timeDigits.slice(4, 6)}`;
+  }
 
   return [timeValue, meridiem].filter(Boolean).join(" ");
 }
@@ -564,20 +591,28 @@ function sanitizeTypedDateInput(value: string, previousValue: string) {
   return dateValue;
 }
 
-function sanitizeTypedTimeInput(value: string, previousValue: string) {
+function sanitizeTypedTimeInput(
+  value: string,
+  previousValue: string,
+  showSeconds: boolean
+) {
   const trimmedValue = value.trimStart();
   if (/^[A-Za-z]/.test(trimmedValue) && !/^[AP]/i.test(trimmedValue)) {
     return previousValue;
   }
 
   const normalizedValue = value.toUpperCase().replace(/[^0-9\s:APM]/g, "");
-  const formattedTime = formatTimeInput(normalizedValue);
+  const formattedTime = formatTimeInput(normalizedValue, showSeconds);
   if (formattedTime === null) return previousValue;
 
   return formattedTime;
 }
 
-function sanitizeTypedDateTimeInput(value: string, previousValue: string) {
+function sanitizeTypedDateTimeInput(
+  value: string,
+  previousValue: string,
+  showSeconds: boolean
+) {
   const trimmedValue = value.trimStart();
   if (/^[A-Za-z]/.test(trimmedValue)) return previousValue;
 
@@ -591,21 +626,58 @@ function sanitizeTypedDateTimeInput(value: string, previousValue: string) {
   if (!limitedDateDigits) return "";
   if (!isValid) return previousValue;
 
-  const formattedTime = isComplete ? formatTimeInput(restValue) : "";
+  const formattedTime = isComplete ? formatTimeInput(restValue, showSeconds) : "";
   if (formattedTime === null) return previousValue;
 
   return [dateValue, formattedTime].filter(Boolean).join(" ");
 }
 
-type DateTimeInputSegment = keyof typeof DATE_TIME_INPUT_SEGMENT_RANGES;
+type DateTimeInputSegment =
+  | "day"
+  | "month"
+  | "year"
+  | "hour"
+  | "minute"
+  | "second"
+  | "meridiem";
 
-function getDateTimeInputSegment(cursorPosition: number): DateTimeInputSegment {
-  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.day[1]) return "day";
-  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.month[1]) return "month";
-  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.year[1]) return "year";
-  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.hour[1]) return "hour";
-  if (cursorPosition <= DATE_TIME_INPUT_SEGMENT_RANGES.minute[1]) {
+function getDateTimeInputSegmentRanges(showSeconds: boolean) {
+  return showSeconds
+    ? ({
+        day: [0, 2],
+        month: [3, 5],
+        year: [6, 10],
+        hour: [11, 13],
+        minute: [14, 16],
+        second: [17, 19],
+        meridiem: [20, 22],
+      } satisfies Record<DateTimeInputSegment, readonly [number, number]>)
+    : ({
+        day: [0, 2],
+        month: [3, 5],
+        year: [6, 10],
+        hour: [11, 13],
+        minute: [14, 16],
+        second: [17, 19],
+        meridiem: [17, 19],
+      } satisfies Record<DateTimeInputSegment, readonly [number, number]>);
+}
+
+function getDateTimeInputSegment(
+  cursorPosition: number,
+  showSeconds: boolean
+): DateTimeInputSegment {
+  const ranges = getDateTimeInputSegmentRanges(showSeconds);
+
+  if (cursorPosition <= ranges.day[1]) return "day";
+  if (cursorPosition <= ranges.month[1]) return "month";
+  if (cursorPosition <= ranges.year[1]) return "year";
+  if (cursorPosition <= ranges.hour[1]) return "hour";
+  if (cursorPosition <= ranges.minute[1]) {
     return "minute";
+  }
+  if (showSeconds && cursorPosition <= ranges.second[1]) {
+    return "second";
   }
 
   return "meridiem";
@@ -619,12 +691,13 @@ function stepDateTimeInputValue(
   value: string,
   cursorPosition: number,
   direction: 1 | -1,
-  fallbackTime: string
+  fallbackTime: string,
+  showSeconds: boolean
 ) {
   const typedDateTime = parseTypedDateTime(value);
   if (!typedDateTime) return null;
 
-  const segment = getDateTimeInputSegment(cursorPosition);
+  const segment = getDateTimeInputSegment(cursorPosition, showSeconds);
   const nextDate = new Date(typedDateTime.date);
   const [hourValue = "0", minuteValue = "0", secondValue = "00"] = (
     typedDateTime.startTime ?? fallbackTime
@@ -661,6 +734,8 @@ function stepDateTimeInputValue(
     nextDate.setHours(nextDate.getHours() + direction);
   } else if (segment === "minute") {
     nextDate.setMinutes(nextDate.getMinutes() + direction);
+  } else if (segment === "second") {
+    nextDate.setSeconds(nextDate.getSeconds() + direction);
   } else {
     nextDate.setHours(nextDate.getHours() + 12 * direction);
   }
@@ -681,6 +756,34 @@ function stepDateTimeInputValue(
     startTime,
     segment,
   };
+}
+
+function formatTimeForTimeInput(time: string, showSeconds: boolean) {
+  const normalizedTime = parseTimePart(time) ?? DEFAULT_START_TIME;
+  const [hour = "00", minute = "00", second = "00"] = normalizedTime.split(":");
+
+  return showSeconds ? `${hour}:${minute}:${second}` : `${hour}:${minute}`;
+}
+
+function normalizeTimeInputValue(time: string, fallbackTime: string) {
+  return parseTimePart(time) ?? parseTimePart(fallbackTime) ?? DEFAULT_START_TIME;
+}
+
+function openNativeTimePicker(input: HTMLInputElement | null) {
+  if (!input) return;
+
+  input.focus();
+
+  const showPicker = (
+    input as HTMLInputElement & { showPicker?: () => void }
+  ).showPicker;
+  if (!showPicker) return;
+
+  try {
+    showPicker.call(input);
+  } catch {
+    input.focus();
+  }
 }
 
 function parseTypedDateTime(value: string) {
@@ -762,6 +865,85 @@ function FigmaCalendarIcon({ className }: { className?: string }) {
   );
 }
 
+function CalendarDropdown({
+  id,
+  label,
+  value,
+  options,
+  open,
+  onOpenChange,
+  onValueChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  options: CalendarDropdownOption[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onValueChange: (value: string) => void;
+}) {
+  const selectedOption = options.find((option) => option.value === value);
+
+  return (
+    <div className="relative">
+      <label className="sr-only" htmlFor={id}>
+        {label}
+      </label>
+      <button
+        id={id}
+        type="button"
+        role="combobox"
+        aria-label={label}
+        aria-expanded={open}
+        aria-controls={`${id}-options`}
+        data-value={value}
+        className={cn(
+          CALENDAR_DROPDOWN_TRIGGER_CLASS,
+          "inline-flex items-center justify-between gap-2"
+        )}
+        onClick={() => onOpenChange(!open)}
+      >
+        <span>{selectedOption?.label ?? value}</span>
+        <ChevronRight
+          className={cn("size-3 transition-transform", open && "-rotate-90")}
+          aria-hidden="true"
+        />
+      </button>
+      {open && (
+        <div
+          id={`${id}-options`}
+          role="listbox"
+          aria-label={`${label} options`}
+          className="absolute left-0 top-full z-10 mt-1 max-h-52 min-w-full overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg"
+        >
+          {options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-label={option.label}
+              aria-selected={option.value === value}
+              disabled={option.disabled}
+              className={cn(
+                "flex w-full items-center rounded px-2 py-1.5 text-left text-sm text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover disabled:cursor-not-allowed disabled:opacity-40",
+                option.value === value && "bg-semantic-primary text-semantic-text-inverted"
+              )}
+              onClick={() => {
+                if (option.disabled) return;
+
+                onValueChange(option.value);
+                onOpenChange(false);
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
   (
     {
@@ -777,6 +959,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       readOnly = false,
       name,
       showEndTime = true,
+      showSeconds,
       showClear = true,
       closeOnSelect = false,
       startTimeLabel = "Start Time",
@@ -799,7 +982,6 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const showCalendar = pickerVariant !== "time-only";
     const showTimeFields = pickerVariant !== "date-only";
     const resolvedShowEndTime = showTimeFields && showEndTime;
-    const placeholder = placeholderProp ?? getDefaultPlaceholder(pickerVariant);
     const isValueControlled = value !== undefined;
     const isOpenControlled = controlledOpen !== undefined;
     const [internalValue, setInternalValue] = React.useState(() =>
@@ -815,17 +997,33 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const hasTimeValue = isValueControlled
       ? Boolean(value?.date || value?.startTime || value?.endTime)
       : internalHasTimeValue;
+    const resolvedShowSeconds =
+      showSeconds ??
+      (timeHasVisibleSeconds(currentValue.startTime) ||
+        (resolvedShowEndTime && timeHasVisibleSeconds(currentValue.endTime)));
+    const placeholder =
+      placeholderProp ?? getDefaultPlaceholder(pickerVariant, resolvedShowSeconds);
     const open = isOpenControlled ? controlledOpen : internalOpen;
     const [visibleMonth, setVisibleMonth] = React.useState(() =>
       startOfMonth(currentValue.date ?? new Date())
     );
     const [dateInputValue, setDateInputValue] = React.useState(() =>
-      formatDateForDisplay(currentValue.date, currentValue.startTime)
+      formatValueForDisplay(
+        currentValue,
+        pickerVariant,
+        resolvedShowEndTime,
+        hasTimeValue,
+        resolvedShowSeconds
+      )
     );
     const [isDateInputFocused, setIsDateInputFocused] = React.useState(false);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const triggerRef = React.useRef<HTMLDivElement | null>(null);
     const popoverRef = React.useRef<HTMLDivElement | null>(null);
+    const startTimeInputRef = React.useRef<HTMLInputElement | null>(null);
+    const endTimeInputRef = React.useRef<HTMLInputElement | null>(null);
+    const [openCalendarDropdown, setOpenCalendarDropdown] =
+      React.useState<CalendarDropdownKind | null>(null);
     const usesContainerPortal = portalContainer !== undefined;
     const floatingStrategy: Strategy = usesContainerPortal
       ? "absolute"
@@ -872,7 +1070,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       currentValue,
       pickerVariant,
       resolvedShowEndTime,
-      hasTimeValue
+      hasTimeValue,
+      resolvedShowSeconds
     );
     const effectiveMinDate = React.useMemo(() => {
       if (!disablePastDates) return minDate;
@@ -891,6 +1090,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
     const setOpen = React.useCallback(
       (nextOpen: boolean) => {
+        if (!nextOpen) {
+          setOpenCalendarDropdown(null);
+        }
+
         if (!isOpenControlled) {
           setInternalOpen(nextOpen);
         }
@@ -1055,7 +1258,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       if (pickerVariant === "time-only") {
         const nextInputValue = sanitizeTypedTimeInput(
           event.target.value,
-          dateInputValue
+          dateInputValue,
+          resolvedShowSeconds
         );
         setDateInputValue(nextInputValue);
 
@@ -1121,7 +1325,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
       const nextInputValue = sanitizeTypedDateTimeInput(
         event.target.value,
-        dateInputValue
+        dateInputValue,
+        resolvedShowSeconds
       );
       setDateInputValue(nextInputValue);
 
@@ -1169,7 +1374,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         dateInputValue,
         cursorPosition,
         direction,
-        currentValue.startTime
+        currentValue.startTime,
+        resolvedShowSeconds
       );
 
       if (!steppedDateTime) return;
@@ -1185,10 +1391,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
       const nextInputValue = formatDateForDisplay(
         steppedDateTime.date,
-        steppedDateTime.startTime
+        steppedDateTime.startTime,
+        resolvedShowSeconds
       );
+      const dateTimeInputSegmentRanges =
+        getDateTimeInputSegmentRanges(resolvedShowSeconds);
       const [selectionStart, selectionEnd] =
-        DATE_TIME_INPUT_SEGMENT_RANGES[steppedDateTime.segment];
+        dateTimeInputSegmentRanges[steppedDateTime.segment];
       const resolvedInputValue =
         pickerVariant === "date-only"
           ? formatDateOnlyForDisplay(steppedDateTime.date)
@@ -1217,7 +1426,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           currentValue,
           pickerVariant,
           resolvedShowEndTime,
-          hasTimeValue
+          hasTimeValue,
+          resolvedShowSeconds
         )
       );
     };
@@ -1267,25 +1477,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   <ChevronLeft className="size-4" aria-hidden="true" />
                 </button>
                 <div className="flex min-w-0 items-center gap-1.5">
-                  <label className="sr-only" htmlFor={`${triggerId}-month`}>
-                    Month
-                  </label>
-                  <select
+                  <CalendarDropdown
                     id={`${triggerId}-month`}
-                    aria-label="Month"
-                    className={CALENDAR_NATIVE_SELECT_CLASS}
+                    label="Month"
                     value={visibleMonth.getMonth().toString()}
-                    onChange={(event) => {
-                      syncCalendarMonthAndValue(
-                        new Date(
-                          visibleMonth.getFullYear(),
-                          Number(event.target.value),
-                          1
-                        )
-                      );
-                    }}
-                  >
-                    {monthNames.map((monthName, monthIndex) => {
+                    open={openCalendarDropdown === "month"}
+                    onOpenChange={(nextOpen) =>
+                      setOpenCalendarDropdown(nextOpen ? "month" : null)
+                    }
+                    options={monthNames.map((monthName, monthIndex) => {
                       const optionMonth = new Date(
                         visibleMonth.getFullYear(),
                         monthIndex,
@@ -1296,41 +1496,44 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                           isMonthBefore(optionMonth, effectiveMinDate)) ||
                         (maxDate && isMonthAfter(optionMonth, maxDate));
 
-                      return (
-                        <option
-                          key={monthName}
-                          value={monthIndex.toString()}
-                          disabled={!!isDisabled}
-                        >
-                          {monthName}
-                        </option>
-                      );
+                      return {
+                        value: monthIndex.toString(),
+                        label: monthName,
+                        disabled: !!isDisabled,
+                      };
                     })}
-                  </select>
-                  <label className="sr-only" htmlFor={`${triggerId}-year`}>
-                    Year
-                  </label>
-                  <select
-                    id={`${triggerId}-year`}
-                    aria-label="Year"
-                    className={CALENDAR_NATIVE_SELECT_CLASS}
-                    value={visibleMonth.getFullYear().toString()}
-                    onChange={(event) => {
+                    onValueChange={(nextMonth) => {
                       syncCalendarMonthAndValue(
                         new Date(
-                          Number(event.target.value),
+                          visibleMonth.getFullYear(),
+                          Number(nextMonth),
+                          1
+                        )
+                      );
+                    }}
+                  />
+                  <CalendarDropdown
+                    id={`${triggerId}-year`}
+                    label="Year"
+                    value={visibleMonth.getFullYear().toString()}
+                    open={openCalendarDropdown === "year"}
+                    onOpenChange={(nextOpen) =>
+                      setOpenCalendarDropdown(nextOpen ? "year" : null)
+                    }
+                    options={yearOptions.map((year) => ({
+                      value: year.toString(),
+                      label: year.toString(),
+                    }))}
+                    onValueChange={(nextYear) => {
+                      syncCalendarMonthAndValue(
+                        new Date(
+                          Number(nextYear),
                           visibleMonth.getMonth(),
                           1
                         )
                       );
                     }}
-                  >
-                    {yearOptions.map((year) => (
-                      <option key={year} value={year.toString()}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
+                  />
                   <div id={`${triggerId}-calendar-heading`} className="sr-only">
                     {monthFormatter.format(visibleMonth)}
                   </div>
@@ -1423,22 +1626,32 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               >
                 {startTimeLabel}
               </label>
-              <div className="relative">
+              <div
+                className="relative cursor-pointer"
+                onClick={() => openNativeTimePicker(startTimeInputRef.current)}
+              >
                 <Clock2
                   className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
                   aria-hidden="true"
                 />
                 <input
+                  ref={startTimeInputRef}
                   id={`${triggerId}-start-time`}
                   type="time"
-                  step="1"
-                  value={currentValue.startTime}
+                  step={resolvedShowSeconds ? "1" : "60"}
+                  value={formatTimeForTimeInput(
+                    currentValue.startTime,
+                    resolvedShowSeconds
+                  )}
                   className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                   onChange={(event) =>
                     updateValue(
                       {
                         ...currentValue,
-                        startTime: event.target.value,
+                        startTime: normalizeTimeInputValue(
+                          event.target.value,
+                          currentValue.startTime
+                        ),
                       },
                       { hasTimeValue: true }
                     )
@@ -1455,22 +1668,32 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 >
                   {endTimeLabel}
                 </label>
-                <div className="relative">
+                <div
+                  className="relative cursor-pointer"
+                  onClick={() => openNativeTimePicker(endTimeInputRef.current)}
+                >
                   <Clock2
                     className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
                     aria-hidden="true"
                   />
                   <input
+                    ref={endTimeInputRef}
                     id={`${triggerId}-end-time`}
                     type="time"
-                    step="1"
-                    value={currentValue.endTime}
+                    step={resolvedShowSeconds ? "1" : "60"}
+                    value={formatTimeForTimeInput(
+                      currentValue.endTime,
+                      resolvedShowSeconds
+                    )}
                     className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                     onChange={(event) =>
                       updateValue(
                         {
                           ...currentValue,
-                          endTime: event.target.value,
+                          endTime: normalizeTimeInputValue(
+                            event.target.value,
+                            currentValue.endTime
+                          ),
                         },
                         { hasTimeValue: true }
                       )
