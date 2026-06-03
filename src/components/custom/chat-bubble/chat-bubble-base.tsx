@@ -44,10 +44,7 @@ import type {
   ReplyToPayload,
   ShowReplyOn,
 } from "./types";
-import {
-  isChatBubbleMessageProps,
-  isChatBubbleFlatProps,
-} from "./types";
+import { isChatBubbleMessageProps, isChatBubbleFlatProps } from "./types";
 
 // Default max-width for text bubbles. Consumers override via the
 // `textMaxWidthClassName` prop. Library is the single source of truth — do
@@ -173,7 +170,9 @@ function renderMessageContent(
 
 function renderManualContent(children: React.ReactNode): React.ReactNode {
   return React.Children.map(children, (child, index) =>
-    typeof child === "string" ? renderTextWithLinks(child, `manual-${index}`) : child
+    typeof child === "string"
+      ? renderTextWithLinks(child, `manual-${index}`)
+      : child
   );
 }
 
@@ -201,12 +200,7 @@ function getTextOnlyColumnMinWidthStyle(
   };
 }
 
-const failedColumnStyle: React.CSSProperties = {
-  width: "100%",
-  maxWidth: "min(100%, 640px)",
-};
-
-const failedFeedbackStyle: React.CSSProperties = {
+const failedFeedbackMaxWidthStyle: React.CSSProperties = {
   maxWidth: "min(100%, 640px)",
 };
 
@@ -272,32 +266,45 @@ function FailedMessageFeedback({
 
   return (
     <div
-      className="mt-2 flex w-full min-w-0 justify-end"
+      className="mt-2 flex w-full min-w-0 max-w-full items-start gap-2 text-semantic-error-text"
       role="alert"
     >
-      <div
-        className="flex w-fit min-w-0 max-w-full items-start gap-2 text-semantic-error-text"
-        style={failedFeedbackStyle}
-      >
-        <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
-        <div className="flex min-w-0 flex-1 items-start gap-1 text-[12px] leading-4 tracking-normal">
-          {hasCode && (
-            <span className="shrink-0 text-[14px] font-semibold leading-4 tracking-[0.014px]">
-              <span>{code}</span>
-              <span>:</span>
-            </span>
-          )}
-          <div className="relative min-w-0 flex-1">
-            <p
-              ref={measureRef}
-              aria-hidden
-              className="pointer-events-none invisible absolute left-0 top-0 m-0 w-full break-words text-[12px] leading-4 tracking-normal"
-            >
+      <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
+      <div className="flex min-w-0 flex-1 items-start gap-1 text-[12px] leading-4 tracking-normal">
+        {hasCode && (
+          <span className="shrink-0 text-[14px] font-semibold leading-4 tracking-[0.014px]">
+            <span>{code}</span>
+            <span>:</span>
+          </span>
+        )}
+        <div className="relative min-w-0 flex-1">
+          <p
+            ref={measureRef}
+            aria-hidden
+            className="pointer-events-none invisible absolute left-0 top-0 m-0 w-full break-words text-[12px] leading-4 tracking-normal"
+          >
+            {trimmedText}
+          </p>
+          {isExpanded ? (
+            <p className="m-0 min-w-0 break-words leading-4">
               {trimmedText}
+              {needsToggle && (
+                <>
+                  {" "}
+                  <button
+                    type="button"
+                    className={toggleButtonClassName}
+                    onClick={handleToggle}
+                  >
+                    {lessMoreLabel}
+                  </button>
+                </>
+              )}
             </p>
-            {isExpanded ? (
+          ) : (
+            <div>
               <p className="m-0 min-w-0 break-words leading-4">
-                {trimmedText}
+                {collapsedText}
                 {needsToggle && (
                   <>
                     {" "}
@@ -306,31 +313,13 @@ function FailedMessageFeedback({
                       className={toggleButtonClassName}
                       onClick={handleToggle}
                     >
-                      {lessMoreLabel}
+                      {learnMoreLabel}
                     </button>
                   </>
                 )}
               </p>
-            ) : (
-              <div>
-                <p className="m-0 min-w-0 break-words leading-4">
-                  {collapsedText}
-                  {needsToggle && (
-                    <>
-                      {" "}
-                      <button
-                        type="button"
-                        className={toggleButtonClassName}
-                        onClick={handleToggle}
-                      >
-                        {learnMoreLabel}
-                      </button>
-                    </>
-                  )}
-                </p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -527,6 +516,13 @@ function MessageModeReplyQuoteButton({
   );
 }
 
+/** Template failures use {@link FailedMessageFeedback} only — no inline Retry in the footer. */
+function shouldShowFailedRetryInFooter(
+  msg: ChatBubbleRenderableMessage
+): boolean {
+  return msg.status === "failed" && msg.type !== "template";
+}
+
 function MessageModeDeliveryFooter({
   msg,
 }: {
@@ -535,6 +531,8 @@ function MessageModeDeliveryFooter({
   if (!shouldShowMessageDeliveryFooter(msg)) {
     return null;
   }
+
+  const showFailedRetry = shouldShowFailedRetryInFooter(msg);
 
   return (
     <div
@@ -583,15 +581,17 @@ function MessageModeDeliveryFooter({
                 <span className="text-[13px] text-semantic-error-primary font-medium">
                   Failed
                 </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  className="text-[13px] font-semibold text-semantic-text-link underline hover:no-underline"
-                >
-                  Retry
-                </button>
+                {showFailedRetry ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="text-[13px] font-semibold text-semantic-text-link underline hover:no-underline"
+                  >
+                    Retry
+                  </button>
+                ) : null}
               </span>
             ) : (
               <>
@@ -649,6 +649,7 @@ function MessageModeDeliveryFooterInline({
 
   const isFailed = msg.status === "failed";
   const isQueued = msg.status === "queued";
+  const showFailedRetry = shouldShowFailedRetryInFooter(msg);
   return (
     <span
       className={cn(
@@ -669,13 +670,15 @@ function MessageModeDeliveryFooterInline({
               <span className="text-semantic-error-primary font-medium">
                 Failed
               </span>
-              <button
-                type="button"
-                onClick={(e) => e.stopPropagation()}
-                className="m-0 border-0 bg-transparent p-0 font-semibold text-semantic-text-link underline hover:no-underline cursor-pointer"
-              >
-                Retry
-              </button>
+              {showFailedRetry ? (
+                <button
+                  type="button"
+                  onClick={(e) => e.stopPropagation()}
+                  className="m-0 border-0 bg-transparent p-0 font-semibold text-semantic-text-link underline hover:no-underline cursor-pointer"
+                >
+                  Retry
+                </button>
+              ) : null}
             </>
           ) : (
             <>
@@ -717,13 +720,7 @@ const TEMPLATE_BUTTON_CLASSNAME = cn(
   "py-2.5 cursor-pointer no-underline"
 );
 
-function CopyCodeButton({
-  label,
-  code,
-}: {
-  label: string;
-  code: string;
-}) {
+function CopyCodeButton({ label, code }: { label: string; code: string }) {
   const [copied, setCopied] = React.useState(false);
 
   React.useEffect(() => {
@@ -737,7 +734,7 @@ function CopyCodeButton({
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(code).then(
         () => setCopied(true),
-        () => setCopied(false),
+        () => setCopied(false)
       );
     }
   };
@@ -762,7 +759,9 @@ function TemplateButton({
 }: {
   button: NonNullable<ChatMessage["buttons"]>[number];
 }) {
-  const handleClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
+  const handleClick: React.MouseEventHandler<
+    HTMLAnchorElement | HTMLButtonElement
+  > = (e) => {
     e.stopPropagation();
   };
   if (button.kind === "copyCode") {
@@ -795,13 +794,21 @@ function TemplateButton({
   }
   if (button.kind === "phone") {
     return (
-      <a href={`tel:${button.phone}`} className={TEMPLATE_BUTTON_CLASSNAME} onClick={handleClick}>
+      <a
+        href={`tel:${button.phone}`}
+        className={TEMPLATE_BUTTON_CLASSNAME}
+        onClick={handleClick}
+      >
         {label}
       </a>
     );
   }
   return (
-    <button type="button" className={TEMPLATE_BUTTON_CLASSNAME} onClick={handleClick}>
+    <button
+      type="button"
+      className={TEMPLATE_BUTTON_CLASSNAME}
+      onClick={handleClick}
+    >
       {label}
     </button>
   );
@@ -850,12 +857,14 @@ function computeMessageBubbleLayout(
           ? cn("max-w-[340px] w-full")
           : msg.type === "contact" || msg.type === "listReply"
             ? cn("max-w-[320px] w-full")
-            // Text bubbles: library is single source of truth for max-width.
-            // Consumers override via the `textMaxWidthClassName` prop.
-            : cn(textMaxWidthClassName);
+            : // Text bubbles: library is single source of truth for max-width.
+              // Consumers override via the `textMaxWidthClassName` prop.
+              cn(textMaxWidthClassName);
 
   const hasButtons =
-    msg.type === "template" && Array.isArray(msg.buttons) && msg.buttons.length > 0;
+    msg.type === "template" &&
+    Array.isArray(msg.buttons) &&
+    msg.buttons.length > 0;
 
   return {
     hasMedia,
@@ -924,7 +933,8 @@ const ChatBubbleMessageMode = React.forwardRef<
     msg.sender === "agent" && !hasMedia && hasText && !hasButtons;
   // Used to decide whether the bubble wrapper needs `w-fit` (text bubbles, so
   // the reply-button absolute anchor matches the rendered bubble width).
-  const isMessageTextOnly = isMessageReceiverTextOnly || isMessageSenderTextOnly;
+  const isMessageTextOnly =
+    isMessageReceiverTextOnly || isMessageSenderTextOnly;
   const messageTextOnlyMinWidth: string | undefined = isMessageReceiverTextOnly
     ? RECEIVER_TEXT_ONLY_MIN_WIDTH
     : isMessageSenderTextOnly
@@ -936,8 +946,7 @@ const ChatBubbleMessageMode = React.forwardRef<
       : undefined;
 
   const shouldShowReplyIcon =
-    !!onReplyTo &&
-    (showReplyOn === "both" || showReplyOn === msg.sender);
+    !!onReplyTo && (showReplyOn === "both" || showReplyOn === msg.sender);
 
   const replyButton = shouldShowReplyIcon ? (
     <Tooltip>
@@ -952,8 +961,8 @@ const ChatBubbleMessageMode = React.forwardRef<
               messageId: msg.id,
               sender:
                 msg.sender === "agent"
-                  ? msg.senderName ?? replyParticipantName ?? ""
-                  : replyParticipantName ?? "",
+                  ? (msg.senderName ?? replyParticipantName ?? "")
+                  : (replyParticipantName ?? ""),
               text: msg.text || msg.media?.caption || "",
             })
           }
@@ -1004,24 +1013,14 @@ const ChatBubbleMessageMode = React.forwardRef<
         id={`msg-${msg.id}`}
         className={cn(
           "flex min-w-0 flex-col",
-          hasFailedFeedback
-            ? "w-full max-w-full"
-            : isMessageTextOnly
-              ? "max-w-full"
-              : bubbleWidth,
+          isMessageTextOnly ? "max-w-full" : bubbleWidth,
           msg.sender === "agent" ? "items-end" : "items-start",
           // Reserve 36px inside the column so the absolutely-positioned sender
           // icon (sentBy badge or custom senderIndicator) stays within the box.
           // Prevents avatar clipping by ancestor overflow:hidden / tight padding.
-          msg.sender === "agent" &&
-            (msg.sentBy || senderIndicator) &&
-            "pr-9"
+          msg.sender === "agent" && (msg.sentBy || senderIndicator) && "pr-9"
         )}
-        style={
-          hasFailedFeedback
-            ? failedColumnStyle
-            : getTextOnlyColumnMinWidthStyle(messageTextOnlyMinWidth)
-        }
+        style={getTextOnlyColumnMinWidthStyle(messageTextOnlyMinWidth)}
       >
         {msg.sender === "customer" && msg.senderName && (
           <span className="text-[12px] text-semantic-text-muted mb-1 px-1">
@@ -1034,210 +1033,228 @@ const ChatBubbleMessageMode = React.forwardRef<
             msg.sender === "agent" ? "justify-end" : "justify-start"
           )}
         >
-        {/*
+          {/*
           Bubble wrapper: provides the positioning anchor for the absolutely-
           positioned reply button + sender icon, AND owns the minWidth so the
           wrapper's width === the rendered bubble width. Putting the absolute
           children on an outer flex row would let them detach from the actual
           bubble (since the bubble's minWidth doesn't propagate to the row).
         */}
-        <div
-          className={cn(
-            "relative",
-            isMessageTextOnly ? bubbleWidth : "max-w-full",
-            // Text-only bubbles shrink the wrapper to content (+ minWidth);
-            // media variants let the column's max-w control width via w-full.
-            isMessageTextOnly ? "w-fit" : "w-full"
-          )}
-          style={getTextOnlyMinWidthStyle(messageTextOnlyMinWidth)}
-        >
-        {replyButton}
-        <div
-          className={cn(
-            "rounded-lg overflow-hidden w-full",
-            msg.sender === "agent"
-              ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
-              : "bg-semantic-bg-primary border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-xs"
-          )}
-        >
-          {msg.type === "carousel" && hasText && (
-            <div className="px-4 pt-3">
-              <p
-                className={cn(
-                  MESSAGE_BODY_TEXT_CLASS,
-                  "text-[14px] leading-5"
-                )}
-              >
-                {renderMessageContent(messageBodyContent, "carousel-message")}
-              </p>
-            </div>
-          )}
-          {msg.type === "image" && msg.media && (
-            <ImageMedia media={msg.media} />
-          )}
-          {msg.type === "template" &&
-            msg.media &&
-            (templateMediaKind === "video" ||
-            isVideoMedia(undefined, msg.media.fileType, msg.media.url) ? (
-              <VideoMedia media={msg.media} />
-            ) : templateMediaKind === "document" ? (
-              <DocMedia
-                variant="file"
-                filename={msg.media.filename}
-                fileType={msg.media.fileType}
-                pageCount={msg.media.pageCount}
-                fileSize={msg.media.fileSize}
-                onDownload={() => {
-                  if (msg.media?.url) {
-                    window.open(
-                      msg.media.url,
-                      "_blank",
-                      "noopener,noreferrer"
-                    );
-                  }
-                }}
-              />
-            ) : (
-              <ImageMedia media={msg.media} />
-            ))}
-          {msg.type === "video" && msg.media && (
-            <VideoMedia media={msg.media} />
-          )}
-          {msg.type === "audio" && msg.media && (
-            <AudioMedia media={msg.media} />
-          )}
-          {msg.type === "docPreview" && msg.media && (
-            <DocMedia
-              variant="preview"
-              thumbnailUrl={msg.media.thumbnailUrl || msg.media.url}
-              filename={msg.media.filename}
-              fileType={msg.media.fileType}
-              pageCount={msg.media.pageCount}
-              fileSize={msg.media.fileSize}
-            />
-          )}
-          {msg.type === "document" && msg.media && (
-            <DocMedia
-              variant="download"
-              thumbnailUrl={msg.media.thumbnailUrl || msg.media.url}
-              filename={msg.media.filename}
-              fileType={msg.media.fileType}
-              pageCount={msg.media.pageCount}
-              fileSize={msg.media.fileSize}
-            />
-          )}
-          {msg.type === "otherDoc" && msg.media && (
-            <DocMedia
-              variant="file"
-              filename={msg.media.filename}
-              fileType={msg.media.fileType}
-            />
-          )}
-          {msg.type === "carousel" && msg.media && (
-            <CarouselMedia media={msg.media} />
-          )}
-          {msg.type === "loading" && <LoadingMedia error={msg.error} />}
-          {msg.type === "referral" && msg.referral && (
-            <ReferralMedia referral={msg.referral} />
-          )}
-          {msg.type === "location" && msg.location && (
-            <LocationMedia location={msg.location} />
-          )}
-          {msg.type === "contact" && msg.contactCard && (
-            <ContactMedia contact={msg.contactCard} />
-          )}
-          {msg.type === "listReply" && msg.listReply && (
-            <ListReplyMedia listReply={msg.listReply} />
-          )}
-
           <div
             className={cn(
-              "px-4",
-              hasButtons ? "pb-2" : "pb-1.5",
-              hasMedia
-                ? msg.type === "audio"
-                  ? "pt-0"
-                  : msg.type === "otherDoc"
-                    ? "pt-3 mt-1"
-                    : "pt-2"
-                : "pt-3"
+              hasFailedFeedback ? "flex flex-col" : "relative",
+              isMessageTextOnly ? bubbleWidth : "max-w-full",
+              // Text-only bubbles shrink the wrapper to content (+ minWidth);
+              // media variants let the column's max-w control width via w-full.
+              isMessageTextOnly ? "w-fit" : "w-full"
             )}
+            style={{
+              ...getTextOnlyMinWidthStyle(messageTextOnlyMinWidth),
+              ...(hasFailedFeedback ? failedFeedbackMaxWidthStyle : {}),
+            }}
           >
-            {msg.replyTo && (
-              <MessageModeReplyQuoteButton
-                replyTo={msg.replyTo}
-                onReplyClick={onReplyClick}
-              />
-            )}
-            {msg.type === "template" && templateHeaderContent && !msg.media && (
-              <p
+            <div className="relative w-full">
+              {replyButton}
+              <div
                 className={cn(
-                  MESSAGE_BODY_TEXT_CLASS,
-                  "mb-1 text-[14px] font-semibold text-semantic-text-primary"
+                  "rounded-lg overflow-hidden w-full",
+                  msg.sender === "agent"
+                    ? "bg-semantic-info-surface border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary"
+                    : "bg-semantic-bg-primary border-[0.2px] border-solid border-semantic-border-layout text-semantic-text-primary shadow-xs"
                 )}
               >
-                {renderMessageContent(templateHeaderContent, "template-header")}
-              </p>
-            )}
-            {hasText && msg.type !== "carousel" && (
-              <p
-                className={cn(
-                  MESSAGE_BODY_TEXT_CLASS,
-                  "text-[14px] leading-5"
+                {msg.type === "carousel" && hasText && (
+                  <div className="px-4 pt-3">
+                    <p
+                      className={cn(
+                        MESSAGE_BODY_TEXT_CLASS,
+                        "text-[14px] leading-5"
+                      )}
+                    >
+                      {renderMessageContent(
+                        messageBodyContent,
+                        "carousel-message"
+                      )}
+                    </p>
+                  </div>
                 )}
-              >
-                {renderMessageContent(messageBodyContent, "message")}
-                {shouldUseInlineFooter && (
-                  <MessageModeDeliveryFooterInline msg={msg} />
+                {msg.type === "image" && msg.media && (
+                  <ImageMedia media={msg.media} />
                 )}
-              </p>
-            )}
-            {msg.type === "template" && msg.templateFooterText && (
-              <p
-                className={cn(
-                  MESSAGE_BODY_TEXT_CLASS,
-                  "mt-1 text-[12px] text-semantic-text-muted"
+                {msg.type === "template" &&
+                  msg.media &&
+                  (templateMediaKind === "video" ||
+                  isVideoMedia(undefined, msg.media.fileType, msg.media.url) ? (
+                    <VideoMedia media={msg.media} />
+                  ) : templateMediaKind === "document" ? (
+                    <DocMedia
+                      variant="file"
+                      filename={msg.media.filename}
+                      fileType={msg.media.fileType}
+                      pageCount={msg.media.pageCount}
+                      fileSize={msg.media.fileSize}
+                      onDownload={() => {
+                        if (msg.media?.url) {
+                          window.open(
+                            msg.media.url,
+                            "_blank",
+                            "noopener,noreferrer"
+                          );
+                        }
+                      }}
+                    />
+                  ) : (
+                    <ImageMedia media={msg.media} />
+                  ))}
+                {msg.type === "video" && msg.media && (
+                  <VideoMedia media={msg.media} />
                 )}
-              >
-                {renderMessageText(msg.templateFooterText)}
-              </p>
-            )}
-            {isDocWithMeta && (
-              <div className="flex items-center gap-2 mt-1.5">
-                <File className="size-3.5 text-semantic-text-muted" />
-                <span className="text-[13px] text-semantic-text-muted">
-                  {[
-                    msg.media!.fileType,
-                    msg.media!.pageCount &&
-                      `${msg.media!.pageCount} pages`,
-                    msg.media!.fileSize,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
+                {msg.type === "audio" && msg.media && (
+                  <AudioMedia media={msg.media} />
+                )}
+                {msg.type === "docPreview" && msg.media && (
+                  <DocMedia
+                    variant="preview"
+                    thumbnailUrl={msg.media.thumbnailUrl || msg.media.url}
+                    filename={msg.media.filename}
+                    fileType={msg.media.fileType}
+                    pageCount={msg.media.pageCount}
+                    fileSize={msg.media.fileSize}
+                  />
+                )}
+                {msg.type === "document" && msg.media && (
+                  <DocMedia
+                    variant="download"
+                    thumbnailUrl={msg.media.thumbnailUrl || msg.media.url}
+                    filename={msg.media.filename}
+                    fileType={msg.media.fileType}
+                    pageCount={msg.media.pageCount}
+                    fileSize={msg.media.fileSize}
+                  />
+                )}
+                {msg.type === "otherDoc" && msg.media && (
+                  <DocMedia
+                    variant="file"
+                    filename={msg.media.filename}
+                    fileType={msg.media.fileType}
+                  />
+                )}
+                {msg.type === "carousel" && msg.media && (
+                  <CarouselMedia media={msg.media} />
+                )}
+                {msg.type === "loading" && <LoadingMedia error={msg.error} />}
+                {msg.type === "referral" && msg.referral && (
+                  <ReferralMedia referral={msg.referral} />
+                )}
+                {msg.type === "location" && msg.location && (
+                  <LocationMedia location={msg.location} />
+                )}
+                {msg.type === "contact" && msg.contactCard && (
+                  <ContactMedia contact={msg.contactCard} />
+                )}
+                {msg.type === "listReply" && msg.listReply && (
+                  <ListReplyMedia listReply={msg.listReply} />
+                )}
+
+                <div
+                  className={cn(
+                    "px-4",
+                    hasButtons ? "pb-2" : "pb-1.5",
+                    hasMedia
+                      ? msg.type === "audio"
+                        ? "pt-0"
+                        : msg.type === "otherDoc"
+                          ? "pt-3 mt-1"
+                          : "pt-2"
+                      : "pt-3"
+                  )}
+                >
+                  {msg.replyTo && (
+                    <MessageModeReplyQuoteButton
+                      replyTo={msg.replyTo}
+                      onReplyClick={onReplyClick}
+                    />
+                  )}
+                  {msg.type === "template" &&
+                    templateHeaderContent &&
+                    !msg.media && (
+                      <p
+                        className={cn(
+                          MESSAGE_BODY_TEXT_CLASS,
+                          "mb-1 text-[14px] font-semibold text-semantic-text-primary"
+                        )}
+                      >
+                        {renderMessageContent(
+                          templateHeaderContent,
+                          "template-header"
+                        )}
+                      </p>
+                    )}
+                  {hasText && msg.type !== "carousel" && (
+                    <p
+                      className={cn(
+                        MESSAGE_BODY_TEXT_CLASS,
+                        "text-[14px] leading-5"
+                      )}
+                    >
+                      {renderMessageContent(messageBodyContent, "message")}
+                      {shouldUseInlineFooter && (
+                        <MessageModeDeliveryFooterInline msg={msg} />
+                      )}
+                    </p>
+                  )}
+                  {msg.type === "template" && msg.templateFooterText && (
+                    <p
+                      className={cn(
+                        MESSAGE_BODY_TEXT_CLASS,
+                        "mt-1 text-[12px] text-semantic-text-muted"
+                      )}
+                    >
+                      {renderMessageText(msg.templateFooterText)}
+                    </p>
+                  )}
+                  {isDocWithMeta && (
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <File className="size-3.5 text-semantic-text-muted" />
+                      <span className="text-[13px] text-semantic-text-muted">
+                        {[
+                          msg.media!.fileType,
+                          msg.media!.pageCount &&
+                            `${msg.media!.pageCount} pages`,
+                          msg.media!.fileSize,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                    </div>
+                  )}
+                  {!hasButtons && !shouldUseInlineFooter && (
+                    <MessageModeDeliveryFooter msg={msg} />
+                  )}
+                </div>
+                {hasButtons && (
+                  <>
+                    {msg.buttons!.map(
+                      (
+                        btn: NonNullable<ChatMessage["buttons"]>[number],
+                        i: number
+                      ) => (
+                        <TemplateButton key={i} button={btn} />
+                      )
+                    )}
+                    <div className="px-4 pt-2 pb-1.5">
+                      <MessageModeDeliveryFooter msg={msg} />
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-            {!hasButtons && !shouldUseInlineFooter && (
-              <MessageModeDeliveryFooter msg={msg} />
+              {msg.sender === "agent" && senderIcon}
+            </div>
+            {hasFailedFeedback && (
+              <FailedMessageFeedback failedMessage={msg.failedMessage} />
             )}
           </div>
-          {hasButtons && (
-            <>
-              {msg.buttons!.map((btn: NonNullable<ChatMessage["buttons"]>[number], i: number) => (
-                <TemplateButton key={i} button={btn} />
-              ))}
-              <div className="px-4 pt-2 pb-1.5">
-                <MessageModeDeliveryFooter msg={msg} />
-              </div>
-            </>
-          )}
         </div>
-        {msg.sender === "agent" && senderIcon}
-        </div>
-        </div>
-        {hasFailedFeedback && (
-          <FailedMessageFeedback failedMessage={msg.failedMessage} />
-        )}
       </div>
     </div>
   );
@@ -1251,7 +1268,8 @@ ChatBubbleMessageMode.displayName = "ChatBubbleMessageMode";
  */
 function flatPropsToMessage(props: ChatBubbleFlatProps): ChatMessage {
   const sender = props.variant === "sender" ? "agent" : "customer";
-  const id = props.messageId ?? `flat-${Math.random().toString(36).slice(2, 10)}`;
+  const id =
+    props.messageId ?? `flat-${Math.random().toString(36).slice(2, 10)}`;
   const base: ChatMessage = {
     id,
     text: "",
@@ -1462,8 +1480,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
       variant === "receiver" && !hasMedia && !!children;
     const isManualSenderTextOnly =
       variant === "sender" && !hasMedia && !!children;
-    const isManualTextOnly =
-      isManualReceiverTextOnly || isManualSenderTextOnly;
+    const isManualTextOnly = isManualReceiverTextOnly || isManualSenderTextOnly;
     const hasManualFailedFeedback =
       variant === "sender" && status === "failed" && !!failedMessage?.text;
     const manualTextOnlyMinWidth: string | undefined = isManualReceiverTextOnly
@@ -1500,8 +1517,8 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
                   messageId: messageId ?? "",
                   sender:
                     variant === "sender"
-                      ? senderName ?? replyParticipantName ?? ""
-                      : replyParticipantName ?? senderName ?? "",
+                      ? (senderName ?? replyParticipantName ?? "")
+                      : (replyParticipantName ?? senderName ?? ""),
                   text:
                     typeof children === "string" ? (children as string) : "",
                 })
@@ -1537,13 +1554,11 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             "flex min-w-0 flex-col",
             // Text bubbles: prop-driven cap (library is single source of truth).
             // Media variants: use the absolute-px caps from maxWidthMap.
-            hasManualFailedFeedback
-              ? "w-full max-w-full"
-              : isManualTextOnly
-                ? "max-w-full"
-                : maxWidth === "text"
-                  ? textMaxWidthClassName
-                  : maxWidthMap[maxWidth],
+            isManualTextOnly
+              ? "max-w-full"
+              : maxWidth === "text"
+                ? textMaxWidthClassName
+                : maxWidthMap[maxWidth],
             variant === "sender" ? "items-end" : "items-start",
             // Reserve 36px (28px avatar + 6px ml + 2px buffer) inside the column
             // so the absolutely-positioned senderIndicator stays within the box.
@@ -1551,11 +1566,7 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
             // with overflow:hidden or tight right/left padding.
             senderIndicator && variant === "sender" && "pr-9"
           )}
-          style={
-            hasManualFailedFeedback
-              ? failedColumnStyle
-              : getTextOnlyColumnMinWidthStyle(manualTextOnlyMinWidth)
-          }
+          style={getTextOnlyColumnMinWidthStyle(manualTextOnlyMinWidth)}
         >
           {variant === "receiver" && senderName && (
             <span className="mb-1 px-1 text-[12px] text-semantic-text-muted">
@@ -1568,78 +1579,83 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
               variant === "sender" ? "justify-end" : "justify-start"
             )}
           >
-          {/*
+            {/*
             Bubble wrapper: positioning anchor for reply button + sender icon,
             and owns the minWidth so the wrapper width === rendered bubble width.
           */}
-          <div
-            className={cn(
-              "relative",
-              isManualTextOnly ? textMaxWidthClassName : "max-w-full",
-              isManualTextOnly ? "w-fit" : "w-full"
-            )}
-            style={getTextOnlyMinWidthStyle(manualTextOnlyMinWidth)}
-          >
-          {manualReplyButton}
-          <div
-            className={cn(
-              "overflow-hidden rounded w-full",
-              !hasMedia && "px-4 pb-1.5 pt-3",
-              variant === "sender"
-                ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
-                : "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-xs"
-            )}
-          >
-            {media}
-            <div className={hasMedia ? "px-4 pb-1.5 pt-2" : ""}>
-              {reply && (
-                <ReplyQuote
-                  sender={reply.sender}
-                  message={reply.message}
-                  className="bg-semantic-bg-primary"
-                  onClick={() => {
-                    if (reply.messageId && onReplyClick) {
-                      onReplyClick(reply.messageId);
-                    }
-                  }}
-                />
+            <div
+              className={cn(
+                hasManualFailedFeedback ? "flex flex-col" : "relative",
+                isManualTextOnly ? textMaxWidthClassName : "max-w-full",
+                isManualTextOnly ? "w-fit" : "w-full"
               )}
-              {children && (
-                <p
+              style={{
+                ...getTextOnlyMinWidthStyle(manualTextOnlyMinWidth),
+                ...(hasManualFailedFeedback ? failedFeedbackMaxWidthStyle : {}),
+              }}
+            >
+              <div className="relative w-full">
+                {manualReplyButton}
+                <div
                   className={cn(
-                    MESSAGE_BODY_TEXT_CLASS,
-                    "text-[14px] leading-5"
+                    "overflow-hidden rounded w-full",
+                    !hasMedia && "px-4 pb-1.5 pt-3",
+                    variant === "sender"
+                      ? "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-primary"
+                      : "border-[0.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-xs"
                   )}
                 >
-                  {renderManualContent(children)}
-                  {useManualInlineFooter && (
-                    <LegacyDeliveryFooterInline
-                      status={status}
-                      timestamp={timestamp}
-                      variant={variant}
-                    />
-                  )}
-                </p>
-              )}
-              {!useManualInlineFooter && (
-                <LegacyDeliveryFooter
-                  status={status}
-                  timestamp={timestamp}
-                  variant={variant}
-                />
+                  {media}
+                  <div className={hasMedia ? "px-4 pb-1.5 pt-2" : ""}>
+                    {reply && (
+                      <ReplyQuote
+                        sender={reply.sender}
+                        message={reply.message}
+                        className="bg-semantic-bg-primary"
+                        onClick={() => {
+                          if (reply.messageId && onReplyClick) {
+                            onReplyClick(reply.messageId);
+                          }
+                        }}
+                      />
+                    )}
+                    {children && (
+                      <p
+                        className={cn(
+                          MESSAGE_BODY_TEXT_CLASS,
+                          "text-[14px] leading-5"
+                        )}
+                      >
+                        {renderManualContent(children)}
+                        {useManualInlineFooter && (
+                          <LegacyDeliveryFooterInline
+                            status={status}
+                            timestamp={timestamp}
+                            variant={variant}
+                          />
+                        )}
+                      </p>
+                    )}
+                    {!useManualInlineFooter && (
+                      <LegacyDeliveryFooter
+                        status={status}
+                        timestamp={timestamp}
+                        variant={variant}
+                      />
+                    )}
+                  </div>
+                </div>
+                {variant === "sender" && senderIndicator && (
+                  <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary">
+                    {senderIndicator}
+                  </div>
+                )}
+              </div>
+              {hasManualFailedFeedback && (
+                <FailedMessageFeedback failedMessage={failedMessage} />
               )}
             </div>
           </div>
-          {variant === "sender" && senderIndicator && (
-            <div className="absolute bottom-0 left-full ml-1.5 flex size-7 items-center justify-center rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary">
-              {senderIndicator}
-            </div>
-          )}
-          </div>
-          </div>
-          {hasManualFailedFeedback && (
-            <FailedMessageFeedback failedMessage={failedMessage} />
-          )}
         </div>
       </div>
     );

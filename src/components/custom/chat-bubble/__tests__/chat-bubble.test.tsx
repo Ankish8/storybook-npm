@@ -57,7 +57,9 @@ describe("ChatBubble", () => {
 
     const link = screen.getByRole("link", { name: "https://www.google.com" });
     expect(link).toHaveAttribute("href", "https://www.google.com");
-    expect(link.parentElement).toHaveTextContent("Open https://www.google.com.");
+    expect(link.parentElement).toHaveTextContent(
+      "Open https://www.google.com."
+    );
   });
 
   it("sender variant has info surface background class", () => {
@@ -225,15 +227,11 @@ describe("ChatBubble", () => {
 
     const alert = screen.getByRole("alert");
     expect(alert).toBeInTheDocument();
-    expect(alert).toHaveClass("w-full", "justify-end");
-    expect(alert.firstElementChild).toHaveClass("w-fit", "max-w-full");
-    expect(alert.firstElementChild).toHaveStyle({
-      maxWidth: "min(100%, 640px)",
-    });
+    expect(alert).toHaveClass("w-full", "max-w-full", "items-start", "gap-2");
     expect(alert.parentElement).toHaveStyle({
-      width: "100%",
       maxWidth: "min(100%, 640px)",
     });
+    expect(alert.parentElement).toHaveClass("flex", "flex-col");
     expect(screen.getByText("131049")).toBeInTheDocument();
     expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
       /healthy ecosystem management/
@@ -269,14 +267,9 @@ describe("ChatBubble", () => {
     );
 
     const alert = screen.getAllByRole("alert").at(-1)!;
-    expect(alert.parentElement?.parentElement).toHaveClass("w-full");
-    expect(alert).toHaveClass("w-full", "justify-end");
-    expect(alert.firstElementChild).toHaveClass("w-fit", "max-w-full");
-    expect(alert.firstElementChild).toHaveStyle({
-      maxWidth: "min(100%, 640px)",
-    });
+    expect(alert.parentElement).toHaveClass("flex", "flex-col");
+    expect(alert).toHaveClass("w-full", "max-w-full", "items-start", "gap-2");
     expect(alert.parentElement).toHaveStyle({
-      width: "100%",
       maxWidth: "min(100%, 640px)",
     });
     expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
@@ -354,12 +347,12 @@ describe("ChatBubble", () => {
     );
 
     const bubble = screen.getByText("Hi").closest(".rounded-lg");
-    const wrapper = bubble?.parentElement;
+    const wrapper = bubble?.parentElement?.parentElement;
     const column = wrapper?.parentElement?.parentElement;
     expect(column).toHaveStyle({
       minWidth: "min(13rem, 100%)",
     });
-    expect(bubble?.parentElement).toHaveStyle({
+    expect(wrapper).toHaveStyle({
       minWidth: "min(13rem, 100%)",
     });
   });
@@ -412,7 +405,8 @@ describe("ChatBubble", () => {
     // The bubble div uses either `rounded` (manual mode) or `rounded-lg`
     // (message mode); both have `overflow-hidden`, which uniquely identifies it.
     const getBubbleWrapper = (container: HTMLElement) =>
-      container.querySelector("div.overflow-hidden")?.parentElement;
+      container.querySelector("div.overflow-hidden")?.parentElement
+        ?.parentElement;
 
     it("receiver short text bubble: responsive minWidth on the wrapper + left-aligned footer", () => {
       const { container } = render(
@@ -554,8 +548,7 @@ describe("ChatBubble", () => {
       // differs from the bubble's edge when minWidth applies, putting the icon
       // inside/over the bubble. We verify by walking up from the button and
       // confirming the wrapper ancestor is found before the bubble's sibling.
-      const bubble = container.querySelector("div.overflow-hidden");
-      const wrapper = bubble?.parentElement;
+      const wrapper = getBubbleWrapper(container);
       const replyBtn = screen.getByRole("button", { name: "Reply" });
       expect(wrapper?.contains(replyBtn)).toBe(true);
       // Wrapper carries the minWidth, so its width === rendered bubble width.
@@ -1002,7 +995,10 @@ describe("ChatBubble", () => {
             { id: "3", name: "Amit Kumar", phone: "+91 98765 43212" },
             { id: "4", name: "Nisha Rao", phone: "+91 98765 43213" },
           ]}
-          contactModal={{ title: "Shared Contacts", viewLabel: "View Contacts" }}
+          contactModal={{
+            title: "Shared Contacts",
+            viewLabel: "View Contacts",
+          }}
           onViewContacts={onViewContacts}
         />
       );
@@ -1083,13 +1079,17 @@ describe("ChatBubble", () => {
       expect(screen.getByLabelText("required")).toBeInTheDocument();
       expect(screen.getByText("View slots")).toBeInTheDocument();
       expect(screen.queryByText("Morning")).not.toBeInTheDocument();
-      const showListButton = screen.getByRole("button", { name: /view slots/i });
+      const showListButton = screen.getByRole("button", {
+        name: /view slots/i,
+      });
       expect(showListButton).toHaveAttribute("aria-haspopup", "dialog");
 
       fireEvent.click(showListButton);
       expect(screen.getByRole("dialog")).toBeInTheDocument();
       expect(screen.getByText("Available slots")).toBeInTheDocument();
-      expect(screen.getByText("Choose one appointment slot.")).toBeInTheDocument();
+      expect(
+        screen.getByText("Choose one appointment slot.")
+      ).toBeInTheDocument();
       expect(screen.getByText("Morning")).toBeInTheDocument();
       const rowButton = screen.getByRole("button", {
         name: /10:00 AM Available today/i,
@@ -1207,9 +1207,7 @@ describe("ChatBubble", () => {
           variant="sender"
           timestamp="2:02 PM"
           text="Your code is 4Y5GX9."
-          buttons={[
-            { kind: "copyCode", label: "4Y5GX9", code: "4Y5GX9" },
-          ]}
+          buttons={[{ kind: "copyCode", label: "4Y5GX9", code: "4Y5GX9" }]}
         />
       );
       const btn = screen.getByRole("button", { name: /Copy 4Y5GX9/i });
@@ -1256,7 +1254,7 @@ describe("ChatBubble", () => {
         />
       );
       expect(
-        screen.getByText("Do not share this code with anyone."),
+        screen.getByText("Do not share this code with anyone.")
       ).toBeInTheDocument();
     });
 
@@ -1274,6 +1272,27 @@ describe("ChatBubble", () => {
       expect(screen.getByText("Delivered")).toBeInTheDocument();
       // No template buttons rendered.
       expect(container.querySelectorAll("button").length).toBe(0);
+    });
+
+    it("hides inline Retry for failed template messages", () => {
+      render(
+        <ChatBubble
+          type="template"
+          variant="sender"
+          timestamp="2:11 PM"
+          status="failed"
+          text="Template delivery failed."
+          failedMessage={{ text: "Use a utility template or try later." }}
+        />
+      );
+
+      expect(screen.getByText("Failed")).toBeInTheDocument();
+      expect(
+        screen.getAllByText("Use a utility template or try later.").length
+      ).toBeGreaterThan(0);
+      expect(
+        screen.queryByRole("button", { name: "Retry" })
+      ).not.toBeInTheDocument();
     });
 
     it("flat sender alignment matches manual sender", () => {
