@@ -13,18 +13,49 @@ function carouselCardTitleLabel(title: CarouselCard["title"]): string {
  * card plays independently — extracted as a subcomponent so the parent
  * carousel doesn't need to track refs keyed by index.
  */
-function CardMedia({ card, height }: { card: CarouselCard; height: number }) {
+function CardMedia({
+  card,
+  height,
+  onImageClick,
+}: {
+  card: CarouselCard;
+  height: number;
+  onImageClick?: (url: string) => void;
+}) {
   const isVideo = card.mediaType === "video";
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
   if (!isVideo) {
+    const openPreview = (e: React.MouseEvent | React.KeyboardEvent) => {
+      e.stopPropagation();
+      if (!onImageClick || !card.url?.trim()) return;
+      onImageClick(card.url);
+    };
+
     return (
       <img
         src={card.url}
         alt={carouselCardTitleLabel(card.title)}
-        className="w-full object-cover"
+        className={cn(
+          "w-full object-cover",
+          onImageClick && "cursor-pointer"
+        )}
         style={{ height }}
+        onClick={onImageClick ? openPreview : undefined}
+        onKeyDown={
+          onImageClick
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openPreview(e);
+                }
+              }
+            : undefined
+        }
+        role={onImageClick ? "button" : undefined}
+        tabIndex={onImageClick ? 0 : undefined}
+        data-testid={onImageClick ? "carousel-card-image-trigger" : undefined}
       />
     );
   }
@@ -76,7 +107,17 @@ function CardMedia({ card, height }: { card: CarouselCard; height: number }) {
 }
 
 const CarouselMedia = React.forwardRef(
-  ({ className, cards, cardWidth = 260, imageHeight = 200, ...props }: CarouselMediaProps, ref: React.Ref<HTMLDivElement>) => {
+  (
+    {
+      className,
+      cards,
+      cardWidth = 260,
+      imageHeight = 200,
+      onImageClick,
+      ...props
+    }: CarouselMediaProps,
+    ref: React.Ref<HTMLDivElement>
+  ) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(
@@ -117,7 +158,11 @@ const CarouselMedia = React.forwardRef(
               className="shrink-0 bg-white rounded border border-solid border-semantic-border-layout overflow-hidden shadow-[0px_1px_3px_0px_rgba(10,13,18,0.08)]"
               style={{ width: cardWidth }}
             >
-              <CardMedia card={card} height={imageHeight} />
+              <CardMedia
+                card={card}
+                height={imageHeight}
+                onImageClick={onImageClick}
+              />
               <div className="px-3 pt-2.5 pb-2">
                 <p className="m-0 text-[14px] font-semibold text-semantic-text-primary line-clamp-2">
                   {card.title}

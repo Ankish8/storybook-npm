@@ -84,6 +84,21 @@ describe("CarouselMedia", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
   });
 
+  it("image cards call onImageClick when clicked or keyboard activated", async () => {
+    const user = userEvent.setup();
+    const onImageClick = vi.fn();
+
+    render(<CarouselMedia cards={[sampleCards[0]]} onImageClick={onImageClick} />);
+
+    const imageTrigger = screen.getByTestId("carousel-card-image-trigger");
+    await user.click(imageTrigger);
+    expect(onImageClick).toHaveBeenCalledWith("https://example.com/img1.jpg");
+
+    imageTrigger.focus();
+    await user.keyboard("{Enter}");
+    expect(onImageClick).toHaveBeenCalledTimes(2);
+  });
+
   it("custom cardWidth is applied", () => {
     const { container } = render(
       <CarouselMedia cards={sampleCards} cardWidth={300} />

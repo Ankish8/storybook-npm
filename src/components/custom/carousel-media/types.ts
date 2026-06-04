@@ -35,4 +35,6 @@ export interface CarouselMediaProps extends React.HTMLAttributes<HTMLDivElement>
   cardWidth?: number;
   /** Height of card images in pixels. Defaults to 200 */
   imageHeight?: number;
+  /** Opens a full-size preview when an image card is pressed */
+  onImageClick?: (url: string) => void;
 }
