@@ -18,7 +18,7 @@ import {
 import type { BotSettingsProps } from "./types";
 
 const defaultInfoTooltip =
-  "Select the WhatsApp numbers you want this bot to handle. The bot will respond to messages received on these numbers.";
+  "Select the WhatsApp numbers you want this agent to handle. The agent will respond to messages received on these numbers.";
 
 const BotSettings = React.forwardRef<HTMLDivElement, BotSettingsProps>(
   (
