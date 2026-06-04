@@ -119,7 +119,7 @@ const DropdownMenuItem = React.forwardRef(({ className, inset, children, descrip
       renderDropdownMenuItemChildren(children)
     )}
     {suffix && (
-      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-4">{suffix}</span>
     )}
   </DropdownMenuPrimitive.Item>
 ));
@@ -158,7 +158,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checke
       renderDropdownMenuItemChildren(children)
     )}
     {suffix && (
-      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-4">{suffix}</span>
     )}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
@@ -197,7 +197,7 @@ const DropdownMenuRadioItem = React.forwardRef(({ className, children, descripti
       renderDropdownMenuItemChildren(children)
     )}
     {suffix && (
-      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-2">{suffix}</span>
+      <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-4">{suffix}</span>
     )}
   </DropdownMenuPrimitive.RadioItem>
 ));
