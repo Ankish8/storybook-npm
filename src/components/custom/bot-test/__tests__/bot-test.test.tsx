@@ -12,7 +12,7 @@ const sampleNumbers = [
 describe("BotTest", () => {
   it("renders the dialog with title and description", () => {
     render(<BotTest open />);
-    expect(screen.getByText("Test your bot")).toBeInTheDocument();
+    expect(screen.getByText("Test your agent")).toBeInTheDocument();
     expect(
       screen.getByText(/Send 'Hi .* to the selected number to begin./)
     ).toBeInTheDocument();
@@ -180,6 +180,6 @@ describe("BotTest", () => {
 
   it("does not render when open is false", () => {
     render(<BotTest open={false} />);
-    expect(screen.queryByText("Test your bot")).not.toBeInTheDocument();
+    expect(screen.queryByText("Test your agent")).not.toBeInTheDocument();
   });
 });
