@@ -1062,6 +1062,7 @@ components:
     isMultiFile: true
     directory: "chat-bubble"
     files:
+      - "media-utils.ts"
       - "message-renderers.tsx"
       - "agent-source-samples.tsx"
       - "chat-bubble-base.tsx"
