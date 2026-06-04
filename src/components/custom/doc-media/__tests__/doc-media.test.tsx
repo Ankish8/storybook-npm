@@ -1,9 +1,18 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import { DocMedia } from "../doc-media";
+import { downloadMediaFile } from "../utils";
+
+vi.mock("../utils", () => ({
+  downloadMediaFile: vi.fn(() => Promise.resolve()),
+}));
 
 describe("DocMedia", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("renders preview variant with thumbnail, filename, and metadata", () => {
     render(
       <DocMedia
@@ -109,6 +118,48 @@ describe("DocMedia", () => {
     const downloadButton = screen.getByRole("button", { name: "Download" });
     await user.click(downloadButton);
     expect(onDownload).toHaveBeenCalledTimes(1);
+  });
+
+  it("downloads with downloadUrl and suggested filename", async () => {
+    const user = userEvent.setup();
+    render(
+      <DocMedia
+        variant="file"
+        filename="Report.pdf"
+        downloadUrl="https://example.com/report.pdf"
+        downloadFilename="latest-report.pdf"
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Download" }));
+
+    expect(downloadMediaFile).toHaveBeenCalledWith(
+      "https://example.com/report.pdf",
+      "latest-report.pdf"
+    );
+  });
+
+  it("shows a loading state while custom download handler is pending", async () => {
+    const user = userEvent.setup();
+    let resolveDownload: () => void;
+    const onDownload = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveDownload = resolve;
+        })
+    );
+
+    render(
+      <DocMedia variant="file" fileType="PDF" onDownload={onDownload} />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Download" }));
+    expect(screen.getByRole("button", { name: "Downloading" })).toBeDisabled();
+
+    resolveDownload!();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Download" })).toBeEnabled();
+    });
   });
 
   it("preview variant shows default filename when none provided", () => {

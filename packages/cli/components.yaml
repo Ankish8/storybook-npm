@@ -1132,6 +1132,7 @@ components:
     files:
       - "doc-media.tsx"
       - "types.ts"
+      - "utils.ts"
       - "index.ts"
     mainFile: "doc-media.tsx"
 

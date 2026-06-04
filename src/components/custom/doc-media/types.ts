@@ -17,6 +17,13 @@ export interface DocMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   fileSize?: string;
   /** Caption text */
   caption?: string;
-  /** Handler for download button click (variant="file" only) */
-  onDownload?: () => void;
+  /** Remote or blob URL to download (variant="file" only). Shows a loader while fetching. */
+  downloadUrl?: string;
+  /** Suggested filename when using `downloadUrl` */
+  downloadFilename?: string;
+  /**
+   * Custom download handler (variant="file" only). May return a Promise; a loader is
+   * shown until it settles. Prefer `downloadUrl` for the default `downloadMediaFile` flow.
+   */
+  onDownload?: () => void | Promise<void>;
 }

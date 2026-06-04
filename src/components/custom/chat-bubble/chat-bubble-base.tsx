@@ -1008,15 +1008,8 @@ const ChatBubbleMessageMode = React.forwardRef<
                       fileType={msg.media.fileType}
                       pageCount={msg.media.pageCount}
                       fileSize={msg.media.fileSize}
-                      onDownload={() => {
-                        if (msg.media?.url) {
-                          window.open(
-                            msg.media.url,
-                            "_blank",
-                            "noopener,noreferrer"
-                          );
-                        }
-                      }}
+                      downloadUrl={msg.media.url}
+                      downloadFilename={msg.media.filename}
                     />
                   ) : (
                     <ImageMedia media={msg.media} />
@@ -1052,6 +1045,10 @@ const ChatBubbleMessageMode = React.forwardRef<
                     variant="file"
                     filename={msg.media.filename}
                     fileType={msg.media.fileType}
+                    pageCount={msg.media.pageCount}
+                    fileSize={msg.media.fileSize}
+                    downloadUrl={msg.media.url}
+                    downloadFilename={msg.media.filename}
                   />
                 )}
                 {msg.type === "carousel" && msg.media && (

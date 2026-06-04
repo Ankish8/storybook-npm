@@ -1,7 +1,8 @@
 import * as React from "react";
 import { cn } from "../../../lib/utils";
-import { File, FileSpreadsheet, ArrowDownToLine } from "lucide-react";
+import { File, FileSpreadsheet, ArrowDownToLine, Loader2 } from "lucide-react";
 import type { DocMediaProps } from "./types";
+import { downloadMediaFile } from "./utils";
 
 const DocMedia = React.forwardRef(
   (
@@ -14,11 +15,49 @@ const DocMedia = React.forwardRef(
       pageCount,
       fileSize,
       caption,
+      downloadUrl,
+      downloadFilename,
       onDownload,
       ...props
     }: DocMediaProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
+    const [isDownloading, setIsDownloading] = React.useState(false);
+
+    const handleDownloadClick = React.useCallback(async () => {
+      if (isDownloading) {
+        return;
+      }
+
+      const trimmedUrl = downloadUrl?.trim();
+      const runDownload = trimmedUrl
+        ? () =>
+            downloadMediaFile(
+              trimmedUrl,
+              downloadFilename?.trim() || filename
+            )
+        : onDownload
+          ? () => Promise.resolve(onDownload())
+          : null;
+
+      if (!runDownload) {
+        return;
+      }
+
+      setIsDownloading(true);
+      try {
+        await runDownload();
+      } finally {
+        setIsDownloading(false);
+      }
+    }, [
+      isDownloading,
+      downloadUrl,
+      downloadFilename,
+      filename,
+      onDownload,
+    ]);
+
     if (variant === "preview") {
       return (
         <div
@@ -136,11 +175,27 @@ const DocMedia = React.forwardRef(
           </span>
           <button
             type="button"
-            onClick={onDownload}
-            className="shrink-0 size-8 rounded-full flex items-center justify-center hover:bg-semantic-bg-hover transition-colors"
-            aria-label="Download"
+            onClick={() => {
+              void handleDownloadClick();
+            }}
+            disabled={isDownloading || (!downloadUrl?.trim() && !onDownload)}
+            className={cn(
+              "shrink-0 size-8 rounded-full flex items-center justify-center transition-colors",
+              isDownloading
+                ? "cursor-wait opacity-70"
+                : "hover:bg-semantic-bg-hover disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
+            aria-label={isDownloading ? "Downloading" : "Download"}
+            aria-busy={isDownloading}
           >
-            <ArrowDownToLine className="size-[18px] text-semantic-text-secondary" />
+            {isDownloading ? (
+              <Loader2
+                className="size-[18px] animate-spin text-semantic-text-secondary"
+                aria-hidden
+              />
+            ) : (
+              <ArrowDownToLine className="size-[18px] text-semantic-text-secondary" />
+            )}
           </button>
         </div>
       </div>
