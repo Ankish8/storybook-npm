@@ -1,10 +1,6 @@
 import type * as React from "react";
+import type { MediaPayload } from "../chat-types/types";
 
-export type VideoMediaPayload = {
-  url: string;
-  thumbnailUrl?: string;
-  fileType?: string;
-};
 
 type VideoElementProps = Omit<
   React.VideoHTMLAttributes<HTMLVideoElement>,
@@ -25,7 +21,7 @@ type VideoMediaSharedProps = {
 export type VideoMediaProps = VideoMediaSharedProps &
   (
     | ({
-        media: VideoMediaPayload;
+        media: MediaPayload;
         url?: never;
       } & Omit<React.HTMLAttributes<HTMLDivElement>, "children">)
     | ({

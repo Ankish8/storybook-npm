@@ -1,4 +1,4 @@
-import type { VideoMediaPayload } from "./types";
+import type { MediaPayload } from "../chat-types/types";
 
 export function urlPathWithoutQuery(url: string): string {
   return url.trim().split(/[?#]/)[0];
@@ -59,7 +59,7 @@ function isVideoMedia(contentType?: string, mediaUrl?: string): boolean {
 }
 
 export function hasDisplayableVideoThumbnail(
-  media: Pick<VideoMediaPayload, "url" | "thumbnailUrl" | "fileType">
+  media: Pick<MediaPayload, "url" | "thumbnailUrl" | "fileType">
 ): boolean {
   const thumb = media.thumbnailUrl?.trim();
   if (!thumb) return false;
