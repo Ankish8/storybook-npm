@@ -959,10 +959,9 @@ import { Mail } from "lucide-react"
 ---
 
 ### VideoMedia
-> A video player with thumbnail overlay, play/pause, seek bar, speed dropdown, volume, and fullscreen
+> A native video renderer for chat media with poster thumbnail resolution
 
 **Install**: `npx myoperator-ui add video-media`
-**Requires**: `dropdown-menu` (auto-installed)
 **Type**: Multi-file component
 
 ---
