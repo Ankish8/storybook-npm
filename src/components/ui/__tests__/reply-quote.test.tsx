@@ -64,8 +64,7 @@ describe("ReplyQuote", () => {
     expect(container.firstChild).toHaveClass("tw-w-full", "tw-min-w-0");
     expect(container.querySelectorAll("p")[0]).toHaveClass("tw-truncate");
     expect(screen.getByText(/A very long message text/)).toHaveClass(
-      "tw-flex-1",
-      "tw-truncate"
+      "tw-line-clamp-1"
     );
   });
 

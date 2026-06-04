@@ -48,7 +48,7 @@ function ReplyQuoteInner({
         <p className="tw-m-0 tw-min-w-0 tw-shrink-0 tw-truncate tw-text-[14px] tw-font-semibold tw-leading-5 tw-tracking-[0.014px] tw-text-[var(--semantic-text-primary,#181D27)]">
           {sender}
         </p>
-        <p className="tw-m-0 tw-min-h-0 tw-min-w-0 tw-flex-1 tw-truncate tw-text-[14px] tw-leading-5 tw-text-[var(--semantic-text-muted,#717680)]">
+        <p className="tw-m-0 tw-min-w-0 tw-line-clamp-1 tw-text-[14px] tw-leading-5 tw-text-[var(--semantic-text-muted,#717680)]">
           {message}
         </p>
       </div>
