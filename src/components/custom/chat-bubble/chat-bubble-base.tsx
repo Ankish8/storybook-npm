@@ -209,60 +209,14 @@ function FailedMessageFeedback({
 }: {
   failedMessage?: ChatFailedMessage;
 }) {
-  const {
-    code,
-    text = "",
-    learnMoreLabel = "Learn more",
-    lessMoreLabel = "Show less",
-  } = failedMessage ?? {};
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [needsToggle, setNeedsToggle] = React.useState(false);
-  const measureRef = React.useRef<HTMLParagraphElement>(null);
+  const { code, text = "" } = failedMessage ?? {};
   const hasCode =
     code !== undefined && code !== null && String(code).trim() !== "";
   const trimmedText = text.trim();
-  const collapsedText =
-    needsToggle && !isExpanded
-      ? trimmedText.slice(0, 126).trimEnd()
-      : trimmedText;
-
-  const toggleButtonClassName =
-    "m-0 border-0 bg-transparent p-0 text-left text-[12px] font-semibold tracking-[0.06px] text-semantic-error-text underline hover:no-underline";
-
-  React.useLayoutEffect(() => {
-    const measureToggleNeed = () => {
-      const element = measureRef.current;
-      if (!element) {
-        return;
-      }
-
-      // leading-4 on text-[12px] => 16px line height; two lines => 32px (max-h-8).
-      const twoLineHeight = 32;
-      const overflows = element.scrollHeight > twoLineHeight + 1;
-      setNeedsToggle(overflows);
-    };
-
-    measureToggleNeed();
-
-    const element = measureRef.current;
-    if (!element || typeof ResizeObserver === "undefined") {
-      return;
-    }
-
-    const resizeObserver = new ResizeObserver(measureToggleNeed);
-    resizeObserver.observe(element);
-
-    return () => resizeObserver.disconnect();
-  }, [trimmedText, isExpanded]);
 
   if (!trimmedText) {
     return null;
   }
-
-  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setIsExpanded((current) => !current);
-  };
 
   return (
     <div
@@ -278,48 +232,9 @@ function FailedMessageFeedback({
           </span>
         )}
         <div className="relative min-w-0 flex-1">
-          <p
-            ref={measureRef}
-            aria-hidden
-            className="pointer-events-none invisible absolute left-0 top-0 m-0 w-full break-words text-[12px] leading-4 tracking-normal"
-          >
+          <p className="m-0 min-w-0 break-words leading-4">
             {trimmedText}
           </p>
-          {isExpanded ? (
-            <p className="m-0 min-w-0 break-words leading-4">
-              {trimmedText}
-              {needsToggle && (
-                <>
-                  {" "}
-                  <button
-                    type="button"
-                    className={toggleButtonClassName}
-                    onClick={handleToggle}
-                  >
-                    {lessMoreLabel}
-                  </button>
-                </>
-              )}
-            </p>
-          ) : (
-            <div>
-              <p className="m-0 min-w-0 break-words leading-4">
-                {collapsedText}
-                {needsToggle && (
-                  <>
-                    {" "}
-                    <button
-                      type="button"
-                      className={toggleButtonClassName}
-                      onClick={handleToggle}
-                    >
-                      {learnMoreLabel}
-                    </button>
-                  </>
-                )}
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -199,10 +199,6 @@ export type ChatFailedMessage = {
   code?: string | number
   /** Detailed failed-delivery reason shown below the bubble. */
   text: string
-  /** Label for expanding the two-line collapsed detail. Defaults to "Learn more". */
-  learnMoreLabel?: string
-  /** Label for collapsing the expanded detail. Defaults to "Show less". */
-  lessMoreLabel?: string
 }
 
 export type ChatMessage = {

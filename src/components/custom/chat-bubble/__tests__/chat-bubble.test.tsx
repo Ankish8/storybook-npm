@@ -204,13 +204,6 @@ describe("ChatBubble", () => {
   });
 
   it("renders failed message detail with code below a failed sender bubble", () => {
-    const scrollHeightSpy = vi
-      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
-      .mockReturnValue(48);
-    const clientHeightSpy = vi
-      .spyOn(HTMLElement.prototype, "clientHeight", "get")
-      .mockReturnValue(32);
-
     render(
       <ChatBubble
         variant="sender"
@@ -233,25 +226,17 @@ describe("ChatBubble", () => {
     });
     expect(alert.parentElement).toHaveClass("flex", "flex-col");
     expect(screen.getByText("131049")).toBeInTheDocument();
-    expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
+    expect(alert.querySelector("p")).toHaveTextContent(
       /healthy ecosystem management/
     );
     expect(
-      screen.getByRole("button", { name: "Learn more" })
-    ).toBeInTheDocument();
-
-    scrollHeightSpy.mockRestore();
-    clientHeightSpy.mockRestore();
+      screen.queryByRole("button", { name: "Learn more" })
+    ).not.toBeInTheDocument();
   });
 
-  it("toggles long failed message detail between two-line and expanded states", () => {
-    const scrollHeightSpy = vi
-      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
-      .mockReturnValue(48);
-    const clientHeightSpy = vi
-      .spyOn(HTMLElement.prototype, "clientHeight", "get")
-      .mockReturnValue(32);
-
+  it("renders the full failed message detail without a toggle", () => {
+    const failedMessage =
+      "In order to maintain a healthy ecosystem management, the message failed to be delivered. Try a utility template or wait 24h before resending.";
     render(
       <ChatBubble
         type="text"
@@ -261,7 +246,7 @@ describe("ChatBubble", () => {
         text="Have a look at this document"
         failedMessage={{
           code: "131049",
-          text: "In order to maintain a healthy ecosystem management, the message failed to be delivered. Try a utility template or wait 24h before resending.",
+          text: failedMessage,
         }}
       />
     );
@@ -272,38 +257,16 @@ describe("ChatBubble", () => {
     expect(alert.parentElement).toHaveStyle({
       maxWidth: "min(100%, 640px)",
     });
-    expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
-      /Learn more/
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: "Learn more" }));
-    expect(alert.querySelector("p:not([aria-hidden])")).not.toHaveTextContent(
-      /Learn more/
-    );
+    expect(alert.querySelector("p")).toHaveTextContent(failedMessage);
     expect(
-      screen.getByRole("button", { name: "Show less" })
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "Show less" }));
-    expect(alert.querySelector("p:not([aria-hidden])")).toHaveTextContent(
-      /Learn more/
-    );
+      screen.queryByRole("button", { name: "Learn more" })
+    ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Learn more" })
-    ).toBeInTheDocument();
-
-    scrollHeightSpy.mockRestore();
-    clientHeightSpy.mockRestore();
+      screen.queryByRole("button", { name: "Show less" })
+    ).not.toBeInTheDocument();
   });
 
   it("does not show failed message toggle when detail fits within two lines", () => {
-    const scrollHeightSpy = vi
-      .spyOn(HTMLElement.prototype, "scrollHeight", "get")
-      .mockReturnValue(32);
-    const clientHeightSpy = vi
-      .spyOn(HTMLElement.prototype, "clientHeight", "get")
-      .mockReturnValue(32);
-
     render(
       <ChatBubble
         variant="sender"
@@ -321,9 +284,6 @@ describe("ChatBubble", () => {
     expect(
       screen.queryByRole("button", { name: "Learn more" })
     ).not.toBeInTheDocument();
-
-    scrollHeightSpy.mockRestore();
-    clientHeightSpy.mockRestore();
   });
 
   it("shows delivered status with correct text", () => {

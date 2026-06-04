@@ -180,7 +180,7 @@ const meta: Meta<typeof ChatBubble> = {
       control: "object",
       table: { category: "Manual bubble" },
       description:
-        "Failed delivery detail shown below sender failed bubbles: `{ code?: string | number, text: string }`. Long text is collapsed to two lines with a Learn more / Show less toggle.",
+        "Failed delivery detail shown below sender failed bubbles: `{ code?: string | number, text: string }`. The full text is always shown.",
     },
     senderName: {
       control: "text",
