@@ -1,7 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { VideoMedia } from "../video-media";
-import { hasDisplayableVideoThumbnail, urlPathWithoutQuery } from "../utils";
+import {
+  appendSafariMediaFragment,
+  hasDisplayableVideoThumbnail,
+  resolveVideoMimeType,
+  urlPathWithoutQuery,
+} from "../utils";
 
 describe("VideoMedia", () => {
   it("renders a native video from url props", () => {
@@ -15,14 +20,16 @@ describe("VideoMedia", () => {
 
     const video = screen.getByTestId("video-element");
     expect(video).toBeInTheDocument();
-    expect(video).toHaveAttribute("src", "https://example.com/video.mp4");
+    expect(video).toHaveAttribute("crossorigin", "anonymous");
     expect(video).toHaveAttribute("poster", "https://example.com/poster.jpg");
     expect(video).toHaveAttribute("controls");
     expect(video).toHaveAttribute("playsinline");
-    expect(screen.getByTestId("video-media-source")).toHaveAttribute(
-      "type",
-      "video/mp4"
+    const source = screen.getByTestId("video-media-source");
+    expect(source).toHaveAttribute(
+      "src",
+      "https://example.com/video.mp4#t=0.001"
     );
+    expect(source).toHaveAttribute("type", "video/mp4");
   });
 
   it("uses media payload thumbnail when it is displayable", () => {
@@ -126,5 +133,17 @@ describe("video media utils", () => {
         fileType: "video/mp4",
       })
     ).toBe(false);
+  });
+
+  it("appends a Safari media fragment without keeping other hash fragments", () => {
+    expect(
+      appendSafariMediaFragment(" https://example.com/video.mp4#preview ")
+    ).toBe("https://example.com/video.mp4#t=0.001");
+  });
+
+  it("resolves common video MIME types from the URL when fileType is missing", () => {
+    expect(resolveVideoMimeType("https://example.com/video.webm?token=1")).toBe(
+      "video/webm"
+    );
   });
 });

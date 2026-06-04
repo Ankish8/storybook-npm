@@ -61,12 +61,11 @@ describe("ReplyQuote", () => {
         message="A very long message text that should also be truncated in the UI"
       />
     );
-    expect(container.firstChild).toHaveClass("tw-max-w-full", "tw-min-w-0");
-    expect(container.querySelector("p")).toHaveClass("tw-truncate");
+    expect(container.firstChild).toHaveClass("tw-w-full", "tw-min-w-0");
+    expect(container.querySelectorAll("p")[0]).toHaveClass("tw-truncate");
     expect(screen.getByText(/A very long message text/)).toHaveClass(
-      "tw-overflow-hidden",
-      "tw-text-ellipsis",
-      "tw-whitespace-nowrap"
+      "tw-flex-1",
+      "tw-truncate"
     );
   });
 
@@ -81,6 +80,20 @@ describe("ReplyQuote", () => {
     expect(screen.getByTestId("carousel-card-reply")).toBeInTheDocument();
   });
 
+  it("renders a trimmed thumbnail when provided", () => {
+    render(
+      <ReplyQuote
+        sender="John"
+        message="Image reply"
+        thumbnailUrl=" https://example.com/image.png "
+      />
+    );
+
+    const image = document.querySelector("img");
+    expect(image).toHaveAttribute("src", "https://example.com/image.png");
+    expect(image).toHaveAttribute("alt", "");
+  });
+
   it("all <p> elements have m-0 for Bootstrap compatibility", () => {
     const { container } = render(
       <ReplyQuote sender="John" message="Test" />
@@ -90,36 +103,19 @@ describe("ReplyQuote", () => {
 
   // Accessibility tests
 
-  it("has role=button when onClick is provided", () => {
+  it("renders a native button when onClick is provided", () => {
     const { container } = render(
       <ReplyQuote sender="John" message="Test" onClick={() => {}} />
     );
-    expect(container.firstChild).toHaveAttribute("role", "button");
+    expect(container.firstChild).toBeInstanceOf(HTMLButtonElement);
+    expect(screen.getByRole("button")).toBeInTheDocument();
   });
 
-  it("is keyboard focusable when onClick is provided", () => {
-    const { container } = render(
+  it("uses type=button for interactive quotes", () => {
+    render(
       <ReplyQuote sender="John" message="Test" onClick={() => {}} />
     );
-    expect(container.firstChild).toHaveAttribute("tabindex", "0");
-  });
-
-  it("fires onClick on Enter key", () => {
-    const handleClick = vi.fn();
-    const { container } = render(
-      <ReplyQuote sender="John" message="Test" onClick={handleClick} />
-    );
-    fireEvent.keyDown(container.firstChild!, { key: "Enter" });
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-
-  it("fires onClick on Space key", () => {
-    const handleClick = vi.fn();
-    const { container } = render(
-      <ReplyQuote sender="John" message="Test" onClick={handleClick} />
-    );
-    fireEvent.keyDown(container.firstChild!, { key: " " });
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button")).toHaveAttribute("type", "button");
   });
 
   it("does NOT have role=button when onClick is not provided", () => {
@@ -160,7 +156,7 @@ describe("ReplyQuote", () => {
     expect(handleClick).not.toHaveBeenCalled();
   });
 
-  it("calls consumer onKeyDown alongside internal handler", () => {
+  it("calls consumer onKeyDown on the native button", () => {
     const handleClick = vi.fn();
     const handleKeyDown = vi.fn();
     const { container } = render(
@@ -172,7 +168,7 @@ describe("ReplyQuote", () => {
       />
     );
     fireEvent.keyDown(container.firstChild!, { key: "Enter" });
-    expect(handleClick).toHaveBeenCalledTimes(1);
     expect(handleKeyDown).toHaveBeenCalledTimes(1);
+    expect(handleClick).not.toHaveBeenCalled();
   });
 });

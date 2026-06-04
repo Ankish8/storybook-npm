@@ -1,7 +1,11 @@
 import * as React from "react";
 import { cn } from "../../../lib/utils";
 import type { VideoMediaProps } from "./types";
-import { hasDisplayableVideoThumbnail } from "./utils";
+import {
+  appendSafariMediaFragment,
+  hasDisplayableVideoThumbnail,
+  resolveVideoMimeType,
+} from "./utils";
 
 const DEFAULT_MAX_HEIGHT = 280;
 
@@ -56,16 +60,21 @@ const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
 
     const fixedHeight = wrapperStyle?.height != null;
     const usesMediaPayload = Boolean(media);
-    const className = "className" in props ? props.className : undefined;
+    const className =
+      "className" in props ? props.className : undefined;
 
     const maxHeight =
       style?.maxHeight ??
       (fixedHeight ? undefined : `${DEFAULT_MAX_HEIGHT}px`);
 
+    const sourceUrl = appendSafariMediaFragment(resolved.url);
+    const sourceMimeType = resolveVideoMimeType(resolved.url, resolved.fileType);
+    const displayPoster = resolved.poster?.trim() || undefined;
+
     const videoElement = (
       <video
-        src={resolved.url}
-        poster={resolved.poster}
+        crossOrigin="anonymous"
+        poster={displayPoster}
         controls
         playsInline
         preload="metadata"
@@ -88,13 +97,11 @@ const VideoMedia = React.forwardRef<HTMLDivElement, VideoMediaProps>(
               "video-element")
         }
       >
-        {resolved.fileType ? (
-          <source
-            data-testid="video-media-source"
-            src={resolved.url}
-            type={resolved.fileType}
-          />
-        ) : null}
+        <source
+          data-testid="video-media-source"
+          src={sourceUrl}
+          {...(sourceMimeType ? { type: sourceMimeType } : {})}
+        />
       </video>
     );
 

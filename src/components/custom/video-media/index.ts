@@ -1,3 +1,8 @@
 export { VideoMedia } from "./video-media";
 export type { VideoMediaPayload, VideoMediaProps } from "./types";
-export { hasDisplayableVideoThumbnail, urlPathWithoutQuery } from "./utils";
+export {
+  appendSafariMediaFragment,
+  hasDisplayableVideoThumbnail,
+  resolveVideoMimeType,
+  urlPathWithoutQuery,
+} from "./utils";

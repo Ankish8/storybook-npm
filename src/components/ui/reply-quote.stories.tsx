@@ -9,7 +9,7 @@ const meta: Meta<typeof ReplyQuote> = {
     docs: {
       description: {
         component: `
-A quoted message block with a blue left border, showing sender name and quoted text. Used in chat applications for reply-to previews.
+A quoted message block with a blue left border, showing sender name, quoted text, and an optional thumbnail. Used in chat applications for reply-to previews.
 
 \`\`\`bash
 npx myoperator-ui add reply-quote
@@ -24,8 +24,8 @@ import { ReplyQuote } from "@/components/ui/reply-quote"
 ## Accessibility
 
 When an \`onClick\` handler is provided, ReplyQuote becomes an interactive element:
-- **Keyboard navigation**: receives \`role="button"\` and \`tabIndex={0}\`, so keyboard users can Tab to it.
-- **Keyboard activation**: pressing **Enter** or **Space** triggers the click handler.
+- **Keyboard navigation**: renders as a native \`button\`, so keyboard users can Tab to it.
+- **Keyboard activation**: native button behavior supports **Enter** and **Space**.
 - **Focus indicator**: a visible focus ring appears on keyboard focus (\`focus-visible\`).
 - **Screen readers**: an \`aria-label\` of \`"Quoted reply from {sender}: {message}"\` is set by default, and can be overridden via the \`aria-label\` prop.
 
@@ -89,6 +89,10 @@ When no \`onClick\` is provided, the component renders as a static quote with no
       control: "text",
       description: "The quoted message text",
     },
+    thumbnailUrl: {
+      control: "text",
+      description: "Optional thumbnail shown on the right side of the quote",
+    },
     onClick: {
       action: "clicked",
       description: "Handler for clicking the quote (e.g., scroll to original message)",
@@ -128,12 +132,21 @@ export const LongText: Story = {
   },
 };
 
+export const WithThumbnail: Story = {
+  args: {
+    sender: "Template message",
+    message: "Image header preview with caption",
+    thumbnailUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=88&h=88&fit=crop",
+  },
+};
+
 export const InChatContext: Story = {
   render: () => (
-    <div className="flex flex-col gap-2 rounded-lg border border-semantic-border-layout p-4 bg-white">
+    <div className="flex flex-col gap-2 rounded-lg border border-semantic-border-layout p-4 bg-semantic-bg-primary">
       <ReplyQuote
         sender="Alice"
         message="Can we schedule a meeting tomorrow?"
+        thumbnailUrl="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=88&h=88&fit=crop"
         onClick={() => {}}
       />
       <div className="bg-semantic-primary-surface rounded-lg px-4 py-2">
