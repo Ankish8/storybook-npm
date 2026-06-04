@@ -70,7 +70,7 @@ const BotTest: React.FC<BotTestProps> = ({
       <DialogContent className="gap-0 p-0">
         <DialogHeader className="px-6 pt-6 pb-0">
           <DialogTitle className="text-lg font-semibold text-semantic-text-primary">
-            Test your bot
+            Test your agent
           </DialogTitle>
           <DialogDescription className="text-sm text-semantic-text-muted mt-1">
             {description}

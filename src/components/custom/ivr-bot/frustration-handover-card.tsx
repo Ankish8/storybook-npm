@@ -50,7 +50,7 @@ const DEFAULT_DEPARTMENT_OPTIONS: DepartmentOption[] = [
 
 /** Default hover text for the info icon next to the "Escalate to Human" accordion title */
 export const defaultEscalateToHumanInfoTooltip =
-  "When enabled, the bot automatically transfers the call to a human agent if a caller shows repeated signs of frustration. Select a department extension to route these escalations to.";
+  "When enabled, the agent automatically transfers the call to a human agent if a caller shows repeated signs of frustration. Select a department extension to route these escalations to.";
 
 export const defaultEscalationPromptErrorMessage =
   "Escalation prompt is required";

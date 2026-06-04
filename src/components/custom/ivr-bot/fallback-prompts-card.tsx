@@ -24,11 +24,11 @@ export interface FallbackPromptsData {
 
 /** Default hover text for the info icon next to "Agent Busy Prompt" */
 export const defaultAgentBusyPromptTooltip =
-  "Played when a call is transferred but no agent picks up and the call returns to the bot.";
+  "Played when a call is transferred but no agent picks up and the call returns to the agent.";
 
 /** Default hover text for the info icon next to "No Extension Found" */
 export const defaultNoExtensionFoundPromptTooltip =
-  "Played when the bot can't find a valid department extension to transfer to.";
+  "Played when the agent can't find a valid department extension to transfer to.";
 
 /** Default hover text for the info icon next to the "Fallback Prompts" accordion title */
 export const defaultFallbackPromptsInfoTooltip =

@@ -21,18 +21,18 @@ import {
 
 /** Default hover text for the Silence Wait Duration info icon */
 export const defaultSilenceWaitDurationTooltip =
-  "How long the bot waits after a caller stops speaking before responding again.";
+  "How long the agent waits after a caller stops speaking before responding again.";
 
 /** Default hover text for the Maximum Silence Retries info icon */
 export const defaultMaximumSilenceRetriesTooltip =
-  "The number of consecutive silences after which the bot automatically ends the call.";
+  "The number of consecutive silences after which the agent automatically ends the call.";
 
 /** Default muted helper line under Maximum Silence Retries (below the input); empty = none shown */
 export const defaultMaximumSilenceRetriesHelpText = "";
 
 /** Default muted helper line under Interruption Handling */
 export const defaultInterruptionHandlingHelpText =
-  "Allow user to interrupt the bot mid-sentence.";
+  "Allow user to interrupt the agent mid-sentence.";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
