@@ -57,7 +57,7 @@ export interface BotIdentityData {
   language: string;
 }
 
-/** Default hover text for the info icon next to "agent Name & Identity" */
+/** Default hover text for the info icon next to "Bot Name & Identity" */
 export const defaultBotNameIdentityTooltip =
   "The name the agent uses to introduce itself during calls. This is different from the agent's system name set at creation.";
 
@@ -100,13 +100,13 @@ export interface BotIdentityCardProps {
   onPauseVoice?: (voiceValue: string) => void;
   /** The voice value currently being played. Controls play/pause icon state. */
   playingVoice?: string;
-  /** Message shown when Agent Name & Identity is empty. Defaults to "Agent name is required". */
+  /** Message shown when Bot Name & Identity is empty. Defaults to "Bot name is required". */
   botNameValidation?: string;
   /** Message shown when Primary Role is empty. Defaults to "Primary role is required". */
   primaryRoleValidation?: string;
   /** Message shown when Tone is empty. Defaults to "Tone is required". */
   toneValidation?: string;
-  /** When false, Agent Name & Identity skips built-in error-message validation. Defaults to true. */
+  /** When false, Bot Name & Identity skips built-in error-message validation. Defaults to true. */
   botNameErrorMessageValidation?: boolean;
   /** When false, Primary Role skips built-in error-message validation. Defaults to true. */
   primaryRoleErrorMessageValidation?: boolean;
@@ -114,7 +114,7 @@ export interface BotIdentityCardProps {
   toneErrorMessageValidation?: boolean;
   /** Disables all fields in the card (view mode) */
   disabled?: boolean;
-  /** Hover text on the info icon next to "Agent Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
+  /** Hover text on the info icon next to "Bot Name & Identity" (default: {@link defaultBotNameIdentityTooltip}) */
   botNameIdentityTooltip?: string;
   /** Hover text on the info icon next to "Primary Role" (default: {@link defaultPrimaryRoleTooltip}) */
   primaryRoleTooltip?: string;
