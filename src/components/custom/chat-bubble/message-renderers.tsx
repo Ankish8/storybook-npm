@@ -27,6 +27,7 @@ import { Button } from "../../ui/button"
 import { Spinner } from "../../ui/spinner"
 import { cn } from "../../../lib/utils"
 import { VideoMedia as BaseVideoMedia } from "../video-media"
+import { hasDisplayableVideoThumbnail } from "../video-media/utils"
 import type {
   MediaPayload,
   LocationPayload,
@@ -180,13 +181,21 @@ function CarouselCardMedia({ item }: { item: CarouselCardItem }) {
     )
   }
 
+  const displayThumbnail = hasDisplayableVideoThumbnail({
+    url: item.url,
+    thumbnailUrl: item.thumbnailUrl,
+  })
+    ? item.thumbnailUrl
+    : undefined
+
   return (
     <BaseVideoMedia
       url={item.url}
-      thumbnailUrl={item.thumbnailUrl || item.url}
+      thumbnailUrl={displayThumbnail}
       wrapperStyle={{ height: 200 }}
       aria-label={item.title}
       data-testid="carousel-video-element"
+      onPointerDown={(e) => e.stopPropagation()}
     />
   )
 }
@@ -211,7 +220,16 @@ function CarouselMedia({ media }: { media: MediaPayload }) {
       {/* Scrollable card row */}
       <div ref={scrollRef} onScroll={updateScrollState} tabIndex={0} role="region" aria-label="Carousel" aria-roledescription="carousel" className="flex gap-3 overflow-x-auto px-3 pt-2 pb-3" style={{ scrollbarWidth: "none" }}>
         {media.images?.map((item, i) => (
-          <div key={i} className="shrink-0 bg-semantic-bg-primary rounded border border-solid border-semantic-border-layout overflow-hidden shadow-xs" style={{ width: 260 }}>
+          <div
+            key={i}
+            className={cn(
+              "shrink-0 bg-semantic-bg-primary rounded border border-solid border-semantic-border-layout shadow-xs",
+              item.mediaType === "video"
+                ? "overflow-visible"
+                : "overflow-hidden"
+            )}
+            style={{ width: 260 }}
+          >
             {/* Card media — image or video */}
             <CarouselCardMedia item={item} />
             {/* Card title */}
