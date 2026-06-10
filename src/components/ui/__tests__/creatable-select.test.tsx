@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CreatableSelect } from "../creatable-select";
 
@@ -106,5 +106,30 @@ describe("CreatableSelect", () => {
     const input = screen.getByRole("combobox") as HTMLInputElement;
     await user.type(input, "a  b");
     expect(input.value).toBe("a b");
+  });
+
+  it("keeps the cursor in place when normalizeComboboxInput rejects a second space", async () => {
+    const user = userEvent.setup();
+    const sanitize = (raw: string) => raw.replace(/[^A-Za-z ]/g, "");
+    const normalize = (s: string) => s.replace(/ +/g, " ").replace(/^\s+/, "");
+    render(
+      <CreatableSelect
+        options={OPTIONS}
+        placeholder="Pick one"
+        sanitizeInput={sanitize}
+        normalizeComboboxInput={normalize}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: /Pick one/i }));
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.type(input, "Rhea from XYZ");
+    input.setSelectionRange(5, 5);
+    await user.keyboard(" ");
+
+    expect(input.value).toBe("Rhea from XYZ");
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(5);
+      expect(input.selectionEnd).toBe(5);
+    });
   });
 });

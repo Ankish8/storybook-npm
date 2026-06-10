@@ -95,6 +95,156 @@ function normalizeFunctionNameInput(value: string): string {
 function clampFunctionNameInput(value: string, maxLength: number): string {
   return clampToMaxLength(normalizeFunctionNameInput(value), maxLength);
 }
+
+/** Maps a raw input cursor to the index after {@link normalizeFunctionNameInput}. */
+function getFunctionNameCursorPosition(
+  rawValue: string,
+  cursorPosition: number,
+  normalizedValue: string
+): number {
+  const normalizedBefore = normalizeFunctionNameInput(
+    rawValue.slice(0, cursorPosition)
+  );
+  return Math.min(normalizedBefore.length, normalizedValue.length);
+}
+
+type SingleSpaceEditableElement = HTMLInputElement | HTMLTextAreaElement;
+
+function getSingleSpaceCursorPosition(
+  rawValue: string,
+  cursorPosition: number,
+  normalizedValue: string
+): number {
+  const normalizedBefore = normalizeTextareaSpaces(rawValue.slice(0, cursorPosition));
+  return Math.min(normalizedBefore.length, normalizedValue.length);
+}
+
+function restoreSingleSpaceCursor(
+  input: SingleSpaceEditableElement,
+  cursorPosition: number
+) {
+  input.setSelectionRange(cursorPosition, cursorPosition);
+  window.requestAnimationFrame(() => {
+    input.setSelectionRange(cursorPosition, cursorPosition);
+  });
+}
+
+function preventConsecutiveSpaceBeforeInput(
+  e: React.FormEvent<SingleSpaceEditableElement>
+) {
+  const nativeEvent = e.nativeEvent as InputEvent;
+  if (nativeEvent.inputType !== "insertText" || nativeEvent.data !== " ") return;
+
+  const input = e.currentTarget;
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? start;
+  const nextValue = input.value.slice(0, start) + " " + input.value.slice(end);
+
+  if (nextValue.includes("  ")) {
+    e.preventDefault();
+    restoreSingleSpaceCursor(input, start);
+  }
+}
+
+function preventConsecutiveKeySpaceBeforeInput(
+  e: React.FormEvent<HTMLInputElement>
+) {
+  const nativeEvent = e.nativeEvent as InputEvent;
+  if (nativeEvent.inputType !== "insertText" || nativeEvent.data !== " ") return;
+
+  const input = e.currentTarget;
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? start;
+
+  if (input.value.slice(0, start).endsWith("-") || input.value.slice(end).startsWith("-")) {
+    e.preventDefault();
+    restoreSingleSpaceCursor(input, start);
+  }
+}
+
+function applyKeyTextChange(
+  e: React.ChangeEvent<HTMLInputElement>,
+  onValueChange: (nextValue: string) => void
+) {
+  const rawValue = e.target.value;
+  const rawCursor = e.target.selectionStart ?? rawValue.length;
+  const normalizedValue = rawValue.replace(/ /g, "-");
+
+  if (normalizedValue !== rawValue) {
+    const input = e.currentTarget;
+    input.value = normalizedValue;
+    restoreSingleSpaceCursor(input, rawCursor);
+  }
+
+  onValueChange(normalizedValue);
+}
+
+function applySingleSpaceTextChange<T extends SingleSpaceEditableElement>(
+  e: React.ChangeEvent<T>,
+  onValueChange: (nextValue: string) => void
+): { value: string; cursor: number } {
+  const rawValue = e.target.value;
+  const rawCursor = e.target.selectionStart ?? rawValue.length;
+  const normalizedValue = normalizeTextareaSpaces(rawValue);
+  const nextCursor = getSingleSpaceCursorPosition(
+    rawValue,
+    rawCursor,
+    normalizedValue
+  );
+
+  if (normalizedValue !== rawValue) {
+    const input = e.currentTarget;
+    input.value = normalizedValue;
+    restoreSingleSpaceCursor(input, nextCursor);
+  }
+
+  onValueChange(normalizedValue);
+
+  return { value: normalizedValue, cursor: nextCursor };
+}
+
+function usePreserveFunctionNameInputSelection(value: string) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const pendingSelectionRef = React.useRef<number | null>(null);
+
+  React.useLayoutEffect(() => {
+    if (pendingSelectionRef.current === null || !inputRef.current) return;
+    const pos = pendingSelectionRef.current;
+    pendingSelectionRef.current = null;
+    inputRef.current.setSelectionRange(pos, pos);
+  }, [value]);
+
+  const applyFunctionNameChange = React.useCallback(
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      currentValue: string,
+      normalizedValue: string,
+      onValueChange: (nextValue: string) => void
+    ) => {
+      const rawValue = e.target.value;
+      const rawCursor = e.target.selectionStart ?? rawValue.length;
+      const nextCursor = getFunctionNameCursorPosition(
+        rawValue,
+        rawCursor,
+        normalizedValue
+      );
+
+      if (normalizedValue !== currentValue) {
+        pendingSelectionRef.current = nextCursor;
+        onValueChange(normalizedValue);
+        return;
+      }
+
+      const input = inputRef.current ?? e.currentTarget;
+      window.requestAnimationFrame(() => {
+        input.setSelectionRange(nextCursor, nextCursor);
+      });
+    },
+    []
+  );
+
+  return { inputRef, applyFunctionNameChange };
+}
 const VARIABLE_NAME_MAX = 30;
 /** Aligned with Chat Bot and other product modules that cap free-text descriptions at 2000 characters. */
 const VARIABLE_DESCRIPTION_MAX = 2000;
@@ -493,6 +643,8 @@ function VariableFormModal({
   const [nameError, setNameError] = React.useState("");
   const [descriptionError, setDescriptionError] = React.useState("");
   const descriptionFieldId = React.useId();
+  const { inputRef: variableNameInputRef, applyFunctionNameChange: applyVariableNameChange } =
+    usePreserveFunctionNameInputSelection(name);
 
   const nameMaxLen = resolveVariableFieldMaxLength(
     variableNameMaxLimit,
@@ -516,7 +668,7 @@ function VariableFormModal({
       setNameError("");
       setDescriptionError("");
     }
-  }, [open, initialData]);
+  }, [open, initialData, nameMaxLen]);
 
   const validateName = (v: string) => {
     if (!v.trim()) return "";
@@ -531,7 +683,7 @@ function VariableFormModal({
       nameMaxLen != null
         ? clampFunctionNameInput(e.target.value, nameMaxLen)
         : normalizeFunctionNameInput(e.target.value);
-    setName(normalized);
+    applyVariableNameChange(e, name, normalized, setName);
     setNameError(validateName(normalized));
   };
 
@@ -585,6 +737,7 @@ function VariableFormModal({
           </label>
           <div className="relative">
             <input
+              ref={variableNameInputRef}
               type="text"
               value={name}
               onChange={handleNameChange}
@@ -798,10 +951,13 @@ function VariableInput({
         maxLength={maxLength}
         disabled={disabled}
         className={cn(className, showDisplay && "opacity-0 pointer-events-none")}
+        onBeforeInput={preventConsecutiveSpaceBeforeInput}
         onChange={(e) => {
-          onChange(e.target.value);
-          const cursor = e.target.selectionStart ?? e.target.value.length;
-          const t = detectVarTrigger(e.target.value, cursor);
+          const { value: nextValue, cursor } = applySingleSpaceTextChange(
+            e,
+            onChange
+          );
+          const t = detectVarTrigger(nextValue, cursor);
           setTrigger(t);
           if (t) updatePopupPos(e.target, cursor);
           else setPopupStyle(undefined);
@@ -941,6 +1097,7 @@ function KeyValueTable({
   disabled = false,
   maxRows,
   maxRowsItemLabel = "rows",
+  limitKeyConsecutiveSpaces = false,
   bulkRequiredFillSummary,
 }: {
   rows: KeyValuePair[];
@@ -961,6 +1118,7 @@ function KeyValueTable({
   maxRows?: number;
   /** Noun for the row-limit tooltip, e.g. "headers" or "query parameters". */
   maxRowsItemLabel?: string;
+  limitKeyConsecutiveSpaces?: boolean;
   /**
    * When there are multiple rows, **more than one row has errors**, and every visible error is a
    * missing key/value message, show this single line instead of stacking redundant per-row copy.
@@ -1030,7 +1188,14 @@ function KeyValueTable({
                 <input
                   type="text"
                   value={row.key}
-                  onChange={(e) => update(row.id, { key: e.target.value })}
+                  onBeforeInput={preventConsecutiveKeySpaceBeforeInput}
+                  onChange={(e) => {
+                    if (limitKeyConsecutiveSpaces) {
+                      applyKeyTextChange(e, (v) => update(row.id, { key: v }));
+                      return;
+                    }
+                    applyKeyTextChange(e, (v) => update(row.id, { key: v }));
+                  }}
                   onBlur={() => onKeyBlur?.(row.id)}
                   placeholder="Key"
                   maxLength={keyMaxLength}
@@ -1228,6 +1393,8 @@ export const CreateFunctionModal = React.forwardRef(
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
     const [name, setName] = React.useState(initialData?.name ?? "");
+    const { inputRef: functionNameInputRef, applyFunctionNameChange: applyFunctionNameChange } =
+      usePreserveFunctionNameInputSelection(name);
     const [botMessage, setBotMessage] = React.useState(initialData?.botMessage ?? "");
     const [botMessageInvalidCharsError, setBotMessageInvalidCharsError] =
       React.useState("");
@@ -1570,6 +1737,7 @@ export const CreateFunctionModal = React.forwardRef(
       variableGroups,
       maxHeaderRows,
       maxQueryParamRows,
+      nameMaxLength,
       botMessageMaxLength,
       promptMaxLength,
     ]);
@@ -1820,6 +1988,7 @@ export const CreateFunctionModal = React.forwardRef(
                   </label>
                   <div className={cn("relative")}>
                     <input
+                      ref={functionNameInputRef}
                       id="fn-name"
                       type="text"
                       value={name}
@@ -1830,7 +1999,7 @@ export const CreateFunctionModal = React.forwardRef(
                           e.target.value,
                           nameMaxLength
                         );
-                        setName(normalized);
+                        applyFunctionNameChange(e, name, normalized, setName);
                         if (nameError) validateName(normalized);
                       }}
                       onBlur={(e) =>
@@ -2036,11 +2205,14 @@ export const CreateFunctionModal = React.forwardRef(
                         value={url}
                         maxLength={URL_MAX}
                         disabled={disabled}
+                        onBeforeInput={preventConsecutiveSpaceBeforeInput}
                         onChange={(e) => {
-                          setUrl(e.target.value);
-                          if (urlError) validateUrl(e.target.value);
-                          const cursor = e.target.selectionStart ?? e.target.value.length;
-                          const t = detectVarTrigger(e.target.value, cursor);
+                          const { value: nextValue, cursor } = applySingleSpaceTextChange(
+                            e,
+                            setUrl
+                          );
+                          if (urlError) validateUrl(nextValue);
+                          const t = detectVarTrigger(nextValue, cursor);
                           setUrlTrigger(t);
                           if (t) setUrlPopupStyle(computePopupStyle(e.target, cursor));
                           else setUrlPopupStyle(undefined);
@@ -2185,6 +2357,7 @@ export const CreateFunctionModal = React.forwardRef(
                       maxRowsItemLabel="query parameters"
                       keyMaxLength={QUERY_PARAM_KEY_MAX}
                       valueMaxLength={QUERY_PARAM_VALUE_MAX}
+                      limitKeyConsecutiveSpaces
                       getRowErrors={(row) => {
                         const useSubmitRowErrors =
                           step2SubmitAttempted &&
@@ -2249,11 +2422,14 @@ export const CreateFunctionModal = React.forwardRef(
                           disabled={disabled}
                           aria-invalid={Boolean(bodyError)}
                           aria-describedby={bodyError ? "fn-body-error" : undefined}
+                          onBeforeInput={preventConsecutiveSpaceBeforeInput}
                           onChange={(e) => {
-                            setBody(e.target.value);
-                            if (bodyError) validateBody(e.target.value);
-                            const cursor = e.target.selectionStart ?? e.target.value.length;
-                            const t = detectVarTrigger(e.target.value, cursor);
+                            const { value: nextValue, cursor } = applySingleSpaceTextChange(
+                              e,
+                              setBody
+                            );
+                            if (bodyError) validateBody(nextValue);
+                            const t = detectVarTrigger(nextValue, cursor);
                             setBodyTrigger(t);
                             if (t) setBodyPopupStyle(computePopupStyle(e.target, cursor));
                             else setBodyPopupStyle(undefined);

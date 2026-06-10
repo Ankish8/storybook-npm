@@ -1,6 +1,5 @@
-import * as React from "react";
 import "@testing-library/jest-dom/vitest";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { CreateFunctionModal } from "../create-function-modal";
@@ -192,6 +191,20 @@ describe("CreateFunctionModal", () => {
     expect(screen.getByText(/8\/30/)).toBeInTheDocument();
   });
 
+  it("preserves cursor position when a second space is entered in function name", async () => {
+    render(<CreateFunctionModal open onOpenChange={noop} />);
+    const input = screen.getByLabelText(/Function Name/i) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "xcvb_dc_vb_vdv_" } });
+    await user.click(input);
+    input.setSelectionRange(5, 5);
+    await user.keyboard(" ");
+    expect(input).toHaveValue("xcvb_dc_vb_vdv_");
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(5);
+      expect(input.selectionEnd).toBe(5);
+    });
+  });
+
   it("replaces spaces in variable name with underscores and saves normalized name", async () => {
     const onAddVariable = vi.fn();
     render(
@@ -310,6 +323,38 @@ describe("CreateFunctionModal", () => {
     await user.click(screen.getByRole("button", { name: /Next/i }));
     await user.click(screen.getByRole("button", { name: /Back/i }));
     expect(screen.getByLabelText(/Function Name/i)).toBeInTheDocument();
+  });
+
+  it("preserves cursor position when a second space is entered in a header value", async () => {
+    render(
+      <CreateFunctionModal
+        open
+        onOpenChange={noop}
+        initialStep={2}
+        initialData={{
+          name: "MyFunc",
+          prompt: VALID_PROMPT,
+          method: "GET",
+          url: "https://api.example.com/",
+          headers: [{ id: "h1", key: "X-Test", value: "Rhea from XYZ" }],
+          queryParams: [],
+          body: "",
+        }}
+      />
+    );
+
+    const valueInput = screen.getByPlaceholderText(
+      "Type {{ to add variables"
+    ) as HTMLInputElement;
+    await user.click(valueInput);
+    valueInput.setSelectionRange(5, 5);
+    await user.keyboard(" ");
+
+    expect(valueInput).toHaveValue("Rhea from XYZ");
+    await waitFor(() => {
+      expect(valueInput.selectionStart).toBe(5);
+      expect(valueInput.selectionEnd).toBe(5);
+    });
   });
 
   it("disables header Add row at maximum header count and clamps initial headers", async () => {

@@ -315,4 +315,30 @@ describe("CreatableMultiSelect", () => {
     await user.type(input, "b");
     expect(onValid).toHaveBeenCalled();
   });
+
+  it("keeps the cursor in place when normalizeInput rejects a second space", async () => {
+    const user = userEvent.setup();
+    const sanitize = (raw: string) => raw.replace(/[^A-Za-z ]/g, "");
+    const normalize = (s: string) => s.replace(/ +/g, " ").replace(/^\s+/, "");
+    render(
+      <CreatableMultiSelect
+        options={OPTIONS}
+        placeholder="Pick items"
+        sanitizeInput={sanitize}
+        normalizeInput={normalize}
+        maxLengthPerItem={20}
+      />
+    );
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByRole("combobox") as HTMLInputElement;
+    await user.type(input, "Friendly tone");
+    input.setSelectionRange(9, 9);
+    await user.keyboard(" ");
+
+    expect(input.value).toBe("Friendly tone");
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(9);
+      expect(input.selectionEnd).toBe(9);
+    });
+  });
 });

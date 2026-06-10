@@ -59,6 +59,11 @@ export interface CreatableMultiSelectProps extends Omit<
    * If the raw value differs from the sanitized value, `onInvalidCharacters` is called.
    */
   sanitizeInput?: (raw: string) => string;
+  /**
+   * Applied after `sanitizeInput` on typed draft values (e.g. collapse spaces).
+   * Does not affect invalid-character detection.
+   */
+  normalizeInput?: (sanitized: string) => string;
   /** Fired when `sanitizeInput` removed one or more characters from the raw input. */
   onInvalidCharacters?: () => void;
   /**
@@ -148,6 +153,12 @@ function isValueAlreadySelected(
   });
 }
 
+function restoreInputCursor(input: HTMLInputElement, cursorPosition: number) {
+  window.requestAnimationFrame(() => {
+    input.setSelectionRange(cursorPosition, cursorPosition);
+  });
+}
+
 const CreatableMultiSelect = React.forwardRef(
   (
     {
@@ -165,6 +176,7 @@ const CreatableMultiSelect = React.forwardRef(
       showPerItemCharacterCounter = true,
       triggerDisplay = "chips",
       sanitizeInput,
+      normalizeInput,
       onInvalidCharacters,
       onValidInput,
       onInputValueChange,
@@ -189,6 +201,17 @@ const CreatableMultiSelect = React.forwardRef(
       maxLengthPerItem
     );
 
+    const normalizeDraftValue = React.useCallback(
+      (raw: string) => {
+        const sanitized = sanitizeInput ? sanitizeInput(raw) : raw;
+        const normalized = normalizeInput ? normalizeInput(sanitized) : sanitized;
+        return maxLengthPerItem != null
+          ? normalized.slice(0, maxLengthPerItem)
+          : normalized;
+      },
+      [maxLengthPerItem, normalizeInput, sanitizeInput]
+    );
+
     const addValue = (val: string) => {
       const isPreset = options.some((o) => o.value === val);
       const afterSanitize = isPreset
@@ -196,7 +219,9 @@ const CreatableMultiSelect = React.forwardRef(
         : sanitizeInput
           ? sanitizeInput(val)
           : val;
-      const trimmed = afterSanitize.trim();
+      const afterNormalize =
+        isPreset || !normalizeInput ? afterSanitize : normalizeInput(afterSanitize);
+      const trimmed = afterNormalize.trim();
       if (
         !trimmed ||
         isValueAlreadySelected(
@@ -385,12 +410,19 @@ const CreatableMultiSelect = React.forwardRef(
                       if (raw !== sanitized) onInvalidCharacters?.();
                       else onValidInput?.();
                     }
-                    const nextInput =
-                      maxLengthPerItem != null
-                        ? sanitized.slice(0, maxLengthPerItem)
-                        : sanitized;
+                    const nextInput = normalizeDraftValue(raw);
                     setInputValue(nextInput);
                     onInputValueChange?.(nextInput);
+
+                    if (nextInput !== raw) {
+                      const input = e.currentTarget;
+                      const rawCursor = input.selectionStart ?? raw.length;
+                      const nextCursor = Math.min(
+                        normalizeDraftValue(raw.slice(0, rawCursor)).length,
+                        nextInput.length
+                      );
+                      restoreInputCursor(input, nextCursor);
+                    }
                   }}
                   maxLength={maxLengthPerItem}
                   onKeyDown={handleKeyDown}

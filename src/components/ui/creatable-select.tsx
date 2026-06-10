@@ -43,6 +43,12 @@ export const creatableToneHintRowClassName = cn(
   "flex shrink-0 items-center justify-between gap-2 px-4 py-2"
 )
 
+function restoreInputCursor(input: HTMLInputElement, cursorPosition: number) {
+  window.requestAnimationFrame(() => {
+    input.setSelectionRange(cursorPosition, cursorPosition)
+  })
+}
+
 export interface CreatableSelectOption {
   value: string
   label: string
@@ -121,6 +127,17 @@ const CreatableSelect = React.forwardRef(
 
     // Merge forwarded ref with internal ref
     React.useImperativeHandle(ref, () => containerRef.current!)
+
+    const normalizeSearchValue = React.useCallback(
+      (raw: string) => {
+        const sanitized = sanitizeInput ? sanitizeInput(raw) : raw
+        const normalized = normalizeComboboxInput
+          ? normalizeComboboxInput(sanitized)
+          : sanitized
+        return maxLength != null ? normalized.slice(0, maxLength) : normalized
+      },
+      [maxLength, normalizeComboboxInput, sanitizeInput]
+    )
 
     const selectedLabel = React.useMemo(() => {
       const found = options.find((o) => o.value === value)
@@ -274,13 +291,19 @@ const CreatableSelect = React.forwardRef(
                   if (raw !== sanitized) onInvalidCharacters?.()
                   else onValidInput?.()
                 }
-                const next = normalizeComboboxInput
-                  ? normalizeComboboxInput(sanitized)
-                  : sanitized
-                const nextSearch =
-                  maxLength != null ? next.slice(0, maxLength) : next
+                const nextSearch = normalizeSearchValue(raw)
                 setSearch(nextSearch)
                 onInputValueChange?.(nextSearch)
+
+                if (nextSearch !== raw) {
+                  const input = e.currentTarget
+                  const rawCursor = input.selectionStart ?? raw.length
+                  const nextCursor = Math.min(
+                    normalizeSearchValue(raw.slice(0, rawCursor)).length,
+                    nextSearch.length
+                  )
+                  restoreInputCursor(input, nextCursor)
+                }
               }}
               maxLength={maxLength}
               onKeyDown={handleKeyDown}

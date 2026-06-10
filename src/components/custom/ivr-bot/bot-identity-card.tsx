@@ -580,6 +580,12 @@ const BotIdentityCard = React.forwardRef(
                 maxLengthPerItem={TONE_MAX_LENGTH_PER_ITEM}
                 showPerItemCharacterCounter={true}
                 sanitizeInput={filterBotIdentityText}
+                normalizeInput={(sanitized) =>
+                  normalizeFilteredBotIdentityTyping(
+                    sanitized,
+                    TONE_MAX_LENGTH_PER_ITEM
+                  )
+                }
                 onInvalidCharacters={() =>
                   setToneError(BOT_IDENTITY_INVALID_CHARS_MESSAGE)
                 }
