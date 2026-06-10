@@ -138,8 +138,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         }
 
         if (ref) {
-          (ref as React.MutableRefObject<HTMLTextAreaElement | null>).current =
-            node;
+          ref.current = node;
         }
       },
       [ref]
