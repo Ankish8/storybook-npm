@@ -579,7 +579,7 @@ function VarPopup({
       <div className="max-h-48 overflow-y-auto p-1">
         {filteredGroups.map((group) => (
           <div key={group.label}>
-            <p className="m-0 px-2 pt-2 pb-1 text-sm font-medium text-semantic-text-muted">
+            <p className="m-0 px-2 pt-2 pb-1 text-sm font-semibold text-semantic-text-muted">
               {group.label}
             </p>
             {group.items.map((item) => {
@@ -731,7 +731,7 @@ function VariableFormModal({
     >
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-semantic-text-muted">
+          <label className="text-sm font-semibold text-semantic-text-muted">
             Variable name{" "}
             <span className="text-semantic-error-primary">*</span>
           </label>
@@ -775,7 +775,7 @@ function VariableFormModal({
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor={descriptionFieldId}
-            className="text-sm font-medium text-semantic-text-muted"
+            className="text-sm font-semibold text-semantic-text-muted"
           >
             Description{" "}
             <span className="text-semantic-error-primary">*</span>
@@ -826,7 +826,7 @@ function VariableFormModal({
           ) : null}
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium text-semantic-text-muted">Required</span>
+          <span className="text-sm font-semibold text-semantic-text-muted">Required</span>
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -836,7 +836,7 @@ function VariableFormModal({
                 onChange={() => setRequired(true)}
                 className="size-4 accent-semantic-primary"
               />
-              <span className="text-base text-semantic-text-primary">Yes</span>
+              <span className="text-base font-semibold text-semantic-text-primary">Yes</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -846,7 +846,7 @@ function VariableFormModal({
                 onChange={() => setRequired(false)}
                 className="size-4 accent-semantic-primary"
               />
-              <span className="text-base text-semantic-text-primary">No</span>
+              <span className="text-base font-semibold text-semantic-text-primary">No</span>
             </label>
           </div>
         </div>
@@ -1159,7 +1159,7 @@ function KeyValueTable({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-sm text-semantic-text-muted">{label}</span>
+      <span className="text-sm font-semibold text-semantic-text-muted">{label}</span>
       <div className="border border-solid border-semantic-border-layout rounded">
         {/* Column headers — desktop only; grid tracks match data rows so Key | Value borders align */}
         <div className="hidden sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)_2.5rem] border-b border-solid border-semantic-border-layout rounded-t">
@@ -2137,7 +2137,7 @@ export const CreateFunctionModal = React.forwardRef(
               <div className="flex flex-col gap-5">
                 {/* API URL — always a single combined row */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-xs font-medium uppercase tracking-[0.06em] text-semantic-text-muted">
+                  <span className="text-xs font-semibold uppercase tracking-[0.06em] text-semantic-text-muted">
                     API URL
                   </span>
                     <div
@@ -2411,7 +2411,7 @@ export const CreateFunctionModal = React.forwardRef(
                   )}
                   {activeTab === "body" && (
                     <div className="flex flex-col gap-1.5">
-                      <span className="text-sm text-semantic-text-muted">
+                      <span className="text-sm font-semibold text-semantic-text-muted">
                         Body
                       </span>
                       <div className={cn("relative")}>
@@ -2480,7 +2480,7 @@ export const CreateFunctionModal = React.forwardRef(
                   {/* Variable test values — shown when URL, body (if applicable), or params contain {{variables}} */}
                   {testableVars.length > 0 && (
                     <div className="flex flex-col gap-2">
-                      <span className="text-sm text-semantic-text-muted">
+                      <span className="text-sm font-semibold text-semantic-text-muted">
                         Variable values for testing
                       </span>
                       {testableVars.map((variable, varIndex) => {
@@ -2552,7 +2552,7 @@ export const CreateFunctionModal = React.forwardRef(
                   </button>
 
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-sm text-semantic-text-muted">
+                    <span className="text-sm font-semibold text-semantic-text-muted">
                       Response from API
                     </span>
                     <textarea

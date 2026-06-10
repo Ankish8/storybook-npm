@@ -94,9 +94,9 @@ import { TextField } from "@/components/ui/text-field"
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Label Color</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-primary</code></td>
-      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">181D27</td>
-      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #181D27; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-secondary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">343E55</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #343E55; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Helper Text</td>

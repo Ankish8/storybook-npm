@@ -248,7 +248,7 @@ function DateInput({
 
   return (
     <div ref={containerRef} className="relative flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-semantic-text-secondary">
+      <label className="text-sm font-semibold text-semantic-text-secondary">
         {label}
       </label>
       <button

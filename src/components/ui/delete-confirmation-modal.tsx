@@ -129,7 +129,7 @@ const DeleteConfirmationModal = React.forwardRef(
           <div className="grid gap-2 py-4">
             <label
               htmlFor="delete-confirmation-input"
-              className="text-sm text-semantic-text-secondary"
+              className="text-sm font-semibold text-semantic-text-secondary"
             >
               Enter "{confirmText}" in uppercase to confirm
             </label>

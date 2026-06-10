@@ -133,7 +133,7 @@ function Calendar({ value, onChange, minDate, maxDate }: CalendarProps) {
         {DAYS_OF_WEEK.map((d) => (
           <div
             key={d}
-            className="text-center text-xs font-medium text-semantic-text-muted py-1"
+            className="text-center text-xs font-semibold text-semantic-text-muted py-1"
           >
             {d}
           </div>

@@ -116,7 +116,7 @@ export const ReadableField = React.forwardRef(
       >
         {/* Header Row: Label + Optional Action */}
         <div className="flex items-start justify-between">
-          <span className="text-sm text-semantic-text-secondary tracking-[0.035px]">
+          <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.035px]">
             {label}
           </span>
           {headerAction && (

@@ -239,7 +239,7 @@ export const InputTypes: Story = {
       <div>
         <label
           htmlFor="input-type-text"
-          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
         >
           Text
         </label>
@@ -248,7 +248,7 @@ export const InputTypes: Story = {
       <div>
         <label
           htmlFor="input-type-email"
-          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
         >
           Email
         </label>
@@ -257,7 +257,7 @@ export const InputTypes: Story = {
       <div>
         <label
           htmlFor="input-type-password"
-          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
         >
           Password
         </label>
@@ -270,7 +270,7 @@ export const InputTypes: Story = {
       <div>
         <label
           htmlFor="input-type-number"
-          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
         >
           Number
         </label>
@@ -279,7 +279,7 @@ export const InputTypes: Story = {
       <div>
         <label
           htmlFor="input-type-search"
-          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
         >
           Search
         </label>

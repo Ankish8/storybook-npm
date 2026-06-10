@@ -335,6 +335,6 @@ describe("Textarea", () => {
     const label = screen.getByText("My Label");
     expect(label).toHaveClass("my-label-class");
     expect(label).toHaveClass("text-sm");
-    expect(label).toHaveClass("font-medium");
+    expect(label).toHaveClass("font-semibold");
   });
 });

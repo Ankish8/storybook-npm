@@ -1554,7 +1554,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="flex size-8 items-center justify-center text-xs font-medium text-semantic-text-muted"
+                    className="flex size-8 items-center justify-center text-xs font-semibold text-semantic-text-muted"
                   >
                     {day}
                   </div>
