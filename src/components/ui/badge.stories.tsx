@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Check, X, AlertCircle, Clock } from "lucide-react";
+import { Check, X, AlertCircle, Clock, Sparkles } from "lucide-react";
 import { Badge } from "./badge";
 
 const meta: Meta<typeof Badge> = {
@@ -45,6 +45,18 @@ import { Badge } from "@/components/ui/badge"
       <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-success-primary</code></td>
       <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">17B26A</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #17B26A; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Warning Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-warning-surface</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">FFFAEB</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #FFFAEB; border-radius: 6px; border: 1px solid #FEDF89;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Warning Text</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-warning-primary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">F79009</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #F79009; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Failed Background</td>
@@ -121,6 +133,7 @@ import { Badge } from "@/components/ui/badge"
       control: "select",
       options: [
         "active",
+        "warning",
         "failed",
         "disabled",
         "default",
@@ -169,6 +182,14 @@ export const Active: Story = {
   },
 };
 
+export const Warning: Story = {
+  args: {
+    children: "Vanity",
+    variant: "warning",
+    leftIcon: <Sparkles />,
+  },
+};
+
 export const Failed: Story = {
   args: {
     children: "Failed",
@@ -194,6 +215,9 @@ export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active">Active</Badge>
+      <Badge variant="warning" leftIcon={<Sparkles />}>
+        Vanity
+      </Badge>
       <Badge variant="failed">Failed</Badge>
       <Badge variant="disabled">Disabled</Badge>
       <Badge variant="default">Default</Badge>
@@ -229,6 +253,9 @@ export const WithIcons: Story = {
       </Badge>
       <Badge variant="failed" leftIcon={<X />}>
         Failed
+      </Badge>
+      <Badge variant="warning" leftIcon={<Sparkles />}>
+        Vanity
       </Badge>
       <Badge variant="disabled" leftIcon={<Clock />}>
         Pending

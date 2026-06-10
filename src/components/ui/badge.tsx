@@ -15,6 +15,7 @@ const badgeVariants = cva(
       variant: {
         // Status-based variants (existing)
         active: "bg-semantic-success-surface text-semantic-success-primary",
+        warning: "bg-semantic-warning-surface text-semantic-warning-primary",
         failed: "bg-semantic-error-surface text-semantic-error-primary",
         disabled: "bg-semantic-bg-ui text-semantic-text-muted",
         default: "bg-semantic-bg-ui text-semantic-text-primary",
@@ -44,6 +45,7 @@ const badgeVariants = cva(
  * @example
  * ```tsx
  * <Badge variant="active">Active</Badge>
+ * <Badge variant="warning">Warning</Badge>
  * <Badge variant="failed">Failed</Badge>
  * <Badge variant="disabled">Disabled</Badge>
  * <Badge variant="default">Default</Badge>

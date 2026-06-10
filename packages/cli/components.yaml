@@ -36,6 +36,7 @@ categories:
       - textarea
       - select-field
       - multi-select
+      - search-filter
       - readable-field
       - date-time-picker
 
@@ -319,6 +320,20 @@ components:
     internalDependencies:
       - checkbox
       - tooltip
+
+  search-filter:
+    description: "A searchable filter dropdown with checkbox options and apply/cancel actions"
+    category: form
+    dependencies:
+      - "@floating-ui/react-dom"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - checkbox
+      - input
 
   number-step-field:
     description: "Number input with inline chevron steppers and trailing suffix chip"

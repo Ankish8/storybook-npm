@@ -173,6 +173,14 @@ export type {
   MultiSelectOptionInput,
 } from "./components/ui/multi-select";
 
+// SearchFilter
+export { SearchFilter, searchFilterVariants } from "./components/ui/search-filter";
+export type {
+  SearchFilterProps,
+  SearchFilterOption,
+  SearchFilterSearchMode,
+} from "./components/ui/search-filter";
+
 // Checkbox
 export { Checkbox, checkboxVariants } from "./components/ui/checkbox";
 export type { CheckboxProps, CheckedState } from "./components/ui/checkbox";

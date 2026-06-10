@@ -16,6 +16,7 @@ describe("Badge", () => {
 
   it.each([
     ["active", "bg-semantic-success-surface", "text-semantic-success-primary"],
+    ["warning", "bg-semantic-warning-surface", "text-semantic-warning-primary"],
     ["failed", "bg-semantic-error-surface", "text-semantic-error-primary"],
     ["disabled", "bg-semantic-bg-ui", "text-semantic-text-muted"],
     ["default", "bg-semantic-bg-ui", "text-semantic-text-primary"],
