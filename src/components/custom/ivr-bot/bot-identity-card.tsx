@@ -228,6 +228,7 @@ function StyledInput({
   placeholder,
   value,
   onChange,
+  onBeforeInput,
   onBlur,
   disabled,
   maxLength,
@@ -237,7 +238,8 @@ function StyledInput({
 }: {
   placeholder?: string;
   value?: string;
-  onChange?: (v: string) => void;
+  onChange?: (v: string, event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBeforeInput?: React.FormEventHandler<HTMLInputElement>;
   onBlur?: () => void;
   disabled?: boolean;
   maxLength?: number;
@@ -254,8 +256,9 @@ function StyledInput({
         value={value ?? ""}
         onChange={(e) => {
           const v = e.target.value;
-          onChange?.(maxLength != null ? v.slice(0, maxLength) : v);
+          onChange?.(maxLength != null ? v.slice(0, maxLength) : v, e);
         }}
+        onBeforeInput={onBeforeInput}
         onFocus={() => setIsFocused(true)}
         onBlur={() => {
           setIsFocused(false);
@@ -405,18 +408,62 @@ const BotIdentityCard = React.forwardRef(
     const toneErrorText = toneDisplayError ? toneDisplayError : undefined;
 
     const handleBotNameChange = React.useCallback(
-      (raw: string) => {
+      (raw: string, event?: React.ChangeEvent<HTMLInputElement>) => {
         const filtered = filterBotIdentityText(raw);
+        const sanitized = sanitizeBotIdentityFieldTyping(
+          raw,
+          BOT_NAME_MAX_LENGTH
+        );
         if (hadInvalidBotIdentityChars(raw, filtered)) {
           setBotNameError(BOT_IDENTITY_INVALID_CHARS_MESSAGE);
         } else {
           setBotNameError(null);
         }
-        onChange({
-          botName: sanitizeBotIdentityFieldTyping(raw, BOT_NAME_MAX_LENGTH),
-        });
+        onChange({ botName: sanitized });
+
+        if (event && sanitized !== raw) {
+          const input = event.currentTarget;
+          const rawCursor = input.selectionStart ?? raw.length;
+          const sanitizedBeforeCursor = sanitizeBotIdentityFieldTyping(
+            raw.slice(0, rawCursor),
+            BOT_NAME_MAX_LENGTH
+          );
+          const nextCursor = Math.min(
+            sanitizedBeforeCursor.length,
+            sanitized.length
+          );
+          window.requestAnimationFrame(() => {
+            input.setSelectionRange(nextCursor, nextCursor);
+          });
+        }
       },
       [onChange]
+    );
+
+    const handleBotNameBeforeInput = React.useCallback(
+      (event: React.FormEvent<HTMLInputElement>) => {
+        const nativeEvent = event.nativeEvent as InputEvent;
+        if (nativeEvent.inputType !== "insertText" || nativeEvent.data !== " ") {
+          return;
+        }
+
+        const input = event.currentTarget;
+        const selectionStart = input.selectionStart ?? input.value.length;
+        const selectionEnd = input.selectionEnd ?? selectionStart;
+        const nextValue =
+          input.value.slice(0, selectionStart) +
+          nativeEvent.data +
+          input.value.slice(selectionEnd);
+
+        if (nextValue.includes("  ")) {
+          event.preventDefault();
+          input.setSelectionRange(selectionStart, selectionStart);
+          window.requestAnimationFrame(() => {
+            input.setSelectionRange(selectionStart, selectionStart);
+          });
+        }
+      },
+      []
     );
 
     const handleBotNameBlur = React.useCallback(() => {
@@ -471,6 +518,7 @@ const BotIdentityCard = React.forwardRef(
                 placeholder="e.g., Rhea from XYZ"
                 value={botNameValue}
                 onChange={handleBotNameChange}
+                onBeforeInput={handleBotNameBeforeInput}
                 onBlur={handleBotNameBlur}
                 disabled={disabled}
                 invalid={Boolean(botNameErrorText)}

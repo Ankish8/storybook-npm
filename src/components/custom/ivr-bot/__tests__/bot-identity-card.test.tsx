@@ -1,6 +1,6 @@
 import * as React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BotIdentityCard } from "../bot-identity-card";
 import { BOT_IDENTITY_INVALID_CHARS_MESSAGE } from "../bot-identity-text";
@@ -45,6 +45,33 @@ describe("BotIdentityCard", () => {
     await user.type(input, "Rhea   ");
     expect(input).toHaveValue("Rhea ");
     expect(screen.getByText("4/50")).toBeInTheDocument();
+  });
+
+  it("keeps the bot name cursor in place when a second consecutive space is rejected", async () => {
+    const user = userEvent.setup();
+    function Controlled() {
+      const [data, setData] = React.useState({ botName: "Rhea from XYZ" });
+      return (
+        <BotIdentityCard
+          data={data}
+          onChange={(patch) => setData((d) => ({ ...d, ...patch }))}
+        />
+      );
+    }
+    render(<Controlled />);
+    const input = screen.getByPlaceholderText(
+      "e.g., Rhea from XYZ"
+    ) as HTMLInputElement;
+
+    await user.click(input);
+    input.setSelectionRange(5, 5);
+    await user.keyboard(" ");
+
+    expect(input).toHaveValue("Rhea from XYZ");
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(5);
+      expect(input.selectionEnd).toBe(5);
+    });
   });
 
   it("trims bot name on blur", async () => {
