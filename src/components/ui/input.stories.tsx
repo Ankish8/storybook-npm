@@ -237,24 +237,53 @@ export const InputTypes: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Text</p>
-        <Input type="text" placeholder="Enter text" />
+        <label
+          htmlFor="input-type-text"
+          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+        >
+          Text
+        </label>
+        <Input id="input-type-text" type="text" placeholder="Enter text" />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Email</p>
-        <Input type="email" placeholder="email@example.com" />
+        <label
+          htmlFor="input-type-email"
+          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+        >
+          Email
+        </label>
+        <Input id="input-type-email" type="email" placeholder="email@example.com" />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Password</p>
-        <Input type="password" placeholder="Enter password" />
+        <label
+          htmlFor="input-type-password"
+          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+        >
+          Password
+        </label>
+        <Input
+          id="input-type-password"
+          type="password"
+          placeholder="Enter password"
+        />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Number</p>
-        <Input type="number" placeholder="0" />
+        <label
+          htmlFor="input-type-number"
+          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+        >
+          Number
+        </label>
+        <Input id="input-type-number" type="number" placeholder="0" />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Search</p>
-        <Input type="search" placeholder="Search..." />
+        <label
+          htmlFor="input-type-search"
+          className="mb-1.5 block text-sm font-medium text-semantic-text-secondary"
+        >
+          Search
+        </label>
+        <Input id="input-type-search" type="search" placeholder="Search..." />
       </div>
     </div>
   ),
