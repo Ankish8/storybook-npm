@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 103 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 104 components across 7 categories.
 
 ## Quick Reference
 
@@ -26,6 +26,7 @@
 | Textarea | form | `npx myoperator-ui add textarea` |
 | SelectField | form | `npx myoperator-ui add select-field` |
 | MultiSelect | form | `npx myoperator-ui add multi-select` |
+| SearchFilter | form | `npx myoperator-ui add search-filter` |
 | ReadableField | form | `npx myoperator-ui add readable-field` |
 | DateTimePicker | form | `npx myoperator-ui add date-time-picker` |
 | Table | data | `npx myoperator-ui add table` |
@@ -439,6 +440,14 @@ import { Mail } from "lucide-react"
   onValueChange={(values) => console.log(values)}
 />
 ```
+
+---
+
+### SearchFilter
+> A searchable filter dropdown with checkbox options and apply/cancel actions
+
+**Install**: `npx myoperator-ui add search-filter`
+**Requires**: `button`, `checkbox`, `input` (auto-installed)
 
 ---
 
