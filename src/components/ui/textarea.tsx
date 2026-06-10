@@ -125,7 +125,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     }: TextareaProps,
     ref
   ) => {
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+    const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
     const pendingSelectionRef = React.useRef<[number, number] | null>(null);
 
     const setTextareaRef = React.useCallback(
@@ -138,7 +138,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         }
 
         if (ref) {
-          ref.current = node;
+          (ref as React.MutableRefObject<HTMLTextAreaElement | null>).current =
+            node;
         }
       },
       [ref]
