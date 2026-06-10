@@ -309,7 +309,7 @@ const SelectField = React.forwardRef(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-sm font-medium text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-secondary",
               labelClassName
             )}
           >
@@ -355,7 +355,7 @@ const SelectField = React.forwardRef(
                   placeholder={searchPlaceholder}
                   value={effectiveSearchQuery}
                   onChange={handleSearchChange}
-                  className="w-full h-8 text-sm bg-transparent placeholder:text-semantic-text-muted focus:outline-none"
+                  className="w-full h-[42px] text-base text-semantic-text-primary bg-transparent placeholder:text-semantic-text-placeholder focus:outline-none"
                   // Prevent closing dropdown when clicking input
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}

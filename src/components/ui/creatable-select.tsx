@@ -284,7 +284,7 @@ const CreatableSelect = React.forwardRef(
               }}
               maxLength={maxLength}
               onKeyDown={handleKeyDown}
-              className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-muted"
+              className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder"
               placeholder={selectedLabel || placeholder}
               aria-expanded="true"
               aria-haspopup="listbox"
@@ -315,7 +315,7 @@ const CreatableSelect = React.forwardRef(
             <span
               className={cn(
                 "line-clamp-1",
-                !selectedLabel && "text-semantic-text-muted"
+                !selectedLabel && "text-semantic-text-placeholder"
               )}
             >
               {selectedLabel || placeholder}

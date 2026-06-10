@@ -395,7 +395,7 @@ const CreatableMultiSelect = React.forwardRef(
                   maxLength={maxLengthPerItem}
                   onKeyDown={handleKeyDown}
                   disabled={disabled}
-                  className="min-w-[120px] flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-muted"
+                  className="min-w-[120px] flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder"
                   role="combobox"
                   aria-expanded={isOpen}
                   aria-controls={listboxId}
@@ -449,7 +449,7 @@ const CreatableMultiSelect = React.forwardRef(
                     className={cn(
                       "line-clamp-2 flex-1 text-base",
                       value.length === 0
-                        ? "text-semantic-text-muted"
+                        ? "text-semantic-text-placeholder"
                         : "text-semantic-text-primary"
                     )}
                   >
@@ -459,7 +459,7 @@ const CreatableMultiSelect = React.forwardRef(
                   <span
                     className={cn(
                       "line-clamp-2 flex-1 text-base",
-                      "text-semantic-text-muted"
+                      "text-semantic-text-placeholder"
                     )}
                   >
                     {placeholder}

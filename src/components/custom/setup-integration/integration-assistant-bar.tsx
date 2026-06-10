@@ -7,6 +7,7 @@ export interface IntegrationAssistantBarProps extends React.HTMLAttributes<HTMLD
   label?: string;
   /** Reset control label (default: "Reset Chat") */
   resetLabel?: string;
+  isResetChatDisabled?: boolean;
   onResetClick?: () => void;
   leadingIcon?: React.ReactNode;
   resetIcon?: React.ReactNode;
@@ -21,6 +22,7 @@ const IntegrationAssistantBar = React.forwardRef<
       className,
       label = "AI Assistant",
       resetLabel = "Reset Chat",
+      isResetChatDisabled = false,
       onResetClick,
       leadingIcon,
       resetIcon,
@@ -47,8 +49,9 @@ const IntegrationAssistantBar = React.forwardRef<
       {onResetClick && (
         <button
           type="button"
+          disabled={isResetChatDisabled}
           onClick={onResetClick}
-          className="flex items-center gap-1 text-sm font-semibold tracking-wide text-semantic-text-muted hover:text-semantic-text-secondary transition-colors"
+          className="flex items-center gap-1 text-sm font-semibold tracking-wide text-semantic-text-muted transition-colors hover:text-semantic-text-secondary disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:text-semantic-text-muted"
         >
           {resetIcon ?? <RotateCcw className="size-[11px]" />}
           {resetLabel}

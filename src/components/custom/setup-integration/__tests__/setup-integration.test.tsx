@@ -233,6 +233,24 @@ describe("SetupIntegration", () => {
     expect(onResetChat).not.toHaveBeenCalled();
   });
 
+  it("disables Reset Chat when isResetChatDisabled is true", () => {
+    const onResetChat = vi.fn();
+    render(
+      <SetupIntegration
+        {...modalProps}
+        messages={sampleMessages}
+        onResetChat={onResetChat}
+        isResetChatDisabled
+      />
+    );
+    const resetButton = screen.getByRole("button", { name: "Reset Chat" });
+
+    expect(resetButton).toBeDisabled();
+    fireEvent.click(resetButton);
+    expect(screen.queryByText("Reset Chat?")).not.toBeInTheDocument();
+    expect(onResetChat).not.toHaveBeenCalled();
+  });
+
   it("calls onAction when action button is clicked", () => {
     const onAction = vi.fn();
     render(

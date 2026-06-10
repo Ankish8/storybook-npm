@@ -482,7 +482,7 @@ const MultiSelect = React.forwardRef(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-xs font-normal text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-secondary",
               labelClassName
             )}
           >
@@ -520,7 +520,7 @@ const MultiSelect = React.forwardRef(
           >
           <div className="flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
-              <span className="text-semantic-text-placeholder">
+              <span className="text-base text-semantic-text-placeholder">
                 {placeholder}
               </span>
             ) : (
@@ -642,7 +642,7 @@ const MultiSelect = React.forwardRef(
                     placeholder={searchPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full h-8 px-3 text-sm border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
+                    className="w-full h-[42px] px-3 text-base text-semantic-text-primary border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>

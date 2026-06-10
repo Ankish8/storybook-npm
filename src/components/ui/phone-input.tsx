@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const phoneInputContainerVariants = cva(
-  "flex items-center border border-solid rounded transition-all",
+  "flex items-center border h-[42px] border-solid rounded transition-all",
   {
     variants: {
       state: {
@@ -147,14 +147,14 @@ const PhoneInput = React.forwardRef(
       >
         <div
           className={cn(
-            "flex items-center gap-1.5 pl-3 pr-2 h-10 shrink-0",
+            "flex h-full items-center gap-1.5 pl-3 pr-2 shrink-0",
             onCountryClick && "cursor-pointer"
           )}
           onClick={onCountryClick}
           data-testid="phone-input-country"
         >
-          <span className="text-sm">{countryFlag}</span>
-          <span className="text-sm text-semantic-text-secondary">
+          <span className="text-base">{countryFlag}</span>
+          <span className="text-base text-semantic-text-secondary">
             {countryCode}
           </span>
           {showChevron && (
@@ -173,7 +173,7 @@ const PhoneInput = React.forwardRef(
           aria-invalid={ariaInvalid ?? derivedState === "error"}
           aria-describedby={describedBy || undefined}
           className={cn(
-            "flex-1 h-10 px-3 text-sm text-semantic-text-primary placeholder:text-semantic-text-muted outline-none bg-transparent disabled:cursor-not-allowed",
+            "flex-1 h-full px-3 text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder outline-none bg-transparent disabled:cursor-not-allowed",
             className
           )}
           onBeforeInput={handleBeforeInput}

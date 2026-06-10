@@ -283,7 +283,7 @@ describe("ReadableField", () => {
       .getByText(defaultProps.value)
       .closest("div");
 
-    expect(inputContainer).toHaveClass("h-11");
+    expect(inputContainer).toHaveClass("h-[42px]");
     expect(inputContainer).toHaveClass("rounded");
     expect(inputContainer).toHaveClass("border");
     expect(inputContainer).toHaveClass("border-semantic-border-layout");

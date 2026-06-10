@@ -30,6 +30,7 @@ const SetupIntegration = React.forwardRef<
       isActionLoading = false,
       actionLabel = "Test Integration",
       isActionDisabled = false,
+      isResetChatDisabled = false,
       actionMode = "test",
       integrationName,
       onIntegrationNameChange,
@@ -55,6 +56,7 @@ const SetupIntegration = React.forwardRef<
     };
 
     const handleResetRequest = () => {
+      if (isResetChatDisabled) return;
       setShowResetConfirm(true);
     };
 
@@ -91,6 +93,7 @@ const SetupIntegration = React.forwardRef<
             isActionLoading={isActionLoading}
             actionLabel={actionLabel}
             isActionDisabled={isActionDisabled}
+            isResetChatDisabled={isResetChatDisabled}
             actionMode={actionMode}
             integrationName={integrationName}
             onIntegrationNameChange={onIntegrationNameChange}

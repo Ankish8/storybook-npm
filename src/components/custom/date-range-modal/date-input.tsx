@@ -248,7 +248,7 @@ function DateInput({
 
   return (
     <div ref={containerRef} className="relative flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-semantic-text-primary">
+      <label className="text-sm font-medium text-semantic-text-secondary">
         {label}
       </label>
       <button
@@ -256,12 +256,12 @@ function DateInput({
         type="button"
         onClick={handleTriggerClick}
         className={cn(
-          "flex items-center justify-between gap-2 w-full px-3 py-2 rounded-md border border-solid text-sm transition-colors outline-none",
+          "flex h-[42px] items-center justify-between gap-2 w-full px-3 py-2 rounded-md border border-solid text-base transition-colors outline-none",
           "border-semantic-border-input bg-semantic-bg-primary text-semantic-text-primary",
           "hover:border-semantic-border-input-focus/50",
           open &&
             "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-          !value && "text-semantic-text-muted"
+          !value && "text-semantic-text-placeholder"
         )}
         aria-haspopup="dialog"
         aria-expanded={open}

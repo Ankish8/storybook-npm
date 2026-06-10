@@ -231,7 +231,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           <label
             htmlFor={textareaId}
             className={cn(
-              "text-sm font-medium text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-secondary",
               labelClassName
             )}
           >

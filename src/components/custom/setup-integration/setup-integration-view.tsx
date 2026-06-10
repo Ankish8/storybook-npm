@@ -32,6 +32,7 @@ const SetupIntegrationView = React.forwardRef<
       isActionLoading = false,
       actionLabel = "Test Integration",
       isActionDisabled = false,
+      isResetChatDisabled = false,
       actionMode = "test",
       integrationName,
       onIntegrationNameChange,
@@ -84,7 +85,10 @@ const SetupIntegrationView = React.forwardRef<
         />
 
         <IntegrationAssistantSection>
-          <IntegrationAssistantBar onResetClick={onResetChat} />
+          <IntegrationAssistantBar
+            isResetChatDisabled={isResetChatDisabled}
+            onResetClick={onResetChat}
+          />
           <IntegrationChatMessages
             messages={messages}
             messagesAreaClassName={messagesAreaClassName}

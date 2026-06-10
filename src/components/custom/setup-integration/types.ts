@@ -88,6 +88,8 @@ export interface SetupIntegrationProps
   actionLabel?: string
   /** Whether the action button is disabled */
   isActionDisabled?: boolean
+  /** Whether the "Reset Chat" button is disabled */
+  isResetChatDisabled?: boolean
   /** Current action mode — controls button styling */
   actionMode?: SetupIntegrationAction
   /** Integration name shown in header for edit mode (e.g., "Integration test 1") */

@@ -247,7 +247,7 @@ const TextField = React.forwardRef(
           <label
             htmlFor={inputId}
             className={cn(
-              "text-sm font-medium text-semantic-text-muted",
+              "text-sm font-medium text-semantic-text-secondary",
               labelClassName
             )}
           >

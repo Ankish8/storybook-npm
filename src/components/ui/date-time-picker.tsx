@@ -65,8 +65,8 @@ const dateTimePickerTriggerVariants = cva(
     variants: {
       size: {
         sm: "h-9 gap-2 rounded-lg px-3 py-2 text-sm",
-        default: "h-10 gap-2 rounded-lg px-4 py-2.5 text-sm",
-        lg: "h-10 gap-2 rounded-lg px-4 py-2.5 text-sm",
+        default: "h-[42px] gap-2 rounded-lg px-4 py-2.5 text-base",
+        lg: "h-[42px] gap-2 rounded-lg px-4 py-2.5 text-base",
       },
       state: {
         default: "",
@@ -1622,7 +1622,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             <div className="flex flex-col gap-1.5">
               <label
                 id={`${triggerId}-start-time-label`}
-                className="block text-sm font-semibold text-semantic-text-primary"
+                className="block text-sm font-semibold text-semantic-text-secondary"
               >
                 {startTimeLabel}
               </label>
@@ -1641,7 +1641,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     currentValue.startTime,
                     resolvedShowSeconds
                   )}
-                  className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+                  className="h-[42px] w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                   onClick={() => openNativeTimePicker(startTimeInputRef.current)}
                   onChange={(event) =>
                     updateValue(
@@ -1663,7 +1663,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <div className="flex flex-col gap-1.5">
                 <label
                   id={`${triggerId}-end-time-label`}
-                  className="block text-sm font-semibold text-semantic-text-primary"
+                  className="block text-sm font-semibold text-semantic-text-secondary"
                 >
                   {endTimeLabel}
                 </label>
@@ -1682,7 +1682,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       currentValue.endTime,
                       resolvedShowSeconds
                     )}
-                    className="h-8 w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+                    className="h-[42px] w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
                     onClick={() => openNativeTimePicker(endTimeInputRef.current)}
                     onChange={(event) =>
                       updateValue(
@@ -1759,7 +1759,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   ? "Time"
                   : "Date and time"
             }
-            className="min-w-0 flex-1 bg-transparent text-sm text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed read-only:cursor-not-allowed"
+            className="min-w-0 flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed read-only:cursor-not-allowed"
             onFocus={() => {
               setIsDateInputFocused(true);
               setOpen(true);

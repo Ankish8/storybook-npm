@@ -32,7 +32,7 @@ const SelectGroup = SelectPrimitive.Group;
 const SelectValue = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>) => (
   <SelectPrimitive.Value
     ref={ref}
-    className={cn("[&[data-placeholder]]:text-semantic-text-muted", className)}
+    className={cn("[&[data-placeholder]]:text-semantic-text-placeholder", className)}
     {...props}
   />
 ));

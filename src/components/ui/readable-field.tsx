@@ -116,7 +116,7 @@ export const ReadableField = React.forwardRef(
       >
         {/* Header Row: Label + Optional Action */}
         <div className="flex items-start justify-between">
-          <span className="text-sm text-semantic-text-muted tracking-[0.035px]">
+          <span className="text-sm text-semantic-text-secondary tracking-[0.035px]">
             {label}
           </span>
           {headerAction && (
@@ -151,7 +151,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-11 items-center justify-between rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
+            "flex h-[42px] items-center justify-between rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-4 pr-2.5 py-2.5",
             inputClassName
           )}
         >
