@@ -1,5 +1,7 @@
+import * as React from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Input } from "../input";
 
 describe("Input", () => {
@@ -82,6 +84,32 @@ describe("Input", () => {
       target: { value: "test" },
     });
     expect(handleChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the cursor in place when a second consecutive space is rejected", async () => {
+    const user = userEvent.setup();
+    function Controlled() {
+      const [value, setValue] = React.useState("Rhea from XYZ");
+      return (
+        <Input
+          data-testid="input"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        />
+      );
+    }
+    render(<Controlled />);
+    const input = screen.getByTestId("input") as HTMLInputElement;
+
+    await user.click(input);
+    input.setSelectionRange(5, 5);
+    await user.keyboard(" ");
+
+    expect(input).toHaveValue("Rhea from XYZ");
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(5);
+      expect(input.selectionEnd).toBe(5);
+    });
   });
 
   it("renders with defaultValue", () => {

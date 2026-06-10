@@ -4,6 +4,29 @@ import { Loader2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+const consecutiveSpaceInputTypes = new Set([
+  "email",
+  "password",
+  "search",
+  "tel",
+  "text",
+  "url",
+]);
+
+function shouldPreventConsecutiveSpacesForType(
+  type: React.HTMLInputTypeAttribute | undefined
+): boolean {
+  return type == null || consecutiveSpaceInputTypes.has(type);
+}
+
+function collapseConsecutiveSpaces(value: string): string {
+  return value.replace(/ {2,}/g, " ");
+}
+
+function getCollapsedCursorPosition(value: string, cursorPosition: number) {
+  return collapseConsecutiveSpaces(value.slice(0, cursorPosition)).length;
+}
+
 /**
  * TextField container variants for when icons/prefix/suffix are present
  */
@@ -106,6 +129,11 @@ export interface TextFieldProps
   labelClassName?: string;
   /** Additional class for the input container (includes prefix/suffix/icons) */
   inputContainerClassName?: string;
+  /**
+   * Prevents inserting a second consecutive space in text-like inputs while
+   * preserving the user's current cursor position. Defaults to `true`.
+   */
+  preventConsecutiveSpaces?: boolean;
 }
 
 const TextField = React.forwardRef(
@@ -133,10 +161,12 @@ const TextField = React.forwardRef(
       value,
       defaultValue,
       onChange,
+      onBeforeInput,
       onWheel,
       disabled,
       id,
       type,
+      preventConsecutiveSpaces = true,
       ...props
     }: TextFieldProps,
     ref: React.ForwardedRef<HTMLInputElement>
@@ -163,9 +193,27 @@ const TextField = React.forwardRef(
 
     // Derive state from props
     const derivedState = error ? "error" : (state ?? "default");
+    const shouldPreventConsecutiveSpaces =
+      preventConsecutiveSpaces && shouldPreventConsecutiveSpacesForType(type);
 
     // Handle change for both controlled and uncontrolled
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (shouldPreventConsecutiveSpaces && e.target.value.includes("  ")) {
+        const input = e.currentTarget;
+        const rawValue = input.value;
+        const rawCursor = input.selectionStart ?? rawValue.length;
+        const collapsedValue = collapseConsecutiveSpaces(rawValue);
+        const nextCursor = Math.min(
+          getCollapsedCursorPosition(rawValue, rawCursor),
+          collapsedValue.length
+        );
+
+        input.value = collapsedValue;
+        window.requestAnimationFrame(() => {
+          input.setSelectionRange(nextCursor, nextCursor);
+        });
+      }
+
       if (!isControlled) {
         setInternalValue(e.target.value);
       }
@@ -225,6 +273,33 @@ const TextField = React.forwardRef(
         maxLength={maxLength}
         value={isControlled ? value : undefined}
         defaultValue={!isControlled ? defaultValue : undefined}
+        onBeforeInput={(e) => {
+          onBeforeInput?.(e);
+          if (!shouldPreventConsecutiveSpaces || e.defaultPrevented) {
+            return;
+          }
+
+          const nativeEvent = e.nativeEvent as InputEvent;
+          if (nativeEvent.inputType !== "insertText" || nativeEvent.data !== " ") {
+            return;
+          }
+
+          const input = e.currentTarget;
+          const selectionStart = input.selectionStart ?? input.value.length;
+          const selectionEnd = input.selectionEnd ?? selectionStart;
+          const nextValue =
+            input.value.slice(0, selectionStart) +
+            nativeEvent.data +
+            input.value.slice(selectionEnd);
+
+          if (nextValue.includes("  ")) {
+            e.preventDefault();
+            input.setSelectionRange(selectionStart, selectionStart);
+            window.requestAnimationFrame(() => {
+              input.setSelectionRange(selectionStart, selectionStart);
+            });
+          }
+        }}
         onChange={handleChange}
         onWheel={
           type === "number"
