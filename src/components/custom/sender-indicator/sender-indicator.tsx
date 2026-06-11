@@ -46,6 +46,7 @@ function SenderBadgeIcon({
   }
   if (sentBy.type === "bot") return <Bot className={iconClass} />
   if (sentBy.type === "campaign") return <Megaphone className={iconClass} />
+  if (sentBy.type === "ai_agent") return <Bot className={iconClass} />
   return <Plug className={iconClass} />
 }
 
