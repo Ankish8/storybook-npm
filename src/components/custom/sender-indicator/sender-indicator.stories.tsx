@@ -17,6 +17,7 @@ A circular badge that identifies who sent a message. Displays agent initials, a 
 | Type | Display |
 |------|---------|
 | \`agent\` | Two-letter initials from the agent's name |
+| \`ai_agent\` | Plug icon (tooltip: "AI Agent") |
 | \`bot\` | Bot icon |
 | \`campaign\` | Megaphone icon |
 | \`api\` | Plug icon |
@@ -67,6 +68,13 @@ export const Agent: Story = {
   },
 }
 
+export const AIAgent: Story = {
+  args: {
+    sentBy: { type: "ai_agent", name: "Support AI" },
+    withTooltip: true,
+  },
+}
+
 export const Bot: Story = {
   args: {
     sentBy: { type: "bot", name: "SalesBot" },
@@ -96,6 +104,10 @@ export const AllVariants: Story = {
         <span className="text-[11px] text-semantic-text-muted">Agent</span>
       </div>
       <div className="flex flex-col items-center gap-2">
+        <SenderIndicator sentBy={{ type: "ai_agent", name: "Support AI" }} withTooltip />
+        <span className="text-[11px] text-semantic-text-muted">AI Agent</span>
+      </div>
+      <div className="flex flex-col items-center gap-2">
         <SenderIndicator sentBy={{ type: "bot", name: "IVR Bot" }} withTooltip />
         <span className="text-[11px] text-semantic-text-muted">Bot</span>
       </div>
@@ -115,6 +127,7 @@ export const WithoutTooltip: Story = {
   render: () => (
     <div className="flex items-center gap-4">
       <SenderIndicator sentBy={{ type: "agent", name: "Priya Sharma" }} />
+      <SenderIndicator sentBy={{ type: "ai_agent" }} />
       <SenderIndicator sentBy={{ type: "bot" }} />
       <SenderIndicator sentBy={{ type: "campaign" }} />
       <SenderIndicator sentBy={{ type: "api" }} />
