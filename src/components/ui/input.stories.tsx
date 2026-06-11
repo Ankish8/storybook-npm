@@ -206,12 +206,22 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Default</p>
-        <Input placeholder="Default state" />
+        <label
+          htmlFor="input-state-default"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Default
+        </label>
+        <Input id="input-state-default" placeholder="Default state" />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Error</p>
-        <Input state="error" placeholder="Error state" />
+        <label
+          htmlFor="input-state-error"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Error
+        </label>
+        <Input id="input-state-error" state="error" placeholder="Error state" />
       </div>
     </div>
   ),
@@ -252,7 +262,11 @@ export const InputTypes: Story = {
         >
           Email
         </label>
-        <Input id="input-type-email" type="email" placeholder="email@example.com" />
+        <Input
+          id="input-type-email"
+          type="email"
+          placeholder="email@example.com"
+        />
       </div>
       <div>
         <label
@@ -294,16 +308,27 @@ export const NumberExponentGuard: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">
+        <label
+          htmlFor="input-number-exponent-blocked"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
           Default (blocks `e` / `E`)
-        </p>
-        <Input type="number" placeholder="Try typing 2e3" />
+        </label>
+        <Input
+          id="input-number-exponent-blocked"
+          type="number"
+          placeholder="Try typing 2e3"
+        />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">
+        <label
+          htmlFor="input-number-exponent-allowed"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
           Opt-out (preventNumberExponent false)
-        </p>
+        </label>
         <Input
+          id="input-number-exponent-allowed"
           type="number"
           preventNumberExponent={false}
           placeholder="Allows exponent notation"
@@ -340,13 +365,32 @@ export const WithCheckIcon: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Click to focus — check appears</p>
-        <Input showCheckIcon placeholder="Enter amount" />
+        <label
+          htmlFor="input-check-icon-focus"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Click to focus — check appears
+        </label>
+        <Input
+          id="input-check-icon-focus"
+          showCheckIcon
+          placeholder="Enter amount"
+        />
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Side-by-side (wallet top-up pattern)</p>
+        <label
+          htmlFor="input-check-icon-side-1000"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Side-by-side (wallet top-up pattern)
+        </label>
         <div className="flex gap-2">
-          <Input showCheckIcon defaultValue="₹1,000" className="text-center" />
+          <Input
+            id="input-check-icon-side-1000"
+            showCheckIcon
+            defaultValue="₹1,000"
+            className="text-center"
+          />
           <Input showCheckIcon defaultValue="₹5,000" className="text-center" />
         </div>
       </div>

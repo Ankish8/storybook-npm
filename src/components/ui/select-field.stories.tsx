@@ -162,9 +162,9 @@ import { SelectField } from "@/components/ui/select-field"
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Label Color</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-primary</code></td>
-      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">181D27</td>
-      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #181D27; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-text-secondary</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">535862</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #535862; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Error Color</td>
@@ -191,7 +191,7 @@ import { SelectField } from "@/components/ui/select-field"
       <td style="padding: 12px 16px;">Label</td>
       <td style="padding: 12px 16px;">Title/Small</td>
       <td style="padding: 12px 16px; font-family: monospace; font-size: 13px;">14px / SemiBold</td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm font-medium</code></td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">text-sm font-semibold text-semantic-text-secondary</code></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Selected Value</td>
@@ -997,12 +997,16 @@ export const WebhookFormExample: Story = {
   render: () => (
     <form className="flex flex-col gap-4 w-96">
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-[#333333]">
-          Webhook URL <span className="text-[#FF3B3B]">*</span>
+        <label
+          htmlFor="webhook-url"
+          className="text-sm font-semibold text-semantic-text-secondary"
+        >
+          Webhook URL <span className="text-semantic-error-primary">*</span>
         </label>
         <div className="flex h-10 w-full items-center rounded bg-white border border-[#E9E9E9] px-4">
           <span className="text-sm text-[#6B7280] mr-2">https://</span>
           <input
+            id="webhook-url"
             type="text"
             className="flex-1 bg-transparent border-0 outline-none text-sm text-[#333333] placeholder:text-[#9CA3AF]"
             placeholder="api.example.com/webhooks"

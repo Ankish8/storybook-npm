@@ -288,13 +288,19 @@ export const WithForm: Story = {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <label htmlFor="name" className="text-sm font-medium">
+            <label
+              htmlFor="name"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Name
             </label>
             <Input id="name" placeholder="Enter your name" />
           </div>
           <div className="grid gap-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <label
+              htmlFor="email"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Email
             </label>
             <Input id="email" type="email" placeholder="Enter your email" />

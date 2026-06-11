@@ -228,7 +228,10 @@ export const InForm: Story = {
       }}
     >
       <div className="flex flex-col gap-2">
-        <label htmlFor="phone" className="text-sm font-medium text-semantic-text-primary">
+        <label
+          htmlFor="phone"
+          className="text-sm font-semibold text-semantic-text-secondary"
+        >
           Phone Number
         </label>
         <PhoneInput id="phone" {...args} />
@@ -244,8 +247,7 @@ export const InForm: Story = {
   parameters: {
     docs: {
       description: {
-        story:
-          "Phone input used inside a form with a label and helper text.",
+        story: "Phone input used inside a form with a label and helper text.",
       },
     },
   },

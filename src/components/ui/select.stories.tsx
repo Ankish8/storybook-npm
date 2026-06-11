@@ -183,9 +183,14 @@ export const States: Story = {
   render: () => (
     <div className="flex flex-col gap-4 w-80">
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Default</p>
+        <label
+          htmlFor="select-state-default"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Default
+        </label>
         <Select>
-          <SelectTrigger>
+          <SelectTrigger id="select-state-default">
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
@@ -195,9 +200,14 @@ export const States: Story = {
         </Select>
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Error</p>
+        <label
+          htmlFor="select-state-error"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Error
+        </label>
         <Select>
-          <SelectTrigger state="error">
+          <SelectTrigger id="select-state-error" state="error">
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
@@ -207,9 +217,14 @@ export const States: Story = {
         </Select>
       </div>
       <div>
-        <p className="text-sm text-[#6B7280] mb-1.5">Disabled</p>
+        <label
+          htmlFor="select-state-disabled"
+          className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+        >
+          Disabled
+        </label>
         <Select disabled>
-          <SelectTrigger>
+          <SelectTrigger id="select-state-disabled">
             <SelectValue placeholder="Select an option" />
           </SelectTrigger>
           <SelectContent>
@@ -342,11 +357,14 @@ export const AuthenticationExample: Story = {
   name: "Authentication example",
   render: () => (
     <div className="w-96">
-      <p className="text-sm font-medium text-[#333333] mb-1.5">
+      <label
+        htmlFor="select-authentication-example"
+        className="mb-1.5 block text-sm font-semibold text-semantic-text-secondary"
+      >
         Authentication
-      </p>
+      </label>
       <Select defaultValue="none">
-        <SelectTrigger>
+        <SelectTrigger id="select-authentication-example">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

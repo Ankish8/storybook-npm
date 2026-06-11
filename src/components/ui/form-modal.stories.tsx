@@ -4,7 +4,13 @@ import { useState } from "react";
 import { FormModal } from "./form-modal";
 import { Input } from "./input";
 import { Button } from "./button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 import { Checkbox } from "./checkbox";
 
 const meta: Meta<typeof FormModal> = {
@@ -40,7 +46,7 @@ npx myoperator-ui add form-modal
   loading={loading}
 >
   <div className="grid gap-2">
-    <label htmlFor="name" className="text-sm font-medium">Name</label>
+    <label htmlFor="name" className="text-sm font-semibold text-semantic-text-secondary">Name</label>
     <Input id="name" value={name} onChange={e => setName(e.target.value)} />
   </div>
 </FormModal>
@@ -126,7 +132,10 @@ export const Default: Story = {
           loading={loading}
         >
           <div className="grid gap-2">
-            <label htmlFor="name" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="name"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Name
             </label>
             <Input
@@ -137,7 +146,10 @@ export const Default: Story = {
             />
           </div>
           <div className="grid gap-2">
-            <label htmlFor="email" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="email"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Email
             </label>
             <Input
@@ -173,7 +185,10 @@ export const WithoutDescription: Story = {
           saveButtonText="Create"
         >
           <div className="grid gap-2">
-            <label htmlFor="username" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="username"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Username
             </label>
             <Input
@@ -219,7 +234,10 @@ export const CustomButtons: Story = {
           cancelButtonText="Discard"
         >
           <div className="grid gap-2">
-            <label htmlFor="project-name" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="project-name"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Project Name
             </label>
             <Input id="project-name" placeholder="My Awesome Project" />
@@ -250,7 +268,10 @@ export const WithSelect: Story = {
           saveButtonText="Assign"
         >
           <div className="grid gap-2">
-            <label htmlFor="role" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="role"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Role
             </label>
             <Select value={role} onValueChange={setRole}>
@@ -290,7 +311,10 @@ export const MultipleFieldTypes: Story = {
           onSave={() => setOpen(false)}
         >
           <div className="grid gap-2">
-            <label htmlFor="amount" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="amount"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Threshold Amount
             </label>
             <div className="relative">
@@ -312,7 +336,10 @@ export const MultipleFieldTypes: Story = {
               checked={notify}
               onCheckedChange={(checked) => setNotify(checked as boolean)}
             />
-            <label htmlFor="notify" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="notify"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Send email notifications
             </label>
           </div>
@@ -344,7 +371,10 @@ export const WithValidation: Story = {
           disableSave={!isValidEmail}
         >
           <div className="grid gap-2">
-            <label htmlFor="email" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="email"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Email Address
             </label>
             <Input
@@ -392,7 +422,10 @@ export const Sizes: Story = {
           onSave={() => setOpenSm(false)}
         >
           <div className="grid gap-2">
-            <label htmlFor="small-input" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="small-input"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Input
             </label>
             <Input id="small-input" placeholder="Small modal" />
@@ -407,7 +440,10 @@ export const Sizes: Story = {
           onSave={() => setOpenLg(false)}
         >
           <div className="grid gap-2">
-            <label htmlFor="large-input" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="large-input"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Input
             </label>
             <Input id="large-input" placeholder="Large modal" />
@@ -437,20 +473,29 @@ export const ComplexLayout: Story = {
           size="lg"
         >
           <div className="grid gap-2">
-            <label htmlFor="street" className="text-sm font-medium text-semantic-text-secondary">
+            <label
+              htmlFor="street"
+              className="text-sm font-semibold text-semantic-text-secondary"
+            >
               Street Address
             </label>
             <Input id="street" placeholder="123 Main St" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
-              <label htmlFor="city" className="text-sm font-medium text-semantic-text-secondary">
+              <label
+                htmlFor="city"
+                className="text-sm font-semibold text-semantic-text-secondary"
+              >
                 City
               </label>
               <Input id="city" placeholder="New York" />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="zip" className="text-sm font-medium text-semantic-text-secondary">
+              <label
+                htmlFor="zip"
+                className="text-sm font-semibold text-semantic-text-secondary"
+              >
                 ZIP Code
               </label>
               <Input id="zip" placeholder="10001" />
