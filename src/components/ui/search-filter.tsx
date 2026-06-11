@@ -9,36 +9,32 @@ import {
   useFloating,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Search, X } from "lucide-react";
+import { Check, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "./button";
-import { Checkbox } from "./checkbox";
 import { Input, type InputProps } from "./input";
 
-const searchFilterVariants = cva(
-  "relative flex min-w-0 flex-col",
-  {
-    variants: {
-      size: {
-        sm: "w-full max-w-80",
-        default: "w-full max-w-[360px]",
-        lg: "w-full max-w-[420px]",
-      },
+const searchFilterVariants = cva("relative flex min-w-0 flex-col", {
+  variants: {
+    size: {
+      sm: "w-full max-w-80",
+      default: "w-full max-w-[360px]",
+      lg: "w-full max-w-[420px]",
     },
-    defaultVariants: {
-      size: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
 
-const searchFilterDropdownVariants = cva(
-  "flex flex-col overflow-hidden p-0"
-);
+const searchFilterDropdownVariants = cva("flex flex-col overflow-hidden p-0");
 
 export type SearchFilterSearchMode = "text" | "numeric";
 
-function normalizeSearchText(value: string, searchMode: SearchFilterSearchMode) {
+function normalizeSearchText(
+  value: string,
+  searchMode: SearchFilterSearchMode
+) {
   if (searchMode === "numeric") {
     return value.replace(/\D/g, "");
   }
@@ -94,17 +90,26 @@ function renderHighlightedNumericLabel(label: string, query: string) {
 export interface SearchFilterOption {
   /** Unique option value returned in selection callbacks */
   value: string;
-  /** Display label shown beside the checkbox */
+  /** Display label shown in the option list and input after selection */
   label: string;
   /** Disables selection for this row */
   disabled?: boolean;
 }
 
 export interface SearchFilterProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
     VariantProps<typeof searchFilterVariants> {
   /** Options displayed in the filter list */
   options: SearchFilterOption[];
+  /** Controlled selected option value */
+  value?: string;
+  /** Initial selected option value for uncontrolled usage */
+  defaultValue?: string;
+  /** Called when a single option is selected */
+  onValueChange?: (value: string) => void;
+  /** Called with the full option when a single option is selected */
+  onOptionSelect?: (option: SearchFilterOption) => void;
   /** Controlled search text */
   searchValue?: string;
   /** Initial search text for uncontrolled usage */
@@ -117,22 +122,10 @@ export interface SearchFilterProps
   searchMode?: SearchFilterSearchMode;
   /** Message shown when filtering returns no options */
   emptyMessage?: string;
-  /** Cancel button label */
-  cancelLabel?: string;
-  /** Apply button label */
-  applyLabel?: string;
-  /** Called when Cancel is clicked */
-  onCancel?: () => void;
-  /** Called with the current selection when Apply is clicked */
-  onApply?: (value: string[]) => void;
   /** Disables the whole filter */
   disabled?: boolean;
   /** Disables only the search input */
   searchDisabled?: boolean;
-  /** Disables the Cancel button */
-  cancelDisabled?: boolean;
-  /** Disables the Apply button */
-  applyDisabled?: boolean;
   /** Class name for the scrollable options region */
   listClassName?: string;
   /** Additional props for the search input */
@@ -145,20 +138,18 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
       className,
       size,
       options,
+      value,
+      defaultValue,
+      onValueChange,
+      onOptionSelect,
       searchValue,
       defaultSearchValue = "",
       onSearchChange,
       searchPlaceholder = "Search...",
       searchMode = "numeric",
       emptyMessage = "No options found",
-      cancelLabel = "Cancel",
-      applyLabel = "Apply",
-      onCancel,
-      onApply,
       disabled = false,
       searchDisabled = false,
-      cancelDisabled = false,
-      applyDisabled = false,
       listClassName,
       inputProps,
       ...props
@@ -179,15 +170,22 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
     const inputId = React.useId();
     const dropdownId = React.useId();
     const optionIdPrefix = React.useId();
-    const [selectedValues, setSelectedValues] = React.useState<string[]>([]);
+    const [internalValue, setInternalValue] = React.useState(
+      defaultValue ?? ""
+    );
     const [internalSearchValue, setInternalSearchValue] =
       React.useState(defaultSearchValue);
     const [isOpen, setIsOpen] = React.useState(false);
+    const selectedValue = value ?? internalValue;
+    const selectedOption = React.useMemo(
+      () => options.find((option) => option.value === selectedValue),
+      [options, selectedValue]
+    );
     const currentSearchValue = searchValue ?? internalSearchValue;
     const displaySearchValue =
-      searchMode === "numeric"
+      currentSearchValue && searchMode === "numeric"
         ? normalizeSearchText(currentSearchValue, searchMode)
-        : currentSearchValue;
+        : currentSearchValue || selectedOption?.label || "";
     const normalizedSearchQuery = normalizeSearchText(
       currentSearchValue,
       searchMode
@@ -294,18 +292,32 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
       );
     }, [normalizedSearchQuery, options, searchMode]);
 
-    const toggleOption = React.useCallback(
+    const selectOption = React.useCallback(
       (option: SearchFilterOption) => {
         if (disabled || option.disabled) return;
 
-        const isSelected = selectedValues.includes(option.value);
-        setSelectedValues(
-          isSelected
-            ? selectedValues.filter((item) => item !== option.value)
-            : [...selectedValues, option.value]
-        );
+        if (value === undefined) {
+          setInternalValue(option.value);
+        }
+
+        if (searchValue === undefined) {
+          setInternalSearchValue(option.label);
+        }
+
+        onValueChange?.(option.value);
+        onOptionSelect?.(option);
+        onSearchChange?.(option.label);
+        setOpen(false);
       },
-      [disabled, selectedValues, setSelectedValues]
+      [
+        disabled,
+        onSearchChange,
+        onOptionSelect,
+        onValueChange,
+        searchValue,
+        setOpen,
+        value,
+      ]
     );
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +330,9 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
       if (searchValue === undefined) {
         setInternalSearchValue(nextSearchValue);
       }
+      if (value === undefined && selectedOption?.label !== nextSearchValue) {
+        setInternalValue("");
+      }
       setOpen(true);
       onSearchChange?.(nextSearchValue);
     };
@@ -326,102 +341,73 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
       if (searchValue === undefined) {
         setInternalSearchValue("");
       }
+      if (value === undefined) {
+        setInternalValue("");
+      }
+      onValueChange?.("");
       onSearchChange?.("");
       setOpen(true);
       focusSearchInput();
     };
 
-    const handleCancel = () => {
-      onCancel?.();
-      setOpen(false);
-    };
-
-    const handleApply = () => {
-      onApply?.(selectedValues);
-      setOpen(false);
-    };
-
     const dropdownPanel = (
-      <>
-        <div
-          className={cn(
-            "max-h-60 overflow-auto p-1",
-            disabled && "pointer-events-none opacity-60",
-            listClassName
-          )}
-          role="group"
-          aria-label="Filter options"
-        >
-          {filteredOptions.length > 0 ? (
-            filteredOptions.map((option, index) => {
-              const isSelected = selectedValues.includes(option.value);
-              const optionDisabled = disabled || option.disabled;
+      <div
+        className={cn(
+          "max-h-60 overflow-auto p-1",
+          disabled && "pointer-events-none opacity-60",
+          listClassName
+        )}
+        id={dropdownId}
+        role="listbox"
+        aria-label="Filter options"
+      >
+        {filteredOptions.length > 0 ? (
+          filteredOptions.map((option, index) => {
+            const isSelected = selectedValue === option.value;
+            const optionDisabled = disabled || option.disabled;
 
-              const optionLabelId = `${optionIdPrefix}-${index}`;
+            const optionLabelId = `${optionIdPrefix}-${index}`;
 
-              return (
-                <div
-                  key={option.value}
-                  role="option"
-                  aria-selected={isSelected}
-                  aria-disabled={optionDisabled}
-                  className={cn(
-                    "relative flex w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-2 text-left text-sm text-semantic-text-primary outline-none",
-                    !isSelected &&
-                      "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
-                    optionDisabled && "cursor-not-allowed opacity-50"
-                  )}
-                  onClick={() => toggleOption(option)}
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={isSelected}
+                aria-disabled={optionDisabled}
+                disabled={optionDisabled}
+                className={cn(
+                  "relative flex w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm px-4 py-2 pr-9 text-left text-sm text-semantic-text-primary outline-none",
+                  !isSelected &&
+                    "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                  isSelected && "bg-semantic-bg-ui",
+                  optionDisabled && "cursor-not-allowed opacity-50"
+                )}
+                onClick={() => selectOption(option)}
+              >
+                <span
+                  id={optionLabelId}
+                  className="min-w-0 flex-1 truncate text-left"
                 >
-                  <Checkbox
-                    size="sm"
-                    checked={isSelected}
-                    disabled={optionDisabled}
-                    aria-label={option.label}
-                    className="shrink-0"
-                    onClick={(event) => event.stopPropagation()}
-                    onCheckedChange={() => toggleOption(option)}
-                  />
-                  <span id={optionLabelId} className="min-w-0 flex-1 truncate text-left">
-                    {searchMode === "numeric"
-                      ? renderHighlightedNumericLabel(
-                          option.label,
-                          normalizedSearchQuery
-                        )
-                      : option.label}
-                  </span>
-                </div>
-              );
-            })
-          ) : (
-            <div className="px-4 py-6 text-center text-sm text-semantic-text-muted">
-              {emptyMessage}
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center justify-end gap-4 border-t border-solid border-semantic-border-layout p-4">
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="min-w-0 px-4"
-            disabled={disabled || cancelDisabled}
-            onClick={handleCancel}
-          >
-            {cancelLabel}
-          </Button>
-          <Button
-            type="button"
-            size="lg"
-            className="min-w-0 px-4"
-            disabled={disabled || applyDisabled}
-            onClick={handleApply}
-          >
-            {applyLabel}
-          </Button>
-        </div>
-      </>
+                  {searchMode === "numeric"
+                    ? renderHighlightedNumericLabel(
+                        option.label,
+                        normalizedSearchQuery
+                      )
+                    : option.label}
+                </span>
+                {isSelected ? (
+                  <Check className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-semantic-brand" />
+                ) : null}
+              </button>
+            );
+          })
+        ) : (
+          <div className="px-4 py-6 text-center text-sm text-semantic-text-muted">
+            {emptyMessage}
+          </div>
+        )}
+      </div>
     );
 
     return (
@@ -445,7 +431,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             aria-controls={dropdownId}
             aria-expanded={isOpen}
             aria-haspopup="listbox"
-            className={cn("h-10 pl-10 pr-9", inputClassName)}
+            className={cn("pl-10 pr-9", inputClassName)}
             {...searchInputProps}
             onClick={(event) => {
               setOpen(true);
@@ -484,7 +470,6 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
           createPortal(
             <div
               ref={setDropdownRef}
-              id={dropdownId}
               className={cn(
                 "rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-md",
                 searchFilterDropdownVariants()
@@ -493,7 +478,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                 ...floatingStyles,
                 zIndex: 10050,
               }}
-              role="dialog"
+              role="presentation"
               aria-labelledby={inputId}
               onMouseDown={(event) => event.stopPropagation()}
             >

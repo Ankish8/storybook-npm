@@ -13,7 +13,7 @@ const options: SearchFilterOption[] = [
 ];
 
 describe("SearchFilter", () => {
-  it("renders options and action buttons after opening", async () => {
+  it("renders single-select options after opening", async () => {
     const user = userEvent.setup();
 
     render(<SearchFilter options={options} />);
@@ -22,9 +22,13 @@ describe("SearchFilter", () => {
 
     await user.click(screen.getByPlaceholderText("Search..."));
 
-    expect(screen.getByRole("checkbox", { name: "+91 11 4000 3001" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Apply" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "+91 11 4000 3001" })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Apply" })
+    ).not.toBeInTheDocument();
   });
 
   it("applies default size classes", () => {
@@ -41,11 +45,7 @@ describe("SearchFilter", () => {
     ["lg", "max-w-[420px]"],
   ] as const)("renders %s size", (size, maxWidthClass) => {
     render(
-      <SearchFilter
-        size={size}
-        options={options}
-        data-testid="search-filter"
-      />
+      <SearchFilter size={size} options={options} data-testid="search-filter" />
     );
 
     expect(screen.getByTestId("search-filter")).toHaveClass("w-full");
@@ -87,36 +87,41 @@ describe("SearchFilter", () => {
     );
   });
 
-  it("updates internal selected values", async () => {
+  it("selects a single option and shows it in the search input", async () => {
     const user = userEvent.setup();
 
-    render(<SearchFilter options={options} />);
+    render(<SearchFilter options={options} searchMode="text" />);
 
     await user.click(screen.getByPlaceholderText("Search..."));
 
-    await user.click(screen.getByRole("checkbox", { name: "+91 11 4000 3001" }));
+    await user.click(screen.getByRole("option", { name: "+91 11 4000 3001" }));
 
+    expect(screen.getByPlaceholderText("Search...")).toHaveValue(
+      "+91 11 4000 3001"
+    );
     expect(
-      screen.getByRole("checkbox", { name: "+91 11 4000 3001" })
-    ).toHaveAttribute("aria-checked", "true");
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
+    ).not.toBeInTheDocument();
   });
 
-  it("calls onApply with the current selected values", async () => {
+  it("calls selection callbacks with the chosen option", async () => {
     const user = userEvent.setup();
-    const onApply = vi.fn();
+    const onValueChange = vi.fn();
+    const onOptionSelect = vi.fn();
 
     render(
       <SearchFilter
         options={options}
-        onApply={onApply}
+        onValueChange={onValueChange}
+        onOptionSelect={onOptionSelect}
       />
     );
 
     await user.click(screen.getByPlaceholderText("Search..."));
-    await user.click(screen.getByRole("checkbox", { name: "+91 11 4000 3001" }));
-    await user.click(screen.getByRole("button", { name: "Apply" }));
+    await user.click(screen.getByRole("option", { name: "+91 11 4000 3001" }));
 
-    expect(onApply).toHaveBeenCalledWith(["3001"]);
+    expect(onValueChange).toHaveBeenCalledWith("3001");
+    expect(onOptionSelect).toHaveBeenCalledWith(options[0]);
   });
 
   it("filters options by search text", async () => {
@@ -126,10 +131,12 @@ describe("SearchFilter", () => {
 
     await user.type(screen.getByPlaceholderText("Search..."), "3453");
 
-    expect(screen.getByRole("checkbox", { name: "+91 11 4000 3453" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "+91 11 4000 3453" })
+    ).toBeInTheDocument();
     expect(screen.getByText("3453")).toHaveClass("font-semibold");
     expect(
-      screen.queryByRole("checkbox", { name: "+91 11 4000 3001" })
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
     ).not.toBeInTheDocument();
   });
 
@@ -137,21 +144,18 @@ describe("SearchFilter", () => {
     const user = userEvent.setup();
     const onSearchChange = vi.fn();
 
-    render(
-      <SearchFilter
-        options={options}
-        onSearchChange={onSearchChange}
-      />
-    );
+    render(<SearchFilter options={options} onSearchChange={onSearchChange} />);
 
     const searchInput = screen.getByPlaceholderText("Search...");
     await user.type(searchInput, "abc3453");
 
     expect(searchInput).toHaveValue("3453");
     expect(onSearchChange).toHaveBeenLastCalledWith("3453");
-    expect(screen.getByRole("checkbox", { name: "+91 11 4000 3453" })).toBeInTheDocument();
     expect(
-      screen.queryByRole("checkbox", { name: "+91 11 4000 3001" })
+      screen.getByRole("option", { name: "+91 11 4000 3453" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
     ).not.toBeInTheDocument();
   });
 
@@ -167,9 +171,11 @@ describe("SearchFilter", () => {
 
     await user.type(screen.getByPlaceholderText("Search..."), "sales");
 
-    expect(screen.getByRole("checkbox", { name: "Sales Team" })).toBeInTheDocument();
     expect(
-      screen.queryByRole("checkbox", { name: "+91 11 4000 3001" })
+      screen.getByRole("option", { name: "Sales Team" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
     ).not.toBeInTheDocument();
   });
 
@@ -180,9 +186,11 @@ describe("SearchFilter", () => {
 
     await user.click(screen.getByPlaceholderText("Search..."));
 
-    expect(screen.getByRole("checkbox", { name: "+91 11 4000 5444" })).toBeInTheDocument();
     expect(
-      screen.queryByRole("checkbox", { name: "+91 11 4000 3001" })
+      screen.getByRole("option", { name: "+91 11 4000 5444" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
     ).not.toBeInTheDocument();
   });
 
@@ -193,52 +201,54 @@ describe("SearchFilter", () => {
     render(<SearchFilter options={options} onSearchChange={onSearchChange} />);
 
     const searchInput = screen.getByPlaceholderText("Search...");
-    expect(screen.queryByRole("button", { name: "Clear search" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Clear search" })
+    ).not.toBeInTheDocument();
 
     await user.type(searchInput, "3453");
 
     expect(searchInput).toHaveValue("3453");
-    expect(screen.getByRole("button", { name: "Clear search" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Clear search" })
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Clear search" }));
 
     expect(searchInput).toHaveValue("");
     expect(onSearchChange).toHaveBeenLastCalledWith("");
-    expect(screen.getByRole("checkbox", { name: "+91 11 4000 3001" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "+91 11 4000 3001" })
+    ).toBeInTheDocument();
   });
 
-  it("disables cancel and apply buttons separately", async () => {
+  it("marks the controlled value as selected", async () => {
     const user = userEvent.setup();
+
+    render(<SearchFilter options={options} value="3453" />);
+
+    await user.click(screen.getByPlaceholderText("Search..."));
+
+    expect(
+      screen.getByRole("option", { name: "+91 11 4000 3453" })
+    ).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("does not select disabled options", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
 
     render(
       <SearchFilter
-        options={options}
-        cancelDisabled
-        applyDisabled={false}
+        options={[{ ...options[0], disabled: true }, ...options.slice(1)]}
+        onValueChange={onValueChange}
       />
     );
 
     await user.click(screen.getByPlaceholderText("Search..."));
+    await user.click(screen.getByRole("option", { name: "+91 11 4000 3001" }));
 
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Apply" })).not.toBeDisabled();
-  });
-
-  it("disables apply button separately", async () => {
-    const user = userEvent.setup();
-
-    render(
-      <SearchFilter
-        options={options}
-        cancelDisabled={false}
-        applyDisabled
-      />
-    );
-
-    await user.click(screen.getByPlaceholderText("Search..."));
-
-    expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
-    expect(screen.getByRole("button", { name: "Apply" })).toBeDisabled();
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(screen.getByPlaceholderText("Search...")).toHaveValue("");
   });
 
   it("has Bootstrap margin reset on all paragraph elements", () => {
@@ -253,12 +263,14 @@ describe("SearchFilter", () => {
     render(<SearchFilter options={options} />);
 
     expect(
-      screen.queryByRole("checkbox", { name: "+91 11 4000 3001" })
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
     ).not.toBeInTheDocument();
 
     await user.click(screen.getByPlaceholderText("Search..."));
 
-    expect(screen.getByRole("checkbox", { name: "+91 11 4000 3001" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "+91 11 4000 3001" })
+    ).toBeInTheDocument();
   });
 
   it("does not render a second search input inside the dropdown", async () => {

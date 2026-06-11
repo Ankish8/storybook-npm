@@ -12,6 +12,11 @@ const phoneOptions: SearchFilterOption[] = [
   { value: "6789", label: "+91 11 4000 6789" },
 ];
 
+const authOptions: SearchFilterOption[] = [
+  { value: "none", label: "None" },
+  { value: "basic-auth", label: "Basic Auth" },
+];
+
 const meta: Meta<typeof SearchFilter> = {
   title: "Components/SearchFilter",
   component: SearchFilter,
@@ -20,8 +25,8 @@ const meta: Meta<typeof SearchFilter> = {
     docs: {
       description: {
         component: `
-A searchable checkbox filter input that opens a dropdown with Cancel and Apply actions.
-Use it where users need to search and select multiple values before applying.
+A searchable single-select input that opens a dropdown of matching options.
+Use it where users need to search a list, select one value, and show that selection in the input.
 
 \`\`\`bash
 npx myoperator-ui add search-filter
@@ -48,7 +53,7 @@ import { SearchFilter } from "@/components/ui/search-filter"
     <tr style="border-bottom: 1px solid var(--semantic-border-layout);">
       <td style="padding: 12px 16px;">Primary</td>
       <td style="padding: 12px 16px;"><code>--semantic-primary</code></td>
-      <td style="padding: 12px 16px;">Apply button and selected checkbox</td>
+      <td style="padding: 12px 16px;">Selected option checkmark</td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background: var(--semantic-primary); border-radius: 6px;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid var(--semantic-border-layout);">
@@ -81,13 +86,9 @@ import { SearchFilter } from "@/components/ui/search-filter"
       options: ["text", "numeric"],
       description: "Search input behavior. Defaults to numeric.",
     },
-    cancelDisabled: {
-      control: "boolean",
-      description: "Disables the Cancel button",
-    },
-    applyDisabled: {
-      control: "boolean",
-      description: "Disables the Apply button",
+    value: {
+      control: "text",
+      description: "Controlled selected option value",
     },
     disabled: {
       control: "boolean",
@@ -119,11 +120,11 @@ export const Large: Story = {
   },
 };
 
-export const ButtonDisabledStates: Story = {
+export const SelectedAuthOption: Story = {
   args: {
-    options: phoneOptions,
-    cancelDisabled: true,
-    applyDisabled: true,
+    options: authOptions,
+    value: "basic-auth",
+    searchMode: "text",
   },
 };
 
@@ -141,4 +142,3 @@ export const TextSearch: Story = {
     searchPlaceholder: "Search text...",
   },
 };
-

@@ -322,7 +322,7 @@ components:
       - tooltip
 
   search-filter:
-    description: "A searchable filter dropdown with checkbox options and apply/cancel actions"
+    description: "A searchable single-select dropdown that shows the selected option in the input"
     category: form
     dependencies:
       - "@floating-ui/react-dom"
@@ -331,8 +331,6 @@ components:
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
     internalDependencies:
-      - button
-      - checkbox
       - input
 
   number-step-field:
