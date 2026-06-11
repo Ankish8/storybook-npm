@@ -444,10 +444,10 @@ import { Mail } from "lucide-react"
 ---
 
 ### SearchFilter
-> A searchable filter dropdown with checkbox options and apply/cancel actions
+> A searchable single-select dropdown that shows the selected option in the input
 
 **Install**: `npx myoperator-ui add search-filter`
-**Requires**: `button`, `checkbox`, `input` (auto-installed)
+**Requires**: `input` (auto-installed)
 
 ---
 
