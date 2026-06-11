@@ -106,7 +106,7 @@ export type MediaPayload = {
   }>
 }
 
-export type SentByType = "agent" | "bot" | "campaign" | "api"
+export type SentByType = "agent" | "ai_agent" | "bot" | "campaign" | "api"
 
 export type LocationPayload = {
   latitude: number

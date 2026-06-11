@@ -22,6 +22,7 @@ function getInitials(name: string): string {
 
 function getTooltipLabel(sentBy: { type: SentByType; name?: string }): string {
   if (sentBy.type === "agent") return "Agent"
+  if (sentBy.type === "ai_agent") return "AI Agent"
   if (sentBy.type === "bot") return "Bot"
   if (sentBy.type === "campaign") return "Campaign"
   return "API"
