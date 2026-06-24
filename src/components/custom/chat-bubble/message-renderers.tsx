@@ -54,12 +54,34 @@ const SPEED_OPTIONS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const
 /* ── ImageMedia ── */
 
 function ImageMedia({ media }: { media: MediaPayload }) {
+  const openPreview = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation()
+    media.onActivate?.()
+  }
+
   return (
     <div className="relative">
       <img
         src={media.url}
         alt={media.caption || "Image"}
-        className="w-full rounded-t object-cover max-h-[280px]"
+        className={cn(
+          "w-full rounded-t object-cover max-h-[280px]",
+          media.onActivate && "cursor-pointer"
+        )}
+        onClick={media.onActivate ? openPreview : undefined}
+        onKeyDown={
+          media.onActivate
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault()
+                  openPreview(e)
+                }
+              }
+            : undefined
+        }
+        role={media.onActivate ? "button" : undefined}
+        tabIndex={media.onActivate ? 0 : undefined}
+        data-testid={media.onActivate ? "chat-bubble-image-trigger" : undefined}
       />
     </div>
   )
