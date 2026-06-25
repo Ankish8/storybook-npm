@@ -186,7 +186,6 @@ export const OpenByDefault: Story = {
 };
 
 export const TimeColumnPicker: Story = {
-  name: "Time Column Picker",
   parameters: {
     docs: {
       description: {
@@ -207,7 +206,6 @@ export const TimeColumnPicker: Story = {
 };
 
 export const CustomTimeSteps: Story = {
-  name: "Custom Time Steps",
   parameters: {
     docs: {
       description: {
@@ -229,6 +227,34 @@ export const WithDateBounds: Story = {
     minDate: new Date(2026, 4, 10),
     maxDate: new Date(2026, 4, 20),
   },
+};
+
+export const Responsive: Story = {
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        story:
+          "The trigger fills its container (`w-full`) and the popover follows the trigger width, clamped to a 280–360px design range and capped to the viewport so it never overflows on mobile or over-stretches inside a wide form field. Resize the preview to see it adapt.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex w-full flex-col gap-6">
+      <div className="w-full max-w-[640px] rounded-lg border border-dashed border-semantic-border-layout p-4">
+        <p className="m-0 mb-2 text-sm text-semantic-text-muted">
+          Full-width form field (popover clamps to 360px)
+        </p>
+        <DateTimePicker defaultValue={sampleValue} className="sm:w-full" />
+      </div>
+      <div className="w-[240px] rounded-lg border border-dashed border-semantic-border-layout p-4">
+        <p className="m-0 mb-2 text-sm text-semantic-text-muted">
+          Narrow container (240px)
+        </p>
+        <DateTimePicker defaultValue={sampleValue} className="sm:w-full" />
+      </div>
+    </div>
+  ),
 };
 
 export const AllSizes: Story = {

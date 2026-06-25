@@ -22,6 +22,11 @@ const DEFAULT_SECOND_STEP = 5;
 const TIME_COLUMN_MAX_HEIGHT = 168;
 const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --";
 const POPOVER_WIDTH = 336;
+// The popover follows the trigger width but is clamped to a usable design range
+// so it neither stretches across a full-width desktop field nor overflows a
+// narrow mobile viewport.
+const MIN_POPOVER_WIDTH = 280;
+const MAX_POPOVER_WIDTH = 360;
 const POPOVER_MARGIN = 8;
 const POPOVER_GAP = 4;
 const MAX_POPOVER_HEIGHT = 420;
@@ -1262,10 +1267,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         shift({ padding: POPOVER_MARGIN }),
         floatingSize({
           padding: POPOVER_MARGIN,
-          apply({ availableHeight, elements, rects }) {
+          apply({ availableHeight, availableWidth, elements, rects }) {
             const maxHeight = Math.max(
               1,
               Math.min(MAX_POPOVER_HEIGHT, availableHeight)
+            );
+            const maxWidth = Math.min(MAX_POPOVER_WIDTH, availableWidth);
+            const width = Math.max(
+              1,
+              Math.min(Math.max(rects.reference.width, MIN_POPOVER_WIDTH), maxWidth)
             );
             elements.floating.style.setProperty(
               POPOVER_SCROLL_HEIGHT_VAR,
@@ -1273,7 +1283,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             );
             elements.floating.style.setProperty(
               POPOVER_WIDTH_VAR,
-              `${rects.reference.width}px`
+              `${width}px`
             );
           },
         }),
@@ -1679,7 +1689,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           )}
           style={{
             ...floatingStyles,
-            width: `var(${POPOVER_WIDTH_VAR}, ${POPOVER_WIDTH}px)`,
+            width: `var(${POPOVER_WIDTH_VAR}, min(${POPOVER_WIDTH}px, calc(100vw - ${
+              POPOVER_MARGIN * 2
+            }px)))`,
             maxHeight: `var(${POPOVER_SCROLL_HEIGHT_VAR}, min(${MAX_POPOVER_HEIGHT}px, calc(100dvh - ${
               POPOVER_MARGIN * 2
             }px)))`,
@@ -1782,7 +1794,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="flex size-8 items-center justify-center text-xs font-semibold text-semantic-text-muted"
+                    className="mx-auto flex size-8 items-center justify-center text-xs font-semibold text-semantic-text-muted"
                   >
                     {day}
                   </div>
