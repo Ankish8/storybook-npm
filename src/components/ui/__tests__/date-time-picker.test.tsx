@@ -1,6 +1,12 @@
 import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -128,48 +134,54 @@ describe("DateTimePicker", () => {
     expect(screen.queryByLabelText("Year")).not.toBeInTheDocument();
   });
 
-  it("opens the native time picker only when clicking the time input", () => {
-    const showPicker = vi.fn();
-    const inputPrototype = HTMLInputElement.prototype as HTMLInputElement & {
-      showPicker?: () => void;
-    };
-    const originalShowPicker = inputPrototype.showPicker;
+  it("toggles the custom time column picker when clicking the time field", () => {
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
 
-    Object.defineProperty(inputPrototype, "showPicker", {
-      configurable: true,
-      value: showPicker,
-    });
+    fireEvent.click(screen.getByLabelText("Date and time"));
 
-    try {
-      render(
-        <DateTimePicker
-          defaultValue={{
-            date: mayTwelve,
-            startTime: "10:30:00",
-            endTime: "12:30:00",
-          }}
-        />
-      );
+    const startTimeField = screen.getByLabelText("Start Time");
+    expect(startTimeField).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByLabelText("Start Time hours")).not.toBeInTheDocument();
 
-      fireEvent.click(screen.getByLabelText("Date and time"));
-      fireEvent.click(screen.getByText("Start Time"));
-      fireEvent.click(screen.getByLabelText("Start Time").parentElement!);
+    fireEvent.click(startTimeField);
 
-      expect(showPicker).not.toHaveBeenCalled();
+    expect(startTimeField).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByLabelText("Start Time hours")).toBeInTheDocument();
+    expect(screen.getByLabelText("Start Time minutes")).toBeInTheDocument();
+    expect(screen.getByLabelText("Start Time meridiem")).toBeInTheDocument();
 
-      fireEvent.click(screen.getByLabelText("Start Time"));
+    fireEvent.click(startTimeField);
 
-      expect(showPicker).toHaveBeenCalled();
-    } finally {
-      if (originalShowPicker) {
-        Object.defineProperty(inputPrototype, "showPicker", {
-          configurable: true,
-          value: originalShowPicker,
-        });
-      } else {
-        delete (inputPrototype as { showPicker?: () => void }).showPicker;
-      }
-    }
+    expect(startTimeField).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByLabelText("Start Time hours")).not.toBeInTheDocument();
+  });
+
+  it("only opens one time column picker at a time", () => {
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Date and time"));
+    fireEvent.click(screen.getByLabelText("Start Time"));
+    expect(screen.getByLabelText("Start Time hours")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("End Time"));
+    expect(screen.queryByLabelText("Start Time hours")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("End Time hours")).toBeInTheDocument();
   });
 
   it("uses DateRangeModal trigger styling", () => {
@@ -209,7 +221,7 @@ describe("DateTimePicker", () => {
     });
   });
 
-  it("updates start and end time values", () => {
+  it("updates start and end time values from the column picker", () => {
     const handleValueChange = vi.fn();
     render(
       <DateTimePicker
@@ -223,22 +235,30 @@ describe("DateTimePicker", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
-    fireEvent.change(screen.getByLabelText("Start Time"), {
-      target: { value: "11:45:00" },
-    });
-    fireEvent.change(screen.getByLabelText("End Time"), {
-      target: { value: "13:15:00" },
-    });
 
-    expect(handleValueChange).toHaveBeenCalledWith({
+    fireEvent.click(screen.getByLabelText("Start Time"));
+    fireEvent.click(
+      within(screen.getByLabelText("Start Time hours")).getByText("11")
+    );
+    fireEvent.click(
+      within(screen.getByLabelText("Start Time minutes")).getByText("45")
+    );
+
+    expect(handleValueChange).toHaveBeenLastCalledWith({
       date: mayTwelve,
       startTime: "11:45:00",
       endTime: "12:30:00",
     });
+
+    fireEvent.click(screen.getByLabelText("End Time"));
+    fireEvent.click(
+      within(screen.getByLabelText("End Time meridiem")).getByText("AM")
+    );
+
     expect(handleValueChange).toHaveBeenLastCalledWith({
       date: mayTwelve,
       startTime: "11:45:00",
-      endTime: "13:15:00",
+      endTime: "00:30:00",
     });
   });
 
@@ -259,8 +279,13 @@ describe("DateTimePicker", () => {
 
     fireEvent.click(screen.getByLabelText("Date and time"));
 
-    expect(screen.getByLabelText("Start Time")).toHaveValue("10:30:15");
-    expect(screen.getByLabelText("End Time")).toHaveValue("12:30:45");
+    expect(screen.getByLabelText("Start Time")).toHaveTextContent(
+      "10:30:15 AM"
+    );
+    expect(screen.getByLabelText("End Time")).toHaveTextContent("12:30:45 PM");
+
+    fireEvent.click(screen.getByLabelText("Start Time"));
+    expect(screen.getByLabelText("Start Time seconds")).toBeInTheDocument();
   });
 
   it("can hide seconds and normalizes time input changes to minute precision", () => {
@@ -281,16 +306,21 @@ describe("DateTimePicker", () => {
 
     fireEvent.click(screen.getByLabelText("Date and time"));
 
-    expect(screen.getByLabelText("Start Time")).toHaveValue("10:30");
-    expect(screen.getByLabelText("End Time")).toHaveValue("12:30");
+    expect(screen.getByLabelText("Start Time")).toHaveTextContent("10:30 AM");
+    expect(screen.getByLabelText("End Time")).toHaveTextContent("12:30 PM");
 
-    fireEvent.change(screen.getByLabelText("Start Time"), {
-      target: { value: "11:45" },
-    });
+    fireEvent.click(screen.getByLabelText("Start Time"));
+    expect(
+      screen.queryByLabelText("Start Time seconds")
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      within(screen.getByLabelText("Start Time minutes")).getByText("45")
+    );
 
     expect(handleValueChange).toHaveBeenLastCalledWith({
       date: mayTwelve,
-      startTime: "11:45:00",
+      startTime: "10:45:00",
       endTime: "12:30:45",
     });
   });

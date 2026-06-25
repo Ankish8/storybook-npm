@@ -16,7 +16,7 @@ const meta: Meta<typeof DateTimePicker> = {
     docs: {
       description: {
         component: `
-A date and time picker input with a calendar popover and start/end time fields.
+A date and time picker input with a calendar popover and start/end time fields. Times are selected through a custom column picker (Hours / Minutes / Seconds / AM-PM) so the control renders consistently across browsers and follows the design tokens.
 
 \`\`\`bash
 npx myoperator-ui add date-time-picker
@@ -89,6 +89,16 @@ import { DateTimePicker } from "@/components/ui/date-time-picker"
       control: "boolean",
       description:
         "Force seconds on or off. When omitted, seconds appear automatically when a selected time includes non-zero seconds.",
+    },
+    minuteStep: {
+      control: { type: "number", min: 1, max: 30 },
+      description:
+        "Step between selectable minutes in the time column picker (default 5).",
+    },
+    secondStep: {
+      control: { type: "number", min: 1, max: 30 },
+      description:
+        "Step between selectable seconds in the time column picker (default 5).",
     },
     showClear: {
       control: "boolean",
@@ -171,6 +181,44 @@ export const WithoutSeconds: Story = {
 export const OpenByDefault: Story = {
   args: {
     defaultValue: sampleValue,
+    defaultOpen: true,
+  },
+};
+
+export const TimeColumnPicker: Story = {
+  name: "Time Column Picker",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Click a time field to reveal the Hours / Minutes / Seconds / AM-PM columns. The selected value in each column is highlighted and scrolled into view.",
+      },
+    },
+  },
+  args: {
+    defaultValue: {
+      date: new Date(2026, 4, 18),
+      startTime: "10:30:30",
+      endTime: "12:30:30",
+    },
+    showSeconds: true,
+    defaultOpen: true,
+  },
+};
+
+export const CustomTimeSteps: Story = {
+  name: "Custom Time Steps",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use `minuteStep` and `secondStep` to control the granularity of the time columns. Here minutes step by 15.",
+      },
+    },
+  },
+  args: {
+    defaultValue: sampleValue,
+    minuteStep: 15,
     defaultOpen: true,
   },
 };

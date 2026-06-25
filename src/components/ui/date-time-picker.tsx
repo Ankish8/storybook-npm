@@ -11,12 +11,15 @@ import {
   type Strategy,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronLeft, ChevronRight, Clock2, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Clock2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const DEFAULT_START_TIME = "10:30:00";
 const DEFAULT_END_TIME = "12:30:00";
+const DEFAULT_MINUTE_STEP = 5;
+const DEFAULT_SECOND_STEP = 5;
+const TIME_COLUMN_MAX_HEIGHT = 168;
 const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --";
 const POPOVER_WIDTH = 336;
 const POPOVER_MARGIN = 8;
@@ -101,6 +104,8 @@ export interface DateTimePickerProps
   name?: string;
   showEndTime?: boolean;
   showSeconds?: boolean;
+  minuteStep?: number;
+  secondStep?: number;
   showClear?: boolean;
   closeOnSelect?: boolean;
   startTimeLabel?: string;
@@ -758,32 +763,45 @@ function stepDateTimeInputValue(
   };
 }
 
-function formatTimeForTimeInput(time: string, showSeconds: boolean) {
-  const normalizedTime = parseTimePart(time) ?? DEFAULT_START_TIME;
-  const [hour = "00", minute = "00", second = "00"] = normalizedTime.split(":");
+type Meridiem = "AM" | "PM";
 
-  return showSeconds ? `${hour}:${minute}:${second}` : `${hour}:${minute}`;
+function padTime(value: number) {
+  return value.toString().padStart(2, "0");
 }
 
-function normalizeTimeInputValue(time: string, fallbackTime: string) {
-  return parseTimePart(time) ?? parseTimePart(fallbackTime) ?? DEFAULT_START_TIME;
-}
-
-function openNativeTimePicker(input: HTMLInputElement | null) {
-  if (!input) return;
-
-  input.focus();
-
-  const showPicker = (
-    input as HTMLInputElement & { showPicker?: () => void }
-  ).showPicker;
-  if (!showPicker) return;
-
-  try {
-    showPicker.call(input);
-  } catch {
-    input.focus();
+function buildTimeRange(max: number, step: number) {
+  const safeStep = Math.max(1, Math.floor(step));
+  const values: number[] = [];
+  for (let value = 0; value <= max; value += safeStep) {
+    values.push(value);
   }
+
+  return values;
+}
+
+function decomposeTime(time: string) {
+  const normalizedTime = parseTimePart(time) ?? DEFAULT_START_TIME;
+  const [hour = "0", minute = "0", second = "0"] = normalizedTime.split(":");
+  const hourNumber = Number(hour);
+
+  return {
+    hour12: hourNumber % 12 || 12,
+    minute: Number(minute),
+    second: Number(second),
+    meridiem: (hourNumber >= 12 ? "PM" : "AM") as Meridiem,
+  };
+}
+
+function composeTime(
+  hour12: number,
+  minute: number,
+  second: number,
+  meridiem: Meridiem
+) {
+  const normalizedHour12 = hour12 % 12;
+  const hour = meridiem === "PM" ? normalizedHour12 + 12 : normalizedHour12;
+
+  return `${padTime(hour)}:${padTime(minute)}:${padTime(second)}`;
 }
 
 function parseTypedDateTime(value: string) {
@@ -944,6 +962,212 @@ function CalendarDropdown({
   );
 }
 
+interface TimeColumnOption {
+  key: string;
+  label: string;
+  selected: boolean;
+}
+
+function TimeColumn({
+  header,
+  ariaLabel,
+  options,
+  onSelect,
+}: {
+  header: string;
+  ariaLabel: string;
+  options: TimeColumnOption[];
+  onSelect: (key: string) => void;
+}) {
+  const listRef = React.useRef<HTMLDivElement | null>(null);
+  const selectedRef = React.useRef<HTMLButtonElement | null>(null);
+
+  React.useEffect(() => {
+    const list = listRef.current;
+    const selected = selectedRef.current;
+    if (!list || !selected) return;
+
+    list.scrollTop =
+      selected.offsetTop - list.clientHeight / 2 + selected.clientHeight / 2;
+  }, []);
+
+  return (
+    <div className="flex min-w-0 flex-col border-r border-solid border-semantic-border-layout last:border-r-0">
+      <div className="border-b border-solid border-semantic-border-layout px-1 py-2 text-center text-[11px] font-semibold uppercase tracking-wide text-semantic-text-muted">
+        {header}
+      </div>
+      <div
+        ref={listRef}
+        role="listbox"
+        aria-label={ariaLabel}
+        className="flex flex-col gap-0.5 overflow-y-auto p-1 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+        style={{ maxHeight: `${TIME_COLUMN_MAX_HEIGHT}px` }}
+      >
+        {options.map((option) => (
+          <button
+            key={option.key}
+            ref={option.selected ? selectedRef : undefined}
+            type="button"
+            role="option"
+            aria-selected={option.selected}
+            className={cn(
+              "flex shrink-0 items-center justify-center rounded-md border border-solid px-2 py-1.5 text-sm transition-colors",
+              option.selected
+                ? "border-semantic-info-border bg-semantic-info-surface font-semibold text-semantic-text-primary"
+                : "border-transparent text-semantic-text-secondary hover:bg-semantic-bg-hover"
+            )}
+            onClick={() => onSelect(option.key)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TimeField({
+  id,
+  label,
+  value,
+  showSeconds,
+  minuteStep,
+  secondStep,
+  open,
+  onOpenChange,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  showSeconds: boolean;
+  minuteStep: number;
+  secondStep: number;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onChange: (time: string) => void;
+}) {
+  const { hour12, minute, second, meridiem } = decomposeTime(value);
+  // When seconds are hidden they are not editable, so normalize to :00 on any
+  // change rather than carrying a stale seconds value forward.
+  const effectiveSecond = showSeconds ? second : 0;
+  const hourOptions = React.useMemo<TimeColumnOption[]>(
+    () =>
+      Array.from({ length: 12 }, (_, index) => index + 1).map((hour) => ({
+        key: hour.toString(),
+        label: padTime(hour),
+        selected: hour === hour12,
+      })),
+    [hour12]
+  );
+  const minuteOptions = React.useMemo<TimeColumnOption[]>(
+    () =>
+      buildTimeRange(59, minuteStep).map((minuteValue) => ({
+        key: minuteValue.toString(),
+        label: padTime(minuteValue),
+        selected: minuteValue === minute,
+      })),
+    [minute, minuteStep]
+  );
+  const secondOptions = React.useMemo<TimeColumnOption[]>(
+    () =>
+      buildTimeRange(59, secondStep).map((secondValue) => ({
+        key: secondValue.toString(),
+        label: padTime(secondValue),
+        selected: secondValue === second,
+      })),
+    [second, secondStep]
+  );
+  const meridiemOptions: TimeColumnOption[] = [
+    { key: "AM", label: "AM", selected: meridiem === "AM" },
+    { key: "PM", label: "PM", selected: meridiem === "PM" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span
+        id={`${id}-label`}
+        className="block text-sm font-semibold text-semantic-text-secondary"
+      >
+        {label}
+      </span>
+      <button
+        id={id}
+        type="button"
+        aria-label={label}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={cn(
+          "flex h-[42px] w-full items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50",
+          open &&
+            "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+        )}
+        onClick={() => onOpenChange(!open)}
+      >
+        <Clock2
+          className="size-4 shrink-0 text-semantic-text-muted"
+          aria-hidden="true"
+        />
+        <span className="m-0 min-w-0 flex-1 truncate">
+          {formatTimeForDisplay(value, showSeconds)}
+        </span>
+        <ChevronDown
+          className={cn(
+            "size-4 shrink-0 text-semantic-text-muted transition-transform",
+            open && "rotate-180"
+          )}
+          aria-hidden="true"
+        />
+      </button>
+      {open && (
+        <div
+          className={cn(
+            "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm",
+            showSeconds ? "grid-cols-4" : "grid-cols-3"
+          )}
+        >
+          <TimeColumn
+            header="Hours"
+            ariaLabel={`${label} hours`}
+            options={hourOptions}
+            onSelect={(key) =>
+              onChange(composeTime(Number(key), minute, effectiveSecond, meridiem))
+            }
+          />
+          <TimeColumn
+            header="Minutes"
+            ariaLabel={`${label} minutes`}
+            options={minuteOptions}
+            onSelect={(key) =>
+              onChange(composeTime(hour12, Number(key), effectiveSecond, meridiem))
+            }
+          />
+          {showSeconds && (
+            <TimeColumn
+              header="Seconds"
+              ariaLabel={`${label} seconds`}
+              options={secondOptions}
+              onSelect={(key) =>
+                onChange(composeTime(hour12, minute, Number(key), meridiem))
+              }
+            />
+          )}
+          <TimeColumn
+            header="AM/PM"
+            ariaLabel={`${label} meridiem`}
+            options={meridiemOptions}
+            onSelect={(key) =>
+              onChange(
+                composeTime(hour12, minute, effectiveSecond, key as Meridiem)
+              )
+            }
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
   (
     {
@@ -960,6 +1184,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       name,
       showEndTime = true,
       showSeconds,
+      minuteStep = DEFAULT_MINUTE_STEP,
+      secondStep = DEFAULT_SECOND_STEP,
       showClear = true,
       closeOnSelect = false,
       startTimeLabel = "Start Time",
@@ -1020,10 +1246,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const triggerRef = React.useRef<HTMLDivElement | null>(null);
     const popoverRef = React.useRef<HTMLDivElement | null>(null);
-    const startTimeInputRef = React.useRef<HTMLInputElement | null>(null);
-    const endTimeInputRef = React.useRef<HTMLInputElement | null>(null);
     const [openCalendarDropdown, setOpenCalendarDropdown] =
       React.useState<CalendarDropdownKind | null>(null);
+    const [openTimeField, setOpenTimeField] = React.useState<
+      "start" | "end" | null
+    >(null);
     const usesContainerPortal = portalContainer !== undefined;
     const floatingStrategy: Strategy = usesContainerPortal
       ? "absolute"
@@ -1092,6 +1319,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       (nextOpen: boolean) => {
         if (!nextOpen) {
           setOpenCalendarDropdown(null);
+          setOpenTimeField(null);
         }
 
         if (!isOpenControlled) {
@@ -1588,6 +1816,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                           : isCurrentMonth
                             ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
                             : "text-semantic-text-muted hover:bg-semantic-bg-hover",
+                        isToday &&
+                          !isSelected &&
+                          "ring-1 ring-inset ring-semantic-border-secondary",
                         isDisabled &&
                           "opacity-40 cursor-not-allowed pointer-events-none"
                       )}
@@ -1601,9 +1832,6 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       }}
                     >
                       {day.getDate()}
-                      {isToday && !isSelected && (
-                        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 size-1 rounded-full bg-semantic-primary" />
-                      )}
                     </button>
                   );
                 })}
@@ -1619,87 +1847,45 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   "border-t border-solid border-semantic-border-layout"
               )}
             >
-            <div className="flex flex-col gap-1.5">
-              <label
-                id={`${triggerId}-start-time-label`}
-                className="block text-sm font-semibold text-semantic-text-secondary"
-              >
-                {startTimeLabel}
-              </label>
-              <div className="relative">
-                <Clock2
-                  className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
-                  aria-hidden="true"
-                />
-                <input
-                  ref={startTimeInputRef}
-                  id={`${triggerId}-start-time`}
-                  aria-labelledby={`${triggerId}-start-time-label`}
-                  type="time"
-                  step={resolvedShowSeconds ? "1" : "60"}
-                  value={formatTimeForTimeInput(
-                    currentValue.startTime,
-                    resolvedShowSeconds
-                  )}
-                  className="h-[42px] w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
-                  onClick={() => openNativeTimePicker(startTimeInputRef.current)}
-                  onChange={(event) =>
+              <TimeField
+                id={`${triggerId}-start-time`}
+                label={startTimeLabel}
+                value={currentValue.startTime}
+                showSeconds={resolvedShowSeconds}
+                minuteStep={minuteStep}
+                secondStep={secondStep}
+                open={openTimeField === "start"}
+                onOpenChange={(nextOpen) =>
+                  setOpenTimeField(nextOpen ? "start" : null)
+                }
+                onChange={(startTime) =>
+                  updateValue(
+                    { ...currentValue, startTime },
+                    { hasTimeValue: true }
+                  )
+                }
+              />
+
+              {resolvedShowEndTime && (
+                <TimeField
+                  id={`${triggerId}-end-time`}
+                  label={endTimeLabel}
+                  value={currentValue.endTime}
+                  showSeconds={resolvedShowSeconds}
+                  minuteStep={minuteStep}
+                  secondStep={secondStep}
+                  open={openTimeField === "end"}
+                  onOpenChange={(nextOpen) =>
+                    setOpenTimeField(nextOpen ? "end" : null)
+                  }
+                  onChange={(endTime) =>
                     updateValue(
-                      {
-                        ...currentValue,
-                        startTime: normalizeTimeInputValue(
-                          event.target.value,
-                          currentValue.startTime
-                        ),
-                      },
+                      { ...currentValue, endTime },
                       { hasTimeValue: true }
                     )
                   }
                 />
-              </div>
-            </div>
-
-            {resolvedShowEndTime && (
-              <div className="flex flex-col gap-1.5">
-                <label
-                  id={`${triggerId}-end-time-label`}
-                  className="block text-sm font-semibold text-semantic-text-secondary"
-                >
-                  {endTimeLabel}
-                </label>
-                <div className="relative">
-                  <Clock2
-                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
-                    aria-hidden="true"
-                  />
-                  <input
-                    ref={endTimeInputRef}
-                    id={`${triggerId}-end-time`}
-                    aria-labelledby={`${triggerId}-end-time-label`}
-                    type="time"
-                    step={resolvedShowSeconds ? "1" : "60"}
-                    value={formatTimeForTimeInput(
-                      currentValue.endTime,
-                      resolvedShowSeconds
-                    )}
-                    className="h-[42px] w-full rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary pl-9 pr-3 text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
-                    onClick={() => openNativeTimePicker(endTimeInputRef.current)}
-                    onChange={(event) =>
-                      updateValue(
-                        {
-                          ...currentValue,
-                          endTime: normalizeTimeInputValue(
-                            event.target.value,
-                            currentValue.endTime
-                          ),
-                        },
-                        { hasTimeValue: true }
-                      )
-                    }
-                  />
-                </div>
-              </div>
-            )}
+              )}
             </div>
           )}
         </div>,
@@ -1740,7 +1926,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             open &&
               state !== "error" &&
               "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-            !displayValue && "text-semantic-text-placeholder"
+            !displayValue && "text-semantic-text-placeholder",
+            disabled &&
+              "cursor-not-allowed bg-semantic-bg-ui text-semantic-text-muted hover:border-semantic-border-input"
           )}
         >
           <input
