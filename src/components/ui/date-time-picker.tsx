@@ -249,6 +249,129 @@ function isPointerInsideElement(
   return false;
 }
 
+// Floating sub-dropdowns (Month / Year / Time) are portaled to document.body
+// so they escape the popover's overflow clipping. Because they live outside the
+// popover in the DOM, the picker's own outside-click handler can't recognize
+// them via `contains`. Tagging each portaled panel with this attribute lets the
+// handler detect clicks that land inside an open sub-dropdown.
+const DROPDOWN_MARKER_ATTR = "data-dtp-dropdown";
+const DROPDOWN_GAP = 4;
+const DROPDOWN_MARGIN = 8;
+const DROPDOWN_MAX_HEIGHT = 256;
+const DROPDOWN_Z_INDEX = 10060;
+const DROPDOWN_PLACEMENT: Placement = "bottom-start";
+const DROPDOWN_WIDTH_VAR = "--date-time-picker-dropdown-width";
+const DROPDOWN_HEIGHT_VAR = "--date-time-picker-dropdown-height";
+
+function isPointerInsideDropdown(event: MouseEvent) {
+  const target = event.target;
+
+  return (
+    target instanceof Element &&
+    target.closest(`[${DROPDOWN_MARKER_ATTR}]`) !== null
+  );
+}
+
+// Shared floating + dismissal behavior for the Month, Year, and Time dropdowns.
+// Each instance positions its panel against its trigger, mirrors the picker's
+// portal strategy, and closes itself on an outside click or Escape — without
+// collapsing the parent picker (Escape is captured so it doesn't bubble to the
+// picker's own Escape handler).
+function useFloatingDropdown({
+  open,
+  onOpenChange,
+  strategy,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  strategy: Strategy;
+}) {
+  const middleware = React.useMemo(
+    () => [
+      offset(DROPDOWN_GAP),
+      flip({ padding: DROPDOWN_MARGIN }),
+      shift({ padding: DROPDOWN_MARGIN }),
+      floatingSize({
+        padding: DROPDOWN_MARGIN,
+        apply({ availableHeight, rects, elements }) {
+          const maxHeight = Math.max(
+            1,
+            Math.min(DROPDOWN_MAX_HEIGHT, availableHeight)
+          );
+          elements.floating.style.setProperty(
+            DROPDOWN_HEIGHT_VAR,
+            `${maxHeight}px`
+          );
+          elements.floating.style.setProperty(
+            DROPDOWN_WIDTH_VAR,
+            `${rects.reference.width}px`
+          );
+        },
+      }),
+    ],
+    []
+  );
+
+  const floating = useFloating<HTMLButtonElement>({
+    open,
+    placement: DROPDOWN_PLACEMENT,
+    strategy,
+    transform: false,
+    middleware,
+    whileElementsMounted: (reference, floatingEl, update) =>
+      autoUpdate(reference, floatingEl, update, { animationFrame: true }),
+  });
+
+  const { refs, floatingStyles, isPositioned } = floating;
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      const reference = refs.reference.current as HTMLElement | null;
+      if (
+        !isPointerInsideElement(event, reference) &&
+        !isPointerInsideElement(event, refs.floating.current)
+      ) {
+        onOpenChange(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        // Capture phase + stopPropagation keeps Escape from also reaching the
+        // picker's handler, so it dismisses just this dropdown.
+        event.stopPropagation();
+        onOpenChange(false);
+      }
+    };
+
+    // Capture phase: the popover container calls stopPropagation on its own
+    // mousedown, which would otherwise swallow clicks inside it before they
+    // reach a bubble-phase document listener. Listening on capture runs this
+    // handler top-down — before that stopPropagation — so clicks anywhere
+    // outside the dropdown (including elsewhere in the popover) dismiss it.
+    document.addEventListener("mousedown", handlePointerDown, true);
+    document.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown, true);
+      document.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [open, onOpenChange, refs]);
+
+  const setReference = React.useCallback(
+    (node: HTMLButtonElement | null) => refs.setReference(node),
+    [refs]
+  );
+  const setFloating = React.useCallback(
+    (node: HTMLDivElement | null) => refs.setFloating(node),
+    [refs]
+  );
+
+  return { setReference, setFloating, floatingStyles, isPositioned };
+}
+
 function timeHasVisibleSeconds(time?: string) {
   const [, , second = "00"] = (time ?? "").split(":");
   return /^\d{1,2}$/.test(second) && Number(second) !== 0;
@@ -896,6 +1019,8 @@ function CalendarDropdown({
   open,
   onOpenChange,
   onValueChange,
+  portalMount,
+  strategy,
 }: {
   id: string;
   label: string;
@@ -904,8 +1029,16 @@ function CalendarDropdown({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onValueChange: (value: string) => void;
+  portalMount: HTMLElement | null;
+  strategy: Strategy;
 }) {
   const selectedOption = options.find((option) => option.value === value);
+  const { setReference, setFloating, floatingStyles, isPositioned } =
+    useFloatingDropdown({
+      open,
+      onOpenChange,
+      strategy,
+    });
 
   return (
     <div className="relative">
@@ -913,6 +1046,7 @@ function CalendarDropdown({
         {label}
       </label>
       <button
+        ref={setReference}
         id={id}
         type="button"
         role="combobox"
@@ -932,37 +1066,51 @@ function CalendarDropdown({
           aria-hidden="true"
         />
       </button>
-      {open && (
-        <div
-          id={`${id}-options`}
-          role="listbox"
-          aria-label={`${label} options`}
-          className="absolute left-0 top-full z-10 mt-1 max-h-52 min-w-full overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg"
-        >
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              role="option"
-              aria-label={option.label}
-              aria-selected={option.value === value}
-              disabled={option.disabled}
-              className={cn(
-                "flex w-full items-center rounded px-2 py-1.5 text-left text-sm text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover disabled:cursor-not-allowed disabled:opacity-40",
-                option.value === value && "bg-semantic-primary text-semantic-text-inverted"
-              )}
-              onClick={() => {
-                if (option.disabled) return;
+      {open &&
+        portalMount &&
+        createPortal(
+          <div
+            ref={setFloating}
+            id={`${id}-options`}
+            role="listbox"
+            aria-label={`${label} options`}
+            data-dtp-dropdown=""
+            className="flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+            style={{
+              ...floatingStyles,
+              width: `var(${DROPDOWN_WIDTH_VAR}, auto)`,
+              maxHeight: `var(${DROPDOWN_HEIGHT_VAR}, ${DROPDOWN_MAX_HEIGHT}px)`,
+              zIndex: DROPDOWN_Z_INDEX,
+              visibility: isPositioned ? undefined : "hidden",
+            }}
+          >
+            {options.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-label={option.label}
+                aria-selected={option.value === value}
+                disabled={option.disabled}
+                className={cn(
+                  "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                  option.value === value
+                    ? "border-semantic-info-border bg-semantic-info-surface font-semibold text-semantic-text-primary"
+                    : "border-transparent text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                )}
+                onClick={() => {
+                  if (option.disabled) return;
 
-                onValueChange(option.value);
-                onOpenChange(false);
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
+                  onValueChange(option.value);
+                  onOpenChange(false);
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>,
+          portalMount
+        )}
     </div>
   );
 }
@@ -1041,6 +1189,8 @@ function TimeField({
   open,
   onOpenChange,
   onChange,
+  portalMount,
+  strategy,
 }: {
   id: string;
   label: string;
@@ -1051,8 +1201,16 @@ function TimeField({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onChange: (time: string) => void;
+  portalMount: HTMLElement | null;
+  strategy: Strategy;
 }) {
   const { hour12, minute, second, meridiem } = decomposeTime(value);
+  const { setReference, setFloating, floatingStyles, isPositioned } =
+    useFloatingDropdown({
+      open,
+      onOpenChange,
+      strategy,
+    });
   // When seconds are hidden they are not editable, so normalize to :00 on any
   // change rather than carrying a stale seconds value forward.
   const effectiveSecond = showSeconds ? second : 0;
@@ -1097,6 +1255,7 @@ function TimeField({
         {label}
       </span>
       <button
+        ref={setReference}
         id={id}
         type="button"
         aria-label={label}
@@ -1124,51 +1283,64 @@ function TimeField({
           aria-hidden="true"
         />
       </button>
-      {open && (
-        <div
-          className={cn(
-            "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm",
-            showSeconds ? "grid-cols-4" : "grid-cols-3"
-          )}
-        >
-          <TimeColumn
-            header="Hours"
-            ariaLabel={`${label} hours`}
-            options={hourOptions}
-            onSelect={(key) =>
-              onChange(composeTime(Number(key), minute, effectiveSecond, meridiem))
-            }
-          />
-          <TimeColumn
-            header="Minutes"
-            ariaLabel={`${label} minutes`}
-            options={minuteOptions}
-            onSelect={(key) =>
-              onChange(composeTime(hour12, Number(key), effectiveSecond, meridiem))
-            }
-          />
-          {showSeconds && (
+      {open &&
+        portalMount &&
+        createPortal(
+          <div
+            ref={setFloating}
+            role="listbox"
+            aria-label={`${label} options`}
+            data-dtp-dropdown=""
+            className={cn(
+              "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg",
+              showSeconds ? "grid-cols-4" : "grid-cols-3"
+            )}
+            style={{
+              ...floatingStyles,
+              width: `var(${DROPDOWN_WIDTH_VAR}, auto)`,
+              zIndex: DROPDOWN_Z_INDEX,
+              visibility: isPositioned ? undefined : "hidden",
+            }}
+          >
             <TimeColumn
-              header="Seconds"
-              ariaLabel={`${label} seconds`}
-              options={secondOptions}
+              header="Hours"
+              ariaLabel={`${label} hours`}
+              options={hourOptions}
               onSelect={(key) =>
-                onChange(composeTime(hour12, minute, Number(key), meridiem))
+                onChange(composeTime(Number(key), minute, effectiveSecond, meridiem))
               }
             />
-          )}
-          <TimeColumn
-            header="AM/PM"
-            ariaLabel={`${label} meridiem`}
-            options={meridiemOptions}
-            onSelect={(key) =>
-              onChange(
-                composeTime(hour12, minute, effectiveSecond, key as Meridiem)
-              )
-            }
-          />
-        </div>
-      )}
+            <TimeColumn
+              header="Minutes"
+              ariaLabel={`${label} minutes`}
+              options={minuteOptions}
+              onSelect={(key) =>
+                onChange(composeTime(hour12, Number(key), effectiveSecond, meridiem))
+              }
+            />
+            {showSeconds && (
+              <TimeColumn
+                header="Seconds"
+                ariaLabel={`${label} seconds`}
+                options={secondOptions}
+                onSelect={(key) =>
+                  onChange(composeTime(hour12, minute, Number(key), meridiem))
+                }
+              />
+            )}
+            <TimeColumn
+              header="AM/PM"
+              ariaLabel={`${label} meridiem`}
+              options={meridiemOptions}
+              onSelect={(key) =>
+                onChange(
+                  composeTime(hour12, minute, effectiveSecond, key as Meridiem)
+                )
+              }
+            />
+          </div>,
+          portalMount
+        )}
     </div>
   );
 }
@@ -1375,7 +1547,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       const handlePointerDown = (event: MouseEvent) => {
         if (
           !isPointerInsideElement(event, rootRef.current) &&
-          !isPointerInsideElement(event, popoverRef.current)
+          !isPointerInsideElement(event, popoverRef.current) &&
+          !isPointerInsideDropdown(event)
         ) {
           setOpen(false);
         }
@@ -1721,6 +1894,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     id={`${triggerId}-month`}
                     label="Month"
                     value={visibleMonth.getMonth().toString()}
+                    portalMount={portalMount}
+                    strategy={floatingStrategy}
                     open={openCalendarDropdown === "month"}
                     onOpenChange={(nextOpen) =>
                       setOpenCalendarDropdown(nextOpen ? "month" : null)
@@ -1756,6 +1931,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     id={`${triggerId}-year`}
                     label="Year"
                     value={visibleMonth.getFullYear().toString()}
+                    portalMount={portalMount}
+                    strategy={floatingStrategy}
                     open={openCalendarDropdown === "year"}
                     onOpenChange={(nextOpen) =>
                       setOpenCalendarDropdown(nextOpen ? "year" : null)
@@ -1866,6 +2043,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 showSeconds={resolvedShowSeconds}
                 minuteStep={minuteStep}
                 secondStep={secondStep}
+                portalMount={portalMount}
+                strategy={floatingStrategy}
                 open={openTimeField === "start"}
                 onOpenChange={(nextOpen) =>
                   setOpenTimeField(nextOpen ? "start" : null)
@@ -1886,6 +2065,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   showSeconds={resolvedShowSeconds}
                   minuteStep={minuteStep}
                   secondStep={secondStep}
+                  portalMount={portalMount}
+                  strategy={floatingStrategy}
                   open={openTimeField === "end"}
                   onOpenChange={(nextOpen) =>
                     setOpenTimeField(nextOpen ? "end" : null)
