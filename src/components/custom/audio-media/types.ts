@@ -1,6 +1,13 @@
 import * as React from "react";
 
 export interface AudioMediaProps extends React.HTMLAttributes<HTMLDivElement> {
+  /**
+   * Audio source URL. When provided, the component plays real audio: the
+   * play/pause button drives playback, the waveform fills as it plays, and
+   * clicking or dragging the waveform seeks. When omitted, the component stays
+   * purely visual and `playedBars` controls the fill.
+   */
+  src?: string;
   /** Audio duration text (e.g., "0:30", "2:15") */
   duration?: string;
   /** Array of bar heights for the waveform visualization. Defaults to a built-in pattern */
@@ -19,4 +26,10 @@ export interface AudioMediaProps extends React.HTMLAttributes<HTMLDivElement> {
   onPlayChange?: (playing: boolean) => void;
   /** Callback when speed changes */
   onSpeedChange?: (speed: number) => void;
+  /**
+   * Callback fired when the user seeks by clicking or dragging the waveform.
+   * Receives the seek position as a fraction between 0 and 1. Fires even when
+   * `src` is not set, so controlled (visual-only) usages can react to seeks.
+   */
+  onSeek?: (fraction: number) => void;
 }

@@ -29,15 +29,19 @@ const containerStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "",
   unread:
     "flex h-5 items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
+  // Mobile/tablet: full-width-friendly with 20px (px-5) side padding so wrapped
+  // text has breathing room; reverts to the compact pill on desktop at `lg`.
   system:
-    "flex min-h-5 max-w-full items-center rounded bg-semantic-bg-primary px-1.5 py-0.5 shadow-sm",
+    "flex min-h-5 min-w-0 max-w-[80%] items-center rounded bg-semantic-bg-primary px-5 py-0.5 shadow-sm lg:px-1.5",
 };
 
 const textStyles: Record<ChatTimelineDividerVariant, string> = {
   default: "text-[13px] text-semantic-text-muted",
   unread: "text-[12px] font-semibold leading-none text-semantic-text-primary",
+  // Mobile/tablet: wrap + centre-align long system events; desktop (`lg`)
+  // truncates on a single line.
   system:
-    "min-w-0 truncate text-[12px] font-normal leading-4 text-semantic-text-secondary",
+    "min-w-0 whitespace-normal break-words text-center text-[12px] font-normal leading-4 text-semantic-text-secondary lg:truncate",
 };
 
 const highlightSegmentClassName = cn(
@@ -106,7 +110,7 @@ const ChatTimelineDivider = React.forwardRef<
     <div
       ref={ref}
       role="separator"
-      className={cn("my-2 flex min-w-0 items-center gap-3", className)}
+      className={cn("my-3 flex min-w-0 items-center gap-3", className)}
       {...props}
     >
       {showLines && <div className="flex-1 h-px bg-semantic-border-layout" />}

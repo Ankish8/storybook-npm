@@ -88,3 +88,18 @@ export const WithDuration: Story = {
     playedBars: 0,
   },
 };
+
+export const RealPlayback: Story = {
+  args: {
+    src: "https://www.w3schools.com/html/horse.mp3",
+    duration: "0:03",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass a `src` to enable real audio. The play button starts/pauses playback, the waveform fills as it plays, and you can **click or drag the waveform to seek** (keyboard: focus it and use arrow keys / Home / End). The speed pill changes `playbackRate`.",
+      },
+    },
+  },
+};

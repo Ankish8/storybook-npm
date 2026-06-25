@@ -47,6 +47,26 @@ describe("ChatTimelineDivider", () => {
     expect(text.parentElement?.className).toContain("shadow-sm");
   });
 
+  it("wraps and centre-aligns system events on mobile/tablet, truncating on desktop", () => {
+    render(
+      <ChatTimelineDivider variant="system">
+        Assigned to Alex Smith
+      </ChatTimelineDivider>
+    );
+    const text = screen.getByText("Assigned to Alex Smith");
+    // Mobile/tablet base: wrap + centre
+    expect(text.className).toContain("whitespace-normal");
+    expect(text.className).toContain("break-words");
+    expect(text.className).toContain("text-center");
+    // Desktop (lg+) reverts to single-line truncation
+    expect(text.className).toContain("lg:truncate");
+    // 20px side padding on mobile/tablet, compact pill at lg+
+    expect(text.parentElement?.className).toContain("px-5");
+    expect(text.parentElement?.className).toContain("lg:px-1.5");
+    // Pill must be allowed to shrink below content width so lg:truncate can clip
+    expect(text.parentElement?.className).toContain("min-w-0");
+  });
+
   it("renders horizontal lines on both sides", () => {
     const { container } = render(
       <ChatTimelineDivider>Today</ChatTimelineDivider>

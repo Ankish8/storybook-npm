@@ -224,7 +224,7 @@ function FailedMessageFeedback({
       role="alert"
     >
       <CircleAlert className="size-[15px] shrink-0 text-semantic-error-primary" />
-      <div className="flex min-w-0 flex-1 items-start gap-1 text-[12px] leading-4 tracking-normal">
+      <div className="flex min-w-0 flex-1 flex-col gap-1 text-[12px] leading-4 tracking-normal">
         {hasCode && (
           <span className="shrink-0 text-[14px] font-semibold leading-4 tracking-[0.014px]">
             <span>{code}</span>

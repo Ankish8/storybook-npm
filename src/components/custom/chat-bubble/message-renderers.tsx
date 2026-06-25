@@ -561,7 +561,7 @@ function ContactListModal({
       <DialogContent
         size="sm"
         hideCloseButton
-        className="gap-0 border-semantic-border-layout bg-semantic-bg-primary p-0"
+        className="w-[calc(100%-40px)] gap-0 border-semantic-border-layout bg-semantic-bg-primary p-0"
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-semantic-bg-primary px-6 pb-4 pt-6">
           <DialogTitle className="text-[16px] font-semibold leading-6 text-semantic-text-primary">
@@ -572,7 +572,7 @@ function ContactListModal({
             <span className="sr-only">Close</span>
           </DialogClose>
         </div>
-        <div className="px-6 pb-6 pt-4">
+        <div className="px-5 pb-6 pt-4">
           {contacts.map((item, index) => (
             <div
               key={item.id ?? `${item.name}-${index}`}
@@ -768,7 +768,7 @@ function ListReplyModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         size="sm"
-        className="max-h-[456px] gap-0 overflow-hidden rounded border-semantic-border-layout bg-semantic-bg-primary p-0"
+        className="w-[calc(100%-40px)] max-h-[456px] gap-0 overflow-hidden rounded border-semantic-border-layout bg-semantic-bg-primary p-0"
       >
         <div className="px-6 pb-4 pt-5">
           <DialogTitle className="text-[18px] font-semibold leading-6 text-semantic-text-primary">
@@ -780,7 +780,7 @@ function ListReplyModal({
             </DialogDescription>
           )}
         </div>
-        <div className="max-h-[384px] overflow-y-auto px-6 pb-6 pr-3 [scrollbar-color:var(--semantic-text-muted)_transparent]">
+        <div className="max-h-[384px] overflow-y-auto px-5 pb-6 pr-2 [scrollbar-color:var(--semantic-text-muted)_transparent]">
           <div className="pr-3">
             <ListReplyRows listReply={listReply} presentation="modal" />
           </div>

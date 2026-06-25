@@ -8,14 +8,12 @@ const meta: Meta<typeof ChatTimelineDivider> = {
     layout: "padded",
     docs: {
       description: {
-        component:
-          `
+        component: `
 A timeline divider for chat message lists. Renders centered content between two horizontal lines.
 
 Use it to separate messages by date, mark unread boundaries, or display system events like agent assignments and conversation resolutions.
 
-For string children, wrap names or keywords in ` **
-          ` for semibold action-feedback highlights (e.g. \`Assigned to **Alex Smith** by **Admin**\`).
+For string children, wrap names or keywords in \`**\` for semibold action-feedback highlights (e.g. \`Assigned to **Alex Smith** by **Admin**\`).
 
 ### Installation
 
@@ -101,6 +99,26 @@ export const ConversationResolved: Story = {
         Jane Doe
       </span>
     </ChatTimelineDivider>
+  ),
+};
+
+export const SystemEventMobileWrap: Story = {
+  name: "System Event — Mobile Wrap",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "On mobile (< 640px), long system events wrap instead of truncating, centre-aligned with 20px left/right padding. At `sm` and up they revert to a compact single-line truncated pill. Resize the viewport (or use the toolbar viewport addon) to see the breakpoint.",
+      },
+    },
+  },
+  render: () => (
+    <div style={{ width: '100%', margin: '0 auto' }}>
+      <ChatTimelineDivider variant="system">
+        Conversation transferred to **Alex Smith** from **Priya Patel** by
+        **Workflow Automation**
+      </ChatTimelineDivider>
+    </div>
   ),
 };
 
