@@ -478,7 +478,7 @@ function VariableGroupRow({
             // arbitrary variant + important modifier.
             "[&_[data-placeholder]]:!text-[var(--semantic-text-link)] [&>svg]:hidden"
           )}
-          contentClassName="w-[280px] max-w-[320px]"
+          contentClassName="w-auto min-w-[280px] max-w-[320px]"
         />
       )}
     </div>
