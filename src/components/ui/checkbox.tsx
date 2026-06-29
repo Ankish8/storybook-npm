@@ -138,7 +138,7 @@ const Checkbox = React.forwardRef(
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-semantic-text-primary cursor-pointer",
+                  "font-semibold text-semantic-text-secondary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -152,7 +152,7 @@ const Checkbox = React.forwardRef(
                 htmlFor={id}
                 className={cn(
                   labelSizeVariants({ size }),
-                  "text-semantic-text-primary cursor-pointer",
+                  "font-semibold text-semantic-text-secondary cursor-pointer",
                   disabled && "opacity-50 cursor-not-allowed",
                   labelClassName
                 )}
@@ -176,7 +176,7 @@ const Checkbox = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-semantic-text-primary",
+                "font-semibold text-semantic-text-secondary",
                 disabled && "opacity-50",
                 labelClassName
               )}
@@ -189,7 +189,7 @@ const Checkbox = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-semantic-text-primary",
+                "font-semibold text-semantic-text-secondary",
                 disabled && "opacity-50",
                 labelClassName
               )}

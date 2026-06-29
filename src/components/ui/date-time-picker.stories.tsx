@@ -66,6 +66,14 @@ import { DateTimePicker } from "@/components/ui/date-time-picker"
   },
   tags: ["autodocs"],
   argTypes: {
+    label: {
+      control: "text",
+      description: "Label text displayed above the trigger",
+    },
+    required: {
+      control: "boolean",
+      description: "Shows a red asterisk next to the label",
+    },
     variant: {
       control: "select",
       options: ["date-time", "date-only", "time-only"],
@@ -126,6 +134,37 @@ export const Overview: Story = {
 
 export const Empty: Story = {
   args: {},
+};
+
+export const WithLabel: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A field-style label rendered above the trigger, matching the label style used by `Input` and `SelectField`. Pass `required` to show the red asterisk.",
+      },
+    },
+  },
+  args: {
+    label: "Event date",
+    required: true,
+    defaultValue: sampleValue,
+  },
+};
+
+export const WithOptionalLabel: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A label without the required asterisk — the optional-field case. Same label style as `Input` and `SelectField`, just no `required`.",
+      },
+    },
+  },
+  args: {
+    label: "Event date",
+    defaultValue: sampleValue,
+  },
 };
 
 export const Error: Story = {

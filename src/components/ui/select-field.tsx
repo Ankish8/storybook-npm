@@ -430,7 +430,7 @@ const SelectField = React.forwardRef(
             {showEndOfList && (
               <div
                 role="status"
-                className="py-2 text-center text-xs text-semantic-text-muted"
+                className="py-2 text-center text-sm text-semantic-text-muted"
               >
                 End of list
               </div>
@@ -444,12 +444,12 @@ const SelectField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs text-semantic-error-primary"
+                className="text-sm text-semantic-error-primary"
               >
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-semantic-text-muted">
+              <span id={helperId} className="text-sm text-semantic-text-muted">
                 {helperText}
               </span>
             ) : null}

@@ -116,7 +116,7 @@ export const ReadableField = React.forwardRef(
       >
         {/* Header Row: Label + Optional Action */}
         <div className="flex items-start justify-between">
-          <span className="text-sm font-semibold text-semantic-text-secondary tracking-[0.035px]">
+          <span className="text-sm font-semibold text-semantic-text-secondary">
             {label}
           </span>
           {headerAction && (
@@ -201,7 +201,7 @@ export const ReadableField = React.forwardRef(
 
         {/* Helper Text */}
         {helperText && (
-          <p className="m-0 text-sm text-semantic-text-muted tracking-[0.035px]">
+          <p className="m-0 text-sm text-semantic-text-muted">
             {helperText}
           </p>
         )}

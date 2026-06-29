@@ -527,7 +527,7 @@ const MultiSelect = React.forwardRef(
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-xs px-2 py-0.5 rounded"
+                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-sm px-2 py-0.5 rounded"
                 >
                   {label}
                   <span
@@ -602,14 +602,14 @@ const MultiSelect = React.forwardRef(
                     className="size-3.5 shrink-0 text-semantic-error-primary"
                     aria-hidden
                   />
-                  <span className="text-xs text-semantic-error-primary">
+                  <span className="text-sm text-semantic-error-primary">
                     {error}
                   </span>
                 </div>
               ) : helperText ? (
                 <span
                   id={helperId}
-                  className="text-xs text-semantic-text-muted"
+                  className="text-sm text-semantic-text-muted"
                 >
                   {helperText}
                 </span>
@@ -669,7 +669,7 @@ const MultiSelect = React.forwardRef(
                       return (
                         <div
                           key={`header-${item.label}-${itemIndex}`}
-                          className="px-3 pt-2 pb-1 text-xs font-semibold uppercase tracking-wide text-semantic-text-muted"
+                          className="px-3 pt-2 pb-1 text-sm font-semibold uppercase tracking-wide text-semantic-text-muted"
                         >
                           {item.label}
                         </div>
@@ -750,7 +750,7 @@ const MultiSelect = React.forwardRef(
                           {option.label}
                         </span>
                         {secondaryLine ? (
-                          <span className="shrink-0 max-w-[55%] truncate text-right text-xs text-semantic-text-muted">
+                          <span className="shrink-0 max-w-[55%] truncate text-right text-sm text-semantic-text-muted">
                             {secondaryLine}
                           </span>
                         ) : null}
@@ -770,7 +770,7 @@ const MultiSelect = React.forwardRef(
                           </TooltipTrigger>
                           <TooltipContent
                             side="top"
-                            className="max-w-xs bg-semantic-primary text-semantic-text-inverted border-semantic-primary border-solid"
+                            className="max-w-sm bg-semantic-primary text-semantic-text-inverted border-semantic-primary border-solid"
                           >
                             {overlayCopy}
                           </TooltipContent>
@@ -792,7 +792,7 @@ const MultiSelect = React.forwardRef(
 
               {/* Footer with count */}
               {maxSelections && showSelectionFooter ? (
-                <div className="p-2 border-t border-solid border-semantic-border-layout text-xs text-semantic-text-muted">
+                <div className="p-2 border-t border-solid border-semantic-border-layout text-sm text-semantic-text-muted">
                   {selectedValues.length} / {maxSelections} selected
                 </div>
               ) : null}

@@ -109,7 +109,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-semantic-text-primary",
+                "font-semibold text-semantic-text-secondary",
                 disabled && "opacity-50"
               )}
             >
@@ -121,7 +121,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "text-semantic-text-primary",
+                "font-semibold text-semantic-text-secondary",
                 disabled && "opacity-50"
               )}
             >

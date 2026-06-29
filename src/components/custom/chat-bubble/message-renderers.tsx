@@ -563,7 +563,7 @@ function ContactListModal({
         hideCloseButton
         className="w-[calc(100%-40px)] gap-0 border-semantic-border-layout bg-semantic-bg-primary p-0"
       >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-semantic-bg-primary px-6 pb-4 pt-6">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 bg-semantic-bg-primary px-5 pb-4 pt-6">
           <DialogTitle className="text-[16px] font-semibold leading-6 text-semantic-text-primary">
             {title}
           </DialogTitle>
@@ -770,7 +770,7 @@ function ListReplyModal({
         size="sm"
         className="w-[calc(100%-40px)] max-h-[456px] gap-0 overflow-hidden rounded border-semantic-border-layout bg-semantic-bg-primary p-0"
       >
-        <div className="px-6 pb-4 pt-5">
+        <div className="px-5 pb-4 pt-5">
           <DialogTitle className="text-[18px] font-semibold leading-6 text-semantic-text-primary">
             {title}
           </DialogTitle>

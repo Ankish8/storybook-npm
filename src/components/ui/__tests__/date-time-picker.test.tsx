@@ -908,6 +908,33 @@ describe("DateTimePicker", () => {
     );
   });
 
+  it("renders a label associated with the trigger", () => {
+    render(<DateTimePicker id="event-date" label="Event date" />);
+
+    const label = screen.getByText("Event date");
+    expect(label.tagName).toBe("LABEL");
+    expect(label).toHaveClass(
+      "font-semibold",
+      "text-semantic-text-secondary"
+    );
+    expect(label).toHaveAttribute("for", "event-date");
+  });
+
+  it("shows a required asterisk when required", () => {
+    render(<DateTimePicker label="Event date" required />);
+
+    const asterisk = screen.getByText("*");
+    expect(asterisk).toHaveClass("text-semantic-error-primary");
+  });
+
+  it("does not render a label when none is provided", () => {
+    render(<DateTimePicker data-testid="no-label" />);
+
+    expect(
+      screen.getByTestId("no-label").querySelector("label")
+    ).toBeNull();
+  });
+
   it("formats display helpers", () => {
     expect(formatTimeForDisplay("00:00:00")).toBe("12:00 AM");
     expect(formatTimeForDisplay("00:00:05", true)).toBe("12:00:05 AM");

@@ -103,6 +103,12 @@ export interface DateTimePickerProps
   value?: DateTimePickerValue;
   defaultValue?: DateTimePickerValue;
   onValueChange?: (value: DateTimePickerValue) => void;
+  /** Label text displayed above the trigger */
+  label?: string;
+  /** Shows a red asterisk next to the label when true */
+  required?: boolean;
+  /** Additional class for the label */
+  labelClassName?: string;
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
@@ -1355,6 +1361,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       value,
       defaultValue,
       onValueChange,
+      label,
+      required,
+      labelClassName,
       placeholder: placeholderProp,
       disabled = false,
       readOnly = false,
@@ -2111,6 +2120,20 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               hasTimeValue
             )}
           />
+        )}
+        {label && (
+          <label
+            htmlFor={triggerId}
+            className={cn(
+              "mb-1.5 block text-sm font-semibold text-semantic-text-secondary",
+              labelClassName
+            )}
+          >
+            {label}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
+          </label>
         )}
         <div
           ref={setTriggerRef}
