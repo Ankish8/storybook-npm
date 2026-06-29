@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Info, Plus } from "lucide-react";
+import { Info, Plus, Search } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { tagVariants } from "../../ui/tag";
 import {
@@ -9,12 +9,34 @@ import {
   TooltipTrigger,
 } from "../../ui/tooltip";
 import { Textarea } from "../../ui/textarea";
+import { SelectField } from "../../ui/select-field";
 import { FormFieldLabel } from "./form-field-label";
+import type { VariableGroup, VariableItem } from "./types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface BotBehaviorData {
   systemPrompt: string;
+}
+
+/** The text inserted into the prompt when a variable is picked. */
+function getInsertValue(item: VariableItem): string {
+  return item.value ?? `{{${item.name}}}`;
+}
+
+/** The braced label shown on the chip and in the pickers (e.g. `{{First_Name}}`). */
+function getDisplayLabel(item: VariableItem): string {
+  return item.value ?? `{{${item.name}}}`;
+}
+
+/** True when the variable's name or rendered label matches the search query. */
+function variableMatches(item: VariableItem, query: string): boolean {
+  if (!query) return true;
+  const q = query.toLowerCase();
+  return (
+    item.name.toLowerCase().includes(q) ||
+    getDisplayLabel(item).toLowerCase().includes(q)
+  );
 }
 
 /** Default hover text for the info icon next to "How It Behaves" */
@@ -38,8 +60,31 @@ export interface BotBehaviorCardProps {
    * user is done editing, including any variables they just inserted.
    */
   onSystemPromptBlur?: (value: string) => void;
-  /** Session Variables shown as insertable chips and in the {{ autocomplete dropdown */
+  /**
+   * Legacy single-group input: session variables shown as insertable chips and
+   * in the `{{` autocomplete. Each string is the full braced form (e.g.
+   * `"{{Caller number}}"`). Ignored when {@link variableGroups} is provided.
+   *
+   * @deprecated Prefer {@link variableGroups} — it scales to multiple labelled
+   * groups and renders one chip row per group automatically.
+   */
   sessionVariables?: string[];
+  /**
+   * Variable groups driving the UI. Each group renders its own chip row
+   * (with a per-group searchable "View all" dropdown), and all groups are
+   * combined — grouped by `label` — in the `{{` variable picker.
+   *
+   * This is fully data-driven: pass the groups and the component renders the
+   * chip rows and pickers automatically. When provided, it takes precedence
+   * over {@link sessionVariables}.
+   *
+   * @example
+   * variableGroups={[
+   *   { label: "Session variables", items: [{ name: "Caller Contact Number" }] },
+   *   { label: "Contact Variables", items: [{ name: "First_Name" }, { name: "Email" }] },
+   * ]}
+   */
+  variableGroups?: VariableGroup[];
   /** Required validation message for the "How It Behaves" system prompt. */
   systemPromptValidation?: string;
   /**
@@ -187,39 +232,255 @@ function focusTextareaAfterInsert(
   scrollCaretIntoViewInTextarea(textarea, selectionStart);
 }
 
-// Uses the same visual classes as DropdownMenuContent + DropdownMenuItem.
-// Position is driven by cursor coordinates from getCaretPixelPos.
+/**
+ * Caret-anchored variable picker shown when the user types `{{`.
+ *
+ * Reuses SelectField's visual language (a search input with a `Search` icon
+ * over grouped, labelled items) but is positioned at the cursor via
+ * {@link getCaretPixelPos} — a real SelectField can't anchor at the caret
+ * because it opens from its own trigger button.
+ *
+ * Filtering combines its own search box with the text typed after `{{`
+ * (`triggerQuery`): the search box wins once the user types in it, otherwise
+ * the `{{`-fragment filters. Items from every group are shown, grouped by
+ * `label`.
+ */
 function VarPopup({
-  variables,
+  groups,
+  triggerQuery,
   onSelect,
   style,
 }: {
-  variables: string[];
-  onSelect: (v: string) => void;
+  groups: VariableGroup[];
+  triggerQuery: string;
+  onSelect: (insertValue: string) => void;
   style?: React.CSSProperties;
 }) {
-  if (variables.length === 0) return null;
+  const [search, setSearch] = React.useState("");
+  const query = (search.trim() ? search : triggerQuery).toLowerCase();
+
+  const filteredGroups = groups
+    .map((g) => ({
+      ...g,
+      items: g.items.filter((item) => variableMatches(item, query)),
+    }))
+    .filter((g) => g.items.length > 0);
+
   return (
     <div
       role="listbox"
+      data-var-popup=""
       style={style}
-      className="absolute z-[9999] min-w-[8rem] max-w-xs overflow-hidden rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+      className="absolute z-[9999] flex max-h-72 min-w-[16rem] max-w-sm flex-col overflow-hidden rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-md"
     >
-      {variables.map((v) => (
-        <button
-          key={v}
-          type="button"
-          role="option"
-          aria-selected={false}
-          onMouseDown={(e) => {
-            e.preventDefault(); // keep textarea focused so blur doesn't close popup first
-            onSelect(v);
-          }}
-          className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+      {/* Search input — mirrors SelectField's searchable header */}
+      <div className="flex items-center gap-2 border-b border-solid border-semantic-border-layout px-3">
+        <Search className="size-4 shrink-0 text-semantic-text-muted" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          // Keep the textarea selection logic intact and let Escape close the popup
+          onMouseDown={(e) => e.stopPropagation()}
+          placeholder="Search variable…"
+          aria-label="Search variables"
+          className="h-10 w-full bg-transparent text-sm text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder"
+        />
+      </div>
+
+      <div className="overflow-y-auto p-1">
+        {filteredGroups.map((group) => (
+          <div key={group.label}>
+            <p className="m-0 px-2 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-semantic-text-muted">
+              {group.label}
+            </p>
+            {group.items.map((item) => {
+              const insertValue = getInsertValue(item);
+              return (
+                <button
+                  key={`${group.label}:${item.name}`}
+                  type="button"
+                  role="option"
+                  aria-selected={false}
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // keep textarea focused so blur doesn't close popup first
+                    onSelect(insertValue);
+                  }}
+                  className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui"
+                >
+                  {getDisplayLabel(item)}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+        {filteredGroups.length === 0 && (
+          <p className="m-0 px-2 py-6 text-center text-sm text-semantic-text-muted">
+            No variables found
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A single variable group's chip row: a label, the chips that fit on one line,
+ * and a "View all" link (rendered only when chips overflow) that opens a
+ * per-group searchable {@link SelectField}.
+ *
+ * The visible chip count is measured, not hard-coded: a hidden mirror row
+ * lays out every chip with wrapping, and we count how many share the first
+ * row's `offsetTop` — then trim until the "View all" link also fits. A
+ * `ResizeObserver` recomputes on width changes.
+ */
+function VariableGroupRow({
+  group,
+  disabled,
+  onInsert,
+}: {
+  group: VariableGroup;
+  disabled?: boolean;
+  onInsert: (insertValue: string) => void;
+}) {
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const measureRef = React.useRef<HTMLDivElement>(null);
+  const viewAllMeasureRef = React.useRef<HTMLSpanElement>(null);
+  const chipRefs = React.useRef<Array<HTMLSpanElement | null>>([]);
+
+  const total = group.items.length;
+  const [visibleCount, setVisibleCount] = React.useState(total);
+  const [overflow, setOverflow] = React.useState(false);
+
+  const recompute = React.useCallback(() => {
+    const measure = measureRef.current;
+    const chips = chipRefs.current
+      .slice(0, total)
+      .filter((el): el is HTMLSpanElement => el != null);
+    if (!measure || chips.length === 0) {
+      setVisibleCount(chips.length);
+      setOverflow(false);
+      return;
+    }
+    const rowTop = chips[0].offsetTop;
+    const onFirstRow = chips.filter((c) => c.offsetTop <= rowTop + 1).length;
+    if (onFirstRow === chips.length) {
+      setVisibleCount(chips.length);
+      setOverflow(false);
+      return;
+    }
+    // Overflow: reserve room for the "View all" link after the last chip.
+    const containerWidth = measure.clientWidth;
+    const GAP = 8; // matches gap-2
+    const viewAllWidth = viewAllMeasureRef.current?.offsetWidth ?? 48;
+    let count = onFirstRow;
+    while (count > 0) {
+      const last = chips[count - 1];
+      const rightEdge = last.offsetLeft + last.offsetWidth;
+      if (rightEdge + GAP + viewAllWidth <= containerWidth) break;
+      count--;
+    }
+    setVisibleCount(count);
+    setOverflow(true);
+  }, [total]);
+
+  React.useLayoutEffect(() => {
+    recompute();
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const ro = new ResizeObserver(() => recompute());
+    ro.observe(wrapper);
+    return () => ro.disconnect();
+  }, [recompute, group.items]);
+
+  const chipClass = cn(
+    tagVariants(),
+    "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity",
+    disabled && "opacity-50 cursor-not-allowed"
+  );
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="relative flex flex-wrap items-center gap-2"
+    >
+      {/* Hidden mirror row used only for measuring natural chip widths */}
+      <div
+        ref={measureRef}
+        aria-hidden
+        className="pointer-events-none invisible absolute inset-x-0 top-0 flex flex-wrap items-center gap-2"
+      >
+        <span className="shrink-0 text-sm text-semantic-text-secondary">
+          {group.label}:
+        </span>
+        {group.items.map((item, i) => (
+          <span
+            key={`${item.name}-${i}`}
+            ref={(el) => {
+              chipRefs.current[i] = el;
+            }}
+            className={cn(tagVariants(), "gap-1.5")}
+          >
+            <Plus className="size-3 shrink-0" />
+            {getDisplayLabel(item)}
+          </span>
+        ))}
+        <span
+          ref={viewAllMeasureRef}
+          className="absolute text-sm font-medium"
         >
-          {v}
+          View all
+        </span>
+      </div>
+
+      {/* Visible row */}
+      <span className="shrink-0 text-sm text-semantic-text-secondary">
+        {group.label}:
+      </span>
+      {group.items.slice(0, visibleCount).map((item, i) => (
+        <button
+          key={`${item.name}-${i}`}
+          type="button"
+          onMouseDown={(e) => {
+            if (disabled) return;
+            e.preventDefault();
+          }}
+          onClick={() => {
+            if (disabled) return;
+            onInsert(getInsertValue(item));
+          }}
+          disabled={disabled}
+          className={chipClass}
+        >
+          <Plus className="size-3 shrink-0" />
+          {getDisplayLabel(item)}
         </button>
       ))}
+      {overflow && (
+        <SelectField
+          value=""
+          placeholder="View all"
+          searchable
+          searchPlaceholder="Search variable…"
+          disabled={disabled}
+          options={group.items.map((item) => ({
+            value: getInsertValue(item),
+            label: getDisplayLabel(item),
+          }))}
+          onSelect={(opt) => onInsert(opt.value)}
+          wrapperClassName="inline-flex w-auto gap-0"
+          triggerClassName={cn(
+            "h-auto w-auto gap-1 border-0 bg-transparent p-0 text-sm font-medium text-semantic-text-link shadow-none",
+            "hover:underline focus:border-0 focus:shadow-none",
+            // The visible "View all" text is SelectField's placeholder; color it
+            // like a link. Uses the explicit CSS-var form (not the `semantic-*`
+            // token name) so the tw- prefixer transforms it correctly inside the
+            // arbitrary variant + important modifier.
+            "[&_[data-placeholder]]:!text-[var(--semantic-text-link)] [&>svg]:hidden"
+          )}
+          contentClassName="w-[280px] max-w-[320px]"
+        />
+      )}
     </div>
   );
 }
@@ -279,6 +540,7 @@ const BotBehaviorCard = React.forwardRef(
       onChange,
       onSystemPromptBlur,
       sessionVariables = DEFAULT_SESSION_VARIABLES,
+      variableGroups,
       systemPromptValidation = defaultSystemPromptRequiredMessage,
       HowItBehavesErrorMessageValidation = true,
       maxLength = 5000,
@@ -305,11 +567,23 @@ const BotBehaviorCard = React.forwardRef(
     const [varTrigger, setVarTrigger] = React.useState<TriggerState | null>(null);
     const [popupStyle, setPopupStyle] = React.useState<React.CSSProperties | undefined>();
 
-    const filteredVars = varTrigger
-      ? sessionVariables.filter((v) =>
-          v.toLowerCase().includes(varTrigger.query)
-        )
-      : [];
+    /**
+     * Normalized variable groups driving both the chip rows and the `{{`
+     * picker. `variableGroups` wins; otherwise the legacy `sessionVariables`
+     * strings collapse into a single "Session variables" group.
+     */
+    const resolvedGroups: VariableGroup[] = React.useMemo(() => {
+      if (variableGroups && variableGroups.length > 0) return variableGroups;
+      return [
+        {
+          label: "Session variables",
+          items: sessionVariables.map((v) => ({
+            name: v.replace(/^\{\{|\}\}$/g, ""),
+            value: v,
+          })),
+        },
+      ];
+    }, [variableGroups, sessionVariables]);
 
     const resolvedHowItBehavesTooltip =
       howItBehavesTooltip === undefined
@@ -420,12 +694,21 @@ const BotBehaviorCard = React.forwardRef(
      * do we fire `onSystemPromptBlur` with the current prompt value.
      */
     const handleSectionBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-      clearTrigger();
-      if (!onSystemPromptBlur || !hasFocusedRef.current) return;
       const section = sectionRef.current;
-      const next = e.relatedTarget as Node | null;
-      // Focus moved to another element inside this section — ignore
-      if (section && next && section.contains(next)) return;
+      const next = e.relatedTarget as Element | null;
+      // The `{{` picker's own search input / option buttons.
+      const intoPopup = !!next?.closest?.("[data-var-popup]");
+      // A portaled Radix dropdown — e.g. a group's "View all" SelectField.
+      const intoPopper = !!next?.closest?.(
+        "[data-radix-popper-content-wrapper]"
+      );
+      // Keep the `{{` picker open while the user interacts with it; otherwise close it.
+      if (!intoPopup) clearTrigger();
+      if (!onSystemPromptBlur || !hasFocusedRef.current) return;
+      const intoSection = !!(section && next && section.contains(next));
+      // Focus still inside the section, or moved into a dropdown the section
+      // owns (the View all list) — not a real "left the section" blur.
+      if (intoSection || intoPopper) return;
       onSystemPromptBlur(prompt);
     };
 
@@ -466,36 +749,29 @@ const BotBehaviorCard = React.forwardRef(
                 disabled={disabled}
                 wrapperClassName="gap-0"
                 className="placeholder:text-semantic-text-muted hover:border-semantic-border-input-focus"
+                helperText="Type {{ to enable dropdown or use the below chips to input variables"
                 error={promptError}
                 errorIcon={Boolean(promptError)}
               />
-              <VarPopup variables={filteredVars} onSelect={handleVarSelect} style={popupStyle} />
+              {varTrigger && (
+                <VarPopup
+                  groups={resolvedGroups}
+                  triggerQuery={varTrigger.query}
+                  onSelect={handleVarSelect}
+                  style={popupStyle}
+                />
+              )}
             </div>
+            {/* One chip row per variable group — data-driven from resolvedGroups */}
             <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-semantic-text-secondary">
-                  Session Variables:
-                </span>
-                {sessionVariables.map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onMouseDown={(e) => {
-                      if (disabled) return;
-                      e.preventDefault();
-                    }}
-                    onClick={() => {
-                      if (disabled) return;
-                      insertVariable(v);
-                    }}
-                    disabled={disabled}
-                    className={cn(tagVariants(), "gap-1.5 cursor-pointer hover:opacity-80 transition-opacity", disabled && "opacity-50 cursor-not-allowed")}
-                  >
-                    <Plus className="size-3 shrink-0" />
-                    {v}
-                  </button>
-                ))}
-              </div>
+              {resolvedGroups.map((group) => (
+                <VariableGroupRow
+                  key={group.label}
+                  group={group}
+                  disabled={disabled}
+                  onInsert={insertVariable}
+                />
+              ))}
             </div>
           </div>
         </SectionCard>

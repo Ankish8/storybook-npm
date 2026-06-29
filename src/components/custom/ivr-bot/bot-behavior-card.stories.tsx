@@ -9,7 +9,11 @@ const meta: Meta<typeof BotBehaviorCard> = {
     layout: "padded",
     docs: {
       description: {
-        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and session variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it. Empty prompts show built-in real-time required validation by default, matching Fallback Prompts. Pass \`HowItBehavesErrorMessageValidation={false}\` to disable it, or customize the message with \`systemPromptValidation\`.
+        component: `The "How It Behaves" card for configuring a bot's system prompt with character counter, \`{{\` variable autocomplete dropdown, and variable chips. The section title includes an **info icon** (hover for tooltip); override via \`howItBehavesTooltip\` or pass \`""\` to hide it. Empty prompts show built-in real-time required validation by default, matching Fallback Prompts. Pass \`HowItBehavesErrorMessageValidation={false}\` to disable it, or customize the message with \`systemPromptValidation\`.
+
+### Variable groups (data-driven)
+
+Pass \`variableGroups\` — an array of \`{ label, items }\` — and the card renders **one chip row per group** automatically. Adding a new group is config-only; no markup changes. Each row shows only the chips that fit on a single line and collapses the rest into a per-group **searchable "View all" dropdown** (a \`SelectField\`). Typing \`{{\` in the textarea opens a single, searchable picker containing every group's variables, grouped by \`label\`; selecting one inserts \`{{variable_name}}\` at the cursor. The legacy \`sessionVariables\` string array still works and is treated as a single "Session variables" group; \`variableGroups\` takes precedence when both are passed.
 
 ### onSystemPromptBlur — section-level blur
 
@@ -86,6 +90,55 @@ export const CustomVariables: Story = {
             "{{Time}}",
             "{{Contact Details}}",
             "{{Account ID}}",
+          ]}
+        />
+      </div>
+    );
+  },
+};
+
+/**
+ * Data-driven **variable groups**. Pass `variableGroups` and the component
+ * renders one chip row per group automatically. Each row shows only the chips
+ * that fit on a single line; the rest collapse into a per-group, searchable
+ * **View all** dropdown. Type `{{` in the textarea to open the combined,
+ * grouped variable picker.
+ */
+export const VariableGroups: Story = {
+  render: function Render() {
+    const [data, setData] = useState<Partial<BotBehaviorData>>({
+      systemPrompt:
+        "You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome. How can I assist you today?' ",
+    });
+    return (
+      <div className="max-w-[760px]">
+        <BotBehaviorCard
+          data={data}
+          onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          variableGroups={[
+            {
+              label: "Session variables",
+              items: [
+                { name: "Morning/Afternoon/Evening (IST)" },
+                { name: "Caller Contact Number" },
+                { name: "Caller City" },
+                { name: "Caller State" },
+                { name: "DID Number" },
+                { name: "Queue Name" },
+              ],
+            },
+            {
+              label: "Contact Variables",
+              items: [
+                { name: "First_Name" },
+                { name: "Last_Name" },
+                { name: "Email" },
+                { name: "Contacts" },
+                { name: "Company" },
+                { name: "Account_ID" },
+                { name: "Lifecycle_Stage" },
+              ],
+            },
           ]}
         />
       </div>

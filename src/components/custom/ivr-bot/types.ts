@@ -416,6 +416,13 @@ export interface IvrBotConfigProps {
   /** Override session variable chips for BotBehaviorCard */
   sessionVariables?: string[];
   /**
+   * Variable groups for the "How It Behaves" system prompt (BotBehaviorCard).
+   * Each group renders its own chip row + searchable "View all" dropdown, and
+   * all groups appear — grouped by `label` — in the `{{` variable picker.
+   * Takes precedence over `sessionVariables` when provided.
+   */
+  behaviorVariableGroups?: VariableGroup[];
+  /**
    * Function-scoped variables for Create / Edit Function modal (`{{` autocomplete; `required` applies to Test API validation only).
    * Pass the same groups your app persists; items with `required: true` block Test API until test values are filled for placeholders used in the request.
    */

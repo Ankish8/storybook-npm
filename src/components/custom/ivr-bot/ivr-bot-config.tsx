@@ -128,6 +128,7 @@ export const IvrBotConfig = React.forwardRef(
       voiceOptions,
       languageOptions,
       sessionVariables,
+      behaviorVariableGroups,
       functionVariableGroups,
       onAddFunctionVariable,
       onEditFunctionVariable,
@@ -246,6 +247,7 @@ export const IvrBotConfig = React.forwardRef(
               onChange={update}
               onSystemPromptBlur={onSystemPromptBlur}
               sessionVariables={sessionVariables}
+              variableGroups={behaviorVariableGroups}
               systemPromptValidation={systemPromptValidation}
               HowItBehavesErrorMessageValidation={
                 systemPromptHowItBehavesErrorMessageValidation

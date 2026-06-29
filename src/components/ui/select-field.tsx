@@ -80,6 +80,13 @@ export interface SelectFieldProps {
   wrapperClassName?: string;
   /** Additional class for trigger */
   triggerClassName?: string;
+  /**
+   * Additional class for the dropdown content. By default the content width is
+   * bound to the trigger width (`--radix-select-trigger-width`); override here
+   * (e.g. `w-[280px] max-w-[320px]`) when the trigger is intentionally narrow —
+   * such as a "View all" text link — so the list isn't clipped to the link width.
+   */
+  contentClassName?: string;
   /** Additional class for label */
   labelClassName?: string;
   /** ID for the select */
@@ -178,6 +185,7 @@ const SelectField = React.forwardRef(
       onSearchChange,
       wrapperClassName,
       triggerClassName,
+      contentClassName,
       labelClassName,
       id,
       name,
@@ -345,6 +353,7 @@ const SelectField = React.forwardRef(
           <SelectContent
             onViewportScrollEnd={hasMore !== false ? onScrollEnd : undefined}
             hideScrollButtons={totalRendered === 0}
+            className={contentClassName}
           >
             {/* Search input */}
             {searchable && (
