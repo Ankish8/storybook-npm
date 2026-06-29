@@ -169,11 +169,16 @@ function extractFunctionFromSource(source, funcName) {
   return code
 }
 
-// Extract Pattern 6 block and helper functions from prefix-utils.ts
+// Extract Pattern 6 + Pattern 7 blocks and helper functions from prefix-utils.ts
 const pattern6Match = prefixUtilsSource.match(
   /\/\/ PATTERN-6-START\r?\n([\s\S]*?)\r?\n\s*\/\/ PATTERN-6-END/
 )
 const PATTERN_6_CODE = pattern6Match ? pattern6Match[1].trimEnd() : ''
+
+const pattern7Match = prefixUtilsSource.match(
+  /\/\/ PATTERN-7-START\r?\n([\s\S]*?)\r?\n\s*\/\/ PATTERN-7-END/
+)
+const PATTERN_7_CODE = pattern7Match ? pattern7Match[1].trimEnd() : ''
 
 const HELPER_FUNCTIONS = [
   'isAlreadyPrefixed',
@@ -1023,19 +1028,24 @@ function prefixTailwindClasses(content: string, prefix: string): string {
   return content
 }`
 
-  // Inject Pattern 6 (className={...} expression handling) from prefix-utils.ts
-  // Use function replacement to prevent $ pattern interpretation in String.replace
+  // Inject Pattern 6 (className={...} expression handling) and Pattern 7
+  // (indirected var/JSX-attribute classname strings, e.g. wrapperClassName="...")
+  // from prefix-utils.ts. Both run on `content` before the final return, mirroring
+  // the source. Use function-free string slicing to prevent $ pattern interpretation.
   // IMPORTANT: Target the LAST 'return content\n}' (in prefixTailwindClasses),
   // NOT the first one (in transformSemanticClassesInContent)
-  if (PATTERN_6_CODE) {
+  if (PATTERN_6_CODE || PATTERN_7_CODE) {
     // Use a unique anchor from the end of Pattern 5 to avoid matching the wrong function
     const anchor = `  )\n\n  return content\n}`
     const anchorIndex = code.lastIndexOf(anchor)
     if (anchorIndex !== -1) {
       const insertPos = anchorIndex + '  )\n\n'.length
+      const injected = [PATTERN_6_CODE, PATTERN_7_CODE]
+        .filter(Boolean)
+        .join('\n\n')
       code =
         code.slice(0, insertPos) +
-        PATTERN_6_CODE +
+        injected +
         '\n\n  return content\n}' +
         code.slice(anchorIndex + anchor.length)
     }
