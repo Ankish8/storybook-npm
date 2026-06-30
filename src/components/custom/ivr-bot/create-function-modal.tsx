@@ -9,6 +9,7 @@ import {
 import { Button } from "../../ui/button";
 import { FormModal } from "../../ui/form-modal";
 import { Textarea } from "../../ui/textarea";
+import { Switch } from "../../ui/switch";
 import {
   Tooltip,
   TooltipContent,
@@ -1387,6 +1388,7 @@ export const CreateFunctionModal = React.forwardRef(
       variableNameMaxLimit,
       descriptionMaxLimit,
       showAgentMessage = true,
+      showWaitForResponse = true,
     }: CreateFunctionModalProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
@@ -1396,6 +1398,7 @@ export const CreateFunctionModal = React.forwardRef(
     const { inputRef: functionNameInputRef, applyFunctionNameChange: applyFunctionNameChange } =
       usePreserveFunctionNameInputSelection(name);
     const [botMessage, setBotMessage] = React.useState(initialData?.botMessage ?? "");
+    const [waitForResponse, setWaitForResponse] = React.useState(initialData?.waitForResponse ?? true);
     const [botMessageInvalidCharsError, setBotMessageInvalidCharsError] =
       React.useState("");
     const [botMessageRequiredTouched, setBotMessageRequiredTouched] =
@@ -1656,6 +1659,7 @@ export const CreateFunctionModal = React.forwardRef(
         setBotMessage(
           clampToMaxLength(initialData?.botMessage ?? "", botMessageMaxLength)
         );
+        setWaitForResponse(initialData?.waitForResponse ?? true);
         setPrompt(
           clampToMaxNormalizedTextLength(
             initialData?.prompt ?? "",
@@ -1852,6 +1856,7 @@ export const CreateFunctionModal = React.forwardRef(
       const data: CreateFunctionData = {
         name: name.trim(),
         botMessage: showAgentMessage ? botMessage.trim() : "",
+        waitForResponse: showWaitForResponse ? waitForResponse : true,
         prompt: prompt.trim(),
         method,
         url: url.trim(),
@@ -2129,6 +2134,34 @@ export const CreateFunctionModal = React.forwardRef(
                     (prompt.length > 0 && promptCharCount < promptMinLength)
                   }
                 />
+
+                {showWaitForResponse ? (
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-semibold text-semantic-text-primary">
+                      Wait for Response
+                    </label>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="inline-flex shrink-0 cursor-pointer"
+                            aria-label="Wait for Response: more information"
+                          >
+                            <Info className="size-3.5 text-semantic-text-muted pointer-events-none" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Turn this off for actions that don't return information the conversation needs. Keep it on if the agent needs the function's result to decide what to say next.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Switch
+                      checked={waitForResponse}
+                      onCheckedChange={setWaitForResponse}
+                      disabled={disabled}
+                    />
+                  </div>
+                ) : null}
               </div>
             )}
 

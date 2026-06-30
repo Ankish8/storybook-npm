@@ -72,6 +72,8 @@ export interface CreateFunctionStep1Data {
   name: string;
   /** Optional caller-facing copy when the function runs (max length via `botMessageMaxLength` on the modal). */
   botMessage?: string;
+  /** Whether the bot should wait for the function's response before continuing. Defaults to true. */
+  waitForResponse?: boolean;
   prompt: string;
 }
 
@@ -203,6 +205,11 @@ export interface CreateFunctionModalProps {
    * (submitted `botMessage` is `""`). When omitted or `true`, the field is shown.
    */
   showAgentMessage?: boolean;
+  /**
+   * When `false`, the **Wait for Response** toggle is not rendered and the submitted value
+   * defaults to `true`. Follows the same voice-bot-only condition as `showAgentMessage`.
+   */
+  showWaitForResponse?: boolean;
 }
 
 export interface IvrBotConfigData {
