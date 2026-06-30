@@ -203,7 +203,7 @@ const IntegrationHeader = React.forwardRef<
             </h2>
           )}
           {description !== undefined && description !== null && (
-            <p className="m-0 min-w-0 text-sm font-normal text-semantic-text-muted" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <p className="m-0 min-w-0 break-words line-clamp-2 text-sm font-normal text-semantic-text-muted">
               {description}
             </p>
           )}

@@ -14,7 +14,7 @@ const meta: Meta<typeof CreateFunctionModal> = {
     layout: "centered",
     docs: {
       description: {
-        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name, optional **Agent Message**, and **Prompt** (required, min length via \`promptMinLength\`). Use \`showAgentMessage={false}\` to hide **Agent Message** when your API does not support it (Step 1 validation and submitted \`botMessage\` adjust accordingly). Step 2 configures the API endpoint with headers, query parameters, and an optional request body. The body editor appears only for **POST**, **PUT**, and **PATCH**; **GET** and **DELETE** do not show a body tab.
+        component: `A 2-step wizard modal for creating or editing a bot function. Step 1 collects the function name, optional **Agent Message**, an optional **Wait for Response** toggle, and **Prompt** (required, min length via \`promptMinLength\`). Use \`showAgentMessage={false}\` to hide **Agent Message** when your API does not support it (Step 1 validation and submitted \`botMessage\` adjust accordingly). Use \`showWaitForResponse={false}\` to hide the **Wait for Response** toggle (submitted \`waitForResponse\` then defaults to \`true\`). Step 2 configures the API endpoint with headers, query parameters, and an optional request body. The body editor appears only for **POST**, **PUT**, and **PATCH**; **GET** and **DELETE** do not show a body tab.
 
 **Install**
 \`\`\`bash
@@ -180,7 +180,7 @@ export const Step1NameAndPrompt: Story = {
     docs: {
       description: {
         story:
-          "The first step collects the **function name** (default max 30 chars, override with `nameMaxLength`) and a **prompt** description (default max 2000 chars, override with `promptMaxLength`). The **Next** button stays disabled until the name is valid and the prompt meets `promptMinLength` (default 100).",
+          "The first step collects the **function name** (default max 30 chars, override with `nameMaxLength`) and a **prompt** description (default max 2000 chars, override with `promptMaxLength`). A **Wait for Response** toggle (shown by default; hide with `showWaitForResponse={false}`) controls whether the bot waits for the function's result before continuing. The **Next** button stays disabled until the name is valid and the prompt meets `promptMinLength` (default 100).",
       },
     },
   },
