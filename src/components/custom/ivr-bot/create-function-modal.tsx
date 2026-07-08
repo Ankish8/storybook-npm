@@ -1395,7 +1395,7 @@ export const CreateFunctionModal = React.forwardRef(
     const [step, setStep] = React.useState<1 | 2>(initialStep);
 
     const [name, setName] = React.useState(initialData?.name ?? "");
-    const { inputRef: functionNameInputRef, applyFunctionNameChange: applyFunctionNameChange } =
+    const { inputRef: functionNameInputRef, applyFunctionNameChange } =
       usePreserveFunctionNameInputSelection(name);
     const [botMessage, setBotMessage] = React.useState(initialData?.botMessage ?? "");
     const [waitForResponse, setWaitForResponse] = React.useState(initialData?.waitForResponse ?? true);
@@ -1785,8 +1785,13 @@ export const CreateFunctionModal = React.forwardRef(
       botMessagePlaceholder ??
       "e.g. Please wait while I get the data for you";
 
+    // Agent Message is what the agent says while waiting on the function's
+    // result, so it's meaningless (and disabled) once the agent won't wait.
+    const agentMessageActive = !showWaitForResponse || waitForResponse;
+
     const botMessageRequiredEmptyError =
       showAgentMessage &&
+      agentMessageActive &&
       !botMessageOptional &&
       botMessageRequiredTouched &&
       botMessage.trim().length === 0
@@ -1801,6 +1806,7 @@ export const CreateFunctionModal = React.forwardRef(
       promptCharCount >= promptMinLength &&
       promptCharCount <= promptMaxLength &&
       (!showAgentMessage ||
+        !agentMessageActive ||
         ((botMessageOptional || botMessage.trim().length > 0) &&
           botMessage.length <= botMessageMaxLength &&
           !hasInvalidPromptFieldChars(botMessage)));
@@ -2067,7 +2073,7 @@ export const CreateFunctionModal = React.forwardRef(
                       maxLength={botMessageMaxLength}
                       displayCharCount={botMessage.length}
                       showCount
-                      disabled={disabled}
+                      disabled={disabled || !agentMessageActive}
                       onChange={(e) => {
                         const v = clampToMaxLength(
                           e.target.value,
