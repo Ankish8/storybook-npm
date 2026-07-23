@@ -73,6 +73,19 @@ const TRAILING_URL_PUNCTUATION = /[.,!?;:)\]}]+$/;
 const RECEIVER_TEXT_ONLY_MIN_WIDTH = "7rem";
 const SENDER_TEXT_ONLY_STATUS_MIN_WIDTH = "13rem";
 const SENDER_TEXT_ONLY_FAILED_MIN_WIDTH = "14rem";
+// A reply preview truncates its content (`truncate`/`line-clamp-1`), so it
+// reports a min-content width of 0 and never forces the bubble to grow. Without
+// this floor, a short-body bubble collapses to the footer-sized min-width and
+// clips short media-type labels (e.g. "Image" → "Ima…"). 12rem comfortably fits
+// the sender line plus an icon + the longest media label ("Document").
+const REPLY_PREVIEW_MIN_WIDTH = "12rem";
+
+/** Returns the larger of two `<n>rem` widths (falls back to whichever is defined). */
+function maxRemWidth(a?: string, b?: string): string | undefined {
+  if (!a) return b;
+  if (!b) return a;
+  return parseFloat(a) >= parseFloat(b) ? a : b;
+}
 
 type ChatBubbleRenderableMessage = ChatMessage & {
   textContent?: React.ReactNode;
@@ -850,15 +863,22 @@ const ChatBubbleMessageMode = React.forwardRef<
   // the reply-button absolute anchor matches the rendered bubble width).
   const isMessageTextOnly =
     isMessageReceiverTextOnly || isMessageSenderTextOnly;
-  const messageTextOnlyMinWidth: string | undefined = isMessageReceiverTextOnly
-    ? RECEIVER_TEXT_ONLY_MIN_WIDTH
-    : isMessageSenderTextOnly
-      ? msg.status === "failed"
-        ? SENDER_TEXT_ONLY_FAILED_MIN_WIDTH
-        : msg.status
-          ? SENDER_TEXT_ONLY_STATUS_MIN_WIDTH
-          : RECEIVER_TEXT_ONLY_MIN_WIDTH
-      : undefined;
+  const messageTextOnlyBaseMinWidth: string | undefined =
+    isMessageReceiverTextOnly
+      ? RECEIVER_TEXT_ONLY_MIN_WIDTH
+      : isMessageSenderTextOnly
+        ? msg.status === "failed"
+          ? SENDER_TEXT_ONLY_FAILED_MIN_WIDTH
+          : msg.status
+            ? SENDER_TEXT_ONLY_STATUS_MIN_WIDTH
+            : RECEIVER_TEXT_ONLY_MIN_WIDTH
+        : undefined;
+  // A reply preview can't push the bubble wider on its own (it truncates), so
+  // ensure text-only reply bubbles are at least wide enough to show the preview.
+  const messageTextOnlyMinWidth: string | undefined =
+    isMessageTextOnly && msg.replyTo
+      ? maxRemWidth(messageTextOnlyBaseMinWidth, REPLY_PREVIEW_MIN_WIDTH)
+      : messageTextOnlyBaseMinWidth;
 
   const shouldShowReplyIcon =
     !!onReplyTo && (showReplyOn === "both" || showReplyOn === msg.sender);
@@ -1395,15 +1415,22 @@ const ChatBubblePrimitive = React.forwardRef<HTMLDivElement, ChatBubbleProps>(
     const isManualTextOnly = isManualReceiverTextOnly || isManualSenderTextOnly;
     const hasManualFailedFeedback =
       variant === "sender" && status === "failed" && !!failedMessage?.text;
-    const manualTextOnlyMinWidth: string | undefined = isManualReceiverTextOnly
-      ? RECEIVER_TEXT_ONLY_MIN_WIDTH
-      : isManualSenderTextOnly
-        ? status === "failed"
-          ? SENDER_TEXT_ONLY_FAILED_MIN_WIDTH
-          : status
-            ? SENDER_TEXT_ONLY_STATUS_MIN_WIDTH
-            : RECEIVER_TEXT_ONLY_MIN_WIDTH
-        : undefined;
+    const manualTextOnlyBaseMinWidth: string | undefined =
+      isManualReceiverTextOnly
+        ? RECEIVER_TEXT_ONLY_MIN_WIDTH
+        : isManualSenderTextOnly
+          ? status === "failed"
+            ? SENDER_TEXT_ONLY_FAILED_MIN_WIDTH
+            : status
+              ? SENDER_TEXT_ONLY_STATUS_MIN_WIDTH
+              : RECEIVER_TEXT_ONLY_MIN_WIDTH
+          : undefined;
+    // A reply preview truncates and can't widen the bubble itself; give text-only
+    // reply bubbles a floor wide enough to show the preview's media-type label.
+    const manualTextOnlyMinWidth: string | undefined =
+      isManualTextOnly && reply
+        ? maxRemWidth(manualTextOnlyBaseMinWidth, REPLY_PREVIEW_MIN_WIDTH)
+        : manualTextOnlyBaseMinWidth;
 
     // For manual mode: variant "sender" maps to agent semantics, "receiver" to customer.
     const manualSenderRole: "agent" | "customer" =

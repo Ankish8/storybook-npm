@@ -47,6 +47,18 @@ import { Badge } from "@/components/ui/badge"
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #17B26A; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Information Background</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-info-surface</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">ECF1FB</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #ECF1FB; border-radius: 6px; border: 1px solid #B9CDF0;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
+      <td style="padding: 12px 16px;">Information Text</td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-info-text</code></td>
+      <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">2F5398</td>
+      <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #2F5398; border-radius: 6px; border: 1px solid #E9EAEB;"></div></td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;">
       <td style="padding: 12px 16px;">Warning Background</td>
       <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">--semantic-warning-surface</code></td>
       <td style="padding: 12px 16px; font-family: monospace; font-size: 13px !important;">FFFAEB</td>
@@ -133,6 +145,7 @@ import { Badge } from "@/components/ui/badge"
       control: "select",
       options: [
         "active",
+        "information",
         "warning",
         "failed",
         "disabled",
@@ -182,6 +195,13 @@ export const Active: Story = {
   },
 };
 
+export const Information: Story = {
+  args: {
+    children: "Coming Soon",
+    variant: "information",
+  },
+};
+
 export const Warning: Story = {
   args: {
     children: "Vanity",
@@ -215,6 +235,7 @@ export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap items-center gap-4">
       <Badge variant="active">Active</Badge>
+      <Badge variant="information">Coming Soon</Badge>
       <Badge variant="warning" leftIcon={<Sparkles />}>
         Vanity
       </Badge>

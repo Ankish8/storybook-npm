@@ -525,6 +525,50 @@ export const SearchableWithGroups: Story = {
   ),
 };
 
+// Searchable with groups + separator — grouped options divided by a top
+// border, uppercase group labels (Figma "routing" dropdown style). The list is
+// long enough to demonstrate that the dropdown caps its height (max-h-96 ≈
+// 384px) and scrolls while the separators/labels stay in place.
+const routingOptions: SelectOption[] = [
+  { value: "all", label: "All Routing" },
+  ...Array.from({ length: 12 }, (_, i) => ({
+    value: `callflow-${i + 1}`,
+    label: `Callflow ${i + 1}`,
+    group: "Callflow",
+  })),
+  ...Array.from({ length: 12 }, (_, i) => ({
+    value: `agent-${i + 1}`,
+    label: `AI Agent ${i + 1}`,
+    group: "AI Agents",
+  })),
+];
+
+export const SearchableWithGroupsSeparator: Story = {
+  name: "Searchable with groups With Separator",
+  render: () => (
+    // Responsive width — fills the parent up to a max, instead of a fixed 320px.
+    <div className="w-80">
+      <SelectField
+        label="Routing"
+        placeholder="Select Routing"
+        options={routingOptions}
+        searchable
+        searchPlaceholder="Search..."
+        separateGroups
+        helperText="Groups are divided by a separator"
+      />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Same searchable, grouped behaviour as **Searchable with groups**, but with `separateGroups` enabled — each group is divided by a top border and its label is shown in uppercase with letter-spacing, matching the Figma routing dropdown. When the option list is long, the dropdown caps its height (`max-h-96` ≈ 384px) and scrolls, preserving the dividers and uppercase group labels.",
+      },
+    },
+  },
+};
+
 // Controlled Example
 const ControlledExample = () => {
   const [value, setValue] = useState("");
@@ -886,7 +930,9 @@ const ServerSideSearchExample = () => {
     () => filterTemplates("").length > PAGE
   );
   const pageRef = useRef(1);
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);

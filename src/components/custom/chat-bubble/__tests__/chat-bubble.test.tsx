@@ -428,6 +428,40 @@ describe("ChatBubble", () => {
       );
     });
 
+    it("reply bubble with a short body gets a min-width floor wide enough for the reply preview (manual mode)", () => {
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="12:13 pm"
+          reply={{ sender: "You", message: "Image" }}
+        >
+          jh
+        </ChatBubble>
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      // Without a reply this bubble would collapse to 7rem (no status); the reply
+      // preview floor bumps it to 12rem so the media label isn't clipped.
+      expect((column as HTMLElement).style.minWidth).toBe("min(12rem, 100%)");
+      const wrapper = getBubbleWrapper(container);
+      expect((wrapper as HTMLElement).style.minWidth).toBe("min(12rem, 100%)");
+    });
+
+    it("reply bubble keeps a wider status-based floor when it exceeds the reply floor (manual mode)", () => {
+      const { container } = render(
+        <ChatBubble
+          variant="sender"
+          timestamp="12:13 pm"
+          status="failed"
+          reply={{ sender: "You", message: "Image" }}
+        >
+          jh
+        </ChatBubble>
+      );
+      const column = container.querySelector("div.flex.flex-col");
+      // 14rem (failed footer) > 12rem (reply floor) — the larger one wins.
+      expect((column as HTMLElement).style.minWidth).toBe("min(14rem, 100%)");
+    });
+
     it("textMaxWidthClassName defaults to max-w-[65%] on the wrapper (manual mode)", () => {
       const { container } = render(
         <ChatBubble variant="sender" timestamp="2:15 PM">

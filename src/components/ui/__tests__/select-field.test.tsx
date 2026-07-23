@@ -145,6 +145,42 @@ describe("SelectField", () => {
     expect(screen.getByText("Group B")).toBeInTheDocument();
   });
 
+  it("keeps the selected value on the trigger while searching filters it out", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        options={defaultOptions}
+        defaultValue="option1"
+        searchable
+      />
+    );
+
+    // Trigger shows the selected label before searching.
+    expect(screen.getByRole("combobox")).toHaveTextContent("Option 1");
+
+    await user.click(screen.getByRole("combobox"));
+    const searchInput = screen.getByPlaceholderText("Search...");
+    // Query that excludes the selected "Option 1".
+    await user.type(searchInput, "Option 2");
+
+    // The selected option must stay mounted (hidden) rather than being removed
+    // from the tree — this is what keeps Radix's trigger value and the search
+    // input's focus intact.
+    const selectedItem = screen.getByRole("option", { name: "Option 1" });
+    expect(selectedItem).toHaveClass("hidden");
+    // Search input keeps focus so the cursor stays visible.
+    expect(searchInput).toHaveFocus();
+  });
+
+  it("adds separator styling to group labels when separateGroups is set", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={groupedOptions} separateGroups />);
+
+    await user.click(screen.getByRole("combobox"));
+    const groupLabel = screen.getByText("Group A");
+    expect(groupLabel).toHaveClass("border-t", "uppercase");
+  });
+
   // Selection
   it("selects option on click", async () => {
     const user = userEvent.setup();
