@@ -140,6 +140,49 @@ describe("SearchFilter", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("skips internal filtering while query is shorter than minSearchLength", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <SearchFilter
+        options={[...options, { value: "sales", label: "Sales Team" }]}
+        searchMode="text"
+        minSearchLength={3}
+      />
+    );
+
+    await user.type(screen.getByPlaceholderText("Search..."), "sa");
+
+    // Below the threshold: non-matching options remain visible, no filtering.
+    expect(
+      screen.getByRole("option", { name: "Sales Team" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "+91 11 4000 3001" })
+    ).toBeInTheDocument();
+  });
+
+  it("filters once the query reaches minSearchLength", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <SearchFilter
+        options={[...options, { value: "sales", label: "Sales Team" }]}
+        searchMode="text"
+        minSearchLength={3}
+      />
+    );
+
+    await user.type(screen.getByPlaceholderText("Search..."), "sal");
+
+    expect(
+      screen.getByRole("option", { name: "Sales Team" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "+91 11 4000 3001" })
+    ).not.toBeInTheDocument();
+  });
+
   it("defaults to numeric search with digits only", async () => {
     const user = userEvent.setup();
     const onSearchChange = vi.fn();

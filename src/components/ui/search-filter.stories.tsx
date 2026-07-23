@@ -86,6 +86,11 @@ import { SearchFilter } from "@/components/ui/search-filter"
       options: ["text", "numeric"],
       description: "Search input behavior. Defaults to numeric.",
     },
+    minSearchLength: {
+      control: "number",
+      description:
+        "Minimum query length before internal option filtering runs. Below it, all options are shown.",
+    },
     value: {
       control: "text",
       description: "Controlled selected option value",
@@ -140,5 +145,14 @@ export const TextSearch: Story = {
     options: [...phoneOptions, { value: "sales", label: "Sales Team" }],
     searchMode: "text",
     searchPlaceholder: "Search text...",
+  },
+};
+
+export const MinSearchLength: Story = {
+  args: {
+    options: [...phoneOptions, { value: "sales", label: "Sales Team" }],
+    searchMode: "text",
+    minSearchLength: 2,
+    searchPlaceholder: "Type at least 2 characters...",
   },
 };

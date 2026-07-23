@@ -120,6 +120,8 @@ export interface SearchFilterProps
   searchPlaceholder?: string;
   /** Search input behavior. Defaults to "numeric" for phone-number filtering. */
   searchMode?: SearchFilterSearchMode;
+  /** Minimum query length before internal option filtering runs. Below it, all options are shown. Defaults to 0. */
+  minSearchLength?: number;
   /** Message shown when filtering returns no options */
   emptyMessage?: string;
   /** Disables the whole filter */
@@ -147,6 +149,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
       onSearchChange,
       searchPlaceholder = "Search...",
       searchMode = "numeric",
+      minSearchLength = 0,
       emptyMessage = "No options found",
       disabled = false,
       searchDisabled = false,
@@ -283,6 +286,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
     }, [isOpen, refs.floating, setOpen]);
 
     const filteredOptions = React.useMemo(() => {
+      if (normalizedSearchQuery.length < minSearchLength) return options;
       if (!normalizedSearchQuery) return options;
 
       return options.filter((option) =>
@@ -290,7 +294,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
           normalizedSearchQuery
         )
       );
-    }, [normalizedSearchQuery, options, searchMode]);
+    }, [normalizedSearchQuery, options, searchMode, minSearchLength]);
 
     const selectOption = React.useCallback(
       (option: SearchFilterOption) => {
