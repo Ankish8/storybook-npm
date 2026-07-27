@@ -33,12 +33,74 @@ describe("BotCard", () => {
     expect(screen.getByText("342 Conversations")).toBeInTheDocument();
   });
 
-  it("does not render conversation line for voicebot but keeps spacing row", () => {
+  it("renders the numbers mapped row instead of conversations for voicebot", () => {
     const { container } = render(<BotCard bot={voicebot} />);
     expect(screen.queryByText(/Conversations/)).not.toBeInTheDocument();
+    expect(screen.getByText("Numbers mapped:")).toBeInTheDocument();
     const root = container.firstElementChild as HTMLElement;
-    const spacer = root.children[2] as HTMLElement;
-    expect(spacer).toHaveClass("h-4", "sm:h-5", "mb-3", "sm:mb-4", "shrink-0");
+    const row = root.children[2] as HTMLElement;
+    expect(row).toHaveClass("mb-3", "sm:mb-4", "shrink-0");
+  });
+
+  it('renders "-" when voicebot has no numbers attached', () => {
+    render(<BotCard bot={{ ...voicebot, numbersAttached: 0 }} />);
+    expect(screen.getByText("Numbers mapped:")).toBeInTheDocument();
+    expect(screen.getByText("-")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /mapped number/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders a clickable numbers pill and calls onNumbersClick with id and count", async () => {
+    const user = userEvent.setup();
+    const onNumbersClick = vi.fn();
+    const onEdit = vi.fn();
+    render(
+      <BotCard
+        bot={{ ...voicebot, numbersAttached: 32 }}
+        onEdit={onEdit}
+        onNumbersClick={onNumbersClick}
+      />
+    );
+    const pill = screen.getByRole("button", {
+      name: "View 32 mapped numbers",
+    });
+    expect(pill).toHaveTextContent("32 numbers");
+    await user.click(pill);
+    expect(onNumbersClick).toHaveBeenCalledWith("bot-2", 32);
+    // pill click must not bubble into the card's edit handler
+    expect(onEdit).not.toHaveBeenCalled();
+  });
+
+  it("uses singular label for a single mapped number", () => {
+    render(
+      <BotCard bot={{ ...voicebot, numbersAttached: 1 }} onNumbersClick={vi.fn()} />
+    );
+    expect(
+      screen.getByRole("button", { name: "View 1 mapped number" })
+    ).toHaveTextContent("1 number");
+  });
+
+  it("renders the numbers pill non-interactive when onNumbersClick is omitted", () => {
+    render(<BotCard bot={{ ...voicebot, numbersAttached: 32 }} />);
+    expect(screen.getByText("32 numbers")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /mapped number/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the numbers pill non-interactive when the card is disabled", () => {
+    render(
+      <BotCard
+        bot={{ ...voicebot, numbersAttached: 32 }}
+        botCardDisabled
+        onNumbersClick={vi.fn()}
+      />
+    );
+    expect(screen.getByText("32 numbers")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /mapped number/i })
+    ).not.toBeInTheDocument();
   });
 
   it("renders last published info", () => {

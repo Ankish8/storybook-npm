@@ -9,6 +9,7 @@ const sampleBots = [
     name: "Lead validation bot",
     type: "voicebot" as const,
     conversationCount: 342,
+    numbersAttached: 32,
     lastPublishedBy: "Nandan Raikwar",
     lastPublishedDate: "15 Jan, 2025",
   },
@@ -68,6 +69,49 @@ export const VoicebotCard: Story = {
       <BotCard {...args} />
     </div>
   ),
+};
+
+export const VoicebotWithNumbersMapped: Story = {
+  args: {
+    bot: sampleBots[0],
+    onEdit: fn(),
+    onDelete: fn(),
+    onNumbersClick: fn(),
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Voicebots show a "Numbers mapped" row. When `bot.numbersAttached > 0` and `onNumbersClick` is provided, the pill is clickable — use it to redirect to the numbers page.',
+      },
+    },
+  },
+};
+
+export const VoicebotWithNoNumbersMapped: Story = {
+  args: {
+    bot: { ...sampleBots[0], numbersAttached: 0 },
+    onEdit: fn(),
+    onDelete: fn(),
+    onNumbersClick: fn(),
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story: 'With zero mapped numbers the row renders "-" and is not clickable.',
+      },
+    },
+  },
 };
 
 export const ChatbotCard: Story = {

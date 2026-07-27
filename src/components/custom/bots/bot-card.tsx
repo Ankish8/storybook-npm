@@ -6,6 +6,7 @@ import {
   Pencil,
   Trash2,
   ShieldCheck,
+  ArrowUpRight,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
@@ -61,6 +62,7 @@ export const BotCard = React.forwardRef(
       disabledTooltip,
       onEdit,
       onDelete,
+      onNumbersClick,
       className,
       ...props
     }: BotCardProps,
@@ -69,6 +71,8 @@ export const BotCard = React.forwardRef(
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
     const isDisabled = Boolean(botCardDisabled);
+    const numbersAttached = bot.numbersAttached ?? 0;
+    const hasNumbers = numbersAttached > 0;
     const showDisabledTooltip =
       isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";
 
@@ -193,7 +197,41 @@ export const BotCard = React.forwardRef(
             Conversations
           </p>
         ) : (
-          <div className="h-4 sm:h-5 mb-3 sm:mb-4 shrink-0" aria-hidden />
+          <div className="flex items-center gap-2 min-h-[24px] mb-3 sm:mb-4 min-w-0 shrink-0">
+            <span className="text-xs sm:text-sm text-semantic-text-muted shrink-0">
+              Numbers mapped:
+            </span>
+            {!hasNumbers ? (
+              <span className="text-xs sm:text-sm text-semantic-text-muted">
+                -
+              </span>
+            ) : onNumbersClick && !isDisabled ? (
+              <button
+                type="button"
+                data-bot-card-action
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNumbersClick(bot.id, numbersAttached);
+                }}
+                aria-label={`View ${numbersAttached} mapped ${numbersAttached === 1 ? "number" : "numbers"}`}
+                className="inline-flex items-center gap-0.5 rounded bg-semantic-bg-ui px-2 py-1 text-xs font-semibold text-semantic-text-link hover:bg-semantic-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-border-focus cursor-pointer shrink-0"
+              >
+                <span>
+                  {numbersAttached}{" "}
+                  {numbersAttached === 1 ? "number" : "numbers"}
+                </span>
+                <ArrowUpRight className="size-[16px] shrink-0" aria-hidden />
+              </button>
+            ) : (
+              <span className="inline-flex items-center gap-0.5 rounded bg-semantic-bg-ui px-2 py-1 text-xs font-semibold text-semantic-text-link shrink-0">
+                <span>
+                  {numbersAttached}{" "}
+                  {numbersAttached === 1 ? "number" : "numbers"}
+                </span>
+                <ArrowUpRight className="size-[16px] shrink-0" aria-hidden />
+              </span>
+            )}
+          </div>
         )}
 
         {/* Divider */}
