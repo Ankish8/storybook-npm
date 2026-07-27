@@ -104,6 +104,7 @@ describe("Registry", () => {
         "lucide-react",
         "react-markdown",
         "remark-gfm",
+        "react-country-flag",
         "tailwindcss-animate", // Required for animation classes (animate-in, animate-out, etc.)
       ];
 
