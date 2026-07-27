@@ -201,7 +201,7 @@ import { Mail } from "lucide-react"
 ---
 
 ### PhoneInput
-> A phone number input with country code prefix, flag emoji, and optional country selector
+> A phone number input with country code prefix, SVG country flag, and optional country selector
 
 **Install**: `npx myoperator-ui add phone-input`
 
