@@ -10,7 +10,7 @@ const meta: Meta<typeof PhoneInput> = {
     docs: {
       description: {
         component: `
-A phone number input with a country code prefix area (flag emoji + dial code + optional chevron). The prefix and input are visually unified in a single bordered container with a subtle vertical divider.
+A phone number input with a country code prefix area (SVG country flag + dial code + optional chevron). The prefix and input are visually unified in a single bordered container with a subtle vertical divider.
 
 \`\`\`bash
 npx myoperator-ui add phone-input
@@ -26,7 +26,7 @@ import { PhoneInput } from "@/components/ui/phone-input"
 
 \`\`\`tsx
 <PhoneInput placeholder="Enter phone number" />
-<PhoneInput countryFlag="🇺🇸" countryCode="+1" />
+<PhoneInput countryIso="US" countryCode="+1" />
 <PhoneInput phoneMaxNumber={10} />
 <PhoneInput state="empty" placeholder="Phone number is required" />
 <PhoneInput validation="Enter a valid phone number" />
@@ -118,7 +118,7 @@ type Story = StoryObj<typeof PhoneInput>;
 
 export const Overview: Story = {
   args: {
-    countryFlag: "🇮🇳",
+    countryIso: "IN",
     countryCode: "+91",
     placeholder: "Enter phone number",
     showChevron: true,
@@ -127,7 +127,7 @@ export const Overview: Story = {
 
 export const WithCountrySelector: Story = {
   args: {
-    countryFlag: "🇮🇳",
+    countryIso: "IN",
     countryCode: "+91",
     placeholder: "Enter phone number",
     onCountryClick: fn(),
@@ -159,7 +159,7 @@ export const Disabled: Story = {
 
 export const USNumber: Story = {
   args: {
-    countryFlag: "🇺🇸",
+    countryIso: "US",
     countryCode: "+1",
     placeholder: "Enter phone number",
   },
@@ -167,6 +167,22 @@ export const USNumber: Story = {
     docs: {
       description: {
         story: "Phone input configured for US country code.",
+      },
+    },
+  },
+};
+
+export const CustomFlagNode: Story = {
+  args: {
+    countryFlag: <span className="text-base">🇮🇳</span>,
+    countryCode: "+91",
+    placeholder: "Enter phone number",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`countryFlag` overrides the SVG flag with any custom node — an emoji, an image, or a custom icon.",
       },
     },
   },

@@ -168,13 +168,14 @@ components:
       - "tailwind-merge@^2.6.0"
 
   phone-input:
-    description: "A phone number input with country code prefix, flag emoji, and optional country selector"
+    description: "A phone number input with country code prefix, SVG country flag, and optional country selector"
     category: core
     dependencies:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+      - "react-country-flag@^3.1.0"
 
   reply-quote:
     description: "A quoted message block with blue left border showing sender name and quoted text for reply previews"

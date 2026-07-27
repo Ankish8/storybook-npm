@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 
 import { cn } from "@/lib/utils";
 
@@ -29,7 +30,7 @@ const phoneInputContainerVariants = cva(
  * @example
  * ```tsx
  * <PhoneInput placeholder="Enter phone number" />
- * <PhoneInput countryFlag="🇺🇸" countryCode="+1" />
+ * <PhoneInput countryIso="US" countryCode="+1" />
  * <PhoneInput phoneMaxNumber={10} />
  * <PhoneInput state="empty" />
  * <PhoneInput validation="Enter a valid phone number" />
@@ -43,8 +44,10 @@ export interface PhoneInputProps
   state?: "default" | "empty" | "error";
   /** Validation message displayed below the input. Also applies error styling. */
   validation?: string;
-  /** Country flag emoji (e.g., "🇮🇳", "🇺🇸"). Defaults to "🇮🇳" */
-  countryFlag?: string;
+  /** ISO 3166-1 alpha-2 country code used to render the SVG flag (e.g., "IN", "US"). Defaults to "IN" */
+  countryIso?: string;
+  /** Custom flag node rendered instead of the SVG flag (e.g., an emoji or custom icon) */
+  countryFlag?: React.ReactNode;
   /** Country dial code (e.g., "+91", "+1"). Defaults to "+91" */
   countryCode?: string;
   /** Whether to show the chevron dropdown indicator. Defaults to true */
@@ -63,7 +66,8 @@ const PhoneInput = React.forwardRef(
       className,
       state,
       validation,
-      countryFlag = "🇮🇳",
+      countryIso = "IN",
+      countryFlag,
       countryCode = "+91",
       showChevron = true,
       onCountryClick,
@@ -153,7 +157,15 @@ const PhoneInput = React.forwardRef(
           onClick={onCountryClick}
           data-testid="phone-input-country"
         >
-          <span className="text-base">{countryFlag}</span>
+          {countryFlag ?? (
+            <ReactCountryFlag
+              svg
+              countryCode={countryIso}
+              className="!w-5 !h-[15px] object-cover shrink-0"
+              title={countryIso}
+              aria-label={countryIso}
+            />
+          )}
           <span className="text-base text-semantic-text-secondary">
             {countryCode}
           </span>

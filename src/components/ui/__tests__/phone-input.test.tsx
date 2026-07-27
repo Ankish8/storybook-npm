@@ -4,16 +4,25 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { PhoneInput } from "../phone-input";
 
 describe("PhoneInput", () => {
-  it("renders with default country flag and code", () => {
+  it("renders the default IN svg flag and code", () => {
     render(<PhoneInput />);
-    expect(screen.getByText("🇮🇳")).toBeInTheDocument();
+    const flag = screen.getByLabelText("IN");
+    expect(flag).toBeInTheDocument();
+    expect(flag).toHaveAttribute("src", expect.stringContaining("in.svg"));
     expect(screen.getByText("+91")).toBeInTheDocument();
   });
 
-  it("renders custom countryFlag and countryCode", () => {
-    render(<PhoneInput countryFlag="🇺🇸" countryCode="+1" />);
-    expect(screen.getByText("🇺🇸")).toBeInTheDocument();
+  it("renders the svg flag for a custom countryIso and countryCode", () => {
+    render(<PhoneInput countryIso="US" countryCode="+1" />);
+    const flag = screen.getByLabelText("US");
+    expect(flag).toHaveAttribute("src", expect.stringContaining("us.svg"));
     expect(screen.getByText("+1")).toBeInTheDocument();
+  });
+
+  it("renders a custom countryFlag node instead of the svg flag", () => {
+    render(<PhoneInput countryFlag={<span>🇺🇸</span>} countryCode="+1" />);
+    expect(screen.getByText("🇺🇸")).toBeInTheDocument();
+    expect(screen.queryByLabelText("IN")).not.toBeInTheDocument();
   });
 
   it("forwards ref to the input element", () => {
