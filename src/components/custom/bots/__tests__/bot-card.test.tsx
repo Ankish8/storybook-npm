@@ -42,6 +42,28 @@ describe("BotCard", () => {
     expect(row).toHaveClass("mb-3", "sm:mb-4", "shrink-0");
   });
 
+  it("removes the numbers mapped section when showNumbersMapped is false", () => {
+    render(
+      <BotCard
+        bot={voicebot}
+        showNumbersMapped={false}
+        onNumbersClick={vi.fn()}
+      />
+    );
+    expect(screen.queryByText("Numbers mapped:")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /mapped number/i })
+    ).not.toBeInTheDocument();
+    // rest of the card is unaffected
+    expect(screen.getByText("Voice support bot")).toBeInTheDocument();
+    expect(screen.getByText("Last Published")).toBeInTheDocument();
+  });
+
+  it("renders the numbers mapped section by default (showNumbersMapped defaults to true)", () => {
+    render(<BotCard bot={voicebot} />);
+    expect(screen.getByText("Numbers mapped:")).toBeInTheDocument();
+  });
+
   it('renders "-" when voicebot has no numbers attached', () => {
     render(<BotCard bot={{ ...voicebot, numbersAttached: 0 }} />);
     expect(screen.getByText("Numbers mapped:")).toBeInTheDocument();
@@ -74,7 +96,10 @@ describe("BotCard", () => {
 
   it("uses singular label for a single mapped number", () => {
     render(
-      <BotCard bot={{ ...voicebot, numbersAttached: 1 }} onNumbersClick={vi.fn()} />
+      <BotCard
+        bot={{ ...voicebot, numbersAttached: 1 }}
+        onNumbersClick={vi.fn()}
+      />
     );
     expect(
       screen.getByRole("button", { name: "View 1 mapped number" })

@@ -60,6 +60,7 @@ export const BotCard = React.forwardRef(
       PartnerPortal = false,
       botCardDisabled = false,
       disabledTooltip,
+      showNumbersMapped = true,
       onEdit,
       onDelete,
       onNumbersClick,
@@ -196,7 +197,7 @@ export const BotCard = React.forwardRef(
             {new Intl.NumberFormat("en-US").format(bot.conversationCount)}{" "}
             Conversations
           </p>
-        ) : (
+        ) : showNumbersMapped ? (
           <div className="flex items-center gap-2 min-h-[24px] mb-3 sm:mb-4 min-w-0 shrink-0">
             <span className="text-xs sm:text-sm text-semantic-text-muted shrink-0">
               Numbers mapped:
@@ -232,7 +233,7 @@ export const BotCard = React.forwardRef(
               </span>
             )}
           </div>
-        )}
+        ) : null}
 
         {/* Divider */}
         <div className="border-t border-solid border-semantic-border-layout mb-2 sm:mb-3 mt-auto" />

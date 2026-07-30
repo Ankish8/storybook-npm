@@ -48,6 +48,8 @@ export interface BotCardProps extends Omit<
   botCardDisabled?: boolean;
   /** Shown on hover/focus only when botCardDisabled is true. Tooltip is not rendered when omitted or empty. */
   disabledTooltip?: string;
+  /** Voicebot only: when false, the "Numbers mapped" section is removed from the card. Defaults to true. */
+  showNumbersMapped?: boolean;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
   /** Called when Delete action is selected */

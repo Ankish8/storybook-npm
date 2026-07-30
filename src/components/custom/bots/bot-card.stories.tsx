@@ -114,6 +114,29 @@ export const VoicebotWithNoNumbersMapped: Story = {
   },
 };
 
+export const VoicebotWithoutNumbersMappedSection: Story = {
+  args: {
+    bot: sampleBots[0],
+    showNumbersMapped: false,
+    onEdit: fn(),
+    onDelete: fn(),
+    onNumbersClick: fn(),
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Set `showNumbersMapped={false}` to remove the "Numbers mapped" section entirely. The footer stays pinned to the bottom of the card.',
+      },
+    },
+  },
+};
+
 export const ChatbotCard: Story = {
   args: {
     bot: sampleBots[1],

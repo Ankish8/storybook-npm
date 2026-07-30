@@ -15,6 +15,11 @@ export const argTypes = {
       'Bot data object. Optional `status: "draft" | "published"` — when "draft", shows "Unpublished changes" with red indicator in Last Published section. Voicebots also support `numbersAttached: number` — renders the "Numbers mapped" pill (or "-" when 0).',
   },
   typeLabels: { control: false, description: "Override type badge labels (e.g. Voicebot, Chatbot)" },
+  showNumbersMapped: {
+    control: "boolean",
+    description:
+      'Voicebot only: when false, the "Numbers mapped" section is removed from the card. Defaults to true.',
+  },
   onEdit: { action: "onEdit", description: "Called with bot id when Edit is selected (card click or menu)" },
   onDelete: { action: "onDelete", description: "Called with bot id when Delete is selected from menu" },
   onNumbersClick: {
@@ -30,6 +35,7 @@ export const propsTable = `
 |------|------|----------|---------|-------------|
 | bot | Bot | Yes | — | Bot data |
 | typeLabels | Partial<Record<BotType, string>> | No | — | Override type badge labels |
+| showNumbersMapped | boolean | No | true | Voicebot only: set false to remove the "Numbers mapped" section |
 | onEdit | (botId: string) => void | No | — | When Edit is selected (card click or menu) |
 | onDelete | (botId: string) => void | No | — | When Delete is selected from menu |
 | onNumbersClick | (botId: string, numbersAttached: number) => void | No | — | Voicebot only: numbers pill click (only when bot.numbersAttached > 0) |
