@@ -38,6 +38,9 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
   --color-neutral-900: #181D27;
   --color-neutral-950: #0A0D12;
 
+  /* Slate (cool gray) — recessed page/marketing surfaces */
+  --color-slate-100: #F1F5F9;
+
   /* Primary (Blue Gray) */
   --color-primary-25: #F9FAFB;
   --color-primary-50: #EBECEE;
@@ -146,6 +149,8 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
   --semantic-bg-primary: var(--color-white);
   --semantic-bg-secondary: var(--color-primary-950);
   --semantic-bg-ui: var(--color-neutral-100);
+  --semantic-bg-canvas: var(--color-slate-100);
+  --semantic-bg-subtle: var(--color-neutral-50);
   --semantic-bg-grey: var(--color-neutral-200);
   --semantic-bg-grey-hover: var(--color-neutral-400);
   --semantic-bg-inverted: var(--color-black);
@@ -434,6 +439,8 @@ export default {
         "semantic-bg-primary": "var(--semantic-bg-primary)",
         "semantic-bg-secondary": "var(--semantic-bg-secondary)",
         "semantic-bg-ui": "var(--semantic-bg-ui)",
+        "semantic-bg-canvas": "var(--semantic-bg-canvas)",
+        "semantic-bg-subtle": "var(--semantic-bg-subtle)",
         "semantic-bg-grey": "var(--semantic-bg-grey)",
         "semantic-bg-grey-hover": "var(--semantic-bg-grey-hover)",
         "semantic-bg-inverted": "var(--semantic-bg-inverted)",

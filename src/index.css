@@ -28,6 +28,10 @@
     --color-neutral-900: #181D27;
     --color-neutral-950: #0A0D12;
 
+    /* Slate (cool gray) — recessed page/marketing surfaces. Distinct from
+       Neutral, which is warm. Mirrors the `slate` palette in the Figma library. */
+    --color-slate-100: #F1F5F9;
+
     /* Primary (Blue Gray) */
     --color-primary-25: #F9FAFB;
     --color-primary-50: #EBECEE;
@@ -137,6 +141,8 @@
     --semantic-bg-primary: var(--color-white);
     --semantic-bg-secondary: var(--color-primary-950);
     --semantic-bg-ui: var(--color-neutral-100);
+    --semantic-bg-canvas: var(--color-slate-100);
+    --semantic-bg-subtle: var(--color-neutral-50);
     --semantic-bg-grey: var(--color-neutral-200);
     --semantic-bg-grey-hover: var(--color-neutral-400);
     --semantic-bg-inverted: var(--color-black);

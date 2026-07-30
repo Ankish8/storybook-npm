@@ -39,6 +39,8 @@ const SEMANTIC_FALLBACKS: Record<string, string> = {
   'semantic-bg-primary': '#FFFFFF',
   'semantic-bg-secondary': '#0C0F12',
   'semantic-bg-ui': '#F5F5F5',
+  'semantic-bg-canvas': '#F1F5F9',
+  'semantic-bg-subtle': '#FAFAFA',
   'semantic-bg-grey': '#E9EAEB',
   'semantic-bg-grey-hover': '#A4A7AE',
   'semantic-bg-inverted': '#000000',

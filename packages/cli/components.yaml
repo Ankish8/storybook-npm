@@ -101,6 +101,7 @@ categories:
       - plan-upgrade-summary-modal
       - payment-summary
       - let-us-drive-card
+      - login
       - power-up-card
       - pricing-card
       - pricing-page
@@ -858,6 +859,36 @@ components:
       - "types.ts"
       - "index.ts"
     mainFile: "let-us-drive-card.tsx"
+
+  login:
+    description: "Complete authentication flow with login, forgot password, OTP verification, and reset password steps in a two-pane marketing layout"
+    category: custom
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - button
+      - checkbox
+      - phone-input
+      - text-field
+    isMultiFile: true
+    directory: "login"
+    files:
+      - "types.ts"
+      - "use-controllable-value.ts"
+      - "login-illustration.ts"
+      - "form-parts.tsx"
+      - "auth-layout.tsx"
+      - "otp-input.tsx"
+      - "login-form.tsx"
+      - "forgot-password-form.tsx"
+      - "otp-verification-form.tsx"
+      - "reset-password-form.tsx"
+      - "login.tsx"
+      - "index.ts"
+    mainFile: "index.ts"
 
   power-up-card:
     description: "An add-on service card with icon, title, pricing, description, and CTA button for the power-ups section"

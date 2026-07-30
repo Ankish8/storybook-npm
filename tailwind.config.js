@@ -85,6 +85,8 @@ export default {
         "semantic-bg-primary": "var(--semantic-bg-primary)",
         "semantic-bg-secondary": "var(--semantic-bg-secondary)",
         "semantic-bg-ui": "var(--semantic-bg-ui)",
+        "semantic-bg-canvas": "var(--semantic-bg-canvas)",
+        "semantic-bg-subtle": "var(--semantic-bg-subtle)",
         "semantic-bg-grey": "var(--semantic-bg-grey)",
         "semantic-bg-grey-hover": "var(--semantic-bg-grey-hover)",
         "semantic-bg-inverted": "var(--semantic-bg-inverted)",
