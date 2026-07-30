@@ -95,7 +95,7 @@ const [password, setPassword] = React.useState("")
 
 ### Marketing illustration
 
-The right-hand panel ships with the Figma artwork built in — the MyOperator inbox on a laptop with the floating "Chat assigned to AI Agent" and "2.5 Billion Conversations Handled" cards. It is embedded as a palette-quantised data URI (~13 KB) because the CLI copies component files as UTF-8 text, so a binary \`.png\` in the component directory would never reach a consumer's project.
+The right-hand panel ships with the Figma artwork built in — the MyOperator inbox on a laptop with the floating "Chat assigned to AI Agent" and "2.5 Billion Conversations Handled" cards. It is embedded as a WebP data URI (~30 KB, 1126x670 for retina) because the CLI copies component files as UTF-8 text, so a binary \`.png\` in the component directory would never reach a consumer's project.
 
 \`\`\`tsx
 <Login />                                  // bundled artwork (default)

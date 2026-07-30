@@ -863,10 +863,10 @@ describe("marketing illustration", () => {
       </AuthLayout>
     );
 
-    const art = container.querySelector('img[src^="data:image/png;base64,"]');
+    const art = container.querySelector('img[src^="data:image/webp;base64,"]');
     expect(art).toBeInTheDocument();
-    expect(art).toHaveAttribute("width", "618");
-    expect(art).toHaveAttribute("height", "368");
+    expect(art).toHaveAttribute("width", "1126");
+    expect(art).toHaveAttribute("height", "670");
   });
 
   it("treats the bundled artwork as decorative", () => {
@@ -876,7 +876,7 @@ describe("marketing illustration", () => {
       </AuthLayout>
     );
 
-    const art = container.querySelector('img[src^="data:image/png;base64,"]');
+    const art = container.querySelector('img[src^="data:image/webp;base64,"]');
     expect(art).toHaveAttribute("alt", "");
   });
 
@@ -891,7 +891,7 @@ describe("marketing illustration", () => {
       container.querySelector('img[src="https://cdn.example.com/hero.png"]')
     ).toBeInTheDocument();
     expect(
-      container.querySelector('img[src^="data:image/png;base64,"]')
+      container.querySelector('img[src^="data:image/webp;base64,"]')
     ).not.toBeInTheDocument();
   });
 
@@ -943,7 +943,7 @@ describe("marketing illustration", () => {
     );
 
     expect(
-      container.querySelector('img[src^="data:image/png;base64,"]')
+      container.querySelector('img[src^="data:image/webp;base64,"]')
     ).not.toBeInTheDocument();
   });
 

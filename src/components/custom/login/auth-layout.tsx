@@ -58,9 +58,9 @@ const AuthLayout = React.forwardRef<HTMLDivElement, AuthLayoutProps>(
         <img
           src={resolvedIllustrationSrc}
           alt={illustrationAlt}
-          width={618}
-          height={368}
-          className="h-auto w-full max-w-[563px] object-contain"
+          width={1126}
+          height={670}
+          className="h-auto w-full max-w-100 object-contain"
         />
       ) : null);
 
@@ -105,7 +105,7 @@ const AuthLayout = React.forwardRef<HTMLDivElement, AuthLayoutProps>(
             )}
           >
             {illustrationNode ? (
-              <div className="flex w-full max-w-[563px] items-center justify-center">
+              <div className="flex w-full max-w-100 items-center justify-center">
                 {illustrationNode}
               </div>
             ) : null}
