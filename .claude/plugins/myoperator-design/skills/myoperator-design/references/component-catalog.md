@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 104 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 105 components across 7 categories.
 
 ## Quick Reference
 
@@ -71,6 +71,7 @@
 | PlanUpgradeSummaryModal | custom | `npx myoperator-ui add plan-upgrade-summary-modal` |
 | PaymentSummary | custom | `npx myoperator-ui add payment-summary` |
 | LetUsDriveCard | custom | `npx myoperator-ui add let-us-drive-card` |
+| Login | custom | `npx myoperator-ui add login` |
 | PowerUpCard | custom | `npx myoperator-ui add power-up-card` |
 | PricingCard | custom | `npx myoperator-ui add pricing-card` |
 | PricingPage | custom | `npx myoperator-ui add pricing-page` |
@@ -900,6 +901,15 @@ import { Mail } from "lucide-react"
 
 **Install**: `npx myoperator-ui add let-us-drive-card`
 **Requires**: `button`, `badge` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### Login
+> Complete authentication flow with login, forgot password, OTP verification, and reset password steps in a two-pane marketing layout
+
+**Install**: `npx myoperator-ui add login`
+**Requires**: `button`, `checkbox`, `phone-input`, `text-field` (auto-installed)
 **Type**: Multi-file component
 
 ---
