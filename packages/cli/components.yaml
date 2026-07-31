@@ -999,6 +999,7 @@ components:
       - button
       - dialog
       - dropdown-menu
+      - spinner
       - tooltip
     isMultiFile: true
     directory: "bots"

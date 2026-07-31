@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Badge } from "../../ui/badge";
+import { Spinner } from "../../ui/spinner";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -61,7 +62,9 @@ export const BotCard = React.forwardRef(
       botCardDisabled = false,
       disabledTooltip,
       showNumbersMapped = true,
-      numbersAttached: numbersAttachedProp,
+      numbersAttached = 0,
+      isFetchingNumbers = false,
+      noNumberMessage = "-",
       onEdit,
       onDelete,
       onNumbersClick,
@@ -73,7 +76,6 @@ export const BotCard = React.forwardRef(
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
     const isDisabled = Boolean(botCardDisabled);
-    const numbersAttached = numbersAttachedProp ?? bot.numbersAttached ?? 0;
     const hasNumbers = numbersAttached > 0;
     const showDisabledTooltip =
       isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";
@@ -203,9 +205,15 @@ export const BotCard = React.forwardRef(
             <span className="text-xs sm:text-sm text-semantic-text-muted shrink-0">
               Numbers mapped:
             </span>
-            {!hasNumbers ? (
+            {isFetchingNumbers ? (
+              <Spinner
+                size="sm"
+                variant="muted"
+                aria-label="Loading numbers"
+              />
+            ) : !hasNumbers ? (
               <span className="text-xs sm:text-sm text-semantic-text-muted">
-                -
+                {noNumberMessage}
               </span>
             ) : onNumbersClick && !isDisabled ? (
               <button

@@ -12,7 +12,7 @@ export const argTypes = {
   bot: {
     control: false,
     description:
-      'Bot data object. Optional `status: "draft" | "published"` — when "draft", shows "Unpublished changes" with red indicator in Last Published section. Voicebots also support `numbersAttached: number` — renders the "Numbers mapped" pill (or "-" when 0).',
+      'Bot data object. Optional `status: "draft" | "published"` — when "draft", shows "Unpublished changes" with red indicator in Last Published section.',
   },
   typeLabels: { control: false, description: "Override type badge labels (e.g. Voicebot, Chatbot)" },
   showNumbersMapped: {
@@ -23,14 +23,24 @@ export const argTypes = {
   numbersAttached: {
     control: "number",
     description:
-      "Voicebot only: count of phone numbers mapped to this bot. Takes precedence over `bot.numbersAttached`; falls back to it, then 0 (renders \"-\").",
+      "Voicebot only: count of phone numbers mapped to this bot. Defaults to 0, which renders noNumberMessage.",
+  },
+  isFetchingNumbers: {
+    control: "boolean",
+    description:
+      'Voicebot only: while true, the "Numbers mapped" row shows a small spinner instead of the count. Defaults to false.',
+  },
+  noNumberMessage: {
+    control: "text",
+    description:
+      'Voicebot only: text shown in place of the count when no numbers are mapped. Defaults to "-".',
   },
   onEdit: { action: "onEdit", description: "Called with bot id when Edit is selected (card click or menu)" },
   onDelete: { action: "onDelete", description: "Called with bot id when Delete is selected from menu" },
   onNumbersClick: {
     action: "onNumbersClick",
     description:
-      "Voicebot only: called with (botId, numbersAttached) when the numbers pill is clicked. Pill is interactive only when bot.numbersAttached > 0 and this handler is set.",
+      "Voicebot only: called with (botId, numbersAttached) when the numbers pill is clicked. Pill is interactive only when numbersAttached > 0 and this handler is set.",
   },
   className: { control: "text", description: "Root className for the card container" },
 } as const;
@@ -41,10 +51,12 @@ export const propsTable = `
 | bot | Bot | Yes | — | Bot data |
 | typeLabels | Partial<Record<BotType, string>> | No | — | Override type badge labels |
 | showNumbersMapped | boolean | No | true | Voicebot only: set false to remove the "Numbers mapped" section |
-| numbersAttached | number | No | bot.numbersAttached ?? 0 | Voicebot only: mapped-number count; overrides bot.numbersAttached |
+| numbersAttached | number | No | 0 | Voicebot only: mapped-number count (noNumberMessage when 0) |
+| isFetchingNumbers | boolean | No | false | Voicebot only: show a sm Spinner in place of the count |
+| noNumberMessage | string | No | "-" | Voicebot only: text shown when no numbers are mapped |
 | onEdit | (botId: string) => void | No | — | When Edit is selected (card click or menu) |
 | onDelete | (botId: string) => void | No | — | When Delete is selected from menu |
-| onNumbersClick | (botId: string, numbersAttached: number) => void | No | — | Voicebot only: numbers pill click (only when bot.numbersAttached > 0) |
+| onNumbersClick | (botId: string, numbersAttached: number) => void | No | — | Voicebot only: numbers pill click (only when numbersAttached > 0) |
 | className | string | No | — | Root className |
 | ...props | HTMLDivElement | — | — | Other div props (e.g. onClick, onKeyDown) |
 `;

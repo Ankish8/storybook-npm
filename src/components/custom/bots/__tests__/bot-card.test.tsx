@@ -65,12 +65,86 @@ describe("BotCard", () => {
   });
 
   it('renders "-" when voicebot has no numbers attached', () => {
-    render(<BotCard bot={{ ...voicebot, numbersAttached: 0 }} />);
+    render(<BotCard bot={voicebot} numbersAttached={0} />);
     expect(screen.getByText("Numbers mapped:")).toBeInTheDocument();
     expect(screen.getByText("-")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /mapped number/i })
     ).not.toBeInTheDocument();
+  });
+
+  it("renders a spinner instead of the count while isFetchingNumbers is true", () => {
+    render(
+      <BotCard
+        bot={voicebot}
+        numbersAttached={32}
+        isFetchingNumbers
+        onNumbersClick={vi.fn()}
+      />
+    );
+    // row label stays; the count/pill is replaced by the loader
+    expect(screen.getByText("Numbers mapped:")).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: "Loading numbers" })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("32 numbers")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /mapped number/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the count and no spinner when isFetchingNumbers is false (default)", () => {
+    render(<BotCard bot={voicebot} numbersAttached={32} />);
+    expect(screen.getByText("32 numbers")).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("prefers the spinner over noNumberMessage while fetching a zero count", () => {
+    render(
+      <BotCard
+        bot={voicebot}
+        numbersAttached={0}
+        isFetchingNumbers
+        noNumberMessage="No numbers mapped"
+      />
+    );
+    expect(
+      screen.getByRole("status", { name: "Loading numbers" })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No numbers mapped")).not.toBeInTheDocument();
+  });
+
+  it("renders noNumberMessage in place of the default dash when set", () => {
+    render(
+      <BotCard
+        bot={voicebot}
+        numbersAttached={0}
+        noNumberMessage="No numbers mapped"
+      />
+    );
+    expect(screen.getByText("No numbers mapped")).toBeInTheDocument();
+    expect(screen.queryByText("-")).not.toBeInTheDocument();
+  });
+
+  it("ignores noNumberMessage when numbers are attached", () => {
+    render(
+      <BotCard
+        bot={voicebot}
+        numbersAttached={32}
+        noNumberMessage="No numbers mapped"
+      />
+    );
+    expect(screen.getByText("32 numbers")).toBeInTheDocument();
+    expect(screen.queryByText("No numbers mapped")).not.toBeInTheDocument();
+  });
+
+  it("does not forward isFetchingNumbers or noNumberMessage to the DOM", () => {
+    const { container } = render(
+      <BotCard bot={voicebot} isFetchingNumbers noNumberMessage="none" />
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.hasAttribute("isfetchingnumbers")).toBe(false);
+    expect(root.hasAttribute("nonumbermessage")).toBe(false);
   });
 
   it("renders a clickable numbers pill and calls onNumbersClick with id and count", async () => {
@@ -79,7 +153,8 @@ describe("BotCard", () => {
     const onEdit = vi.fn();
     render(
       <BotCard
-        bot={{ ...voicebot, numbersAttached: 32 }}
+        bot={voicebot}
+        numbersAttached={32}
         onEdit={onEdit}
         onNumbersClick={onNumbersClick}
       />
@@ -97,7 +172,8 @@ describe("BotCard", () => {
   it("uses singular label for a single mapped number", () => {
     render(
       <BotCard
-        bot={{ ...voicebot, numbersAttached: 1 }}
+        bot={voicebot}
+        numbersAttached={1}
         onNumbersClick={vi.fn()}
       />
     );
@@ -106,7 +182,7 @@ describe("BotCard", () => {
     ).toHaveTextContent("1 number");
   });
 
-  it("uses the top-level numbersAttached prop when bot.numbersAttached is absent", async () => {
+  it("uses the numbersAttached prop for the pill count and click payload", async () => {
     const user = userEvent.setup();
     const onNumbersClick = vi.fn();
     render(
@@ -122,34 +198,6 @@ describe("BotCard", () => {
     expect(onNumbersClick).toHaveBeenCalledWith("bot-2", 7);
   });
 
-  it("prefers the numbersAttached prop over bot.numbersAttached", () => {
-    render(
-      <BotCard
-        bot={{ ...voicebot, numbersAttached: 32 }}
-        numbersAttached={5}
-        onNumbersClick={vi.fn()}
-      />
-    );
-    expect(
-      screen.getByRole("button", { name: "View 5 mapped numbers" })
-    ).toHaveTextContent("5 numbers");
-    expect(screen.queryByText("32 numbers")).not.toBeInTheDocument();
-  });
-
-  it('renders "-" when the numbersAttached prop is 0 and bot.numbersAttached is set', () => {
-    render(
-      <BotCard
-        bot={{ ...voicebot, numbersAttached: 32 }}
-        numbersAttached={0}
-        onNumbersClick={vi.fn()}
-      />
-    );
-    expect(screen.getByText("-")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /mapped number/i })
-    ).not.toBeInTheDocument();
-  });
-
   it("does not forward numbersAttached to the DOM", () => {
     const { container } = render(
       <BotCard bot={voicebot} numbersAttached={7} />
@@ -159,7 +207,7 @@ describe("BotCard", () => {
   });
 
   it("renders the numbers pill non-interactive when onNumbersClick is omitted", () => {
-    render(<BotCard bot={{ ...voicebot, numbersAttached: 32 }} />);
+    render(<BotCard bot={voicebot} numbersAttached={32} />);
     expect(screen.getByText("32 numbers")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /mapped number/i })
@@ -169,7 +217,8 @@ describe("BotCard", () => {
   it("renders the numbers pill non-interactive when the card is disabled", () => {
     render(
       <BotCard
-        bot={{ ...voicebot, numbersAttached: 32 }}
+        bot={voicebot}
+        numbersAttached={32}
         botCardDisabled
         onNumbersClick={vi.fn()}
       />

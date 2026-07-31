@@ -30,8 +30,6 @@ export interface Bot {
   /** When "draft", card shows "Unpublished changes" with red indicator in the Last Published section */
   status?: BotStatus;
   source?: BotSource;
-  /** Voicebot only: count of phone numbers mapped to this bot. 0 or undefined renders "-". */
-  numbersAttached?: number;
 }
 
 export interface BotCardProps extends Omit<
@@ -50,15 +48,19 @@ export interface BotCardProps extends Omit<
   disabledTooltip?: string;
   /** Voicebot only: when false, the "Numbers mapped" section is removed from the card. Defaults to true. */
   showNumbersMapped?: boolean;
-  /** Voicebot only: count of phone numbers mapped to this bot. Takes precedence over `bot.numbersAttached`; falls back to it, then 0. */
+  /** Voicebot only: count of phone numbers mapped to this bot. Defaults to 0, which renders noNumberMessage. */
   numbersAttached?: number;
+  /** Voicebot only: while true, the "Numbers mapped" row shows a small spinner instead of the count. Defaults to false. */
+  isFetchingNumbers?: boolean;
+  /** Voicebot only: text shown in place of the count when no numbers are mapped. Defaults to "-". */
+  noNumberMessage?: string;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
   /** Called when Delete action is selected */
   onDelete?: (botId: string) => void;
   /**
    * Voicebot only: called when the "N numbers" pill is clicked (e.g. to redirect to the numbers page).
-   * The pill is only interactive when bot.numbersAttached > 0 and this handler is provided.
+   * The pill is only interactive when numbersAttached > 0 and this handler is provided.
    */
   onNumbersClick?: (botId: string, numbersAttached: number) => void;
 }

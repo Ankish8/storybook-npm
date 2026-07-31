@@ -9,7 +9,6 @@ const sampleBots = [
     name: "Lead validation bot",
     type: "voicebot" as const,
     conversationCount: 342,
-    numbersAttached: 32,
     lastPublishedBy: "Nandan Raikwar",
     lastPublishedDate: "15 Jan, 2025",
   },
@@ -59,6 +58,7 @@ type Story = StoryObj<typeof meta>;
 export const VoicebotCard: Story = {
   args: {
     bot: sampleBots[0],
+    numbersAttached: 32,
     typeLabels: undefined,
     onEdit: fn(),
     onDelete: fn(),
@@ -74,6 +74,7 @@ export const VoicebotCard: Story = {
 export const VoicebotWithNumbersMapped: Story = {
   args: {
     bot: sampleBots[0],
+    numbersAttached: 32,
     onEdit: fn(),
     onDelete: fn(),
     onNumbersClick: fn(),
@@ -87,7 +88,7 @@ export const VoicebotWithNumbersMapped: Story = {
     docs: {
       description: {
         story:
-          'Voicebots show a "Numbers mapped" row. When `bot.numbersAttached > 0` and `onNumbersClick` is provided, the pill is clickable — use it to redirect to the numbers page.',
+          'Voicebots show a "Numbers mapped" row. Pass the count via the `numbersAttached` prop. When `numbersAttached > 0` and `onNumbersClick` is provided, the pill is clickable — use it to redirect to the numbers page.',
       },
     },
   },
@@ -95,7 +96,8 @@ export const VoicebotWithNumbersMapped: Story = {
 
 export const VoicebotWithNoNumbersMapped: Story = {
   args: {
-    bot: { ...sampleBots[0], numbersAttached: 0 },
+    bot: sampleBots[0],
+    numbersAttached: 0,
     onEdit: fn(),
     onDelete: fn(),
     onNumbersClick: fn(),
@@ -114,10 +116,10 @@ export const VoicebotWithNoNumbersMapped: Story = {
   },
 };
 
-export const VoicebotWithNumbersAttachedProp: Story = {
+export const VoicebotFetchingNumbers: Story = {
   args: {
-    bot: { ...sampleBots[0], numbersAttached: undefined },
-    numbersAttached: 7,
+    bot: sampleBots[0],
+    isFetchingNumbers: true,
     onEdit: fn(),
     onDelete: fn(),
     onNumbersClick: fn(),
@@ -131,7 +133,31 @@ export const VoicebotWithNumbersAttachedProp: Story = {
     docs: {
       description: {
         story:
-          "Pass the count as a top-level `numbersAttached` prop instead of embedding it in the `bot` object. When both are set, the prop wins.",
+          'Set `isFetchingNumbers` while the mapped-number count is still loading — the row shows a small spinner instead of the count. The rest of the card renders normally.',
+      },
+    },
+  },
+};
+
+export const VoicebotWithNoNumberMessage: Story = {
+  args: {
+    bot: sampleBots[0],
+    numbersAttached: 0,
+    noNumberMessage: "No numbers mapped",
+    onEdit: fn(),
+    onDelete: fn(),
+    onNumbersClick: fn(),
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Use `noNumberMessage` to replace the default "-" with custom copy when no numbers are mapped.',
       },
     },
   },
@@ -140,6 +166,7 @@ export const VoicebotWithNumbersAttachedProp: Story = {
 export const VoicebotWithoutNumbersMappedSection: Story = {
   args: {
     bot: sampleBots[0],
+    numbersAttached: 32,
     showNumbersMapped: false,
     onEdit: fn(),
     onDelete: fn(),
