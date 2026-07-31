@@ -87,12 +87,16 @@ for (const [name, meta] of Object.entries(config.components)) {
         }
 
         // Check for unlisted source files in the directory
-        // Excludes: stories, tests, __tests__ dirs, and non-source files
+        // Excludes: stories, story-helpers, tests, __tests__ dirs, and non-source files
         const actualFiles = fs.readdirSync(dirPath).filter(f => {
           if (f.startsWith('.')) return false
           if (f.includes('.stories.')) return false
           if (f.includes('.test.')) return false
           if (f === '__tests__') return false
+          // Storybook-only scaffolding shared between .stories.tsx files.
+          // Not a .stories.tsx (Storybook would treat each export as a story)
+          // and never copied into a consumer's project.
+          if (f === 'story-helpers.ts' || f === 'story-helpers.tsx') return false
           // Only check .ts/.tsx files (source files)
           return f.endsWith('.ts') || f.endsWith('.tsx')
         })
