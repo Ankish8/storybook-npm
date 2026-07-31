@@ -106,6 +106,58 @@ describe("BotCard", () => {
     ).toHaveTextContent("1 number");
   });
 
+  it("uses the top-level numbersAttached prop when bot.numbersAttached is absent", async () => {
+    const user = userEvent.setup();
+    const onNumbersClick = vi.fn();
+    render(
+      <BotCard
+        bot={voicebot}
+        numbersAttached={7}
+        onNumbersClick={onNumbersClick}
+      />
+    );
+    const pill = screen.getByRole("button", { name: "View 7 mapped numbers" });
+    expect(pill).toHaveTextContent("7 numbers");
+    await user.click(pill);
+    expect(onNumbersClick).toHaveBeenCalledWith("bot-2", 7);
+  });
+
+  it("prefers the numbersAttached prop over bot.numbersAttached", () => {
+    render(
+      <BotCard
+        bot={{ ...voicebot, numbersAttached: 32 }}
+        numbersAttached={5}
+        onNumbersClick={vi.fn()}
+      />
+    );
+    expect(
+      screen.getByRole("button", { name: "View 5 mapped numbers" })
+    ).toHaveTextContent("5 numbers");
+    expect(screen.queryByText("32 numbers")).not.toBeInTheDocument();
+  });
+
+  it('renders "-" when the numbersAttached prop is 0 and bot.numbersAttached is set', () => {
+    render(
+      <BotCard
+        bot={{ ...voicebot, numbersAttached: 32 }}
+        numbersAttached={0}
+        onNumbersClick={vi.fn()}
+      />
+    );
+    expect(screen.getByText("-")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /mapped number/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not forward numbersAttached to the DOM", () => {
+    const { container } = render(
+      <BotCard bot={voicebot} numbersAttached={7} />
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.hasAttribute("numbersattached")).toBe(false);
+  });
+
   it("renders the numbers pill non-interactive when onNumbersClick is omitted", () => {
     render(<BotCard bot={{ ...voicebot, numbersAttached: 32 }} />);
     expect(screen.getByText("32 numbers")).toBeInTheDocument();

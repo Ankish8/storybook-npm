@@ -61,6 +61,7 @@ export const BotCard = React.forwardRef(
       botCardDisabled = false,
       disabledTooltip,
       showNumbersMapped = true,
+      numbersAttached: numbersAttachedProp,
       onEdit,
       onDelete,
       onNumbersClick,
@@ -72,7 +73,7 @@ export const BotCard = React.forwardRef(
     const typeLabel = getTypeLabel(bot, typeLabels);
     const isChatbot = bot.type === "chatbot";
     const isDisabled = Boolean(botCardDisabled);
-    const numbersAttached = bot.numbersAttached ?? 0;
+    const numbersAttached = numbersAttachedProp ?? bot.numbersAttached ?? 0;
     const hasNumbers = numbersAttached > 0;
     const showDisabledTooltip =
       isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";

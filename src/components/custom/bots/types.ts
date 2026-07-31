@@ -50,6 +50,8 @@ export interface BotCardProps extends Omit<
   disabledTooltip?: string;
   /** Voicebot only: when false, the "Numbers mapped" section is removed from the card. Defaults to true. */
   showNumbersMapped?: boolean;
+  /** Voicebot only: count of phone numbers mapped to this bot. Takes precedence over `bot.numbersAttached`; falls back to it, then 0. */
+  numbersAttached?: number;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
   /** Called when Delete action is selected */

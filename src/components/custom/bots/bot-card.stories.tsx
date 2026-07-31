@@ -114,6 +114,29 @@ export const VoicebotWithNoNumbersMapped: Story = {
   },
 };
 
+export const VoicebotWithNumbersAttachedProp: Story = {
+  args: {
+    bot: { ...sampleBots[0], numbersAttached: undefined },
+    numbersAttached: 7,
+    onEdit: fn(),
+    onDelete: fn(),
+    onNumbersClick: fn(),
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass the count as a top-level `numbersAttached` prop instead of embedding it in the `bot` object. When both are set, the prop wins.",
+      },
+    },
+  },
+};
+
 export const VoicebotWithoutNumbersMappedSection: Story = {
   args: {
     bot: sampleBots[0],

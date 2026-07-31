@@ -20,6 +20,11 @@ export const argTypes = {
     description:
       'Voicebot only: when false, the "Numbers mapped" section is removed from the card. Defaults to true.',
   },
+  numbersAttached: {
+    control: "number",
+    description:
+      "Voicebot only: count of phone numbers mapped to this bot. Takes precedence over `bot.numbersAttached`; falls back to it, then 0 (renders \"-\").",
+  },
   onEdit: { action: "onEdit", description: "Called with bot id when Edit is selected (card click or menu)" },
   onDelete: { action: "onDelete", description: "Called with bot id when Delete is selected from menu" },
   onNumbersClick: {
@@ -36,6 +41,7 @@ export const propsTable = `
 | bot | Bot | Yes | — | Bot data |
 | typeLabels | Partial<Record<BotType, string>> | No | — | Override type badge labels |
 | showNumbersMapped | boolean | No | true | Voicebot only: set false to remove the "Numbers mapped" section |
+| numbersAttached | number | No | bot.numbersAttached ?? 0 | Voicebot only: mapped-number count; overrides bot.numbersAttached |
 | onEdit | (botId: string) => void | No | — | When Edit is selected (card click or menu) |
 | onDelete | (botId: string) => void | No | — | When Delete is selected from menu |
 | onNumbersClick | (botId: string, numbersAttached: number) => void | No | — | Voicebot only: numbers pill click (only when bot.numbersAttached > 0) |
