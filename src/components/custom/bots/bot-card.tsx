@@ -65,6 +65,8 @@ export const BotCard = React.forwardRef(
       numbersAttached = 0,
       isFetchingNumbers = false,
       noNumberMessage = "-",
+      DisableDelete = false,
+      TooltipDelete,
       onEdit,
       onDelete,
       onNumbersClick,
@@ -79,6 +81,11 @@ export const BotCard = React.forwardRef(
     const hasNumbers = numbersAttached > 0;
     const showDisabledTooltip =
       isDisabled && disabledTooltip != null && disabledTooltip.trim() !== "";
+    const isDeleteDisabled = isDisabled || Boolean(DisableDelete);
+    const showDeleteTooltip =
+      Boolean(DisableDelete) &&
+      TooltipDelete != null &&
+      TooltipDelete.trim() !== "";
 
     const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (isDisabled) return;
@@ -102,6 +109,20 @@ export const BotCard = React.forwardRef(
         }
       }
     };
+
+    const deleteItem = onDelete && (
+      <DropdownMenuItem
+        className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary focus:bg-semantic-error-surface focus:text-semantic-error-primary"
+        disabled={isDeleteDisabled}
+        onSelect={(e) => {
+          e.preventDefault();
+          if (!isDeleteDisabled) onDelete(bot.id);
+        }}
+      >
+        <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
+        <span>Delete</span>
+      </DropdownMenuItem>
+    );
 
     const card = (
       <div
@@ -171,17 +192,22 @@ export const BotCard = React.forwardRef(
                   {onDelete && (
                     <>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm text-semantic-error-primary focus:bg-semantic-error-surface focus:text-semantic-error-primary"
-                        disabled={isDisabled}
-                        onSelect={(e) => {
-                          e.preventDefault();
-                          if (!isDisabled) onDelete(bot.id);
-                        }}
-                      >
-                        <Trash2 className="size-4 shrink-0 text-semantic-error-primary" />
-                        <span>Delete</span>
-                      </DropdownMenuItem>
+                      {showDeleteTooltip ? (
+                        <TooltipProvider delayDuration={200}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="block cursor-not-allowed">
+                                {deleteItem}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="left">
+                              <p className="m-0">{TooltipDelete}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ) : (
+                        deleteItem
+                      )}
                     </>
                   )}
                 </DropdownMenuContent>

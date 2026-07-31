@@ -54,6 +54,10 @@ export interface BotCardProps extends Omit<
   isFetchingNumbers?: boolean;
   /** Voicebot only: text shown in place of the count when no numbers are mapped. Defaults to "-". */
   noNumberMessage?: string;
+  /** When true, only the Delete menu item is disabled; the rest of the card stays interactive. Defaults to false. */
+  DisableDelete?: boolean;
+  /** Shown on hover of the Delete menu item only when DisableDelete is true. Tooltip is not rendered when omitted or empty. */
+  TooltipDelete?: string;
   /** Called when Edit action is selected */
   onEdit?: (botId: string) => void;
   /** Called when Delete action is selected */

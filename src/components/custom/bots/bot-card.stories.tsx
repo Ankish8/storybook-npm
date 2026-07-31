@@ -332,3 +332,29 @@ export const ChatbotCardDisabled: Story = {
     </div>
   ),
 };
+
+export const DisableDelete: Story = {
+  name: "Delete disabled",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Open the ⋮ menu: Delete is disabled while Edit and the card itself stay interactive. Hover the Delete row to see `TooltipDelete`. The tooltip is hover-only — disabled menu items are skipped by keyboard navigation.',
+      },
+    },
+  },
+  args: {
+    bot: sampleBots[0],
+    DisableDelete: true,
+    TooltipDelete: "Published bots can't be deleted. Unpublish it first.",
+    typeLabels: undefined,
+    onEdit: fn(),
+    onDelete: fn(),
+    className: undefined,
+  },
+  render: (args) => (
+    <div style={{ width: 375 }}>
+      <BotCard {...args} />
+    </div>
+  ),
+};

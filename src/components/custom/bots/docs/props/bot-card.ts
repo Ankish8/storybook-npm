@@ -35,6 +35,16 @@ export const argTypes = {
     description:
       'Voicebot only: text shown in place of the count when no numbers are mapped. Defaults to "-".',
   },
+  DisableDelete: {
+    control: "boolean",
+    description:
+      "When true, only the Delete menu item is disabled; the rest of the card stays interactive. Defaults to false.",
+  },
+  TooltipDelete: {
+    control: "text",
+    description:
+      "Shown on hover of the Delete menu item only when DisableDelete is true. Tooltip is not rendered when omitted or empty.",
+  },
   onEdit: { action: "onEdit", description: "Called with bot id when Edit is selected (card click or menu)" },
   onDelete: { action: "onDelete", description: "Called with bot id when Delete is selected from menu" },
   onNumbersClick: {
@@ -54,6 +64,8 @@ export const propsTable = `
 | numbersAttached | number | No | 0 | Voicebot only: mapped-number count (noNumberMessage when 0) |
 | isFetchingNumbers | boolean | No | false | Voicebot only: show a sm Spinner in place of the count |
 | noNumberMessage | string | No | "-" | Voicebot only: text shown when no numbers are mapped |
+| DisableDelete | boolean | No | false | Disables only the Delete menu item; rest of the card stays interactive |
+| TooltipDelete | string | No | — | Hover tooltip on the disabled Delete item (only when DisableDelete is true) |
 | onEdit | (botId: string) => void | No | — | When Edit is selected (card click or menu) |
 | onDelete | (botId: string) => void | No | — | When Delete is selected from menu |
 | onNumbersClick | (botId: string, numbersAttached: number) => void | No | — | Voicebot only: numbers pill click (only when numbersAttached > 0) |

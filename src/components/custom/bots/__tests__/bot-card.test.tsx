@@ -414,6 +414,118 @@ describe("BotCard", () => {
     });
   });
 
+  it("disables only the Delete item when DisableDelete is true", async () => {
+    const user = userEvent.setup();
+    const handleDelete = vi.fn();
+    const handleEdit = vi.fn();
+    render(
+      <BotCard
+        bot={chatbot}
+        DisableDelete
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    );
+
+    await user.click(screen.getByLabelText("More options"));
+    const deleteItem = screen.getByText("Delete").closest('[role="menuitem"]');
+    expect(deleteItem).toHaveAttribute("data-disabled");
+    expect(screen.getByText("Edit").closest('[role="menuitem"]')).not.toHaveAttribute(
+      "data-disabled"
+    );
+
+    fireEvent.click(deleteItem as HTMLElement);
+    expect(handleDelete).not.toHaveBeenCalled();
+  });
+
+  it("leaves the card and Edit interactive when DisableDelete is true", async () => {
+    const user = userEvent.setup();
+    const handleEdit = vi.fn();
+    const { container } = render(
+      <BotCard bot={chatbot} DisableDelete onEdit={handleEdit} onDelete={vi.fn()} />
+    );
+
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).not.toHaveClass("opacity-50");
+    expect(root).not.toHaveAttribute("aria-disabled");
+    expect(screen.getByLabelText("More options")).not.toBeDisabled();
+
+    await user.click(root);
+    expect(handleEdit).toHaveBeenCalledWith("bot-1");
+  });
+
+  it("keeps Delete enabled by default (DisableDelete defaults to false)", async () => {
+    const user = userEvent.setup();
+    const handleDelete = vi.fn();
+    render(<BotCard bot={chatbot} onDelete={handleDelete} />);
+
+    await user.click(screen.getByLabelText("More options"));
+    expect(
+      screen.getByText("Delete").closest('[role="menuitem"]')
+    ).not.toHaveAttribute("data-disabled");
+
+    await user.click(screen.getByText("Delete"));
+    expect(handleDelete).toHaveBeenCalledWith("bot-1");
+  });
+
+  it("disables Delete when the whole card is disabled", async () => {
+    const user = userEvent.setup();
+    const handleDelete = vi.fn();
+    render(<BotCard bot={chatbot} botCardDisabled onDelete={handleDelete} />);
+    // the trigger is disabled with the card; the item is disabled too
+    expect(screen.getByLabelText("More options")).toBeDisabled();
+    await user.click(screen.getByLabelText("More options"));
+    const deleteItem = screen.getByText("Delete").closest('[role="menuitem"]');
+    expect(deleteItem).toHaveAttribute("data-disabled");
+    fireEvent.click(deleteItem as HTMLElement);
+    expect(handleDelete).not.toHaveBeenCalled();
+  });
+
+  it("shows TooltipDelete on hover only when DisableDelete is true", async () => {
+    const user = userEvent.setup();
+    const tooltip = "Published bots can't be deleted.";
+    const { rerender } = render(
+      <BotCard bot={chatbot} TooltipDelete={tooltip} onDelete={vi.fn()} />
+    );
+
+    await user.click(screen.getByLabelText("More options"));
+    await user.hover(screen.getByText("Delete"));
+    expect(screen.queryByText(tooltip)).not.toBeInTheDocument();
+
+    rerender(
+      <BotCard
+        bot={chatbot}
+        DisableDelete
+        TooltipDelete={tooltip}
+        onDelete={vi.fn()}
+      />
+    );
+    await user.hover(screen.getByText("Delete"));
+
+    await waitFor(() => {
+      expect(screen.getAllByText(tooltip).length).toBeGreaterThan(0);
+    });
+  });
+
+  it("does not render a Delete tooltip when TooltipDelete is empty", async () => {
+    const user = userEvent.setup();
+    render(
+      <BotCard bot={chatbot} DisableDelete TooltipDelete="   " onDelete={vi.fn()} />
+    );
+    await user.click(screen.getByLabelText("More options"));
+    await user.hover(screen.getByText("Delete"));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("does not forward DisableDelete or TooltipDelete to the DOM", () => {
+    const { container } = render(
+      <BotCard bot={chatbot} DisableDelete TooltipDelete="nope" />
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.hasAttribute("disabledelete")).toBe(false);
+    expect(root.hasAttribute("tooltipdelete")).toBe(false);
+  });
+
   it("does not throw when action callbacks are not provided", () => {
     render(<BotCard bot={chatbot} />);
     expect(() =>
