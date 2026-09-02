@@ -1,0 +1,546 @@
+{
+  "screen": {
+    "id": "rh70d405dryzsq3m6k1byep3bd8d7n0r",
+    "project_id": "s57ctzvv6rdeyr8hc8591gw53s8c81a0",
+    "status": "ready",
+    "error": null,
+    "frame_name": "Empty State",
+    "file_name": "MyO - Product Design",
+    "file_key": "IRVvk2LxmE8c3XgGDo7wsK",
+    "node_id": "3:57904",
+    "figma_url": "https://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Designhttps://www.figma.com/design/IRVvk2LxmE8c3XgGDo7wsK/MyO---Product-Design",
+    "figma_section": "Live chat",
+    "rev": "2391756624137778529",
+    "tree_rev": "2391756624137778529",
+    "preview_stale": false,
+    "width": 1440,
+    "height": 1024,
+    "node_count": 502,
+    "version": 2,
+    "is_latest": true,
+    "preview_url": "https://pub-f0c6190b107d49b7a32d3cde8da4901f.r2.dev/handoff-previews/IRVvk2LxmE8c3XgGDo7wsK/2391756624137778529/3-57904%402x.png",
+    "thumbnail_url": "https://pub-f0c6190b107d49b7a32d3cde8da4901f.r2.dev/handoff-previews/IRVvk2LxmE8c3XgGDo7wsK/2391756624137778529/3-57904%400.711x.png",
+    "tree_url": "https://pub-f0c6190b107d49b7a32d3cde8da4901f.r2.dev/handoff-trees/v7/IRVvk2LxmE8c3XgGDo7wsK/2391756624137778529/3-57904.json",
+    "twin": null,
+    "created_at": "2026-08-26T03:06:18.376Z",
+    "updated_at": "2026-08-26T12:25:34.509Z"
+  },
+  "project_name": "MyOperator",
+  "product_brief": null,
+  "ux_brief": {
+    "designSystem": [
+      {
+        "name": "Accordion",
+        "category": "layout",
+        "description": "An expandable/collapsible accordion component with single or multiple mode support."
+      },
+      {
+        "name": "Alert",
+        "category": "feedback",
+        "description": "A alert component."
+      },
+      {
+        "name": "Avatar",
+        "category": "core",
+        "description": "A avatar component."
+      },
+      {
+        "name": "Badge",
+        "category": "core",
+        "description": "A status badge component with active, failed, disabled, outline, secondary, and destructive variants. Supports asChild for rendering as links."
+      },
+      {
+        "name": "BouncingLoader",
+        "category": "feedback",
+        "description": "A bouncing loader component."
+      },
+      {
+        "name": "Button",
+        "category": "core",
+        "description": "A customizable button component with variants, sizes, and icons. Supports loading states and can render as a child element using Radix Slot."
+      },
+      {
+        "name": "Checkbox",
+        "category": "form",
+        "description": "A tri-state checkbox component built on Radix UI with label support. Supports checked, unchecked, and indeterminate states."
+      },
+      {
+        "name": "ConfirmationModal",
+        "category": "overlay",
+        "description": "A confirmation modal component."
+      },
+      {
+        "name": "ContactListItem",
+        "category": "core",
+        "description": "A contact list item component."
+      },
+      {
+        "name": "CreatableMultiSelect",
+        "category": "uncategorised",
+        "description": "A creatable multi select component."
+      },
+      {
+        "name": "CreatableSelect",
+        "category": "uncategorised",
+        "description": "A creatable select component."
+      },
+      {
+        "name": "DateDivider",
+        "category": "core",
+        "description": "A date divider component."
+      },
+      {
+        "name": "DateTimePicker",
+        "category": "form",
+        "description": "A date time picker component."
+      },
+      {
+        "name": "DeleteConfirmationModal",
+        "category": "overlay",
+        "description": "A delete confirmation modal component."
+      },
+      {
+        "name": "Dialog",
+        "category": "overlay",
+        "description": "A dialog component."
+      },
+      {
+        "name": "DropdownMenu",
+        "category": "overlay",
+        "description": "A dropdown menu component for displaying actions and options. Built on Radix UI with full keyboard navigation support."
+      },
+      {
+        "name": "EmptyState",
+        "category": "feedback",
+        "description": "A empty state component."
+      },
+      {
+        "name": "FormModal",
+        "category": "overlay",
+        "description": "A form modal component."
+      },
+      {
+        "name": "ImageMedia",
+        "category": "core",
+        "description": "A image media component."
+      },
+      {
+        "name": "Input",
+        "category": "form",
+        "description": "A flexible input component for text entry with state variants. Supports default and error states."
+      },
+      {
+        "name": "MultiSelect",
+        "category": "form",
+        "description": "A multi-select component with tags display, search functionality, and validation states. Supports maximum selection limits."
+      },
+      {
+        "name": "NumberStepField",
+        "category": "uncategorised",
+        "description": "A number step field component."
+      },
+      {
+        "name": "PageHeader",
+        "category": "layout",
+        "description": "A page header component."
+      },
+      {
+        "name": "Pagination",
+        "category": "layout",
+        "description": "A pagination component."
+      },
+      {
+        "name": "Panel",
+        "category": "layout",
+        "description": "A panel component."
+      },
+      {
+        "name": "PhoneInput",
+        "category": "core",
+        "description": "A phone input component."
+      },
+      {
+        "name": "ReadableField",
+        "category": "form",
+        "description": "A readable field component."
+      },
+      {
+        "name": "ReplyQuote",
+        "category": "core",
+        "description": "A reply quote component."
+      },
+      {
+        "name": "Select",
+        "category": "form",
+        "description": "A composable select dropdown built with Radix UI primitives. Includes SelectTrigger, SelectContent, SelectItem, and more sub-components."
+      },
+      {
+        "name": "SelectField",
+        "category": "form",
+        "description": "A form-ready select component with label, helper text, error handling, and grouped options support."
+      },
+      {
+        "name": "Skeleton",
+        "category": "feedback",
+        "description": "A skeleton component."
+      },
+      {
+        "name": "Spinner",
+        "category": "feedback",
+        "description": "A spinner component."
+      },
+      {
+        "name": "Switch",
+        "category": "form",
+        "description": "A switch component built on Radix UI for boolean inputs with on/off states. Supports labels and multiple sizes."
+      },
+      {
+        "name": "SystemMessage",
+        "category": "core",
+        "description": "A system message component."
+      },
+      {
+        "name": "Table",
+        "category": "data",
+        "description": "A composable table component with size variants, loading/empty states, sticky columns, and sorting support."
+      },
+      {
+        "name": "Tabs",
+        "category": "core",
+        "description": "A tabs component."
+      },
+      {
+        "name": "Tag",
+        "category": "feedback",
+        "description": "A tag component for event labels with optional bold label prefix. Rounded rectangle tags for categorization."
+      },
+      {
+        "name": "TextField",
+        "category": "form",
+        "description": "A comprehensive text field component with label, icons, prefix/suffix, validation states, character count, and loading state."
+      },
+      {
+        "name": "Textarea",
+        "category": "form",
+        "description": "A textarea component."
+      },
+      {
+        "name": "Toast",
+        "category": "feedback",
+        "description": "A toast component."
+      },
+      {
+        "name": "Tooltip",
+        "category": "overlay",
+        "description": "A tooltip component."
+      },
+      {
+        "name": "Typography",
+        "category": "core",
+        "description": "A typography component."
+      },
+      {
+        "name": "UnreadSeparator",
+        "category": "core",
+        "description": "A unread separator component."
+      }
+    ],
+    "visuals": [
+      {
+        "nodeId": "I3:57922;2097:8951;33:523",
+        "component": "Icons",
+        "kind": "Add",
+        "size": "18×18",
+        "repeats": 2
+      },
+      {
+        "nodeId": "I3:57915;125:3725;91:28013;86:430",
+        "component": "Icons",
+        "kind": "Call",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57915;125:3723;86:430",
+        "component": "Icons",
+        "kind": "Call log",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57915;125:3722;86:2585",
+        "component": "Icons",
+        "kind": "Chat",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "3:57916",
+        "component": "Icons",
+        "kind": "Chevron right",
+        "size": "18×18",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57915;125:3727;86:430",
+        "component": "Icons",
+        "kind": "Contacts",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57922;2097:8956",
+        "component": null,
+        "kind": "Filter",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57923;2097:7572;618:6889",
+        "component": "inbox",
+        "kind": "Inbox",
+        "size": "48×48",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57915;125:3732;99:29394;86:430",
+        "component": "Icons",
+        "kind": "Manage",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "3:57919",
+        "component": "Icons",
+        "kind": "Notification",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57915;125:3728;96:28976;86:430",
+        "component": "Icons",
+        "kind": "Report",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "3:57920",
+        "component": "Icons",
+        "kind": "Switch",
+        "size": "24×24",
+        "repeats": 1
+      },
+      {
+        "nodeId": "I3:57915;125:3724;91:27536;86:430",
+        "component": "Icons",
+        "kind": "WhatsApp",
+        "size": "24×24",
+        "repeats": 1
+      }
+    ],
+    "screen": "Empty State",
+    "size": "1440×1024",
+    "copy": [
+      {
+        "nodeId": "I3:57922;2097:8950",
+        "text": "Inbox"
+      },
+      {
+        "nodeId": "I3:57922;2097:8951;33:524",
+        "text": "New Chat"
+      },
+      {
+        "nodeId": "I3:57922;2097:8961;127:12153;127:12102",
+        "text": "Open"
+      },
+      {
+        "nodeId": "I3:57922;2097:8961;127:12146;127:12116",
+        "text": "Assigned"
+      },
+      {
+        "nodeId": "I3:57922;2097:8961;127:12142;127:12116",
+        "text": "Resolved"
+      },
+      {
+        "nodeId": "I3:57923;2097:7572;618:6908",
+        "text": "Your inbox is empty."
+      },
+      {
+        "nodeId": "I3:57923;2097:7572;618:6909",
+        "text": "When you receive messages they will appear here."
+      },
+      {
+        "nodeId": "I3:57922;2097:8986",
+        "text": "No conversations"
+      },
+      {
+        "nodeId": "I3:57923;2097:7572;618:6913;37:203",
+        "text": "Start New Chat"
+      }
+    ],
+    "controls": [
+      {
+        "nodeId": "3:57916",
+        "component": "Icons",
+        "label": null,
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "3:57922",
+        "component": "Inbox Panel",
+        "label": "Inbox",
+        "leadsTo": null
+      },
+      {
+        "nodeId": "3:57923",
+        "component": "Selected Chat",
+        "label": "Your inbox is empty.",
+        "leadsTo": null
+      },
+      {
+        "nodeId": "3:57915",
+        "component": "Sidebar Menu",
+        "label": "Home",
+        "leadsTo": null
+      },
+      {
+        "nodeId": "I3:57915;125:3722",
+        "component": "Menu Items",
+        "label": "Chat",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57922;2097:8951",
+        "component": "Buttons",
+        "label": "New Chat",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3723",
+        "component": "Menu Items",
+        "label": "Call Logs",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57922;2097:8961",
+        "component": "Tabs",
+        "label": "Open",
+        "leadsTo": null
+      },
+      {
+        "nodeId": "I3:57922;2097:8961;127:12153",
+        "component": "Tab",
+        "label": "Open",
+        "leadsTo": null
+      },
+      {
+        "nodeId": "I3:57922;2097:8961;127:12146",
+        "component": "Tab",
+        "label": "Assigned",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57922;2097:8961;127:12142",
+        "component": "Tab",
+        "label": "Resolved",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3724",
+        "component": "Sidebar Dropdown",
+        "label": "Whatsapp",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3724;91:27536",
+        "component": "Menu Items",
+        "label": "Whatsapp",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3725",
+        "component": "Sidebar Dropdown",
+        "label": "Call",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3725;91:28013",
+        "component": "Menu Items",
+        "label": "Call",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3727",
+        "component": "Menu Items",
+        "label": "Contact",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3728",
+        "component": "Sidebar Dropdown",
+        "label": "Reports",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3728;96:28976",
+        "component": "Menu Items",
+        "label": "Reports",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3732",
+        "component": "Sidebar Dropdown",
+        "label": "Manage",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57915;125:3732;99:29394",
+        "component": "Menu Items",
+        "label": "Manage",
+        "leadsTo": "state change"
+      },
+      {
+        "nodeId": "I3:57923;2097:7572",
+        "component": "Empty State",
+        "label": "Your inbox is empty.",
+        "leadsTo": null
+      },
+      {
+        "nodeId": "I3:57923;2097:7572;618:6913",
+        "component": "Buttons",
+        "label": "Start New Chat",
+        "leadsTo": "state change"
+      }
+    ],
+    "exits": [],
+    "siblings": [
+      "Outbound Dialer 4 copy",
+      "Outbound Dialer 4",
+      "Outbound Dialer 4 copy",
+      "Empty State"
+    ],
+    "truncated": []
+  },
+  "annotations": [],
+  "comments": [],
+  "flows": [
+    {
+      "direction": "out",
+      "flowName": "Main flow",
+      "label": null,
+      "otherFrameName": "Outbound Dialer 4 copy",
+      "otherScreenId": "rh7edv1crbfn6ermg3j9e61t4x8c9pvj",
+      "sourceLayerName": null,
+      "trigger": null
+    },
+    {
+      "direction": "in",
+      "flowName": "Main flow",
+      "label": null,
+      "otherFrameName": "Outbound Dialer 4",
+      "otherScreenId": "rh75sz3y1vvj79qkv1ggqxhxm98c9nq5",
+      "sourceLayerName": "Create Campaign",
+      "trigger": null
+    }
+  ]
+}

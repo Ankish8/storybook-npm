@@ -1,6 +1,19 @@
 {
-  "name": "myoperator-publish",
+  "name": "myoperator",
   "version": "1.0.0",
-  "description": "Automated publishing workflow for myOperator UI CLI and MCP packages",
-  "commands": "./.claude/commands"
+  "description": "Build and audit myOperator design-handoff screens from Merlin. Rebuilds a Figma screen as a working page out of the real design-system components, or publishes a UX audit back to the team.",
+  "author": {
+    "name": "myOperator",
+    "email": "ankish@myoperator.co"
+  },
+  "homepage": "https://github.com/Ankish8/storybook-npm",
+  "repository": "https://github.com/Ankish8/storybook-npm",
+  "keywords": ["figma", "design-handoff", "design-system", "merlin", "myoperator", "ux-audit"],
+  "skills": "./.claude/skills",
+  "mcpServers": {
+    "merlin": {
+      "type": "http",
+      "url": "https://basic-monitor-555.convex.site/mcp"
+    }
+  }
 }

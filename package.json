@@ -3,6 +3,9 @@
   "private": false,
   "version": "0.0.32",
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -39,6 +42,7 @@
     "test:watch": "vitest",
     "check:bootstrap-compat": "node scripts/check-bootstrap-compat.js",
     "create-component": "node scripts/create-component.js",
+    "merlin": "node tools/merlin/merlin.mjs",
     "check-tests": "node scripts/check-component-tests.js",
     "api:snapshot": "node scripts/generate-api-snapshot.js",
     "api:check": "node scripts/check-breaking-changes.js",
@@ -112,6 +116,7 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
+    "vite-plugin-singlefile": "^2.3.3",
     "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.0.0"
   }

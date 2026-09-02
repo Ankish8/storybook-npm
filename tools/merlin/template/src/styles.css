@@ -1,0 +1,17 @@
+/* The design system's tokens and fonts. Everything a twin paints comes from here. */
+@import "../../../src/index.css";
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--semantic-bg-primary);
+}
+
+* {
+  box-sizing: border-box;
+}

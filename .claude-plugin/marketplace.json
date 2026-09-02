@@ -1,24 +1,38 @@
 {
-  "name": "myoperator-local",
+  "name": "myoperator-tools",
   "owner": {
-    "name": "ankish"
+    "name": "myOperator",
+    "email": "ankish@myoperator.co"
   },
-  "description": "Local plugins for myOperator UI",
+  "description": "myOperator design-system tooling for Claude Code",
+  "renames": {
+    "myoperator-publish": "myoperator"
+  },
   "plugins": [
     {
-      "name": "myoperator-publish",
-      "description": "Automated publishing workflow for myOperator UI CLI and MCP packages",
-      "source": "./"
+      "name": "myoperator",
+      "displayName": "myOperator design tools",
+      "version": "1.0.0",
+      "description": "Build and audit myOperator design-handoff screens from Merlin. Adds /build-screen and /audit-screen, and connects Merlin's MCP server so there is nothing else to set up.",
+      "author": {
+        "name": "myOperator",
+        "email": "ankish@myoperator.co"
+      },
+      "source": "./",
+      "category": "development",
+      "homepage": "https://github.com/Ankish8/storybook-npm"
     },
     {
       "name": "component-creator",
       "description": "Intelligent React component creation with design system validation, Figma integration, and automated testing",
-      "source": "./.claude/plugins/component-creator"
+      "source": "./.claude/plugins/component-creator",
+      "category": "development"
     },
     {
       "name": "myoperator-design",
       "description": "Create UIs matching the myOperator design system aesthetic. Generates standalone React/Tailwind code with consistent visual language.",
-      "source": "./.claude/plugins/myoperator-design"
+      "source": "./.claude/plugins/myoperator-design",
+      "category": "development"
     }
   ]
 }
