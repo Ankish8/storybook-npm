@@ -1048,6 +1048,7 @@ const ChatBubbleMessageMode = React.forwardRef<
                     fileType={msg.media.fileType}
                     pageCount={msg.media.pageCount}
                     fileSize={msg.media.fileSize}
+                    documentUrl={msg.media.url}
                   />
                 )}
                 {msg.type === "document" && msg.media && (
@@ -1058,6 +1059,7 @@ const ChatBubbleMessageMode = React.forwardRef<
                     fileType={msg.media.fileType}
                     pageCount={msg.media.pageCount}
                     fileSize={msg.media.fileSize}
+                    documentUrl={msg.media.url}
                   />
                 )}
                 {msg.type === "otherDoc" && msg.media && (
@@ -1069,6 +1071,7 @@ const ChatBubbleMessageMode = React.forwardRef<
                     fileSize={msg.media.fileSize}
                     downloadUrl={msg.media.url}
                     downloadFilename={msg.media.filename}
+                    documentUrl={msg.media.url}
                   />
                 )}
                 {msg.type === "carousel" && msg.media && (

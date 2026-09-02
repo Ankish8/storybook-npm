@@ -51,7 +51,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "prepublishOnly": "npm run build:lib",
     "prepare": "husky",
-    "postinstall": "node scripts/ensure-cli-registry.js"
+    "postinstall": "node scripts/ensure-cli-registry.js",
+    "emit-catalog": "node scripts/emit-catalog.js",
+    "merlin": "node tools/merlin/merlin.mjs"
   },
   "overrides": {
     "tailwindcss": "^3.4.18"
@@ -119,6 +121,7 @@
     "vite": "^7.2.4",
     "vite-plugin-singlefile": "^2.3.3",
     "vite-plugin-dts": "^3.9.1",
+    "vite-plugin-singlefile": "^2.3.3",
     "vitest": "^1.0.0"
   }
 }

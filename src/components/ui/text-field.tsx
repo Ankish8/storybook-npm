@@ -209,7 +209,15 @@ const TextField = React.forwardRef(
         );
 
         input.value = collapsedValue;
+        // Restore the caret synchronously: assigning `value` above parks it at
+        // 0, and the next keystroke can land before any animation frame runs,
+        // which reorders what the user typed. The deferred pass is kept for
+        // browsers that reset the caret again after React re-renders, but it
+        // must no-op once the value has moved on — a frame that fires mid-typing
+        // would otherwise drag the caret back to a stale position.
+        input.setSelectionRange(nextCursor, nextCursor);
         window.requestAnimationFrame(() => {
+          if (input.value !== collapsedValue) return;
           input.setSelectionRange(nextCursor, nextCursor);
         });
       }
@@ -293,11 +301,11 @@ const TextField = React.forwardRef(
             input.value.slice(selectionEnd);
 
           if (nextValue.includes("  ")) {
+            // Blocking the insertion is enough — nothing moved, so the caret is
+            // already where it belongs. Re-setting it from a later animation
+            // frame, with an offset captured before this keystroke, drags the
+            // caret backwards and reorders what follows.
             e.preventDefault();
-            input.setSelectionRange(selectionStart, selectionStart);
-            window.requestAnimationFrame(() => {
-              input.setSelectionRange(selectionStart, selectionStart);
-            });
           }
         }}
         onChange={handleChange}

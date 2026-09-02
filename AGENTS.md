@@ -51,7 +51,40 @@ npm run typecheck          # TypeScript check
 
 # Sync MCP metadata (from root)
 node scripts/sync-mcp-metadata.js  # Updates MCP package with component info from components.yaml
+
+# Merlin handoff (screen twins) — see tools/merlin/README.md
+npm run merlin -- whoami                    # session check (--api dev for the dev deployment)
+npm run merlin -- projects                  # handoff projects
+npm run merlin -- context <screenId> --out twins/<slug>/context
+npm run merlin -- push <screenId> twins/<slug>/dist/index.html
 ```
+
+## Screen twins (Merlin handoff)
+
+`/build-screen` rebuilds a Figma screen from Merlin's handoff workspace as a **twin** —
+one self-contained HTML file, built from the real components in `src/`, published back
+to Merlin where it renders beside the design behind a **Live** toggle. Clickable,
+typeable and genuinely responsive, which a Figma frame is not.
+
+- **`tools/merlin/`** owns every call to Merlin: OAuth (public client + PKCE, loopback
+  ports **8976/8977** — Merlin matches redirect URIs exactly, so no other port works),
+  the `/v1/handoff/*` API, the twin scaffolder and the tree summariser. The command
+  never calls the API itself; one client, one place to keep correct.
+- **`twins/<slug>/` is gitignored working scratch.** The artifact is the uploaded HTML.
+  A twin declares **no dependencies** — React, Vite and Tailwind resolve from the repo
+  root, which is what guarantees a single copy of React; installing inside one is how
+  every hook starts throwing.
+- **Twins are UNPREFIXED**, like Storybook. The `tw-` prefix belongs to CLI-installed
+  copies and the two must never be mixed in one bundle.
+- **Its Tailwind config resolves through `__dirname`, never CWD.** A bare
+  `tailwindcss("./tailwind.config.js")` loads the ROOT config when vite runs from the
+  repo root, whose content globs do not cover the twin — every class is purged and it
+  looks like broken CSS rather than a misresolved path.
+- **Never infer what a semantic token is from its name.** `--semantic-bg-secondary` is
+  `--color-primary-950` — near-black, not a light secondary surface; the light page
+  background is `--semantic-bg-ui`. Read `src/index.css`. This renders as a black
+  screen and survives code review easily.
+
 
 ## Component Change Workflow
 

@@ -125,6 +125,8 @@ const meta: Meta<typeof DocMedia> = {
         component: `
 A document media component for displaying documents in chat messages. Supports three variants: **preview** and **download** (both show full image thumbnail with gradient overlay, filename, and metadata — consistent appearance for agent and customer messages), and **file** (icon-centered preview with filetype badge and download button for documents without thumbnails).
 
+Pass \`documentUrl\` (the real file, as opposed to \`thumbnailUrl\`'s cover image) with \`fileType="PDF"\` and the thumbnail is replaced by the actual document embedded inline — the browser's native PDF viewer running in an \`<iframe>\`, sized the same as the thumbnail it replaces. Hover the card and scroll to move through the PDF's pages right there, no click or separate view needed. Every other file type (and \`variant="file"\`) keeps the static thumbnail/icon as before.
+
 ### Installation
 
 \`\`\`bash
@@ -166,6 +168,11 @@ import { DocMedia } from "@/components/custom/doc-media"
 export default meta;
 type Story = StoryObj<typeof DocMedia>;
 
+// Mozilla's own PDF.js demo file — a small, reliably-hosted real PDF so the
+// preview stories below open an actual scrollable document, not a 404.
+const SAMPLE_PDF_URL =
+  "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
+
 export const PDFPreview: Story = {
   args: {
     variant: "preview",
@@ -174,6 +181,46 @@ export const PDFPreview: Story = {
     fileType: "PDF",
     pageCount: 24,
     fileSize: "3.2 MB",
+  },
+};
+
+export const InlineScrollablePdf: Story = {
+  name: "Inline scrollable PDF",
+  args: {
+    variant: "preview",
+    thumbnailUrl: "https://placehold.co/442x308/e2e8f0/64748b?text=PDF+Preview",
+    filename: "Annual_Report_2025.pdf",
+    fileType: "PDF",
+    pageCount: 24,
+    fileSize: "3.2 MB",
+    documentUrl: SAMPLE_PDF_URL,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "With `documentUrl` set and `fileType=\"PDF\"`, the static thumbnail is replaced by the real document — the browser's native PDF viewer running inline in an `<iframe>`. Hover it and scroll to move through the pages, right there in the card.",
+      },
+    },
+  },
+};
+
+export const NonPdfKeepsStaticThumbnail: Story = {
+  name: "Non-PDF keeps the static thumbnail",
+  args: {
+    variant: "preview",
+    thumbnailUrl: "https://placehold.co/442x308/e2e8f0/64748b?text=Spreadsheet",
+    filename: "Q4_Sales_Data.xlsx",
+    fileType: "XLS",
+    documentUrl: "https://example.com/Q4_Sales_Data.xlsx",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Non-PDF file types (spreadsheets, Word docs, etc.) can't render inline in a browser, so `documentUrl` is ignored for them — the card just shows the static thumbnail as usual.",
+      },
+    },
   },
 };
 

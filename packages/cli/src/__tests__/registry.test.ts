@@ -30,9 +30,14 @@ describe("Registry", () => {
         expect(component.description).toBeTruthy();
         expect(typeof component.description).toBe("string");
 
-        // Check dependencies
+        // Check dependencies. A component must pull in *something* — but a pure
+        // composite (e.g. a modal built only from other myOperator components)
+        // legitimately has no npm dependencies of its own, only internal ones.
         expect(component.dependencies).toBeInstanceOf(Array);
-        expect(component.dependencies.length).toBeGreaterThan(0);
+        expect(
+          component.dependencies.length +
+            (component.internalDependencies?.length ?? 0)
+        ).toBeGreaterThan(0);
 
         // Check files
         expect(component.files).toBeInstanceOf(Array);

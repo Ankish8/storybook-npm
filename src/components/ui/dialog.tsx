@@ -85,7 +85,7 @@ const DialogContent = React.forwardRef(({ className, children, size, hideCloseBu
         {children}
         {/* Accessibility: Add hidden description if none provided */}
         {!hasDescription && (
-          <DialogPrimitive.Description className="sr-only">
+          <DialogPrimitive.Description className="sr-only m-0">
             Dialog content
           </DialogPrimitive.Description>
         )}
@@ -144,7 +144,7 @@ DialogTitle.displayName = DialogPrimitive.Title.displayName;
 const DialogDescription = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>, ref: React.Ref<React.ElementRef<typeof DialogPrimitive.Description>>) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("m-0 text-sm text-muted-foreground", className)}
     {...props}
   />
 ));

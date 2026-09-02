@@ -175,6 +175,18 @@ export interface MultiSelectProps extends VariantProps<
   searchable?: boolean;
   /** Search placeholder text */
   searchPlaceholder?: string;
+  /**
+   * When set, the trigger shows a single compact summary (e.g. "3 lines
+   * selected") instead of one chip per selection; hovering it reveals the full
+   * list of selected labels in a tooltip. Receives the selected count.
+   */
+  summaryLabel?: (count: number) => string;
+  /**
+   * When set, pins a select-all row at the top of the list with this label
+   * (e.g. "All lines"). Toggles every non-disabled option; respects
+   * `maxSelections`. Omit to hide the row entirely.
+   */
+  selectAllLabel?: string;
   /** Maximum selections allowed */
   maxSelections?: number;
   /**
@@ -252,6 +264,8 @@ const MultiSelect = React.forwardRef(
       options,
       searchable,
       searchPlaceholder = "Search...",
+      selectAllLabel,
+      summaryLabel,
       maxSelections,
       showSelectionFooter = true,
       wrapperClassName,
@@ -400,6 +414,28 @@ const MultiSelect = React.forwardRef(
     // Determine if controlled
     const isControlled = value !== undefined;
     const selectedValues = isControlled ? value : internalValue;
+
+    // Select-all: values eligible for select-all exclude disabled options
+    const selectableValues = React.useMemo(
+      () => flatOptions.filter((o) => !o.disabled).map((o) => o.value),
+      [flatOptions]
+    );
+    const allSelected =
+      selectableValues.length > 0 &&
+      selectableValues.every((v) => selectedValues.includes(v));
+    const someSelected = selectedValues.length > 0 && !allSelected;
+
+    const toggleSelectAll = () => {
+      const newValues = allSelected
+        ? []
+        : maxSelections
+          ? selectableValues.slice(0, maxSelections)
+          : selectableValues;
+      if (!isControlled) {
+        setInternalValue(newValues);
+      }
+      onValueChange?.(newValues);
+    };
 
     // Derive state from props
     const derivedState = error ? "error" : (state ?? "default");
@@ -621,6 +657,23 @@ const MultiSelect = React.forwardRef(
               <span className="text-base text-semantic-text-placeholder">
                 {placeholder}
               </span>
+            ) : summaryLabel ? (
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="min-w-0 truncate text-sm text-semantic-text-primary">
+                      {summaryLabel(selectedValues.length)}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="flex flex-col gap-0.5">
+                      {selectedLabels.map((label, index) => (
+                        <span key={selectedValues[index]}>{label}</span>
+                      ))}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ) : (
               selectedLabels.map((label, index) => (
                 <span
@@ -751,6 +804,32 @@ const MultiSelect = React.forwardRef(
                     className="w-full h-[42px] px-3 text-base text-semantic-text-primary border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                     onClick={(e) => e.stopPropagation()}
                   />
+                </div>
+              )}
+
+              {/* Select all */}
+              {selectAllLabel && (
+                <div
+                  role="option"
+                  aria-selected={allSelected}
+                  tabIndex={0}
+                  onClick={toggleSelectAll}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggleSelectAll();
+                    }
+                  }}
+                  className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-semantic-text-primary outline-none hover:bg-semantic-bg-ui"
+                >
+                  <Checkbox
+                    checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                    size="sm"
+                    className="pointer-events-none shrink-0"
+                    aria-hidden
+                    tabIndex={-1}
+                  />
+                  <span className="min-w-0 flex-1 truncate text-left">{selectAllLabel}</span>
                 </div>
               )}
 
