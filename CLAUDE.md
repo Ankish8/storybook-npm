@@ -25,6 +25,14 @@ designer installed the plugin, got the commands, and got no Merlin connection, w
 the one step the plugin exists to remove. `claude plugin details myoperator` is the only
 thing that shows the difference; check it after any change here.
 
+**BUMP `version` OR NOBODY GETS THE CHANGE.** `claude plugin update` compares the
+manifest version, not the content: with the version unchanged it reports "already at
+the latest version" and leaves the installed copy — a stale snapshot under
+`~/.claude/plugins/cache/<marketplace>/<plugin>/` — exactly as it was. Note that
+`claude plugin marketplace update` refreshes the marketplace checkout and NOT that
+copy, so it looks like it worked. Bump the version in BOTH `plugin.json` and the
+marketplace entry on any change here.
+
 **Skills, not commands, for the same reason.** A plugin `commands/` entry is reachable
 only as `/myoperator:build-screen` — bare `/build-screen` answers `Unknown command`. A
 plugin SKILL is reachable as both, which is why Merlin's UI can go on saying
