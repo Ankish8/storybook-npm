@@ -165,16 +165,32 @@ function freeBytes(dir) {
 /** Every reason we refuse, as a sentence naming the fix. Empty means go ahead. */
 export function preflight({ home = merlinHome() } = {}) {
   const problems = [];
+  /*
+   * THE FIX IS NAMED FOR THE MACHINE IT IS ON. "Install Node" is not an instruction
+   * to someone who has never installed it, and the right command differs per platform
+   * — this runs on designers' laptops, not on servers where everyone knows.
+   */
   if (nodeTooOld()) {
+    const how =
+      process.platform === "darwin"
+        ? "Download it from nodejs.org, or `brew install node` if you use Homebrew."
+        : process.platform === "win32"
+          ? "Download the LTS installer from nodejs.org, or `winget install OpenJS.NodeJS.LTS`."
+          : "Install it from nodejs.org, or your distribution's package manager.";
     problems.push(
-      `Node ${MIN_NODE.join(".")} or newer is required (this is ${process.versions.node}). ` +
-        `Install it from nodejs.org, or with \`brew install node\`.`,
+      `Node ${MIN_NODE.join(".")} or newer is required and this machine has ${process.versions.node}. ${how}`,
     );
   }
   if (!hasGit()) {
+    const how =
+      process.platform === "darwin"
+        ? "Run `xcode-select --install` and accept the prompt."
+        : process.platform === "win32"
+          ? "Install it from git-scm.com, or `winget install Git.Git`."
+          : "Install it with your distribution's package manager, e.g. `apt install git`.";
     problems.push(
-      "git is not installed. On macOS run `xcode-select --install`. " +
-        "You can still run /audit-screen, which needs neither git nor a checkout.",
+      `git is not installed. ${how} You can still run /audit-screen meanwhile — it needs ` +
+        "neither git nor a local copy of the design system.",
     );
   }
   const free = freeBytes(home);
@@ -239,6 +255,15 @@ function writeState(patch) {
   fs.writeFileSync(statePath(), JSON.stringify(next, null, 2));
   return next;
 }
+
+/**
+ * `npm` IS `npm.cmd` ON WINDOWS, and `spawnSync` without a shell will not find it —
+ * it raises ENOENT, which would read here as "npm is not installed" on a machine
+ * where it plainly is. `git` needs no such treatment: git.exe is a real executable on
+ * PATH. Named explicitly rather than reaching for `shell: true`, which would put a
+ * command line through the shell for no benefit.
+ */
+const NPM = process.platform === "win32" ? "npm.cmd" : "npm";
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, { cwd, encoding: "utf8" });
@@ -370,12 +395,12 @@ export function ensureWorkspace({ ref = DEFAULT_REF, force = false, log = () => 
 
     if (force || !installLooksComplete(dir)) {
       log("Installing dependencies… (a few minutes the first time)");
-      const npm = run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], dir);
+      const npm = run(NPM, ["install", "--ignore-scripts", "--no-audit", "--no-fund"], dir);
       if (npm.status !== 0 || !installLooksComplete(dir)) {
         // One retry: a partial install from an interrupted run is common and
         // repairs itself, and re-reporting without trying is a worse answer.
         log("The install did not complete. Retrying once…");
-        const retry = run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], dir);
+        const retry = run(NPM, ["install", "--ignore-scripts", "--no-audit", "--no-fund"], dir);
         if (retry.status !== 0 || !installLooksComplete(dir)) {
           const tail = (retry.stderr || npm.stderr || "").split("\n").slice(-40).join("\n");
           throw new Error(

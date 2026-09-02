@@ -12,7 +12,7 @@
     {
       "name": "myoperator",
       "displayName": "myOperator design tools",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "description": "Build and audit myOperator design-handoff screens from Merlin. Run /setup once and it connects Merlin and downloads the design system for you.",
       "author": {
         "name": "myOperator",
