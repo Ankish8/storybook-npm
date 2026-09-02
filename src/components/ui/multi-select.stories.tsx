@@ -651,7 +651,15 @@ const fetchAgentPage = (page: number) =>
     }, 700);
   });
 
-const InfiniteScrollExample = () => {
+const InfiniteScrollExample = ({
+  optionVariant = "detailed",
+  searchable = false,
+  label = "Agent",
+}: {
+  optionVariant?: "simple" | "detailed";
+  searchable?: boolean;
+  label?: string;
+}) => {
   const [options, setOptions] = React.useState<MultiSelectOption[]>([]);
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
@@ -675,9 +683,11 @@ const InfiniteScrollExample = () => {
   return (
     <div className="w-[320px]">
       <MultiSelect
-        label="Agent"
+        label={label}
         placeholder="Select agents"
-        optionVariant="detailed"
+        optionVariant={optionVariant}
+        searchable={searchable}
+        searchPlaceholder="Search..."
         options={options}
         hasMore={hasMore}
         loadingMore={loadingMore}
@@ -691,12 +701,24 @@ const InfiniteScrollExample = () => {
 };
 
 export const InfiniteScroll: Story = {
-  render: () => <InfiniteScrollExample />,
+  render: () => (
+    <div className="flex flex-wrap gap-8">
+      <InfiniteScrollExample
+        optionVariant="simple"
+        searchable
+        label="Simple + search"
+      />
+      <InfiniteScrollExample
+        optionVariant="detailed"
+        label="Detailed rows"
+      />
+    </div>
+  ),
   parameters: {
     docs: {
       description: {
         story:
-          "Server-side pagination. `onScrollEnd` fires once when the list is scrolled within 48px of the bottom, `loadingMore` renders the spinner row, and `hasMore` stops the requests at the last page. The callback is latched, so trackpad momentum cannot fan one flick out into several requests.",
+          "Server-side pagination in both option styles. `onScrollEnd` fires once when the list is scrolled within 48px of the bottom, `loadingMore` renders the spinner row, and `hasMore` stops the requests at the last page. The callback is latched, so trackpad momentum cannot fan one flick out into several requests. Left: `optionVariant=\"simple\"` with `searchable` — a search box above the list and a checkmark on the right of the selected rows; the filter runs over the pages already fetched, so scroll further to search a wider set. Right: `optionVariant=\"detailed\"` — checkbox plus primary and secondary text.",
       },
     },
   },
