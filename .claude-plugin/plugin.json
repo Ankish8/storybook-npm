@@ -1,6 +1,6 @@
 {
   "name": "myoperator",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Build and audit myOperator design-handoff screens from Merlin. Rebuilds a Figma screen as a working page out of the real design-system components, or publishes a UX audit back to the team.",
   "author": {
     "name": "myOperator",

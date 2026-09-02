@@ -74,11 +74,37 @@ export function isWorkspace(dir) {
   );
 }
 
+/**
+ * THE PLUGIN'S OWN COPY IS NEVER A WORKSPACE, even though it looks exactly like one.
+ *
+ * Installing the plugin clones this whole repository into
+ * `~/.claude/plugins/marketplaces/<name>/`, so it carries `src/index.css`,
+ * `tailwind.config.js` and a `package.json` — every file `isWorkspace` tests — and no
+ * node_modules. Measured: with a shell anywhere inside it, `workspace --status`
+ * answered `ok: true, installed: false` and pointed at the plugin.
+ *
+ * Taken as the workspace it would send `npm install` and every twin into a directory
+ * the docs call ephemeral and that is replaced on the next plugin update — so the
+ * install is thrown away, silently, and `--status` disagrees with `ensureWorkspace`,
+ * which only ever manages ~/.merlin/design-system.
+ *
+ * Both tests are needed: CLAUDE_PLUGIN_ROOT is exact but set only while a plugin is
+ * running, and the path check still catches a shell that happens to be in there.
+ */
+function isPluginCopy(dir) {
+  const root = process.env.CLAUDE_PLUGIN_ROOT;
+  const resolved = path.resolve(dir);
+  if (root && (resolved === path.resolve(root) || resolved.startsWith(path.resolve(root) + path.sep))) {
+    return true;
+  }
+  return resolved.split(path.sep).join("/").includes("/.claude/plugins/");
+}
+
 /** Walk up from `start` looking for a real checkout. */
 function findCheckoutUpwards(start) {
   let dir = path.resolve(start);
   for (let i = 0; i < 12; i += 1) {
-    if (isWorkspace(dir)) return dir;
+    if (isWorkspace(dir) && !isPluginCopy(dir)) return dir;
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;

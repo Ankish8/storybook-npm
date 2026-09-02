@@ -12,8 +12,8 @@
     {
       "name": "myoperator",
       "displayName": "myOperator design tools",
-      "version": "1.0.1",
-      "description": "Build and audit myOperator design-handoff screens from Merlin. Adds /build-screen and /audit-screen, and connects Merlin's MCP server so there is nothing else to set up.",
+      "version": "1.1.0",
+      "description": "Build and audit myOperator design-handoff screens from Merlin. Run /setup once and it connects Merlin and downloads the design system for you.",
       "author": {
         "name": "myOperator",
         "email": "ankish@myoperator.co"
