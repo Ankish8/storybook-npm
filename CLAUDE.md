@@ -4,6 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **IMPORTANT: Never add "Co-Authored-By: Claude" or "Generated with Claude Code" to commit messages.**
 
+## Merlin handoff plugin (`/build-screen`, `/audit-screen`)
+
+This repo is a Claude Code plugin. `.claude-plugin/plugin.json` declares `skills`
+(NOT `commands`) so only the four designer skills ship — `publish-all`, `add-prop` and
+`create-component` stay project-scoped to a checkout, which is where they belong.
+
+**THE MCP SERVER MUST BE DECLARED IN `.mcp.json` AT THE REPO ROOT.** Do not move it
+into `plugin.json`. The docs say `mcpServers` may be inline there, or a path — measured
+on Claude Code 2.1.236, **both forms load NOTHING**:
+
+| where | `claude plugin details` |
+|---|---|
+| `mcpServers` inline in plugin.json | `MCP servers (0)` |
+| `"mcpServers": "./mcp-config.json"` | `MCP servers (0)` |
+| **`.mcp.json` at the plugin root** | **`MCP servers (1)`** |
+
+It shipped inline first and `claude plugin validate` passed, so nothing caught it — a
+designer installed the plugin, got the commands, and got no Merlin connection, which is
+the one step the plugin exists to remove. `claude plugin details myoperator` is the only
+thing that shows the difference; check it after any change here.
+
+**Skills, not commands, for the same reason.** A plugin `commands/` entry is reachable
+only as `/myoperator:build-screen` — bare `/build-screen` answers `Unknown command`. A
+plugin SKILL is reachable as both, which is why Merlin's UI can go on saying
+`/build-screen`.
+
 ## Architecture Overview
 
 This is a **React component library** (myOperator UI) distributed via a CLI tool, with an MCP server for AI integration. The monorepo contains three packages:

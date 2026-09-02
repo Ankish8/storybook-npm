@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "merlin": {
+      "type": "http",
+      "url": "https://basic-monitor-555.convex.site/mcp"
+    }
+  }
+}
