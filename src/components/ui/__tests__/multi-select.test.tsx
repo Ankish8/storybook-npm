@@ -6,6 +6,7 @@ import {
   flattenMultiSelectOptions,
   type MultiSelectOption,
 } from "../multi-select";
+import { Dialog, DialogContent, DialogTitle } from "../dialog";
 
 const defaultOptions: MultiSelectOption[] = [
   { value: "option1", label: "Option 1" },
@@ -556,5 +557,60 @@ describe("MultiSelect", () => {
     );
 
     expect(screen.getByTitle(longLabel)).toHaveClass("truncate");
+  });
+
+  // Inside a Radix Dialog the focus trap must not steal focus from the
+  // body-portaled search input (regression: typing did nothing).
+  it("keeps the search input typable inside a Dialog", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Assign</DialogTitle>
+          <MultiSelect options={defaultOptions} searchable placeholder="Select" />
+        </DialogContent>
+      </Dialog>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const search = await screen.findByPlaceholderText("Search...");
+    search.focus();
+    await user.type(search, "Option 2");
+
+    expect(search).toHaveValue("Option 2");
+    expect(document.activeElement).toBe(search);
+    expect(screen.queryByText("Option 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+  });
+
+  // Radix FocusScope also restores focus from its document `focusout` handler,
+  // which fires on the element inside the dialog and so never passes through
+  // the menu. jsdom leaves `relatedTarget` null on a plain focus() call, so the
+  // browser's event is reconstructed here.
+  it("survives the Dialog focus trap's focusout handler", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Assign</DialogTitle>
+          <MultiSelect options={defaultOptions} searchable placeholder="Select" />
+        </DialogContent>
+      </Dialog>
+    );
+
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    const search = await screen.findByPlaceholderText("Search...");
+    search.focus();
+
+    trigger.dispatchEvent(
+      new FocusEvent("focusout", {
+        bubbles: true,
+        composed: true,
+        relatedTarget: search,
+      })
+    );
+
+    expect(document.activeElement).toBe(search);
   });
 });

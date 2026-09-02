@@ -372,9 +372,37 @@ const MultiSelect = React.forwardRef(
       const stop = (event: Event) => event.stopPropagation();
       node.addEventListener("wheel", stop, { passive: false });
       node.addEventListener("touchmove", stop, { passive: false });
+
+      /**
+       * The dialog also traps focus. Radix `FocusScope` registers TWO bubble
+       * listeners on `document` and either one is enough to make the search
+       * input untypable:
+       *   - `focusin`  — target outside the dialog, so focus is pulled back.
+       *   - `focusout` — fired on the element focus is LEAVING (inside the
+       *     dialog) with `relatedTarget` = our input; since that is outside, it
+       *     restores the previously focused element.
+       * The `focusout` one never travels through the menu, so a listener on the
+       * menu node cannot see it. Intercepting in the CAPTURE phase on
+       * `document` does: capture at `document` runs before the bubble listeners
+       * on the same node, so stopping propagation there means FocusScope never
+       * runs — but only for focus events that involve the menu. Every other
+       * focus event in the app is untouched.
+       */
+      const stopMenuFocusEvent = (event: Event) => {
+        const { target, relatedTarget } = event as FocusEvent;
+        const touchesMenu =
+          (target instanceof Node && node.contains(target)) ||
+          (relatedTarget instanceof Node && node.contains(relatedTarget));
+        if (touchesMenu) event.stopPropagation();
+      };
+      document.addEventListener("focusin", stopMenuFocusEvent, true);
+      document.addEventListener("focusout", stopMenuFocusEvent, true);
+
       return () => {
         node.removeEventListener("wheel", stop);
         node.removeEventListener("touchmove", stop);
+        document.removeEventListener("focusin", stopMenuFocusEvent, true);
+        document.removeEventListener("focusout", stopMenuFocusEvent, true);
       };
     }, [isOpen, portalTarget, refs.floating]);
 
