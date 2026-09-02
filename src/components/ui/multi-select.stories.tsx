@@ -538,9 +538,12 @@ export const GroupedDetailed: Story = {
 };
 
 /**
- * Inside a Radix Dialog the menu mounts into the dialog content element, not
- * `document.body` — otherwise the dialog's scroll lock and focus scope treat it
- * as an outside element and swallow wheel and click events.
+ * Inside a Radix Dialog the menu still portals to `document.body` (a dialog is a
+ * transformed, scrollable ancestor and would clip a `position: fixed` menu). The
+ * component neutralises what the dialog would otherwise do to an outside
+ * element: wheel/touchmove are kept from the scroll lock, `pointer-events: auto`
+ * restores clicks, and `focusin` / `focusout` are stopped so the focus trap
+ * cannot pull focus off the search input mid-keystroke.
  */
 export const InsideDialog: Story = {
   render: () => {
