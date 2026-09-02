@@ -1,0 +1,1 @@
+../../.claude/skills/build-screen-cursor/SKILL.md

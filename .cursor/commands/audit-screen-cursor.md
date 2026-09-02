@@ -1,0 +1,1 @@
+../../.claude/skills/audit-screen-cursor/SKILL.md
