@@ -452,6 +452,85 @@ export type {
 export { DateRangeModal } from "./components/custom/date-range-modal/index";
 export type { DateRangeModalProps } from "./components/custom/date-range-modal/index";
 
+// CallLogs (Custom)
+export { CallLogs } from "./components/custom/call-logs/call-logs";
+export type {
+  CallLogsProps,
+  CallLogsHandledBy,
+  CallLogsActions,
+  CallStatus,
+} from "./components/custom/call-logs/call-logs";
+
+// LiveCallsBanner (Custom)
+export { LiveCallsBanner } from "./components/custom/call-logs/live-calls-banner";
+export type { LiveCallsBannerProps } from "./components/custom/call-logs/live-calls-banner";
+
+
+// CallJourneyPanel (Custom)
+export { CallJourneyPanel } from "./components/custom/call-logs/call-journey-panel";
+export type { CallJourneyPanelProps, CallJourneyEvent } from "./components/custom/call-logs/call-journey-panel";
+
+// CallLogsFilterPanel (Custom)
+export { CallLogsFilterPanel } from "./components/custom/call-logs/call-logs-filter-panel";
+export type {
+  CallLogsFilterValue,
+  CallLogsFilterPanelProps,
+} from "./components/custom/call-logs/call-logs-filter-panel";
+export {
+  CALL_STATUS_OPTIONS,
+  CALL_DIRECTION_OPTIONS,
+  SOURCE_OPTIONS,
+  DURATION_OPTIONS,
+  AI_HANDLING_OPTIONS,
+  TRANSFER_STATUS_OPTIONS,
+} from "./components/custom/call-logs/call-logs-filter-panel";
+
+// CallLogsSavePresetModal (Custom)
+export { CallLogsSavePresetModal } from "./components/custom/call-logs/call-logs-save-preset-modal";
+export type { CallLogsSavePresetModalProps } from "./components/custom/call-logs/call-logs-save-preset-modal";
+
+// CallLogsActiveFiltersBar (Custom)
+export { CallLogsActiveFiltersBar } from "./components/custom/call-logs/call-logs-active-filters-bar";
+export type {
+  CallLogsActiveFiltersBarProps,
+  CallLogsActiveFilterChip,
+} from "./components/custom/call-logs/call-logs-active-filters-bar";
+
+// BulkSelectionToolbar (Custom)
+export { BulkSelectionToolbar } from "./components/custom/call-logs/bulk-selection-toolbar";
+export type { BulkSelectionAction, BulkSelectionToolbarProps } from "./components/custom/call-logs/bulk-selection-toolbar";
+
+// RecordingPlaybackBar (Custom)
+export { RecordingPlaybackBar } from "./components/custom/call-logs/recording-playback-bar";
+export type { RecordingPlaybackBarProps } from "./components/custom/call-logs/recording-playback-bar";
+
+// CallDetailPanel (Custom)
+export { CallDetailPanel } from "./components/custom/call-logs/call-detail-panel";
+export type {
+  CallDetailPanelProps,
+  CallDetailNote,
+  CallDetailLogEntry,
+} from "./components/custom/call-logs/call-detail-panel";
+
+// CallLogsViewTabs (Custom)
+export { CallLogsViewTabs } from "./components/custom/call-logs/call-logs-view-tabs";
+export type { CallLogsViewTab, CallLogsViewTabsProps } from "./components/custom/call-logs/call-logs-view-tabs";
+
+// CallLogsDateRangeFilter (Custom)
+export { CallLogsDateRangeFilter } from "./components/custom/call-logs/call-logs-date-range-filter";
+export type { CallLogsDateRangeFilterProps } from "./components/custom/call-logs/call-logs-date-range-filter";
+
+// CallLogsLineSelect (Custom)
+export { CallLogsLineSelect } from "./components/custom/call-logs/call-logs-line-select";
+export type { CallLogsLineSelectProps } from "./components/custom/call-logs/call-logs-line-select";
+
+// CallLogsSearchBar (Custom)
+export { CallLogsSearchBar } from "./components/custom/call-logs/call-logs-search-bar";
+export type {
+  CallLogsSearchBarProps,
+  CallLogsSearchBarSuggestion,
+} from "./components/custom/call-logs/call-logs-search-bar";
+
 // ChatListItem (Custom)
 export { ChatListItem } from "./components/custom/chat-list-item";
 export type { ChatListItemProps, MessageStatus, MessageType } from "./components/custom/chat-list-item";

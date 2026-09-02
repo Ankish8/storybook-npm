@@ -202,6 +202,34 @@ Report after finishing:
   npm view myoperator-mcp version
   ```
 
+### Tell Merlin (latest only)
+
+Merlin's dev-handoff workspace reads the deployed Storybook's `catalog.json` on a
+nightly cron (21:00 UTC). Until it runs, a component published today still shows in
+handoff as an unmatched dashed outline — the design system has it, the tool does not
+yet know.
+
+End the report with:
+
+> Merlin picks up the new catalog at the nightly sync. To have it now, open Merlin →
+> any handoff project → **Styleguide** → **Sync now** (throttled to once a minute).
+> It is also still in the right rail under **Integrations**.
+
+**Name the requests this deploy satisfies.** If any component in this release came
+from a Merlin component request — you completed one with
+`handoff_complete_component_request`, or `handoff_list_component_requests` with
+`status: "shipped"` lists one whose slug is in this release — say so explicitly:
+
+> `feature-card` was requested from the Empty State screen. Once the sync runs, every
+> instance of that Figma component resolves to it automatically.
+
+That sentence is the only thing connecting the person who asked to the deploy that
+answered them. Without it the request sits at "shipped" in Merlin and the designer
+finds out by checking.
+
+Only for `latest`: a beta publish triggers no Vercel deploy, so there is nothing new
+for Merlin to read.
+
 ---
 
 ## Quick Reference

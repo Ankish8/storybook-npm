@@ -39,6 +39,7 @@ categories:
       - search-filter
       - readable-field
       - date-time-picker
+      - date-range-picker
 
   data:
     description: "Data display components"
@@ -87,6 +88,25 @@ categories:
       - chat-composer
       - chat-list-item
       - chat-timeline-divider
+      - call-logs
+      - live-calls-banner
+      - call-journey-panel
+      - call-journey-json-modal
+      - call-logs-filter-panel
+      - call-logs-active-filters-bar
+      - call-logs-save-preset-modal
+      - call-logs-add-note-modal
+      - call-logs-edit-contact-modal
+      - call-logs-block-contact-modal
+      - call-logs-add-contact-modal
+      - bulk-selection-toolbar
+      - recording-playback-bar
+      - call-detail-panel
+      - call-logs-view-tabs
+      - call-logs-customize-tabs-modal
+      - call-logs-date-range-filter
+      - call-logs-line-select
+      - call-logs-search-bar
       - doc-media
       - event-selector
       - key-value-input
@@ -345,6 +365,18 @@ components:
       - "lucide-react"
     internalDependencies:
       - input
+
+  date-range-picker:
+    description: "A date range picker with a trigger button, an anchored popover calendar with range selection, month/year dropdown jump, and a quick-presets column (Today, Yesterday, Last 7 days, Last 30 days, This month, Last month)"
+    category: form
+    dependencies:
+      - "@floating-ui/react-dom@^2.1.6"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - dropdown-menu
 
   date-time-picker:
     description: "A date and time picker input with a calendar popover and start/end time fields"
@@ -1135,6 +1167,303 @@ components:
       - "index.ts"
     mainFile: "chat-list-item.tsx"
 
+  call-logs:
+    description: "A single call-logs table row showing caller identity, who/what handled the call, timing, and trailing actions like transfer or recording playback"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - badge
+      - checkbox
+      - dropdown-menu
+      - tooltip
+    isMultiFile: true
+    directory: "call-logs/call-logs"
+    files:
+      - "types.ts"
+      - "call-logs.tsx"
+      - "index.ts"
+    mainFile: "call-logs.tsx"
+
+  live-calls-banner:
+    description: "A banner showing how many calls are currently live, with an optional Hide/Show toggle"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    isMultiFile: true
+    directory: "call-logs/live-calls-banner"
+    files:
+      - "types.ts"
+      - "live-calls-banner.tsx"
+      - "index.ts"
+    mainFile: "live-calls-banner.tsx"
+
+  call-journey-panel:
+    description: "A slide-out panel showing the full event timeline for a single call, including AI/bot-handled Participants rendered as highlighted cards"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    isMultiFile: true
+    directory: "call-logs/call-journey-panel"
+    files:
+      - "types.ts"
+      - "call-journey-panel.tsx"
+      - "index.ts"
+    mainFile: "call-journey-panel.tsx"
+
+  call-journey-json-modal:
+    description: "The dialog opened from CallDetailPanel's 'View Detailed Logs' action — a read-only viewer for a call's raw JSON logs with a copy-to-clipboard button"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - dialog
+    isMultiFile: true
+    directory: "call-logs/call-journey-json-modal"
+    files:
+      - "types.ts"
+      - "call-journey-json-modal.tsx"
+      - "index.ts"
+    mainFile: "call-journey-json-modal.tsx"
+
+  call-logs-filter-panel:
+    description: "A slide-out filters drawer for the Call Logs page covering call type, source, duration, call properties, and people/routing filters"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - select-field
+      - multi-select
+      - checkbox
+      - button
+    isMultiFile: true
+    directory: "call-logs/call-logs-filter-panel"
+    files:
+      - "types.ts"
+      - "call-logs-filter-panel.tsx"
+      - "index.ts"
+    mainFile: "call-logs-filter-panel.tsx"
+
+  call-logs-active-filters-bar:
+    description: "A chip bar shown below the Call Logs top bar once filters are applied — one removable chip per active filter, plus Save as Preset and Clear All actions"
+    category: custom
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - tag
+    isMultiFile: true
+    directory: "call-logs/call-logs-active-filters-bar"
+    files:
+      - "types.ts"
+      - "call-logs-active-filters-bar.tsx"
+      - "index.ts"
+    mainFile: "call-logs-active-filters-bar.tsx"
+
+  call-logs-save-preset-modal:
+    description: "The confirmation dialog for CallLogsFilterPanel's 'Save as New Preset' action — names and saves the current filter combination"
+    category: custom
+    internalDependencies:
+      - form-modal
+      - text-field
+    isMultiFile: true
+    directory: "call-logs/call-logs-save-preset-modal"
+    files:
+      - "types.ts"
+      - "call-logs-save-preset-modal.tsx"
+      - "index.ts"
+    mainFile: "call-logs-save-preset-modal.tsx"
+
+  call-logs-add-note-modal:
+    description: "The dialog opened from a call-logs row's 'More actions' menu ('Notes') to add a note for that call"
+    category: custom
+    internalDependencies:
+      - form-modal
+      - textarea
+    isMultiFile: true
+    directory: "call-logs/call-logs-add-note-modal"
+    files:
+      - "types.ts"
+      - "call-logs-add-note-modal.tsx"
+      - "index.ts"
+    mainFile: "call-logs-add-note-modal.tsx"
+
+  call-logs-edit-contact-modal:
+    description: "The dialog opened from CallDetailPanel's 'Edit Contact' action to update a contact's name, phone number, and email"
+    category: custom
+    internalDependencies:
+      - form-modal
+      - text-field
+      - phone-input
+    isMultiFile: true
+    directory: "call-logs/call-logs-edit-contact-modal"
+    files:
+      - "types.ts"
+      - "call-logs-edit-contact-modal.tsx"
+      - "index.ts"
+    mainFile: "call-logs-edit-contact-modal.tsx"
+
+  call-logs-block-contact-modal:
+    description: "The confirmation dialog opened from CallDetailPanel's 'Block Caller' action, requiring a reason before blocking"
+    category: custom
+    internalDependencies:
+      - form-modal
+      - text-field
+      - phone-input
+      - textarea
+    isMultiFile: true
+    directory: "call-logs/call-logs-block-contact-modal"
+    files:
+      - "types.ts"
+      - "call-logs-block-contact-modal.tsx"
+      - "index.ts"
+    mainFile: "call-logs-block-contact-modal.tsx"
+
+  call-logs-add-contact-modal:
+    description: "The dialog for saving a new contact, e.g. from an 'Add Contact' button on the Call Logs page toolbar"
+    category: custom
+    internalDependencies:
+      - form-modal
+      - text-field
+      - phone-input
+    isMultiFile: true
+    directory: "call-logs/call-logs-add-contact-modal"
+    files:
+      - "types.ts"
+      - "call-logs-add-contact-modal.tsx"
+      - "index.ts"
+    mainFile: "call-logs-add-contact-modal.tsx"
+
+  bulk-selection-toolbar:
+    description: "A toolbar shown above a table when rows are selected, surfacing the selection count and bulk actions"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    isMultiFile: true
+    directory: "call-logs/bulk-selection-toolbar"
+    files:
+      - "types.ts"
+      - "bulk-selection-toolbar.tsx"
+      - "index.ts"
+    mainFile: "bulk-selection-toolbar.tsx"
+
+  recording-playback-bar:
+    description: "A bar shown above a call logs table while a call recording is playing, with play/pause control"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    isMultiFile: true
+    directory: "call-logs/recording-playback-bar"
+    files:
+      - "types.ts"
+      - "recording-playback-bar.tsx"
+      - "index.ts"
+    mainFile: "recording-playback-bar.tsx"
+
+  call-detail-panel:
+    description: "A slide-out side panel showing call recording playback with a waveform, an AI-generated summary, and Notes/Call-log tabs"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - textarea
+      - button
+    isMultiFile: true
+    directory: "call-logs/call-detail-panel"
+    files:
+      - "types.ts"
+      - "call-detail-panel.tsx"
+      - "index.ts"
+    mainFile: "call-detail-panel.tsx"
+
+  call-logs-view-tabs:
+    description: "A view-tab switcher for the Call Logs page showing built-in views alongside removable user-saved filter presets, collapsing extra presets into a 'More' dropdown"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - dropdown-menu
+    isMultiFile: true
+    directory: "call-logs/call-logs-view-tabs"
+    files:
+      - "types.ts"
+      - "call-logs-view-tabs.tsx"
+      - "index.ts"
+    mainFile: "call-logs-view-tabs.tsx"
+
+  call-logs-customize-tabs-modal:
+    description: "The dialog opened from CallLogsViewTabs' 'Customize tabs...' footer link — lists pinned and available views, reorderable and pin/unpin-able"
+    category: custom
+    dependencies:
+      - "lucide-react"
+    internalDependencies:
+      - dialog
+      - button
+    isMultiFile: true
+    directory: "call-logs/call-logs-customize-tabs-modal"
+    files:
+      - "types.ts"
+      - "call-logs-customize-tabs-modal.tsx"
+      - "index.ts"
+    mainFile: "call-logs-customize-tabs-modal.tsx"
+
+  call-logs-date-range-filter:
+    description: "The Call Logs page's Date Range filter — wraps DateRangePicker with future dates blocked by default"
+    category: custom
+    dependencies:
+      - "@floating-ui/react-dom@^2.1.6"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - date-range-picker
+    isMultiFile: true
+    directory: "call-logs/call-logs-date-range-filter"
+    files:
+      - "types.ts"
+      - "call-logs-date-range-filter.tsx"
+      - "index.ts"
+    mainFile: "call-logs-date-range-filter.tsx"
+
+  call-logs-line-select:
+    description: "The Call Logs page's Line (number dialled) filter — wraps MultiSelect with detailed rows, an All lines select-all, and search enabled by default"
+    category: custom
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - multi-select
+      - checkbox
+      - tooltip
+    isMultiFile: true
+    directory: "call-logs/call-logs-line-select"
+    files:
+      - "types.ts"
+      - "call-logs-line-select.tsx"
+      - "index.ts"
+    mainFile: "call-logs-line-select.tsx"
+
+  call-logs-search-bar:
+    description: "The Call Logs page header search — a text input with a live-suggestions dropdown (matched substring bolded), a clear button, and a committed-value state"
+    category: custom
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+    internalDependencies:
+      - text-field
+    isMultiFile: true
+    directory: "call-logs/call-logs-search-bar"
+    files:
+      - "types.ts"
+      - "call-logs-search-bar.tsx"
+      - "index.ts"
+    mainFile: "call-logs-search-bar.tsx"
+
   chat-timeline-divider:
     description: "A timeline divider for chat message lists — renders centered content between horizontal lines with date, unread, and system event variants"
     category: custom
@@ -1167,12 +1496,15 @@ components:
     mainFile: "chat-composer.tsx"
 
   doc-media:
-    description: "A document media component with preview, download, and file variants for chat messages"
+    description: "A document media component with preview, download, and file variants for chat messages — click opens an in-app scrollable PDF preview (or a download fallback for other file types)"
     category: custom
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+    internalDependencies:
+      - dialog
+      - button
     isMultiFile: true
     directory: "doc-media"
     files:
