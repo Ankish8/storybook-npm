@@ -26,6 +26,25 @@ const config: StorybookConfig = {
     options: {}
   },
   docs: {},
+  // Emits storybook-static/manifests/components.json on build (and serves
+  // /manifests/components.json in dev): per-component docgen props + per-story
+  // JSX snippets. Merlin's handoff workspace syncs it alongside public/catalog.json
+  // (scripts/emit-catalog.js) — keep both on, or Merlin degrades to CVA-only props.
+  features: {
+    experimentalComponentsManifest: true,
+  },
+  typescript: {
+    // The default "react-docgen" cannot resolve `VariantProps<typeof buttonVariants>`,
+    // which is every CVA component's props type. Slower builds, real prop tables.
+    reactDocgen: "react-docgen-typescript",
+    reactDocgenTypescriptOptions: {
+      shouldExtractLiteralValuesFromEnum: true,
+      // Without this filter the manifest lists every inherited HTML attribute —
+      // hundreds per component — instead of the component's own API.
+      propFilter: (prop) =>
+        prop.parent ? !/node_modules/.test(prop.parent.fileName) : true,
+    },
+  },
   viteFinal: async (config) => {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
