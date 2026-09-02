@@ -1,6 +1,6 @@
 # myOperator Component Catalog
 
-> Auto-generated from `components.yaml` and component metadata. 105 components across 7 categories.
+> Auto-generated from `components.yaml` and component metadata. 125 components across 7 categories.
 
 ## Quick Reference
 
@@ -29,6 +29,7 @@
 | SearchFilter | form | `npx myoperator-ui add search-filter` |
 | ReadableField | form | `npx myoperator-ui add readable-field` |
 | DateTimePicker | form | `npx myoperator-ui add date-time-picker` |
+| DateRangePicker | form | `npx myoperator-ui add date-range-picker` |
 | Table | data | `npx myoperator-ui add table` |
 | Dialog | overlay | `npx myoperator-ui add dialog` |
 | DropdownMenu | overlay | `npx myoperator-ui add dropdown-menu` |
@@ -57,6 +58,25 @@
 | ChatComposer | custom | `npx myoperator-ui add chat-composer` |
 | ChatListItem | custom | `npx myoperator-ui add chat-list-item` |
 | ChatTimelineDivider | custom | `npx myoperator-ui add chat-timeline-divider` |
+| CallLogs | custom | `npx myoperator-ui add call-logs` |
+| LiveCallsBanner | custom | `npx myoperator-ui add live-calls-banner` |
+| CallJourneyPanel | custom | `npx myoperator-ui add call-journey-panel` |
+| CallJourneyJsonModal | custom | `npx myoperator-ui add call-journey-json-modal` |
+| CallLogsFilterPanel | custom | `npx myoperator-ui add call-logs-filter-panel` |
+| CallLogsActiveFiltersBar | custom | `npx myoperator-ui add call-logs-active-filters-bar` |
+| CallLogsSavePresetModal | custom | `npx myoperator-ui add call-logs-save-preset-modal` |
+| CallLogsAddNoteModal | custom | `npx myoperator-ui add call-logs-add-note-modal` |
+| CallLogsEditContactModal | custom | `npx myoperator-ui add call-logs-edit-contact-modal` |
+| CallLogsBlockContactModal | custom | `npx myoperator-ui add call-logs-block-contact-modal` |
+| CallLogsAddContactModal | custom | `npx myoperator-ui add call-logs-add-contact-modal` |
+| BulkSelectionToolbar | custom | `npx myoperator-ui add bulk-selection-toolbar` |
+| RecordingPlaybackBar | custom | `npx myoperator-ui add recording-playback-bar` |
+| CallDetailPanel | custom | `npx myoperator-ui add call-detail-panel` |
+| CallLogsViewTabs | custom | `npx myoperator-ui add call-logs-view-tabs` |
+| CallLogsCustomizeTabsModal | custom | `npx myoperator-ui add call-logs-customize-tabs-modal` |
+| CallLogsDateRangeFilter | custom | `npx myoperator-ui add call-logs-date-range-filter` |
+| CallLogsLineSelect | custom | `npx myoperator-ui add call-logs-line-select` |
+| CallLogsSearchBar | custom | `npx myoperator-ui add call-logs-search-bar` |
 | DocMedia | custom | `npx myoperator-ui add doc-media` |
 | EventSelector | custom | `npx myoperator-ui add event-selector` |
 | KeyValueInput | custom | `npx myoperator-ui add key-value-input` |
@@ -467,6 +487,14 @@ import { Mail } from "lucide-react"
 
 ---
 
+### DateRangePicker
+> A date range picker with a trigger button, an anchored popover calendar with range selection, month/year dropdown jump, and a quick-presets column (Today, Yesterday, Last 7 days, Last 30 days, This month, Last month)
+
+**Install**: `npx myoperator-ui add date-range-picker`
+**Requires**: `dropdown-menu` (auto-installed)
+
+---
+
 ## Data — Data display components
 
 ### Table
@@ -780,10 +808,178 @@ import { Mail } from "lucide-react"
 
 ---
 
+### CallLogs
+> A single call-logs table row showing caller identity, who/what handled the call, timing, and trailing actions like transfer or recording playback
+
+**Install**: `npx myoperator-ui add call-logs`
+**Requires**: `badge`, `checkbox`, `dropdown-menu`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### LiveCallsBanner
+> A banner showing how many calls are currently live, with an optional Hide/Show toggle
+
+**Install**: `npx myoperator-ui add live-calls-banner`
+**Type**: Multi-file component
+
+---
+
+### CallJourneyPanel
+> A slide-out panel showing the full event timeline for a single call, including AI/bot-handled Participants rendered as highlighted cards
+
+**Install**: `npx myoperator-ui add call-journey-panel`
+**Type**: Multi-file component
+
+---
+
+### CallJourneyJsonModal
+> The dialog opened from CallDetailPanel's 'View Detailed Logs' action — a read-only viewer for a call's raw JSON logs with a copy-to-clipboard button
+
+**Install**: `npx myoperator-ui add call-journey-json-modal`
+**Requires**: `dialog` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsFilterPanel
+> A slide-out filters drawer for the Call Logs page covering call type, source, duration, call properties, and people/routing filters
+
+**Install**: `npx myoperator-ui add call-logs-filter-panel`
+**Requires**: `select-field`, `multi-select`, `checkbox`, `button` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsActiveFiltersBar
+> A chip bar shown below the Call Logs top bar once filters are applied — one removable chip per active filter, plus Save as Preset and Clear All actions
+
+**Install**: `npx myoperator-ui add call-logs-active-filters-bar`
+**Requires**: `tag` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsSavePresetModal
+> The confirmation dialog for CallLogsFilterPanel's 'Save as New Preset' action — names and saves the current filter combination
+
+**Install**: `npx myoperator-ui add call-logs-save-preset-modal`
+**Requires**: `form-modal`, `text-field` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsAddNoteModal
+> The dialog opened from a call-logs row's 'More actions' menu ('Notes') to add a note for that call
+
+**Install**: `npx myoperator-ui add call-logs-add-note-modal`
+**Requires**: `form-modal`, `textarea` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsEditContactModal
+> The dialog opened from CallDetailPanel's 'Edit Contact' action to update a contact's name, phone number, and email
+
+**Install**: `npx myoperator-ui add call-logs-edit-contact-modal`
+**Requires**: `form-modal`, `text-field`, `phone-input` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsBlockContactModal
+> The confirmation dialog opened from CallDetailPanel's 'Block Caller' action, requiring a reason before blocking
+
+**Install**: `npx myoperator-ui add call-logs-block-contact-modal`
+**Requires**: `form-modal`, `text-field`, `phone-input`, `textarea` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsAddContactModal
+> The dialog for saving a new contact, e.g. from an 'Add Contact' button on the Call Logs page toolbar
+
+**Install**: `npx myoperator-ui add call-logs-add-contact-modal`
+**Requires**: `form-modal`, `text-field`, `phone-input` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### BulkSelectionToolbar
+> A toolbar shown above a table when rows are selected, surfacing the selection count and bulk actions
+
+**Install**: `npx myoperator-ui add bulk-selection-toolbar`
+**Type**: Multi-file component
+
+---
+
+### RecordingPlaybackBar
+> A bar shown above a call logs table while a call recording is playing, with play/pause control
+
+**Install**: `npx myoperator-ui add recording-playback-bar`
+**Type**: Multi-file component
+
+---
+
+### CallDetailPanel
+> A slide-out side panel showing call recording playback with a waveform, an AI-generated summary, and Notes/Call-log tabs
+
+**Install**: `npx myoperator-ui add call-detail-panel`
+**Requires**: `textarea`, `button` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsViewTabs
+> A view-tab switcher for the Call Logs page showing built-in views alongside removable user-saved filter presets, collapsing extra presets into a 'More' dropdown
+
+**Install**: `npx myoperator-ui add call-logs-view-tabs`
+**Requires**: `dropdown-menu` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsCustomizeTabsModal
+> The dialog opened from CallLogsViewTabs' 'Customize tabs...' footer link — lists pinned and available views, reorderable and pin/unpin-able
+
+**Install**: `npx myoperator-ui add call-logs-customize-tabs-modal`
+**Requires**: `dialog`, `button` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsDateRangeFilter
+> The Call Logs page's Date Range filter — wraps DateRangePicker with future dates blocked by default
+
+**Install**: `npx myoperator-ui add call-logs-date-range-filter`
+**Requires**: `date-range-picker` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsLineSelect
+> The Call Logs page's Line (number dialled) filter — wraps MultiSelect with detailed rows, an All lines select-all, and search enabled by default
+
+**Install**: `npx myoperator-ui add call-logs-line-select`
+**Requires**: `multi-select`, `checkbox`, `tooltip` (auto-installed)
+**Type**: Multi-file component
+
+---
+
+### CallLogsSearchBar
+> The Call Logs page header search — a text input with a live-suggestions dropdown (matched substring bolded), a clear button, and a committed-value state
+
+**Install**: `npx myoperator-ui add call-logs-search-bar`
+**Requires**: `text-field` (auto-installed)
+**Type**: Multi-file component
+
+---
+
 ### DocMedia
-> A document media component with preview, download, and file variants for chat messages
+> A document media component with preview, download, and file variants for chat messages — click opens an in-app scrollable PDF preview (or a download fallback for other file types)
 
 **Install**: `npx myoperator-ui add doc-media`
+**Requires**: `dialog`, `button` (auto-installed)
 **Type**: Multi-file component
 
 ---
