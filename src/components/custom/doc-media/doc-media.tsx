@@ -1,8 +1,47 @@
 import * as React from "react";
 import { cn } from "../../../lib/utils";
-import { File, FileSpreadsheet, ArrowDownToLine, Loader2 } from "lucide-react";
+import { ArrowDownToLine, File, FileSpreadsheet, Loader2 } from "lucide-react";
 import type { DocMediaProps } from "./types";
 import { downloadMediaFile } from "./utils";
+
+/**
+ * The card's thumbnail area: a real, scrollable PDF (native browser PDF
+ * viewer in an `<iframe>` — no extra dependency) when `documentUrl` points at
+ * a PDF, otherwise the static cover image as before. The filename/metadata
+ * overlay sits on top either way; `pointer-events-none` on it lets hover and
+ * scroll reach the iframe underneath instead of being captured by the overlay.
+ */
+function DocMediaThumbnail({
+  documentUrl,
+  fileType,
+  thumbnailUrl,
+  alt,
+}: {
+  documentUrl?: string;
+  fileType?: string;
+  thumbnailUrl?: string;
+  alt: string;
+}) {
+  if (documentUrl && fileType?.toUpperCase() === "PDF") {
+    return (
+      <iframe
+        src={documentUrl}
+        title={alt}
+        className="block w-full border-0"
+        style={{ aspectRatio: "442/308" }}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={thumbnailUrl}
+      alt={alt}
+      className="w-full object-cover"
+      style={{ aspectRatio: "442/308" }}
+    />
+  );
+}
 
 const DocMedia = React.forwardRef(
   (
@@ -15,6 +54,7 @@ const DocMedia = React.forwardRef(
       pageCount,
       fileSize,
       caption,
+      documentUrl,
       downloadUrl,
       downloadFilename,
       onDownload,
@@ -58,69 +98,34 @@ const DocMedia = React.forwardRef(
       onDownload,
     ]);
 
-    if (variant === "preview") {
+    if (variant === "preview" || variant === "download") {
       return (
         <div
           ref={ref}
           className={cn("relative rounded-t overflow-hidden", className)}
           {...props}
         >
-          <img
-            src={thumbnailUrl}
-            alt={filename || "Document preview"}
-            className="w-full object-cover"
-            style={{ aspectRatio: "442/308" }}
+          <DocMediaThumbnail
+            documentUrl={documentUrl}
+            fileType={fileType}
+            thumbnailUrl={thumbnailUrl}
+            alt={
+              variant === "download"
+                ? caption || filename || "Document"
+                : filename || "Document preview"
+            }
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#1d222f]/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#1d222f]/30 to-transparent" />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 px-4 py-3">
             <p className="m-0 text-[14px] font-semibold text-white truncate">
               {filename || "Document"}
             </p>
             <div className="flex items-center gap-1.5 mt-1">
               <File className="size-3.5 text-white/80" />
               <span className="text-[12px] text-white/80">
-                {[
-                  fileType,
-                  pageCount && `${pageCount} pages`,
-                  fileSize,
-                ]
+                {[fileType, pageCount && `${pageCount} pages`, fileSize]
                   .filter(Boolean)
-                  .join("  \u00B7  ")}
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (variant === "download") {
-      return (
-        <div
-          ref={ref}
-          className={cn("relative rounded-t overflow-hidden", className)}
-          {...props}
-        >
-          <img
-            src={thumbnailUrl}
-            alt={caption || filename || "Document"}
-            className="w-full object-cover"
-            style={{ aspectRatio: "442/308" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1d222f] via-[#1d222f]/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-3">
-            <p className="m-0 text-[14px] font-semibold text-white truncate">
-              {filename || "Document"}
-            </p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <File className="size-3.5 text-white/80" />
-              <span className="text-[12px] text-white/80">
-                {[
-                  fileType,
-                  pageCount && `${pageCount} pages`,
-                  fileSize,
-                ]
-                  .filter(Boolean)
-                  .join("  \u00B7  ")}
+                  .join("  ·  ")}
               </span>
             </div>
           </div>

@@ -1,12 +1,93 @@
 ---
 description: Create a new React component with intelligent analysis, design system validation, and auto-generated tests
-argument-hint: Optional screenshot path
-allowed-tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "AskUserQuestion", "Task", "Skill"]
+argument-hint: "A Merlin component-request id — or a screenshot path, or nothing"
+allowed-tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "AskUserQuestion", "Task", "Skill", "mcp__merlin"]
 ---
 
 # Create Component Workflow
 
 You are creating a new React component for the myOperator UI component library. Follow this comprehensive workflow:
+
+## Phase 0: A Merlin request, or the regular route
+
+### 0a. Route on `$ARGUMENTS` — READ THIS FIRST
+
+> **ZERO ARGUMENTS MEANS THE OLD COMMAND.** If `$ARGUMENTS` is empty, skip this
+> entire phase and go straight to Phase 1 Step 1. Do not call any Merlin tool, do not
+> mention Merlin, do not mention a request. Nothing about the regular route changes.
+
+| `$ARGUMENTS` | Go to |
+|---|---|
+| empty | Phase 1 Step 1, unchanged |
+| a path, or ends `.png` / `.jpg` / `.jpeg` / `.webp` | Phase 1 Step 2 with it as the screenshot, unchanged |
+| contains `figma.com` | Phase 1 Step 1, unchanged — Step 3's existing note already handles a link |
+| a single opaque token | 0b |
+
+### 0b. Connect to Merlin
+
+Structurally the same as `/build-screen` Phase 0:
+
+1. Call the `whoami` MCP tool (namespaced `mcp__merlin__whoami`). If it answers,
+   report the workspace and carry on — **never mention the CLI**.
+2. Tool missing or unauthorized → `node tools/merlin/merlin.mjs whoami --json`.
+   Exit 0 → carry on, **never mention MCP**. Exit 2 (`not_logged_in`) → AskUserQuestion
+   with three options: add the MCP server
+   (`claude mcp add --transport http merlin https://basic-monitor-555.convex.site/mcp`,
+   dev `https://acrobatic-bass-678.convex.site/mcp`), CLI browser login, or paste a
+   one-time setup key. Exit 1 → stop and report.
+
+> **ONE WORKING CONNECTION IS ENOUGH. NEVER ASK FOR A SECOND.**
+
+**One honest divergence from `/build-screen`: the CLI has no component-request
+commands.** If only the CLI answers, say so plainly and offer either adding the MCP
+server, or continuing on the regular route using the id as nothing more than a name
+hint. Do not pretend the CLI can fetch the brief.
+
+### 0c. Resolve the id — never guess what it is
+
+Call `handoff_resolve_targets` with the one ref. A Merlin id is an opaque Convex id
+and carries no type in its text, which is exactly why this exists.
+
+| Result | Do |
+|---|---|
+| `component_request_id` is set | 0d |
+| `build_kind: single_screen` (a screen id) | "That is a screen id — `/build-screen` builds screens." Stop. |
+| a `figma_url` target | Phase 1 Step 1, using it as the Figma link |
+| everything `unknown` | relay each `reason` **verbatim**, then Phase 1 Step 1 |
+
+### 0d. Fetch the brief, and derive instead of asking
+
+Call `handoff_get_component_request` with the id. Then:
+
+| Step | Comes from | What to do |
+|---|---|---|
+| P1 S1 screenshot | `render_url`, else `screen_preview_url` + `spec.abs_box` | `curl -sSL "<url>" -o /tmp/merlin-req.png`, then **Read it**. The "never suggest a name before seeing an image" rule is intact — you have the image, you simply did not ask for it. |
+| P1 S2 analyse | the image + `spec.tokens` + `spec.text_samples` + `context` | unchanged |
+| P1 S3 name | `suggested_name` | **skip the question.** State the name. |
+| P1 S4 ui vs custom | `placement.kind` | **skip.** State it. |
+| P1 S5 folder | `placement.folder` / `subfolder`, and `placement.story_title` | **skip when present.** State the resolved story title. If `kind` is `custom` and `folder` is null, this is the ONE question Phase 0 may still ask — run S5 unchanged. |
+| P1 S6 existence check | — | **RUN UNCHANGED.** The designer cannot know what is already in `src/`. |
+| P2 S1 Figma link | `figma_url` | **skip.** |
+| P2 S2 fetch Figma | `figma_url` | **RUN UNCHANGED** (`get_design_context`, `get_screenshot`). |
+| P2 S2b reconcile the name | `figma_name` **and** Figma's own set name | **RUN UNCHANGED, and it matters MORE here.** `figma_name` is the exact key Merlin links on. If it is null the element was drawn by hand: say so, and expect `link: "skipped-no-figma-name"` at the end. |
+| P2 S2c variant axes | Figma | **RUN UNCHANGED.** |
+| P2 S4 multi-state inventory | `variant_links` + `other_usages` + `attachments` | **Do not ask the question.** Build the State Inventory Table from all three and show it. One confirmation: "anything missing?" |
+
+**Read `spec_source`.** `head` means the geometry was recomputed from the current
+design. `snapshot` means the element is GONE from the head revision and you are
+looking at what it was when the request was raised — say so before you build, because
+the design has moved and the request may be stale.
+
+**`other_usages` is project-scoped.** A component used in three projects reports one
+of them. Treat the count as a floor, not a total.
+
+### 0e. Announce what you derived
+
+Before proceeding, state: the name, ui-vs-custom, the resolved story title, the Figma
+link, how many other screens use it, and how many attachments and extra links came
+with it. Nothing is skipped silently.
+
+> **From Phase 3 on, nothing in this command changes.**
 
 ## Phase 1: Screenshot Analysis & Component Discovery
 
@@ -42,6 +123,11 @@ Using AskUserQuestion, present 3-4 name suggestions based on YOUR ANALYSIS of th
 - Options should be based on what you SEE in the screenshot, each with a description
 - Example: "feature-card" - "Card displaying a feature with icon, title, and capabilities"
 - User can also type a custom name via "Other"
+
+> These are a starting point only. Phase 2 fetches the Figma component's own name and
+> reconciles it against this choice — the design is the naming authority, because that
+> is the name Merlin's handoff matches instances by. If a Figma link is already in
+> `$ARGUMENTS`, resolve the real name first and offer it as the recommended option here.
 
 ### Step 4: Confirm Component Type
 
@@ -128,6 +214,39 @@ Using AskUserQuestion:
 - Use `mcp__figma__get_design_context` to fetch design metadata
 - Use `mcp__figma__get_screenshot` to get visual reference
 - Store design context for component generation
+
+### Step 2b: Reconcile the NAME against Figma (do not skip)
+
+The design is the naming authority, not the screenshot. Merlin's handoff workspace
+matches a Figma instance to this library **by name**, so a component published under a
+name the design does not use starts life unmatched and has to be connected by hand
+later, on every screen that uses it.
+
+- From the fetched design context, read the component's **set name** if it is a variant
+  set, otherwise its component name. Prefer the SET name: Figma names the set "Button"
+  and its members "Size=Large, Type=Primary", so the member name is an axis string, not
+  a component.
+- Compare it with the name chosen in Phase 1, normalising both the way the matcher does:
+  lowercase, strip non-alphanumerics, drop a trailing plural `s`. `Text Field` and
+  `TextField` agree; `Dropdown` and `Select Menu` do not.
+- If they disagree, AskUserQuestion:
+  - question: "Figma calls this component `<figma name>`. Merlin matches designs to code by name — using a different name here means every instance stays unmatched until someone connects it by hand."
+  - header: "Name"
+  - Options: `"Use <figma-kebab-name>" (Recommended)` — "Matches the design; Merlin resolves it automatically" · `"Keep <chosen-name>"` — "I'll connect it in Merlin myself"
+- If Figma reports no component at all (a raw frame, not an instance), say so and keep
+  the Phase 1 name — there is nothing to match against yet.
+
+### Step 2c: Take the VARIANT AXES from Figma
+
+- Read the variant axes off the component set (`Type`, `Size`, `State`, …) with their
+  possible values.
+- These are the default CVA axes. Map each to a prop name in code's vocabulary
+  (`Type` → `variant`, `Size` → `size`, values case-folded: `Large` → `lg`) and note
+  any you deliberately do not implement.
+- An axis the code has no prop for shows up in Merlin's spec panel as
+  `// TODO: Figma axis "State=Default" has no matching prop`, pasted in front of every
+  developer using the component. Implementing them here is what prevents that; choosing
+  not to is fine, but do it knowingly.
 
 ### Step 3: Analyze Figma Design
 
@@ -875,6 +994,53 @@ Present a comprehensive summary:
 2. Verify visually in browser
 3. Build CLI: `cd packages/cli && npm run build`
 ```
+
+### Regenerate the catalog
+
+```bash
+npm run emit-catalog
+```
+
+Keeps `public/catalog.json` current so `--check` stays green and `/publish-all` has
+less to do. **It does not reach Merlin** — Merlin reads the DEPLOYED Storybook's
+catalog, so the component becomes visible there only after `/publish-all` builds and
+deploys, and then the nightly sync (21:00 UTC) or Integrations → Sync now.
+
+---
+
+## Phase 9.5: Report the component back to Merlin
+
+**Only when Phase 0 resolved a request id.** Skip this entire phase otherwise.
+
+Run it AFTER the tests and the typecheck pass — not before, because a request marked
+shipped against a component that does not compile is worse than one still open.
+
+```
+handoff_complete_component_request {
+  request_id:     <the id from Phase 0>,
+  slug:           <as written to packages/cli/components.yaml>,
+  component_name: <the exported React name>,
+  story_title:    <the story title you used>,
+  source_path:    <path from the repo root>,
+  notes:          <an axis you did not implement, a rename — anything the designer should know>
+}
+```
+
+**If it turned out to already exist, pass the EXISTING slug.** The end state is the
+same and that is the correct answer, not a reason to skip the call.
+
+**A failure here does NOT fail the build.** The component exists on disk and the
+tests pass; only the bookkeeping is missing. Print the exact call so it can be retried
+by hand, and carry on to the summary.
+
+Put the reply's `link` outcome and `next_step` in the summary **verbatim**:
+
+| `link` | What it means |
+|---|---|
+| `written` | Merlin now maps the design's component name to your slug. Every instance on every screen will resolve to it once the catalog syncs. |
+| `written-pending-catalog` | Same, and expected — the slug is not in Merlin's catalog yet because Storybook has not been deployed. It starts resolving on its own after `/publish-all` and a sync. |
+| `already-matches` | Your component's name already equals the Figma name, so no link was needed. This is a SUCCESS: Step 2b did its job and the design resolves directly. |
+| `skipped-no-figma-name` | The element was drawn by hand, so there was no Figma component name to key a link on. Instances will not resolve automatically; the designer will need to connect it once, or re-draw the element as an instance. |
 
 ## Important Rules
 
