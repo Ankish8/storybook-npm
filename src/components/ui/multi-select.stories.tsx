@@ -2,6 +2,14 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import { useState } from "react";
 import { MultiSelect, type MultiSelectOption } from "./multi-select";
+import { Button } from "./button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./dialog";
 
 const skillOptions: MultiSelectOption[] = [
   { value: "react", label: "React" },
@@ -524,6 +532,83 @@ export const GroupedDetailed: Story = {
         searchable
         showClearAll={false}
         showSeparatorBeforeChevron
+      />
+    </div>
+  ),
+};
+
+/**
+ * Inside a Radix Dialog the menu mounts into the dialog content element, not
+ * `document.body` — otherwise the dialog's scroll lock and focus scope treat it
+ * as an outside element and swallow wheel and click events.
+ */
+export const InsideDialog: Story = {
+  render: () => {
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState<string[]>([]);
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button>Open dialog</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign skills</DialogTitle>
+          </DialogHeader>
+          <div className="py-2">
+            <MultiSelect
+              label="Skills"
+              placeholder="Select skills"
+              options={skillOptions}
+              value={value}
+              onValueChange={setValue}
+              searchable
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  },
+};
+
+const longLabelOptions: MultiSelectOption[] = [
+  {
+    value: "long-1",
+    label:
+      "Customer support escalation queue for enterprise accounts in the APAC region — tier 3",
+  },
+  {
+    value: "long-2",
+    label:
+      "Outbound campaign / unstructured value pulled straight from the CRM with no length cap",
+  },
+  { value: "short", label: "Sales" },
+];
+
+/**
+ * Selected chips in the trigger always truncate, so the control never breaks its
+ * layout. The dropdown shows the full label wrapped by default; set
+ * `truncateOptionText` to clip option rows to one line instead.
+ */
+export const LongOptionLabels: Story = {
+  render: () => (
+    <div className="flex w-[320px] flex-col gap-8">
+      <MultiSelect
+        label="Wrapped (default)"
+        placeholder="Select"
+        options={longLabelOptions}
+      />
+      <MultiSelect
+        label="Truncated"
+        placeholder="Select"
+        options={longLabelOptions}
+        truncateOptionText
+      />
+      <MultiSelect
+        label="Selected chips"
+        placeholder="Select"
+        options={longLabelOptions}
+        defaultValue={["long-1", "short"]}
       />
     </div>
   ),

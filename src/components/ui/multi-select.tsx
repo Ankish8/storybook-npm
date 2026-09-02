@@ -118,6 +118,11 @@ export function flattenMultiSelectOptions(
   return (input as MultiSelectOption[]).map(normalizeMultiSelectOption);
 }
 
+/** Menu never renders narrower than this, even off a tiny trigger. */
+const MENU_MIN_WIDTH = 180;
+/** Floor for the flip/shrink height so the list is never collapsed to nothing. */
+const MENU_MIN_HEIGHT = 120;
+
 /**
  * MultiSelect trigger variants matching TextField styling
  */
@@ -199,6 +204,19 @@ export interface MultiSelectProps extends VariantProps<
   showClearAll?: boolean;
   /** Vertical rule before the chevron (Figma-style trigger) */
   showSeparatorBeforeChevron?: boolean;
+  /**
+   * Element the dropdown is portaled into. Defaults to `document.body` so the
+   * menu escapes `overflow` and `transform` ancestors (a Radix DialogContent is
+   * both, and a transformed ancestor would clip a `position: fixed` menu).
+   */
+  menuContainer?: HTMLElement | null;
+  /**
+   * Truncate long labels in the dropdown list to a single line with an ellipsis
+   * instead of wrapping them. Selected chips in the trigger always truncate —
+   * this only controls the option rows.
+   * @default false for `simple`, true for `detailed` (single-line row design)
+   */
+  truncateOptionText?: boolean;
 }
 
 /**
@@ -245,6 +263,8 @@ const MultiSelect = React.forwardRef(
       optionVariant = "simple",
       separateSelectedWithDivider = false,
       showClearAll = true,
+      menuContainer,
+      truncateOptionText,
       showSeparatorBeforeChevron = false,
       closeOnEscape = false,
     }: MultiSelectProps,
@@ -258,8 +278,24 @@ const MultiSelect = React.forwardRef(
     // Search query
     const [searchQuery, setSearchQuery] = React.useState("");
 
+    // `detailed` rows are a single-line design, so they truncate unless the
+    // caller opts out; `simple` rows wrap the full label unless asked not to.
+    const truncateOptions =
+      truncateOptionText ?? optionVariant === "detailed";
+
     // Container ref for click outside detection
     const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+    /** Where the dropdown gets portaled; body unless the caller overrides. */
+    const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(
+      null
+    );
+
+    React.useEffect(() => {
+      if (!isOpen || typeof document === "undefined") return;
+      setPortalTarget(menuContainer ?? document.body);
+    }, [isOpen, menuContainer]);
+
 
     const { refs, floatingStyles, isPositioned } = useFloating({
       open: isOpen,
@@ -271,8 +307,19 @@ const MultiSelect = React.forwardRef(
         shift({ padding: 8 }),
         size({
           padding: 8,
-          apply({ rects, elements }) {
-            elements.floating.style.width = `${rects.reference.width}px`;
+          apply({ rects, elements, availableHeight, availableWidth }) {
+            // Match the trigger, but never render an unreadably narrow menu on a
+            // small trigger, and never spill past the viewport on a small screen.
+            const width = Math.min(
+              Math.max(rects.reference.width, MENU_MIN_WIDTH),
+              availableWidth
+            );
+            elements.floating.style.width = `${width}px`;
+            // Let the option list shrink instead of overflowing a short viewport.
+            elements.floating.style.setProperty(
+              "--multi-select-available-height",
+              `${Math.max(availableHeight, MENU_MIN_HEIGHT)}px`
+            );
           },
         }),
       ],
@@ -293,6 +340,29 @@ const MultiSelect = React.forwardRef(
       },
       [refs]
     );
+
+    /**
+     * Radix Dialog / Drawer wrap their content in `react-remove-scroll`, which
+     * listens for `wheel` / `touchmove` on `document` (bubble phase) and calls
+     * `preventDefault()` for anything outside the locked subtree — our
+     * body-portaled menu counts as outside, so its list would not scroll.
+     * Stopping propagation at the menu keeps that document listener from ever
+     * seeing the event, leaving the browser's native scrolling intact.
+     * Clicks are handled separately: the dialog sets `pointer-events: none` on
+     * `<body>`, which the menu overrides with `pointer-events: auto`.
+     */
+    React.useEffect(() => {
+      const node = refs.floating.current;
+      if (!isOpen || !node) return;
+
+      const stop = (event: Event) => event.stopPropagation();
+      node.addEventListener("wheel", stop, { passive: false });
+      node.addEventListener("touchmove", stop, { passive: false });
+      return () => {
+        node.removeEventListener("wheel", stop);
+        node.removeEventListener("touchmove", stop);
+      };
+    }, [isOpen, portalTarget, refs.floating]);
 
     const flatOptions = React.useMemo(
       () => flattenMultiSelectOptions(options),
@@ -475,14 +545,14 @@ const MultiSelect = React.forwardRef(
     return (
       <div
         ref={containerRef}
-        className={cn("flex flex-col gap-1", wrapperClassName)}
+        className={cn("flex min-w-0 flex-col gap-1", wrapperClassName)}
       >
         {/* Label */}
         {label && (
           <label
             htmlFor={selectId}
             className={cn(
-              "text-sm font-semibold text-semantic-text-secondary",
+              "break-words text-sm font-semibold text-semantic-text-secondary",
               labelClassName
             )}
           >
@@ -518,7 +588,7 @@ const MultiSelect = React.forwardRef(
               triggerClassName
             )}
           >
-          <div className="flex-1 flex flex-wrap gap-1">
+          <div className="min-w-0 flex-1 flex flex-wrap gap-1">
             {selectedValues.length === 0 ? (
               <span className="text-base text-semantic-text-placeholder">
                 {placeholder}
@@ -527,9 +597,14 @@ const MultiSelect = React.forwardRef(
               selectedLabels.map((label, index) => (
                 <span
                   key={selectedValues[index]}
-                  className="inline-flex items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-sm px-2 py-0.5 rounded"
+                  className="inline-flex min-w-0 max-w-full items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-sm px-2 py-0.5 rounded"
                 >
-                  {label}
+                  <span
+                    className="min-w-0 truncate"
+                    title={typeof label === "string" ? label : undefined}
+                  >
+                    {label}
+                  </span>
                   <span
                     role="button"
                     tabIndex={0}
@@ -543,7 +618,7 @@ const MultiSelect = React.forwardRef(
                         );
                       }
                     }}
-                    className="cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                    className="shrink-0 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                     aria-label={`Remove ${label}`}
                   >
                     <X className="size-3" />
@@ -602,14 +677,14 @@ const MultiSelect = React.forwardRef(
                     className="size-3.5 shrink-0 text-semantic-error-primary"
                     aria-hidden
                   />
-                  <span className="text-sm text-semantic-error-primary">
+                  <span className="min-w-0 break-words text-sm text-semantic-error-primary">
                     {error}
                   </span>
                 </div>
               ) : helperText ? (
                 <span
                   id={helperId}
-                  className="text-sm text-semantic-text-muted"
+                  className="min-w-0 break-words text-sm text-semantic-text-muted"
                 >
                   {helperText}
                 </span>
@@ -618,7 +693,7 @@ const MultiSelect = React.forwardRef(
           )}
 
           {isOpen &&
-            typeof document !== "undefined" &&
+            portalTarget &&
             createPortal(
               <TooltipProvider delayDuration={200}>
                 <div
@@ -630,6 +705,9 @@ const MultiSelect = React.forwardRef(
                   style={{
                     ...floatingStyles,
                     zIndex: 10050,
+                    // Radix Dialog sets `pointer-events: none` on <body> while
+                    // open; without this the menu swallows nothing and clicks die.
+                    pointerEvents: "auto",
                     visibility: isPositioned ? undefined : "hidden",
                   }}
                   onMouseDown={(e) => e.stopPropagation()}
@@ -649,7 +727,13 @@ const MultiSelect = React.forwardRef(
               )}
 
               {/* Options */}
-              <div className="max-h-60 overflow-auto p-1">
+              <div
+                className="overflow-auto overscroll-contain p-1"
+                style={{
+                  maxHeight:
+                    "min(15rem, var(--multi-select-available-height, 15rem))",
+                }}
+              >
                 {filteredOptions.length === 0 ? (
                   <div className="py-6 text-center text-sm text-semantic-text-muted">
                     No results found
@@ -714,7 +798,19 @@ const MultiSelect = React.forwardRef(
                             <Check className="size-4 text-semantic-primary" />
                           )}
                         </span>
-                        <span className="min-w-0 flex-1 whitespace-normal break-words text-left">
+                        <span
+                          title={
+                            truncateOptions && typeof option.label === "string"
+                              ? option.label
+                              : undefined
+                          }
+                          className={cn(
+                            "min-w-0 flex-1 text-left",
+                            truncateOptions
+                              ? "truncate"
+                              : "whitespace-normal break-words"
+                          )}
+                        >
                           {option.label}
                         </span>
                       </button>
@@ -746,7 +842,19 @@ const MultiSelect = React.forwardRef(
                           aria-hidden
                           tabIndex={-1}
                         />
-                        <span className="min-w-0 flex-1 truncate text-left">
+                        <span
+                          title={
+                            typeof option.label === "string"
+                              ? option.label
+                              : undefined
+                          }
+                          className={cn(
+                            "min-w-0 flex-1 text-left",
+                            truncateOptions
+                              ? "truncate"
+                              : "whitespace-normal break-words"
+                          )}
+                        >
                           {option.label}
                         </span>
                         {secondaryLine ? (
@@ -798,7 +906,7 @@ const MultiSelect = React.forwardRef(
               ) : null}
                 </div>
               </TooltipProvider>,
-              document.body
+              portalTarget
             )}
         </div>
 

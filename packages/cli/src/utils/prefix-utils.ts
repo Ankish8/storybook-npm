@@ -825,6 +825,8 @@ export function prefixTailwindClasses(content: string, prefix: string): string {
     'borderStyle',
     'borderRadius',
     'zIndex',
+    'pointerEvents',
+    'touchAction',
     'overflow',
     'overflowX',
     'overflowY',

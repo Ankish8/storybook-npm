@@ -450,4 +450,111 @@ describe("MultiSelect", () => {
     await user.click(screen.getByRole("button", { name: "outside-target" }));
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
+
+  it("portals the menu to document.body, not into a transformed dialog ancestor", async () => {
+    const user = userEvent.setup();
+    render(
+      <div role="dialog" data-testid="dialog-content">
+        <MultiSelect options={defaultOptions} />
+      </div>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const listbox = screen.getByRole("listbox");
+    expect(listbox.parentElement).toBe(document.body);
+  });
+
+  it("stops wheel events at the menu so a dialog scroll lock cannot cancel them", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    const listbox = screen.getByRole("listbox");
+
+    const onDocumentWheel = vi.fn();
+    document.addEventListener("wheel", onDocumentWheel);
+    listbox.dispatchEvent(
+      new WheelEvent("wheel", { bubbles: true, cancelable: true })
+    );
+    document.removeEventListener("wheel", onDocumentWheel);
+
+    expect(onDocumentWheel).not.toHaveBeenCalled();
+  });
+
+  it("portals to a caller-supplied container when menuContainer is set", async () => {
+    const user = userEvent.setup();
+    const host = document.createElement("div");
+    host.setAttribute("data-testid", "custom-host");
+    document.body.appendChild(host);
+
+    render(
+      <div role="dialog">
+        <MultiSelect options={defaultOptions} menuContainer={host} />
+      </div>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(host).toContainElement(screen.getByRole("listbox"));
+    host.remove();
+  });
+
+  it("truncates long option labels when truncateOptionText is set", async () => {
+    const user = userEvent.setup();
+    const longLabel = "A".repeat(200);
+    render(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        truncateOptionText
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const text = screen.getByTitle(longLabel);
+    expect(text).toHaveClass("truncate");
+  });
+
+  it("wraps long option labels by default", async () => {
+    const user = userEvent.setup();
+    const longLabel = "B".repeat(200);
+    render(<MultiSelect options={[{ value: "long", label: longLabel }]} />);
+
+    await user.click(screen.getByRole("combobox"));
+    const option = screen.getByRole("option");
+    expect(option.querySelector("span.break-words")).not.toBeNull();
+  });
+
+  it("detailed rows truncate by default but honour truncateOptionText={false}", async () => {
+    const user = userEvent.setup();
+    const longLabel = "C".repeat(200);
+    const { rerender } = render(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        optionVariant="detailed"
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByTitle(longLabel)).toHaveClass("truncate");
+
+    rerender(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        optionVariant="detailed"
+        truncateOptionText={false}
+      />
+    );
+    expect(screen.getByTitle(longLabel)).toHaveClass("break-words");
+  });
+
+  it("truncates selected chips in the trigger", async () => {
+    const longLabel = "D".repeat(200);
+    render(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        defaultValue={["long"]}
+      />
+    );
+
+    expect(screen.getByTitle(longLabel)).toHaveClass("truncate");
+  });
 });
