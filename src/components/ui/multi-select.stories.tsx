@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
+import * as React from "react";
 import { useState } from "react";
 import { MultiSelect, type MultiSelectOption } from "./multi-select";
 import { Button } from "./button";
@@ -247,6 +248,18 @@ import { MultiSelect } from "@/components/ui/multi-select"
     maxSelections: {
       control: "number",
       description: "Maximum selections allowed",
+    },
+    hasMore: {
+      control: "boolean",
+      description: "Whether the server has more pages to load",
+    },
+    loadingMore: {
+      control: "boolean",
+      description: "Whether a page fetch is in flight (renders a loading row)",
+    },
+    onScrollEnd: {
+      action: "scrollEnd",
+      description: "Fired once when the list is scrolled near its bottom",
     },
   },
 };
@@ -538,9 +551,12 @@ export const GroupedDetailed: Story = {
 };
 
 /**
- * Inside a Radix Dialog the menu mounts into the dialog content element, not
- * `document.body` — otherwise the dialog's scroll lock and focus scope treat it
- * as an outside element and swallow wheel and click events.
+ * Inside a Radix Dialog the menu still portals to `document.body` (a dialog is a
+ * transformed, scrollable ancestor and would clip a `position: fixed` menu). The
+ * component neutralises what the dialog would otherwise do to an outside
+ * element: wheel/touchmove are kept from the scroll lock, `pointer-events: auto`
+ * restores clicks, and `focusin` / `focusout` are stopped so the focus trap
+ * cannot pull focus off the search input mid-keystroke.
  */
 export const InsideDialog: Story = {
   render: () => {
@@ -612,4 +628,76 @@ export const LongOptionLabels: Story = {
       />
     </div>
   ),
+};
+
+// Infinite scroll / server-side pagination
+const PAGE_SIZE = 20;
+const TOTAL_AGENTS = 137;
+
+/** Stand-in for a paginated API — resolves after a short delay. */
+const fetchAgentPage = (page: number) =>
+  new Promise<{ items: MultiSelectOption[]; hasMore: boolean }>((resolve) => {
+    setTimeout(() => {
+      const start = page * PAGE_SIZE;
+      const items = Array.from(
+        { length: Math.min(PAGE_SIZE, TOTAL_AGENTS - start) },
+        (_, i) => ({
+          value: `agent-${start + i + 1}`,
+          label: `Agent ${start + i + 1}`,
+          secondaryText: `Ext. ${1000 + start + i}`,
+        })
+      );
+      resolve({ items, hasMore: start + items.length < TOTAL_AGENTS });
+    }, 700);
+  });
+
+const InfiniteScrollExample = () => {
+  const [options, setOptions] = React.useState<MultiSelectOption[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [hasMore, setHasMore] = React.useState(true);
+  const [loadingMore, setLoadingMore] = React.useState(false);
+
+  const loadPage = React.useCallback(async (next: number) => {
+    setLoadingMore(true);
+    const result = await fetchAgentPage(next);
+    setOptions((prev) => [...prev, ...result.items]);
+    setHasMore(result.hasMore);
+    setPage(next + 1);
+    setLoadingMore(false);
+  }, []);
+
+  React.useEffect(() => {
+    void loadPage(0);
+    // Only the first page on mount; the rest come from onScrollEnd.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="w-[320px]">
+      <MultiSelect
+        label="Agent"
+        placeholder="Select agents"
+        optionVariant="detailed"
+        options={options}
+        hasMore={hasMore}
+        loadingMore={loadingMore}
+        onScrollEnd={() => {
+          if (!loadingMore && hasMore) void loadPage(page);
+        }}
+        helperText={`${options.length} of ${TOTAL_AGENTS} loaded`}
+      />
+    </div>
+  );
+};
+
+export const InfiniteScroll: Story = {
+  render: () => <InfiniteScrollExample />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Server-side pagination. `onScrollEnd` fires once when the list is scrolled within 48px of the bottom, `loadingMore` renders the spinner row, and `hasMore` stops the requests at the last page. The callback is latched, so trackpad momentum cannot fan one flick out into several requests.",
+      },
+    },
+  },
 };
