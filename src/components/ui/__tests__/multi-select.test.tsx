@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   MultiSelect,
@@ -612,5 +612,143 @@ describe("MultiSelect", () => {
     );
 
     expect(document.activeElement).toBe(search);
+  });
+
+  // Infinite scroll / server-side pagination
+  describe("infinite scroll", () => {
+    // jsdom reports 0 for every layout box, so the list geometry is stubbed on
+    // the prototype BEFORE render — the component measures the list in an
+    // effect that runs on open, so stubbing a node afterwards would be too
+    // late and the no-scrollbar fallback would already have fired.
+    const stubGeometry = (scrollHeight: number, clientHeight: number) => {
+      vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
+        scrollHeight
+      );
+      vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
+        clientHeight
+      );
+    };
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    const openList = async (ui: React.ReactElement) => {
+      const user = userEvent.setup();
+      render(ui);
+      await user.click(screen.getByRole("combobox"));
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+      return { list, user };
+    };
+
+    const scrollTo = (list: HTMLDivElement, top: number) => {
+      Object.defineProperty(list, "scrollTop", {
+        configurable: true,
+        value: top,
+      });
+      fireEvent.scroll(list);
+    };
+
+    it("calls onScrollEnd once when scrolled within 48px of the bottom", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+
+      scrollTo(list, 400); // 1000 - 400 - 240 = 360px left
+      expect(onScrollEnd).not.toHaveBeenCalled();
+
+      scrollTo(list, 730); // 30px left — inside the threshold
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("latches so trackpad inertia cannot fire repeat requests", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+
+      scrollTo(list, 730);
+      // Momentum keeps emitting scroll events at/near the boundary.
+      scrollTo(list, 745);
+      scrollTo(list, 755);
+      scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("re-arms only after the user scrolls away from the bottom", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+
+      scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      scrollTo(list, 200); // away from the boundary — latch clears
+      scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not call onScrollEnd when hasMore is false", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect options={defaultOptions} onScrollEnd={onScrollEnd} />
+      );
+
+      scrollTo(list, 760);
+      expect(onScrollEnd).not.toHaveBeenCalled();
+    });
+
+    it("does not call onScrollEnd while loadingMore is true", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      scrollTo(list, 760);
+      expect(onScrollEnd).not.toHaveBeenCalled();
+    });
+
+    it("renders the loading row at the bottom of the list when loadingMore", async () => {
+      stubGeometry(1000, 240);
+      await openList(<MultiSelect options={defaultOptions} hasMore loadingMore />);
+
+      expect(screen.getByRole("status")).toHaveTextContent("Loading more...");
+      // Existing options stay visible while the next page loads.
+      expect(screen.getByText("Option 1")).toBeInTheDocument();
+    });
+
+    it("shows the loading row instead of the empty state on a first page fetch", async () => {
+      stubGeometry(1000, 240);
+      await openList(<MultiSelect options={[]} hasMore loadingMore />);
+
+      expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+
+    it("requests the next page when the first page is too short to scroll", async () => {
+      // Content fits the viewport, so no scroll event will ever fire — without
+      // the fallback, pagination would stall on page 1 forever.
+      stubGeometry(120, 240);
+      const onScrollEnd = vi.fn();
+      await openList(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -124,6 +124,13 @@ const MENU_MIN_WIDTH = 180;
 const MENU_MIN_HEIGHT = 120;
 
 /**
+ * Distance from the bottom of the option list, in px, at which `onScrollEnd`
+ * fires. Roughly one option row, so the next page starts loading just before
+ * the user actually hits the end.
+ */
+const SCROLL_END_THRESHOLD_PX = 48;
+
+/**
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
@@ -156,6 +163,27 @@ export interface MultiSelectProps extends VariantProps<
   disabled?: boolean;
   /** Loading state with spinner */
   loading?: boolean;
+  /**
+   * Called once when the option list is scrolled to within
+   * `SCROLL_END_THRESHOLD_PX` of its bottom. Use it to fetch the next page of
+   * server-side options. Fires at most once per scroll gesture — it re-arms
+   * only after the user scrolls back away from the bottom, so a single
+   * trackpad flick (which keeps emitting scroll events while it decelerates)
+   * cannot fan out into several requests.
+   */
+  onScrollEnd?: () => void;
+  /**
+   * Whether the server has more pages. When false, `onScrollEnd` is never
+   * called.
+   * @default false
+   */
+  hasMore?: boolean;
+  /**
+   * Whether a page fetch is in flight. Renders a loading row at the bottom of
+   * the list and suppresses further `onScrollEnd` calls.
+   * @default false
+   */
+  loadingMore?: boolean;
   /** Placeholder text when no value selected */
   placeholder?: string;
   /** Currently selected values (controlled) */
@@ -257,6 +285,9 @@ const MultiSelect = React.forwardRef(
       error,
       disabled,
       loading,
+      onScrollEnd,
+      hasMore = false,
+      loadingMore = false,
       placeholder = "Select options",
       value,
       defaultValue = [],
@@ -405,6 +436,61 @@ const MultiSelect = React.forwardRef(
         document.removeEventListener("focusout", stopMenuFocusEvent, true);
       };
     }, [isOpen, portalTarget, refs.floating]);
+
+    /** The scrollable option list; also read by the no-scrollbar fallback. */
+    const listRef = React.useRef<HTMLDivElement | null>(null);
+    /**
+     * True once `onScrollEnd` has fired for the current visit to the bottom.
+     * Cleared only when the user scrolls back out of the threshold zone, so
+     * trackpad inertia — which keeps firing `scroll` for hundreds of ms after
+     * the finger lifts — cannot re-trigger the callback.
+     */
+    const isLatchedRef = React.useRef(false);
+
+    /**
+     * Deliberately a plain function, not a `useCallback` — it must read the
+     * current `hasMore` / `loadingMore` on every scroll event, and a memoised
+     * handler would need a props ref (writing refs during render is banned).
+     */
+    const maybeLoadMore = () => {
+      const node = listRef.current;
+      if (!node) return;
+
+      const isNearBottom =
+        node.scrollHeight - node.scrollTop - node.clientHeight <
+        SCROLL_END_THRESHOLD_PX;
+
+      if (!isNearBottom) {
+        // Only an explicit scroll away from the boundary re-arms the latch.
+        isLatchedRef.current = false;
+        return;
+      }
+      if (isLatchedRef.current || !hasMore || loadingMore || !onScrollEnd)
+        return;
+
+      isLatchedRef.current = true;
+      onScrollEnd();
+    };
+
+    // A closed menu or a new search starts from a clean latch.
+    React.useEffect(() => {
+      isLatchedRef.current = false;
+    }, [isOpen, searchQuery]);
+
+    /**
+     * A page can arrive without making the list taller than its max-height
+     * (few results, or a short viewport). No further `scroll` event would ever
+     * fire, so pagination would stall silently — re-check whenever the rendered
+     * options or the fetch state change.
+     */
+    React.useEffect(() => {
+      if (!isOpen || !hasMore || loadingMore) return;
+      const node = listRef.current;
+      if (!node || node.scrollHeight > node.clientHeight) return;
+      if (isLatchedRef.current) return;
+      isLatchedRef.current = true;
+      onScrollEnd?.();
+    }, [isOpen, portalTarget, hasMore, loadingMore, options, onScrollEnd]);
 
     const flatOptions = React.useMemo(
       () => flattenMultiSelectOptions(options),
@@ -835,13 +921,15 @@ const MultiSelect = React.forwardRef(
 
               {/* Options */}
               <div
+                ref={listRef}
+                onScroll={maybeLoadMore}
                 className="overflow-auto overscroll-contain p-1"
                 style={{
                   maxHeight:
                     "min(15rem, var(--multi-select-available-height, 15rem))",
                 }}
               >
-                {filteredOptions.length === 0 ? (
+                {filteredOptions.length === 0 && !loadingMore ? (
                   <div className="py-6 text-center text-sm text-semantic-text-muted">
                     No results found
                   </div>
@@ -1003,6 +1091,17 @@ const MultiSelect = React.forwardRef(
                     return withDisabledTooltip(simpleRow);
                   })
                 )}
+
+                {loadingMore ? (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="flex items-center justify-center gap-2 py-3 text-sm text-semantic-text-muted"
+                  >
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>Loading more...</span>
+                  </div>
+                ) : null}
               </div>
 
               {/* Footer with count */}
