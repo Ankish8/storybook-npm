@@ -228,11 +228,32 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
       [disabled]
     );
 
+    /**
+     * The pending focus frame has to be cancellable. Opening the menu schedules
+     * a frame that refocuses the input, and the input's `onFocus` reopens the
+     * menu. If that frame lands AFTER an option has been picked, it reopens the
+     * dropdown that `selectOption` just closed — so selecting an option looks
+     * like it does nothing. Whether the frame lands before or after the click is
+     * pure timing, which is why the bug comes and goes.
+     */
+    const focusFrameRef = React.useRef<number | null>(null);
+
+    const cancelPendingFocus = React.useCallback(() => {
+      if (focusFrameRef.current === null) return;
+      window.cancelAnimationFrame(focusFrameRef.current);
+      focusFrameRef.current = null;
+    }, []);
+
     const focusSearchInput = React.useCallback(() => {
-      window.requestAnimationFrame(() => {
+      cancelPendingFocus();
+      focusFrameRef.current = window.requestAnimationFrame(() => {
+        focusFrameRef.current = null;
         searchInputRef.current?.focus();
       });
-    }, []);
+    }, [cancelPendingFocus]);
+
+    // Never let a queued frame fire into an unmounted component.
+    React.useEffect(() => cancelPendingFocus, [cancelPendingFocus]);
 
     const setRootRef = React.useCallback(
       (node: HTMLDivElement | null) => {
@@ -311,9 +332,12 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
         onValueChange?.(option.value);
         onOptionSelect?.(option);
         onSearchChange?.(option.label);
+        // Drop any queued refocus first, or it reopens what we are closing.
+        cancelPendingFocus();
         setOpen(false);
       },
       [
+        cancelPendingFocus,
         disabled,
         onSearchChange,
         onOptionSelect,

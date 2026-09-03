@@ -1,6 +1,6 @@
 import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SearchFilter, type SearchFilterOption } from "../search-filter";
@@ -102,6 +102,43 @@ describe("SearchFilter", () => {
     expect(
       screen.queryByRole("option", { name: "+91 11 4000 3001" })
     ).not.toBeInTheDocument();
+  });
+
+  it("stays closed when a queued refocus frame fires after selection", async () => {
+    // Hold every animation frame so the refocus is GUARANTEED to still be
+    // pending when the option is clicked. Left to real timing the frame
+    // usually lands first and the bug hides, which is exactly why it survived.
+    const frames: Array<FrameRequestCallback | null> = [];
+    const rafSpy = vi
+      .spyOn(window, "requestAnimationFrame")
+      .mockImplementation((cb: FrameRequestCallback) => frames.push(cb));
+    const cancelSpy = vi
+      .spyOn(window, "cancelAnimationFrame")
+      .mockImplementation((handle: number) => {
+        frames[handle - 1] = null;
+      });
+
+    try {
+      const user = userEvent.setup();
+
+      render(<SearchFilter options={options} searchMode="text" />);
+
+      const input = screen.getByPlaceholderText("Search...");
+      await user.click(input);
+      await user.click(screen.getByRole("option", { name: "+91 11 4000 3001" }));
+
+      // Without the cancel, this frame refocuses the input, whose onFocus
+      // reopens the dropdown that selectOption just closed.
+      await act(async () => {
+        frames.splice(0).forEach((cb) => cb?.(0));
+      });
+
+      expect(screen.queryAllByRole("option")).toHaveLength(0);
+      expect(input).toHaveAttribute("aria-expanded", "false");
+    } finally {
+      rafSpy.mockRestore();
+      cancelSpy.mockRestore();
+    }
   });
 
   it("calls selection callbacks with the chosen option", async () => {
