@@ -307,6 +307,66 @@ describe("MultiSelect", () => {
     expect(screen.getByText("No results found")).toBeInTheDocument();
   });
 
+  // Controlled search (server-side filtering, e.g. paired with onScrollEnd
+  // pagination — client-side filtering would only search the loaded page).
+  it("controlled search: calls onSearchQueryChange instead of managing its own state", async () => {
+    const user = userEvent.setup();
+    const onSearchQueryChange = vi.fn();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        searchable
+        searchQuery=""
+        onSearchQueryChange={onSearchQueryChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...");
+    fireEvent.change(input, { target: { value: "abc" } });
+
+    expect(onSearchQueryChange).toHaveBeenCalledWith("abc");
+    // Controlled: the input only reflects the `searchQuery` prop, which the
+    // parent didn't feed back here, so it doesn't update itself from typing.
+    expect(input).toHaveValue("");
+  });
+
+  it("controlled search: does not filter options client-side, even when searchQuery matches nothing", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        searchable
+        searchQuery="no-match-in-any-label"
+        onSearchQueryChange={vi.fn()}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    // The parent owns filtering server-side; the component must not also
+    // filter `options`, or it would show a false "No results found" against
+    // options the parent already filtered for this query.
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+  });
+
+  it("uncontrolled search still filters client-side when searchQuery is omitted", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...");
+    await user.type(input, "Option 1");
+
+    // Uncontrolled: the component owns its own search state, so the input
+    // reflects what was typed and options are filtered internally.
+    expect(input).toHaveValue("Option 1");
+    expect(
+      screen.queryByRole("option", { name: "Option 2" })
+    ).not.toBeInTheDocument();
+  });
+
   // Disabled state
   it("is disabled when disabled prop is set", () => {
     render(<MultiSelect options={defaultOptions} disabled />);

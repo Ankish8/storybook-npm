@@ -634,22 +634,40 @@ export const LongOptionLabels: Story = {
 const PAGE_SIZE = 20;
 const TOTAL_AGENTS = 137;
 
-/** Stand-in for a paginated API — resolves after a short delay. */
-const fetchAgentPage = (page: number) =>
-  new Promise<{ items: MultiSelectOption[]; hasMore: boolean }>((resolve) => {
-    setTimeout(() => {
-      const start = page * PAGE_SIZE;
-      const items = Array.from(
-        { length: Math.min(PAGE_SIZE, TOTAL_AGENTS - start) },
-        (_, i) => ({
-          value: `agent-${start + i + 1}`,
-          label: `Agent ${start + i + 1}`,
-          secondaryText: `Ext. ${1000 + start + i}`,
-        })
-      );
-      resolve({ items, hasMore: start + items.length < TOTAL_AGENTS });
-    }, 700);
-  });
+const ALL_AGENTS: MultiSelectOption[] = Array.from(
+  { length: TOTAL_AGENTS },
+  (_, i) => ({
+    value: `agent-${i + 1}`,
+    label: `Agent ${i + 1}`,
+    secondaryText: `Ext. ${1000 + i}`,
+  })
+);
+
+/**
+ * Stand-in for a paginated, server-side-filtered API — resolves after a
+ * short delay. Filtering runs over the *full* dataset here, not client-side
+ * over whatever page happens to already be loaded — matching how a real
+ * search endpoint behaves, and why `searchQuery`/`onSearchQueryChange` are
+ * wired up as controlled below instead of leaving MultiSelect to filter.
+ */
+const fetchAgentPage = (page: number, query: string) =>
+  new Promise<{ items: MultiSelectOption[]; hasMore: boolean; total: number }>(
+    (resolve) => {
+      setTimeout(() => {
+        const trimmed = query.trim().toLowerCase();
+        const matches = trimmed
+          ? ALL_AGENTS.filter((a) => a.label.toLowerCase().includes(trimmed))
+          : ALL_AGENTS;
+        const start = page * PAGE_SIZE;
+        const items = matches.slice(start, start + PAGE_SIZE);
+        resolve({
+          items,
+          hasMore: start + items.length < matches.length,
+          total: matches.length,
+        });
+      }, 700);
+    }
+  );
 
 const InfiniteScrollExample = ({
   optionVariant = "detailed",
@@ -664,37 +682,49 @@ const InfiniteScrollExample = ({
   const [page, setPage] = React.useState(0);
   const [hasMore, setHasMore] = React.useState(true);
   const [loadingMore, setLoadingMore] = React.useState(false);
+  const [total, setTotal] = React.useState(TOTAL_AGENTS);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const loadPage = React.useCallback(async (next: number) => {
-    setLoadingMore(true);
-    const result = await fetchAgentPage(next);
-    setOptions((prev) => [...prev, ...result.items]);
-    setHasMore(result.hasMore);
-    setPage(next + 1);
-    setLoadingMore(false);
-  }, []);
+  const loadPage = React.useCallback(
+    async (next: number, query: string, replace: boolean) => {
+      setLoadingMore(true);
+      const result = await fetchAgentPage(next, query);
+      setOptions((prev) =>
+        replace ? result.items : [...prev, ...result.items]
+      );
+      setHasMore(result.hasMore);
+      setTotal(result.total);
+      setPage(next + 1);
+      setLoadingMore(false);
+    },
+    []
+  );
 
+  // Refetches page 0 against the *server* whenever the query changes — the
+  // whole point of controlled search — instead of MultiSelect filtering
+  // whatever page is already loaded client-side.
   React.useEffect(() => {
-    void loadPage(0);
-    // Only the first page on mount; the rest come from onScrollEnd.
+    void loadPage(0, searchQuery, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchQuery]);
 
   return (
-    <div className="w-[320px]">
+    <div className="w-full max-w-[320px]">
       <MultiSelect
         label={label}
         placeholder="Select agents"
         optionVariant={optionVariant}
         searchable={searchable}
         searchPlaceholder="Search..."
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
         options={options}
         hasMore={hasMore}
         loadingMore={loadingMore}
         onScrollEnd={() => {
-          if (!loadingMore && hasMore) void loadPage(page);
+          if (!loadingMore && hasMore) void loadPage(page, searchQuery, false);
         }}
-        helperText={`${options.length} of ${TOTAL_AGENTS} loaded`}
+        helperText={`${options.length} of ${total} loaded`}
       />
     </div>
   );
@@ -718,7 +748,7 @@ export const InfiniteScroll: Story = {
     docs: {
       description: {
         story:
-          "Server-side pagination in both option styles. `onScrollEnd` fires once when the list is scrolled within 48px of the bottom, `loadingMore` renders the spinner row, and `hasMore` stops the requests at the last page. The callback is latched, so trackpad momentum cannot fan one flick out into several requests. Left: `optionVariant=\"simple\"` with `searchable` — a search box above the list and a checkmark on the right of the selected rows; the filter runs over the pages already fetched, so scroll further to search a wider set. Right: `optionVariant=\"detailed\"` — checkbox plus primary and secondary text.",
+          "Server-side pagination in both option styles. `onScrollEnd` fires once when the list is scrolled within 48px of the bottom, `loadingMore` renders the spinner row, and `hasMore` stops the requests at the last page. The callback is latched, so trackpad momentum cannot fan one flick out into several requests — and re-measures after each page lands, so a page that grows the list well past the old scroll height (with no `scroll` event to trigger a re-check) still unlatches instead of stalling. Left: `optionVariant=\"simple\"` with `searchable`, wired to `searchQuery`/`onSearchQueryChange` — every keystroke re-fetches page 0 from the *full* dataset server-side, not a client-side filter over whatever pages happen to already be loaded (which would falsely show \"No results found\" for matches sitting on pages 3+). Right: `optionVariant=\"detailed\"` — checkbox plus primary and secondary text.",
       },
     },
   },

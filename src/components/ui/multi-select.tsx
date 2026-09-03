@@ -212,6 +212,18 @@ export interface MultiSelectProps extends VariantProps<
   /** Search placeholder text */
   searchPlaceholder?: string;
   /**
+   * Controlled search value. Pair with `onSearchQueryChange` when filtering
+   * happens server-side (e.g. alongside `onScrollEnd` pagination, where each
+   * page only has a slice of the full result set — client-side filtering
+   * would search just that slice and show false "No results found" states).
+   * When provided, the component stops managing its own search state and
+   * stops filtering `options` itself; the caller is expected to pass already
+   * filtered `options` for the current `searchQuery`.
+   */
+  searchQuery?: string;
+  /** Fires on every search input change. Required to pair with `searchQuery`. */
+  onSearchQueryChange?: (query: string) => void;
+  /**
    * When set, the trigger shows a single compact summary (e.g. "3 lines
    * selected") instead of one chip per selection; hovering it reveals the full
    * list of selected labels in a tooltip. Receives the selected count.
@@ -303,6 +315,8 @@ const MultiSelect = React.forwardRef(
       options,
       searchable,
       searchPlaceholder = "Search...",
+      searchQuery: searchQueryProp,
+      onSearchQueryChange,
       selectAllLabel,
       summaryLabel,
       maxSelections,
@@ -328,8 +342,20 @@ const MultiSelect = React.forwardRef(
       React.useState<string[]>(defaultValue);
     // Dropdown open state
     const [isOpen, setIsOpen] = React.useState(false);
-    // Search query
-    const [searchQuery, setSearchQuery] = React.useState("");
+    // Search query — controlled when the caller passes `searchQuery` (server-side
+    // filtering), uncontrolled otherwise.
+    const [internalSearchQuery, setInternalSearchQuery] = React.useState("");
+    const isSearchControlled = searchQueryProp !== undefined;
+    const searchQuery = isSearchControlled ? searchQueryProp : internalSearchQuery;
+    const updateSearchQuery = React.useCallback(
+      (next: string) => {
+        if (!isSearchControlled) {
+          setInternalSearchQuery(next);
+        }
+        onSearchQueryChange?.(next);
+      },
+      [isSearchControlled, onSearchQueryChange]
+    );
 
     // `detailed` rows are a single-line design, so they truncate unless the
     // caller opts out; `simple` rows wrap the full label unless asked not to.
@@ -607,8 +633,11 @@ const MultiSelect = React.forwardRef(
     // Determine aria-describedby
     const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
-    // Filter options by search query
+    // Filter options by search query. Skipped when `searchQuery` is
+    // controlled — the caller owns filtering then (typically server-side, so
+    // `options` is already the filtered slice for the current query).
     const filteredOptions = React.useMemo(() => {
+      if (isSearchControlled) return flatOptions;
       if (!searchable || !searchQuery.trim()) return flatOptions;
       const q = searchQuery.toLowerCase();
       return flatOptions.filter((option) => {
@@ -619,7 +648,7 @@ const MultiSelect = React.forwardRef(
           (option.group?.toLowerCase().includes(q) ?? false)
         );
       });
-    }, [flatOptions, searchable, searchQuery]);
+    }, [flatOptions, searchable, searchQuery, isSearchControlled]);
 
     type DisplayItem =
       | { type: "option"; option: MultiSelectOption }
@@ -737,7 +766,7 @@ const MultiSelect = React.forwardRef(
           return;
         }
         setIsOpen(false);
-        setSearchQuery("");
+        updateSearchQuery("");
       };
 
       const timeoutId = window.setTimeout(() => {
@@ -748,13 +777,13 @@ const MultiSelect = React.forwardRef(
         window.clearTimeout(timeoutId);
         document.removeEventListener("mousedown", handleClickOutside);
       };
-    }, [isOpen, refs.floating]);
+    }, [isOpen, refs.floating, updateSearchQuery]);
 
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape" && closeOnEscape) {
         setIsOpen(false);
-        setSearchQuery("");
+        updateSearchQuery("");
       } else if (e.key === "Enter" || e.key === " ") {
         if (!isOpen) {
           e.preventDefault();
@@ -957,7 +986,7 @@ const MultiSelect = React.forwardRef(
                     type="text"
                     placeholder={searchPlaceholder}
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => updateSearchQuery(e.target.value)}
                     className="w-full h-[42px] px-3 text-base text-semantic-text-primary border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                     onClick={(e) => e.stopPropagation()}
                   />
