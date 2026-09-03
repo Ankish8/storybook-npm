@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, within, fireEvent } from "@testing-library/react";
+import { render, screen, within, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   MultiSelect,
@@ -620,6 +620,8 @@ describe("MultiSelect", () => {
     // the prototype BEFORE render — the component measures the list in an
     // effect that runs on open, so stubbing a node afterwards would be too
     // late and the no-scrollbar fallback would already have fired.
+    const POST_FETCH_MEASURE_DELAY_MS = 50;
+
     const stubGeometry = (scrollHeight: number, clientHeight: number) => {
       vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
         scrollHeight
@@ -643,12 +645,29 @@ describe("MultiSelect", () => {
       return { list, user };
     };
 
-    const scrollTo = (list: HTMLDivElement, top: number) => {
+    /**
+     * The handler coalesces scroll bursts into one `requestAnimationFrame`, so
+     * the measurement lands a frame after the event — flush it.
+     */
+    const scrollTo = async (list: HTMLDivElement, top: number) => {
       Object.defineProperty(list, "scrollTop", {
         configurable: true,
         value: top,
       });
       fireEvent.scroll(list);
+      // Let the queued frame run.
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+    };
+
+    /** Flush the post-fetch re-measure timer (50ms). */
+    const flushRemeasure = async () => {
+      await act(async () => {
+        await new Promise((resolve) =>
+          setTimeout(resolve, POST_FETCH_MEASURE_DELAY_MS + 20)
+        );
+      });
     };
 
     it("calls onScrollEnd once when scrolled within 48px of the bottom", async () => {
@@ -658,10 +677,10 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 400); // 1000 - 400 - 240 = 360px left
+      await scrollTo(list, 400); // 1000 - 400 - 240 = 360px left
       expect(onScrollEnd).not.toHaveBeenCalled();
 
-      scrollTo(list, 730); // 30px left — inside the threshold
+      await scrollTo(list, 730); // 30px left — inside the threshold
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
     });
 
@@ -672,11 +691,11 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 730);
+      await scrollTo(list, 730);
       // Momentum keeps emitting scroll events at/near the boundary.
-      scrollTo(list, 745);
-      scrollTo(list, 755);
-      scrollTo(list, 760);
+      await scrollTo(list, 745);
+      await scrollTo(list, 755);
+      await scrollTo(list, 760);
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
     });
 
@@ -687,11 +706,11 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 760);
+      await scrollTo(list, 760);
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
 
-      scrollTo(list, 200); // away from the boundary — latch clears
-      scrollTo(list, 760);
+      await scrollTo(list, 200); // away from the boundary — latch clears
+      await scrollTo(list, 760);
       expect(onScrollEnd).toHaveBeenCalledTimes(2);
     });
 
@@ -702,7 +721,7 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 760);
+      await scrollTo(list, 760);
       expect(onScrollEnd).not.toHaveBeenCalled();
     });
 
@@ -718,7 +737,7 @@ describe("MultiSelect", () => {
         />
       );
 
-      scrollTo(list, 760);
+      await scrollTo(list, 760);
       expect(onScrollEnd).not.toHaveBeenCalled();
     });
 
@@ -747,8 +766,95 @@ describe("MultiSelect", () => {
       await openList(
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
+      await flushRemeasure();
 
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("re-arms after a page lands and pushes the bottom out of reach", async () => {
+      // The regression: a fast flick latches at the bottom, the page arrives
+      // and grows the list — which emits no scroll event — so the latch has to
+      // be cleared by the post-fetch re-measure or pagination stalls forever.
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { rerender } = render(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+
+      await scrollTo(list, 760); // flick to the bottom — latches
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      // Page in flight, then it lands and the list grows by 400px while
+      // `scrollTop` stays at 760 — no scroll event is emitted.
+      rerender(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      stubGeometry(1400, 240);
+      rerender(
+        <MultiSelect
+          options={[...defaultOptions, { value: "option4", label: "Option 4" }]}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      await flushRemeasure();
+
+      // Latch cleared without any user scroll — the next flick paginates.
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+      await scrollTo(list, 1160);
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
+    });
+
+    it("chains the next page when a landed page leaves the user at the bottom", async () => {
+      // Short page: the list is still pinned to the bottom after the fetch, so
+      // the re-measure must keep the chain going rather than clear the latch.
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { rerender } = render(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+
+      await scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      // Page adds only 20px — still inside the threshold.
+      stubGeometry(1020, 240);
+      rerender(
+        <MultiSelect
+          options={[...defaultOptions, { value: "option4", label: "Option 4" }]}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      await flushRemeasure();
+
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
     });
   });
 });

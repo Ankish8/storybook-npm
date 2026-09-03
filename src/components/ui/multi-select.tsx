@@ -131,6 +131,14 @@ const MENU_MIN_HEIGHT = 120;
 const SCROLL_END_THRESHOLD_PX = 48;
 
 /**
+ * How long to wait after a page lands before re-measuring the list. React has
+ * committed the new rows by the time the effect runs, but the browser has not
+ * necessarily laid them out, so `scrollHeight` can still read the pre-growth
+ * value. One frame is usually enough; 50ms is a cheap margin.
+ */
+const POST_FETCH_MEASURE_DELAY_MS = 50;
+
+/**
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
@@ -441,11 +449,32 @@ const MultiSelect = React.forwardRef(
     const listRef = React.useRef<HTMLDivElement | null>(null);
     /**
      * True once `onScrollEnd` has fired for the current visit to the bottom.
-     * Cleared only when the user scrolls back out of the threshold zone, so
-     * trackpad inertia — which keeps firing `scroll` for hundreds of ms after
-     * the finger lifts — cannot re-trigger the callback.
+     * Cleared when the user scrolls back out of the threshold zone, or when a
+     * landed page pushes the bottom back out of reach, so trackpad inertia —
+     * which keeps firing `scroll` for hundreds of ms after the finger lifts —
+     * cannot re-trigger the callback.
      */
     const isLatchedRef = React.useRef(false);
+    /** Previous `loadingMore`, so the re-measure knows a page just landed. */
+    const wasLoadingMoreRef = React.useRef(false);
+    /** Pending `requestAnimationFrame` id for the coalesced scroll handler. */
+    const scrollFrameRef = React.useRef<number | null>(null);
+    /**
+     * `onScrollEnd` read from a timer rather than from the closure, so an
+     * inline arrow from the consumer cannot restart the post-fetch timer on
+     * every render.
+     */
+    const onScrollEndRef = React.useRef(onScrollEnd);
+    React.useEffect(() => {
+      onScrollEndRef.current = onScrollEnd;
+    }, [onScrollEnd]);
+
+    /** Distance in px from the current scroll position to the list bottom. */
+    const distanceToBottom = () => {
+      const node = listRef.current;
+      if (!node) return null;
+      return node.scrollHeight - node.scrollTop - node.clientHeight;
+    };
 
     /**
      * Deliberately a plain function, not a `useCallback` — it must read the
@@ -453,14 +482,10 @@ const MultiSelect = React.forwardRef(
      * handler would need a props ref (writing refs during render is banned).
      */
     const maybeLoadMore = () => {
-      const node = listRef.current;
-      if (!node) return;
+      const distance = distanceToBottom();
+      if (distance === null) return;
 
-      const isNearBottom =
-        node.scrollHeight - node.scrollTop - node.clientHeight <
-        SCROLL_END_THRESHOLD_PX;
-
-      if (!isNearBottom) {
+      if (distance >= SCROLL_END_THRESHOLD_PX) {
         // Only an explicit scroll away from the boundary re-arms the latch.
         isLatchedRef.current = false;
         return;
@@ -472,25 +497,71 @@ const MultiSelect = React.forwardRef(
       onScrollEnd();
     };
 
+    /**
+     * `scroll` fires far more often than the browser paints, so a fast flick
+     * delivers a burst of events whose geometry is mid-flight. Coalescing to
+     * one `requestAnimationFrame` per burst measures once per frame, after
+     * layout has settled, and still sees the final resting position.
+     */
+    const handleListScroll = () => {
+      if (scrollFrameRef.current !== null) return;
+      scrollFrameRef.current = requestAnimationFrame(() => {
+        scrollFrameRef.current = null;
+        maybeLoadMore();
+      });
+    };
+
     // A closed menu or a new search starts from a clean latch.
     React.useEffect(() => {
       isLatchedRef.current = false;
     }, [isOpen, searchQuery]);
 
+    React.useEffect(
+      () => () => {
+        if (scrollFrameRef.current !== null) {
+          cancelAnimationFrame(scrollFrameRef.current);
+        }
+      },
+      []
+    );
+
     /**
-     * A page can arrive without making the list taller than its max-height
-     * (few results, or a short viewport). No further `scroll` event would ever
-     * fire, so pagination would stall silently — re-check whenever the rendered
-     * options or the fetch state change.
+     * Re-measure once a page has landed. Content growth emits no `scroll`
+     * event, so without this the latch set on the way down would never clear
+     * and pagination would stall permanently after a fast flick to the bottom.
+     * It also covers the case where the page does not make the list taller
+     * than its max-height (few results, or a short viewport), where no further
+     * `scroll` event would ever fire either.
+     *
+     * The latch is cleared only once the bottom is genuinely out of reach —
+     * while the user is still pinned at distance ~0, it stays armed and the
+     * next page is chained explicitly, so inertia cannot fan out into
+     * duplicate requests.
      */
     React.useEffect(() => {
-      if (!isOpen || !hasMore || loadingMore) return;
-      const node = listRef.current;
-      if (!node || node.scrollHeight > node.clientHeight) return;
-      if (isLatchedRef.current) return;
-      isLatchedRef.current = true;
-      onScrollEnd?.();
-    }, [isOpen, portalTarget, hasMore, loadingMore, options, onScrollEnd]);
+      const pageJustLanded = wasLoadingMoreRef.current && !loadingMore;
+      wasLoadingMoreRef.current = loadingMore;
+      if (!isOpen || loadingMore) return;
+
+      const timeoutId = window.setTimeout(() => {
+        const distance = distanceToBottom();
+        if (distance === null) return;
+
+        if (distance >= SCROLL_END_THRESHOLD_PX) {
+          isLatchedRef.current = false;
+          return;
+        }
+        if (!hasMore || !onScrollEndRef.current) return;
+        // Still latched and nothing landed: the scroll handler's request is
+        // in flight (or the consumer never set `loadingMore`) — don't refire.
+        if (isLatchedRef.current && !pageJustLanded) return;
+
+        isLatchedRef.current = true;
+        onScrollEndRef.current();
+      }, POST_FETCH_MEASURE_DELAY_MS);
+
+      return () => window.clearTimeout(timeoutId);
+    }, [isOpen, portalTarget, hasMore, loadingMore, options.length]);
 
     const flatOptions = React.useMemo(
       () => flattenMultiSelectOptions(options),
@@ -922,7 +993,7 @@ const MultiSelect = React.forwardRef(
               {/* Options */}
               <div
                 ref={listRef}
-                onScroll={maybeLoadMore}
+                onScroll={handleListScroll}
                 className="overflow-auto overscroll-contain p-1"
                 style={{
                   maxHeight:
