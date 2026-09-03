@@ -131,6 +131,13 @@ const MENU_MIN_HEIGHT = 120;
 const SCROLL_END_THRESHOLD_PX = 48;
 
 /**
+ * How long after a fetch settles to re-measure distance-to-bottom, giving
+ * the just-rendered page (and the floating-ui menu resize it can trigger)
+ * a moment to finish laying out before geometry is read.
+ */
+const POST_FETCH_MEASURE_DELAY_MS = 50;
+
+/**
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
@@ -203,6 +210,18 @@ export interface MultiSelectProps extends VariantProps<
   searchable?: boolean;
   /** Search placeholder text */
   searchPlaceholder?: string;
+  /**
+   * Controlled search value. Pair with `onSearchQueryChange` when filtering
+   * happens server-side (e.g. alongside `onScrollEnd` pagination, where each
+   * page only has a slice of the full result set — client-side filtering
+   * would search just that slice and show false "No results found" states).
+   * When provided, the component stops managing its own search state and
+   * stops filtering `options` itself; the caller is expected to pass already
+   * filtered `options` for the current `searchQuery`.
+   */
+  searchQuery?: string;
+  /** Fires on every search input change. Required to pair with `searchQuery`. */
+  onSearchQueryChange?: (query: string) => void;
   /**
    * When set, the trigger shows a single compact summary (e.g. "3 lines
    * selected") instead of one chip per selection; hovering it reveals the full
@@ -295,6 +314,8 @@ const MultiSelect = React.forwardRef(
       options,
       searchable,
       searchPlaceholder = "Search...",
+      searchQuery: searchQueryProp,
+      onSearchQueryChange,
       selectAllLabel,
       summaryLabel,
       maxSelections,
@@ -320,8 +341,20 @@ const MultiSelect = React.forwardRef(
       React.useState<string[]>(defaultValue);
     // Dropdown open state
     const [isOpen, setIsOpen] = React.useState(false);
-    // Search query
-    const [searchQuery, setSearchQuery] = React.useState("");
+    // Search query — controlled when the caller passes `searchQuery` (server-side
+    // filtering), uncontrolled otherwise.
+    const [internalSearchQuery, setInternalSearchQuery] = React.useState("");
+    const isSearchControlled = searchQueryProp !== undefined;
+    const searchQuery = isSearchControlled ? searchQueryProp : internalSearchQuery;
+    const updateSearchQuery = React.useCallback(
+      (next: string) => {
+        if (!isSearchControlled) {
+          setInternalSearchQuery(next);
+        }
+        onSearchQueryChange?.(next);
+      },
+      [isSearchControlled, onSearchQueryChange]
+    );
 
     // `detailed` rows are a single-line design, so they truncate unless the
     // caller opts out; `simple` rows wrap the full label unless asked not to.
@@ -446,6 +479,18 @@ const MultiSelect = React.forwardRef(
      * the finger lifts — cannot re-trigger the callback.
      */
     const isLatchedRef = React.useRef(false);
+    /** Coalesces bursty `scroll` events to one measurement per animation frame. */
+    const scrollFrameRef = React.useRef<number | null>(null);
+    /**
+     * Always the latest `onScrollEnd`. The post-fetch effect below can't put
+     * the callback itself in its dependency array — a consumer passing an
+     * inline arrow (as most do) would give it a new identity every render
+     * and re-fire the effect's timer constantly — so it reads this instead.
+     */
+    const onScrollEndRef = React.useRef(onScrollEnd);
+    React.useEffect(() => {
+      onScrollEndRef.current = onScrollEnd;
+    }, [onScrollEnd]);
 
     /**
      * Deliberately a plain function, not a `useCallback` — it must read the
@@ -472,6 +517,20 @@ const MultiSelect = React.forwardRef(
       onScrollEnd();
     };
 
+    /**
+     * Raw `scroll` events can fire many times per animation frame (fast
+     * trackpad flicks especially). Reading layout geometry inside the raw
+     * callback risks measuring mid-burst; batching to once per frame reads
+     * settled geometry instead.
+     */
+    const handleListScroll = () => {
+      if (scrollFrameRef.current !== null) return;
+      scrollFrameRef.current = requestAnimationFrame(() => {
+        scrollFrameRef.current = null;
+        maybeLoadMore();
+      });
+    };
+
     // A closed menu or a new search starts from a clean latch.
     React.useEffect(() => {
       isLatchedRef.current = false;
@@ -491,6 +550,59 @@ const MultiSelect = React.forwardRef(
       isLatchedRef.current = true;
       onScrollEnd?.();
     }, [isOpen, portalTarget, hasMore, loadingMore, options, onScrollEnd]);
+
+    /** Read inside the effect below to detect a true → false transition only. */
+    const wasLoadingMoreRef = React.useRef(loadingMore);
+
+    /**
+     * A newly-arrived page can *also* grow the list well past its old
+     * scrollHeight while scrollTop stays put, so distance-to-bottom silently
+     * jumps back above the threshold — the browser never fires a `scroll`
+     * event for that, so the latch set by the fetch that just landed would
+     * otherwise never clear and pagination stalls until the user manually
+     * scrolls. Gated on an actual `loadingMore` true → false transition (not
+     * merely "currently false", which is also true before any fetch has ever
+     * run) so this can't schedule a stray check on mount/open that lands —
+     * given the delay below — after the user has since scrolled on their
+     * own, double-firing on top of the scroll-driven latch above. Re-measure
+     * once the fetch settles: clear the latch if the user is now clear of
+     * the bottom, or, if a short page/extreme flick left them still pinned
+     * there, chain the next fetch — deliberately regardless of the current
+     * latch value, since it's already `true` from the fetch that just landed.
+     */
+    React.useEffect(() => {
+      const wasLoading = wasLoadingMoreRef.current;
+      wasLoadingMoreRef.current = loadingMore;
+      if (loadingMore || !wasLoading) return;
+
+      const timeoutId = window.setTimeout(() => {
+        const node = listRef.current;
+        if (!node) return;
+        const distanceToBottom =
+          node.scrollHeight - node.scrollTop - node.clientHeight;
+
+        if (distanceToBottom >= SCROLL_END_THRESHOLD_PX) {
+          isLatchedRef.current = false;
+          return;
+        }
+        if (hasMore && onScrollEndRef.current) {
+          isLatchedRef.current = true;
+          onScrollEndRef.current();
+        }
+      }, POST_FETCH_MEASURE_DELAY_MS);
+
+      return () => window.clearTimeout(timeoutId);
+    }, [hasMore, loadingMore, options]);
+
+    // Cancel any in-flight animation frame on unmount.
+    React.useEffect(
+      () => () => {
+        if (scrollFrameRef.current !== null) {
+          cancelAnimationFrame(scrollFrameRef.current);
+        }
+      },
+      []
+    );
 
     const flatOptions = React.useMemo(
       () => flattenMultiSelectOptions(options),
@@ -536,8 +648,11 @@ const MultiSelect = React.forwardRef(
     // Determine aria-describedby
     const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
-    // Filter options by search query
+    // Filter options by search query. Skipped when `searchQuery` is
+    // controlled — the caller owns filtering then (typically server-side, so
+    // `options` is already the filtered slice for the current query).
     const filteredOptions = React.useMemo(() => {
+      if (isSearchControlled) return flatOptions;
       if (!searchable || !searchQuery.trim()) return flatOptions;
       const q = searchQuery.toLowerCase();
       return flatOptions.filter((option) => {
@@ -548,7 +663,7 @@ const MultiSelect = React.forwardRef(
           (option.group?.toLowerCase().includes(q) ?? false)
         );
       });
-    }, [flatOptions, searchable, searchQuery]);
+    }, [flatOptions, searchable, searchQuery, isSearchControlled]);
 
     type DisplayItem =
       | { type: "option"; option: MultiSelectOption }
@@ -666,7 +781,7 @@ const MultiSelect = React.forwardRef(
           return;
         }
         setIsOpen(false);
-        setSearchQuery("");
+        updateSearchQuery("");
       };
 
       const timeoutId = window.setTimeout(() => {
@@ -677,13 +792,13 @@ const MultiSelect = React.forwardRef(
         window.clearTimeout(timeoutId);
         document.removeEventListener("mousedown", handleClickOutside);
       };
-    }, [isOpen, refs.floating]);
+    }, [isOpen, refs.floating, updateSearchQuery]);
 
     // Handle keyboard navigation
     const handleKeyDown = (e: React.KeyboardEvent) => {
       if (e.key === "Escape" && closeOnEscape) {
         setIsOpen(false);
-        setSearchQuery("");
+        updateSearchQuery("");
       } else if (e.key === "Enter" || e.key === " ") {
         if (!isOpen) {
           e.preventDefault();
@@ -886,7 +1001,7 @@ const MultiSelect = React.forwardRef(
                     type="text"
                     placeholder={searchPlaceholder}
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => updateSearchQuery(e.target.value)}
                     className="w-full h-[42px] px-3 text-base text-semantic-text-primary border border-solid border-semantic-border-input rounded bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-input-focus/50"
                     onClick={(e) => e.stopPropagation()}
                   />
@@ -922,7 +1037,7 @@ const MultiSelect = React.forwardRef(
               {/* Options */}
               <div
                 ref={listRef}
-                onScroll={maybeLoadMore}
+                onScroll={handleListScroll}
                 className="overflow-auto overscroll-contain p-1"
                 style={{
                   maxHeight:

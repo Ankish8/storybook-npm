@@ -307,6 +307,66 @@ describe("MultiSelect", () => {
     expect(screen.getByText("No results found")).toBeInTheDocument();
   });
 
+  // Controlled search (server-side filtering, e.g. paired with onScrollEnd
+  // pagination — client-side filtering would only search the loaded page).
+  it("controlled search: calls onSearchQueryChange instead of managing its own state", async () => {
+    const user = userEvent.setup();
+    const onSearchQueryChange = vi.fn();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        searchable
+        searchQuery=""
+        onSearchQueryChange={onSearchQueryChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...");
+    fireEvent.change(input, { target: { value: "abc" } });
+
+    expect(onSearchQueryChange).toHaveBeenCalledWith("abc");
+    // Controlled: the input only reflects the `searchQuery` prop, which the
+    // parent didn't feed back here, so it doesn't update itself from typing.
+    expect(input).toHaveValue("");
+  });
+
+  it("controlled search: does not filter options client-side, even when searchQuery matches nothing", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        searchable
+        searchQuery="no-match-in-any-label"
+        onSearchQueryChange={vi.fn()}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    // The parent owns filtering server-side; the component must not also
+    // filter `options`, or it would show a false "No results found" against
+    // options the parent already filtered for this query.
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+  });
+
+  it("uncontrolled search still filters client-side when searchQuery is omitted", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...");
+    await user.type(input, "Option 1");
+
+    // Uncontrolled: the component owns its own search state, so the input
+    // reflects what was typed and options are filtered internally.
+    expect(input).toHaveValue("Option 1");
+    expect(
+      screen.queryByRole("option", { name: "Option 2" })
+    ).not.toBeInTheDocument();
+  });
+
   // Disabled state
   it("is disabled when disabled prop is set", () => {
     render(<MultiSelect options={defaultOptions} disabled />);
@@ -643,12 +703,19 @@ describe("MultiSelect", () => {
       return { list, user };
     };
 
-    const scrollTo = (list: HTMLDivElement, top: number) => {
+    // The scroll handler now coalesces raw `scroll` events to one
+    // measurement per animation frame, so tests must flush a frame before
+    // asserting on `onScrollEnd`.
+    const flushFrame = () =>
+      new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+    const scrollTo = async (list: HTMLDivElement, top: number) => {
       Object.defineProperty(list, "scrollTop", {
         configurable: true,
         value: top,
       });
       fireEvent.scroll(list);
+      await flushFrame();
     };
 
     it("calls onScrollEnd once when scrolled within 48px of the bottom", async () => {
@@ -658,10 +725,10 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 400); // 1000 - 400 - 240 = 360px left
+      await scrollTo(list, 400); // 1000 - 400 - 240 = 360px left
       expect(onScrollEnd).not.toHaveBeenCalled();
 
-      scrollTo(list, 730); // 30px left — inside the threshold
+      await scrollTo(list, 730); // 30px left — inside the threshold
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
     });
 
@@ -672,11 +739,11 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 730);
+      await scrollTo(list, 730);
       // Momentum keeps emitting scroll events at/near the boundary.
-      scrollTo(list, 745);
-      scrollTo(list, 755);
-      scrollTo(list, 760);
+      await scrollTo(list, 745);
+      await scrollTo(list, 755);
+      await scrollTo(list, 760);
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
     });
 
@@ -687,11 +754,11 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 760);
+      await scrollTo(list, 760);
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
 
-      scrollTo(list, 200); // away from the boundary — latch clears
-      scrollTo(list, 760);
+      await scrollTo(list, 200); // away from the boundary — latch clears
+      await scrollTo(list, 760);
       expect(onScrollEnd).toHaveBeenCalledTimes(2);
     });
 
@@ -702,7 +769,7 @@ describe("MultiSelect", () => {
         <MultiSelect options={defaultOptions} onScrollEnd={onScrollEnd} />
       );
 
-      scrollTo(list, 760);
+      await scrollTo(list, 760);
       expect(onScrollEnd).not.toHaveBeenCalled();
     });
 
@@ -718,7 +785,7 @@ describe("MultiSelect", () => {
         />
       );
 
-      scrollTo(list, 760);
+      await scrollTo(list, 760);
       expect(onScrollEnd).not.toHaveBeenCalled();
     });
 
@@ -749,6 +816,63 @@ describe("MultiSelect", () => {
       );
 
       expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("clears the latch when a landed page grows the list without a scroll event (regression)", async () => {
+      // A page arriving can make the list much taller while scrollTop stays
+      // put — the browser never fires a `scroll` event for that growth, so
+      // without the post-fetch re-measure, the latch set by the fetch that
+      // just landed would stay locked forever.
+      const user = userEvent.setup();
+      let scrollHeight = 1000;
+      vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockImplementation(
+        () => scrollHeight
+      );
+      vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
+        240
+      );
+
+      const onScrollEnd = vi.fn();
+      const { rerender } = render(
+        <MultiSelect options={defaultOptions} hasMore onScrollEnd={onScrollEnd} />
+      );
+      await user.click(screen.getByRole("combobox"));
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+
+      await scrollTo(list, 760); // 1000 - 760 - 240 = 0, at the bottom
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      // The fetch it triggered starts...
+      rerender(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      // ...and settles: the list grows to 3000px tall, but scrollTop never
+      // moves, so no `scroll` event fires for the growth — distance-to-bottom
+      // silently jumps from 0 to 2000.
+      scrollHeight = 3000;
+      rerender(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      // Let the internal post-fetch re-measure run.
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Without the fix, the latch stays locked here and this second visit
+      // to the (new) bottom would never re-fire onScrollEnd.
+      await scrollTo(list, 2760); // 3000 - 2760 - 240 = 0, the new bottom
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
     });
   });
 });
