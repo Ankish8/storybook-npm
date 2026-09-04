@@ -261,6 +261,15 @@ import { MultiSelect } from "@/components/ui/multi-select"
       action: "scrollEnd",
       description: "Fired once when the list is scrolled near its bottom",
     },
+    searchQuery: {
+      control: "text",
+      description:
+        "Controlled search value. Pair with onSearchQueryChange for server-side search (e.g. with onScrollEnd pagination) so filtering runs over the full dataset, not just the loaded page.",
+    },
+    onSearchQueryChange: {
+      action: "searchQueryChange",
+      description: "Fired on every search input change. Required to pair with searchQuery.",
+    },
   },
 };
 
