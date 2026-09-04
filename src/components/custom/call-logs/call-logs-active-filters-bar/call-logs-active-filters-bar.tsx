@@ -87,12 +87,12 @@ const CallLogsActiveFiltersBar = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex flex-wrap items-center justify-between gap-x-2 gap-y-2 border-b border-solid border-semantic-border-layout px-4 py-2",
+          "flex items-center justify-between gap-x-2 gap-y-2 border-b border-solid border-semantic-border-layout px-4 py-2",
           className
         )}
         {...props}
       >
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           {chips.map((chip) => (
             <ChipTag key={chip.id} chip={chip} onRemoveChip={onRemoveChip} />
           ))}

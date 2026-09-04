@@ -30,7 +30,12 @@ const SAMPLE_CHIPS: CallLogsActiveFilterChip[] = [
     id: "agents",
     label: "Agent:",
     value: "Akhil, Nivedithatha +2 more",
-    tooltipItems: ["Akhil Yadav", "Nivedithatha N.", "Sumati Dixit", "Komal Rawat"],
+    tooltipItems: [
+      "Akhil Yadav",
+      "Nivedithatha N.",
+      "Sumati Dixit",
+      "Komal Rawat",
+    ],
   },
   { id: "call-direction", label: "Call:", value: "Incoming, Outgoing" },
   { id: "ai-agent-eva", value: "Eva", icon: <Sparkles className="size-3" /> },
@@ -165,7 +170,12 @@ export const SummarizedMultiValueChip: Story = {
         id: "agents",
         label: "Agent:",
         value: "Akhil, Nivedithatha +2 more",
-        tooltipItems: ["Akhil Yadav", "Nivedithatha N.", "Sumati Dixit", "Komal Rawat"],
+        tooltipItems: [
+          "Akhil Yadav",
+          "Nivedithatha N.",
+          "Sumati Dixit",
+          "Komal Rawat",
+        ],
       },
     ],
     onRemoveChip: fn(),
@@ -198,7 +208,7 @@ export const WithoutSaveAsPreset: Story = {
     docs: {
       description: {
         story:
-          'Omitting `onSaveAsPreset` hides that action — useful once the current combination is already an active saved preset.',
+          "Omitting `onSaveAsPreset` hides that action — useful once the current combination is already an active saved preset.",
       },
     },
   },
@@ -215,13 +225,19 @@ function InteractiveDemo() {
   const [chips, setChips] = React.useState(SAMPLE_CHIPS);
 
   if (chips.length === 0) {
-    return <p className="m-0 text-sm text-semantic-text-muted">All filters cleared.</p>;
+    return (
+      <p className="m-0 text-sm text-semantic-text-muted">
+        All filters cleared.
+      </p>
+    );
   }
 
   return (
     <CallLogsActiveFiltersBar
       chips={chips}
-      onRemoveChip={(id) => setChips((prev) => prev.filter((chip) => chip.id !== id))}
+      onRemoveChip={(id) =>
+        setChips((prev) => prev.filter((chip) => chip.id !== id))
+      }
       onSaveAsPreset={fn()}
       onClearAll={() => setChips([])}
     />
@@ -229,16 +245,43 @@ function InteractiveDemo() {
 }
 
 export const Interactive: Story = {
+  args: {
+    chips: {
+      kjklj: "ldksjfkls",
+      jldskjf: "lksdjfls",
+    },
+  },
+
   render: () => (
     <RowContainer>
       <InteractiveDemo />
     </RowContainer>
   ),
+
   parameters: {
     docs: {
       description: {
         story:
-          "Removing a chip or clicking \"Clear All\" updates local state — demonstrating that `CallLogsActiveFiltersBar` is a controlled, presentation-only component: the consumer owns the filter state and derives `chips` from it.",
+          'Removing a chip or clicking "Clear All" updates local state — demonstrating that `CallLogsActiveFiltersBar` is a controlled, presentation-only component: the consumer owns the filter state and derives `chips` from it.',
+      },
+    },
+  },
+};
+
+export const D: Story = {
+  args: {},
+
+  render: () => (
+    <RowContainer>
+      <InteractiveDemo />
+    </RowContainer>
+  ),
+
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Removing a chip or clicking "Clear All" updates local state — demonstrating that `CallLogsActiveFiltersBar` is a controlled, presentation-only component: the consumer owns the filter state and derives `chips` from it.',
       },
     },
   },
