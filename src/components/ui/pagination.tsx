@@ -175,6 +175,49 @@ function PaginationEllipsis({
 }
 PaginationEllipsis.displayName = "PaginationEllipsis";
 
+export interface PaginationInfoProps extends React.ComponentProps<"p"> {
+  /** Current page (1-based) */
+  currentPage: number;
+  /** Number of items shown per page */
+  pageSize: number;
+  /** Total number of items across all pages */
+  totalItems: number;
+  /** Leading label before the range (default: "Showing") */
+  label?: string;
+  /** Additional CSS classes */
+  className?: string;
+}
+
+function PaginationInfo({
+  currentPage,
+  pageSize,
+  totalItems,
+  label = "Showing",
+  className,
+  ...props
+}: PaginationInfoProps) {
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
+
+  return (
+    <p
+      data-slot="pagination-info"
+      aria-live="polite"
+      className={cn(
+        "m-0 text-sm text-semantic-text-muted whitespace-nowrap",
+        className
+      )}
+      {...props}
+    >
+      {label}{" "}
+      <span className="font-medium text-semantic-text-primary">
+        {startItem}–{endItem} of {totalItems}
+      </span>
+    </p>
+  );
+}
+PaginationInfo.displayName = "PaginationInfo";
+
 export interface PaginationWidgetProps {
   /** Current page (1-based) */
   currentPage: number;
@@ -184,7 +227,13 @@ export interface PaginationWidgetProps {
   onPageChange: (page: number) => void;
   /** Number of pages shown on each side of current page (default: 1) */
   siblingCount?: number;
-  /** Additional CSS classes */
+  /** Total number of items — required to render the "Showing X-Y of Z" summary */
+  totalItems?: number;
+  /** Items per page — required to render the "Showing X-Y of Z" summary */
+  pageSize?: number;
+  /** Horizontal placement of the page controls (default: "center", or "end" when the summary is shown) */
+  align?: "start" | "center" | "end";
+  /** Additional CSS classes for the outer wrapper */
   className?: string;
 }
 
@@ -226,17 +275,35 @@ function usePaginationRange(
   return pages;
 }
 
+const paginationAlignClasses = {
+  start: "justify-start",
+  center: "justify-center",
+  end: "justify-end",
+} as const;
+
 function PaginationWidget({
   currentPage,
   totalPages,
   onPageChange,
   siblingCount = 1,
+  totalItems,
+  pageSize,
+  align,
   className,
 }: PaginationWidgetProps) {
   const pages = usePaginationRange(currentPage, totalPages, siblingCount);
+  const showInfo = totalItems !== undefined && pageSize !== undefined;
+  const resolvedAlign = align ?? (showInfo ? "end" : "center");
 
-  return (
-    <Pagination className={className}>
+  const controls = (
+    <Pagination
+      className={cn(
+        "mx-0 w-auto",
+        paginationAlignClasses[resolvedAlign],
+        !showInfo && "w-full",
+        !showInfo && className
+      )}
+    >
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
@@ -281,6 +348,25 @@ function PaginationWidget({
       </PaginationContent>
     </Pagination>
   );
+
+  if (!showInfo) return controls;
+
+  return (
+    <div
+      data-slot="pagination-widget"
+      className={cn(
+        "flex w-full flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between",
+        className
+      )}
+    >
+      <PaginationInfo
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalItems={totalItems}
+      />
+      {controls}
+    </div>
+  );
 }
 PaginationWidget.displayName = "PaginationWidget";
 
@@ -292,5 +378,6 @@ export {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationInfo,
   PaginationWidget,
 };

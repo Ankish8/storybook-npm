@@ -9,6 +9,7 @@ import {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationInfo,
   PaginationWidget,
 } from "./pagination";
 
@@ -22,6 +23,7 @@ const meta: Meta<typeof Pagination> = {
     PaginationPrevious,
     PaginationNext,
     PaginationEllipsis,
+    PaginationInfo,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as Record<string, any>,
   parameters: {
@@ -48,6 +50,23 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 \`\`\`
+
+## Item count summary
+
+\`PaginationWidget\` renders a "Showing X–Y of Z" summary and right-aligns the controls
+when both \`totalItems\` and \`pageSize\` are given. Use \`align\` to override the placement.
+
+\`\`\`tsx
+<PaginationWidget
+  currentPage={page}
+  totalPages={7}
+  pageSize={15}
+  totalItems={96}
+  onPageChange={setPage}
+/>
+\`\`\`
+
+\`PaginationInfo\` is also exported standalone for custom footers.
 
 ## Usage
 
@@ -658,6 +677,82 @@ export const Accessibility: Story = {
           <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-label="Go to next page"</code>.
         </p>
       </div>
+    </div>
+  ),
+};
+
+
+export const WithItemCount: StoryObj<typeof Pagination> = {
+  parameters: {
+    layout: "padded",
+    docs: {
+      description: {
+        story:
+          'Pass `totalItems` and `pageSize` to `PaginationWidget` and it renders the "Showing X–Y of Z" summary on the left with the page controls right-aligned. This is the table-footer layout.',
+      },
+    },
+  },
+  render: () => {
+    const PaginationFooter = () => {
+      const [page, setPage] = React.useState(1);
+      return (
+        <div className="w-full max-w-[900px] border-t border-semantic-border-layout px-4 py-4">
+          <PaginationWidget
+            currentPage={page}
+            totalPages={7}
+            pageSize={15}
+            totalItems={96}
+            onPageChange={setPage}
+          />
+        </div>
+      );
+    };
+    return <PaginationFooter />;
+  },
+};
+
+export const ItemCountAlignments: StoryObj<typeof Pagination> = {
+  parameters: { layout: "padded" },
+  render: () => (
+    <div className="flex w-full max-w-[900px] flex-col gap-8">
+      {(["end", "center", "start"] as const).map((align) => (
+        <div key={align}>
+          <h4 className="font-medium text-sm mb-3">align=&quot;{align}&quot;</h4>
+          <PaginationWidget
+            currentPage={2}
+            totalPages={7}
+            pageSize={15}
+            totalItems={96}
+            align={align}
+            onPageChange={fn()}
+          />
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+export const PaginationInfoOnly: StoryObj<typeof Pagination> = {
+  name: "Pagination Info",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`PaginationInfo` is exported on its own for custom layouts. It derives the range from `currentPage`, `pageSize` and `totalItems`, clamps the end item to the total, and reports `0` when there are no items. `label` overrides the leading word.",
+      },
+    },
+  },
+  render: () => (
+    <div className="flex flex-col gap-3">
+      <PaginationInfo currentPage={1} pageSize={15} totalItems={96} />
+      <PaginationInfo currentPage={7} pageSize={15} totalItems={96} />
+      <PaginationInfo currentPage={1} pageSize={15} totalItems={0} />
+      <PaginationInfo
+        currentPage={3}
+        pageSize={10}
+        totalItems={48}
+        label="Displaying"
+      />
     </div>
   ),
 };
