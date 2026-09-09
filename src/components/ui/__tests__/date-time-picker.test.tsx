@@ -190,7 +190,7 @@ describe("DateTimePicker", () => {
     const trigger = screen.getByLabelText("Date and time").parentElement;
 
     expect(trigger).toHaveClass("h-[42px]");
-    expect(trigger).toHaveClass("rounded-lg");
+    expect(trigger).toHaveClass("rounded");
     expect(trigger).toHaveClass("px-4");
     expect(trigger).toHaveClass("py-2.5");
     expect(trigger).toHaveClass("text-base");

@@ -72,9 +72,9 @@ const dateTimePickerTriggerVariants = cva(
   {
     variants: {
       size: {
-        sm: "h-9 gap-2 rounded-lg px-3 py-2 text-sm",
-        default: "h-[42px] gap-2 rounded-lg px-4 py-2.5 text-base",
-        lg: "h-[42px] gap-2 rounded-lg px-4 py-2.5 text-base",
+        sm: "h-9 gap-2 rounded px-3 py-2 text-sm",
+        default: "h-[42px] gap-2 rounded px-4 py-2.5 text-base",
+        lg: "h-[42px] gap-2 rounded px-4 py-2.5 text-base",
       },
       state: {
         default: "",
@@ -1268,7 +1268,7 @@ function TimeField({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "flex h-[42px] w-full items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50",
+          "flex h-[42px] w-full items-center gap-2 rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50",
           open &&
             "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
         )}

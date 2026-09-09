@@ -63,7 +63,7 @@ const MONTH_LONG_NAMES = [
 ];
 
 const dateRangePickerTriggerVariants = cva(
-  "flex h-10 w-full items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-4 py-2.5 text-left text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex h-10 w-full items-center gap-2 rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-4 py-2.5 text-left text-sm text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       state: {
