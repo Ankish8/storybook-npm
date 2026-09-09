@@ -411,4 +411,112 @@ describe("Select", () => {
       expect(onViewportScrollEnd).not.toHaveBeenCalled();
     });
   });
+  describe("long option labels", () => {
+    const LONG = "A very long option label that keeps going well past the trigger width";
+
+    it("wraps option labels by default", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Select>
+          <SelectTrigger data-testid="trigger">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="long">{LONG}</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+
+      await user.click(screen.getByTestId("trigger"));
+      const label = screen.getByText(LONG);
+      const wrapper = label.closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("whitespace-normal");
+      expect(wrapper.className).toContain("break-words");
+      expect(wrapper.className).not.toContain("truncate");
+      expect(wrapper).not.toHaveAttribute("title");
+    });
+
+    it("truncates option labels when SelectContent sets truncateOptionText", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Select>
+          <SelectTrigger data-testid="trigger">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent truncateOptionText>
+            <SelectItem value="long">{LONG}</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+
+      await user.click(screen.getByTestId("trigger"));
+      const wrapper = screen
+        .getByText(LONG)
+        .closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("truncate");
+      expect(wrapper.className).not.toContain("whitespace-normal");
+      expect(wrapper).toHaveAttribute("title", LONG);
+    });
+
+    it("lets an item override the content-level setting", async () => {
+      const user = userEvent.setup();
+
+      render(
+        <Select>
+          <SelectTrigger data-testid="trigger">
+            <SelectValue placeholder="Select an option" />
+          </SelectTrigger>
+          <SelectContent truncateOptionText>
+            <SelectItem value="long" truncateOptionText={false}>
+              {LONG}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      );
+
+      await user.click(screen.getByTestId("trigger"));
+      const wrapper = screen
+        .getByText(LONG)
+        .closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("whitespace-normal");
+      expect(wrapper.className).not.toContain("truncate");
+    });
+
+    it.each([
+      ["wrapped", false],
+      ["truncated", true],
+    ])(
+      "reports the full, unclipped value to onValueChange when %s",
+      async (_mode, truncate) => {
+        const onValueChange = vi.fn();
+        const user = userEvent.setup();
+        const LONG_VALUE =
+          "customer-support-escalation-queue-enterprise-apac-tier-3";
+
+        render(
+          <Select onValueChange={onValueChange}>
+            <SelectTrigger data-testid="trigger">
+              <SelectValue placeholder="Select an option" />
+            </SelectTrigger>
+            <SelectContent truncateOptionText={truncate}>
+              <SelectItem value={LONG_VALUE}>{LONG}</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+
+        await user.click(screen.getByTestId("trigger"));
+        await user.click(screen.getByText(LONG));
+
+        // Truncation is CSS-only: the persisted value and the rendered label
+        // text are both complete regardless of how the row is displayed.
+        expect(onValueChange).toHaveBeenCalledWith(LONG_VALUE);
+        expect(screen.getByTestId("trigger")).toHaveTextContent(LONG);
+      }
+    );
+  });
 });

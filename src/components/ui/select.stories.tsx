@@ -352,6 +352,69 @@ export const LongList: Story = {
   ),
 };
 
+const longLabelOptions = [
+  {
+    value: "long-1",
+    label:
+      "Customer support escalation queue for enterprise accounts in the APAC region — tier 3",
+  },
+  {
+    value: "long-2",
+    label:
+      "Outbound campaign / unstructured value pulled straight from the CRM with no length cap",
+  },
+  { value: "short", label: "Sales" },
+];
+
+/**
+ * The selected value in the trigger always truncates, so the control never
+ * breaks its layout. Dropdown rows wrap the full label by default; set
+ * `truncateOptionText` on `SelectContent` to clip them to one line instead
+ * (the full label stays available as a native tooltip).
+ */
+export const LongOption: Story = {
+  name: "Long Option",
+  render: () => (
+    <div className="flex w-[320px] flex-col gap-8">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-semantic-text-primary">
+          Wrapped (default)
+        </span>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent>
+            {longLabelOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-semantic-text-primary">
+          Truncated
+        </span>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent truncateOptionText>
+            {longLabelOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  ),
+};
+
 // Authentication Example (from screenshot)
 export const AuthenticationExample: Story = {
   name: "Authentication example",

@@ -29,6 +29,15 @@ const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 
+/**
+ * Lets `SelectContent` set the long-label behaviour once for every
+ * `SelectItem` it renders, so callers don't repeat the flag per item.
+ * Items may still override it individually.
+ */
+const SelectItemLayoutContext = React.createContext<{
+  truncateOptionText: boolean;
+}>({ truncateOptionText: false });
+
 const SelectValue = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>) => (
   <SelectPrimitive.Value
     ref={ref}
@@ -146,6 +155,13 @@ export type SelectContentProps = React.ComponentPropsWithoutRef<
    */
   onViewportScrollEnd?: (event: React.UIEvent<HTMLDivElement>) => void;
   hideScrollButtons?: boolean;
+  /**
+   * Clip long option labels to a single line with an ellipsis instead of
+   * wrapping them. Applies to every `SelectItem` inside this content;
+   * individual items can override it with their own `truncateOptionText`.
+   * The trigger value always truncates, regardless of this flag.
+   */
+  truncateOptionText?: boolean;
 };
 
 const BOTTOM_THRESHOLD_PX = 24;
@@ -159,6 +175,7 @@ const SelectContent = React.forwardRef(
       position = "popper",
       onViewportScrollEnd,
       hideScrollButtons,
+      truncateOptionText = false,
       ...props
     }: SelectContentProps,
     ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
@@ -214,6 +231,11 @@ const SelectContent = React.forwardRef(
       };
     }, [viewport, onViewportScrollEnd]);
 
+    const itemLayout = React.useMemo(
+      () => ({ truncateOptionText }),
+      [truncateOptionText]
+    );
+
     return (
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
@@ -242,7 +264,9 @@ const SelectContent = React.forwardRef(
                 "h-[var(--radix-select-trigger-height)] w-full"
             )}
           >
-            {children}
+            <SelectItemLayoutContext.Provider value={itemLayout}>
+              {children}
+            </SelectItemLayoutContext.Provider>
           </SelectPrimitive.Viewport>
           {!hideScrollButtons && <SelectScrollDownButton />}
         </SelectPrimitive.Content>
@@ -264,29 +288,49 @@ const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPr
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
-const SelectItem = React.forwardRef(({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex w-full cursor-pointer select-none items-start rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
-      "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
-      "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute right-2 flex size-4 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-semantic-brand" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    <span className="min-w-0 flex-1 whitespace-normal break-words leading-normal">
-      <SelectPrimitive.ItemText>
-        {children}
-      </SelectPrimitive.ItemText>
-    </span>
-  </SelectPrimitive.Item>
-));
+export interface SelectItemProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
+  /**
+   * Clip this option's label to a single line with an ellipsis instead of
+   * wrapping it. Defaults to the value set on `SelectContent` (wrapped).
+   */
+  truncateOptionText?: boolean;
+}
+
+const SelectItem = React.forwardRef(({ className, children, truncateOptionText, ...props }: SelectItemProps, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => {
+  const layout = React.useContext(SelectItemLayoutContext);
+  const truncate = truncateOptionText ?? layout.truncateOptionText;
+
+  return (
+    <SelectPrimitive.Item
+      ref={ref}
+      className={cn(
+        "relative flex w-full cursor-pointer select-none items-start rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
+        "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <span className="absolute right-2 flex size-4 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="size-4 text-semantic-brand" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <span
+        title={truncate && typeof children === "string" ? children : undefined}
+        className={cn(
+          "min-w-0 flex-1 leading-normal",
+          truncate ? "truncate" : "whitespace-normal break-words"
+        )}
+      >
+        <SelectPrimitive.ItemText>
+          {children}
+        </SelectPrimitive.ItemText>
+      </span>
+    </SelectPrimitive.Item>
+  );
+});
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
 const SelectSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>) => (
