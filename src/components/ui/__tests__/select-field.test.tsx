@@ -526,4 +526,69 @@ describe("SelectField", () => {
     expect(screen.queryByText("Loading more…")).not.toBeInTheDocument();
     expect(screen.queryByText("End of list")).not.toBeInTheDocument();
   });
+  // Long option labels — truncation is CSS-only and must never change values
+  describe("long option labels", () => {
+    const LONG_LABEL =
+      "Customer support escalation queue for enterprise accounts in the APAC region";
+    const longOptions: SelectOption[] = [
+      { value: "long-value-kept-in-full", label: LONG_LABEL },
+      { value: "short", label: "Sales" },
+    ];
+
+    it("wraps option labels by default", async () => {
+      const user = userEvent.setup();
+      render(<SelectField options={longOptions} />);
+
+      await user.click(screen.getByRole("combobox"));
+      const wrapper = screen
+        .getByText(LONG_LABEL)
+        .closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("whitespace-normal");
+      expect(wrapper.className).toContain("break-words");
+      expect(wrapper.className).not.toContain("truncate");
+    });
+
+    it("truncates option labels when truncateOptionText is set", async () => {
+      const user = userEvent.setup();
+      render(<SelectField options={longOptions} truncateOptionText />);
+
+      await user.click(screen.getByRole("combobox"));
+      const wrapper = screen
+        .getByText(LONG_LABEL)
+        .closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("truncate");
+      expect(wrapper.className).not.toContain("whitespace-normal");
+      expect(wrapper).toHaveAttribute("title", LONG_LABEL);
+    });
+
+    it.each([
+      ["wrapped", false],
+      ["truncated", true],
+    ])(
+      "reports the full, unclipped value and option when %s",
+      async (_mode, truncate) => {
+        const onValueChange = vi.fn();
+        const onSelect = vi.fn();
+        const user = userEvent.setup();
+
+        render(
+          <SelectField
+            options={longOptions}
+            truncateOptionText={truncate}
+            onValueChange={onValueChange}
+            onSelect={onSelect}
+          />
+        );
+
+        await user.click(screen.getByRole("combobox"));
+        await user.click(screen.getByText(LONG_LABEL));
+
+        expect(onValueChange).toHaveBeenCalledWith("long-value-kept-in-full");
+        expect(onSelect).toHaveBeenCalledWith(longOptions[0]);
+        expect(screen.getByRole("combobox")).toHaveTextContent(LONG_LABEL);
+      }
+    );
+  });
 });
