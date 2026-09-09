@@ -53,6 +53,20 @@ import {
 </Select>
 \`\`\`
 
+## Long option labels
+
+Dropdown rows wrap long labels across lines by default. Set \`truncateOptionText\`
+on \`SelectContent\` to clip every row to one line with an ellipsis instead, or set it
+on an individual \`SelectItem\` to override the content-level choice. Truncation is
+CSS-only — the selected \`value\` reported to \`onValueChange\` is always the full,
+unclipped string.
+
+\`\`\`tsx
+<SelectContent truncateOptionText>
+  <SelectItem value="tier-3">Customer support escalation queue — tier 3</SelectItem>
+</SelectContent>
+\`\`\`
+
 ## Design Tokens
 
 <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
@@ -373,7 +387,6 @@ const longLabelOptions = [
  * (the full label stays available as a native tooltip).
  */
 export const LongOption: Story = {
-  name: "Long Option",
   render: () => (
     <div className="flex w-[320px] flex-col gap-8">
       <div className="flex flex-col gap-1">
