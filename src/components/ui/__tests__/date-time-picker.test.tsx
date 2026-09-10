@@ -749,7 +749,9 @@ describe("DateTimePicker", () => {
     fireEvent.click(screen.getByLabelText("Jun", { selector: "button" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
     expect(screen.getByLabelText("Month")).toHaveAttribute("data-value", "5");
-    expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2026 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/06/2026 10:30 AM"
+    );
     expect(screen.getByLabelText("June 12, 2026")).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -759,7 +761,9 @@ describe("DateTimePicker", () => {
     fireEvent.click(screen.getByLabelText("2027", { selector: "button" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
     expect(screen.getByLabelText("Year")).toHaveAttribute("data-value", "2027");
-    expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2027 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/06/2027 10:30 AM"
+    );
     expect(screen.getByLabelText("June 12, 2027")).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -825,7 +829,9 @@ describe("DateTimePicker", () => {
     fireEvent.click(screen.getByLabelText("Month"));
     fireEvent.click(screen.getByLabelText("Feb", { selector: "button" }));
 
-    expect(screen.getByLabelText("Date and time")).toHaveValue("01/02/2026 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "01/02/2026 10:30 AM"
+    );
     expect(screen.getByLabelText("Month")).toHaveAttribute("data-value", "1");
     expect(screen.getByLabelText("February 1, 2026")).toHaveAttribute(
       "aria-pressed",
@@ -848,7 +854,9 @@ describe("DateTimePicker", () => {
     fireEvent.click(screen.getByLabelText("Next month"));
 
     expect(screen.getByLabelText("Month")).toHaveAttribute("data-value", "5");
-    expect(screen.getByLabelText("Date and time")).toHaveValue("12/06/2026 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/06/2026 10:30 AM"
+    );
     expect(screen.getByLabelText("June 12, 2026")).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -933,6 +941,151 @@ describe("DateTimePicker", () => {
     expect(
       screen.getByTestId("no-label").querySelector("label")
     ).toBeNull();
+  });
+
+  it("shows only the date until a time is explicitly selected", () => {
+    render(<DateTimePicker defaultValue={{ date: mayTwelve }} />);
+
+    expect(screen.getByLabelText("Date and time")).toHaveValue("12/05/2026");
+  });
+
+  it("shows only the time until a date is explicitly selected", () => {
+    render(<DateTimePicker defaultValue={{ startTime: "10:30:00" }} />);
+
+    expect(screen.getByLabelText("Date and time")).toHaveValue("10:30 AM");
+  });
+
+  it("clears date and both times, then hides the clear action", () => {
+    const handleChange = vi.fn();
+
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={handleChange}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear date" }));
+
+    expect(handleChange).toHaveBeenCalledWith({
+      date: undefined,
+      startTime: undefined,
+      endTime: undefined,
+    });
+    expect(screen.getByLabelText("Date and time")).toHaveValue("");
+    expect(
+      screen.queryByRole("button", { name: "Clear date" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides the clear action after clearing a controlled value", () => {
+    function ControlledPicker() {
+      const [value, setValue] = React.useState<{
+        date?: Date;
+        startTime?: string;
+        endTime?: string;
+      }>({ date: mayTwelve, startTime: "10:30:00", endTime: "12:30:00" });
+
+      return <DateTimePicker value={value} onValueChange={setValue} />;
+    }
+
+    render(<ControlledPicker />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear date" }));
+
+    expect(screen.getByLabelText("Date and time")).toHaveValue("");
+    expect(
+      screen.queryByRole("button", { name: "Clear date" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("clears every field from the time-only variant", () => {
+    const handleChange = vi.fn();
+
+    render(
+      <DateTimePicker
+        variant="time-only"
+        defaultValue={{ date: mayTwelve, startTime: "10:30:00" }}
+        onValueChange={handleChange}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear date" }));
+
+    expect(handleChange).toHaveBeenCalledWith({
+      date: undefined,
+      startTime: undefined,
+      endTime: undefined,
+    });
+  });
+
+  it("does not fabricate a time in the hidden form value", () => {
+    const { container } = render(
+      <DateTimePicker name="slot" defaultValue={{ date: mayTwelve }} />
+    );
+
+    expect(
+      container.querySelector<HTMLInputElement>('input[name="slot"]')?.value
+    ).toBe("2026-05-12");
+  });
+
+  it("clears a value that was picked from the calendar and typed into the input", async () => {
+    const user = userEvent.setup();
+
+    render(<DateTimePicker />);
+
+    const input = screen.getByLabelText("Date and time");
+    await user.click(input);
+    await user.click(screen.getByLabelText("September 12, 2026"));
+    expect(input).toHaveValue("12/09/2026");
+
+    await user.click(screen.getByRole("button", { name: "Clear date" }));
+
+    expect(input).toHaveValue("");
+    expect(
+      screen.queryByRole("button", { name: "Clear date" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("resets the time columns to 12:00 AM after clearing", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+      />
+    );
+
+    await user.click(screen.getByLabelText("Date and time"));
+    expect(screen.getByLabelText("Start Time")).toHaveTextContent("10:30 AM");
+
+    await user.click(screen.getByRole("button", { name: "Clear date" }));
+
+    expect(screen.getByLabelText("Start Time")).toHaveTextContent("12:00 AM");
+    expect(screen.getByLabelText("End Time")).toHaveTextContent("12:00 AM");
+  });
+
+  it("clears typed text that never parsed into a value", async () => {
+    const user = userEvent.setup();
+
+    render(<DateTimePicker />);
+
+    const input = screen.getByLabelText("Date and time");
+    await user.click(input);
+    await user.type(input, "12");
+    expect(input).toHaveValue("12/");
+
+    await user.click(screen.getByRole("button", { name: "Clear date" }));
+
+    expect(input).toHaveValue("");
   });
 
   it("formats display helpers", () => {
