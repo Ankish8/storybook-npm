@@ -234,7 +234,35 @@ export const DisabledPastDates: Story = {
     docs: {
       description: {
         story:
-          "With `disablePastDates`, every calendar day before today renders disabled and cannot be clicked.",
+          "With `disablePastDates`, every calendar day before today renders disabled and cannot be clicked. Presets are held to the same bound — a preset that resolves partly into the past is clamped to today, and one that resolves entirely into the past renders disabled.",
+      },
+    },
+  },
+};
+
+export const BoundedRange: Story = {
+  name: "Bounded by minDate / maxDate",
+  args: {
+    minDate: new Date(2026, 8, 1),
+    maxDate: new Date(2026, 8, 30),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`minDate` and `maxDate` bound the whole picker, not just the day grid: presets are clamped into the window (and disabled when they fall entirely outside it), the year dropdown lists only years that contain a selectable day, and months with no selectable day are disabled.",
+      },
+    },
+  },
+};
+
+export const Responsive: Story = {
+  parameters: {
+    viewport: { defaultViewport: "mobile1" },
+    docs: {
+      description: {
+        story:
+          "Below the `sm` breakpoint the presets move above the calendar as a horizontally scrollable row, and day cells grow to a 36px touch target. Resize the preview or switch viewports to compare against the desktop two-column layout.",
       },
     },
   },
