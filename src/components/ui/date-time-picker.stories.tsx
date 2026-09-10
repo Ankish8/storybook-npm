@@ -108,6 +108,15 @@ import { DateTimePicker } from "@/components/ui/date-time-picker"
       description:
         "Step between selectable seconds in the time column picker (default 5).",
     },
+    helperText: {
+      control: "text",
+      description: "Helper text displayed below the picker",
+    },
+    error: {
+      control: "text",
+      description:
+        "Error message shown below the picker. Also forces the trigger into the error state and replaces helperText.",
+    },
     showClear: {
       control: "boolean",
       description: "Show or hide the clear action when a value is selected",
@@ -171,6 +180,30 @@ export const Error: Story = {
   args: {
     defaultValue: sampleValue,
     state: "error",
+  },
+};
+
+export const WithHelperText: Story = {
+  args: {
+    label: "Event date",
+    helperText: "Slots are bookable between 9:00 AM and 6:00 PM.",
+    defaultValue: sampleValue,
+  },
+};
+
+export const WithErrorMessage: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "`error` renders the message below the picker and puts the trigger in the error state — no need to pass `state=\"error\"` as well. It also replaces `helperText` while set.",
+      },
+    },
+  },
+  args: {
+    label: "Event date",
+    required: true,
+    error: "Select a date and time",
   },
 };
 

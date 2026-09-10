@@ -122,6 +122,10 @@ export interface DateTimePickerProps
   required?: boolean;
   /** Additional class for the label */
   labelClassName?: string;
+  /** Helper text displayed below the picker */
+  helperText?: string;
+  /** Error message — shows red text below and drives state="error" */
+  error?: string;
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
@@ -1416,6 +1420,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       label,
       required,
       labelClassName,
+      helperText,
+      error,
       placeholder: placeholderProp,
       disabled = false,
       readOnly = false,
@@ -1443,6 +1449,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const generatedId = React.useId();
     const triggerId = id ?? generatedId;
     const pickerVariant = variant ?? "date-time";
+    const resolvedState = error ? "error" : state;
     const showCalendar = pickerVariant !== "time-only";
     const showTimeFields = pickerVariant !== "date-only";
     const resolvedShowEndTime = showTimeFields && showEndTime;
@@ -1535,6 +1542,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       () => getCalendarDays(visibleMonth),
       [visibleMonth]
     );
+    const errorId = `${triggerId}-error`;
+    const helperId = `${triggerId}-helper`;
+    const describedBy = error ? errorId : helperText ? helperId : undefined;
     const displayValue = formatValueForDisplay(
       currentValue,
       pickerVariant,
@@ -2164,9 +2174,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         <div
           ref={setTriggerRef}
           className={cn(
-            dateTimePickerTriggerVariants({ size, state }),
+            dateTimePickerTriggerVariants({ size, state: resolvedState }),
             open &&
-              state !== "error" &&
+              resolvedState !== "error" &&
               "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
             !displayValue && "text-semantic-text-placeholder",
             disabled &&
@@ -2182,6 +2192,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             placeholder={placeholder}
             aria-haspopup="dialog"
             aria-expanded={open}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={describedBy}
             aria-label={
               pickerVariant === "date-only"
                 ? "Date"
@@ -2230,6 +2242,27 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             )}
           </button>
         </div>
+
+        {(error || helperText) && (
+          <div className="mt-1">
+            {error ? (
+              <span
+                id={errorId}
+                role="alert"
+                className="text-sm text-semantic-error-primary"
+              >
+                {error}
+              </span>
+            ) : (
+              <span
+                id={helperId}
+                className="text-sm text-semantic-text-muted"
+              >
+                {helperText}
+              </span>
+            )}
+          </div>
+        )}
 
         {popover}
       </div>

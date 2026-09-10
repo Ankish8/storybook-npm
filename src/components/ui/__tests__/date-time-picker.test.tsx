@@ -1088,6 +1088,41 @@ describe("DateTimePicker", () => {
     expect(input).toHaveValue("");
   });
 
+  it("renders helper text below the picker and links it to the input", () => {
+    render(<DateTimePicker helperText="Pick a slot in business hours" />);
+
+    const helper = screen.getByText("Pick a slot in business hours");
+
+    expect(helper).toHaveClass("text-semantic-text-muted");
+    expect(screen.getByLabelText("Date and time")).toHaveAttribute(
+      "aria-describedby",
+      helper.id
+    );
+    expect(screen.getByLabelText("Date and time")).not.toHaveAttribute(
+      "aria-invalid"
+    );
+  });
+
+  it("renders an error message, marks the field invalid and styles the trigger", () => {
+    render(<DateTimePicker error="Select a date" />);
+
+    const message = screen.getByRole("alert");
+    const input = screen.getByLabelText("Date and time");
+
+    expect(message).toHaveTextContent("Select a date");
+    expect(message).toHaveClass("text-semantic-error-primary");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAttribute("aria-describedby", message.id);
+    expect(input.parentElement).toHaveClass("border-semantic-error-primary");
+  });
+
+  it("prefers the error message over helper text", () => {
+    render(<DateTimePicker helperText="Helper copy" error="Select a date" />);
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Select a date");
+    expect(screen.queryByText("Helper copy")).not.toBeInTheDocument();
+  });
+
   it("formats display helpers", () => {
     expect(formatTimeForDisplay("00:00:00")).toBe("12:00 AM");
     expect(formatTimeForDisplay("00:00:05", true)).toBe("12:00:05 AM");
