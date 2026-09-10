@@ -102,10 +102,10 @@ const dateTimePickerTriggerVariants = cva(
 
 export interface DateTimePickerValue {
   date?: Date;
-  /** Undefined until a time is explicitly selected */
-  startTime?: string;
-  /** Undefined until a time is explicitly selected */
-  endTime?: string;
+  /** Empty string until a time is explicitly selected */
+  startTime: string;
+  /** Empty string until a time is explicitly selected */
+  endTime: string;
 }
 
 export interface DateTimePickerProps
@@ -113,8 +113,8 @@ export interface DateTimePickerProps
     Omit<React.HTMLAttributes<HTMLDivElement>, "defaultValue" | "onChange">,
     VariantProps<typeof dateTimePickerVariants>,
     Pick<VariantProps<typeof dateTimePickerTriggerVariants>, "state"> {
-  value?: DateTimePickerValue;
-  defaultValue?: DateTimePickerValue;
+  value?: Partial<DateTimePickerValue>;
+  defaultValue?: Partial<DateTimePickerValue>;
   onValueChange?: (value: DateTimePickerValue) => void;
   /** Label text displayed above the trigger */
   label?: string;
@@ -159,8 +159,8 @@ function normalizeValue(
 ): DateTimePickerValue {
   return {
     date: value?.date,
-    startTime: value?.startTime,
-    endTime: value?.endTime,
+    startTime: value?.startTime ?? "",
+    endTime: value?.endTime ?? "",
   };
 }
 
@@ -447,8 +447,8 @@ function formatValueForDisplay(
     if (!value.startTime && !value.endTime) return "";
 
     return showEndTime
-      ? `${formatTimeForDisplay(value.startTime ?? UNSET_TIME, showSeconds)} - ${formatTimeForDisplay(value.endTime ?? UNSET_TIME, showSeconds)}`
-      : formatTimeForDisplay(value.startTime ?? UNSET_TIME, showSeconds);
+      ? `${formatTimeForDisplay(value.startTime || UNSET_TIME, showSeconds)} - ${formatTimeForDisplay(value.endTime || UNSET_TIME, showSeconds)}`
+      : formatTimeForDisplay(value.startTime || UNSET_TIME, showSeconds);
   }
 
   const datePart = formatDateOnlyForDisplay(value.date);
@@ -997,8 +997,8 @@ function formatHiddenValue(
   variant: DateTimePickerVariant,
   showEndTime: boolean
 ) {
-  const startTime = value.startTime ?? UNSET_TIME;
-  const endTime = value.endTime ?? UNSET_TIME;
+  const startTime = value.startTime || UNSET_TIME;
+  const endTime = value.endTime || UNSET_TIME;
 
   if (variant === "time-only") {
     if (!value.startTime && !value.endTime) return "";
@@ -1455,8 +1455,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const currentValue = normalizeValue(
       isValueControlled ? value : internalValue
     );
-    const resolvedStartTime = currentValue.startTime ?? UNSET_TIME;
-    const resolvedEndTime = currentValue.endTime ?? UNSET_TIME;
+    const resolvedStartTime = currentValue.startTime || UNSET_TIME;
+    const resolvedEndTime = currentValue.endTime || UNSET_TIME;
     const resolvedShowSeconds =
       showSeconds ??
       (timeHasVisibleSeconds(currentValue.startTime) ||
@@ -1649,8 +1649,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       setVisibleMonth(startOfMonth(new Date()));
       updateValue({
         date: undefined,
-        startTime: undefined,
-        endTime: undefined,
+        startTime: "",
+        endTime: "",
       });
     };
 
@@ -1734,7 +1734,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
         const typedTime = parseTimePart(nextInputValue);
         if (typedTime === undefined) {
-          updateValue({ ...currentValue, startTime: undefined });
+          updateValue({ ...currentValue, startTime: "" });
           return;
         }
 
@@ -1809,7 +1809,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         updateValue({
           ...currentValue,
           date: typedDateTime.date,
-          startTime: typedDateTime.startTime ?? currentValue.startTime,
+          startTime: typedDateTime.startTime || currentValue.startTime,
         });
         updateVisibleMonth(typedDateTime.date);
       }

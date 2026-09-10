@@ -973,8 +973,8 @@ describe("DateTimePicker", () => {
 
     expect(handleChange).toHaveBeenCalledWith({
       date: undefined,
-      startTime: undefined,
-      endTime: undefined,
+      startTime: "",
+      endTime: "",
     });
     expect(screen.getByLabelText("Date and time")).toHaveValue("");
     expect(
@@ -984,11 +984,11 @@ describe("DateTimePicker", () => {
 
   it("hides the clear action after clearing a controlled value", () => {
     function ControlledPicker() {
-      const [value, setValue] = React.useState<{
-        date?: Date;
-        startTime?: string;
-        endTime?: string;
-      }>({ date: mayTwelve, startTime: "10:30:00", endTime: "12:30:00" });
+      const [value, setValue] = React.useState({
+        date: mayTwelve as Date | undefined,
+        startTime: "10:30:00",
+        endTime: "12:30:00",
+      });
 
       return <DateTimePicker value={value} onValueChange={setValue} />;
     }
@@ -1018,8 +1018,8 @@ describe("DateTimePicker", () => {
 
     expect(handleChange).toHaveBeenCalledWith({
       date: undefined,
-      startTime: undefined,
-      endTime: undefined,
+      startTime: "",
+      endTime: "",
     });
   });
 
