@@ -169,7 +169,6 @@ export const WithoutPresets: Story = {
   name: "Without presets",
   args: {
     presets: [],
-    defaultOpen: true,
     defaultValue: {
       start: new Date(2026, 7, 3),
       end: new Date(2026, 7, 5),
@@ -215,7 +214,6 @@ const customPresets: DateRangePreset[] = [
 export const CustomPresets: Story = {
   args: {
     presets: customPresets,
-    defaultOpen: true,
   },
   parameters: {
     docs: {
@@ -231,7 +229,6 @@ export const DisabledPastDates: Story = {
   name: "Disabled past dates",
   args: {
     disablePastDates: true,
-    defaultOpen: true,
   },
   parameters: {
     docs: {

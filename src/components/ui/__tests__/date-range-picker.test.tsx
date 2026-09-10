@@ -97,7 +97,7 @@ describe("DateRangePicker", () => {
     fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
 
-    fireEvent.mouseDown(
+    fireEvent.pointerDown(
       screen.getByRole("button", { name: "outside-target" })
     );
     expect(
@@ -399,6 +399,113 @@ describe("DateRangePicker", () => {
     expect(screen.getByRole("button", { name: "Date Range" })).toHaveClass(
       "border-semantic-error-primary"
     );
+  });
+
+  it("clamps a preset range that starts before minDate", () => {
+    const onValueChange = vi.fn();
+    const minDate = new Date(2026, 8, 5);
+
+    render(
+      <DateRangePicker
+        minDate={minDate}
+        onValueChange={onValueChange}
+        presets={[
+          {
+            label: "Spans minDate",
+            getRange: () => ({
+              start: new Date(2026, 8, 1),
+              end: new Date(2026, 8, 10),
+            }),
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    fireEvent.click(screen.getByText("Spans minDate"));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    const committed = onValueChange.mock.calls[0][0];
+    expect(committed.start).toEqual(minDate);
+    expect(committed.end).toEqual(new Date(2026, 8, 10));
+  });
+
+  it("disables a preset whose whole range falls outside minDate/maxDate", () => {
+    const onValueChange = vi.fn();
+
+    render(
+      <DateRangePicker
+        minDate={new Date(2026, 8, 1)}
+        onValueChange={onValueChange}
+        presets={[
+          {
+            label: "All in the past",
+            getRange: () => ({
+              start: new Date(2025, 0, 1),
+              end: new Date(2025, 0, 31),
+            }),
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    const preset = screen.getByText("All in the past");
+
+    expect(preset).toBeDisabled();
+    fireEvent.click(preset);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("returns focus to the trigger after Escape closes the popover", () => {
+    render(<DateRangePicker />);
+
+    const trigger = screen.getByRole("button", { name: "Date Range" });
+    fireEvent.click(trigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(trigger).toHaveFocus();
+  });
+
+  it("omits years outside minDate/maxDate from the year dropdown", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateRangePicker
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 5),
+        }}
+        minDate={new Date(2026, 0, 1)}
+        maxDate={new Date(2027, 11, 31)}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "3 Aug 2026 - 5 Aug 2026" }));
+    await user.click(screen.getByText("2026"));
+
+    expect(screen.getByText("2027")).toBeInTheDocument();
+    expect(screen.queryByText("2025")).not.toBeInTheDocument();
+  });
+
+  it("closes the month dropdown when the year dropdown opens", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{
+          start: new Date(2026, 8, 3),
+          end: new Date(2026, 8, 5),
+        }}
+      />
+    );
+
+    await user.click(screen.getByText("September"));
+    expect(screen.getByText("January")).toBeInTheDocument();
+
+    await user.click(screen.getByText("2026"));
+    expect(screen.queryByText("January")).not.toBeInTheDocument();
+    expect(screen.getByText("2024")).toBeInTheDocument();
   });
 
   it("has no Bootstrap margin bleed on <p> elements", () => {
