@@ -665,6 +665,33 @@ describe("Registry", () => {
         expect(out).toBe(`<div className="tw-flex tw-items-center" />`);
       });
 
+      it("does not prefix CSS custom property names, placeholder masks, or time literals", () => {
+        // Regression: the date-time-picker shipped with these five constants prefixed.
+        // `-tw--foo` is not a custom property, so setProperty() no-ops and var(-tw--foo)
+        // invalidates the declaration; "tw-00:00:00" fails the time-parsing regex.
+        const src = [
+          `const DEFAULT_START_TIME = "10:30:00"`,
+          `const UNSET_TIME = "00:00:00"`,
+          `const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --"`,
+          `const POPOVER_SCROLL_HEIGHT_VAR = "--date-time-picker-scroll-height"`,
+          `const POPOVER_WIDTH_VAR = "--date-time-picker-popover-width"`,
+        ].join("\n");
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toBe(src);
+      });
+
+      it("still prefixes a genuine class const alongside those literals", () => {
+        const src = [
+          `const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --"`,
+          `const CALENDAR_DROPDOWN_TRIGGER_CLASS = "h-9 min-w-[90px] rounded-md px-3 text-sm"`,
+        ].join("\n");
+        const out = prefixTailwindClasses(src, "tw-");
+        expect(out).toContain(`"--/--/---- --:-- --"`);
+        expect(out).toContain("tw-h-9");
+        expect(out).toContain("tw-min-w-[90px]");
+        expect(out).toContain("tw-rounded-md");
+      });
+
       it("does not touch cn(...) RHS — pattern 2 already handles inner literals", () => {
         const src = `const fooCls = cn("flex items-center")`;
         const out = prefixTailwindClasses(src, "tw-");
