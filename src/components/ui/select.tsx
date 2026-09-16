@@ -3,20 +3,18 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 /**
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-semantic-bg-primary px-4 py-2 text-left text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-[var(--semantic-bg-primary,#FFFFFF)] px-4 py-2 text-left text-base text-[var(--semantic-text-primary,#181D27)] outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
-        default:
-          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+        default: "border border-solid border-[var(--semantic-border-input,#E9EAEB)] focus:outline-none focus:border-[var(--semantic-border-input-focus,#2BBCCA)] focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-solid border-[var(--semantic-error-primary,#F04438)] focus:outline-none focus:border-[var(--semantic-error-primary,#F04438)] focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
     },
     defaultVariants: {
@@ -60,7 +58,7 @@ const SelectTrigger = React.forwardRef(({ className, state, children, ...props }
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 shrink-0 text-semantic-text-muted opacity-70" />
+      <ChevronDown className="size-4 shrink-0 text-[var(--semantic-text-muted,#717680)] opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -75,7 +73,7 @@ const SelectScrollUpButton = React.forwardRef(({ className, ...props }: React.Co
     )}
     {...props}
   >
-    <ChevronUp className="size-4 text-semantic-text-muted" />
+    <ChevronUp className="size-4 text-[var(--semantic-text-muted,#717680)]" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -89,7 +87,7 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }: React.
     )}
     {...props}
   >
-    <ChevronDown className="size-4 text-semantic-text-muted" />
+    <ChevronDown className="size-4 text-[var(--semantic-text-muted,#717680)]" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -241,7 +239,7 @@ const SelectContent = React.forwardRef(
         <SelectPrimitive.Content
           ref={ref}
           className={cn(
-            "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
+            "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded bg-[var(--semantic-bg-primary,#FFFFFF)] border border-solid border-[var(--semantic-border-layout,#E9EAEB)] shadow-md",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -280,7 +278,7 @@ const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPr
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      "px-4 py-1.5 text-xs font-semibold text-semantic-text-muted",
+      "px-4 py-1.5 text-xs font-semibold text-[var(--semantic-text-muted,#717680)]",
       className
     )}
     {...props}
@@ -305,8 +303,8 @@ const SelectItem = React.forwardRef(({ className, children, truncateOptionText, 
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-start rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
-        "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+        "relative flex w-full cursor-pointer select-none items-start rounded-sm py-2 pl-4 pr-8 text-base text-[var(--semantic-text-primary,#181D27)] outline-none",
+        "hover:bg-[var(--semantic-bg-ui,#F5F5F5)] focus:bg-[var(--semantic-bg-ui,#F5F5F5)]",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -314,7 +312,7 @@ const SelectItem = React.forwardRef(({ className, children, truncateOptionText, 
     >
       <span className="absolute right-2 flex size-4 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <Check className="size-4 text-semantic-brand" />
+          <Check className="size-4 text-[var(--semantic-brand,#2BBCCA)]" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <span
@@ -336,7 +334,7 @@ SelectItem.displayName = SelectPrimitive.Item.displayName;
 const SelectSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
+    className={cn("-mx-1 my-1 h-px bg-[var(--semantic-border-layout,#E9EAEB)]", className)}
     {...props}
   />
 ));
