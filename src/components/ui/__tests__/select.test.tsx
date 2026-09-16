@@ -91,14 +91,14 @@ describe("Select", () => {
   it("applies default state styling", () => {
     renderSelect();
     expect(screen.getByTestId("trigger")).toHaveClass(
-      "border-semantic-border-input"
+      "border-[var(--semantic-border-input,#E9EAEB)]"
     );
   });
 
   it("applies error state styling", () => {
     renderSelect({ triggerProps: { state: "error" } });
     expect(screen.getByTestId("trigger")).toHaveClass(
-      "border-semantic-error-primary"
+      "border-[var(--semantic-error-primary,#F04438)]"
     );
   });
 

@@ -19,7 +19,7 @@ import {
   X,
 } from "lucide-react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_START_TIME = "10:30:00";
 /**

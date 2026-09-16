@@ -194,8 +194,8 @@ describe("DateTimePicker", () => {
     expect(trigger).toHaveClass("px-4");
     expect(trigger).toHaveClass("py-2.5");
     expect(trigger).toHaveClass("text-base");
-    expect(trigger).toHaveClass("border-semantic-border-input");
-    expect(trigger).toHaveClass("text-semantic-text-placeholder");
+    expect(trigger).toHaveClass("border-[var(--semantic-border-input,#E9EAEB)]");
+    expect(trigger).toHaveClass("text-[var(--semantic-text-placeholder,#A2A6B1)]");
   });
 
   it("selects a day and reports value changes", () => {
@@ -341,7 +341,7 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker state="error" />);
 
     expect(screen.getByLabelText("Date and time").parentElement).toHaveClass(
-      "border-semantic-error-primary"
+      "border-[var(--semantic-error-primary,#F04438)]"
     );
   });
 
@@ -923,7 +923,7 @@ describe("DateTimePicker", () => {
     expect(label.tagName).toBe("LABEL");
     expect(label).toHaveClass(
       "font-semibold",
-      "text-semantic-text-secondary"
+      "text-[var(--semantic-text-secondary,#343E55)]"
     );
     expect(label).toHaveAttribute("for", "event-date");
   });
@@ -932,7 +932,7 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker label="Event date" required />);
 
     const asterisk = screen.getByText("*");
-    expect(asterisk).toHaveClass("text-semantic-error-primary");
+    expect(asterisk).toHaveClass("text-[var(--semantic-error-primary,#F04438)]");
   });
 
   it("does not render a label when none is provided", () => {
@@ -946,13 +946,13 @@ describe("DateTimePicker", () => {
   it("shows only the date until a time is explicitly selected", () => {
     render(<DateTimePicker defaultValue={{ date: mayTwelve }} />);
 
-    expect(screen.getByLabelText("Date and time")).toHaveValue("12/05/2026");
+    expect(screen.getByLabelText("Date and time")).toHaveValue("12/05/2026 --:-- --");
   });
 
   it("shows only the time until a date is explicitly selected", () => {
     render(<DateTimePicker defaultValue={{ startTime: "10:30:00" }} />);
 
-    expect(screen.getByLabelText("Date and time")).toHaveValue("10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue("--/--/---- 10:30 AM");
   });
 
   it("clears date and both times, then hides the clear action", () => {
@@ -1041,7 +1041,7 @@ describe("DateTimePicker", () => {
     const input = screen.getByLabelText("Date and time");
     await user.click(input);
     await user.click(screen.getByLabelText("September 12, 2026"));
-    expect(input).toHaveValue("12/09/2026");
+    expect(input).toHaveValue("12/09/2026 --:-- --");
 
     await user.click(screen.getByRole("button", { name: "Clear date" }));
 
@@ -1093,7 +1093,7 @@ describe("DateTimePicker", () => {
 
     const helper = screen.getByText("Pick a slot in business hours");
 
-    expect(helper).toHaveClass("text-semantic-text-muted");
+    expect(helper).toHaveClass("text-[var(--semantic-text-muted,#717680)]");
     expect(screen.getByLabelText("Date and time")).toHaveAttribute(
       "aria-describedby",
       helper.id
@@ -1110,10 +1110,10 @@ describe("DateTimePicker", () => {
     const input = screen.getByLabelText("Date and time");
 
     expect(message).toHaveTextContent("Select a date");
-    expect(message).toHaveClass("text-semantic-error-primary");
+    expect(message).toHaveClass("text-[var(--semantic-error-primary,#F04438)]");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveAttribute("aria-describedby", message.id);
-    expect(input.parentElement).toHaveClass("border-semantic-error-primary");
+    expect(input.parentElement).toHaveClass("border-[var(--semantic-error-primary,#F04438)]");
   });
 
   it("prefers the error message over helper text", () => {

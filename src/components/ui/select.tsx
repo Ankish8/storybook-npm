@@ -3,7 +3,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * SelectTrigger variants matching TextField styling
