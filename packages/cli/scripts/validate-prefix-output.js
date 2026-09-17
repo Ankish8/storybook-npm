@@ -55,6 +55,7 @@ const CORRUPTION_PATTERNS = [
   { pattern: /tw-useEffect\b/, desc: 'tw- before useEffect' },
   { pattern: /tw-useRef\b/, desc: 'tw- before useRef' },
   { pattern: /""tw-/, desc: 'tw- after empty string (syntax corruption)' },
+  { pattern: /-tw--/, desc: '-tw-- invalid CSS variable or placeholder corruption' },
 ]
 
 // Pattern to detect misplaced data-attribute prefix

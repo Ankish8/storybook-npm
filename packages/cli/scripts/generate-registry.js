@@ -663,6 +663,15 @@ function looksLikeTailwindClasses(str: string): boolean {
   // Skip displayName values (PascalCase component names)
   if (/^[A-Z][a-zA-Z]*$/.test(str)) return false
 
+  // Skip CSS custom properties (variables) — must begin with -- (or var(--))
+  if (str.startsWith('--') || str.startsWith('var(--')) return false
+
+  // Skip date/time placeholders, masks, and separators like "--/--/---- --:-- --" or "--:--"
+  if (/^[-/: ]+$/.test(str) || /^--[/:-]/.test(str)) return false
+
+  // Skip time strings like "10:30:00", "00:00:00", "12:30", "10:30 AM"
+  if (/^\\d{1,2}:\\d{2}(?::\\d{2})?(?:\\s*(?:AM|PM|am|pm))?$/.test(str.trim())) return false
+
   // Skip strings that look like paths or imports
   // Allow :: inside arbitrary selectors like [&::-webkit-inner-spin-button]
   if (str.startsWith('@') || str.startsWith('.') || str.startsWith('/') || (str.includes('::') && !str.includes('[&'))) return false
@@ -690,6 +699,10 @@ function looksLikeTailwindClasses(str: string): boolean {
   const words = str.split(/\\s+/)
   return words.some(cls => {
     if (!cls) return false
+
+    // Skip CSS variables, date/time masks, or time tokens at word level
+    if (cls.startsWith('--') || /^[-/: ]+$/.test(cls)) return false
+    if (/^\\d{1,2}:\\d{2}(?::\\d{2})?$/.test(cls)) return false
 
     // Skip aria-* and data-* ONLY if they look like HTML attribute values (no [ or :)
     // Allow Tailwind variants like data-[state=open]:animate-in or aria-checked:bg-blue-500
