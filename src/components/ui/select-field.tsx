@@ -123,6 +123,14 @@ export interface SelectFieldProps {
    * an "End of list" footer row. Default true (keep firing).
    */
   hasMore?: boolean;
+  /**
+   * Clip long option labels in the dropdown to a single line with an ellipsis
+   * instead of wrapping them across lines. Default false (wrapped). The
+   * selected value in the trigger always truncates, and the value reported to
+   * `onValueChange` / `onSelect` is always the full string — truncation is
+   * presentation only.
+   */
+  truncateOptionText?: boolean;
 }
 
 /**
@@ -200,6 +208,7 @@ const SelectField = React.forwardRef(
       onScrollEnd,
       loadingMore,
       hasMore,
+      truncateOptionText,
     }: SelectFieldProps,
     ref: React.Ref<HTMLButtonElement>
   ) => {
@@ -391,6 +400,7 @@ const SelectField = React.forwardRef(
           <SelectContent
             onViewportScrollEnd={hasMore !== false ? onScrollEnd : undefined}
             hideScrollButtons={totalRendered === 0}
+            truncateOptionText={truncateOptionText}
             className={contentClassName}
           >
             {/* Search input */}

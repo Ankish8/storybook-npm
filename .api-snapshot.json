@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generatedAt": "2026-07-30T05:22:32.824Z",
+  "generatedAt": "2026-09-16T08:59:56.000Z",
   "components": {
     "accordion": {
       "exports": [
@@ -508,6 +508,107 @@
       },
       "variants": {}
     },
+    "date-range-picker": {
+      "exports": [
+        "DEFAULT_DATE_RANGE_PRESETS",
+        "DateRangePicker",
+        "DateRangePickerProps",
+        "DateRangePreset",
+        "DateRangeValue",
+        "dateRangePickerTriggerVariants"
+      ],
+      "interfaces": {
+        "DateRangeValue": {
+          "start": {
+            "type": "Date",
+            "optional": true
+          },
+          "end": {
+            "type": "Date",
+            "optional": true
+          }
+        },
+        "DateRangePreset": {
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "getRange": {
+            "type": "() => DateRangeValue",
+            "optional": false
+          }
+        },
+        "DateRangePickerProps": {
+          "value": {
+            "type": "DateRangeValue",
+            "optional": true
+          },
+          "defaultValue": {
+            "type": "DateRangeValue",
+            "optional": true
+          },
+          "onValueChange": {
+            "type": "(value: DateRangeValue) => void",
+            "optional": true
+          },
+          "placeholder": {
+            "type": "string",
+            "optional": true
+          },
+          "presets": {
+            "type": "DateRangePreset[]",
+            "optional": true
+          },
+          "minDate": {
+            "type": "Date",
+            "optional": true
+          },
+          "maxDate": {
+            "type": "Date",
+            "optional": true
+          },
+          "disablePastDates": {
+            "type": "boolean",
+            "optional": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "open": {
+            "type": "boolean",
+            "optional": true
+          },
+          "defaultOpen": {
+            "type": "boolean",
+            "optional": true
+          },
+          "onOpenChange": {
+            "type": "(open: boolean) => void",
+            "optional": true
+          },
+          "portalContainer": {
+            "type": "HTMLElement | null",
+            "optional": true
+          },
+          "formatRange": {
+            "type": "(value: DateRangeValue) => string",
+            "optional": true
+          },
+          "triggerClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "triggerLabelClassName": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      },
+      "variants": {
+        "dateRangePickerTriggerVariants": {}
+      }
+    },
     "date-time-picker": {
       "exports": [
         "DateTimePicker",
@@ -535,11 +636,11 @@
         },
         "DateTimePickerProps": {
           "value": {
-            "type": "DateTimePickerValue",
+            "type": "Partial<DateTimePickerValue>",
             "optional": true
           },
           "defaultValue": {
-            "type": "DateTimePickerValue",
+            "type": "Partial<DateTimePickerValue>",
             "optional": true
           },
           "onValueChange": {
@@ -555,6 +656,14 @@
             "optional": true
           },
           "labelClassName": {
+            "type": "string",
+            "optional": true
+          },
+          "helperText": {
+            "type": "string",
+            "optional": true
+          },
+          "error": {
             "type": "string",
             "optional": true
           },
@@ -637,8 +746,7 @@
         }
       },
       "variants": {
-        "dateTimePickerVariants": {},
-        "dateTimePickerTriggerVariants": {}
+        "dateTimePickerVariants": {}
       }
     },
     "delete-confirmation-modal": {
@@ -995,6 +1103,18 @@
             "type": "boolean",
             "optional": true
           },
+          "onScrollEnd": {
+            "type": "() => void",
+            "optional": true
+          },
+          "hasMore": {
+            "type": "boolean",
+            "optional": true
+          },
+          "loadingMore": {
+            "type": "boolean",
+            "optional": true
+          },
           "placeholder": {
             "type": "string",
             "optional": true
@@ -1024,6 +1144,22 @@
             "optional": true
           },
           "searchPlaceholder": {
+            "type": "string",
+            "optional": true
+          },
+          "searchQuery": {
+            "type": "string",
+            "optional": true
+          },
+          "onSearchQueryChange": {
+            "type": "(query: string) => void",
+            "optional": true
+          },
+          "summaryLabel": {
+            "type": "(count: number) => string",
+            "optional": true
+          },
+          "selectAllLabel": {
             "type": "string",
             "optional": true
           },
@@ -1068,6 +1204,14 @@
             "optional": true
           },
           "showSeparatorBeforeChevron": {
+            "type": "boolean",
+            "optional": true
+          },
+          "menuContainer": {
+            "type": "HTMLElement | null",
+            "optional": true
+          },
+          "truncateOptionText": {
             "type": "boolean",
             "optional": true
           }
@@ -1194,6 +1338,8 @@
         "PaginationContentProps",
         "PaginationEllipsis",
         "PaginationEllipsisProps",
+        "PaginationInfo",
+        "PaginationInfoProps",
         "PaginationItem",
         "PaginationItemProps",
         "PaginationLink",
@@ -1265,6 +1411,28 @@
             "optional": true
           }
         },
+        "PaginationInfoProps": {
+          "currentPage": {
+            "type": "number",
+            "optional": false
+          },
+          "pageSize": {
+            "type": "number",
+            "optional": false
+          },
+          "totalItems": {
+            "type": "number",
+            "optional": false
+          },
+          "label": {
+            "type": "string",
+            "optional": true
+          },
+          "className": {
+            "type": "string",
+            "optional": true
+          }
+        },
         "PaginationWidgetProps": {
           "currentPage": {
             "type": "number",
@@ -1280,6 +1448,18 @@
           },
           "siblingCount": {
             "type": "number",
+            "optional": true
+          },
+          "totalItems": {
+            "type": "number",
+            "optional": true
+          },
+          "pageSize": {
+            "type": "number",
+            "optional": true
+          },
+          "align": {
+            "type": "\"start\" | \"center\" | \"end\"",
             "optional": true
           },
           "className": {
@@ -1675,6 +1855,10 @@
           "hasMore": {
             "type": "boolean",
             "optional": true
+          },
+          "truncateOptionText": {
+            "type": "boolean",
+            "optional": true
           }
         }
       },
@@ -1687,6 +1871,7 @@
         "SelectContentProps",
         "SelectGroup",
         "SelectItem",
+        "SelectItemProps",
         "SelectLabel",
         "SelectScrollDownButton",
         "SelectScrollUpButton",
@@ -1696,10 +1881,15 @@
         "SelectValue",
         "selectTriggerVariants"
       ],
-      "interfaces": {},
-      "variants": {
-        "selectTriggerVariants": {}
-      }
+      "interfaces": {
+        "SelectItemProps": {
+          "truncateOptionText": {
+            "type": "boolean",
+            "optional": true
+          }
+        }
+      },
+      "variants": {}
     },
     "skeleton": {
       "exports": [

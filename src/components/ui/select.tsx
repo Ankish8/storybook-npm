@@ -9,14 +9,12 @@ import { cn } from "@/lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-semantic-bg-primary px-4 py-2 text-left text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-[var(--semantic-bg-primary,#FFFFFF)] px-4 py-2 text-left text-base text-[var(--semantic-text-primary,#181D27)] outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
-        default:
-          "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-        error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+        default: "border border-solid border-[var(--semantic-border-input,#E9EAEB)] focus:outline-none focus:border-[var(--semantic-border-input-focus,#2BBCCA)] focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+        error: "border border-solid border-[var(--semantic-error-primary,#F04438)] focus:outline-none focus:border-[var(--semantic-error-primary,#F04438)] focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
       },
     },
     defaultVariants: {
@@ -28,6 +26,15 @@ const selectTriggerVariants = cva(
 const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
+
+/**
+ * Lets `SelectContent` set the long-label behaviour once for every
+ * `SelectItem` it renders, so callers don't repeat the flag per item.
+ * Items may still override it individually.
+ */
+const SelectItemLayoutContext = React.createContext<{
+  truncateOptionText: boolean;
+}>({ truncateOptionText: false });
 
 const SelectValue = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>) => (
   <SelectPrimitive.Value
@@ -51,7 +58,7 @@ const SelectTrigger = React.forwardRef(({ className, state, children, ...props }
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="size-4 shrink-0 text-semantic-text-muted opacity-70" />
+      <ChevronDown className="size-4 shrink-0 text-[var(--semantic-text-muted,#717680)] opacity-70" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -66,7 +73,7 @@ const SelectScrollUpButton = React.forwardRef(({ className, ...props }: React.Co
     )}
     {...props}
   >
-    <ChevronUp className="size-4 text-semantic-text-muted" />
+    <ChevronUp className="size-4 text-[var(--semantic-text-muted,#717680)]" />
   </SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -80,7 +87,7 @@ const SelectScrollDownButton = React.forwardRef(({ className, ...props }: React.
     )}
     {...props}
   >
-    <ChevronDown className="size-4 text-semantic-text-muted" />
+    <ChevronDown className="size-4 text-[var(--semantic-text-muted,#717680)]" />
   </SelectPrimitive.ScrollDownButton>
 ));
 SelectScrollDownButton.displayName =
@@ -146,6 +153,13 @@ export type SelectContentProps = React.ComponentPropsWithoutRef<
    */
   onViewportScrollEnd?: (event: React.UIEvent<HTMLDivElement>) => void;
   hideScrollButtons?: boolean;
+  /**
+   * Clip long option labels to a single line with an ellipsis instead of
+   * wrapping them. Applies to every `SelectItem` inside this content;
+   * individual items can override it with their own `truncateOptionText`.
+   * The trigger value always truncates, regardless of this flag.
+   */
+  truncateOptionText?: boolean;
 };
 
 const BOTTOM_THRESHOLD_PX = 24;
@@ -159,6 +173,7 @@ const SelectContent = React.forwardRef(
       position = "popper",
       onViewportScrollEnd,
       hideScrollButtons,
+      truncateOptionText = false,
       ...props
     }: SelectContentProps,
     ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
@@ -214,12 +229,17 @@ const SelectContent = React.forwardRef(
       };
     }, [viewport, onViewportScrollEnd]);
 
+    const itemLayout = React.useMemo(
+      () => ({ truncateOptionText }),
+      [truncateOptionText]
+    );
+
     return (
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
           ref={ref}
           className={cn(
-            "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
+            "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded bg-[var(--semantic-bg-primary,#FFFFFF)] border border-solid border-[var(--semantic-border-layout,#E9EAEB)] shadow-md",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -242,7 +262,9 @@ const SelectContent = React.forwardRef(
                 "h-[var(--radix-select-trigger-height)] w-full"
             )}
           >
-            {children}
+            <SelectItemLayoutContext.Provider value={itemLayout}>
+              {children}
+            </SelectItemLayoutContext.Provider>
           </SelectPrimitive.Viewport>
           {!hideScrollButtons && <SelectScrollDownButton />}
         </SelectPrimitive.Content>
@@ -256,7 +278,7 @@ const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPr
   <SelectPrimitive.Label
     ref={ref}
     className={cn(
-      "px-4 py-1.5 text-xs font-semibold text-semantic-text-muted",
+      "px-4 py-1.5 text-xs font-semibold text-[var(--semantic-text-muted,#717680)]",
       className
     )}
     {...props}
@@ -264,35 +286,55 @@ const SelectLabel = React.forwardRef(({ className, ...props }: React.ComponentPr
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
-const SelectItem = React.forwardRef(({ className, children, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex w-full cursor-pointer select-none items-start rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
-      "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
-      "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute right-2 flex size-4 items-center justify-center">
-      <SelectPrimitive.ItemIndicator>
-        <Check className="size-4 text-semantic-brand" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    <span className="min-w-0 flex-1 whitespace-normal break-words leading-normal">
-      <SelectPrimitive.ItemText>
-        {children}
-      </SelectPrimitive.ItemText>
-    </span>
-  </SelectPrimitive.Item>
-));
+export interface SelectItemProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
+  /**
+   * Clip this option's label to a single line with an ellipsis instead of
+   * wrapping it. Defaults to the value set on `SelectContent` (wrapped).
+   */
+  truncateOptionText?: boolean;
+}
+
+const SelectItem = React.forwardRef(({ className, children, truncateOptionText, ...props }: SelectItemProps, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>) => {
+  const layout = React.useContext(SelectItemLayoutContext);
+  const truncate = truncateOptionText ?? layout.truncateOptionText;
+
+  return (
+    <SelectPrimitive.Item
+      ref={ref}
+      className={cn(
+        "relative flex w-full cursor-pointer select-none items-start rounded-sm py-2 pl-4 pr-8 text-base text-[var(--semantic-text-primary,#181D27)] outline-none",
+        "hover:bg-[var(--semantic-bg-ui,#F5F5F5)] focus:bg-[var(--semantic-bg-ui,#F5F5F5)]",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <span className="absolute right-2 flex size-4 items-center justify-center">
+        <SelectPrimitive.ItemIndicator>
+          <Check className="size-4 text-[var(--semantic-brand,#2BBCCA)]" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <span
+        title={truncate && typeof children === "string" ? children : undefined}
+        className={cn(
+          "min-w-0 flex-1 leading-normal",
+          truncate ? "truncate" : "whitespace-normal break-words"
+        )}
+      >
+        <SelectPrimitive.ItemText>
+          {children}
+        </SelectPrimitive.ItemText>
+      </span>
+    </SelectPrimitive.Item>
+  );
+});
 SelectItem.displayName = SelectPrimitive.Item.displayName;
 
 const SelectSeparator = React.forwardRef(({ className, ...props }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>, ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
+    className={cn("-mx-1 my-1 h-px bg-[var(--semantic-border-layout,#E9EAEB)]", className)}
     {...props}
   />
 ));

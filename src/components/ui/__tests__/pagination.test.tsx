@@ -8,7 +8,10 @@ import {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
+  PaginationInfo,
+  PaginationWidget,
 } from "../pagination";
+import { assertNoBootstrapMarginBleed } from "./utils/bootstrap-compat";
 
 describe("Pagination", () => {
   it("renders as nav with correct aria attributes", () => {
@@ -329,5 +332,138 @@ describe("Full Pagination composition", () => {
     expect(screen.getByLabelText("Go to previous page")).toBeInTheDocument();
     expect(screen.getByLabelText("Go to next page")).toBeInTheDocument();
     expect(screen.getByText("More pages")).toBeInTheDocument();
+  });
+});
+
+describe("PaginationInfo", () => {
+  it("renders the item range and total", () => {
+    render(<PaginationInfo currentPage={1} pageSize={15} totalItems={96} />);
+
+    expect(screen.getByText("Showing")).toBeInTheDocument();
+    expect(screen.getByText("1–15 of 96")).toBeInTheDocument();
+  });
+
+  it("computes the range for a middle page", () => {
+    render(<PaginationInfo currentPage={3} pageSize={15} totalItems={96} />);
+
+    expect(screen.getByText("31–45 of 96")).toBeInTheDocument();
+  });
+
+  it("clamps the end item on the last partial page", () => {
+    render(<PaginationInfo currentPage={7} pageSize={15} totalItems={96} />);
+
+    expect(screen.getByText("91–96 of 96")).toBeInTheDocument();
+  });
+
+  it("reports a zero range when there are no items", () => {
+    render(<PaginationInfo currentPage={1} pageSize={15} totalItems={0} />);
+
+    expect(screen.getByText("0–0 of 0")).toBeInTheDocument();
+  });
+
+  it("supports a custom label", () => {
+    render(
+      <PaginationInfo
+        currentPage={1}
+        pageSize={10}
+        totalItems={48}
+        label="Displaying"
+      />
+    );
+
+    expect(screen.getByText("Displaying")).toBeInTheDocument();
+  });
+
+  it("has no Bootstrap margin bleed on its paragraph", () => {
+    const { container } = render(
+      <PaginationInfo currentPage={1} pageSize={15} totalItems={96} />
+    );
+
+    assertNoBootstrapMarginBleed(container);
+  });
+
+  it("merges custom className", () => {
+    render(
+      <PaginationInfo
+        currentPage={1}
+        pageSize={15}
+        totalItems={96}
+        className="custom-info"
+        data-testid="info"
+      />
+    );
+
+    const info = screen.getByTestId("info");
+    expect(info).toHaveClass("custom-info");
+    expect(info).toHaveClass("text-sm");
+  });
+});
+
+describe("PaginationWidget item count", () => {
+  it("renders the summary when totalItems and pageSize are given", () => {
+    render(
+      <PaginationWidget
+        currentPage={1}
+        totalPages={7}
+        pageSize={15}
+        totalItems={96}
+        onPageChange={() => {}}
+      />
+    );
+
+    expect(screen.getByText("1–15 of 96")).toBeInTheDocument();
+  });
+
+  it("omits the summary when totalItems is not given", () => {
+    render(
+      <PaginationWidget
+        currentPage={1}
+        totalPages={7}
+        onPageChange={() => {}}
+      />
+    );
+
+    expect(screen.queryByText("Showing")).not.toBeInTheDocument();
+  });
+
+  it("right-aligns the controls by default when the summary is shown", () => {
+    render(
+      <PaginationWidget
+        currentPage={1}
+        totalPages={7}
+        pageSize={15}
+        totalItems={96}
+        onPageChange={() => {}}
+      />
+    );
+
+    expect(screen.getByRole("navigation")).toHaveClass("justify-end");
+  });
+
+  it("honours an explicit align override", () => {
+    render(
+      <PaginationWidget
+        currentPage={1}
+        totalPages={7}
+        pageSize={15}
+        totalItems={96}
+        align="center"
+        onPageChange={() => {}}
+      />
+    );
+
+    expect(screen.getByRole("navigation")).toHaveClass("justify-center");
+  });
+
+  it("centers the controls when no summary is shown", () => {
+    render(
+      <PaginationWidget
+        currentPage={1}
+        totalPages={7}
+        onPageChange={() => {}}
+      />
+    );
+
+    expect(screen.getByRole("navigation")).toHaveClass("justify-center");
   });
 });

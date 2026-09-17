@@ -118,6 +118,20 @@ import { SelectField } from "@/components/ui/select-field"
 />
 \`\`\`
 
+## Long option labels
+
+Dropdown rows wrap long labels across lines by default. Pass \`truncateOptionText\`
+to clip every row to one line with an ellipsis instead (the full label stays
+available as a native tooltip). The selected value in the trigger always
+truncates, so the control never breaks its layout in either mode.
+
+Truncation is CSS-only — the value passed to \`onValueChange\` and the option
+passed to \`onSelect\` are always the full, unclipped values.
+
+\`\`\`tsx
+<SelectField label="Queue" options={options} truncateOptionText />
+\`\`\`
+
 ## Design Tokens
 
 <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
@@ -567,6 +581,49 @@ export const SearchableWithGroupsSeparator: Story = {
       },
     },
   },
+};
+
+// Long option labels — the selected value in the trigger always truncates so
+// the control never breaks its layout. Dropdown rows wrap the full label by
+// default; `truncateOptionText` clips them to one line instead. Either way the
+// value handed to `onValueChange` / `onSelect` is the complete string.
+const longLabelOptions: SelectOption[] = [
+  {
+    value: "long-1",
+    label:
+      "Customer support escalation queue for enterprise accounts in the APAC region — tier 3",
+  },
+  {
+    value: "long-2",
+    label:
+      "Outbound campaign / unstructured value pulled straight from the CRM with no length cap",
+  },
+  { value: "short", label: "Sales" },
+];
+
+export const LongOption: Story = {
+  render: () => (
+    <div className="flex w-[320px] flex-col gap-8">
+      <SelectField
+        label="Wrapped (default)"
+        placeholder="Select"
+        options={longLabelOptions}
+      />
+      <SelectField
+        label="Truncated"
+        placeholder="Select"
+        options={longLabelOptions}
+        truncateOptionText
+      />
+      <SelectField
+        label="Selected value"
+        placeholder="Select"
+        options={longLabelOptions}
+        defaultValue="long-1"
+        helperText="The trigger always truncates, in both modes"
+      />
+    </div>
+  ),
 };
 
 // Controlled Example

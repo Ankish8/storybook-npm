@@ -53,6 +53,20 @@ import {
 </Select>
 \`\`\`
 
+## Long option labels
+
+Dropdown rows wrap long labels across lines by default. Set \`truncateOptionText\`
+on \`SelectContent\` to clip every row to one line with an ellipsis instead, or set it
+on an individual \`SelectItem\` to override the content-level choice. Truncation is
+CSS-only — the selected \`value\` reported to \`onValueChange\` is always the full,
+unclipped string.
+
+\`\`\`tsx
+<SelectContent truncateOptionText>
+  <SelectItem value="tier-3">Customer support escalation queue — tier 3</SelectItem>
+</SelectContent>
+\`\`\`
+
 ## Design Tokens
 
 <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
@@ -348,6 +362,68 @@ export const LongList: Story = {
           <SelectItem value="sg">Singapore</SelectItem>
         </SelectContent>
       </Select>
+    </div>
+  ),
+};
+
+const longLabelOptions = [
+  {
+    value: "long-1",
+    label:
+      "Customer support escalation queue for enterprise accounts in the APAC region — tier 3",
+  },
+  {
+    value: "long-2",
+    label:
+      "Outbound campaign / unstructured value pulled straight from the CRM with no length cap",
+  },
+  { value: "short", label: "Sales" },
+];
+
+/**
+ * The selected value in the trigger always truncates, so the control never
+ * breaks its layout. Dropdown rows wrap the full label by default; set
+ * `truncateOptionText` on `SelectContent` to clip them to one line instead
+ * (the full label stays available as a native tooltip).
+ */
+export const LongOption: Story = {
+  render: () => (
+    <div className="flex w-[320px] flex-col gap-8">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-semantic-text-primary">
+          Wrapped (default)
+        </span>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent>
+            {longLabelOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-semantic-text-primary">
+          Truncated
+        </span>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select" />
+          </SelectTrigger>
+          <SelectContent truncateOptionText>
+            {longLabelOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   ),
 };

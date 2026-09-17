@@ -409,6 +409,19 @@ export function looksLikeTailwindClasses(str: string): boolean {
   // (which treats any `:` as a Tailwind variant) lets URLs through.
   if (str.includes('://')) return false
 
+  // Skip CSS custom property names. A custom property is `--foo`; no Tailwind class
+  // ever starts with `--` (arbitrary properties are written `[--foo:value]`). Without
+  // this, `const V = "--date-time-picker-popover-width"` is prefixed to `-tw--date-...`,
+  // which is no longer a valid custom property — setProperty() silently no-ops and
+  // `var(-tw--...)` is a syntax error that invalidates the whole declaration.
+  if (/^--[a-zA-Z]/.test(str.trim())) return false
+
+  // Skip strings with no ASCII letter at all. Every Tailwind class contains a letter;
+  // punctuation/digit-only strings are display text or data. Without this, the loose
+  // fallback below ("any word containing - or : is a class") matches placeholder masks
+  // like "--/--/---- --:-- --" and time literals like "10:30:00".
+  if (!/[a-zA-Z]/.test(str)) return false
+
   // Skip npm package names - but NOT if they look like Tailwind utility classes
   // Tailwind utilities typically have patterns like: prefix-value (text-xs, bg-blue, p-4)
   const tailwindUtilityPrefixes = [
@@ -544,8 +557,9 @@ export function looksLikeTailwindClasses(str: string): boolean {
   return words.some((cls) => {
     if (!cls) return false
 
-    // Skip CSS variables, date/time masks, or time tokens at word level
-    if (cls.startsWith('--') || /^[-/: ]+$/.test(cls)) return false
+    // Skip CSS variables, date/time masks, letterless tokens, and time tokens at word level
+    if (cls.startsWith('--')) return false
+    if (!/[a-zA-Z]/.test(cls)) return false
     if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(cls)) return false
 
     // Skip aria-* and data-* ONLY if they look like HTML attribute values (no [ or :)

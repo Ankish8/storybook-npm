@@ -11,16 +11,35 @@ import {
   type Strategy,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, ChevronLeft, ChevronRight, Clock2, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Clock2,
+  X,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const DEFAULT_START_TIME = "10:30:00";
-const DEFAULT_END_TIME = "12:30:00";
+/**
+ * What the time columns show while no time is selected. Clearing the value
+ * returns the picker to this state, so an unset time always reads 12:00 AM
+ * rather than re-proposing the sample default.
+ */
+const UNSET_TIME = "00:00:00";
 const DEFAULT_MINUTE_STEP = 5;
 const DEFAULT_SECOND_STEP = 5;
 const TIME_COLUMN_MAX_HEIGHT = 168;
 const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --";
+/**
+ * Masks used when only one half of a date-time value is filled in. The trigger
+ * keeps both segments in place so the field reads as "date selected, time still
+ * missing" rather than silently collapsing to a single value.
+ */
+const DATE_SEGMENT_MASK = "--/--/----";
+const TIME_SEGMENT_MASK = "--:-- --";
+const TIME_SEGMENT_MASK_WITH_SECONDS = "--:--:-- --";
 const POPOVER_WIDTH = 336;
 // The popover follows the trigger width but is clamped to a usable design range
 // so it neither stretches across a full-width desktop field nor overflows a
@@ -68,18 +87,17 @@ const dateTimePickerVariants = cva("relative inline-block w-full max-w-full", {
 });
 
 const dateTimePickerTriggerVariants = cva(
-  "flex w-full items-center justify-between border border-solid border-semantic-border-input bg-semantic-bg-primary text-left text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full items-center justify-between border border-solid border-[var(--semantic-border-input,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] text-left text-[var(--semantic-text-primary,#181D27)] outline-none transition-colors hover:border-semantic-border-input-focus/50 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       size: {
-        sm: "h-9 gap-2 rounded-lg px-3 py-2 text-sm",
-        default: "h-[42px] gap-2 rounded-lg px-4 py-2.5 text-base",
-        lg: "h-[42px] gap-2 rounded-lg px-4 py-2.5 text-base",
+        sm: "h-9 gap-2 rounded px-3 py-2 text-sm",
+        default: "h-[42px] gap-2 rounded px-4 py-2.5 text-base",
+        lg: "h-[42px] gap-2 rounded px-4 py-2.5 text-base",
       },
       state: {
         default: "",
-        error:
-          "border-semantic-error-primary hover:border-semantic-error-primary",
+        error: "border-[var(--semantic-error-primary,#F04438)] hover:border-[var(--semantic-error-primary,#F04438)]",
       },
     },
     defaultVariants: {
@@ -91,7 +109,9 @@ const dateTimePickerTriggerVariants = cva(
 
 export interface DateTimePickerValue {
   date?: Date;
+  /** Empty string until a time is explicitly selected */
   startTime: string;
+  /** Empty string until a time is explicitly selected */
   endTime: string;
 }
 
@@ -100,8 +120,8 @@ export interface DateTimePickerProps
     Omit<React.HTMLAttributes<HTMLDivElement>, "defaultValue" | "onChange">,
     VariantProps<typeof dateTimePickerVariants>,
     Pick<VariantProps<typeof dateTimePickerTriggerVariants>, "state"> {
-  value?: DateTimePickerValue;
-  defaultValue?: DateTimePickerValue;
+  value?: Partial<DateTimePickerValue>;
+  defaultValue?: Partial<DateTimePickerValue>;
   onValueChange?: (value: DateTimePickerValue) => void;
   /** Label text displayed above the trigger */
   label?: string;
@@ -109,6 +129,10 @@ export interface DateTimePickerProps
   required?: boolean;
   /** Additional class for the label */
   labelClassName?: string;
+  /** Helper text displayed below the picker */
+  helperText?: string;
+  /** Error message — shows red text below and drives state="error" */
+  error?: string;
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
@@ -146,8 +170,8 @@ function normalizeValue(
 ): DateTimePickerValue {
   return {
     date: value?.date,
-    startTime: value?.startTime ?? DEFAULT_START_TIME,
-    endTime: value?.endTime ?? DEFAULT_END_TIME,
+    startTime: value?.startTime ?? "",
+    endTime: value?.endTime ?? "",
   };
 }
 
@@ -424,22 +448,40 @@ function formatValueForDisplay(
   value: DateTimePickerValue,
   variant: DateTimePickerVariant,
   showEndTime: boolean,
-  hasTimeValue: boolean,
-  showSeconds: boolean
+  showSeconds: boolean,
+  maskMissingSegments = false
 ) {
   if (variant === "date-only") {
     return formatDateOnlyForDisplay(value.date);
   }
 
   if (variant === "time-only") {
-    if (!hasTimeValue) return "";
+    if (!value.startTime && !value.endTime) return "";
 
     return showEndTime
-      ? `${formatTimeForDisplay(value.startTime, showSeconds)} - ${formatTimeForDisplay(value.endTime, showSeconds)}`
-      : formatTimeForDisplay(value.startTime, showSeconds);
+      ? `${formatTimeForDisplay(value.startTime || UNSET_TIME, showSeconds)} - ${formatTimeForDisplay(value.endTime || UNSET_TIME, showSeconds)}`
+      : formatTimeForDisplay(value.startTime || UNSET_TIME, showSeconds);
   }
 
-  return formatDateForDisplay(value.date, value.startTime, showSeconds);
+  const datePart = formatDateOnlyForDisplay(value.date);
+  const timePart = value.startTime
+    ? formatTimeForDisplay(value.startTime, showSeconds)
+    : "";
+
+  if (!datePart && !timePart) return "";
+
+  // Both segments are visible in the `date-time` variant, so a half-filled value
+  // renders the missing half as its own placeholder mask instead of collapsing —
+  // otherwise a date-only selection reads as a complete value.
+  if (maskMissingSegments) {
+    const timeMask = showSeconds
+      ? TIME_SEGMENT_MASK_WITH_SECONDS
+      : TIME_SEGMENT_MASK;
+
+    return [datePart || DATE_SEGMENT_MASK, timePart || timeMask].join(" ");
+  }
+
+  return [datePart, timePart].filter(Boolean).join(" ");
 }
 
 function getDefaultPlaceholder(
@@ -626,10 +668,7 @@ function splitTypedDateInput(value: string) {
       dateSource.split(/[/-]/);
     const dayResult = consumeDigits(dayPart, 2);
     const monthResult = consumeDigits(`${dayResult.rest}${monthPart}`, 2);
-    const yearResult = consumeDigits(
-      `${monthResult.rest}${yearPart}`,
-      4
-    );
+    const yearResult = consumeDigits(`${monthResult.rest}${yearPart}`, 4);
     const day = dayResult.digits;
     const month = monthResult.digits;
     const year = yearResult.digits;
@@ -667,7 +706,10 @@ function splitTypedDateInput(value: string) {
   };
 }
 
-function isPotentiallyValidTimeDigits(timeDigits: string, showSeconds: boolean) {
+function isPotentiallyValidTimeDigits(
+  timeDigits: string,
+  showSeconds: boolean
+) {
   const hourValue = timeDigits.slice(0, 2);
   const minuteValue = timeDigits.slice(2, 4);
   const secondValue = showSeconds ? timeDigits.slice(4, 6) : "";
@@ -701,7 +743,10 @@ function formatTimeInput(restValue: string, showSeconds: boolean) {
   const meridiem = formatMeridiemInput(meridiemLetters.slice(0, 2));
 
   if (!timeDigits && !meridiem) return "";
-  if (!isPotentiallyValidTimeDigits(timeDigits, showSeconds) || meridiem === null) {
+  if (
+    !isPotentiallyValidTimeDigits(timeDigits, showSeconds) ||
+    meridiem === null
+  ) {
     return null;
   }
 
@@ -721,7 +766,8 @@ function sanitizeTypedDateInput(value: string, previousValue: string) {
   if (/^[A-Za-z]/.test(trimmedValue)) return previousValue;
 
   const normalizedValue = value.toUpperCase().replace(/[^0-9\s/-]/g, "");
-  const { dateDigits, dateValue, isValid } = splitTypedDateInput(normalizedValue);
+  const { dateDigits, dateValue, isValid } =
+    splitTypedDateInput(normalizedValue);
   const limitedDateDigits = dateDigits.slice(0, 8);
 
   if (!limitedDateDigits) return "";
@@ -755,9 +801,7 @@ function sanitizeTypedDateTimeInput(
   const trimmedValue = value.trimStart();
   if (/^[A-Za-z]/.test(trimmedValue)) return previousValue;
 
-  const normalizedValue = value
-    .toUpperCase()
-    .replace(/[^0-9\s/:APM-]/g, "");
+  const normalizedValue = value.toUpperCase().replace(/[^0-9\s/:APM-]/g, "");
   const { dateDigits, dateValue, isComplete, isValid, restValue } =
     splitTypedDateInput(normalizedValue);
   const limitedDateDigits = dateDigits.slice(0, 8);
@@ -765,7 +809,9 @@ function sanitizeTypedDateTimeInput(
   if (!limitedDateDigits) return "";
   if (!isValid) return previousValue;
 
-  const formattedTime = isComplete ? formatTimeInput(restValue, showSeconds) : "";
+  const formattedTime = isComplete
+    ? formatTimeInput(restValue, showSeconds)
+    : "";
   if (formattedTime === null) return previousValue;
 
   return [dateValue, formattedTime].filter(Boolean).join(" ");
@@ -841,7 +887,11 @@ function stepDateTimeInputValue(
   const [hourValue = "0", minuteValue = "0", secondValue = "00"] = (
     typedDateTime.startTime ?? fallbackTime
   ).split(":");
-  nextDate.setHours(Number(hourValue), Number(minuteValue), Number(secondValue));
+  nextDate.setHours(
+    Number(hourValue),
+    Number(minuteValue),
+    Number(secondValue)
+  );
 
   if (segment === "day") {
     nextDate.setDate(nextDate.getDate() + direction);
@@ -885,10 +935,7 @@ function stepDateTimeInputValue(
     .padStart(2, "0")}:${nextDate
     .getMinutes()
     .toString()
-    .padStart(2, "0")}:${nextDate
-    .getSeconds()
-    .toString()
-    .padStart(2, "0")}`;
+    .padStart(2, "0")}:${nextDate.getSeconds().toString().padStart(2, "0")}`;
 
   return {
     date: startOfDay(nextDate),
@@ -971,13 +1018,15 @@ function parseTypedDate(value: string) {
 function formatHiddenValue(
   value: DateTimePickerValue,
   variant: DateTimePickerVariant,
-  showEndTime: boolean,
-  hasTimeValue: boolean
+  showEndTime: boolean
 ) {
-  if (variant === "time-only") {
-    if (!hasTimeValue) return "";
+  const startTime = value.startTime || UNSET_TIME;
+  const endTime = value.endTime || UNSET_TIME;
 
-    return showEndTime ? `${value.startTime}/${value.endTime}` : value.startTime;
+  if (variant === "time-only") {
+    if (!value.startTime && !value.endTime) return "";
+
+    return showEndTime ? `${startTime}/${endTime}` : startTime;
   }
 
   if (!value.date) return "";
@@ -994,6 +1043,8 @@ function formatHiddenValue(
   const day = value.date.getDate().toString().padStart(2, "0");
   const year = value.date.getFullYear();
 
+  if (!value.startTime) return `${year}-${month}-${day}`;
+
   return `${year}-${month}-${day}T${value.startTime}`;
 }
 
@@ -1008,6 +1059,26 @@ function FigmaCalendarIcon({ className }: { className?: string }) {
     >
       <path
         d="M6 1.5V4.5M12 1.5V4.5M2.25 6.375H15.75M3.75 3H14.25C15.0784 3 15.75 3.67157 15.75 4.5V15C15.75 15.8284 15.0784 16.5 14.25 16.5H3.75C2.92157 16.5 2.25 15.8284 2.25 15V4.5C2.25 3.67157 2.92157 3 3.75 3Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function FigmaClockIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M9 4.5V9L11.25 11.25M15.75 9C15.75 12.7279 12.7279 15.75 9 15.75C5.27208 15.75 2.25 12.7279 2.25 9C2.25 5.27208 5.27208 2.25 9 2.25C12.7279 2.25 15.75 5.27208 15.75 9Z"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -1081,7 +1152,7 @@ function CalendarDropdown({
             role="listbox"
             aria-label={`${label} options`}
             data-dtp-dropdown=""
-            className="flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+            className="flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
             style={{
               ...floatingStyles,
               width: `var(${DROPDOWN_WIDTH_VAR}, auto)`,
@@ -1101,8 +1172,8 @@ function CalendarDropdown({
                 className={cn(
                   "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40",
                   option.value === value
-                    ? "border-semantic-info-border bg-semantic-info-surface font-semibold text-semantic-text-primary"
-                    : "border-transparent text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                    ? "border-[var(--semantic-info-border,#A8C0EC)] bg-[var(--semantic-info-surface,#ECF1FB)] font-semibold text-[var(--semantic-text-primary,#181D27)]"
+                    : "border-transparent text-[var(--semantic-text-secondary,#343E55)] hover:bg-[var(--semantic-bg-hover,#D5D7DA)]"
                 )}
                 onClick={() => {
                   if (option.disabled) return;
@@ -1151,8 +1222,8 @@ function TimeColumn({
   }, []);
 
   return (
-    <div className="flex min-w-0 flex-col border-r border-solid border-semantic-border-layout last:border-r-0">
-      <div className="border-b border-solid border-semantic-border-layout px-1 py-2 text-center text-[11px] font-semibold uppercase tracking-wide text-semantic-text-muted">
+    <div className="flex min-w-0 flex-col border-r border-solid border-[var(--semantic-border-layout,#E9EAEB)] last:border-r-0">
+      <div className="border-b border-solid border-[var(--semantic-border-layout,#E9EAEB)] px-1 py-2 text-center text-[11px] font-semibold uppercase tracking-wide text-[var(--semantic-text-muted,#717680)]">
         {header}
       </div>
       <div
@@ -1172,8 +1243,8 @@ function TimeColumn({
             className={cn(
               "flex shrink-0 items-center justify-center rounded-md border border-solid px-2 py-1.5 text-sm transition-colors",
               option.selected
-                ? "border-semantic-info-border bg-semantic-info-surface font-semibold text-semantic-text-primary"
-                : "border-transparent text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                ? "border-[var(--semantic-info-border,#A8C0EC)] bg-[var(--semantic-info-surface,#ECF1FB)] font-semibold text-[var(--semantic-text-primary,#181D27)]"
+                : "border-transparent text-[var(--semantic-text-secondary,#343E55)] hover:bg-[var(--semantic-bg-hover,#D5D7DA)]"
             )}
             onClick={() => onSelect(option.key)}
           >
@@ -1256,7 +1327,7 @@ function TimeField({
     <div className="flex flex-col gap-1.5">
       <span
         id={`${id}-label`}
-        className="block text-sm font-semibold text-semantic-text-secondary"
+        className="block text-sm font-semibold text-[var(--semantic-text-secondary,#343E55)]"
       >
         {label}
       </span>
@@ -1268,14 +1339,14 @@ function TimeField({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "flex h-[42px] w-full items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-semantic-text-primary outline-none transition-colors hover:border-semantic-border-input-focus/50",
+          "flex h-[42px] w-full items-center gap-2 rounded border border-solid border-[var(--semantic-border-input,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] px-3 text-left text-base text-[var(--semantic-text-primary,#181D27)] outline-none transition-colors hover:border-semantic-border-input-focus/50",
           open &&
             "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
         )}
         onClick={() => onOpenChange(!open)}
       >
         <Clock2
-          className="size-4 shrink-0 text-semantic-text-muted"
+          className="size-4 shrink-0 text-[var(--semantic-text-muted,#717680)]"
           aria-hidden="true"
         />
         <span className="m-0 min-w-0 flex-1 truncate">
@@ -1283,7 +1354,7 @@ function TimeField({
         </span>
         <ChevronDown
           className={cn(
-            "size-4 shrink-0 text-semantic-text-muted transition-transform",
+            "size-4 shrink-0 text-[var(--semantic-text-muted,#717680)] transition-transform",
             open && "rotate-180"
           )}
           aria-hidden="true"
@@ -1298,7 +1369,7 @@ function TimeField({
             aria-label={`${label} options`}
             data-dtp-dropdown=""
             className={cn(
-              "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg",
+              "grid overflow-hidden rounded-lg border border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] shadow-lg",
               showSeconds ? "grid-cols-4" : "grid-cols-3"
             )}
             style={{
@@ -1313,7 +1384,9 @@ function TimeField({
               ariaLabel={`${label} hours`}
               options={hourOptions}
               onSelect={(key) =>
-                onChange(composeTime(Number(key), minute, effectiveSecond, meridiem))
+                onChange(
+                  composeTime(Number(key), minute, effectiveSecond, meridiem)
+                )
               }
             />
             <TimeColumn
@@ -1321,7 +1394,9 @@ function TimeField({
               ariaLabel={`${label} minutes`}
               options={minuteOptions}
               onSelect={(key) =>
-                onChange(composeTime(hour12, Number(key), effectiveSecond, meridiem))
+                onChange(
+                  composeTime(hour12, Number(key), effectiveSecond, meridiem)
+                )
               }
             />
             {showSeconds && (
@@ -1364,6 +1439,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       label,
       required,
       labelClassName,
+      helperText,
+      error,
       placeholder: placeholderProp,
       disabled = false,
       readOnly = false,
@@ -1391,6 +1468,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const generatedId = React.useId();
     const triggerId = id ?? generatedId;
     const pickerVariant = variant ?? "date-time";
+    const resolvedState = error ? "error" : state;
     const showCalendar = pickerVariant !== "time-only";
     const showTimeFields = pickerVariant !== "date-only";
     const resolvedShowEndTime = showTimeFields && showEndTime;
@@ -1399,22 +1477,19 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const [internalValue, setInternalValue] = React.useState(() =>
       normalizeValue(defaultValue)
     );
-    const [internalHasTimeValue, setInternalHasTimeValue] = React.useState(() =>
-      Boolean(defaultValue?.date || defaultValue?.startTime || defaultValue?.endTime)
-    );
     const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
     const currentValue = normalizeValue(
       isValueControlled ? value : internalValue
     );
-    const hasTimeValue = isValueControlled
-      ? Boolean(value?.date || value?.startTime || value?.endTime)
-      : internalHasTimeValue;
+    const resolvedStartTime = currentValue.startTime || UNSET_TIME;
+    const resolvedEndTime = currentValue.endTime || UNSET_TIME;
     const resolvedShowSeconds =
       showSeconds ??
       (timeHasVisibleSeconds(currentValue.startTime) ||
         (resolvedShowEndTime && timeHasVisibleSeconds(currentValue.endTime)));
     const placeholder =
-      placeholderProp ?? getDefaultPlaceholder(pickerVariant, resolvedShowSeconds);
+      placeholderProp ??
+      getDefaultPlaceholder(pickerVariant, resolvedShowSeconds);
     const open = isOpenControlled ? controlledOpen : internalOpen;
     const [visibleMonth, setVisibleMonth] = React.useState(() =>
       startOfMonth(currentValue.date ?? new Date())
@@ -1424,8 +1499,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         currentValue,
         pickerVariant,
         resolvedShowEndTime,
-        hasTimeValue,
-        resolvedShowSeconds
+        resolvedShowSeconds,
+        true
       )
     );
     const [isDateInputFocused, setIsDateInputFocused] = React.useState(false);
@@ -1456,7 +1531,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             const maxWidth = Math.min(MAX_POPOVER_WIDTH, availableWidth);
             const width = Math.max(
               1,
-              Math.min(Math.max(rects.reference.width, MIN_POPOVER_WIDTH), maxWidth)
+              Math.min(
+                Math.max(rects.reference.width, MIN_POPOVER_WIDTH),
+                maxWidth
+              )
             );
             elements.floating.style.setProperty(
               POPOVER_SCROLL_HEIGHT_VAR,
@@ -1484,12 +1562,29 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       () => getCalendarDays(visibleMonth),
       [visibleMonth]
     );
+    const errorId = `${triggerId}-error`;
+    const helperId = `${triggerId}-helper`;
+    const describedBy = error ? errorId : helperText ? helperId : undefined;
+    // Unmasked — this is what the typing path reads and writes. The masked variant
+    // below is render-only; letting a mask reach `dateInputValue` would feed
+    // "--/--/----" straight into the typed-input sanitizers.
     const displayValue = formatValueForDisplay(
       currentValue,
       pickerVariant,
       resolvedShowEndTime,
-      hasTimeValue,
       resolvedShowSeconds
+    );
+    const maskedDisplayValue = formatValueForDisplay(
+      currentValue,
+      pickerVariant,
+      resolvedShowEndTime,
+      resolvedShowSeconds,
+      true
+    );
+    const hasValue = Boolean(
+      currentValue.date ||
+        currentValue.startTime ||
+        (resolvedShowEndTime && currentValue.endTime)
     );
     const effectiveMinDate = React.useMemo(() => {
       if (!disablePastDates) return minDate;
@@ -1546,9 +1641,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
     React.useEffect(() => {
       if (!isDateInputFocused) {
-        setDateInputValue(displayValue);
+        setDateInputValue(maskedDisplayValue);
       }
-    }, [displayValue, isDateInputFocused]);
+    }, [maskedDisplayValue, isDateInputFocused]);
 
     React.useEffect(() => {
       if (!open) return;
@@ -1579,15 +1674,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     }, [open, setOpen]);
 
     const updateValue = React.useCallback(
-      (
-        nextValue: DateTimePickerValue,
-        options?: { hasTimeValue?: boolean }
-      ) => {
+      (nextValue: DateTimePickerValue) => {
         if (!isValueControlled) {
           setInternalValue(nextValue);
-          if (options?.hasTimeValue !== undefined) {
-            setInternalHasTimeValue(options.hasTimeValue);
-          }
         }
 
         onValueChange?.(nextValue);
@@ -1600,11 +1689,14 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       if (readOnly) return;
 
       setDateInputValue("");
+      setOpenTimeField(null);
+      setOpenCalendarDropdown(null);
+      setVisibleMonth(startOfMonth(new Date()));
       updateValue({
         date: undefined,
-        startTime: currentValue.startTime,
-        endTime: currentValue.endTime,
-      }, { hasTimeValue: false });
+        startTime: "",
+        endTime: "",
+      });
     };
 
     const yearOptions = React.useMemo(
@@ -1663,13 +1755,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           updateValue({ ...currentValue, date: nextSelectedDate });
         }
       },
-      [
-        currentValue,
-        effectiveMinDate,
-        maxDate,
-        pickerVariant,
-        updateValue,
-      ]
+      [currentValue, effectiveMinDate, maxDate, pickerVariant, updateValue]
     );
 
     const handleTypedDateChange = (
@@ -1693,18 +1779,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
         const typedTime = parseTimePart(nextInputValue);
         if (typedTime === undefined) {
-          updateValue({ ...currentValue, date: undefined }, { hasTimeValue: false });
+          updateValue({ ...currentValue, startTime: "" });
           return;
         }
 
         if (typedTime) {
-          updateValue(
-            {
-              ...currentValue,
-              startTime: typedTime,
-            },
-            { hasTimeValue: true }
-          );
+          updateValue({ ...currentValue, startTime: typedTime });
         }
 
         return;
@@ -1774,7 +1854,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         updateValue({
           ...currentValue,
           date: typedDateTime.date,
-          startTime: typedDateTime.startTime ?? currentValue.startTime,
+          startTime: typedDateTime.startTime || currentValue.startTime,
         });
         updateVisibleMonth(typedDateTime.date);
       }
@@ -1794,7 +1874,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         dateInputValue,
         cursorPosition,
         direction,
-        currentValue.startTime,
+        resolvedStartTime,
         resolvedShowSeconds
       );
 
@@ -1846,8 +1926,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           currentValue,
           pickerVariant,
           resolvedShowEndTime,
-          hasTimeValue,
-          resolvedShowSeconds
+          resolvedShowSeconds,
+          true
         )
       );
     };
@@ -1862,10 +1942,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           ref={setPopoverRef}
           role="dialog"
           aria-modal="false"
-          aria-labelledby={showCalendar ? `${triggerId}-calendar-heading` : undefined}
+          aria-labelledby={
+            showCalendar ? `${triggerId}-calendar-heading` : undefined
+          }
           aria-label={showCalendar ? undefined : "Time picker"}
           className={cn(
-            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "rounded-lg border border-solid border-[var(--semantic-border-layout,#E9EAEB)] bg-[var(--semantic-bg-primary,#FFFFFF)] shadow-lg flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
@@ -1891,7 +1973,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <button
                   type="button"
                   aria-label="Previous month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  className="p-1 rounded hover:bg-[var(--semantic-bg-hover,#D5D7DA)] text-[var(--semantic-text-secondary,#343E55)] transition-colors"
                   onClick={() =>
                     syncCalendarMonthAndValue(addMonths(visibleMonth, -1))
                   }
@@ -1952,11 +2034,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     }))}
                     onValueChange={(nextYear) => {
                       syncCalendarMonthAndValue(
-                        new Date(
-                          Number(nextYear),
-                          visibleMonth.getMonth(),
-                          1
-                        )
+                        new Date(Number(nextYear), visibleMonth.getMonth(), 1)
                       );
                     }}
                   />
@@ -1967,7 +2045,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <button
                   type="button"
                   aria-label="Next month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  className="p-1 rounded hover:bg-[var(--semantic-bg-hover,#D5D7DA)] text-[var(--semantic-text-secondary,#343E55)] transition-colors"
                   onClick={() =>
                     syncCalendarMonthAndValue(addMonths(visibleMonth, 1))
                   }
@@ -1980,7 +2058,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="mx-auto flex size-8 items-center justify-center text-xs font-semibold text-semantic-text-muted"
+                    className="mx-auto flex size-8 items-center justify-center text-xs font-semibold text-[var(--semantic-text-muted,#717680)]"
                   >
                     {day}
                   </div>
@@ -2010,13 +2088,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       className={cn(
                         "relative flex items-center justify-center size-8 mx-auto rounded-full text-xs transition-colors",
                         isSelected
-                          ? "bg-semantic-primary text-semantic-text-inverted font-semibold"
+                          ? "bg-[var(--semantic-primary,#343E55)] text-[var(--semantic-text-inverted,#FFFFFF)] font-semibold"
                           : isCurrentMonth
-                            ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
-                            : "text-semantic-text-muted hover:bg-semantic-bg-hover",
+                            ? "text-[var(--semantic-text-primary,#181D27)] hover:bg-[var(--semantic-bg-hover,#D5D7DA)]"
+                            : "text-[var(--semantic-text-muted,#717680)] hover:bg-[var(--semantic-bg-hover,#D5D7DA)]",
                         isToday &&
                           !isSelected &&
-                          "ring-1 ring-inset ring-semantic-border-secondary",
+                          "ring-1 ring-inset ring-[var(--semantic-border-secondary,#777E8D)]",
                         isDisabled &&
                           "opacity-40 cursor-not-allowed pointer-events-none"
                       )}
@@ -2040,15 +2118,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           {showTimeFields && (
             <div
               className={cn(
-                "space-y-3 bg-semantic-bg-primary p-3",
+                "space-y-3 bg-[var(--semantic-bg-primary,#FFFFFF)] p-3",
                 showCalendar &&
-                  "border-t border-solid border-semantic-border-layout"
+                  "border-t border-solid border-[var(--semantic-border-layout,#E9EAEB)]"
               )}
             >
               <TimeField
                 id={`${triggerId}-start-time`}
                 label={startTimeLabel}
-                value={currentValue.startTime}
+                value={resolvedStartTime}
                 showSeconds={resolvedShowSeconds}
                 minuteStep={minuteStep}
                 secondStep={secondStep}
@@ -2059,10 +2137,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   setOpenTimeField(nextOpen ? "start" : null)
                 }
                 onChange={(startTime) =>
-                  updateValue(
-                    { ...currentValue, startTime },
-                    { hasTimeValue: true }
-                  )
+                  updateValue({ ...currentValue, startTime })
                 }
               />
 
@@ -2070,7 +2145,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <TimeField
                   id={`${triggerId}-end-time`}
                   label={endTimeLabel}
-                  value={currentValue.endTime}
+                  value={resolvedEndTime}
                   showSeconds={resolvedShowSeconds}
                   minuteStep={minuteStep}
                   secondStep={secondStep}
@@ -2081,15 +2156,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     setOpenTimeField(nextOpen ? "end" : null)
                   }
                   onChange={(endTime) =>
-                    updateValue(
-                      { ...currentValue, endTime },
-                      { hasTimeValue: true }
-                    )
+                    updateValue({ ...currentValue, endTime })
                   }
                 />
               )}
             </div>
           )}
+
         </div>,
         portalMount
       );
@@ -2116,8 +2189,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             value={formatHiddenValue(
               currentValue,
               pickerVariant,
-              resolvedShowEndTime,
-              hasTimeValue
+              resolvedShowEndTime
             )}
           />
         )}
@@ -2125,26 +2197,26 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           <label
             htmlFor={triggerId}
             className={cn(
-              "mb-1.5 block text-sm font-semibold text-semantic-text-secondary",
+              "mb-1.5 block text-sm font-semibold text-[var(--semantic-text-secondary,#343E55)]",
               labelClassName
             )}
           >
             {label}
             {required && (
-              <span className="text-semantic-error-primary ml-0.5">*</span>
+              <span className="text-[var(--semantic-error-primary,#F04438)] ml-0.5">*</span>
             )}
           </label>
         )}
         <div
           ref={setTriggerRef}
           className={cn(
-            dateTimePickerTriggerVariants({ size, state }),
+            dateTimePickerTriggerVariants({ size, state: resolvedState }),
             open &&
-              state !== "error" &&
+              resolvedState !== "error" &&
               "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
-            !displayValue && "text-semantic-text-placeholder",
+            !displayValue && "text-[var(--semantic-text-placeholder,#A2A6B1)]",
             disabled &&
-              "cursor-not-allowed bg-semantic-bg-ui text-semantic-text-muted hover:border-semantic-border-input"
+              "cursor-not-allowed bg-[var(--semantic-bg-ui,#F5F5F5)] text-[var(--semantic-text-muted,#717680)] hover:border-[var(--semantic-border-input,#E9EAEB)]"
           )}
         >
           <input
@@ -2156,6 +2228,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             placeholder={placeholder}
             aria-haspopup="dialog"
             aria-expanded={open}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={describedBy}
             aria-label={
               pickerVariant === "date-only"
                 ? "Date"
@@ -2163,9 +2237,12 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   ? "Time"
                   : "Date and time"
             }
-            className="min-w-0 flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed read-only:cursor-not-allowed"
+            className="min-w-0 flex-1 bg-transparent text-base text-[var(--semantic-text-primary,#181D27)] outline-none placeholder:text-[var(--semantic-text-placeholder,#A2A6B1)] disabled:cursor-not-allowed read-only:cursor-not-allowed"
             onFocus={() => {
               setIsDateInputFocused(true);
+              // Drop the placeholder masks while editing so the sanitizers only
+              // ever see real date/time characters.
+              setDateInputValue(displayValue);
               setOpen(true);
             }}
             onClick={() => setOpen(true)}
@@ -2173,28 +2250,58 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             onKeyDown={handleTypedDateKeyDown}
             onBlur={handleTypedDateBlur}
           />
-          {showClear && displayValue && !disabled && !readOnly && (
-            <button
-              type="button"
-              aria-label="Clear date"
-              className="inline-flex size-5 items-center justify-center rounded text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
-              onClick={clearValue}
-            >
-              <X className="size-4" aria-hidden="true" />
-            </button>
-          )}
+          {showClear &&
+            (hasValue || dateInputValue) &&
+            !disabled &&
+            !readOnly && (
+              <button
+                type="button"
+                aria-label="Clear date"
+                className="inline-flex size-5 items-center justify-center rounded text-[var(--semantic-text-muted,#717680)] hover:bg-[var(--semantic-bg-hover,#D5D7DA)] hover:text-[var(--semantic-text-primary,#181D27)]"
+                onClick={clearValue}
+              >
+                <X className="size-4" aria-hidden="true" />
+              </button>
+            )}
           <button
             type="button"
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
-            className="inline-flex shrink-0 items-center justify-center rounded text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary disabled:cursor-not-allowed"
+            className="inline-flex shrink-0 items-center justify-center rounded text-[var(--semantic-text-muted,#717680)] hover:bg-[var(--semantic-bg-hover,#D5D7DA)] hover:text-[var(--semantic-text-primary,#181D27)] disabled:cursor-not-allowed"
             onClick={() => setOpen(!open)}
           >
-            <FigmaCalendarIcon
-              className={cn(size === "sm" ? "size-4" : "size-[18px]")}
-            />
+            {showCalendar ? (
+              <FigmaCalendarIcon
+                className={cn(size === "sm" ? "size-4" : "size-[18px]")}
+              />
+            ) : (
+              <FigmaClockIcon
+                className={cn(size === "sm" ? "size-4" : "size-[18px]")}
+              />
+            )}
           </button>
         </div>
+
+        {(error || helperText) && (
+          <div className="mt-1">
+            {error ? (
+              <span
+                id={errorId}
+                role="alert"
+                className="text-sm text-[var(--semantic-error-primary,#F04438)]"
+              >
+                {error}
+              </span>
+            ) : (
+              <span
+                id={helperId}
+                className="text-sm text-[var(--semantic-text-muted,#717680)]"
+              >
+                {helperText}
+              </span>
+            )}
+          </div>
+        )}
 
         {popover}
       </div>

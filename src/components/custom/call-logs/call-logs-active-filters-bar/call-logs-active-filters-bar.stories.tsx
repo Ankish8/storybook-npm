@@ -226,9 +226,11 @@ function InteractiveDemo() {
 
   if (chips.length === 0) {
     return (
-      <p className="m-0 text-sm text-semantic-text-muted">
-        All filters cleared.
-      </p>
+      <div className="flex min-h-[44px] items-center px-4 py-2">
+        <p className="m-0 text-sm text-semantic-text-muted">
+          All filters cleared.
+        </p>
+      </div>
     );
   }
 
