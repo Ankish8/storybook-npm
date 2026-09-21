@@ -12,11 +12,6 @@ import type { CallLogsViewTab, CallLogsViewTabsProps } from "./types";
 
 const TAB_GAP_PX = 8;
 
-const isJsdom =
-  typeof navigator !== "undefined" &&
-  typeof navigator.userAgent === "string" &&
-  navigator.userAgent.includes("jsdom");
-
 /** Shared remove (×) control — hidden until the parent tab/item is hovered or focused. */
 function RemoveTabButton({
   label,
@@ -143,6 +138,10 @@ const CallLogsViewTabs = React.forwardRef(
     const tabWidthRefs = React.useRef(new Map<string, HTMLButtonElement>());
     const moreWidthRef = React.useRef<HTMLButtonElement>(null);
     const [visibleCount, setVisibleCount] = React.useState(tabs.length);
+    // Whether the row has a real width to measure against. Drives the measuring
+    // clone: mounting it where nothing can be measured (SSR, jsdom) buys
+    // nothing and duplicates every tab label in the query tree.
+    const [canMeasure, setCanMeasure] = React.useState(false);
 
     // Ref to keep recompute stable and avoid destroying/rebuilding the observer on every render.
     const tabsRef = React.useRef(tabs);
@@ -153,6 +152,7 @@ const CallLogsViewTabs = React.forwardRef(
       if (!row || currentTabs.length === 0) return;
 
       const rowWidth = row.clientWidth;
+      setCanMeasure(rowWidth > 0);
       // Measured from a "More (N)" whose N is the total tab count — the widest
       // the trigger can ever get — so the reservation never comes up short.
       const moreWidth = moreWidthRef.current?.offsetWidth ?? 0;
@@ -216,7 +216,7 @@ const CallLogsViewTabs = React.forwardRef(
     React.useLayoutEffect(() => {
       tabsRef.current = tabs;
       recompute();
-    }, [recompute, tabs, tabsSignature]);
+    }, [recompute, tabs, tabsSignature, canMeasure]);
 
     React.useEffect(() => {
       if (typeof ResizeObserver === "undefined") return;
@@ -254,7 +254,7 @@ const CallLogsViewTabs = React.forwardRef(
         {...props}
       >
         {/* Off-screen hidden clone used for exact `offsetWidth` calculation by ResizeObserver. */}
-        {!isJsdom && (
+        {canMeasure && (
           <div
             ref={measureRowRef}
             aria-hidden="true"
