@@ -2,8 +2,16 @@ import * as React from "react";
 
 import { cn } from "../../../../lib/utils";
 import { Tag } from "../../../ui/tag";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../ui/tooltip";
-import type { CallLogsActiveFilterChip, CallLogsActiveFiltersBarProps } from "./types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../../ui/tooltip";
+import type {
+  CallLogsActiveFilterChip,
+  CallLogsActiveFiltersBarProps,
+} from "./types";
 
 function ChipTag({
   chip,
@@ -87,12 +95,12 @@ const CallLogsActiveFiltersBar = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex items-center justify-between gap-x-2 gap-y-2 border-b border-solid border-semantic-border-layout px-4 py-2",
+          "flex shrink-0 items-center justify-between gap-x-2 gap-y-2 border-b border-solid border-semantic-border-layout px-4 py-2",
           className
         )}
         {...props}
       >
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <div className="flex max-h-[76px] min-w-0 flex-1 flex-wrap items-center gap-2 overflow-y-auto overscroll-contain sm:max-h-[112px]">
           {chips.map((chip) => (
             <ChipTag key={chip.id} chip={chip} onRemoveChip={onRemoveChip} />
           ))}
