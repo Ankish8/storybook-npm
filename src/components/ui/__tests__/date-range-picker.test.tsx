@@ -508,6 +508,78 @@ describe("DateRangePicker", () => {
     expect(screen.getByText("2024")).toBeInTheDocument();
   });
 
+  it("does not render the clear button unless clearable is set", () => {
+    render(
+      <DateRangePicker
+        defaultValue={{ start: new Date(2026, 4, 26), end: new Date(2026, 5, 26) }}
+      />
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Clear date range" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides the clear button while no range is selected", () => {
+    render(<DateRangePicker clearable />);
+
+    expect(
+      screen.queryByRole("button", { name: "Clear date range" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("clears the range and fires onValueChange/onClear", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const onClear = vi.fn();
+    render(
+      <DateRangePicker
+        clearable
+        onClear={onClear}
+        onValueChange={onValueChange}
+        defaultValue={{ start: new Date(2026, 4, 26), end: new Date(2026, 5, 26) }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Clear date range" }));
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: undefined,
+      end: undefined,
+    });
+    expect(onClear).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: /Date Range/ })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Clear date range" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not open the calendar when the clear button is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateRangePicker
+        clearable
+        defaultValue={{ start: new Date(2026, 4, 26), end: new Date(2026, 5, 26) }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Clear date range" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("supports a custom clear label", () => {
+    render(
+      <DateRangePicker
+        clearable
+        clearLabel="Reset dates"
+        defaultValue={{ start: new Date(2026, 4, 26), end: new Date(2026, 5, 26) }}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Reset dates" })).toBeInTheDocument();
+  });
+
   it("has no Bootstrap margin bleed on <p> elements", () => {
     const { container } = render(<DateRangePicker />);
 

@@ -146,6 +146,11 @@ import { DateRangePicker } from "@/components/ui/date-range-picker"
       control: "text",
       description: "Trigger text shown when no range is selected",
     },
+    clearable: {
+      control: "boolean",
+      description:
+        "Shows a clear (x) button inside the trigger once a range is selected",
+    },
   },
 };
 
@@ -265,6 +270,24 @@ export const Responsive: Story = {
           "Below the `sm` breakpoint the presets move above the calendar as a horizontally scrollable row, and day cells grow to a 36px touch target. Resize the preview or switch viewports to compare against the desktop two-column layout.",
       },
     },
+  },
+};
+
+export const Clearable: Story = {
+  name: "Clearable",
+  args: {
+    clearable: true,
+    defaultValue: {
+      start: new Date(2026, 4, 26),
+      end: new Date(2026, 5, 26),
+    },
+  },
+};
+
+export const ClearableEmpty: Story = {
+  name: "Clearable (no selection)",
+  args: {
+    clearable: true,
   },
 };
 

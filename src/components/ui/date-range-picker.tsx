@@ -11,7 +11,7 @@ import {
   type Strategy,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -117,6 +117,12 @@ export interface DateRangePickerProps
   triggerClassName?: string;
   /** Additional className merged onto the trigger's label span — e.g. `"hidden sm:inline"` to collapse to an icon-only button below a breakpoint */
   triggerLabelClassName?: string;
+  /** Show a clear (x) button in the trigger once a range is selected. */
+  clearable?: boolean;
+  /** Called after the range is cleared. Fires alongside `onValueChange({})`. */
+  onClear?: () => void;
+  /** Accessible label for the clear button. Defaults to "Clear date range". */
+  clearLabel?: string;
 }
 
 function normalizeValue(value?: DateRangeValue): DateRangeValue {
@@ -330,6 +336,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       formatRange,
       triggerClassName,
       triggerLabelClassName,
+      clearable = false,
+      onClear,
+      clearLabel = "Clear date range",
       id,
       ...props
     },
@@ -409,6 +418,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       [visibleMonth]
     );
     const displayValue = (formatRange ?? defaultFormatRange)(currentValue);
+    const showClear = clearable && !disabled && Boolean(displayValue);
     const effectiveMinDate = React.useMemo(() => {
       if (!disablePastDates) return minDate;
 
@@ -540,6 +550,20 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       if (!range) return;
 
       commitValue(range);
+      setOpen(false);
+      triggerRef.current?.focus();
+    };
+
+    const handleClear = (event: React.MouseEvent<HTMLButtonElement>) => {
+      // The clear button sits on top of the trigger; without this the click
+      // bubbles to the wrapper and the calendar pops open on clear.
+      event.stopPropagation();
+
+      const cleared: DateRangeValue = { start: undefined, end: undefined };
+      setDraftValue(cleared);
+      setPendingEnd(false);
+      commitValue(cleared);
+      onClear?.();
       setOpen(false);
       triggerRef.current?.focus();
     };
@@ -870,6 +894,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
               state !== "error" &&
               "border-semantic-border-input-focus/50 shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
             !displayValue && "text-semantic-text-placeholder",
+            showClear && "pr-9",
             triggerClassName
           )}
           onClick={() => setOpen(!open)}
@@ -885,6 +910,17 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             {displayValue || placeholder}
           </span>
         </button>
+
+        {showClear && (
+          <button
+            type="button"
+            aria-label={clearLabel}
+            className="absolute right-3 top-1/2 flex size-4 -translate-y-1/2 items-center justify-center rounded-sm text-semantic-text-secondary outline-none transition-colors hover:text-semantic-text-primary focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
+            onClick={handleClear}
+          >
+            <X className="size-4" />
+          </button>
+        )}
 
         {popover}
       </div>
