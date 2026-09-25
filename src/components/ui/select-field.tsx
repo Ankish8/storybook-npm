@@ -131,6 +131,14 @@ export interface SelectFieldProps {
    * presentation only.
    */
   truncateOptionText?: boolean;
+  /**
+   * Content shown inside the open dropdown when `options` is empty (and no
+   * search query is active — that case shows "No results found"). Use it to
+   * tell the user why the list is empty and what to do next, e.g.
+   * "No AI Agents yet. Build one in AI Agents first."
+   * Default: "No options available".
+   */
+  emptyMessage?: React.ReactNode;
 }
 
 /**
@@ -209,6 +217,7 @@ const SelectField = React.forwardRef(
       loadingMore,
       hasMore,
       truncateOptionText,
+      emptyMessage = "No options available",
     }: SelectFieldProps,
     ref: React.Ref<HTMLButtonElement>
   ) => {
@@ -488,6 +497,16 @@ const SelectField = React.forwardRef(
             {searchable && effectiveSearchQuery && totalRendered === 0 && (
               <div className="py-6 text-center text-sm text-semantic-text-muted">
                 No results found
+              </div>
+            )}
+
+            {/* Empty state — no options at all and nothing being searched/loaded. */}
+            {options.length === 0 && !effectiveSearchQuery && !loadingMore && (
+              <div
+                role="status"
+                className="px-3 py-6 text-center text-sm text-semantic-text-muted"
+              >
+                {emptyMessage}
               </div>
             )}
 

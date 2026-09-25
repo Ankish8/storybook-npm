@@ -306,6 +306,14 @@ passed to \`onSelect\` are always the full, unclipped values.
         defaultValue: { summary: "false" },
       },
     },
+    emptyMessage: {
+      control: "text",
+      description: "Content shown in the dropdown when options is empty",
+      table: {
+        type: { summary: "ReactNode" },
+        defaultValue: { summary: '"No options available"' },
+      },
+    },
     searchPlaceholder: {
       control: "text",
       description: "Search input placeholder text",
@@ -509,6 +517,29 @@ export const Searchable: Story = {
       />
     </div>
   ),
+};
+
+// Empty state — shown when `options` is empty
+export const EmptyState: Story = {
+  args: {
+    label: "AI Agent",
+    placeholder: "Select an AI Agent",
+    options: [],
+    emptyMessage: "No AI Agents yet. Build one in AI Agents first.",
+  },
+  render: (args) => (
+    <div className="w-80">
+      <SelectField {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When `options` is empty, the open dropdown shows `emptyMessage` (default: \"No options available\") instead of a blank list.",
+      },
+    },
+  },
 };
 
 // Searchable with Groups — inline search + grouped options (e.g., Bots & Agents)

@@ -340,6 +340,40 @@ describe("SelectField", () => {
     expect(screen.getByText("No results found")).toBeInTheDocument();
   });
 
+  it("shows default empty message when options is empty", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={[]} />);
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(screen.getByText("No options available")).toBeInTheDocument();
+  });
+
+  it("shows custom emptyMessage when options is empty", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        options={[]}
+        emptyMessage="No AI Agents yet. Build one in AI Agents first."
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(
+      screen.getByText("No AI Agents yet. Build one in AI Agents first.")
+    ).toBeInTheDocument();
+  });
+
+  it("does not show empty message when options exist", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(screen.queryByText("No options available")).not.toBeInTheDocument();
+  });
+
   it("fires onSearchChange on every keystroke in uncontrolled mode", async () => {
     const user = userEvent.setup();
     const onSearchChange = vi.fn();
