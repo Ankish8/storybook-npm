@@ -329,6 +329,9 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+    internalDependencies:
+      - select
+      - input
 
   multi-select:
     description: "A multi-select dropdown component with search, badges, and async loading"

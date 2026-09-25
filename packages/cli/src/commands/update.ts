@@ -212,6 +212,25 @@ export async function update(components: string[], options: UpdateOptions) {
     console.log(chalk.yellow(`\n  Components not installed (use 'add' instead): ${notInstalled.join(', ')}`))
   }
 
+  // Pull in internal dependencies (recursively) so a component is never
+  // written against a stale copy of a sibling it imports — e.g. updating
+  // select-field alone would leave an old select.tsx that lacks props the
+  // new select-field passes to it.
+  const addedDeps: string[] = []
+  const collectDeps = (name: string) => {
+    for (const dep of registry[name]?.internalDependencies ?? []) {
+      if (!registry[dep] || toUpdate.includes(dep)) continue
+      toUpdate.push(dep)
+      addedDeps.push(dep)
+      collectDeps(dep)
+    }
+  }
+  for (const name of [...toUpdate]) collectDeps(name)
+
+  if (addedDeps.length > 0) {
+    console.log(chalk.blue(`\n  Also updating internal dependencies: ${addedDeps.join(', ')}`))
+  }
+
   if (toUpdate.length === 0) {
     console.log(chalk.yellow('\n  No installed components to update.\n'))
     process.exit(0)
