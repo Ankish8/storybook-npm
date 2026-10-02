@@ -385,6 +385,7 @@ const MultiSelect = React.forwardRef(
       open: isOpen,
       placement: "bottom-start",
       strategy: "fixed",
+      transform: false,
       middleware: [
         offset(4),
         flip({ padding: 8 }),
@@ -896,7 +897,7 @@ const MultiSelect = React.forwardRef(
                           );
                         }
                       }}
-                      className="shrink-0 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                      className="shrink-0 cursor-pointer transition-colors duration-150 hover:text-semantic-error-primary focus:outline-none"
                       aria-label={`Remove ${label}`}
                     >
                       <X className="size-3" />
@@ -918,7 +919,7 @@ const MultiSelect = React.forwardRef(
                       clearAll(e as unknown as React.MouseEvent);
                     }
                   }}
-                  className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                  className="p-0.5 cursor-pointer transition-colors duration-150 hover:text-semantic-error-primary focus:outline-none"
                   aria-label="Clear all"
                 >
                   <X className="size-4 text-[var(--v2-text-muted,#707070)]" />
@@ -950,7 +951,7 @@ const MultiSelect = React.forwardRef(
                 <div
                   id={errorId}
                   role="alert"
-                  className="flex items-center gap-1.5 min-w-0"
+                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-1"
                 >
                   <CircleAlert
                     className="size-3.5 shrink-0 text-semantic-error-primary"
@@ -980,7 +981,7 @@ const MultiSelect = React.forwardRef(
                   id={listboxId}
                   role="listbox"
                   aria-multiselectable="true"
-                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md"
+                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left"
                   style={{
                     ...floatingStyles,
                     zIndex: 10050,

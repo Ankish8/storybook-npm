@@ -104,7 +104,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
       >
         <div
           className={cn(
-            "flex h-10 min-w-0 flex-1 items-center rounded-lg border border-solid border-semantic-border-layout overflow-hidden",
+            "flex h-10 min-w-0 flex-1 items-center rounded-lg border border-solid border-semantic-border-layout overflow-hidden transition-[border-color,box-shadow] duration-150",
             !disabled &&
               "group-hover:[&:not(:focus-within)]:border-[var(--color-primary-100)] group-focus-within:border-semantic-border-accent group-focus-within:shadow-[0_0_4px_rgba(39,171,184,0.4)]"
           )}
@@ -131,7 +131,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerDown={handleStepperPointerDown}
               onClick={stepUp}
               aria-label={incrementAriaLabel ?? "Increase value"}
-              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] duration-150 active:scale-90 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronUp className="size-3" />
             </button>
@@ -141,7 +141,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerDown={handleStepperPointerDown}
               onClick={stepDown}
               aria-label={decrementAriaLabel ?? "Decrease value"}
-              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] duration-150 active:scale-90 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronDown className="size-3" />
             </button>

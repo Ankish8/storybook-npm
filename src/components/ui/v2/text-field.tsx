@@ -394,7 +394,7 @@ const TextField = React.forwardRef(
               <button
                 type="button"
                 onClick={handleClear}
-                className="ml-2 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] flex-shrink-0 cursor-pointer"
+                className="ml-2 transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] flex-shrink-0 cursor-pointer"
                 aria-label="Clear input"
                 tabIndex={-1}
               >
@@ -417,7 +417,7 @@ const TextField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text"
+                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
               >
                 {error}
               </span>

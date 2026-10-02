@@ -105,8 +105,9 @@ const Tag = React.forwardRef(
           <button
             type="button"
             className={cn(
-              "inline-flex items-center justify-center shrink-0 bg-transparent border-none p-0 cursor-pointer",
-              removeDisabled && "cursor-not-allowed opacity-50"
+              "inline-flex items-center justify-center shrink-0 bg-transparent border-none p-0 cursor-pointer transition-transform duration-150 ease-out hover:scale-110 active:scale-90 motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
+              removeDisabled &&
+                "cursor-not-allowed opacity-50 hover:scale-100 active:scale-100"
             )}
             onClick={onRemove}
             disabled={removeDisabled}

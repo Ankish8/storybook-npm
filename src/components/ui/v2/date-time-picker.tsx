@@ -1157,7 +1157,7 @@ function CalendarDropdown({
             role="listbox"
             aria-label={`${label} options`}
             data-dtp-dropdown=""
-            className="flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+            className="motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
             style={{
               ...floatingStyles,
               width: `var(${DROPDOWN_WIDTH_VAR}, auto)`,
@@ -1374,6 +1374,7 @@ function TimeField({
             aria-label={`${label} options`}
             data-dtp-dropdown=""
             className={cn(
+              "motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left",
               "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg",
               showSeconds ? "grid-cols-4" : "grid-cols-3"
             )}
@@ -1954,6 +1955,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           }
           aria-label={showCalendar ? undefined : "Time picker"}
           className={cn(
+            "motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left",
             "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
@@ -2263,7 +2265,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <button
                 type="button"
                 aria-label="Clear date"
-                className="inline-flex size-5 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
+                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
                 onClick={clearValue}
               >
                 <X className="size-4" aria-hidden="true" />
@@ -2273,7 +2275,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             type="button"
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
-            className="inline-flex shrink-0 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
+            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
             onClick={() => setOpen(!open)}
           >
             {showCalendar ? (
@@ -2294,7 +2296,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <span
                 id={errorId}
                 role="alert"
-                className="text-xs text-semantic-error-text"
+                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
               >
                 {error}
               </span>

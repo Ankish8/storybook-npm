@@ -7,27 +7,30 @@ import { cn } from "@/lib/utils";
  * Spinner variants for loading indicators.
  * Uses semantic color tokens for consistent theming.
  */
-const spinnerVariants = cva("animate-spin motion-reduce:animate-none", {
-  variants: {
-    size: {
-      sm: "size-4",
-      default: "size-6",
-      lg: "size-8",
-      xl: "size-12",
+const spinnerVariants = cva(
+  "animate-spin motion-reduce:[animation-duration:2s]",
+  {
+    variants: {
+      size: {
+        sm: "size-4",
+        default: "size-6",
+        lg: "size-8",
+        xl: "size-12",
+      },
+      variant: {
+        default: "text-semantic-primary",
+        secondary: "text-[var(--v2-text-secondary,#5E5E5E)]",
+        muted: "text-[var(--v2-text-muted,#707070)]",
+        inverted: "text-semantic-text-inverted",
+        current: "text-current",
+      },
     },
-    variant: {
-      default: "text-semantic-primary",
-      secondary: "text-[var(--v2-text-secondary,#5E5E5E)]",
-      muted: "text-[var(--v2-text-muted,#707070)]",
-      inverted: "text-semantic-text-inverted",
-      current: "text-current",
+    defaultVariants: {
+      size: "default",
+      variant: "default",
     },
-  },
-  defaultVariants: {
-    size: "default",
-    variant: "default",
-  },
-});
+  }
+);
 
 /**
  * SVG stroke widths that decrease as size increases for visual balance.

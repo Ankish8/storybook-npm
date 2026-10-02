@@ -141,10 +141,10 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           aria-describedby={id + "-helper"}
           onClick={() => input.current?.click()}
           className={cn(
-            "flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-semantic-border-layout bg-semantic-bg-primary p-6 text-center transition-colors hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)]",
+            "flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-semantic-border-layout bg-semantic-bg-primary p-6 text-center transition-[background-color,border-color,transform] duration-150 ease-out hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)]",
             dragging &&
               !disabled &&
-              "border-semantic-border-accent bg-semantic-brand-surface",
+              "border-semantic-border-accent bg-semantic-brand-surface motion-safe:scale-[1.01]",
             (error || message) && "border-semantic-error-primary"
           )}
         >
@@ -183,7 +183,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             {files.map((file, index) => (
               <li
                 key={file.name + file.size + index}
-                className="flex min-w-0 items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3"
+                className="flex min-w-0 items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 motion-safe:animate-in fade-in-0 slide-in-from-top-1"
               >
                 <FileText
                   aria-hidden="true"

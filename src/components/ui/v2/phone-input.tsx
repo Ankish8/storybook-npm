@@ -214,7 +214,10 @@ const PhoneInput = React.forwardRef(
     return (
       <div className="flex flex-col gap-1.5">
         {phoneInput}
-        <p id={validationId} className="m-0 text-xs text-semantic-error-text">
+        <p
+          id={validationId}
+          className="m-0 text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+        >
           {validation}
         </p>
       </div>

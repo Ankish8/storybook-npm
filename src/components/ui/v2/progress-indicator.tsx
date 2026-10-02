@@ -102,7 +102,7 @@ const ProgressIndicator = React.forwardRef<
                     strokeDashoffset={length * (1 - percentage / 100)}
                     className={
                       indeterminate
-                        ? "origin-center animate-spin motion-reduce:animate-none"
+                        ? "origin-center animate-spin motion-reduce:[animation-duration:2s]"
                         : undefined
                     }
                   />

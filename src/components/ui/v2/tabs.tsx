@@ -81,6 +81,7 @@ const TabsContent = React.forwardRef(
       ref={ref}
       className={cn(
         "mt-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline-none",
+        "data-[state=active]:motion-safe:animate-in data-[state=active]:fade-in-0",
         className
       )}
       {...props}

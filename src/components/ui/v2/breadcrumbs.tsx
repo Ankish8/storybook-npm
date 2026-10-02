@@ -119,7 +119,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
                     href={items[index].href || "#"}
                     className={cn(
                       labelClass,
-                      "hover:bg-semantic-bg-ui hover:underline focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-semantic-primary focus-visible:outline-offset-[-2px]"
+                      "transition-colors duration-150 hover:bg-semantic-bg-ui hover:underline focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-semantic-primary focus-visible:outline-offset-[-2px]"
                     )}
                     onClick={(event) =>
                       onNavigate?.(items[index], index, event)

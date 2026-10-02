@@ -572,7 +572,7 @@ const CreatableMultiSelect = React.forwardRef(
 
           {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above. */}
           {isOpen && (
-            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm motion-safe:animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
               {createHintText ? (
                 <div className={creatablePrimaryRoleHintRowClassName}>
                   <span className="text-sm text-[var(--v2-text-muted,#707070)]">

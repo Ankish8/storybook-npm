@@ -285,7 +285,7 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
             <div
-              className="h-4 bg-semantic-bg-grey rounded animate-pulse"
+              className="h-4 bg-semantic-bg-grey rounded animate-pulse motion-reduce:animate-none"
               style={{
                 width: colIndex === 1 ? "80%" : colIndex === 2 ? "30%" : "60%",
               }}

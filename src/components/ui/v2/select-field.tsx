@@ -546,7 +546,10 @@ const SelectField = React.forwardRef(
         {(error || helperText) && (
           <div className="flex justify-between items-start gap-2">
             {error ? (
-              <span id={errorId} className="text-xs text-semantic-error-text">
+              <span
+                id={errorId}
+                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+              >
                 {error}
               </span>
             ) : helperText ? (

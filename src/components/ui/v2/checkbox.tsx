@@ -118,7 +118,7 @@ const Checkbox = React.forwardRef(
         )}
         {...props}
       >
-        <CheckboxPrimitive.Indicator className="flex items-center justify-center">
+        <CheckboxPrimitive.Indicator className="flex items-center justify-center data-[state=checked]:motion-safe:animate-in data-[state=checked]:fade-in-0 data-[state=checked]:zoom-in-50 data-[state=indeterminate]:motion-safe:animate-in data-[state=indeterminate]:fade-in-0 data-[state=indeterminate]:zoom-in-50 data-[state=unchecked]:motion-safe:animate-out data-[state=unchecked]:fade-out-0 data-[state=unchecked]:zoom-out-50">
           {props.checked === "indeterminate" ? (
             <Minus className={cn(iconSizeVariants({ size }), "stroke-[3]")} />
           ) : (

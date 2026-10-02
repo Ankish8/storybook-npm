@@ -2283,6 +2283,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-switch:
     description: "Boolean toggle (v2 design); same API as switch"
@@ -2305,6 +2306,7 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-text-field:
     description: "V2 labelled input with icons, prefixes and validation"
@@ -2316,6 +2318,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-select:
     description: "V2 Radix select with current keyboard and scroll behavior"
@@ -2339,6 +2342,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
     internalDependencies:
       - v2-input
       - v2-select
@@ -2354,6 +2358,7 @@ components:
       - "react-country-flag@^3.1.0"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-multi-select:
     description: "V2 multiselect with current search and selection behavior"
@@ -2366,6 +2371,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
     internalDependencies:
       - v2-checkbox
       - v2-tooltip
@@ -2480,6 +2486,7 @@ components:
       - "@radix-ui/react-tabs"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-table:
     description: "Table (v2 design); same API as table"
@@ -2581,6 +2588,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-skeleton:
     description: "Skeleton (v2 design); same API as skeleton"
@@ -2687,6 +2695,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
     internalDependencies:
       - v2-dropdown-menu
 
@@ -2701,6 +2710,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-stepper:
     description: "Step progress with numbered or icon markers"
@@ -2760,6 +2770,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
     internalDependencies:
       - v2-input
 
@@ -2849,5 +2860,6 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
     internalDependencies:
       - v2-button

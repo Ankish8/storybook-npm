@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
  * kept. `[outline-width:1px]` is immune to both, so the ring is identical.
  */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] transition-[background-color,border-color,box-shadow,color,opacity] duration-200 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] transition-[background-color,border-color,box-shadow,color,opacity,transform] duration-150 ease-out active:scale-[0.98] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -41,7 +41,7 @@ const buttonVariants = cva(
           "font-medium bg-semantic-info-surface text-[var(--v2-text-secondary,#5E5E5E)] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)] hover:shadow-none active:bg-[linear-gradient(270deg,var(--semantic-primary-surface,#EBECEE)_0%,var(--semantic-info-surface,#ECF1FB)_100%)] active:shadow-none disabled:bg-semantic-primary-surface disabled:text-[var(--v2-text-muted,#707070)] disabled:shadow-none aria-busy:bg-semantic-bg-ui aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
         ghost:
           "font-medium bg-transparent text-semantic-text-link hover:bg-semantic-bg-ui active:bg-[linear-gradient(270deg,var(--semantic-border-layout,#E9EAEB)_0%,var(--semantic-bg-ui,#F5F5F5)_100%)] disabled:text-semantic-disabled-primary aria-busy:text-semantic-text-link",
-        link: "font-medium text-[var(--v2-text-secondary,#5E5E5E)] underline-offset-4 hover:underline disabled:text-semantic-disabled-primary aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
+        link: "font-medium active:scale-100 text-[var(--v2-text-secondary,#5E5E5E)] underline-offset-4 hover:underline disabled:text-semantic-disabled-primary aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
         dashed:
           "font-medium border border-dashed border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-muted,#707070)] hover:border-[var(--color-primary-100,#C0C3CA)] hover:bg-semantic-bg-ui active:border-[var(--color-primary-100,#C0C3CA)] active:bg-[linear-gradient(270deg,var(--semantic-border-layout,#E9EAEB)_0%,var(--semantic-bg-ui,#F5F5F5)_100%)] disabled:opacity-50 aria-busy:opacity-100",
       },
@@ -49,9 +49,9 @@ const buttonVariants = cva(
         default: "h-10 px-4 [&_svg]:size-[18px]",
         sm: "h-8 px-4 text-xs leading-4 tracking-[0.06px] [&_svg]:size-[18px]",
         lg: "h-12 px-4 [&_svg]:size-[18px]",
-        icon: "h-10 w-10 p-0 [&_svg]:size-[18px]",
-        "icon-sm": "h-8 w-8 p-0 [&_svg]:size-[18px]",
-        "icon-lg": "h-12 w-12 p-0 [&_svg]:size-[18px]",
+        icon: "h-10 w-10 p-0 active:scale-95 [&_svg]:size-[18px]",
+        "icon-sm": "h-8 w-8 p-0 active:scale-95 [&_svg]:size-[18px]",
+        "icon-lg": "h-12 w-12 p-0 active:scale-95 [&_svg]:size-[18px]",
       },
     },
     defaultVariants: {
@@ -116,7 +116,7 @@ const Button = React.forwardRef(
       >
         {loading ? (
           <>
-            <Loader2 className="animate-spin" />
+            <Loader2 className="animate-spin motion-reduce:[animation-duration:2s]" />
             {loadingText || children}
           </>
         ) : (

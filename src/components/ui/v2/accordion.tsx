@@ -60,7 +60,7 @@ const accordionTriggerVariants = cva(
  * Accordion content variants
  */
 const accordionContentVariants = cva(
-  "overflow-hidden text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-all duration-300 ease-in-out",
+  "overflow-hidden text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-[height,opacity] duration-200 ease-out motion-reduce:transition-none aria-hidden:opacity-0",
   {
     variants: {
       variant: {
@@ -294,7 +294,7 @@ const AccordionTrigger = React.forwardRef(
         {showChevron && (
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-[var(--v2-text-primary,#484848)] transition-transform duration-300",
+              "h-4 w-4 shrink-0 text-[var(--v2-text-primary,#484848)] transition-transform duration-200 ease-out motion-reduce:transition-none",
               isOpen && "rotate-180"
             )}
           />

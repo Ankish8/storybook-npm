@@ -171,7 +171,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={toggleVisibility}
-                className="text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
+                className="transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
                 aria-label={isVisible ? "Hide value" : "Show value"}
               >
                 {isVisible ? (
@@ -195,7 +195,7 @@ export const ReadableField = React.forwardRef(
               aria-label={copied ? "Copied" : "Copy to clipboard"}
             >
               {copied ? (
-                <Check className="size-[18px]" />
+                <Check className="size-[18px] motion-safe:animate-in fade-in-0 zoom-in-50" />
               ) : (
                 <Copy className="size-[18px]" />
               )}
