@@ -10,7 +10,7 @@ import { Button } from "./button";
  * Panel root variants
  */
 const panelVariants = cva(
-  "border-l-[1.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-all duration-300 ease-in-out shrink-0",
+  "border-l-[1.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-all duration-300 ease-in-out shrink-0",
   {
     variants: {
       size: {
@@ -117,7 +117,7 @@ const Panel = React.forwardRef(
           {header ?? (
             <div className="flex items-center gap-3 px-4 h-14 border-b border-solid border-semantic-border-layout shrink-0">
               {title && (
-                <span className="flex-1 text-base font-medium text-semantic-text-primary truncate">
+                <span className="flex-1 text-base font-medium text-[var(--v2-text-primary,#484848)] truncate">
                   {title}
                 </span>
               )}

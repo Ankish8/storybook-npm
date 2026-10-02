@@ -177,11 +177,11 @@ const PhoneInput = React.forwardRef(
               aria-label={countryIso}
             />
           )}
-          <span className="text-base text-semantic-text-secondary">
+          <span className="text-base text-[var(--v2-text-secondary,#5E5E5E)]">
             {countryCode}
           </span>
           {showChevron && (
-            <ChevronDown className="size-3 text-semantic-text-muted" />
+            <ChevronDown className="size-3 text-[var(--v2-text-muted,#707070)]" />
           )}
         </CountryArea>
         <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
@@ -196,7 +196,7 @@ const PhoneInput = React.forwardRef(
           aria-invalid={ariaInvalid ?? derivedState === "error"}
           aria-describedby={describedBy || undefined}
           className={cn(
-            "min-w-0 flex-1 h-full pl-2 pr-4 text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder outline-none bg-transparent disabled:cursor-not-allowed",
+            "min-w-0 flex-1 h-full pl-2 pr-4 text-base text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] outline-none bg-transparent disabled:cursor-not-allowed",
             className
           )}
           onBeforeInput={handleBeforeInput}

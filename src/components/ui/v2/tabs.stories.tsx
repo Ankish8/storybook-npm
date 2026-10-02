@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import * as V2 from "./tabs";
 import * as V1 from "../tabs";
 import { Badge as BadgeV1 } from "../badge";
@@ -96,17 +103,35 @@ function TabsExample({
           value={option.value}
           className="min-w-0 flex-1 rounded-lg border border-semantic-border-layout p-4"
         >
-          <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+          <h3
+            className={
+              version === "v1"
+                ? "m-0 text-base font-semibold text-semantic-text-primary"
+                : "m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]"
+            }
+          >
             {args.panelTitle} · {option.label}
           </h3>
-          <p className="m-0 mt-2 text-sm text-semantic-text-secondary">
+          <p
+            className={
+              version === "v1"
+                ? "m-0 mt-2 text-sm text-semantic-text-secondary"
+                : "m-0 mt-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+            }
+          >
             {option.value === "open"
               ? "Conversations waiting for a reply."
               : option.value === "assigned"
                 ? "Conversations assigned to a teammate."
                 : "Conversations already resolved."}
           </p>
-          <p className="m-0 mt-4 text-xs text-semantic-text-muted">
+          <p
+            className={
+              version === "v1"
+                ? "m-0 mt-4 text-xs text-semantic-text-muted"
+                : "m-0 mt-4 text-xs text-[var(--v2-text-muted,#707070)]"
+            }
+          >
             Use arrow keys to move between tabs.{" "}
             {args.activationMode === "manual"
               ? "Press Enter or Space to activate a focused tab."
@@ -153,8 +178,8 @@ const meta: Meta<ExampleArgs> = {
           changes: [
             [
               "Typography",
-              "Inherited semibold text",
-              "Inter 14/20 semibold, 0.014px spacing",
+              "Inherited medium text",
+              "Inter 14/20 medium labels; color and indicator show selection; 0.014px spacing",
             ],
             [
               "Horizontal tab",
@@ -198,7 +223,10 @@ const meta: Meta<ExampleArgs> = {
               "#EBECEE",
             ],
             ["Divider", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Font", "--font-v2", "Inter 14 / 600"],
+            ["Font", "--font-v2", "Inter 14 / 500 selected and inactive"],
+            ["Selected label", "--v2-text-primary", "#484848", "#484848"],
+            ["Inactive label", "--v2-text-muted", "#707070", "#707070"],
+            ["Panel body / count", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
           ],
           guidance:
             "Match each trigger value to its content. Set orientation on Tabs; vertical styles then follow automatically. Use activationMode=manual when focusing a tab should not load its panel immediately. fullWidth belongs to TabsList. Disabled and count controls below configure the composed example, not the Tabs root API.",
@@ -313,7 +341,7 @@ function GalleryCard({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       {children}
@@ -472,10 +500,10 @@ function InboxExample({
   const visible = items.filter((item) => item.status === args.value);
   return (
     <div className="max-w-[800px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {args.panelTitle}
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
         A local inbox example. Resolve an open item to move it into the Resolved
         tab.
       </p>
@@ -521,7 +549,7 @@ function InboxExample({
             {args.value === option.value && (
               <div className="flex flex-col gap-2">
                 {visible.length === 0 ? (
-                  <p className="m-0 p-4 text-sm text-semantic-text-muted">
+                  <p className="m-0 p-4 text-sm text-[var(--v2-text-muted,#707070)]">
                     No conversations in this tab.
                   </p>
                 ) : (
@@ -530,7 +558,7 @@ function InboxExample({
                       key={item.id}
                       className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-semantic-bg-ui p-4"
                     >
-                      <span className="text-sm text-semantic-text-primary">
+                      <span className="text-sm text-[var(--v2-text-primary,#484848)]">
                         {item.title}
                       </span>
                       {item.status !== "resolved" && (
@@ -576,5 +604,79 @@ export const Usage: Story = {
         updateValue={(value) => updateArgs({ value })}
       />
     );
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: { secondDisabled: true },
+  parameters: {
+    // The meta render writes the selection back through useArgs; every one of those re-renders would
+    // otherwise restore the action spy and wipe its call history mid-play.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Tabs into the list, walks it with Arrow, Home and End, then clicks a tab and tries the disabled one. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const open = canvas.getByRole("tab", { name: "Open" });
+    const assigned = canvas.getByRole("tab", { name: "Assigned" });
+    const resolved = canvas.getByRole("tab", { name: "Resolved" });
+
+    await step("Tab enters the list on the selected tab only", async () => {
+      await userEvent.tab();
+      await expect(open).toHaveFocus();
+      await expect(open).toHaveAttribute("aria-selected", "true");
+      await expect(resolved).toHaveAttribute("tabindex", "-1");
+    });
+
+    await step(
+      "Arrow keys move focus, select, and skip the disabled tab",
+      async () => {
+        await userEvent.keyboard("{ArrowRight}");
+        await waitFor(() => expect(resolved).toHaveFocus());
+        await waitFor(() =>
+          expect(resolved).toHaveAttribute("aria-selected", "true")
+        );
+        await userEvent.keyboard("{ArrowRight}");
+        await waitFor(() => expect(open).toHaveFocus());
+        await userEvent.keyboard("{ArrowLeft}");
+        await waitFor(() => expect(resolved).toHaveFocus());
+        await expect(args.onValueChange).toHaveBeenLastCalledWith("resolved");
+      }
+    );
+
+    await step("Home and End jump to the first and last tab", async () => {
+      await userEvent.keyboard("{Home}");
+      await waitFor(() => expect(open).toHaveFocus());
+      await userEvent.keyboard("{End}");
+      await waitFor(() => expect(resolved).toHaveFocus());
+      await expect(resolved).toHaveAttribute("aria-selected", "true");
+    });
+
+    await step("A click selects a tab and shows its panel", async () => {
+      await userEvent.click(open);
+      await waitFor(() =>
+        expect(open).toHaveAttribute("aria-selected", "true")
+      );
+      await expect(args.onValueChange).toHaveBeenLastCalledWith("open");
+      await expect(canvas.getByRole("tabpanel")).toHaveTextContent(
+        "Inbox · Open"
+      );
+    });
+
+    await step("A disabled tab cannot be selected", async () => {
+      await expect(assigned).toBeDisabled();
+      await userEvent.click(assigned, { pointerEventsCheck: 0 });
+      await expect(assigned).toHaveAttribute("aria-selected", "false");
+      await expect(args.onValueChange).not.toHaveBeenCalledWith("assigned");
+      await expect(open).toHaveAttribute("aria-selected", "true");
+    });
   },
 };

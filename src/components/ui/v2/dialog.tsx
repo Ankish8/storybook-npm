@@ -34,7 +34,7 @@ const DialogOverlay = React.forwardRef(
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const dialogContentVariants = cva(
-  "fixed left-[50%] top-[50%] z-[9999] flex flex-col translate-x-[-50%] translate-y-[-50%] gap-0 border-[1.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary p-0 font-[family-name:var(--font-v2,Inter,sans-serif)] shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] duration-200 max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-xl",
+  "fixed left-[50%] top-[50%] z-[9999] flex flex-col translate-x-[-50%] translate-y-[-50%] gap-0 border-[1.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary p-0 text-[var(--v2-text-secondary,#5E5E5E)] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] duration-200 max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-xl",
   {
     variants: {
       size: {
@@ -108,7 +108,7 @@ const DialogContent = React.forwardRef(
             </DialogPrimitive.Description>
           )}
           {!hideCloseButton && (
-            <DialogPrimitive.Close className="absolute right-6 top-6 flex size-6 items-center justify-center rounded-md text-semantic-text-muted transition-colors hover:bg-semantic-bg-ui hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--semantic-primary,#343E55)] disabled:pointer-events-none">
+            <DialogPrimitive.Close className="absolute right-6 top-6 flex size-6 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors hover:bg-semantic-bg-ui hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--semantic-primary,#343E55)] disabled:pointer-events-none">
               <X className="size-3" />
               <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
@@ -159,7 +159,7 @@ const DialogTitle = React.forwardRef(
     <DialogPrimitive.Title
       ref={ref}
       className={cn(
-        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-normal text-semantic-text-primary",
+        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-normal text-[var(--v2-text-primary,#484848)]",
         className
       )}
       {...props}
@@ -179,7 +179,7 @@ const DialogDescription = React.forwardRef(
     <DialogPrimitive.Description
       ref={ref}
       className={cn(
-        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-text-muted",
+        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-[var(--v2-text-muted,#707070)]",
         className
       )}
       {...props}

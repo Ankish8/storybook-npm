@@ -144,7 +144,7 @@ const DeleteConfirmationModal = React.forwardRef(
               <button
                 type="button"
                 aria-label="Close"
-                className="flex size-6 shrink-0 items-center justify-center rounded-md text-semantic-text-muted transition-colors hover:bg-semantic-bg-ui hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+                className="flex size-6 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors hover:bg-semantic-bg-ui hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
               >
                 <X className="size-3" aria-hidden />
               </button>
@@ -153,7 +153,7 @@ const DeleteConfirmationModal = React.forwardRef(
           <div className="flex flex-col gap-1 px-6 py-0">
             <label
               htmlFor={inputId}
-              className="text-sm font-semibold text-semantic-text-secondary"
+              className="text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
             >
               Enter "{confirmText}" in uppercase to confirm
             </label>

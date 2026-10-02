@@ -103,7 +103,7 @@ const meta: Meta<typeof TextField> = {
             [
               "Typography",
               "Inherited font; 12px label",
-              "Inter; 14px semibold label, 12px helper",
+              "Inter; 14px medium label, 12px helper",
             ],
             [
               "Value text",
@@ -134,8 +134,8 @@ const meta: Meta<typeof TextField> = {
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             [
               "Helper / prefix / suffix",
               "--semantic-text-muted",
@@ -385,7 +385,7 @@ export const AllVariants: Story = {
     <div className="flex w-[420px] max-w-full flex-col gap-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       {STATES.map((state) => (
         <section key={state} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {state === "default"
               ? "Default"
               : state === "empty"
@@ -418,7 +418,7 @@ export const AllSizes: Story = {
     <div className="flex w-[420px] max-w-full flex-col gap-6">
       {SIZES.map((size) => (
         <section key={size} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {size === "sm" ? "Compact · 36px" : "Default · 40px"}
           </p>
           <PreviewTextField
@@ -441,14 +441,14 @@ function StateGrid(args: TextFieldProps) {
         {STATE_COLUMNS.map((column) => (
           <p
             key={column.label}
-            className="m-0 text-xs font-semibold text-semantic-text-muted"
+            className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </p>
         ))}
         {STATES.map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state === "default"
                 ? "Default"
                 : state === "empty"
@@ -544,18 +544,18 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[900px] grid-cols-[130px_minmax(320px,1fr)_minmax(320px,1fr)] items-start gap-x-8 gap-y-5 font-[family-name:var(--font-v2,Inter,sans-serif)]">
         <div />
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 · ui/text-field
         </p>
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/text-field
         </p>
         {COMPARISON_ROWS.flatMap((row) =>
           SIZES.map((size) => (
             <React.Fragment key={row.label + size}>
-              <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+              <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
                 {row.label}
-                <span className="mt-1 block font-normal text-semantic-text-muted">
+                <span className="mt-1 block font-normal text-[var(--v2-text-muted,#707070)]">
                   {size === "sm" ? "Compact" : "Default size"}
                 </span>
               </p>
@@ -655,10 +655,10 @@ function WorkspaceForm(args: TextFieldProps) {
       }}
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Workspace details
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Update the name shown to your team.
         </p>
       </div>
@@ -679,7 +679,10 @@ function WorkspaceForm(args: TextFieldProps) {
         }}
       />
       <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
-        <span className="text-xs text-semantic-text-muted" role="status">
+        <span
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           {saved ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />

@@ -14,13 +14,13 @@ const tagVariants = cva(
     variants: {
       variant: {
         default:
-          "border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary",
+          "border-semantic-border-layout bg-semantic-bg-ui text-[var(--v2-text-secondary,#5E5E5E)]",
         primary:
-          "border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary",
+          "border-semantic-border-layout bg-semantic-bg-ui text-[var(--v2-text-secondary,#5E5E5E)]",
         accent:
-          "border-semantic-border-accent bg-semantic-brand-surface text-semantic-text-primary",
+          "border-semantic-border-accent bg-semantic-brand-surface text-[var(--v2-text-secondary,#5E5E5E)]",
         secondary:
-          "border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-primary",
+          "border-semantic-border-layout bg-semantic-bg-ui text-[var(--v2-text-secondary,#5E5E5E)]",
         success:
           "border-[var(--color-success-200)] bg-semantic-success-surface text-semantic-success-text",
         warning:
@@ -91,7 +91,7 @@ const Tag = React.forwardRef(
         {label && (
           <span
             className={cn(
-              "font-semibold",
+              "font-medium",
               size === "sm" ? "tracking-[0.06px]" : "tracking-[0.014px]"
             )}
           >

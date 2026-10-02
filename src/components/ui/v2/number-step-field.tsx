@@ -131,7 +131,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerDown={handleStepperPointerDown}
               onClick={stepUp}
               aria-label={incrementAriaLabel ?? "Increase value"}
-              className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronUp className="size-3" />
             </button>
@@ -141,13 +141,13 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerDown={handleStepperPointerDown}
               onClick={stepDown}
               aria-label={decrementAriaLabel ?? "Decrease value"}
-              className="flex items-center justify-center text-semantic-text-muted hover:text-semantic-text-primary transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronDown className="size-3" />
             </button>
           </div>
           <span
-            className="inline-flex h-full items-center px-4 shrink-0 bg-semantic-bg-ui text-sm leading-[normal] text-semantic-text-secondary"
+            className="inline-flex h-full items-center px-4 shrink-0 bg-semantic-bg-ui text-sm leading-[normal] text-[var(--v2-text-muted,#707070)]"
             aria-hidden
           >
             {suffix}

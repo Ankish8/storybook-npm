@@ -26,7 +26,7 @@ describe("Alert", () => {
     expect(screen.getByText("Alert description text")).toBeInTheDocument();
   });
 
-  // Variants - text is always black (#181D27), only icon color varies
+  // Variants retain neutral body text; only the icon carries the status color.
   it.each([
     ["default", "bg-semantic-bg-primary", "border-semantic-border-layout"],
     [
@@ -56,7 +56,7 @@ describe("Alert", () => {
       );
       const element = screen.getByTestId("alert");
       expect(element).toHaveClass(bgClass);
-      expect(element).toHaveClass("text-semantic-text-primary"); // Always primary text
+      expect(element).toHaveClass("text-[var(--v2-text-secondary,#5E5E5E)]");
       expect(element).toHaveClass(borderClass);
     }
   );

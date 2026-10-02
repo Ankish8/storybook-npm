@@ -114,14 +114,14 @@ export const ReadableField = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex min-w-0 flex-col gap-2 font-[family-name:var(--font-v2,Inter,sans-serif)]",
+          "flex min-w-0 flex-col gap-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal",
           className
         )}
         {...props}
       >
         {/* Header Row: Label + Optional Action */}
         <div className="flex items-start justify-between">
-          <span className="text-sm font-semibold text-semantic-text-secondary">
+          <span className="text-sm font-medium text-[var(--v2-text-primary,#484848)]">
             {label}
           </span>
           {headerAction &&
@@ -130,7 +130,7 @@ export const ReadableField = React.forwardRef(
                 <button
                   type="button"
                   disabled
-                  className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] opacity-50 cursor-not-allowed rounded"
+                  className="text-sm font-medium text-[var(--v2-text-muted,#707070)] tracking-[0.014px] opacity-50 cursor-not-allowed rounded"
                 >
                   {headerAction.label}
                 </button>
@@ -145,7 +145,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={headerAction.onClick}
-                className="text-sm font-semibold text-semantic-text-muted tracking-[0.014px] hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
+                className="text-sm font-medium text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
               >
                 {headerAction.label}
               </button>
@@ -160,7 +160,7 @@ export const ReadableField = React.forwardRef(
           )}
         >
           {/* Value Display */}
-          <span className="text-base text-semantic-text-primary tracking-[0.08px] truncate">
+          <span className="text-base text-[var(--v2-text-secondary,#5E5E5E)] tracking-[0.08px] truncate">
             {displayValue}
           </span>
 
@@ -171,7 +171,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={toggleVisibility}
-                className="text-semantic-text-muted hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
+                className="text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors"
                 aria-label={isVisible ? "Hide value" : "Show value"}
               >
                 {isVisible ? (
@@ -190,7 +190,7 @@ export const ReadableField = React.forwardRef(
                 "rounded transition-colors focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary",
                 copied
                   ? "text-semantic-success-primary"
-                  : "text-semantic-text-muted hover:text-semantic-text-primary"
+                  : "text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)]"
               )}
               aria-label={copied ? "Copied" : "Copy to clipboard"}
             >
@@ -205,7 +205,9 @@ export const ReadableField = React.forwardRef(
 
         {/* Helper Text */}
         {helperText && (
-          <p className="m-0 text-xs text-semantic-text-muted">{helperText}</p>
+          <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
+            {helperText}
+          </p>
         )}
       </div>
     );

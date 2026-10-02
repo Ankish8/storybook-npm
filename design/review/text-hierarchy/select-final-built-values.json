@@ -1,0 +1,16 @@
+{
+  "empty": {
+    "color": "rgb(112, 112, 112)",
+    "placeholder": true,
+    "text": "Select a method",
+    "weight": "400"
+  },
+  "filled": {
+    "color": "rgb(94, 94, 94)",
+    "placeholder": false,
+    "scrollWidth": 1280,
+    "text": "Basic Auth",
+    "weight": "400",
+    "width": 1280
+  }
+}

@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { Info, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { gallery } from "../../../storybook/v2-preview";
@@ -107,7 +114,9 @@ function InlineConfirmation({
         data-version={version}
         aria-label={String(args.title)}
         className={cn(
-          "flex w-96 max-w-full flex-col overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]",
+          version === "v1"
+            ? "flex w-96 max-w-full flex-col overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]"
+            : "flex w-96 max-w-full flex-col overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]",
           version === "v2"
             ? "gap-0 rounded-xl p-0 font-[family-name:var(--font-v2,Inter,sans-serif)]"
             : "gap-4 rounded-lg p-6"
@@ -135,7 +144,7 @@ function InlineConfirmation({
                 type="button"
                 aria-label="Close preview"
                 onClick={() => args.onOpenChange?.(false)}
-                className="flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-semantic-text-muted"
+                className="flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-[var(--v2-text-muted,#707070)]"
               >
                 <X className="size-3" />
               </button>
@@ -144,7 +153,7 @@ function InlineConfirmation({
               <Description
                 className={
                   args.description
-                    ? "text-sm text-semantic-text-secondary"
+                    ? "text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
                     : "sr-only"
                 }
               >
@@ -325,7 +334,7 @@ export const AllVariants: Story = {
       <div className="grid min-w-[808px] grid-cols-2 items-start gap-6">
         {VARIANTS.map((variant) => (
           <div key={variant} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {variant}
             </span>
             <InlineConfirmation args={{ ...args, variant }} />
@@ -351,14 +360,14 @@ export const States: Story = {
         {["Default", "Hover", "Focus", "Loading"].map((state) => (
           <span
             key={state}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-normal text-[var(--v2-text-muted,#707070)]"
           >
             {state}
           </span>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <span className="pt-6 text-xs font-semibold text-semantic-text-muted">
+            <span className="pt-6 text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {variant}
             </span>
             {["Default", "Hover", "Focus", "Loading"].map((state) => (
@@ -391,7 +400,7 @@ export const V1VsV2: Story = {
           (label) => (
             <span
               key={label}
-              className="text-xs font-semibold text-semantic-text-muted"
+              className="text-xs font-normal text-[var(--v2-text-muted,#707070)]"
             >
               {label}
             </span>
@@ -399,7 +408,7 @@ export const V1VsV2: Story = {
         )}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <span className="pt-6 text-xs font-semibold text-semantic-text-muted">
+            <span className="pt-6 text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {variant}
             </span>
             <InlineConfirmation args={{ ...args, variant }} version="v1" />
@@ -422,15 +431,15 @@ function NotificationExample({
   return (
     <section className="flex w-[520px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Inbox notifications
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           Confirm before changing this workspace preference.
         </p>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <span className="text-sm text-semantic-text-primary">
+        <span className="text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
           Desktop notifications: {enabled ? "Enabled" : "Paused"}
         </span>
         <LiveConfirmation
@@ -456,7 +465,10 @@ function NotificationExample({
           }}
         />
       </div>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {result}
       </p>
     </section>
@@ -475,5 +487,134 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, updateArgs] = useArgs<ConfirmArgs>();
     return <NotificationExample args={args} updateArgs={updateArgs} />;
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // This render calls updateArgs, and Storybook restores mocks on every re-render by default, which would wipe the spy history mid-play.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Opens the confirmation from its trigger, then answers it with Keep enabled and Pause notifications, and dismisses it with the corner close button and an overlay click, checking the callback spies each time. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Review action" });
+    const openModal = async () => {
+      await userEvent.click(trigger);
+      return body.findByRole("dialog", { name: "Pause notifications?" });
+    };
+    const modalClosed = () =>
+      waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await step("The trigger opens the question with its message", async () => {
+      const dialog = await openModal();
+      await expect(dialog).toHaveAccessibleDescription(
+        "You can enable notifications again at any time."
+      );
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+    });
+
+    await step("Keep enabled cancels without confirming", async () => {
+      await userEvent.click(body.getByRole("button", { name: "Keep enabled" }));
+      await modalClosed();
+      await expect(args.onCancel).toHaveBeenCalledTimes(1);
+      await expect(args.onConfirm).not.toHaveBeenCalled();
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+    });
+
+    await step("Pause notifications confirms and closes", async () => {
+      await openModal();
+      await userEvent.click(
+        body.getByRole("button", { name: "Pause notifications" })
+      );
+      await modalClosed();
+      await expect(args.onConfirm).toHaveBeenCalledTimes(1);
+      await expect(args.onCancel).toHaveBeenCalledTimes(1);
+    });
+
+    await step(
+      "The corner close button and the overlay dismiss it",
+      async () => {
+        await openModal();
+        await userEvent.click(body.getByRole("button", { name: "Close" }));
+        await modalClosed();
+        const dialog = await openModal();
+        const overlay = dialog.previousElementSibling as HTMLElement;
+        await expect(overlay).toHaveAttribute("data-state", "open");
+        await userEvent.click(overlay);
+        await modalClosed();
+        await expect(args.onConfirm).toHaveBeenCalledTimes(1);
+        await expect(args.onOpenChange).toHaveBeenCalledTimes(8);
+      }
+    );
+  },
+};
+
+export const KeyboardInteraction: Story = {
+  name: "Keyboard interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // See Interaction: keep spy history across the args-driven re-renders.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Opens the confirmation with Enter, tabs once around its focus trap, then dismisses it with Escape and checks that focus returns to the trigger without confirming.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Review action" });
+    const close = () => body.getByRole("button", { name: "Close" });
+    const cancel = () => body.getByRole("button", { name: "Keep enabled" });
+    const confirm = () =>
+      body.getByRole("button", { name: "Pause notifications" });
+
+    await step(
+      "Enter on the trigger opens it and moves focus inside",
+      async () => {
+        trigger.focus();
+        await userEvent.keyboard("{Enter}");
+        await body.findByRole("dialog", { name: "Pause notifications?" });
+        await expect(close()).toHaveFocus();
+      }
+    );
+
+    await step(
+      "Tab visits each control and wraps back to the start",
+      async () => {
+        await userEvent.tab();
+        await expect(cancel()).toHaveFocus();
+        await userEvent.tab();
+        await expect(confirm()).toHaveFocus();
+        await userEvent.tab();
+        await expect(close()).toHaveFocus();
+      }
+    );
+
+    await step(
+      "Escape closes it, returns focus and confirms nothing",
+      async () => {
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() =>
+          expect(body.queryByRole("dialog")).not.toBeInTheDocument()
+        );
+        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await expect(args.onConfirm).not.toHaveBeenCalled();
+        await waitFor(() => expect(trigger).toHaveFocus());
+      }
+    );
   },
 };

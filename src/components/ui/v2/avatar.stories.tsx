@@ -173,7 +173,7 @@ function Card({
 }) {
   return (
     <section className="flex min-w-0 flex-col items-center gap-4 rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       {children}
@@ -198,7 +198,7 @@ export const AllSizes: Story = {
         {sizes.map((size) => (
           <Card key={size} title={size}>
             <Sample args={{ ...normalized(args), size }} />
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               {{ xs: 24, sm: 30, md: 40, lg: 48, xl: 64 }[size]}px
             </p>
           </Card>
@@ -233,7 +233,7 @@ export const WithStatus: Story = {
         {statuses.map((status) => (
           <Card key={status || "none"} title={status || "None"}>
             <Sample args={{ ...normalized(args), status }} />
-            <p className="m-0 text-xs capitalize text-semantic-text-muted">
+            <p className="m-0 text-xs capitalize text-[var(--v2-text-muted,#707070)]">
               {status || "No presence indicator"}
             </p>
           </Card>
@@ -296,7 +296,7 @@ export const V1VsV2: Story = {
                     key={version}
                     className="flex flex-col items-center gap-3"
                   >
-                    <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+                    <p className="m-0 text-xs font-normal text-[var(--v2-text-muted,#707070)]">
                       {version}
                     </p>
                     <Sample
@@ -323,19 +323,19 @@ function ProfileExample({
   const id = React.useId();
   return (
     <section className="max-w-[600px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Profile preview
       </h3>
-      <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
         Edit the name or presence. Both stay synchronized with Controls.
       </p>
       <div className="my-5 flex items-center gap-4">
         <Sample args={normalized(args)} />
         <div>
-          <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
             {args.name || "Unnamed profile"}
           </p>
-          <p className="m-0 mt-1 text-xs capitalize text-semantic-text-muted">
+          <p className="m-0 mt-1 text-xs capitalize text-[var(--v2-text-muted,#707070)]">
             {args.status || "No status"}
           </p>
         </div>
@@ -344,7 +344,7 @@ function ProfileExample({
         <div>
           <label
             htmlFor={id + "-name"}
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           >
             Name
           </label>
@@ -357,7 +357,7 @@ function ProfileExample({
         <div>
           <label
             htmlFor={id + "-status"}
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           >
             Presence
           </label>

@@ -96,7 +96,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
       <div
         ref={ref}
         className={cn(
-          "w-full font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary",
+          "w-full font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)]",
           className
         )}
         onDragOver={(e) => {
@@ -111,7 +111,10 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
         }}
         {...props}
       >
-        <label htmlFor={id} className="mb-2 block text-sm font-semibold">
+        <label
+          htmlFor={id}
+          className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+        >
           {label}
         </label>
         <input
@@ -138,7 +141,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           aria-describedby={id + "-helper"}
           onClick={() => input.current?.click()}
           className={cn(
-            "flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-semantic-border-layout bg-semantic-bg-primary p-6 text-center transition-colors hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-semantic-text-muted",
+            "flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-semantic-border-layout bg-semantic-bg-primary p-6 text-center transition-colors hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)]",
             dragging &&
               !disabled &&
               "border-semantic-border-accent bg-semantic-brand-surface",
@@ -147,18 +150,18 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
         >
           <span className="flex size-10 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary">
             <UploadCloud
-              className="size-5 text-semantic-text-secondary"
+              className="size-5 text-[var(--v2-text-secondary,#5E5E5E)]"
               aria-hidden="true"
             />
           </span>
-          <span className="text-sm font-semibold text-semantic-text-link">
+          <span className="text-sm font-medium text-semantic-text-link">
             Click to upload
-            <span className="font-normal text-semantic-text-muted">
+            <span className="font-normal text-[var(--v2-text-muted,#707070)]">
               {" "}
               or drag and drop
             </span>
           </span>
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {accept || "Any file type"} · up to{" "}
             {Math.round(maxSize / 1024 / 1024)} MB
           </span>
@@ -170,7 +173,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             "m-0 mt-2 text-xs",
             error || message
               ? "text-semantic-error-text"
-              : "text-semantic-text-muted"
+              : "text-[var(--v2-text-muted,#707070)]"
           )}
         >
           {error || message || helperText}
@@ -184,13 +187,13 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
               >
                 <FileText
                   aria-hidden="true"
-                  className="size-5 shrink-0 text-semantic-text-muted"
+                  className="size-5 shrink-0 text-[var(--v2-text-muted,#707070)]"
                 />
                 <div className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">
                     {file.name}
                   </span>
-                  <span className="block text-xs text-semantic-text-muted">
+                  <span className="block text-xs text-[var(--v2-text-muted,#707070)]">
                     {Math.ceil(file.size / 1024)} KB
                   </span>
                 </div>

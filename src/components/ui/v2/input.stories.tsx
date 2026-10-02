@@ -1,6 +1,13 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { useArgs } from "storybook/preview-api";
 import { gallery, PreviewInput } from "../../../storybook/v2-preview";
 import { Check, Info } from "lucide-react";
@@ -81,7 +88,7 @@ const meta: Meta<typeof Input> = {
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
             ["Focus border", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             [
               "Placeholder",
               "--semantic-text-placeholder",
@@ -225,7 +232,7 @@ export const AllVariants: Story = {
         <div key={state} className="space-y-2">
           <label
             htmlFor={"input-" + state}
-            className="text-sm font-semibold text-semantic-text-secondary"
+            className="text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           >
             {state === "error" ? "Error" : "Default"}
           </label>
@@ -263,7 +270,7 @@ export const Sizing: Story = {
     <div className="flex w-[420px] max-w-full flex-col items-start gap-6">
       {[420, 280].map((width) => (
         <div key={width} className="max-w-full space-y-2" style={{ width }}>
-          <p className="m-0 text-xs text-semantic-text-muted">
+          <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
             40px height · {width}px container
           </p>
           <PreviewInput
@@ -291,14 +298,14 @@ export const States: Story = {
         {STATE_COLUMNS.map((column) => (
           <div
             key={column.label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </div>
         ))}
         {STATES.map((state) => (
           <React.Fragment key={state}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state === "error" ? "Error" : "Default"}
             </div>
             {STATE_COLUMNS.map((column) => (
@@ -334,10 +341,10 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[700px] grid-cols-[100px_minmax(240px,1fr)_minmax(240px,1fr)] items-center gap-x-8 gap-y-5">
         <div />
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 (ui/input)
         </div>
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/input)
         </div>
         {[
@@ -355,7 +362,7 @@ export const V1VsV2: Story = {
           { label: "Disabled", state: "default" as const, disabled: true },
         ].map(({ label, ...example }) => (
           <React.Fragment key={label}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {label}
             </div>
             <InputV1
@@ -385,7 +392,7 @@ function NumericInputs(args: InputProps) {
       <div className="space-y-2">
         <label
           htmlFor="input-amount"
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className="text-sm font-medium text-[var(--v2-text-primary,#484848)]"
         >
           Amount
         </label>
@@ -395,7 +402,7 @@ function NumericInputs(args: InputProps) {
           id="input-amount"
           type="number"
         />
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           {decimals ? "Decimals allowed." : "Whole numbers only."}{" "}
           {args.preventNumberExponent
             ? "Exponent notation is blocked."
@@ -405,7 +412,7 @@ function NumericInputs(args: InputProps) {
       <div className="space-y-2">
         <label
           htmlFor="input-count"
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className="text-sm font-medium text-[var(--v2-text-primary,#484848)]"
         >
           Number of agents
         </label>
@@ -417,7 +424,7 @@ function NumericInputs(args: InputProps) {
           decimal={false}
           allowDecimal={false}
         />
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           This field always accepts whole numbers only.
         </p>
       </div>
@@ -444,17 +451,17 @@ function WorkspaceName(args: InputProps) {
       className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Workspace details
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Update the name used in your workspace.
         </p>
       </div>
       <div className="space-y-2">
         <label
           htmlFor="input-workspace-name"
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className="text-sm font-medium text-[var(--v2-text-primary,#484848)]"
         >
           Workspace name
         </label>
@@ -469,12 +476,18 @@ function WorkspaceName(args: InputProps) {
           aria-invalid={args.state === "error" || undefined}
           aria-describedby="workspace-help"
         />
-        <p id="workspace-help" className="m-0 text-xs text-semantic-text-muted">
+        <p
+          id="workspace-help"
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           Use a name your team can recognize.
         </p>
       </div>
       <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
-        <span className="text-xs text-semantic-text-muted" role="status">
+        <span
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           {saved ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />
@@ -504,5 +517,85 @@ export const Usage: Story = {
         }}
       />
     );
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // Every args update re-runs Storybook's loaders; the default mock restore
+    // would wipe the spy history in the middle of the play function.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Types into the field and checks the change action, the consecutive-space guard and clearing. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const dbg: string[] = [];
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("textbox", { name: "Example input" });
+
+    await step("Clicking focuses the field", async () => {
+      await userEvent.click(input);
+      await expect(input).toHaveFocus();
+    });
+
+    await step("Typing updates the value and calls onChange", async () => {
+      dbg.push("before=" + changeAction.mock.calls.length);
+      changeAction("manual");
+      dbg.push("manualCall=" + changeAction.mock.calls.length);
+      args.onChange?.({ target: { value: "viaArgs" } } as never);
+      dbg.push("viaArgs=" + changeAction.mock.calls.length);
+      await userEvent.type(input, "A");
+      dbg.push(
+        "afterA=" +
+          changeAction.mock.calls.length +
+          " val=" +
+          (input as HTMLInputElement).value
+      );
+      await userEvent.type(input, "da");
+      await new Promise((r) => setTimeout(r, 300));
+      dbg.push(
+        "after300=" +
+          changeAction.mock.calls.length +
+          " val=" +
+          (input as HTMLInputElement).value +
+          " onChange=" +
+          String(args.onChange).slice(0, 60) +
+          " name=" +
+          changeAction.getMockName()
+      );
+      const el = input as unknown as Record<string, unknown>;
+      const key = Object.keys(el).find((k) => k.startsWith("__reactProps"));
+      const rp = key ? (el[key] as Record<string, unknown>) : undefined;
+      dbg.push(
+        "rp.value=" +
+          JSON.stringify(rp?.value) +
+          " rp.onChange=" +
+          String(rp?.onChange).slice(0, 80) +
+          " typeofOnChange=" +
+          typeof rp?.onChange
+      );
+      throw new globalThis.Error("DEBUG " + dbg.join(" | "));
+      await waitFor(() => expect(input).toHaveValue("Ada"));
+      await expect(changeAction).toHaveBeenCalledTimes(3);
+      await expect(changeAction).toHaveBeenLastCalledWith("Ada");
+    });
+
+    await step("A second space in a row is rejected", async () => {
+      await userEvent.type(input, "  Lovelace");
+      await waitFor(() => expect(input).toHaveValue("Ada Lovelace"));
+    });
+
+    await step("Clearing empties the field", async () => {
+      await userEvent.clear(input);
+      await waitFor(() => expect(input).toHaveValue(""));
+      await expect(changeAction).toHaveBeenLastCalledWith("");
+    });
   },
 };

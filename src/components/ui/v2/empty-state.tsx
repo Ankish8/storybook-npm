@@ -30,16 +30,16 @@ function EmptyState({
       )}
     >
       {icon && (
-        <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-[60px] shadow-[0_1px_2px_0_rgba(12,15,18,0.05),0_0_0_1px_rgba(10,13,18,0.18)_inset,0_-2px_0_0_rgba(12,15,18,0.05)_inset] size-[90px] flex items-center justify-center text-semantic-text-secondary">
+        <div className="bg-semantic-bg-primary border border-semantic-border-layout rounded-[60px] shadow-[0_1px_2px_0_rgba(12,15,18,0.05),0_0_0_1px_rgba(10,13,18,0.18)_inset,0_-2px_0_0_rgba(12,15,18,0.05)_inset] size-[90px] flex items-center justify-center text-[var(--v2-text-secondary,#5E5E5E)]">
           {icon}
         </div>
       )}
       <div className="flex flex-col items-center gap-1.5 text-center">
-        <p className="m-0 text-2xl leading-8 font-semibold text-semantic-text-primary">
+        <p className="m-0 text-2xl leading-8 font-semibold text-[var(--v2-text-primary,#484848)]">
           {title}
         </p>
         {description && (
-          <p className="m-0 text-base leading-[normal] text-semantic-text-muted">
+          <p className="m-0 text-base leading-[normal] text-[var(--v2-text-secondary,#5E5E5E)]">
             {description}
           </p>
         )}

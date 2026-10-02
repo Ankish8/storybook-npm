@@ -27,7 +27,7 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
         aria-pressed={interactive ? selected : undefined}
         aria-disabled={interactive ? disabled : undefined}
         className={cn(
-          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary shadow-[0_1px_2px_0_rgba(12,15,18,0.05),inset_0_0_0_1px_rgba(10,13,18,0.18),inset_0_-2px_0_0_rgba(12,15,18,0.05)]",
+          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_2px_0_rgba(12,15,18,0.05),inset_0_0_0_1px_rgba(10,13,18,0.18),inset_0_-2px_0_0_rgba(12,15,18,0.05)]",
           interactive &&
             !disabled &&
             "cursor-pointer transition-[background,box-shadow,border-color] hover:bg-[linear-gradient(290deg,color-mix(in_srgb,var(--semantic-border-layout)_40%,transparent)_0.89%,color-mix(in_srgb,var(--semantic-bg-primary)_40%,transparent)_36.25%)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary",
@@ -37,7 +37,7 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
           selected &&
             "border-semantic-border-accent bg-semantic-brand-surface shadow-[0_0_4px_rgba(39,171,184,0.4)]",
           disabled &&
-            "cursor-not-allowed bg-semantic-bg-ui text-semantic-text-muted shadow-none",
+            "cursor-not-allowed bg-semantic-bg-ui text-[var(--v2-text-muted,#707070)] [&_h3]:text-[var(--v2-text-muted,#707070)] [&_p]:text-[var(--v2-text-muted,#707070)] shadow-none",
           className
         )}
         onClick={disabled ? undefined : onClick}
@@ -76,7 +76,10 @@ const UiCardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("m-0 text-base font-medium leading-5", className)}
+    className={cn(
+      "m-0 text-base font-medium leading-5 text-[var(--v2-text-primary,#484848)]",
+      className
+    )}
     {...props}
   />
 ));
@@ -88,7 +91,7 @@ const UiCardDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      "m-0 text-sm font-normal text-semantic-text-muted",
+      "m-0 text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)]",
       className
     )}
     {...props}

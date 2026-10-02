@@ -125,7 +125,7 @@ const ConfirmationModal = React.forwardRef(
               <button
                 type="button"
                 aria-label="Close"
-                className="flex size-6 shrink-0 items-center justify-center rounded-md text-semantic-text-muted transition-colors hover:bg-semantic-bg-ui hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+                className="flex size-6 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors hover:bg-semantic-bg-ui hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
               >
                 <X className="size-3" aria-hidden />
               </button>
@@ -134,7 +134,9 @@ const ConfirmationModal = React.forwardRef(
           <div className={description ? "px-4 py-3" : "sr-only"}>
             <DialogDescription
               className={
-                description ? "text-sm text-semantic-text-secondary" : "sr-only"
+                description
+                  ? "text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+                  : "sr-only"
               }
             >
               {description || "Confirmation dialog"}

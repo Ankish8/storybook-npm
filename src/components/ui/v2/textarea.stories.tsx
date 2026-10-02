@@ -89,7 +89,7 @@ const meta: Meta<typeof Textarea> = {
             [
               "Typography",
               "Inherited font; default 16px / compact 14px",
-              "Inter; compact 12px / default 14px / large 16px; 14px semibold label",
+              "Inter; compact 12px / default 14px / large 16px; 14px medium label",
             ],
             [
               "Helper and counter",
@@ -111,8 +111,8 @@ const meta: Meta<typeof Textarea> = {
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper / counter", "--semantic-text-muted", "#717680", "#717680"],
             [
               "Placeholder",
@@ -307,7 +307,7 @@ export const AllVariants: Story = {
     <div className="flex w-[420px] max-w-full flex-col gap-6">
       {STATES.map((state) => (
         <section key={state} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {state === "error" ? "Error" : "Default"}
           </p>
           <PreviewTextarea
@@ -332,7 +332,7 @@ export const AllSizes: Story = {
     <div className="flex w-[420px] max-w-full flex-col gap-6">
       {SIZES.map((size) => (
         <section key={size} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {size === "sm"
               ? "Compact · 12px"
               : size === "lg"
@@ -364,14 +364,14 @@ export const States: Story = {
         {COLUMNS.map((column) => (
           <p
             key={column.label}
-            className="m-0 text-xs font-semibold text-semantic-text-muted"
+            className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </p>
         ))}
         {STATES.map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state === "error" ? "Error" : "Default"}
             </p>
             {COLUMNS.map((column) => (
@@ -407,18 +407,18 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[850px] grid-cols-[120px_minmax(320px,1fr)_minmax(320px,1fr)] items-start gap-x-6 gap-y-5">
         <div />
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 · ui/textarea
         </p>
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/textarea
         </p>
         {[...STATES, "disabled" as const].flatMap((state) =>
           SIZES.map((size) => (
             <React.Fragment key={state + size}>
-              <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+              <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
                 {state}
-                <span className="mt-1 block font-normal text-semantic-text-muted">
+                <span className="mt-1 block font-normal text-[var(--v2-text-muted,#707070)]">
                   {size === "sm"
                     ? "Compact"
                     : size === "lg"
@@ -430,7 +430,7 @@ export const V1VsV2: Story = {
                 version === "v1" && size === "lg" ? (
                   <p
                     key={version}
-                    className="m-0 rounded-lg border border-dashed border-semantic-border-layout p-4 text-xs text-semantic-text-muted"
+                    className="m-0 rounded-lg border border-dashed border-semantic-border-layout p-4 text-xs text-[var(--v2-text-muted,#707070)]"
                   >
                     Large is new in v2. v1 supports default and sm.
                   </p>
@@ -479,10 +479,10 @@ function DraftForm(args: TextareaProps) {
       }}
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Conversation notes
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Leave useful context for your team.
         </p>
       </div>
@@ -496,7 +496,10 @@ function DraftForm(args: TextareaProps) {
         }}
       />
       <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
-        <span className="text-xs text-semantic-text-muted" role="status">
+        <span
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           {savedValue === text ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />

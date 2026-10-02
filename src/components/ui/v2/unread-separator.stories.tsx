@@ -87,7 +87,9 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-3 text-base font-semibold">{title}</h3>
+      <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -141,8 +143,10 @@ export const Usage: Story = {
         className="max-w-full rounded-lg border border-semantic-border-layout p-4"
         style={{ width: args.width }}
       >
-        <h3 className="m-0 text-base font-semibold">Unread messages</h3>
-        <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Unread messages
+        </h3>
+        <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
           Simulate one new message or mark the current messages as read.
         </p>
         <div className="flex flex-wrap gap-3">
@@ -174,7 +178,7 @@ export const Usage: Story = {
             </div>
           </>
         ) : (
-          <p className="m-0 mt-4 text-sm text-semantic-text-muted">
+          <p className="m-0 mt-4 text-sm text-[var(--v2-text-muted,#707070)]">
             All messages are read
           </p>
         )}

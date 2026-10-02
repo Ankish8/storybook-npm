@@ -70,10 +70,10 @@ const mapClassName: { [key in Key]: string } = {
  * Maps color variants to Tailwind text color classes
  */
 const mapColorClassName: { [key in Color]: string } = {
-  primary: "text-semantic-text-primary",
-  secondary: "text-semantic-text-secondary",
-  muted: "text-semantic-text-muted",
-  placeholder: "text-semantic-text-placeholder",
+  primary: "text-[var(--v2-text-primary,#484848)]",
+  secondary: "text-[var(--v2-text-secondary,#5E5E5E)]",
+  muted: "text-[var(--v2-text-muted,#707070)]",
+  placeholder: "text-[var(--v2-text-placeholder,#707070)]",
   link: "text-semantic-text-link",
   inverted: "text-semantic-text-inverted",
   error: "text-semantic-error-primary",
@@ -103,7 +103,7 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   kind?: Kind;
   /** Size variant */
   variant?: Variant;
-  /** Text color */
+  /** Text color; body defaults to secondary, other kinds to primary */
   color?: Color;
   /** Text alignment */
   align?: Align;
@@ -155,7 +155,7 @@ const Typography = React.forwardRef(
     const classes = cn(
       "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)]", // Reset margin
       mapClassName[key],
-      color && mapColorClassName[color],
+      mapColorClassName[color ?? (kind === "body" ? "secondary" : "primary")],
       align && "block max-w-full",
       align && mapAlignClassName[align],
       truncate && "block max-w-full truncate",

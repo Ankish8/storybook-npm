@@ -1,5 +1,10 @@
 # HANDOFF: continue the MyOperator "v2" design system
 
+**Repository snapshot update, 2026-10-02:** The user has authorized committing and pushing the current work on `codex/ui-v2-review-2026-10-02`. Storybook is saved in `Ankish8/storybook-npm`; the frontend is saved in the private `Ankish8/myoperator-web-ui` repository. Older statements about uncommitted/local-only work below describe the earlier handoff. See [V2-REPOSITORIES.md](V2-REPOSITORIES.md) for the paired revisions and integration workflow.
+
+**Text hierarchy update, 2026-10-02:** The user requested softer neutral text and less unnecessary font weight across all 56 v2 components. The current palette and weight decisions, browser evidence and preservation checks are in [V2-TEXT-HIERARCHY-REVIEW.md](V2-TEXT-HIERARCHY-REVIEW.md). This update supersedes the original neutral text colors and ordinary label/title weights; use the recorded specs for the remaining design values. This correction remains local.
+
+
 Written by the previous AI agent (Claude Code) on 2026-10-01 for the next agent. You have **no memory** of the earlier conversation; this document is the whole brief. Read all of it, run the "First 15 minutes" checklist (section 4), then continue with the backlog (section 12). **Nothing described here is committed, pushed or published.**
 
 **Story quality update, 2026-10-01:** Before creating or revising a v2 story, read `design/V2-STORY-STANDARD.md`. Button, Badge, Tag, Input, Checkbox and Switch received a subsequent repair for working Controls, synchronized values, visual hierarchy and Docs table formatting. The browser review and current verification scope are recorded in `design/V2-STORY-REVIEW.md`; other new components still need their own review.

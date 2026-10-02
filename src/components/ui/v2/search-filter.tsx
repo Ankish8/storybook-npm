@@ -408,10 +408,11 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                 aria-disabled={optionDisabled}
                 disabled={optionDisabled}
                 className={cn(
-                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-semantic-text-primary outline-none",
+                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
                   !isSelected &&
                     "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
-                  isSelected && "bg-semantic-bg-ui",
+                  isSelected &&
+                    "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]",
                   optionDisabled &&
                     "cursor-not-allowed text-semantic-disabled-primary"
                 )}
@@ -435,7 +436,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             );
           })
         ) : (
-          <div className="px-4 py-6 text-center text-xs text-semantic-text-muted">
+          <div className="px-4 py-6 text-center text-xs text-[var(--v2-text-muted,#707070)]">
             {emptyMessage}
           </div>
         )}
@@ -451,7 +452,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
         <div ref={setAnchorRef} className="relative">
           <Search
             strokeWidth={1.2}
-            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-semantic-text-muted"
+            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[var(--v2-text-muted,#707070)]"
           />
           <Input
             ref={searchInputRef}
@@ -493,7 +494,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             <button
               type="button"
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded border-0 bg-transparent p-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-semantic-text-secondary focus-visible:outline-offset-[3px]"
+              className="absolute right-3 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-semantic-text-secondary focus-visible:outline-offset-[3px]"
               onClick={handleClearSearch}
             >
               <X className="size-4" />
@@ -506,7 +507,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             <div
               ref={setDropdownRef}
               className={cn(
-                "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-md font-[family-name:var(--font-v2,Inter,sans-serif)]",
+                "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-md font-[family-name:var(--font-v2,Inter,sans-serif)]",
                 searchFilterDropdownVariants()
               )}
               style={{

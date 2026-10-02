@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { gallery } from "../../../storybook/v2-preview";
 import {
   DateRangePicker,
@@ -94,7 +101,11 @@ function Example({
       {label && (
         <p
           id={`${id}-label`}
-          className="m-0 text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "m-0 text-sm font-medium text-semantic-text-secondary"
+              : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+          }
         >
           {label}
         </p>
@@ -118,7 +129,13 @@ function Example({
       {hint && (
         <p
           id={`${id}-hint`}
-          className={`m-0 text-xs ${props.state === "error" && !props.disabled ? "text-semantic-error-text" : "text-semantic-text-muted"}`}
+          className={
+            props.state === "error" && !props.disabled
+              ? "m-0 text-xs text-semantic-error-text"
+              : version === "v1"
+                ? "m-0 text-xs text-semantic-text-muted"
+                : "m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+          }
         >
           {hint}
         </p>
@@ -202,7 +219,7 @@ const meta: Meta<Args> = {
               "40px height / 4px corners / 14px type",
               "40px height / 8px corners / Inter 16px",
             ],
-            ["Host text", "Host styling", "14px / 600 label; 12px helper"],
+            ["Host text", "Host styling", "14px / 500 label; 12px helper"],
             ["Hover", "Old teal stroke", "C0C3CA border"],
             [
               "Focus and open",
@@ -224,8 +241,8 @@ const meta: Meta<Args> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA"],
@@ -339,15 +356,17 @@ export const AllVariants: Story = {
   render: (args) => (
     <div className="min-h-[540px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Validation variants</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Validation variants
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           The calendar behavior is the same in both variants.
         </p>
       </header>
       <div className="flex flex-wrap gap-6">
         {VARIANTS.map((state) => (
           <section key={state} className="space-y-3">
-            <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+            <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
               {state}
             </p>
             <Preview
@@ -370,15 +389,17 @@ export const HeightAndWidth: Story = {
   render: (args) => (
     <div className="min-h-[540px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Field proportions</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Field proportions
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           40px high with 8px corners.
         </p>
       </header>
       <div className="flex flex-wrap gap-6">
         {[420, 280].map((width) => (
           <section key={width} className="space-y-3">
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               {width}px wide
             </p>
             <Preview
@@ -400,8 +421,10 @@ export const States: Story = {
   render: (args) => (
     <div className="w-full min-h-[540px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Interaction states</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Interaction states
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           The wide comparison remains within the canvas.
         </p>
       </header>
@@ -414,14 +437,16 @@ export const States: Story = {
           {COLUMNS.map((column) => (
             <p
               key={column.label}
-              className="m-0 text-xs font-semibold text-semantic-text-muted"
+              className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
             >
               {column.label}
             </p>
           ))}
           {VARIANTS.map((state) => (
             <React.Fragment key={state}>
-              <p className="m-0 pt-6 text-sm font-semibold">{state}</p>
+              <p className="m-0 pt-6 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+                {state}
+              </p>
               {COLUMNS.map((column) => (
                 <Preview
                   {...args}
@@ -449,8 +474,10 @@ export const V1VsV2: Story = {
   render: (args) => (
     <div className="w-full min-h-[540px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">v1 and v2</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          v1 and v2
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           The range selection and calendar layout remain compatible.
         </p>
       </header>
@@ -460,13 +487,17 @@ export const V1VsV2: Story = {
           className="grid grid-cols-[160px_320px_320px] gap-6"
         >
           <span />
-          <p className="m-0 text-sm font-semibold">v1</p>
-          <p className="m-0 text-sm font-semibold">v2</p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v1
+          </p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v2
+          </p>
           {["default", "error", "disabled"].flatMap((treatment) =>
             [{}, { start: "2026-10-01", end: "2026-10-07" }].map(
               (value, index) => (
                 <React.Fragment key={`${treatment}-${index}`}>
-                  <p className="m-0 pt-6 text-xs text-semantic-text-muted">
+                  <p className="m-0 pt-6 text-xs text-[var(--v2-text-muted,#707070)]">
                     {treatment} · {index ? "selected" : "empty"}
                   </p>
                   {(["v1", "v2"] as const).map((version) => (
@@ -508,8 +539,10 @@ function RangeForm(args: Args) {
       }}
     >
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Export a report</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Export a report
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Choose the reporting period for this local example.
         </p>
       </header>
@@ -559,5 +592,106 @@ export const Usage: Story = {
           "A local report form. Save a complete range; clear it and submit to see accessible validation. No network request is made.",
       },
     },
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: { presetMode: "custom" },
+  parameters: {
+    // Selections call updateArgs, which re-renders the story, and Storybook
+    // restores (clears) all spies on each render. Keep their history instead.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Picks ranges, clears and applies a preset in fixed October 2026 dates. It ends on the initial range so it can be replayed. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Report period" });
+    const open = async () => {
+      await userEvent.click(trigger);
+      return body.findByRole("dialog");
+    };
+    const pick = (scope: HTMLElement, name: string) =>
+      userEvent.click(within(scope).getByRole("button", { name }));
+    const closed = () =>
+      waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+    const october = (start: number, end: number) => ({
+      start: new Date(2026, 9, start),
+      end: new Date(2026, 9, end),
+    });
+
+    await step("Two clicks pick a range, commit once and close", async () => {
+      await expect(trigger).toHaveTextContent("1 Oct 2026 - 7 Oct 2026");
+      const calendar = await open();
+      await expect(trigger).toHaveAttribute("aria-expanded", "true");
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+      await pick(calendar, "October 12, 2026");
+      await expect(args.onValueChange).not.toHaveBeenCalled();
+      await pick(calendar, "October 20, 2026");
+      await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+      await expect(args.onValueChange).toHaveBeenCalledWith(october(12, 20));
+      await closed();
+      await expect(trigger).toHaveTextContent("12 Oct 2026 - 20 Oct 2026");
+      await expect(trigger).toHaveFocus();
+    });
+
+    await step(
+      "Choosing the end first still gives an ordered range",
+      async () => {
+        const calendar = await open();
+        await pick(calendar, "October 25, 2026");
+        await pick(calendar, "October 14, 2026");
+        await expect(args.onValueChange).toHaveBeenLastCalledWith(
+          october(14, 25)
+        );
+        await closed();
+      }
+    );
+
+    await step(
+      "Clear empties the range without opening the calendar",
+      async () => {
+        await userEvent.click(
+          canvas.getByRole("button", { name: "Clear date range" })
+        );
+        await expect(args.onClear).toHaveBeenCalledTimes(1);
+        await expect(args.onValueChange).toHaveBeenLastCalledWith({});
+        await expect(trigger).toHaveTextContent("Choose a date range");
+        await expect(body.queryByRole("dialog")).not.toBeInTheDocument();
+      }
+    );
+
+    await step("A preset commits its fixed range", async () => {
+      await pick(await open(), "October launch");
+      await expect(args.onValueChange).toHaveBeenLastCalledWith(october(1, 7));
+      await closed();
+      await expect(trigger).toHaveTextContent("1 Oct 2026 - 7 Oct 2026");
+    });
+  },
+};
+
+export const Probe: Story = {
+  ...Interaction,
+  play: async (ctx) => {
+    const w = window as unknown as { __probeErr?: string };
+    if (w.__probeErr)
+      throw new globalThis.Error("PROBE earlier: " + w.__probeErr);
+    try {
+      await Interaction.play!(ctx);
+    } catch (e) {
+      w.__probeErr = String((e as { message: string }).message)
+        // eslint-disable-next-line no-control-regex -- Strip ANSI escapes from probe errors.
+        .replace(/\u001b\[[0-9;]*m/g, "")
+        .slice(0, 280);
+      throw e;
+    }
   },
 };

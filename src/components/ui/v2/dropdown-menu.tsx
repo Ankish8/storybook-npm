@@ -90,7 +90,7 @@ const DropdownMenuSubTrigger = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 rounded-none px-1.5 py-2.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[state=open]:bg-semantic-bg-ui",
+        "flex cursor-pointer select-none items-center gap-2 rounded-none px-1.5 py-2.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=open]:bg-semantic-bg-ui data-[state=open]:text-[var(--v2-text-primary,#484848)]",
         inset && "pl-8",
         className
       )}
@@ -119,7 +119,7 @@ const DropdownMenuSubContent = React.forwardRef(
     <DropdownMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[8rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[8rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
         className
       )}
       {...props}
@@ -143,7 +143,7 @@ const DropdownMenuContent = React.forwardRef(
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[8rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary shadow-md",
+          "z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[8rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           className
         )}
@@ -177,7 +177,7 @@ const DropdownMenuItem = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-none px-1.5 py-2.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary [&>svg]:shrink-0",
+        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-none px-1.5 py-2.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary [&>svg]:shrink-0",
         inset && "pl-8",
         className
       )}
@@ -190,7 +190,7 @@ const DropdownMenuItem = React.forwardRef(
               <span className="min-w-0 whitespace-normal break-words leading-normal">
                 {renderDropdownMenuItemChildren(label)}
               </span>
-              <span className="min-w-0 whitespace-normal break-words text-xs text-semantic-text-muted">
+              <span className="min-w-0 whitespace-normal break-words text-xs text-[var(--v2-text-muted,#707070)]">
                 {description}
               </span>
             </div>
@@ -198,7 +198,7 @@ const DropdownMenuItem = React.forwardRef(
             renderDropdownMenuItemChildren(label)
           )}
           {suffix && (
-            <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-4">
+            <span className="ml-auto text-xs text-[var(--v2-text-muted,#707070)] shrink-0 pl-4">
               {suffix}
             </span>
           )}
@@ -233,7 +233,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-none py-2.5 pl-8 pr-1.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary",
+        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-none py-2.5 pl-8 pr-1.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=checked]:text-[var(--v2-text-primary,#484848)] data-[state=checked]:data-[disabled]:text-semantic-disabled-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary",
         className
       )}
       checked={checked}
@@ -251,7 +251,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(
               <span className="min-w-0 whitespace-normal break-words leading-normal">
                 {renderDropdownMenuItemChildren(label)}
               </span>
-              <span className="min-w-0 whitespace-normal break-words text-xs text-semantic-text-muted">
+              <span className="min-w-0 whitespace-normal break-words text-xs text-[var(--v2-text-muted,#707070)]">
                 {description}
               </span>
             </div>
@@ -259,7 +259,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(
             renderDropdownMenuItemChildren(label)
           )}
           {suffix && (
-            <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-4">
+            <span className="ml-auto text-xs text-[var(--v2-text-muted,#707070)] shrink-0 pl-4">
               {suffix}
             </span>
           )}
@@ -294,7 +294,7 @@ const DropdownMenuRadioItem = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-none py-2.5 pl-8 pr-1.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary",
+        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-none py-2.5 pl-8 pr-1.5 min-h-12 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=checked]:text-[var(--v2-text-primary,#484848)] data-[state=checked]:data-[disabled]:text-semantic-disabled-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary",
         className
       )}
       {...props}
@@ -311,7 +311,7 @@ const DropdownMenuRadioItem = React.forwardRef(
               <span className="min-w-0 whitespace-normal break-words leading-normal">
                 {renderDropdownMenuItemChildren(label)}
               </span>
-              <span className="min-w-0 whitespace-normal break-words text-xs text-semantic-text-muted">
+              <span className="min-w-0 whitespace-normal break-words text-xs text-[var(--v2-text-muted,#707070)]">
                 {description}
               </span>
             </div>
@@ -319,7 +319,7 @@ const DropdownMenuRadioItem = React.forwardRef(
             renderDropdownMenuItemChildren(label)
           )}
           {suffix && (
-            <span className="ml-auto text-xs text-semantic-text-muted shrink-0 pl-4">
+            <span className="ml-auto text-xs text-[var(--v2-text-muted,#707070)] shrink-0 pl-4">
               {suffix}
             </span>
           )}
@@ -344,7 +344,7 @@ const DropdownMenuLabel = React.forwardRef(
     <DropdownMenuPrimitive.Label
       ref={ref}
       className={cn(
-        "px-2 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold text-semantic-text-secondary",
+        "px-2 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium text-[var(--v2-text-primary,#484848)]",
         inset && "pl-8",
         className
       )}
@@ -378,7 +378,7 @@ const DropdownMenuShortcut = ({
   return (
     <span
       className={cn(
-        "ml-auto inline-flex h-5 shrink-0 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-semantic-text-muted",
+        "ml-auto inline-flex h-5 shrink-0 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-[var(--v2-text-muted,#707070)]",
         className
       )}
       {...props}

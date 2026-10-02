@@ -24,9 +24,9 @@ const avatarVariants = cva(
   {
     variants: {
       variant: {
-        soft: "bg-semantic-info-surface text-semantic-text-muted",
+        soft: "bg-semantic-info-surface text-[var(--v2-text-muted,#707070)]",
         outline:
-          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-muted",
+          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-muted,#707070)]",
         filled: "bg-semantic-primary text-semantic-text-inverted",
       },
       size: {

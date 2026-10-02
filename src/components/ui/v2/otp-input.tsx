@@ -88,7 +88,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
               aria-invalid={error || undefined}
               aria-describedby={helperText ? id + "-helper" : undefined}
               className={cn(
-                "h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2.5 text-center text-base font-normal leading-[18px] text-semantic-text-primary outline-none transition-colors placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
+                "h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2.5 text-center text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
                 error
                   ? "border-semantic-error-primary focus:shadow-[0_0_4px_rgba(240,68,56,0.4)]"
                   : "border-semantic-border-layout enabled:hover:[&:not(:focus)]:border-[var(--color-primary-100)] focus:border-semantic-border-accent focus:shadow-[0_0_4px_rgba(39,171,184,0.4)]"
@@ -130,7 +130,9 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
             id={id + "-helper"}
             className={cn(
               "m-0 text-xs",
-              error ? "text-semantic-error-text" : "text-semantic-text-muted"
+              error
+                ? "text-semantic-error-text"
+                : "text-[var(--v2-text-muted,#707070)]"
             )}
           >
             {helperText}

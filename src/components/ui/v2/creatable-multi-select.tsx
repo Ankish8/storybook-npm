@@ -370,7 +370,7 @@ const CreatableMultiSelect = React.forwardRef(
                   value.map((val) => (
                     <span
                       key={val}
-                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-semibold text-semantic-text-primary"
+                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
                     >
                       <span className="min-w-0 truncate">
                         {labelForValue(
@@ -391,9 +391,9 @@ const CreatableMultiSelect = React.forwardRef(
                           maxLengthPerItem
                         )}`}
                         className={cn(
-                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
+                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] transition-colors",
                           !disabled &&
-                            "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                            "hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
                         )}
                         onMouseDown={(e) => {
                           e.preventDefault();
@@ -409,7 +409,7 @@ const CreatableMultiSelect = React.forwardRef(
                     </span>
                   ))}
                 {triggerDisplay === "summary" && value.length > 0 ? (
-                  <span className="line-clamp-2 text-base text-semantic-text-primary">
+                  <span className="line-clamp-2 text-base text-[var(--v2-text-primary,#484848)]">
                     {selectedSummary}
                   </span>
                 ) : null}
@@ -445,7 +445,7 @@ const CreatableMultiSelect = React.forwardRef(
                   aria-labelledby={props["aria-labelledby"]}
                   aria-describedby={descriptionId}
                   aria-invalid={props["aria-invalid"] ?? state === "error"}
-                  className="min-w-[120px] flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder"
+                  className="min-w-[120px] flex-1 bg-transparent text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none placeholder:text-[var(--v2-text-placeholder,#707070)]"
                   role="combobox"
                   aria-expanded={isOpen}
                   aria-controls={listboxId}
@@ -454,12 +454,12 @@ const CreatableMultiSelect = React.forwardRef(
                 />
               </div>
               {maxLengthPerItem != null && showPerItemCharacterCounter ? (
-                <span className="mr-2 mt-1 shrink-0 self-start text-sm text-semantic-text-muted">
+                <span className="mr-2 mt-1 shrink-0 self-start text-sm text-[var(--v2-text-muted,#707070)]">
                   {inputValue.length}/{maxLengthPerItem}
                 </span>
               ) : null}
               <ChevronDown
-                className="mt-1 size-4 shrink-0 self-start rotate-180 text-semantic-text-muted opacity-70 transition-transform"
+                className="mt-1 size-4 shrink-0 self-start rotate-180 text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform"
                 aria-hidden
               />
             </div>
@@ -504,8 +504,8 @@ const CreatableMultiSelect = React.forwardRef(
                     className={cn(
                       "line-clamp-2 flex-1 text-base",
                       value.length === 0
-                        ? "text-semantic-text-placeholder"
-                        : "text-semantic-text-primary"
+                        ? "text-[var(--v2-text-placeholder,#707070)]"
+                        : "text-[var(--v2-text-primary,#484848)]"
                     )}
                   >
                     {summaryTriggerLabel}
@@ -514,7 +514,7 @@ const CreatableMultiSelect = React.forwardRef(
                   <span
                     className={cn(
                       "line-clamp-2 flex-1 text-base",
-                      "text-semantic-text-placeholder"
+                      "text-[var(--v2-text-placeholder,#707070)]"
                     )}
                   >
                     {placeholder}
@@ -523,7 +523,7 @@ const CreatableMultiSelect = React.forwardRef(
                   value.map((val) => (
                     <span
                       key={val}
-                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-semibold text-semantic-text-primary"
+                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
                     >
                       <span className="min-w-0 truncate">
                         {labelForValue(
@@ -544,9 +544,9 @@ const CreatableMultiSelect = React.forwardRef(
                           maxLengthPerItem
                         )}`}
                         className={cn(
-                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
+                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] transition-colors",
                           !disabled &&
-                            "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                            "hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
                         )}
                         onMouseDown={(e) => {
                           e.preventDefault();
@@ -564,7 +564,7 @@ const CreatableMultiSelect = React.forwardRef(
                 )}
               </div>
               <ChevronDown
-                className="mt-1 size-4 shrink-0 self-start text-semantic-text-muted opacity-70 transition-transform"
+                className="mt-1 size-4 shrink-0 self-start text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform"
                 aria-hidden
               />
             </div>
@@ -575,7 +575,7 @@ const CreatableMultiSelect = React.forwardRef(
             <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
               {createHintText ? (
                 <div className={creatablePrimaryRoleHintRowClassName}>
-                  <span className="text-sm text-semantic-text-muted">
+                  <span className="text-sm text-[var(--v2-text-muted,#707070)]">
                     {createHintText}
                   </span>
                   <kbd className={creatableEnterHintKbdClassName}>Enter ↵</kbd>
@@ -593,7 +593,7 @@ const CreatableMultiSelect = React.forwardRef(
                   )}
                 >
                   {maxItems != null && canAddMore ? (
-                    <p className="m-0 text-sm text-semantic-text-muted">
+                    <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
                       Max selections allowed: {maxItems}
                     </p>
                   ) : null}
@@ -615,10 +615,10 @@ const CreatableMultiSelect = React.forwardRef(
                             e.preventDefault();
                           }}
                           onClick={() => addValue(option.value)}
-                          className="inline-flex items-center gap-2.5 whitespace-nowrap rounded border-0 bg-semantic-bg-ui px-2 py-1 text-left text-sm text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover"
+                          className="inline-flex items-center gap-2.5 whitespace-nowrap rounded border-0 bg-semantic-bg-ui px-2 py-1 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-colors hover:bg-semantic-bg-hover"
                         >
                           <Plus
-                            className="size-2.5 shrink-0 text-semantic-text-muted"
+                            className="size-2.5 shrink-0 text-[var(--v2-text-muted,#707070)]"
                             strokeWidth={2}
                             aria-hidden
                           />
@@ -651,8 +651,11 @@ const CreatableMultiSelect = React.forwardRef(
 
         {helperText && !isOpen ? (
           <div className="mt-1.5 flex items-center gap-1.5">
-            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
-            <p id={helperId} className="m-0 text-xs text-semantic-text-muted">
+            <Info className="size-[18px] shrink-0 text-[var(--v2-text-muted,#707070)]" />
+            <p
+              id={helperId}
+              className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+            >
               {helperText}
             </p>
           </div>

@@ -1,0 +1,39 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="V2/Introduction" />
+
+<div className="v2-docs">
+
+# MyOperator v2
+
+The v2 library adds the redesigned components alongside the existing library. Each component installs in `ui/v2` and has its own playground, variants, states and working usage examples.
+
+```bash
+npx myoperator-ui add v2-button v2-input v2-dialog
+```
+
+```tsx
+import { Button } from '@/components/ui/v2/button';
+import { Input } from '@/components/ui/v2/input';
+```
+
+## Choose the version per screen
+
+Existing components continue to install under `ui` with the configured class prefix. v2 installs under `ui/v2` with unprefixed Tailwind classes. Shared components retain their v1 prop names and behavior; new primitives have documented APIs.
+
+## Explore the stories
+
+- **Overview** is an editable playground.
+- **All variants and sizes** compare the supported designs with relevant Controls.
+- **States** show the available interactive or visual states.
+- **v1 vs v2** compares components that have a v1 counterpart.
+- **Usage** demonstrates a local, working composition.
+- **Docs** contains installation, migration notes and token values.
+
+## Verification status
+
+This is local work on `feat/v2`; it has not been published. The completion checklist and per-component browser reviews live in `design/V2-COMPLETION.md` and `design/V2-*-REVIEW.md`. Those notes distinguish recorded Figma values from implementation measurements and unverified values.
+
+Continue with [Migration](?path=/docs/v2-migration--docs) and [Foundations](?path=/docs/v2-foundations--docs).
+
+</div>

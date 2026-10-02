@@ -67,7 +67,7 @@ export const AllVariants: Story = {
     <div className="max-w-full space-y-6">
       {(["default", "subtle"] as const).map((variant) => (
         <section key={variant} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold capitalize">{variant}</h3>
+          <h3 className="m-0 text-sm font-medium capitalize">{variant}</h3>
           <Skeleton {...args} variant={variant} />
         </section>
       ))}
@@ -83,7 +83,7 @@ export const AllShapes: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-8">
       {(["line", "circle", "rectangle"] as const).map((shape) => (
         <section key={shape} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold capitalize">{shape}</h3>
+          <h3 className="m-0 text-sm font-medium capitalize">{shape}</h3>
           <Skeleton
             {...args}
             shape={shape}
@@ -99,7 +99,7 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
   const [loading, setLoading] = useState(true);
   return (
     <section className="w-[360px] max-w-full space-y-4">
-      <h3 className="m-0 text-base font-semibold">Account summary</h3>
+      <h3 className="m-0 text-base font-medium">Account summary</h3>
       <div
         aria-busy={loading}
         className="flex items-center gap-4 rounded-lg border border-solid border-semantic-border-layout p-5"
@@ -115,8 +115,8 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
           </>
         ) : (
           <div>
-            <h4 className="m-0 text-sm font-semibold">Example account</h4>
-            <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+            <h4 className="m-0 text-sm font-medium">Example account</h4>
+            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
               Your profile is ready.
             </p>
           </div>
@@ -144,7 +144,7 @@ export const V1VsV2: Story = {
           key={version}
           className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
         >
-          <h3 className="m-0 text-base font-semibold">{version}</h3>
+          <h3 className="m-0 text-base font-medium">{version}</h3>
           <div className="max-w-full overflow-x-auto">
             {version === "v1" ? <V1 {...args} /> : <Skeleton {...args} />}
           </div>

@@ -8,7 +8,7 @@ import { Switch, type SwitchProps } from "./switch";
  * Table size variants for row height.
  */
 const tableVariants = cva(
-  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm",
+  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,#5E5E5E)]",
   {
     variants: {
       size: {
@@ -200,7 +200,7 @@ const TableHead = React.forwardRef(
     <th
       ref={ref}
       className={cn(
-        "h-[60px] px-6 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium uppercase tracking-[0.014px] text-semantic-text-secondary [&:has([role=checkbox])]:pr-0",
+        "h-[60px] px-6 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium uppercase tracking-[0.014px] text-[var(--v2-text-primary,#484848)] [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-semantic-primary-surface z-10",
         sortDirection && "cursor-pointer select-none",
         className
@@ -241,7 +241,7 @@ const TableCell = React.forwardRef(
     <td
       ref={ref}
       className={cn(
-        "px-6 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-semantic-text-primary [&:has([role=checkbox])]:pr-0",
+        "px-6 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,#5E5E5E)] [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-semantic-bg-primary z-10",
         className
       )}
@@ -258,7 +258,10 @@ const TableCaption = React.forwardRef(
   ) => (
     <caption
       ref={ref}
-      className={cn("mt-4 text-sm text-semantic-text-muted", className)}
+      className={cn(
+        "mt-4 text-sm text-[var(--v2-text-muted,#707070)]",
+        className
+      )}
       {...props}
     />
   )
@@ -309,7 +312,7 @@ const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
     <TableCell
       colSpan={colSpan}
-      className="text-center py-8 text-semantic-text-muted"
+      className="text-center py-8 text-[var(--v2-text-muted,#707070)]"
     >
       {children || "No data available"}
     </TableCell>

@@ -1,0 +1,1111 @@
+[
+  {
+    "component": "button",
+    "view": "Docs",
+    "id": "v2-components-button--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Button\n\nButtons trigger actions or events. v2 design — same props as the v1 Button, so moving a screen is an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it installs exactly as w",
+    "width": 980
+  },
+  {
+    "component": "button",
+    "view": "Overview",
+    "id": "v2-components-button--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Button",
+    "width": 980
+  },
+  {
+    "component": "button",
+    "view": "All variants",
+    "id": "v2-components-button--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nButton\nPrimary\nButton\nSecondary\nButton\nOutline\nButton\nGhost\nButton\nLink\nButton\nDestructive\nButton\nSuccess\nButton\nDashed\nButton",
+    "width": 980
+  },
+  {
+    "component": "button",
+    "view": "States",
+    "id": "v2-components-button--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nHover\nPressed\nFocus\nDisabled\nLoading\ndefault\nButton\nButton\nButton\nButton\nButton\nSaving...\nprimary\nButton\nButton\nButton\nButton\nButton\nSaving...\nsecondary\nButton\nButton\nButton\nButton\nButton\nSaving...\noutline\nButton\nButton\nButton\nButton\nButton\nSaving...\ng",
+    "width": 980
+  },
+  {
+    "component": "button",
+    "view": "Usage",
+    "id": "v2-components-button--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Delete workspace\n\nThis removes every bot, template and contact. It cannot be undone.\n\nCancel\nDelete\nLearn more\nSave",
+    "width": 980
+  },
+  {
+    "component": "button-group",
+    "view": "Docs",
+    "id": "v2-components-buttongroup--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "ButtonGroup\n\nRelated actions and single-choice view controls in a shared container. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it installs ex",
+    "width": 980
+  },
+  {
+    "component": "button-group",
+    "view": "Overview",
+    "id": "v2-components-buttongroup--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Grid\nList\nCalendar",
+    "width": 980
+  },
+  {
+    "component": "button-group",
+    "view": "All Variants",
+    "id": "v2-components-buttongroup--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nGrid\nList\nCalendar\nPrimary\nGrid\nList\nCalendar\nToggle\nGrid\nList\nCalendar",
+    "width": 980
+  },
+  {
+    "component": "button-group",
+    "view": "States",
+    "id": "v2-components-buttongroup--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Enabled\nGrid\nList\nCalendar\nDisabled\nGrid\nList\nCalendar",
+    "width": 980
+  },
+  {
+    "component": "button-group",
+    "view": "Usage",
+    "id": "v2-components-buttongroup--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Your conversations\n\nChoose a view for this example.\n\nGrid\nList\nCalendar\nShowing the grid view",
+    "width": 980
+  },
+  {
+    "component": "badge",
+    "view": "Docs",
+    "id": "v2-components-badge--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Badge\n\nBadges show a short status or category without competing with the main content. v2 design — existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix",
+    "width": 980
+  },
+  {
+    "component": "badge",
+    "view": "Overview",
+    "id": "v2-components-badge--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Badge",
+    "width": 980
+  },
+  {
+    "component": "badge",
+    "view": "All variants",
+    "id": "v2-components-badge--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nBadge\nPrimary\nBadge\nOutline\nBadge\nDisabled\nBadge\nInfo\nBadge\nActive\nBadge\nFailed\nBadge\nWarning\nBadge\nDestructive\nBadge\nSecondary\nBadge",
+    "width": 980
+  },
+  {
+    "component": "badge",
+    "view": "Usage",
+    "id": "v2-components-badge--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "AI bots\n\nStatus at a glance across your workspace.\n\nCustomer support\n\nChatbot\n\nPublished\n\nAppointment assistant\n\nVoicebot\n\nUnpublished\n\nOrder tracking\n\nChatbot\n\nInactive",
+    "width": 980
+  },
+  {
+    "component": "tag",
+    "view": "Docs",
+    "id": "v2-components-tag--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Tag\n\nTags label events and categories. Add a bold prefix, an icon, or a dismiss button when needed. v2 design — existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw-",
+    "width": 980
+  },
+  {
+    "component": "tag",
+    "view": "Overview",
+    "id": "v2-components-tag--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Event:\nCall started",
+    "width": 980
+  },
+  {
+    "component": "tag",
+    "view": "All variants",
+    "id": "v2-components-tag--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nAfter call event\nPrimary\nAfter call event\nSecondary\nAfter call event\nAccent\nAfter call event\nInfo\nAfter call event\nSuccess\nAfter call event\nWarning\nAfter call event\nError\nAfter call event\nDestructive\nAfter call event",
+    "width": 980
+  },
+  {
+    "component": "tag",
+    "view": "Usage",
+    "id": "v2-components-tag--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Conversation activity\n\nEvents and labels attached to a conversation.\n\nIn call:\nCall begin, start dialing\nWhatsApp:\nMessage delivered\n+1 more\nSupport\nResolved\nFollow-up",
+    "width": 980
+  },
+  {
+    "component": "checkbox",
+    "view": "Docs",
+    "id": "v2-components-checkbox--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Checkbox\n\nA selection control for one or more choices, with checked, unchecked and indeterminate states. Built on Radix Checkbox. v2 design — existing v1 props remain available, so moving a screen starts with an import-path change.\n\nnpx myoperator-ui add v2-ch",
+    "width": 980
+  },
+  {
+    "component": "checkbox",
+    "view": "Overview",
+    "id": "v2-components-checkbox--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Select conversation",
+    "width": 980
+  },
+  {
+    "component": "checkbox",
+    "view": "All variants",
+    "id": "v2-components-checkbox--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Unchecked\nSelect conversation\nChecked\nSelect conversation\nIndeterminate\nSelect conversation",
+    "width": 980
+  },
+  {
+    "component": "checkbox",
+    "view": "States",
+    "id": "v2-components-checkbox--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nHover\nFocus\nDisabled\nDisabled + hover\nUnchecked · sm\nChecked · sm\nIndeterminate · sm\nUnchecked · default\nChecked · default\nIndeterminate · default\nUnchecked · lg\nChecked · lg\nIndeterminate · lg",
+    "width": 980
+  },
+  {
+    "component": "checkbox",
+    "view": "Usage",
+    "id": "v2-components-checkbox--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Select conversations\n\nChoose the conversations to include in an export.\n\nSelect all\nBilling question\nProduct feedback\nNew enquiry\n\n1 of 3 selected",
+    "width": 980
+  },
+  {
+    "component": "switch",
+    "view": "Docs",
+    "id": "v2-components-switch--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Switch\n\nA compact toggle for a setting that has on and off states. Built on Radix Switch, with the same controlled and uncontrolled behavior as v1. v2 design — existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUn",
+    "width": 980
+  },
+  {
+    "component": "switch",
+    "view": "Overview",
+    "id": "v2-components-switch--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Enable notifications",
+    "width": 980
+  },
+  {
+    "component": "switch",
+    "view": "All variants",
+    "id": "v2-components-switch--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Off\nEnable notifications\nOn\nEnable notifications",
+    "width": 980
+  },
+  {
+    "component": "switch",
+    "view": "States",
+    "id": "v2-components-switch--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nHover\nFocus\nDisabled\nDisabled + hover\nOff · sm\nOn · sm\nOff · default\nOn · default\nOff · lg\nOn · lg",
+    "width": 980
+  },
+  {
+    "component": "switch",
+    "view": "Usage",
+    "id": "v2-components-switch--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Notification preferences\n\nChoose how you hear about new conversations.\n\nDesktop notifications\n\nShow an alert when a new message arrives.\n\nNotification sound\n\nPlay a sound for new conversations.\n\nDesktop on · Sound off",
+    "width": 980
+  },
+  {
+    "component": "radio",
+    "view": "Docs",
+    "id": "v2-components-radio--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Radio\n\nSingle-choice selection with native radio semantics and optional labels. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it installs exactl",
+    "width": 980
+  },
+  {
+    "component": "radio",
+    "view": "Overview",
+    "id": "v2-components-radio--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Send a weekly summary\n\nA digest of your activity",
+    "width": 980
+  },
+  {
+    "component": "radio",
+    "view": "All Variants",
+    "id": "v2-components-radio--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Send a weekly summary\n\nA digest of your activity\n\nSend a weekly summary\n\nA digest of your activity",
+    "width": 980
+  },
+  {
+    "component": "radio",
+    "view": "States",
+    "id": "v2-components-radio--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Unselected · Default\n\nSend a weekly summary\n\nA digest of your activity\n\nUnselected · Hover\n\nSend a weekly summary\n\nA digest of your activity\n\nUnselected · Focus\n\nSend a weekly summary\n\nA digest of your activity\n\nUnselected · Disabled\n\nSend a weekly summary\n\nA ",
+    "width": 980
+  },
+  {
+    "component": "radio",
+    "view": "Usage",
+    "id": "v2-components-radio--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Summary frequency\nDaily\n\nA digest of your activity\n\nWeekly\n\nA digest of your activity\n\nMonthly\n\nA digest of your activity\n\nSave preference\n\nSelected: weekly",
+    "width": 980
+  },
+  {
+    "component": "breadcrumbs",
+    "view": "Docs",
+    "id": "v2-components-breadcrumbs--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Breadcrumbs\n\nAncestor links, a current page and optional overflow navigation. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it installs exactly ",
+    "width": 980
+  },
+  {
+    "component": "breadcrumbs",
+    "view": "Overview",
+    "id": "v2-components-breadcrumbs--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Home\nWorkspace\nSettings",
+    "width": 980
+  },
+  {
+    "component": "breadcrumbs",
+    "view": "All Variants",
+    "id": "v2-components-breadcrumbs--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nHome\nWorkspace\nSettings\nWith icons\nHome\nWorkspace\nSettings\nMore pages\nHome\nIntegrations\nWebhooks",
+    "width": 980
+  },
+  {
+    "component": "breadcrumbs",
+    "view": "Usage",
+    "id": "v2-components-breadcrumbs--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Workspace settings\nHome\nWorkspace\nSettings\n\nCurrent page: Settings\n\nRestore path",
+    "width": 980
+  },
+  {
+    "component": "stepper",
+    "view": "Docs",
+    "id": "v2-components-stepper--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Stepper\n\nProgressive steps with numbered or icon markers in horizontal and vertical layouts. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it in",
+    "width": 980
+  },
+  {
+    "component": "stepper",
+    "view": "Overview",
+    "id": "v2-components-stepper--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings",
+    "width": 980
+  },
+  {
+    "component": "stepper",
+    "view": "All Variants",
+    "id": "v2-components-stepper--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Horizontal · Numbered\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nHorizontal · Icon\nDetails\nAdd your workspace details\nTeam\nChoose the people to invite\nReview\nConfirm your settings\nVertical · Numbered\n",
+    "width": 980
+  },
+  {
+    "component": "stepper",
+    "view": "States",
+    "id": "v2-components-stepper--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Current step 1\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nCurrent step 2\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nCurrent step 3\n1\nDetails",
+    "width": 980
+  },
+  {
+    "component": "stepper",
+    "view": "Usage",
+    "id": "v2-components-stepper--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Create a workspace\n\nNavigate the local setup flow with step labels or actions.\n\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nDetails\n\nAdd your workspace details\n\nBack\nContinue\n\nStep 1 of 3",
+    "width": 980
+  },
+  {
+    "component": "progress-indicator",
+    "view": "Docs",
+    "id": "v2-components-progressindicator--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "ProgressIndicator\n\nMeasured progress in linear, circular and semicircular presentations. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it instal",
+    "width": 980
+  },
+  {
+    "component": "progress-indicator",
+    "view": "Overview",
+    "id": "v2-components-progressindicator--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "30%",
+    "width": 980
+  },
+  {
+    "component": "progress-indicator",
+    "view": "All Variants",
+    "id": "v2-components-progressindicator--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Linear progress\n30%\nCircle\n30%\nSemi Circle\n30%",
+    "width": 980
+  },
+  {
+    "component": "progress-indicator",
+    "view": "States",
+    "id": "v2-components-progressindicator--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Not started\n0%\nIn progress\n30%\nComplete\n100%\nIndeterminate",
+    "width": 980
+  },
+  {
+    "component": "progress-indicator",
+    "view": "Usage",
+    "id": "v2-components-progressindicator--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Import contacts\n\nEach action advances this local example by 25%.\n\n30%\nImport next batch\nReset\n\n30% of contacts imported.",
+    "width": 980
+  },
+  {
+    "component": "file-upload",
+    "view": "Docs",
+    "id": "v2-components-fileupload--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "FileUpload\n\nNative file selection and drag-and-drop with validation and removable file rows. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not — it in",
+    "width": 980
+  },
+  {
+    "component": "file-upload",
+    "view": "Overview",
+    "id": "v2-components-fileupload--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Contact list\nClick to upload or drag and drop\n.csv · up to 10 MB\n\nChoose a CSV file to import.\n\nLoad sample file",
+    "width": 980
+  },
+  {
+    "component": "file-upload",
+    "view": "All Variants",
+    "id": "v2-components-fileupload--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Single file\nContact list\nClick to upload or drag and drop\n.csv · up to 10 MB\n\nChoose a CSV file to import.\n\nMultiple files\nContact list\nClick to upload or drag and drop\n.csv · up to 10 MB\n\nChoose a CSV file to import.",
+    "width": 980
+  },
+  {
+    "component": "file-upload",
+    "view": "States",
+    "id": "v2-components-fileupload--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Default\nContact list\nClick to upload or drag and drop\n.csv · up to 10 MB\n\nChoose a CSV file to import.\n\nSelected\nContact list\nClick to upload or drag and drop\n.csv · up to 10 MB\n\nChoose a CSV file to import.\n\ncontacts.csv\n1 KB\nError\nContact list\nClick to uploa",
+    "width": 980
+  },
+  {
+    "component": "file-upload",
+    "view": "Usage",
+    "id": "v2-components-fileupload--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Import contacts\n\nChoose a file or load the example, then import locally.\n\nContact list\nClick to upload or drag and drop\n.csv · up to 10 MB\n\nChoose a CSV file to import.\n\nLoad sample file\nImport\n\nNo upload is sent to a server.",
+    "width": 980
+  },
+  {
+    "component": "scrollbar",
+    "view": "Docs",
+    "id": "v2-components-scrollbar--docs",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Scrollbar\n\nA native scroll viewport with the v2 rail, draggable thumb and optional arrow controls. v2 design — a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not —",
+    "width": 980
+  },
+  {
+    "component": "scrollbar",
+    "view": "Overview",
+    "id": "v2-components-scrollbar--overview",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Contact 1\nAvailable\nContact 2\nAvailable\nContact 3\nAvailable\nContact 4\nAvailable\nContact 5\nAvailable\nContact 6\nAvailable\nContact 7\nAvailable\nContact 8\nAvailable\nContact 9\nAvailable\nContact 10\nAvailable\nContact 11\nAvailable\nContact 12\nAvailable\n\nScroll or use th",
+    "width": 980
+  },
+  {
+    "component": "scrollbar",
+    "view": "All Variants",
+    "id": "v2-components-scrollbar--all-variants",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Dark\nContact 1\nAvailable\nContact 2\nAvailable\nContact 3\nAvailable\nContact 4\nAvailable\nContact 5\nAvailable\nContact 6\nAvailable\nContact 7\nAvailable\nContact 8\nAvailable\nContact 9\nAvailable\nContact 10\nAvailable\nContact 11\nAvailable\nContact 12\nAvailable\n\nScroll or u",
+    "width": 980
+  },
+  {
+    "component": "scrollbar",
+    "view": "States",
+    "id": "v2-components-scrollbar--states",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Scrollable content\nContact 1\nAvailable\nContact 2\nAvailable\nContact 3\nAvailable\nContact 4\nAvailable\nContact 5\nAvailable\nContact 6\nAvailable\nContact 7\nAvailable\nContact 8\nAvailable\nContact 9\nAvailable\nContact 10\nAvailable\nContact 11\nAvailable\nContact 12\nAvailabl",
+    "width": 980
+  },
+  {
+    "component": "scrollbar",
+    "view": "Usage",
+    "id": "v2-components-scrollbar--usage",
+    "samples": [],
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": "Team directory\n\nLoading more items updates the thumb size.\n\nContact 1\nAvailable\nContact 2\nAvailable\nContact 3\nAvailable\nContact 4\nAvailable\nContact 5\nAvailable\nContact 6\nAvailable\nContact 7\nAvailable\nContact 8\nAvailable\nContact 9\nAvailable\nContact 10\nAvailable",
+    "width": 980
+  },
+  {
+    "component": "shimmering-text",
+    "view": "Docs",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "ShimmeringText",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "A short loading status with a moving highlight and a reduced-motion fallbac",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Import",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Unprefixed Tailwind",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "v1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Design specification",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Text hierarchy",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "V2 uses neutral charcoal headings, medium gray body text and lighter suppor",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Design Tokens",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Usage guidance",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Keep status text meaningful and brief. active turns the highlight off; role",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Show code",
+        "weight": "700"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "shimmering-text",
+    "view": "Overview",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [],
+    "width": 980
+  },
+  {
+    "component": "shimmering-text",
+    "view": "All Variants",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Animated",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Motion follows the user's preference.",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Static",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "The same status without the highlight.",
+        "weight": "400"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "shimmering-text",
+    "view": "States",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Animated",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Motion follows the user's preference.",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Static",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "The same status without the highlight.",
+        "weight": "400"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "shimmering-text",
+    "view": "Usage",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Contact import",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Start and complete the import locally.",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Ready to import.",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "text": "Start import",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Reset",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "spinner",
+    "view": "Docs",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Spinner",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Animated loading indicators with four sizes and five color treatments. v2 d",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Import",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Unprefixed Tailwind",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "v1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "What changes from v1",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Text hierarchy",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "V2 uses neutral charcoal headings, medium gray body text and lighter suppor",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Design Tokens",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Usage guidance",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Provide a specific aria-label such as Saving changes. Use current to inheri",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Show code",
+        "weight": "700"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "spinner",
+    "view": "Overview",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [],
+    "width": 980
+  },
+  {
+    "component": "spinner",
+    "view": "All Variants",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "default",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "secondary",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "muted",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "text": "inverted",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "current",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "spinner",
+    "view": "Usage",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Conversation list",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Fetching conversations…",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Complete loading",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "skeleton",
+    "view": "Docs",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Skeleton",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Loading placeholders for text, avatars and rectangular content. v2 design —",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Import",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Unprefixed Tailwind",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "v1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "What changes from v1",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Text hierarchy",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "V2 uses neutral charcoal headings, medium gray body text and lighter suppor",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Design Tokens",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Usage guidance",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Match shape, width and height to the content being loaded. Skeletons are hi",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Show code",
+        "weight": "700"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "skeleton",
+    "view": "Overview",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [],
+    "width": 980
+  },
+  {
+    "component": "skeleton",
+    "view": "All Variants",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "default",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "subtle",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "skeleton",
+    "view": "Usage",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Account summary",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Show loaded content",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "bouncing-loader",
+    "view": "Docs",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "BouncingLoader",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "A three-dot loading indicator with configurable dot size, spacing and color",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Import",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Unprefixed Tailwind",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "v1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "What changes from v1",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Text hierarchy",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "V2 uses neutral charcoal headings, medium gray body text and lighter suppor",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Design Tokens",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Usage guidance",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Use one loader per loading region and give it a specific aria-label. Size a",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Show code",
+        "weight": "700"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "bouncing-loader",
+    "view": "Overview",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [],
+    "width": 980
+  },
+  {
+    "component": "bouncing-loader",
+    "view": "All Variants",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "placeholder",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "muted",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "secondary",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  },
+  {
+    "component": "bouncing-loader",
+    "view": "Usage",
+    "scrollWidth": 980,
+    "tableHeadings": 0,
+    "text": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Assistant response",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Finish response",
+        "weight": "500"
+      }
+    ],
+    "width": 980
+  }
+]

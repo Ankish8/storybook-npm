@@ -67,7 +67,7 @@ describe("SelectField", () => {
     );
     expect(screen.getByText("Helper text here")).toBeInTheDocument();
     expect(screen.getByText("Helper text here")).toHaveClass(
-      "text-semantic-text-muted"
+      "text-[var(--v2-text-muted,#707070)]"
     );
   });
 

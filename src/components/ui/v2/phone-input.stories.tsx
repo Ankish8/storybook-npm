@@ -58,7 +58,11 @@ function Example({
       {label && (
         <label
           htmlFor={id}
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "text-sm font-medium text-semantic-text-secondary"
+              : "text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+          }
         >
           {label}
           {props.required && (
@@ -88,7 +92,14 @@ function Example({
         }
       />
       {helperText && !props.validation && (
-        <p id={helperId} className="m-0 text-xs text-semantic-text-muted">
+        <p
+          id={helperId}
+          className={
+            version === "v1"
+              ? "m-0 text-xs text-semantic-text-muted"
+              : "m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+          }
+        >
           {helperText}
         </p>
       )}
@@ -122,7 +133,9 @@ function CountryPicker({
               onClick={() => onPick(c)}
             >
               <span>{c.label}</span>
-              <span className="text-semantic-text-muted">{c.code}</span>
+              <span className="text-[var(--v2-text-muted,#707070)]">
+                {c.code}
+              </span>
             </Button>
           ))}
         </div>
@@ -253,7 +266,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited font",
-              "Inter 16px value/code; example label 14px semibold and helper 12px",
+              "Inter 16px value/code; example label 14px medium and helper 12px",
             ],
             ["Hover", "Default border", "#C0C3CA enabled border"],
             ["Focus", "Thin teal shadow", "#27ABB8 border and soft 4px halo"],
@@ -276,7 +289,7 @@ const meta: Meta<Args> = {
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Country code", "--semantic-text-secondary", "#343E55", "#343E55"],
             [
               "Placeholder",
@@ -399,7 +412,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {VARIANTS.map((state) => (
         <section key={state} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {state === "default"
               ? "Default"
               : state === "empty"
@@ -429,7 +442,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             48px height · {width}px container
           </p>
           <PreviewPhone
@@ -457,14 +470,14 @@ export const States: Story = {
         {COLUMNS.map((c) => (
           <p
             key={c.label}
-            className="m-0 text-xs font-semibold text-semantic-text-muted"
+            className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {c.label}
           </p>
         ))}
         {VARIANTS.map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state === "default"
                 ? "Default"
                 : state === "empty"
@@ -507,15 +520,15 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[850px] grid-cols-[110px_1fr_1fr] items-start gap-x-8 gap-y-6">
         <div />
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 · ui/phone-input
         </p>
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/phone-input
         </p>
         {[...VARIANTS, "disabled" as const].map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state}
             </p>
             {(["v1", "v2"] as const).map((version) => (
@@ -565,10 +578,10 @@ function PhoneForm({
       }}
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Contact phone number
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Save a number in this local example.
         </p>
       </div>
@@ -594,7 +607,10 @@ function PhoneForm({
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">
-        <span role="status" className="text-xs text-semantic-text-muted">
+        <span
+          role="status"
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {saved === String(args.value) && saved ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />

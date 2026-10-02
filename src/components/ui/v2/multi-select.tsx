@@ -145,7 +145,7 @@ const POST_FETCH_MEASURE_DELAY_MS = 50;
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "flex min-h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-base text-semantic-text-primary transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none",
+  "flex min-h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-base text-[var(--v2-text-secondary,#5E5E5E)] transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none",
   {
     variants: {
       state: {
@@ -812,7 +812,7 @@ const MultiSelect = React.forwardRef(
           <label
             htmlFor={selectId}
             className={cn(
-              "font-[family-name:var(--font-v2,Inter,sans-serif)] leading-5 tracking-[0.014px] break-words text-sm font-semibold text-semantic-text-secondary",
+              "font-[family-name:var(--font-v2,Inter,sans-serif)] leading-5 tracking-[0.014px] break-words text-sm font-medium text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -850,14 +850,14 @@ const MultiSelect = React.forwardRef(
           >
             <div className="min-w-0 flex-1 flex flex-wrap gap-1">
               {selectedValues.length === 0 ? (
-                <span className="text-base text-semantic-text-placeholder">
+                <span className="text-base text-[var(--v2-text-placeholder,#707070)]">
                   {placeholder}
                 </span>
               ) : summaryLabel ? (
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="min-w-0 truncate text-sm text-semantic-text-primary">
+                      <span className="min-w-0 truncate text-sm text-[var(--v2-text-primary,#484848)]">
                         {summaryLabel(selectedValues.length)}
                       </span>
                     </TooltipTrigger>
@@ -874,7 +874,7 @@ const MultiSelect = React.forwardRef(
                 selectedLabels.map((label, index) => (
                   <span
                     key={selectedValues[index]}
-                    className="inline-flex min-w-0 max-w-full items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-sm font-semibold px-2 py-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout"
+                    className="inline-flex min-w-0 max-w-full items-center gap-1 bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)] text-sm font-medium px-2 py-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout"
                   >
                     <span
                       className="min-w-0 truncate"
@@ -921,7 +921,7 @@ const MultiSelect = React.forwardRef(
                   className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
                   aria-label="Clear all"
                 >
-                  <X className="size-4 text-semantic-text-muted" />
+                  <X className="size-4 text-[var(--v2-text-muted,#707070)]" />
                 </span>
               )}
               {showSeparatorBeforeChevron && (
@@ -931,11 +931,11 @@ const MultiSelect = React.forwardRef(
                 />
               )}
               {loading ? (
-                <Loader2 className="size-4 animate-spin text-semantic-text-muted" />
+                <Loader2 className="size-4 animate-spin text-[var(--v2-text-muted,#707070)]" />
               ) : (
                 <ChevronDown
                   className={cn(
-                    "size-4 text-semantic-text-muted transition-transform shrink-0",
+                    "size-4 text-[var(--v2-text-muted,#707070)] transition-transform shrink-0",
                     isOpen && "rotate-180"
                   )}
                 />
@@ -963,7 +963,7 @@ const MultiSelect = React.forwardRef(
               ) : helperText ? (
                 <span
                   id={helperId}
-                  className="min-w-0 break-words text-xs text-semantic-text-muted"
+                  className="min-w-0 break-words text-xs text-[var(--v2-text-muted,#707070)]"
                 >
                   {helperText}
                 </span>
@@ -1000,7 +1000,7 @@ const MultiSelect = React.forwardRef(
                         aria-label={searchPlaceholder}
                         value={searchQuery}
                         onChange={(e) => updateSearchQuery(e.target.value)}
-                        className="w-full h-10 px-3 text-base text-semantic-text-primary border border-solid border-semantic-border-input rounded-lg bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-accent focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+                        className="w-full h-10 px-3 text-base text-[var(--v2-text-secondary,#5E5E5E)] border border-solid border-semantic-border-input rounded-lg bg-semantic-bg-primary placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none focus:border-semantic-border-accent focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
@@ -1019,7 +1019,7 @@ const MultiSelect = React.forwardRef(
                           toggleSelectAll();
                         }
                       }}
-                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-semantic-text-primary outline-none hover:bg-semantic-bg-ui"
+                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-semantic-bg-ui"
                     >
                       <Checkbox
                         checked={
@@ -1051,7 +1051,7 @@ const MultiSelect = React.forwardRef(
                     }}
                   >
                     {filteredOptions.length === 0 && !loadingMore ? (
-                      <div className="py-6 text-center text-sm text-semantic-text-muted">
+                      <div className="py-6 text-center text-sm text-[var(--v2-text-muted,#707070)]">
                         No results found
                       </div>
                     ) : (
@@ -1069,7 +1069,7 @@ const MultiSelect = React.forwardRef(
                           return (
                             <div
                               key={`header-${item.label}-${itemIndex}`}
-                              className="px-3 pt-2 pb-1 text-sm font-semibold uppercase tracking-wide text-semantic-text-muted"
+                              className="px-3 pt-2 pb-1 text-sm font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]"
                             >
                               {item.label}
                             </div>
@@ -1091,10 +1091,12 @@ const MultiSelect = React.forwardRef(
                           option.secondaryText ?? option.caption;
 
                         const rowClass = cn(
-                          "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-semantic-text-primary outline-none",
+                          "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
                           optionVariant === "detailed"
                             ? "gap-2 px-2 py-2 text-sm"
                             : "py-2 pl-4 pr-8 text-base",
+                          isSelected &&
+                            "font-medium text-[var(--v2-text-primary,#484848)]",
                           !isSelected &&
                             "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
                           isDisabled && "opacity-50 cursor-not-allowed",
@@ -1178,7 +1180,7 @@ const MultiSelect = React.forwardRef(
                               {option.label}
                             </span>
                             {secondaryLine ? (
-                              <span className="shrink-0 max-w-[55%] truncate text-right text-sm text-semantic-text-muted">
+                              <span className="shrink-0 max-w-[55%] truncate text-right text-sm text-[var(--v2-text-muted,#707070)]">
                                 {secondaryLine}
                               </span>
                             ) : null}
@@ -1223,7 +1225,7 @@ const MultiSelect = React.forwardRef(
                       <div
                         role="status"
                         aria-live="polite"
-                        className="flex items-center justify-center gap-2 py-3 text-sm text-semantic-text-muted"
+                        className="flex items-center justify-center gap-2 py-3 text-sm text-[var(--v2-text-muted,#707070)]"
                       >
                         <Loader2 className="size-4 animate-spin" />
                         <span>Loading more...</span>
@@ -1233,7 +1235,7 @@ const MultiSelect = React.forwardRef(
 
                   {/* Footer with count */}
                   {maxSelections && showSelectionFooter ? (
-                    <div className="p-2 border-t border-solid border-semantic-border-layout text-sm text-semantic-text-muted">
+                    <div className="p-2 border-t border-solid border-semantic-border-layout text-sm text-[var(--v2-text-muted,#707070)]">
                       {selectedValues.length} / {maxSelections} selected
                     </div>
                   ) : null}

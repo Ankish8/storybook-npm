@@ -5,7 +5,7 @@ import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const creatableSelectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-base text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
   {
     variants: {
       state: {
@@ -30,7 +30,7 @@ const creatableSelectTriggerVariants = cva(
  * strings will not compile.
  */
 export const creatableEnterHintKbdClassName = cn(
-  "inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-semantic-text-muted"
+  "inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-[var(--v2-text-muted,#707070)]"
 );
 
 /** Primary Role: hint row above the options list (custom role + Enter kbd). */
@@ -323,7 +323,7 @@ const CreatableSelect = React.forwardRef(
               }}
               maxLength={maxLength}
               onKeyDown={handleKeyDown}
-              className="flex-1 min-w-0 bg-transparent outline-none text-base text-semantic-text-primary placeholder:text-semantic-text-placeholder"
+              className="flex-1 min-w-0 bg-transparent outline-none text-base text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)]"
               placeholder={selectedLabel || placeholder}
               aria-expanded="true"
               aria-haspopup="listbox"
@@ -332,11 +332,11 @@ const CreatableSelect = React.forwardRef(
               aria-autocomplete="list"
             />
             {maxLength != null ? (
-              <span className="mr-2 shrink-0 text-sm text-semantic-text-muted">
+              <span className="mr-2 shrink-0 text-sm text-[var(--v2-text-muted,#707070)]">
                 {search.length}/{maxLength}
               </span>
             ) : null}
-            <ChevronDown className="size-4 text-semantic-text-muted opacity-70 shrink-0 rotate-180 transition-transform" />
+            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0 rotate-180 transition-transform" />
           </div>
         ) : (
           <button
@@ -358,12 +358,12 @@ const CreatableSelect = React.forwardRef(
             <span
               className={cn(
                 "line-clamp-1",
-                !selectedLabel && "text-semantic-text-placeholder"
+                !selectedLabel && "text-[var(--v2-text-placeholder,#707070)]"
               )}
             >
               {selectedLabel || placeholder}
             </span>
-            <ChevronDown className="size-4 text-semantic-text-muted opacity-70 shrink-0" />
+            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0" />
           </button>
         )}
 
@@ -372,7 +372,7 @@ const CreatableSelect = React.forwardRef(
           <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
             {creatableHint ? (
               <div className={creatablePrimaryRoleHintRowClassName}>
-                <span className="text-sm text-semantic-text-muted">
+                <span className="text-sm text-[var(--v2-text-muted,#707070)]">
                   {creatableHint}
                 </span>
                 <kbd className={creatableEnterHintKbdClassName}>Enter ↵</kbd>
@@ -387,7 +387,7 @@ const CreatableSelect = React.forwardRef(
               className="max-h-60 overflow-y-auto p-1"
             >
               {filtered.length === 0 && !isCustom && (
-                <div className="px-4 py-2 text-sm text-semantic-text-muted">
+                <div className="px-4 py-2 text-sm text-[var(--v2-text-muted,#707070)]">
                   No options found
                 </div>
               )}
@@ -401,8 +401,10 @@ const CreatableSelect = React.forwardRef(
                   onClick={() => !opt.disabled && handleSelect(opt.value)}
                   onMouseEnter={() => setHighlightIndex(i)}
                   className={cn(
-                    "relative flex w-full items-center rounded-md py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none cursor-pointer select-none",
+                    "relative flex w-full items-center rounded-md py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none",
                     "hover:bg-semantic-bg-ui",
+                    opt.value === value &&
+                      "font-medium text-[var(--v2-text-primary,#484848)]",
                     highlightIndex === i && "bg-semantic-bg-ui",
                     opt.disabled &&
                       "pointer-events-none opacity-50 cursor-not-allowed"

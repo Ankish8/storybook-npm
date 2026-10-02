@@ -11,7 +11,7 @@
  *   node design/verify/story-sweep.mjs --static storybook-static    # sweep a production build (no HMR interference)
  *   node design/verify/story-sweep.mjs --shot v2-components-button--states --shots /tmp/shots [--full]
  *
- * Options: --url, --static <dir>, --filter <comma list of id prefixes/substrings, default "v2-">, --limit N,
+ * Options: --docs (sweep the Docs pages instead of stories), --discover (for dead controls, find the control they depend on), --url, --static <dir>, --filter <comma list of id prefixes/substrings, default "v2-">, --limit N,
  *   --no-controls, --no-axe, --settle ms (250), --ctl-settle ms (90), --timeout ms (20000), --viewport 1280x900,
  *   --out report.json, --ignore-log <regex>, --chrome <path>, --port N, --strict (axe/dead/overflow also fail).
  * Exit code 1 when any story fails to render, throws, fails its play function, shows the error display or times out.
@@ -38,6 +38,8 @@ function parseArgs(argv) {
     else if (key === "no-axe") o.axe = false;
     else if (key === "full") o.full = true;
     else if (key === "strict") o.strict = true;
+    else if (key === "discover") o.discover = true;
+    else if (key === "docs") o.docs = true;
     else if (key === "shot") o.shot.push(argv[++i]);
     else o[key] = argv[++i];
   }
@@ -88,12 +90,15 @@ async function connectCdp(port) {
   });
   let id = 0;
   const pending = new Map();
+  const listeners = [];
   ws.onmessage = (m) => {
     const d = JSON.parse(m.data);
     if (d.id && pending.has(d.id)) {
       const { res, rej } = pending.get(d.id);
       pending.delete(d.id);
       d.error ? rej(new Error(d.error.message)) : res(d.result);
+    } else if (d.method) {
+      listeners.forEach((l) => l(d));
     }
   };
   const send = (method, params = {}) =>
@@ -102,7 +107,7 @@ async function connectCdp(port) {
       pending.set(i, { res, rej });
       ws.send(JSON.stringify({ id: i, method, params }));
     });
-  return { send, close: () => ws.close() };
+  return { send, on: (fn) => listeners.push(fn), close: () => ws.close() };
 }
 
 async function main() {
@@ -116,8 +121,9 @@ async function main() {
   }
   const index = await (await fetch(`${base}/index.json`)).json();
   const filters = (args.filter || "v2-").split(",").map((s) => s.trim()).filter(Boolean);
+  const wantType = args.docs ? "docs" : "story";
   let ids = Object.values(index.entries)
-    .filter((e) => e.type === "story" && filters.some((f) => e.id.startsWith(f) || e.id.includes(f)))
+    .filter((e) => e.type === wantType && filters.some((f) => e.id.startsWith(f) || e.id.includes(f)))
     .map((e) => e.id);
   if (args.limit) ids = ids.slice(0, Number(args.limit));
   if (!ids.length && !args.shot.length) throw new Error(`No stories match ${filters.join(", ")}`);
@@ -156,17 +162,26 @@ async function main() {
   await cdp.send("Runtime.enable");
   await cdp.send("Emulation.setDeviceMetricsOverride", { width: vw, height: vh, deviceScaleFactor: 1, mobile: false });
 
-  const first = ids[0] || args.shot[0];
-  await cdp.send("Page.navigate", { url: `${base}/iframe.html?id=${encodeURIComponent(first)}&viewMode=story` });
-  let ready = false;
-  for (let i = 0; i < 120 && !ready; i++) {
-    await sleep(500);
-    try { ready = await evalPage("!!(window.__STORYBOOK_PREVIEW__ && window.__STORYBOOK_ADDONS_CHANNEL__ && document.readyState === 'complete')"); } catch { /* navigating */ }
+  const axeSource = args.axe ? fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8") : null;
+  const runnerSource = fs.readFileSync(path.join(here, "story-sweep.runner.js"), "utf8");
+  const navLog = [];
+  cdp.on((d) => {
+    if (d.method === "Page.frameNavigated" && !d.params.frame.parentId) navLog.push(d.params.frame.url);
+    if (d.method === "Inspector.targetCrashed") navLog.push("TARGET CRASHED");
+  });
+  async function boot(storyId) {
+    await cdp.send("Page.navigate", { url: `${base}/iframe.html?id=${encodeURIComponent(storyId)}&viewMode=${args.docs ? "docs" : "story"}` });
+    let ready = false;
+    for (let i = 0; i < 120 && !ready; i++) {
+      await sleep(500);
+      try { ready = await evalPage("!!(window.__STORYBOOK_PREVIEW__ && window.__STORYBOOK_ADDONS_CHANNEL__ && document.readyState === 'complete')"); } catch { /* navigating */ }
+    }
+    if (!ready) throw new Error("Storybook preview did not initialise");
+    await sleep(1500);
+    if (axeSource) await evalPage(axeSource);
+    await evalPage(runnerSource);
   }
-  if (!ready) throw new Error("Storybook preview did not initialise");
-  await sleep(1500);
-  if (args.axe) await evalPage(fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8"));
-  await evalPage(fs.readFileSync(path.join(here, "story-sweep.runner.js"), "utf8"));
+  await boot(ids[0] || args.shot[0]);
 
   // ---- screenshots only
   if (args.shot.length) {
@@ -189,30 +204,56 @@ async function main() {
     if (!ids.length) { cdp.close(); cleanup(); return; }
   }
 
-  // ---- sweep
+  // ---- sweep (self-healing: a story that reloads or crashes the page is recorded and skipped)
   const cfg = {
-    ids, axe: !!args.axe, controls: !!args.controls,
+    ids, axe: !!args.axe, controls: !!args.controls && !args.docs, discover: !!args.discover, viewMode: args.docs ? "docs" : "story",
     settle: Number(args.settle) || 250, ctlSettle: Number(args["ctl-settle"]) || 90, ctlSettleSlow: 420,
     renderTimeout: Number(args.timeout) || 20000,
   };
-  await evalPage(`window.__sweepStart(${JSON.stringify(cfg)})`);
+  const idSet = new Set(ids);
+  cfg.warm = Object.values(index.entries).find((e) => e.type === wantType && !idSet.has(e.id))?.id || null;
+  const results = [];
+  const done = new Set();
   const t0 = Date.now();
   let lastPrint = 0;
-  for (;;) {
-    await sleep(1500);
-    let st;
-    try { st = JSON.parse(await evalPage("JSON.stringify({i: window.__sweep && window.__sweep.index, n: window.__sweep && window.__sweep.total, cur: window.__sweep && window.__sweep.current, done: window.__sweep && window.__sweep.done, fatal: window.__sweep && window.__sweep.fatal})")); }
-    catch (e) { throw new Error(`Lost the page while sweeping (was the dev server reloaded by a file change?): ${e.message}`); }
-    if (!st.n) throw new Error("Sweep state vanished (page reloaded). Use --static for a stable build.");
-    if (Date.now() - lastPrint > 15000) {
-      lastPrint = Date.now();
-      console.log(`  ${st.i}/${st.n}  ${Math.round((Date.now() - t0) / 1000)}s  ${st.cur}`);
+  let reloads = 0;
+  let todo = ids.slice();
+  while (todo.length) {
+    if (reloads) await boot(todo[0]);
+    const warm = cfg.warm && cfg.warm !== todo[0] ? cfg.warm : Object.values(index.entries).find((e) => e.type === wantType && e.id !== todo[0])?.id;
+    await evalPage(`window.__sweepStart(${JSON.stringify({ ...cfg, warm, ids: todo })})`);
+    let fetched = 0;
+    let lastCur = null;
+    for (;;) {
+      await sleep(700);
+      let st = null;
+      try {
+        st = JSON.parse(await evalPage("JSON.stringify(window.__sweep ? {i: window.__sweep.index, n: window.__sweep.total, cur: window.__sweep.current, done: window.__sweep.done} : null)"));
+      } catch { /* page is navigating or gone */ }
+      if (!st) {
+        // The page lost its state: a story reloaded / navigated / crashed it.
+        reloads++;
+        let culprit = lastCur;
+        try { await sleep(1500); culprit = (await evalPage("sessionStorage.getItem('__sweepCur')")) || lastCur; } catch { /* keep lastCur */ }
+        if (!culprit || done.has(culprit)) culprit = todo.find((id) => !done.has(id));
+        console.log(`  !! page reloaded while running ${culprit} (${navLog.slice(-2).join(" -> ")}); recording and resuming`);
+        results.push({ id: culprit, status: "page-reloaded", navigation: navLog.slice(-3) });
+        done.add(culprit);
+        todo = ids.filter((id) => !done.has(id));
+        break;
+      }
+      if (st.i > fetched) {
+        const chunk = JSON.parse(await evalPage(`JSON.stringify(window.__sweep.results.slice(${fetched}, ${st.i}))`));
+        for (const r of chunk) { results.push(r); done.add(r.id); }
+        fetched = st.i;
+      }
+      lastCur = st.cur;
+      if (Date.now() - lastPrint > 20000) {
+        lastPrint = Date.now();
+        console.log(`  ${done.size}/${ids.length}  ${Math.round((Date.now() - t0) / 1000)}s  ${st.cur}`);
+      }
+      if (st.done) { todo = []; break; }
     }
-    if (st.done) break;
-  }
-  const results = [];
-  for (let a = 0; a < ids.length; a += 40) {
-    results.push(...JSON.parse(await evalPage(`JSON.stringify(window.__sweep.results.slice(${a}, ${a + 40}))`)));
   }
   cdp.close();
   cleanup();
@@ -244,9 +285,9 @@ async function main() {
   const out = path.resolve(args.out || path.join(here, "story-sweep-report.json"));
   fs.writeFileSync(out, JSON.stringify({ base, when: new Date().toISOString(), cfg, results }, null, 1));
   const count = (s) => results.filter((r) => r.status === s).length;
-  console.log(`\n=== ${results.length} stories | rendered ${count("rendered") + count("unchanged")} | errored ${count("errored")} | threw ${count("threw")} | play-threw ${count("play-threw")} | timeout ${count("timeout")} | missing ${count("missing")} | sweep-error ${count("sweep-error")}`);
+  console.log(`\n=== ${results.length} stories | rendered ${count("rendered") + count("unchanged")} | errored ${count("errored")} | threw ${count("threw")} | play-threw ${count("play-threw")} | timeout ${count("timeout")} | missing ${count("missing")} | sweep-error ${count("sweep-error")} | page-reloaded ${count("page-reloaded")}`);
   console.log(`play functions: ${results.filter((r) => r.hasPlay).length} stories | controls tested: ${results.reduce((a, r) => a + (r.controls?.tested || 0), 0)} | report: ${out}`);
-  for (const r of fails) console.log(`FAIL ${r.status.padEnd(9)} ${r.id}  ${r.error || r.playError || ""}`);
+  for (const r of fails) console.log(`FAIL ${r.status.padEnd(9)} ${r.id}  ${r.error || r.playError || (r.navigation || []).join(" -> ")}`);
   console.log(`\n--- console (${logMap.size} distinct)`);
   for (const [k, e] of [...logMap].sort((a, b) => b[1].n - a[1].n).slice(0, 25)) console.log(`${String(e.n).padStart(4)}x in ${String(e.stories.size).padStart(3)} stories  ${k.slice(0, 200)}`);
   console.log(`\n--- horizontal overflow (${overflow.length})`);
@@ -257,6 +298,11 @@ async function main() {
   for (const [id, e] of [...axeMap].sort((a, b) => b[1].stories.size - a[1].stories.size)) console.log(`${String(e.stories.size).padStart(4)} stories ${e.impact?.padEnd(8)} ${id}  [${[...e.comps].slice(0, 6).join(", ")}${e.comps.size > 6 ? ", ..." : ""}]  e.g. ${e.sample.target}`);
   console.log(`\n--- dead controls (${dead.length} stories)`);
   for (const r of dead) console.log(`  ${r.id}: ${r.controls.dead.join(", ")}`);
+  const depStories = results.filter((r) => r.controls?.deps && Object.keys(r.controls.deps).length);
+  if (depStories.length) {
+    console.log(`--- dead controls that become effective when another control changes (suggested \`if\` conditions)`);
+    for (const r of depStories) for (const [k, ps] of Object.entries(r.controls.deps)) console.log(`  ${r.id}: ${k}  <-  ${ps.map((p) => `${p.arg}=${JSON.stringify(p.value)}`).join(" or ")}`);
+  }
   console.log(`--- controls that crash the story (${ctlErr.length})`);
   for (const r of ctlErr) console.log(`  ${r.id}: ${r.controls.errored.join(", ")}`);
   console.log(`--- stories whose DOM changes on its own (controls not testable) (${noisy.length})`);

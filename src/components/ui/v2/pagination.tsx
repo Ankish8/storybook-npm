@@ -85,8 +85,8 @@ function PaginationLink({
           size,
         }),
         isActive
-          ? "bg-semantic-bg-ui text-semantic-text-primary"
-          : "text-semantic-text-muted hover:text-semantic-text-secondary",
+          ? "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]"
+          : "text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-secondary,#5E5E5E)]",
         className
       )}
       {...props}
@@ -206,13 +206,13 @@ function PaginationInfo({
       data-slot="pagination-info"
       aria-live="polite"
       className={cn(
-        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-semantic-text-muted whitespace-nowrap",
+        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-muted,#707070)] whitespace-nowrap",
         className
       )}
       {...props}
     >
       {label}{" "}
-      <span className="font-medium text-semantic-text-primary">
+      <span className="font-medium text-[var(--v2-text-primary,#484848)]">
         {startItem}–{endItem} of {totalItems}
       </span>
     </p>

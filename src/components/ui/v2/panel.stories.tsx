@@ -71,10 +71,22 @@ function Demo({
   return (
     <section className="relative flex h-[430px] min-w-0 overflow-hidden rounded-lg border border-semantic-border-layout bg-semantic-bg-ui">
       <div className="min-w-0 flex-1 p-4">
-        <p className="m-0 text-sm font-medium text-semantic-text-primary">
+        <p
+          className={
+            version === "v1"
+              ? "m-0 text-sm font-medium text-semantic-text-primary"
+              : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+          }
+        >
           Workspace
         </p>
-        <p className="m-0 mt-2 text-xs text-semantic-text-muted">
+        <p
+          className={
+            version === "v1"
+              ? "m-0 mt-2 text-xs text-semantic-text-muted"
+              : "m-0 mt-2 text-xs text-[var(--v2-text-muted,#707070)]"
+          }
+        >
           The panel keeps its existing place in the layout.
         </p>
         <Action
@@ -92,15 +104,29 @@ function Demo({
         size={args.size}
         onClose={close}
         aria-label={args["aria-label"] || args.title}
-        className={version === "v1" ? "font-sans" : args.className}
+        className={
+          version === "v1" ? "font-sans text-foreground" : args.className
+        }
         header={
           args.customHeader ? (
             <div className="flex h-14 shrink-0 items-center gap-3 border-b border-semantic-border-layout px-4">
               <div className="min-w-0 flex-1">
-                <p className="m-0 truncate text-base font-medium text-semantic-text-primary">
+                <p
+                  className={
+                    version === "v1"
+                      ? "m-0 truncate text-base font-medium text-semantic-text-primary"
+                      : "m-0 truncate text-base font-medium text-[var(--v2-text-primary,#484848)]"
+                  }
+                >
                   {args.title}
                 </p>
-                <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+                <p
+                  className={
+                    version === "v1"
+                      ? "m-0 mt-1 text-xs text-semantic-text-muted"
+                      : "m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]"
+                  }
+                >
                   Editable contact
                 </p>
               </div>
@@ -145,7 +171,13 @@ function Demo({
         }
       >
         <div className="space-y-4 p-4">
-          <h4 className="m-0 text-xs font-semibold uppercase tracking-wide text-semantic-text-secondary">
+          <h4
+            className={
+              version === "v1"
+                ? "m-0 text-xs font-semibold uppercase tracking-wide text-semantic-text-secondary"
+                : "m-0 text-xs font-medium uppercase tracking-wide text-[var(--v2-text-primary,#484848)]"
+            }
+          >
             Basic information
           </h4>
           <div>
@@ -176,7 +208,13 @@ function Demo({
               onChange={(e) => change({ email: e.target.value })}
             />
           </div>
-          <p className="m-0 text-xs text-semantic-text-muted">
+          <p
+            className={
+              version === "v1"
+                ? "m-0 text-xs text-semantic-text-muted"
+                : "m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+            }
+          >
             Changes are local to this example.
           </p>
           {saved && (
@@ -190,10 +228,22 @@ function Demo({
                 key={i}
                 className="border-t border-semantic-border-layout pt-3"
               >
-                <p className="m-0 text-sm font-medium text-semantic-text-primary">
+                <p
+                  className={
+                    version === "v1"
+                      ? "m-0 text-sm font-medium text-semantic-text-primary"
+                      : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+                  }
+                >
                   Custom field {i + 1}
                 </p>
-                <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+                <p
+                  className={
+                    version === "v1"
+                      ? "m-0 mt-1 text-xs text-semantic-text-muted"
+                      : "m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]"
+                  }
+                >
                   Additional contact information
                 </p>
               </div>
@@ -333,7 +383,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       {children}

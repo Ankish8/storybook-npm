@@ -129,7 +129,7 @@ export const AllVariants: Story = {
       {(["horizontal", "vertical"] as const).flatMap((orientation) =>
         (["numbered", "icon"] as const).map((marker) => (
           <section key={orientation + marker} className="min-w-0 space-y-4">
-            <h3 className="m-0 text-base font-semibold capitalize">
+            <h3 className="m-0 text-base font-medium capitalize">
               {orientation} · {marker}
             </h3>
             <Sample
@@ -153,7 +153,7 @@ export const AllSizes: Story = {
     <div className="grid w-[1000px] max-w-full gap-8 lg:grid-cols-2">
       {(["sm", "md"] as const).map((size) => (
         <section key={size} className="space-y-4">
-          <h3 className="m-0 text-base font-semibold">
+          <h3 className="m-0 text-base font-medium">
             {size === "sm" ? "Small" : "Medium"}
           </h3>
           <Sample key={args.currentStep} {...args} size={size} />
@@ -171,7 +171,7 @@ export const States: Story = {
     <div className="grid w-[1000px] max-w-full gap-8 lg:grid-cols-2">
       {[0, 1, 2, 3].map((index) => (
         <section key={index} className="space-y-4">
-          <h3 className="m-0 text-base font-semibold">
+          <h3 className="m-0 text-base font-medium">
             {index === 3 ? "Disabled" : `Current step ${index + 1}`}
           </h3>
           <Sample
@@ -193,8 +193,8 @@ function Onboarding(args: StepperProps) {
   return (
     <section className="w-[760px] max-w-full space-y-6">
       <div>
-        <h3 className="m-0 text-base font-semibold">Create a workspace</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium">Create a workspace</h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Navigate the local setup flow with step labels or actions.
         </p>
       </div>
@@ -207,10 +207,10 @@ function Onboarding(args: StepperProps) {
         }}
       />
       <div className="rounded-lg border border-solid border-semantic-border-layout p-4">
-        <h4 className="m-0 text-sm font-semibold">
+        <h4 className="m-0 text-sm font-medium">
           {args.steps[index]?.title || "Review"}
         </h4>
-        <p className="m-0 mt-2 text-sm text-semantic-text-secondary">
+        <p className="m-0 mt-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
           {args.steps[index]?.description}
         </p>
       </div>
@@ -236,7 +236,10 @@ function Onboarding(args: StepperProps) {
           {index === args.steps.length - 1 ? "Finish" : "Continue"}
         </Button>
       </div>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {complete
           ? "Workspace setup completed."
           : `Step ${index + 1} of ${args.steps.length}`}

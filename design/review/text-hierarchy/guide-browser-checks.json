@@ -1,0 +1,174 @@
+[
+  {
+    "id": "v2-introduction--docs",
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "MyOperator v2",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Choose the version per screen",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Explore the stories",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Verification status",
+        "weight": "500"
+      }
+    ],
+    "paragraphs": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "The v2 library adds the redesigned components alongside the existing l",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Existing components continue to install under ui with the configured c",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "This is local work on feat/v2; it has not been published. The completi",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Continue with Migration and Foundations.",
+        "weight": "400"
+      }
+    ],
+    "scrollWidth": 980,
+    "width": 980
+  },
+  {
+    "id": "v2-foundations--docs",
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "v2 foundations",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Typography",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Text and semantic colors",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Spacing and shape",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "States and motion",
+        "weight": "500"
+      }
+    ],
+    "paragraphs": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "v2 uses softer neutral text, with clear roles for headings, body copy ",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Actions and active tabs retain 600 weight. Individual component specs ",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Common field and action corners are 8px; dialog and card corners are 1",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Interactive components distinguish hover, focus, pressed, disabled, lo",
+        "weight": "400"
+      }
+    ],
+    "scrollWidth": 980,
+    "width": 980
+  },
+  {
+    "id": "v2-migration--docs",
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Move a screen to v2",
+        "weight": "600"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "1. Configure an unprefixed Tailwind build",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "2. Install the components used on that screen",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "3. Change imports and review the screen",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Bootstrap hosts",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Rollback and retirement",
+        "weight": "500"
+      }
+    ],
+    "paragraphs": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "v2 needs a Tailwind build with an empty prefix, the library's semantic",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "The Storybook preview loads Inter from Google Fonts. Applications can ",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "The CLI installs each component's dependencies into the same namespace",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "For shared primitives, keep the existing props and callbacks. Review l",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Bootstrap and unprefixed Tailwind share utility names. A globally load",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "text": "Changing the import back restores the previous component. Keep v1 avai",
+        "weight": "400"
+      }
+    ],
+    "scrollWidth": 980,
+    "width": 980
+  }
+]

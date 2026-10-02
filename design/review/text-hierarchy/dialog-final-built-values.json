@@ -1,0 +1,51 @@
+{
+  "buttons": [
+    {
+      "color": "rgb(94, 94, 94)",
+      "text": "Cancel",
+      "weight": "500"
+    },
+    {
+      "color": "rgb(255, 255, 255)",
+      "text": "Continue",
+      "weight": "600"
+    },
+    {
+      "color": "rgb(112, 112, 112)",
+      "text": "Close",
+      "weight": "400"
+    }
+  ],
+  "heading": [
+    {
+      "color": "rgb(72, 72, 72)",
+      "text": "Update conversation settings",
+      "weight": "500"
+    }
+  ],
+  "paragraphs": [
+    {
+      "color": "rgb(112, 112, 112)",
+      "text": "Review the change before continuing.",
+      "weight": "400"
+    },
+    {
+      "color": "rgb(94, 94, 94)",
+      "text": "Use a dialog when a short task needs your attention before you return to the page.",
+      "weight": "400"
+    },
+    {
+      "color": "rgb(72, 72, 72)",
+      "text": "Conversation settings",
+      "weight": "500"
+    },
+    {
+      "color": "rgb(112, 112, 112)",
+      "text": "Changes apply to future conversations in this workspace.",
+      "weight": "400"
+    }
+  ],
+  "radius": "12px",
+  "width": 512,
+  "focusReturned": "Open dialog"
+}

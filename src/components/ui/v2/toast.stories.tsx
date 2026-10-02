@@ -83,7 +83,11 @@ function ToastBody({
         type="button"
         aria-label="Dismiss preview"
         onClick={() => args.onOpenChange?.(false)}
-        className="inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
+        className={
+          version === "v1"
+            ? "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
+            : "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)]"
+        }
       >
         <X className="size-3" />
       </button>
@@ -99,7 +103,9 @@ function ToastBody({
         onClick={() => args.onAction?.()}
         aria-label={args.actionAltText}
         className={cn(
-          "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-semibold text-semantic-text-secondary hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50",
+          version === "v1"
+            ? "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-semibold text-semantic-text-secondary hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50"
+            : "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50",
           version === "v2"
             ? "rounded-lg tracking-[0.06px] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)]"
             : "rounded-md px-3"
@@ -179,7 +185,10 @@ function LiveToast({
         <Button variant="outline" onClick={() => changeOpen(true)}>
           {args.triggerLabel}
         </Button>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           {args.open ? "Notification open" : "Notification closed"}
         </p>
       </div>
@@ -503,7 +512,7 @@ export const AllVariants: Story = {
       <div className="grid min-w-[1224px] grid-cols-3 items-start gap-6">
         {VARIANTS.map((variant) => (
           <div key={variant} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {variant}
             </span>
             <InlineToast args={{ ...args, variant }} />
@@ -526,12 +535,12 @@ export const States: Story = {
       <div className="grid min-w-[1224px] grid-cols-3 items-start gap-6">
         {["Visible", "Disabled action", "Dismissed"].map((state) => (
           <div key={state} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {state}
             </span>
             {state === "Dismissed" ? (
               <div className="flex min-h-[116px] w-[384px] items-center justify-center rounded-lg border border-dashed border-semantic-border-layout p-4">
-                <p className="m-0 text-xs text-semantic-text-muted">
+                <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
                   Notification closed · content unmounted
                 </p>
               </div>
@@ -563,14 +572,14 @@ export const V1VsV2: Story = {
         {["v1 · ui/toast", "v2 · ui/v2/toast"].map((label) => (
           <span
             key={label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-normal text-[var(--v2-text-muted,#707070)]"
           >
             {label}
           </span>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <span className="pt-5 text-xs font-semibold text-semantic-text-muted">
+            <span className="pt-5 text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {variant}
             </span>
             <InlineToast args={{ ...args, variant }} version="v1" />
@@ -595,10 +604,10 @@ function WorkspaceForm({
   return (
     <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Workspace settings
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           Save a local edit and use the notification action to undo it.
         </p>
       </div>
@@ -633,7 +642,7 @@ function WorkspaceForm({
       >
         <label
           htmlFor={id}
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className="text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
         >
           Workspace name
         </label>
@@ -656,10 +665,13 @@ function WorkspaceForm({
           </Button>
         </div>
       </form>
-      <p className="m-0 text-sm text-semantic-text-primary">
+      <p className="m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
         Saved name: {saved}
       </p>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {result}
       </p>
       <Toaster />

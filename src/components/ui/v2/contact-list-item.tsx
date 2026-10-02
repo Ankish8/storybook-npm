@@ -73,17 +73,17 @@ const ContactListItem = React.forwardRef(
 
         <div className="flex-1 flex items-center justify-between min-w-0">
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-medium text-semantic-text-primary leading-5 truncate">
+            <span className="text-sm font-medium text-[var(--v2-text-primary,#484848)] leading-5 truncate">
               {name}
             </span>
             {subtitle && (
-              <span className="text-xs text-semantic-text-muted">
+              <span className="text-xs text-[var(--v2-text-muted,#707070)]">
                 {subtitle}
               </span>
             )}
           </div>
           {trailing && (
-            <span className="text-xs font-medium text-semantic-text-muted shrink-0 ml-2">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)] shrink-0 ml-2">
               {trailing}
             </span>
           )}

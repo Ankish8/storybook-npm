@@ -86,7 +86,11 @@ function ProfileFields({
       <div className="flex min-w-0 flex-col gap-1">
         <label
           htmlFor={`${id}-name`}
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "text-sm font-semibold text-semantic-text-secondary"
+              : "text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
+          }
         >
           Name
         </label>
@@ -101,7 +105,11 @@ function ProfileFields({
       <div className="flex min-w-0 flex-col gap-1">
         <label
           htmlFor={`${id}-email`}
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "text-sm font-semibold text-semantic-text-secondary"
+              : "text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
+          }
         >
           Email
         </label>
@@ -117,7 +125,11 @@ function ProfileFields({
       <div className="flex min-w-0 flex-col gap-1">
         <label
           htmlFor={`${id}-department`}
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "text-sm font-semibold text-semantic-text-secondary"
+              : "text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
+          }
         >
           Department
         </label>
@@ -399,7 +411,9 @@ function InlineForm({
         aria-label={String(args.title)}
         style={{ width: WIDTHS[args.size || "sm"] }}
         className={cn(
-          "relative flex max-w-full flex-col border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]",
+          version === "v1"
+            ? "relative flex max-w-full flex-col border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]"
+            : "relative flex max-w-full flex-col border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]",
           version === "v2"
             ? "gap-0 rounded-xl border-[1.2px] p-0 font-[family-name:var(--font-v2,Inter,sans-serif)]"
             : "gap-4 rounded-lg p-6"
@@ -414,7 +428,9 @@ function InlineForm({
           aria-label="Close preview"
           onClick={() => args.onOpenChange(false)}
           className={cn(
-            "absolute flex size-6 items-center justify-center rounded border-0 bg-transparent text-semantic-text-muted",
+            version === "v1"
+              ? "absolute flex size-6 items-center justify-center rounded border-0 bg-transparent text-semantic-text-muted"
+              : "absolute flex size-6 items-center justify-center rounded border-0 bg-transparent text-[var(--v2-text-muted,#707070)]",
             version === "v2" ? "right-6 top-6" : "right-4 top-4"
           )}
         >
@@ -464,7 +480,7 @@ export const AllSizes: Story = {
       <div className="flex min-w-[3632px] items-start gap-6">
         {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
           <div key={size} className="flex shrink-0 flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {size} ·{" "}
               {size === "full" ? "viewport reference" : `${WIDTHS[size]}px`}
             </span>
@@ -492,7 +508,7 @@ export const States: Story = {
           { label: "Loading", loading: true, disableSave: false },
         ].map(({ label, ...state }) => (
           <div key={label} className="flex shrink-0 flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {label}
             </span>
             <InlineForm args={{ ...args, ...state }} />
@@ -516,7 +532,7 @@ export const V1VsV2: Story = {
       <div className="flex items-start gap-6">
         {(["v1", "v2"] as const).map((version) => (
           <div key={version} className="flex shrink-0 flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {version} ·{" "}
               {version === "v1" ? "ui/form-modal" : "ui/v2/form-modal"}
             </span>
@@ -546,21 +562,29 @@ function ProfileExample({
   return (
     <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Workspace profile
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           Edit, validate and save this local profile.
         </p>
       </div>
       <dl className="m-0 grid grid-cols-[100px_1fr] gap-x-4 gap-y-2 text-sm">
-        <dt className="text-semantic-text-muted">Name</dt>
+        <dt className="font-medium text-[var(--v2-text-muted,#707070)]">
+          Name
+        </dt>
         <dd className="m-0 break-words">{saved.nameValue}</dd>
-        <dt className="text-semantic-text-muted">Email</dt>
+        <dt className="font-medium text-[var(--v2-text-muted,#707070)]">
+          Email
+        </dt>
         <dd className="m-0 break-words">{saved.emailValue}</dd>
-        <dt className="text-semantic-text-muted">Department</dt>
+        <dt className="font-medium text-[var(--v2-text-muted,#707070)]">
+          Department
+        </dt>
         <dd className="m-0 capitalize">{saved.department}</dd>
-        <dt className="text-semantic-text-muted">Notifications</dt>
+        <dt className="font-medium text-[var(--v2-text-muted,#707070)]">
+          Notifications
+        </dt>
         <dd className="m-0">{saved.notifications ? "Enabled" : "Paused"}</dd>
       </dl>
       <div>
@@ -583,7 +607,10 @@ function ProfileExample({
           }}
         />
       </div>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {status}
       </p>
     </section>

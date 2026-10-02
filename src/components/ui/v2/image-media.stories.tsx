@@ -120,7 +120,9 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-3 text-base font-semibold">{title}</h3>
+      <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -188,8 +190,10 @@ export const Usage: Story = {
     const [, update] = useArgs<Args>();
     return (
       <section className="max-w-xl rounded-lg border border-semantic-border-layout p-4">
-        <h3 className="m-0 text-base font-semibold">Image in a message</h3>
-        <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Image in a message
+        </h3>
+        <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
           Click the preview to enlarge it. This state is local to the example.
         </p>
         <button

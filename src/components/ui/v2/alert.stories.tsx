@@ -112,7 +112,7 @@ function AlertExample({
       </UI>
       {!visible && (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-semantic-border-layout p-4">
-          <p className="m-0 text-sm text-semantic-text-muted">
+          <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
             Alert dismissed.
           </p>
           <Button
@@ -358,7 +358,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       {children}
@@ -458,10 +458,10 @@ function SettingsExample({
   const [saved, setSaved] = React.useState(false);
   return (
     <section className="max-w-[760px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Inbox settings
       </h3>
-      <p className="m-0 mt-1 mb-5 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-5 text-xs text-[var(--v2-text-muted,#707070)]">
         Save a name to display local feedback. Dismissal stays synchronized with
         Controls.
       </p>
@@ -476,7 +476,7 @@ function SettingsExample({
         <div className="min-w-[220px] flex-1">
           <label
             htmlFor="alert-inbox-name"
-            className="mb-2 block text-sm font-medium"
+            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           >
             Inbox name
           </label>
@@ -495,7 +495,7 @@ function SettingsExample({
         </Button>
       </form>
       {saved && (
-        <p className="m-0 mb-3 text-xs text-semantic-text-muted">
+        <p className="m-0 mb-3 text-xs text-[var(--v2-text-muted,#707070)]">
           Saved locally: {name}
         </p>
       )}

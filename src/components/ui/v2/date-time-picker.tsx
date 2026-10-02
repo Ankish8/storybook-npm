@@ -55,7 +55,7 @@ const CALENDAR_PLACEMENT: Placement = "bottom-start";
 const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
 const CALENDAR_DROPDOWN_TRIGGER_CLASS =
-  "h-9 min-w-[90px] rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-semantic-text-primary outline-none transition-colors hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]";
+  "h-9 min-w-[90px] rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]";
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = Array.from({ length: 12 }, (_, monthIndex) =>
   new Intl.DateTimeFormat("en-US", { month: "short" }).format(
@@ -90,7 +90,7 @@ const dateTimePickerVariants = cva(
 );
 
 const dateTimePickerTriggerVariants = cva(
-  "flex w-full items-center justify-between rounded-lg border border-solid bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-left text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150",
+  "flex w-full items-center justify-between rounded-lg border border-solid bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150",
   {
     variants: {
       size: {
@@ -1177,8 +1177,8 @@ function CalendarDropdown({
                 className={cn(
                   "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40",
                   option.value === value
-                    ? "border-semantic-info-border bg-semantic-info-surface font-semibold text-semantic-text-primary"
-                    : "border-transparent text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                    ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
+                    : "border-transparent text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
                 )}
                 onClick={() => {
                   if (option.disabled) return;
@@ -1228,7 +1228,7 @@ function TimeColumn({
 
   return (
     <div className="flex min-w-0 flex-col border-r border-solid border-semantic-border-layout last:border-r-0">
-      <div className="border-b border-solid border-semantic-border-layout px-1 py-2 text-center text-[11px] font-semibold uppercase tracking-wide text-semantic-text-muted">
+      <div className="border-b border-solid border-semantic-border-layout px-1 py-2 text-center text-[11px] font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
         {header}
       </div>
       <div
@@ -1248,8 +1248,8 @@ function TimeColumn({
             className={cn(
               "flex shrink-0 items-center justify-center rounded-md border border-solid px-2 py-1.5 text-sm transition-colors",
               option.selected
-                ? "border-semantic-info-border bg-semantic-info-surface font-semibold text-semantic-text-primary"
-                : "border-transparent text-semantic-text-secondary hover:bg-semantic-bg-hover"
+                ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
+                : "border-transparent text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
             )}
             onClick={() => onSelect(option.key)}
           >
@@ -1332,7 +1332,7 @@ function TimeField({
     <div className="flex flex-col gap-1.5">
       <span
         id={`${id}-label`}
-        className="block text-sm font-semibold text-semantic-text-secondary"
+        className="block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
       >
         {label}
       </span>
@@ -1344,14 +1344,14 @@ function TimeField({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "flex h-[42px] w-full items-center gap-2 rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-semantic-text-primary outline-none transition-colors hover:border-[var(--color-primary-100,#C0C3CA)]",
+          "flex h-[42px] w-full items-center gap-2 rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:border-[var(--color-primary-100,#C0C3CA)]",
           open &&
             "border-[var(--color-secondary-600,#27ABB8)] shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
         )}
         onClick={() => onOpenChange(!open)}
       >
         <Clock2
-          className="size-4 shrink-0 text-semantic-text-muted"
+          className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
           aria-hidden="true"
         />
         <span className="m-0 min-w-0 flex-1 truncate">
@@ -1359,7 +1359,7 @@ function TimeField({
         </span>
         <ChevronDown
           className={cn(
-            "size-4 shrink-0 text-semantic-text-muted transition-transform",
+            "size-4 shrink-0 text-[var(--v2-text-muted,#707070)] transition-transform",
             open && "rotate-180"
           )}
           aria-hidden="true"
@@ -1954,7 +1954,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           }
           aria-label={showCalendar ? undefined : "Time picker"}
           className={cn(
-            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
@@ -1980,7 +1980,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <button
                   type="button"
                   aria-label="Previous month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
                   onClick={() =>
                     syncCalendarMonthAndValue(addMonths(visibleMonth, -1))
                   }
@@ -2052,7 +2052,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <button
                   type="button"
                   aria-label="Next month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
                   onClick={() =>
                     syncCalendarMonthAndValue(addMonths(visibleMonth, 1))
                   }
@@ -2065,7 +2065,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="mx-auto flex size-8 items-center justify-center text-xs font-semibold text-semantic-text-muted"
+                    className="mx-auto flex size-8 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)]"
                   >
                     {day}
                   </div>
@@ -2095,10 +2095,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       className={cn(
                         "relative flex items-center justify-center size-8 mx-auto rounded-full text-xs transition-colors",
                         isSelected
-                          ? "bg-semantic-primary text-semantic-text-inverted font-semibold"
+                          ? "bg-semantic-primary text-semantic-text-inverted font-medium"
                           : isCurrentMonth
-                            ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
-                            : "text-semantic-text-muted hover:bg-semantic-bg-hover",
+                            ? "text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
+                            : "text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover",
                         isToday &&
                           !isSelected &&
                           "ring-1 ring-inset ring-semantic-border-secondary",
@@ -2203,7 +2203,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           <label
             htmlFor={triggerId}
             className={cn(
-              "mb-1.5 block text-sm font-semibold text-semantic-text-secondary",
+              "mb-1.5 block text-sm font-medium text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -2220,9 +2220,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             open &&
               resolvedState !== "error" &&
               "border-[var(--color-secondary-600,#27ABB8)] shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
-            !displayValue && "text-semantic-text-placeholder",
+            !displayValue && "text-[var(--v2-text-placeholder,#707070)]",
             disabled &&
-              "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout text-semantic-text-muted shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
+              "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout text-[var(--v2-text-muted,#707070)] shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
           )}
         >
           <input
@@ -2243,7 +2243,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   ? "Time"
                   : "Date and time"
             }
-            className="min-w-0 flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed read-only:cursor-not-allowed"
+            className="min-w-0 flex-1 bg-transparent text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed read-only:cursor-not-allowed"
             onFocus={() => {
               setIsDateInputFocused(true);
               // Drop the placeholder masks while editing so the sanitizers only
@@ -2263,7 +2263,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <button
                 type="button"
                 aria-label="Clear date"
-                className="inline-flex size-5 items-center justify-center rounded text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                className="inline-flex size-5 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
                 onClick={clearValue}
               >
                 <X className="size-4" aria-hidden="true" />
@@ -2273,7 +2273,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             type="button"
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
-            className="inline-flex shrink-0 items-center justify-center rounded text-semantic-text-muted hover:bg-semantic-bg-hover hover:text-semantic-text-primary disabled:cursor-not-allowed"
+            className="inline-flex shrink-0 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
             onClick={() => setOpen(!open)}
           >
             {showCalendar ? (
@@ -2299,7 +2299,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {error}
               </span>
             ) : (
-              <span id={helperId} className="text-xs text-semantic-text-muted">
+              <span
+                id={helperId}
+                className="text-xs text-[var(--v2-text-muted,#707070)]"
+              >
                 {helperText}
               </span>
             )}

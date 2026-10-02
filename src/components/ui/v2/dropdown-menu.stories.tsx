@@ -290,7 +290,13 @@ const meta: Meta<MenuArgs> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Hover", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Text", "--semantic-text-primary", "#181D27", "#181D27"],
+            [
+              "Section and selected labels",
+              "--v2-text-primary",
+              "#484848",
+              "#484848",
+            ],
+            ["Choice labels", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Supporting text", "--semantic-text-muted", "#717680", "#717680"],
             [
               "Selected check",
@@ -489,13 +495,21 @@ function InlineMenu({
       data-presentation="inline"
       data-version={version}
       className={cn(
-        "w-72 max-w-full border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md",
+        version === "v1"
+          ? "w-72 max-w-full border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
+          : "w-72 max-w-full border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-[var(--v2-text-secondary,#5E5E5E)] shadow-md",
         version === "v2"
           ? "rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)]"
           : "rounded-md"
       )}
     >
-      <div className="px-2 py-1.5 text-sm font-semibold text-semantic-text-secondary">
+      <div
+        className={
+          version === "v1"
+            ? "px-2 py-1.5 text-sm font-semibold text-semantic-text-secondary"
+            : "px-2 py-1.5 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+        }
+      >
         {args.groupLabel}
       </div>
       <div className="-mx-1 my-1 h-px bg-semantic-border-layout" />
@@ -503,7 +517,10 @@ function InlineMenu({
         className={cn(
           row,
           args.destructive && "text-semantic-error-text",
-          state === "Focus" && "bg-semantic-bg-ui",
+          state === "Focus" &&
+            (version === "v2"
+              ? "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]"
+              : "bg-semantic-bg-ui"),
           "hover:bg-semantic-bg-ui disabled:text-semantic-disabled-primary"
         )}
         disabled={state === "Disabled" || args.disabled}
@@ -515,18 +532,36 @@ function InlineMenu({
             {args.itemLabel}
           </span>
           {args.description && (
-            <span className="text-xs text-semantic-text-muted">
+            <span
+              className={
+                version === "v1"
+                  ? "text-xs text-semantic-text-muted"
+                  : "text-xs text-[var(--v2-text-muted,#707070)]"
+              }
+            >
               {args.description}
             </span>
           )}
         </span>
         {args.suffix && (
-          <span className="shrink-0 text-xs text-semantic-text-muted">
+          <span
+            className={
+              version === "v1"
+                ? "shrink-0 text-xs text-semantic-text-muted"
+                : "shrink-0 text-xs text-[var(--v2-text-muted,#707070)]"
+            }
+          >
             {args.suffix}
           </span>
         )}
         {args.showShortcut && (
-          <span className="inline-flex h-5 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-semantic-text-muted">
+          <span
+            className={
+              version === "v1"
+                ? "inline-flex h-5 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-semantic-text-muted"
+                : "inline-flex h-5 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-[var(--v2-text-muted,#707070)]"
+            }
+          >
             ⌘E
           </span>
         )}
@@ -534,6 +569,9 @@ function InlineMenu({
       <button
         className={cn(
           row,
+          version === "v2" &&
+            checked &&
+            "text-[var(--v2-text-primary,#484848)]",
           "pl-8 hover:bg-semantic-bg-ui disabled:text-semantic-disabled-primary"
         )}
         disabled={args.disabled}
@@ -623,7 +661,7 @@ export const AllVariants: Story = {
           },
         ].map(({ label, ...fixed }) => (
           <div key={label} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {label}
             </span>
             <InlineMenu args={{ ...args, ...fixed }} />
@@ -646,7 +684,7 @@ export const States: Story = {
       <div className="grid min-w-[940px] grid-cols-3 items-start gap-6">
         {["Default", "Focus", "Disabled"].map((state) => (
           <div key={state} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {state}
             </span>
             <InlineMenu
@@ -678,7 +716,7 @@ export const V1VsV2: Story = {
       <div className="grid min-w-[640px] grid-cols-2 items-start gap-8">
         {(["v1", "v2"] as const).map((version) => (
           <div key={version} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {version} ·{" "}
               {version === "v1" ? "ui/dropdown-menu" : "ui/v2/dropdown-menu"}
             </span>
@@ -702,10 +740,10 @@ function WorkspaceActions({
     <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <p className="m-0 text-base font-semibold text-semantic-text-primary">
+          <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
             Customer support inbox
           </p>
-          <p className="m-0 text-xs text-semantic-text-muted">
+          <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
             Choose an action, preference or sort order. This example changes
             local state.
           </p>
@@ -713,16 +751,22 @@ function WorkspaceActions({
         <MenuExample args={args} updateArgs={updateArgs} onResult={setResult} />
       </div>
       <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-        <dt className="text-semantic-text-muted">Notifications</dt>
-        <dd className="m-0 text-semantic-text-primary">
+        <dt className="font-medium text-[var(--v2-text-muted,#707070)]">
+          Notifications
+        </dt>
+        <dd className="m-0 text-[var(--v2-text-primary,#484848)]">
           {args.checked ? "Enabled" : "Disabled"}
         </dd>
-        <dt className="text-semantic-text-muted">Sort order</dt>
-        <dd className="m-0 text-semantic-text-primary">{args.value}</dd>
+        <dt className="font-medium text-[var(--v2-text-muted,#707070)]">
+          Sort order
+        </dt>
+        <dd className="m-0 text-[var(--v2-text-primary,#484848)]">
+          {args.value}
+        </dd>
       </dl>
       <p
         id="conversation-details"
-        className="m-0 text-xs text-semantic-text-muted"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
         role="status"
       >
         {result}

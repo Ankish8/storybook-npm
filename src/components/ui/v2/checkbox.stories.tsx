@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { gallery, PreviewCheckbox } from "../../../storybook/v2-preview";
 import { Checkbox, type CheckedState, type CheckboxProps } from "./checkbox";
 import { Checkbox as CheckboxV1 } from "../checkbox";
@@ -72,7 +79,7 @@ const meta: Meta<typeof Checkbox> = {
             [
               "Labels",
               "Inherited font",
-              "Inter, with the same sizes, weight and placement",
+              "Inter 500 labels, with the same sizes and placement",
             ],
             [
               "Behavior",
@@ -115,8 +122,8 @@ const meta: Meta<typeof Checkbox> = {
               "#FFFFFF",
               "#FFFFFF",
             ],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
-            ["Font", "--font-v2", "Inter 600"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
+            ["Font", "--font-v2", "Inter 500"],
           ],
           guidance:
             'Use Checkbox for independent choices or multi-selection. Pass `checked="indeterminate"` to represent a partially selected group. A visible `label` supplies an accessible name; use `aria-label` for a standalone box. With `separateLabel`, supply an `id` to link the label to the control.',
@@ -231,7 +238,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-8">
       {CHECKED_STATES.map((state) => (
         <div key={state.label} className="flex flex-col items-start gap-3">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {state.label}
           </span>
           <PreviewCheckbox {...args} id={undefined} checked={state.checked} />
@@ -253,7 +260,7 @@ export const AllSizes: Story = {
       <div className="flex max-w-full flex-wrap items-end gap-8">
         {SIZES.map((size) => (
           <div key={size} className="flex flex-col items-start gap-3">
-            <span className="text-xs text-semantic-text-muted">
+            <span className="text-xs text-[var(--v2-text-muted,#707070)]">
               {size} · {size === "sm" ? 16 : size === "lg" ? 24 : 20}px
             </span>
             <Checkbox
@@ -287,7 +294,7 @@ export const States: Story = {
         {STATE_COLUMNS.map((column) => (
           <div
             key={column.label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </div>
@@ -295,7 +302,7 @@ export const States: Story = {
         {SIZES.flatMap((size) =>
           CHECKED_STATES.map((state) => (
             <React.Fragment key={size + state.label}>
-              <div className="text-xs font-semibold text-semantic-text-secondary">
+              <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
                 {state.label} · {size}
               </div>
               {STATE_COLUMNS.map((column) => (
@@ -353,16 +360,16 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[720px] grid-cols-[150px_1fr_1fr] items-center gap-x-8 gap-y-5">
         <div />
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 (ui/checkbox)
         </div>
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/checkbox)
         </div>
         {SIZES.flatMap((size) =>
           CHECKED_STATES.map((state) => (
             <React.Fragment key={size + state.label}>
-              <span className="text-xs text-semantic-text-secondary">
+              <span className="text-xs text-[var(--v2-text-secondary,#5E5E5E)]">
                 {state.label} · {size}
               </span>
               <CheckboxV1
@@ -380,7 +387,9 @@ export const V1VsV2: Story = {
             </React.Fragment>
           ))
         )}
-        <span className="text-xs text-semantic-text-secondary">Focus</span>
+        <span className="text-xs text-[var(--v2-text-secondary,#5E5E5E)]">
+          Focus
+        </span>
         <CheckboxV1
           {...args}
           checked
@@ -393,7 +402,9 @@ export const V1VsV2: Story = {
           checked
           className="pseudo-focus-visible"
         />
-        <span className="text-xs text-semantic-text-secondary">Disabled</span>
+        <span className="text-xs text-[var(--v2-text-secondary,#5E5E5E)]">
+          Disabled
+        </span>
         <CheckboxV1 {...args} checked disabled id="v1-checkbox-disabled" />
         <PreviewCheckbox {...args} id={undefined} checked disabled />
       </div>
@@ -414,10 +425,10 @@ function ConversationSelection(args: CheckboxProps) {
         : "indeterminate";
   return (
     <div className="w-[420px] max-w-full rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
-      <p className="m-0 text-base font-semibold text-semantic-text-primary">
+      <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Select conversations
       </p>
-      <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
         Choose the conversations to include in an export.
       </p>
       <div className="mt-6 border-b border-semantic-border-layout pb-4">
@@ -452,7 +463,7 @@ function ConversationSelection(args: CheckboxProps) {
         ))}
       </div>
       <p
-        className="m-0 border-t border-semantic-border-layout pt-4 text-xs text-semantic-text-muted"
+        className="m-0 border-t border-semantic-border-layout pt-4 text-xs text-[var(--v2-text-muted,#707070)]"
         role="status"
       >
         {selected.length} of {names.length} selected
@@ -466,4 +477,56 @@ export const Usage: Story = {
     "A working tri-state selection group. Size, disabled, label position, separate-label and styling controls apply to every checkbox."
   ),
   render: (args) => <ConversationSelection {...args} />,
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: { checked: false, label: "Include resolved conversations" },
+  parameters: {
+    // Every args update re-runs Storybook's loaders; the default mock restore
+    // would wipe the spy history in the middle of the play function.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Plays real keyboard, box and label clicks against the action spy, and ends unchecked again. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const checkbox = canvas.getByRole("checkbox", {
+      name: "Include resolved conversations",
+    });
+
+    await step(
+      "Tab focuses it; Space toggles it and Enter does not",
+      async () => {
+        await userEvent.tab();
+        await expect(checkbox).toHaveFocus();
+        await userEvent.keyboard(" ");
+        await waitFor(() => expect(checkbox).toBeChecked());
+        await userEvent.keyboard("{Enter}");
+        await expect(args.onCheckedChange).toHaveBeenCalledTimes(1);
+        await userEvent.keyboard(" ");
+        await waitFor(() => expect(checkbox).not.toBeChecked());
+        await expect(args.onCheckedChange).toHaveBeenCalledTimes(2);
+      }
+    );
+
+    await step("Clicking the box checks it", async () => {
+      await userEvent.click(checkbox);
+      await expect(args.onCheckedChange).toHaveBeenLastCalledWith(true);
+      await waitFor(() => expect(checkbox).toBeChecked());
+    });
+
+    await step("Clicking the label unchecks it", async () => {
+      await userEvent.click(canvas.getByText("Include resolved conversations"));
+      await expect(args.onCheckedChange).toHaveBeenLastCalledWith(false);
+      await waitFor(() => expect(checkbox).not.toBeChecked());
+      await expect(args.onCheckedChange).toHaveBeenCalledTimes(4);
+    });
+  },
 };

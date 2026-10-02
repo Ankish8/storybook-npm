@@ -371,7 +371,7 @@ const SelectField = React.forwardRef(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-sm font-semibold leading-5 tracking-[0.014px] text-semantic-text-secondary",
+              "text-sm font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -398,10 +398,10 @@ const SelectField = React.forwardRef(
             className={cn(
               "relative",
               loading && "pr-10",
-              // Figma "routing" style uses a darker (text-muted) placeholder
-              // instead of the default lighter placeholder token.
+              // Routing uses the supporting-text placeholder role. Radix
+              // puts the empty-state attribute on the trigger.
               separateGroups &&
-                "[&>span[data-placeholder]]:text-semantic-text-muted",
+                "data-[placeholder]:[--v2-select-value-color:var(--v2-text-muted,#707070)]",
               triggerClassName
             )}
             aria-invalid={!!error}
@@ -409,7 +409,7 @@ const SelectField = React.forwardRef(
           >
             <SelectValue placeholder={placeholder} />
             {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-semantic-text-muted" />
+              <Loader2 className="absolute right-8 size-4 animate-spin text-[var(--v2-text-muted,#707070)]" />
             )}
           </SelectTrigger>
           <SelectContent
@@ -437,14 +437,14 @@ const SelectField = React.forwardRef(
                 </div>
               ) : (
                 <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
-                  <Search className="size-4 text-semantic-text-muted shrink-0" />
+                  <Search className="size-4 text-[var(--v2-text-muted,#707070)] shrink-0" />
                   <input
                     type="text"
                     placeholder={searchPlaceholder}
                     aria-label={searchPlaceholder}
                     value={effectiveSearchQuery}
                     onChange={handleSearchChange}
-                    className="w-full h-10 text-base text-semantic-text-primary bg-transparent placeholder:text-semantic-text-placeholder focus:outline-none"
+                    className="w-full h-10 text-base text-[var(--v2-text-secondary,#5E5E5E)] bg-transparent placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none"
                     // Prevent closing dropdown when clicking input
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => e.stopPropagation()}
@@ -503,7 +503,7 @@ const SelectField = React.forwardRef(
 
             {/* No results message — based on the count of *visible* options. */}
             {searchable && effectiveSearchQuery && totalRendered === 0 && (
-              <div className="py-6 text-center text-xs text-semantic-text-muted">
+              <div className="py-6 text-center text-xs text-[var(--v2-text-muted,#707070)]">
                 No results found
               </div>
             )}
@@ -512,7 +512,7 @@ const SelectField = React.forwardRef(
             {options.length === 0 && !effectiveSearchQuery && !loadingMore && (
               <div
                 role="status"
-                className="px-3 py-6 text-center text-xs text-semantic-text-muted"
+                className="px-3 py-6 text-center text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 {emptyMessage}
               </div>
@@ -523,7 +523,7 @@ const SelectField = React.forwardRef(
               <div
                 role="status"
                 aria-live="polite"
-                className="flex items-center justify-center gap-2 py-2 text-xs text-semantic-text-muted"
+                className="flex items-center justify-center gap-2 py-2 text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
                 <span>Loading more…</span>
@@ -534,7 +534,7 @@ const SelectField = React.forwardRef(
             {showEndOfList && (
               <div
                 role="status"
-                className="py-2 text-center text-xs text-semantic-text-muted"
+                className="py-2 text-center text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 End of list
               </div>
@@ -550,7 +550,10 @@ const SelectField = React.forwardRef(
                 {error}
               </span>
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-semantic-text-muted">
+              <span
+                id={helperId}
+                className="text-xs text-[var(--v2-text-muted,#707070)]"
+              >
                 {helperText}
               </span>
             ) : null}

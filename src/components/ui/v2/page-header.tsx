@@ -103,7 +103,7 @@ const PageHeader = React.forwardRef(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-semantic-bg-ui transition-colors text-semantic-text-primary"
+            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-semantic-bg-ui transition-colors text-[var(--v2-text-primary,#484848)]"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -112,7 +112,7 @@ const PageHeader = React.forwardRef(
       }
       if (icon) {
         return (
-          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-semantic-text-muted">
+          <div className="flex items-center justify-center w-10 h-10 [&_svg]:w-6 [&_svg]:h-6 text-[var(--v2-text-muted,#707070)]">
             {icon}
           </div>
         );
@@ -281,18 +281,18 @@ const PageHeader = React.forwardRef(
           {/* Content Section: Title + Description */}
           <div className="min-h-0 flex-1 min-w-0">
             <div className="flex h-auto min-h-0 items-center gap-2">
-              <h1 className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-semantic-text-primary truncate">
+              <h1 className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-[var(--v2-text-primary,#484848)] truncate">
                 {title}
               </h1>
               {badge && <span className="flex-shrink-0">{badge}</span>}
               {infoIcon && (
-                <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-semantic-text-muted">
+                <span className="flex-shrink-0 [&_svg]:w-4 [&_svg]:h-4 text-[var(--v2-text-muted,#707070)]">
                   {infoIcon}
                 </span>
               )}
             </div>
             {description && (
-              <p className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[normal] text-semantic-text-muted font-normal mt-0.5 line-clamp-2">
+              <p className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[normal] text-[var(--v2-text-muted,#707070)] font-normal mt-0.5 line-clamp-2">
                 {description}
               </p>
             )}

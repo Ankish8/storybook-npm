@@ -41,6 +41,7 @@ const meta: Meta<typeof OtpInput> = {
             ],
           ],
           tokens: [
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
             ["Focus", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
@@ -121,7 +122,9 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {([4, 6] as const).map((length) => (
         <section key={length}>
-          <h3 className="m-0 mb-2 text-base font-semibold">{length} digits</h3>
+          <h3 className="m-0 mb-2 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+            {length} digits
+          </h3>
           <Sample key={length + String(args.value)} {...args} length={length} />
         </section>
       ))}
@@ -137,7 +140,9 @@ export const AllVariants: Story = {
     <div className="max-w-full space-y-6">
       {["Default", "Error", "Disabled"].map((state) => (
         <section key={state}>
-          <h3 className="m-0 mb-2 text-base font-semibold">{state}</h3>
+          <h3 className="m-0 mb-2 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+            {state}
+          </h3>
           <Sample
             key={state + args.value + args.length}
             {...args}
@@ -180,7 +185,9 @@ export const States: Story = {
                   : "min-w-0 space-y-2"
             }
           >
-            <h3 className="m-0 text-base font-semibold">{state}</h3>
+            <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+              {state}
+            </h3>
             <Sample
               key={state + args.value + args.length}
               {...args}
@@ -210,8 +217,10 @@ function Verification(args: OtpInputProps) {
       }}
     >
       <div>
-        <h3 className="m-0 text-base font-semibold">Verify your phone</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Verify your phone
+        </h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Paste a code or enter one digit at a time.
         </p>
       </div>
@@ -242,7 +251,10 @@ function Verification(args: OtpInputProps) {
           Request new code
         </Button>
       </div>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {submittedValue === value && value.length === (args.length || 4)
           ? "Code submitted for verification."
           : "Waiting for your code."}

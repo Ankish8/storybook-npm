@@ -41,7 +41,7 @@ const ProgressIndicator = React.forwardRef<
         aria-valuemax={100}
         aria-valuenow={indeterminate ? undefined : percentage}
         className={cn(
-          "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[15px] text-semantic-text-primary",
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[15px] text-[var(--v2-text-secondary,#5E5E5E)]",
           circle
             ? "relative inline-flex w-[54px] items-center justify-center"
             : "flex w-[320px] max-w-full items-center gap-3",
@@ -113,7 +113,7 @@ const ProgressIndicator = React.forwardRef<
               <span
                 aria-hidden="true"
                 className={cn(
-                  "absolute text-xs font-semibold tracking-[0.06px]",
+                  "absolute text-xs font-medium tracking-[0.06px]",
                   semi && "bottom-0"
                 )}
               >

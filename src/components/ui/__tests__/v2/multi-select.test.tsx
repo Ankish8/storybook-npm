@@ -68,7 +68,7 @@ describe("MultiSelect", () => {
     render(<MultiSelect options={defaultOptions} helperText="Helper text" />);
     expect(screen.getByText("Helper text")).toBeInTheDocument();
     expect(screen.getByText("Helper text")).toHaveClass(
-      "text-semantic-text-muted"
+      "text-[var(--v2-text-muted,#707070)]"
     );
   });
 

@@ -181,7 +181,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited font",
-              "Inter 16px value; 14px semibold label; 12px supporting text",
+              "Inter 16px value; 14px medium label; 12px supporting text",
             ],
             ["Hover", "Default border", "#C0C3CA enabled border"],
             ["Focus", "Thin teal shadow", "#27ABB8 border and soft 4px halo"],
@@ -199,8 +199,8 @@ const meta: Meta<Args> = {
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
@@ -364,7 +364,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {["", "Check this selection."].map((error) => (
         <section key={error} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {error ? "Error" : "Default"}
           </p>
           <PreviewField
@@ -391,7 +391,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             40px height · {width}px container
           </p>
           <PreviewField
@@ -419,14 +419,14 @@ export const States: Story = {
         {COLUMNS.map((c) => (
           <p
             key={c.label}
-            className="m-0 text-xs font-semibold text-semantic-text-muted"
+            className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {c.label}
           </p>
         ))}
         {["", "Check this selection."].map((error) => (
           <React.Fragment key={error}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {error ? "Error" : "Default"}
             </p>
             {COLUMNS.map((c) => (
@@ -459,10 +459,10 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[870px] grid-cols-[110px_1fr_1fr] items-start gap-x-8 gap-y-6">
         <div />
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 · ui/select-field
         </p>
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/select-field
         </p>
         {[
@@ -477,7 +477,7 @@ export const V1VsV2: Story = {
           { label: "Loading", error: "", disabled: false, loading: true },
         ].map((row) => (
           <React.Fragment key={row.label}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {row.label}
             </p>
             {(["v1", "v2"] as const).map((version) => (
@@ -515,10 +515,10 @@ function UsageForm(args: Args) {
       }}
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Webhook authentication
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Choose a method for this local example.
         </p>
       </div>
@@ -532,7 +532,10 @@ function UsageForm(args: Args) {
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">
-        <span role="status" className="text-xs text-semantic-text-muted">
+        <span
+          role="status"
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {saved && saved === args.value ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />
@@ -590,7 +593,10 @@ function SelectionDetails(args: Args) {
           setLast(option);
         }}
       />
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {last
           ? `Selected ${last.label} · ${last.value}`
           : "Select an option to inspect the full option object."}
@@ -626,7 +632,7 @@ function ActionItem(args: Args) {
           if (option.value === "__create") setOpen(true);
         }}
       />
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         The action opens a dialog while preserving the previous selection.
       </p>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -652,7 +658,7 @@ function ActionItem(args: Args) {
             <div className="space-y-1.5">
               <label
                 htmlFor={nameId}
-                className="text-sm font-semibold text-semantic-text-secondary"
+                className="text-sm font-medium text-[var(--v2-text-primary,#484848)]"
               >
                 Method name
               </label>
@@ -726,7 +732,10 @@ function PaginationExample(args: Args) {
         hasMore={hasMore}
       />
       <div className="flex items-center justify-between gap-4">
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p
+          role="status"
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {Math.min(count, options.length)} of {options.length} options loaded
         </p>
         <Button
@@ -738,7 +747,7 @@ function PaginationExample(args: Args) {
           {pending ? "Loading…" : "Load next page"}
         </Button>
       </div>
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         Scroll to the end of the popup or load a page here. Data stays local.
       </p>
     </div>
@@ -761,12 +770,15 @@ function ServerSearch(args: Args) {
   return (
     <div className="max-w-full space-y-4">
       <Example {...live} />
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {args.searchValue
           ? `Local filtered results for “${args.searchValue}”`
           : "Type a query in the open popup."}
       </p>
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         This controlled-search example uses a local mock dataset; no network
         request is made.
       </p>

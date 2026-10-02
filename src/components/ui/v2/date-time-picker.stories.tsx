@@ -159,7 +159,7 @@ const meta: Meta<Args> = {
             [
               "Type",
               "Inherited type",
-              "Inter 16px values; label 14px / 600; supporting text 12px",
+              "Inter 16px values; label 14px / 500; supporting text 12px",
             ],
             ["Hover", "Old teal stroke", "C0C3CA border"],
             [
@@ -186,8 +186,8 @@ const meta: Meta<Args> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA"],
@@ -334,15 +334,17 @@ export const AllVariants: Story = {
   render: (args) => (
     <div className="min-h-[560px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Picker modes</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Picker modes
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Date and time, date only, and time only.
         </p>
       </header>
       <div className="flex flex-wrap gap-6">
         {VARIANTS.map((variant) => (
           <section key={variant} className="space-y-3">
-            <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+            <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
               {variant}
             </p>
             <Preview
@@ -371,15 +373,17 @@ export const AllSizes: Story = {
   render: (args) => (
     <div className="min-h-[560px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Width sizes</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Width sizes
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Sizes preserve the public width API and share one v2 field height.
         </p>
       </header>
       <div className="flex flex-wrap gap-6">
         {SIZES.map((size) => (
           <section key={size} className="space-y-3">
-            <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+            <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
               {size} · {size === "sm" ? 280 : size === "lg" ? 360 : 336}px wide
             </p>
             <Preview
@@ -401,8 +405,10 @@ export const States: Story = {
   render: (args) => (
     <div className="w-full min-h-[560px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Interaction states</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Interaction states
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Choose a width size in Controls. The grid scrolls within the canvas.
         </p>
       </header>
@@ -415,7 +421,7 @@ export const States: Story = {
           {COLUMNS.map((column) => (
             <p
               key={column.label}
-              className="m-0 text-xs font-semibold text-semantic-text-muted"
+              className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
             >
               {column.label}
             </p>
@@ -423,7 +429,7 @@ export const States: Story = {
           {VARIANTS.flatMap((variant) =>
             STATES.map((state) => (
               <React.Fragment key={`${variant}-${state}`}>
-                <p className="m-0 pt-6 text-sm font-semibold">
+                <p className="m-0 pt-6 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
                   {variant} · {state}
                 </p>
                 {COLUMNS.map((column) => (
@@ -462,8 +468,10 @@ export const V1VsV2: Story = {
   render: (args) => (
     <div className="w-full min-h-[560px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">v1 and v2</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          v1 and v2
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Field styling changes; calendar/time geometry and parsing remain
           compatible.
         </p>
@@ -474,13 +482,17 @@ export const V1VsV2: Story = {
           className="grid grid-cols-[180px_360px_360px] gap-6"
         >
           <span />
-          <p className="m-0 text-sm font-semibold">v1</p>
-          <p className="m-0 text-sm font-semibold">v2</p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v1
+          </p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v2
+          </p>
           {VARIANTS.flatMap((variant) =>
             SIZES.flatMap((size) =>
               ["default", "error", "disabled"].map((treatment) => (
                 <React.Fragment key={`${variant}-${size}-${treatment}`}>
-                  <p className="m-0 pt-6 text-xs text-semantic-text-muted">
+                  <p className="m-0 pt-6 text-xs text-[var(--v2-text-muted,#707070)]">
                     {variant} · {size} · {treatment}
                   </p>
                   {(["v1", "v2"] as const).map((version) => (
@@ -539,8 +551,10 @@ function AppointmentForm(args: Args) {
       }}
     >
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Schedule a call</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Schedule a call
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Set an appointment in this local example.
         </p>
       </header>

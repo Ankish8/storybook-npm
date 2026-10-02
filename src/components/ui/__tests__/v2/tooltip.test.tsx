@@ -183,7 +183,7 @@ describe("Tooltip", () => {
         "data-[state=instant-open]:pointer-events-auto"
       );
       expect(tooltip).toHaveClass("bg-semantic-info-surface");
-      expect(tooltip).toHaveClass("text-semantic-text-secondary");
+      expect(tooltip).toHaveClass("text-[var(--v2-text-secondary,#5E5E5E)]");
       expect(tooltip).toHaveClass("text-xs");
       expect(tooltip).toHaveClass("rounded-md");
       expect(tooltip).toHaveClass("px-4");

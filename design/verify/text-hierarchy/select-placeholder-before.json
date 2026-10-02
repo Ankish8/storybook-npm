@@ -1,0 +1,30 @@
+[
+  {
+    "spans": [
+      {
+        "className": "",
+        "color": "rgb(94, 94, 94)",
+        "placeholder": null,
+        "text": "Select a method"
+      }
+    ],
+    "text": "Select a method",
+    "triggerClass": "flex h-10 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-4 py-2 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+    "triggerColor": "rgb(94, 94, 94)",
+    "triggerPlaceholder": ""
+  },
+  {
+    "spans": [
+      {
+        "className": "",
+        "color": "rgb(94, 94, 94)",
+        "placeholder": null,
+        "text": "Select a method"
+      }
+    ],
+    "text": "Select a method",
+    "triggerClass": "flex h-10 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-4 py-2 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+    "triggerColor": "rgb(94, 94, 94)",
+    "triggerPlaceholder": ""
+  }
+]

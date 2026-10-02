@@ -22,16 +22,17 @@ const badgeVariants = cva(
           "bg-semantic-warning-surface border-[var(--color-warning-200)] text-semantic-warning-text",
         failed:
           "bg-semantic-error-surface border-[var(--color-error-200)] text-semantic-error-text",
-        disabled: "border-0 bg-semantic-bg-ui text-semantic-text-muted",
+        disabled:
+          "border-0 bg-semantic-bg-ui text-[var(--v2-text-muted,#707070)]",
         default:
-          "bg-semantic-bg-ui border-semantic-border-layout text-semantic-text-primary",
+          "bg-semantic-bg-ui border-semantic-border-layout text-[var(--v2-text-secondary,#5E5E5E)]",
         primary:
-          "bg-semantic-bg-ui border-semantic-border-layout text-semantic-text-primary",
+          "bg-semantic-bg-ui border-semantic-border-layout text-[var(--v2-text-secondary,#5E5E5E)]",
         // shadcn-style variants (new)
         secondary:
-          "bg-semantic-brand-surface border-semantic-border-accent text-semantic-text-primary",
+          "bg-semantic-brand-surface border-semantic-border-accent text-[var(--v2-text-secondary,#5E5E5E)]",
         outline:
-          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)]",
         destructive:
           "bg-semantic-error-surface border-[var(--color-error-200)] text-semantic-error-text",
       },

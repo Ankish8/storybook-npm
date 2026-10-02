@@ -44,7 +44,7 @@ describe("Button (v2)", () => {
     ["outline", ["bg-semantic-bg-primary", "border-semantic-border-layout"]],
     ["secondary", ["bg-semantic-info-surface"]],
     ["ghost", ["text-semantic-text-link", "bg-transparent"]],
-    ["link", ["text-semantic-text-secondary", "hover:underline"]],
+    ["link", ["text-[var(--v2-text-secondary,#5E5E5E)]", "hover:underline"]],
     ["dashed", ["border-dashed", "bg-semantic-bg-primary"]],
   ] as const)("renders %s variant", (variant, expectedClasses) => {
     render(<Button variant={variant}>Test</Button>);
@@ -161,19 +161,19 @@ describe("Button (v2)", () => {
         "outline",
         [
           "aria-busy:bg-semantic-bg-primary",
-          "aria-busy:text-semantic-text-secondary",
+          "aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
         ],
       ],
       [
         "secondary",
         [
           "aria-busy:bg-semantic-bg-ui",
-          "aria-busy:text-semantic-text-secondary",
+          "aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
         ],
       ],
       ["success", ["aria-busy:bg-semantic-success-primary"]],
       ["ghost", ["aria-busy:text-semantic-text-link"]],
-      ["link", ["aria-busy:text-semantic-text-secondary"]],
+      ["link", ["aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]"]],
       ["dashed", ["aria-busy:opacity-100"]],
     ] as const)(
       "%s restores its normal look while loading",

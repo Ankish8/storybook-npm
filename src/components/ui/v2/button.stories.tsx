@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { Button } from "./button";
 import { Button as ButtonV1 } from "../button";
 import { ArrowRight, Mail, Plus, Trash2 } from "lucide-react";
@@ -91,15 +91,15 @@ v1 components ship with a \`tw-\` class prefix for Bootstrap hosts. **v2 does no
 <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
   <thead>
     <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Aspect</th>
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">v1</th>
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">v2</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">Aspect</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">v1</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">v2</th>
     </tr>
   </thead>
   <tbody>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Heights</td><td style="padding: 12px 16px;">sm 32 · default 36 · lg 40</td><td style="padding: 12px 16px;">sm 32 · default 40 · lg 48</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Radius</td><td style="padding: 12px 16px;">4px</td><td style="padding: 12px 16px;">8px</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Inter 14/20 semibold (12 for sm)</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Inter 14/20; 500 neutral labels, 600 filled actions (12px sm)</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Solid variants</td><td style="padding: 12px 16px;">Flat fill</td><td style="padding: 12px 16px;">Skeuomorphic border + shadow, gradient when pressed</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Secondary</td><td style="padding: 12px 16px;">Grey surface</td><td style="padding: 12px 16px;">Light-blue surface</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Ghost / Link</td><td style="padding: 12px 16px;">Muted text / blue link</td><td style="padding: 12px 16px;">Blue text / dark text</td></tr>
@@ -108,15 +108,19 @@ v1 components ship with a \`tw-\` class prefix for Bootstrap hosts. **v2 does no
   </tbody>
 </table>
 
+## Text hierarchy
+
+Neutral labels use v2's softer gray palette. Headings use charcoal, body text uses medium gray and supporting text uses a lighter gray. These v2-only text colors follow the October 2 visual refinement; brand action backgrounds and v1 colors stay unchanged.
+
 ## Design Tokens
 
 <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 16px;">
   <thead>
     <tr style="background-color: #FAFAFA; border-bottom: 2px solid #E9EAEB;">
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Token</th>
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">CSS Variable</th>
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Value</th>
-      <th style="padding: 12px 16px; text-align: left; font-weight: 600;">Preview</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">Token</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">CSS Variable</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">Value</th>
+      <th style="padding: 12px 16px; text-align: left; font-weight: 500;">Preview</th>
     </tr>
   </thead>
   <tbody>${[
@@ -144,6 +148,14 @@ v1 components ship with a \`tw-\` class prefix for Bootstrap hosts. **v2 does no
       "#343E55"
     ),
     tokenRow("Font", "--font-v2", "Inter", undefined),
+    tokenRow("Heading text", "--v2-text-primary", "484848", "#484848"),
+    tokenRow(
+      "Neutral action label",
+      "--v2-text-secondary",
+      "5E5E5E",
+      "#5E5E5E"
+    ),
+    tokenRow("Supporting text", "--v2-text-muted", "707070", "#707070"),
     tokenRow("Radius", "--radius", "8px", undefined),
   ].join("")}
   </tbody>
@@ -273,7 +285,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {variant[0].toUpperCase() + variant.slice(1)}
           </span>
           <Button {...buttonStoryProps(args)} variant={variant} />
@@ -293,7 +305,7 @@ export const AllSizes: Story = {
       <div className="flex flex-wrap items-end gap-6">
         {(["sm", "default", "lg"] as const).map((size) => (
           <div key={size} className="flex flex-col items-start gap-2">
-            <span className="text-xs text-semantic-text-muted">
+            <span className="text-xs text-[var(--v2-text-muted,#707070)]">
               {size} · {size === "sm" ? 32 : size === "lg" ? 48 : 40}px
             </span>
             <Button {...buttonStoryProps(args)} size={size} />
@@ -303,7 +315,7 @@ export const AllSizes: Story = {
       <div className="flex flex-wrap items-end gap-6">
         {(["icon-sm", "icon", "icon-lg"] as const).map((size) => (
           <div key={size} className="flex flex-col items-start gap-2">
-            <span className="text-xs text-semantic-text-muted">
+            <span className="text-xs text-[var(--v2-text-muted,#707070)]">
               {size} · {size === "icon-sm" ? 32 : size === "icon-lg" ? 48 : 40}
               px
             </span>
@@ -346,14 +358,14 @@ export const States: Story = {
         {STATE_COLUMNS.map((column) => (
           <div
             key={column.label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </div>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {variant}
             </div>
             {STATE_COLUMNS.map((column) => (
@@ -385,15 +397,15 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[900px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
         <div />
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 (ui/button)
         </div>
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/button)
         </div>
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {variant}
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -430,10 +442,10 @@ export const Usage: Story = {
   render: (args) => (
     <div className="flex w-[420px] max-w-full flex-col gap-6 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Delete workspace
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           This removes every bot, template and contact. It cannot be undone.
         </p>
       </div>
@@ -457,4 +469,34 @@ export const Usage: Story = {
       </div>
     </div>
   ),
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: { children: "Save changes" },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Plays a real click and keyboard activation against the action spy. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole("button", { name: "Save changes" });
+
+    await step("A click calls onClick", async () => {
+      await userEvent.click(button);
+      await expect(args.onClick).toHaveBeenCalledTimes(1);
+    });
+
+    await step("Enter and Space activate it from the keyboard", async () => {
+      button.focus();
+      await userEvent.keyboard("{Enter}");
+      await userEvent.keyboard(" ");
+      await expect(args.onClick).toHaveBeenCalledTimes(3);
+    });
+  },
 };

@@ -83,7 +83,13 @@ function Example({
             {index === 0 ? args.label : section.title}
           </UI.AccordionTrigger>
           <UI.AccordionContent>
-            <p className="m-0 text-sm text-semantic-text-secondary">
+            <p
+              className={
+                version === "v1"
+                  ? "m-0 text-sm text-semantic-text-secondary"
+                  : "m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+              }
+            >
               {index === 0 ? args.content : section.content}
             </p>
             {index === 0 && form}
@@ -238,7 +244,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       {children}
@@ -346,10 +352,10 @@ function ContactExample({
   const [saved, setSaved] = React.useState(false);
   return (
     <section className="max-w-[720px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Contact profile
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
         Expand a section and edit the local form. Open sections stay
         synchronized with Controls.
       </p>
@@ -365,7 +371,10 @@ function ContactExample({
             className="mt-4 flex flex-wrap items-end gap-3"
           >
             <div className="min-w-[220px] flex-1">
-              <label htmlFor={id} className="mb-2 block text-sm font-medium">
+              <label
+                htmlFor={id}
+                className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+              >
                 Contact name
               </label>
               <Input

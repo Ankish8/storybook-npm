@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { Phone } from "lucide-react";
 import { gallery } from "../../../storybook/v2-preview";
 import { Tag, TagGroup, type TagProps } from "./tag";
@@ -87,7 +87,7 @@ const meta: Meta<TagStoryArgs> = {
             [
               "Label",
               "Inherited font, bold prefix",
-              "Inter 400 body and 600 prefix",
+              "Inter 400 body and 500 prefix",
             ],
             [
               "Spacing",
@@ -115,7 +115,7 @@ const meta: Meta<TagStoryArgs> = {
               "#E9EAEB",
               "#E9EAEB",
             ],
-            ["Body text", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Body text", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             [
               "Accent surface",
               "--semantic-brand-surface",
@@ -249,7 +249,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {labelFor(variant)}
           </span>
           <TagSample {...args} variant={variant} />
@@ -268,7 +268,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-wrap items-end gap-8">
       {SIZES.map((size) => (
         <div key={size} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {size} · {size === "sm" ? 20 : size === "lg" ? 30 : 24}px
           </span>
           <TagSample {...args} size={size} />
@@ -317,10 +317,10 @@ function DismissibleTags(args: TagStoryArgs) {
   return (
     <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Contact tags
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Remove a tag to update this example.
         </p>
       </div>
@@ -340,7 +340,7 @@ function DismissibleTags(args: TagStoryArgs) {
             </TagSample>
           ))
         ) : (
-          <span className="text-sm text-semantic-text-muted">
+          <span className="text-sm text-[var(--v2-text-muted,#707070)]">
             No tags selected
           </span>
         )}
@@ -382,14 +382,14 @@ export const VariantsAndSizes: Story = {
         {["Small · 20px", "Default · 24px", "Large · 30px"].map((label) => (
           <div
             key={label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {label}
           </div>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {labelFor(variant)}
             </div>
             {SIZES.map((size) => (
@@ -424,15 +424,15 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[900px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
         <div />
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 (ui/tag)
         </div>
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/tag)
         </div>
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {labelFor(variant)}
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -498,10 +498,10 @@ export const Usage: Story = {
   render: (args) => (
     <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Conversation activity
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Events and labels attached to a conversation.
         </p>
       </div>
@@ -539,4 +539,48 @@ export const Usage: Story = {
       </div>
     </div>
   ),
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    variant: "accent",
+    children: "Support",
+    removable: true,
+    removeAriaLabel: "Remove Support",
+    onRemove: fn(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Plays keyboard and pointer dismissal against the onRemove spy. The parent owns removal, so the tag stays rendered. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const dismiss = canvas.getByRole("button", { name: "Remove Support" });
+
+    await step("Tab focuses it; Enter and Space dismiss", async () => {
+      await userEvent.tab();
+      await expect(dismiss).toHaveFocus();
+      await userEvent.keyboard("{Enter}");
+      await userEvent.keyboard(" ");
+      await expect(args.onRemove).toHaveBeenCalledTimes(2);
+    });
+
+    await step("A click calls onRemove with the click event", async () => {
+      await userEvent.click(dismiss);
+      await expect(args.onRemove).toHaveBeenCalledTimes(3);
+      await expect(args.onRemove).toHaveBeenLastCalledWith(
+        expect.objectContaining({ type: "click" })
+      );
+    });
+
+    await step("The tag stays until its parent removes it", async () => {
+      await expect(canvas.getByText("Support")).toBeInTheDocument();
+    });
+  },
 };

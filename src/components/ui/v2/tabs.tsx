@@ -56,9 +56,9 @@ const TabsTrigger = React.forwardRef(
     <TabsPrimitive.Trigger
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors",
-        "text-semantic-text-secondary border-transparent hover:text-semantic-text-primary",
-        "data-[state=active]:text-semantic-text-primary data-[state=active]:border-semantic-primary",
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors",
+        "text-[var(--v2-text-muted,#707070)] border-transparent hover:text-[var(--v2-text-primary,#484848)]",
+        "data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary",
         "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
         "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui",
         className
@@ -80,7 +80,7 @@ const TabsContent = React.forwardRef(
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "mt-2 font-[family-name:var(--font-v2,Inter,sans-serif)] focus-visible:outline-none",
+        "mt-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline-none",
         className
       )}
       {...props}
@@ -95,7 +95,7 @@ const TabsCount = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cn(
-      "inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-semantic-text-primary",
+      "inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,#5E5E5E)]",
       className
     )}
     {...props}

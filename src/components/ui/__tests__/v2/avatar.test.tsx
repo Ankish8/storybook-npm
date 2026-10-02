@@ -91,7 +91,9 @@ describe("Avatar", () => {
   it("applies soft (default) variant classes", () => {
     const { container } = render(<Avatar name="Test" />);
     expect(container.firstChild).toHaveClass("bg-semantic-info-surface");
-    expect(container.firstChild).toHaveClass("text-semantic-text-muted");
+    expect(container.firstChild).toHaveClass(
+      "text-[var(--v2-text-muted,#707070)]"
+    );
   });
 
   it("applies filled variant classes", () => {

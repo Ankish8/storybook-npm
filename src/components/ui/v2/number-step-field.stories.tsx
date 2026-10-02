@@ -43,6 +43,7 @@ const meta: Meta<typeof NumberStepField> = {
             ["Typography", "Inherited", "Inter; 16px numeric value"],
           ],
           tokens: [
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
             ["Focus", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
             ["Suffix", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
@@ -120,7 +121,7 @@ export const AllVariants: Story = {
         { suffix: "minutes", max: 59, value: 30 },
       ].map((field) => (
         <section key={field.suffix} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-base font-semibold capitalize">
+          <h3 className="m-0 text-base font-medium capitalize text-[var(--v2-text-primary,#484848)]">
             {field.suffix}
           </h3>
           <Sample {...args} {...field} min={0} aria-label={field.suffix} />
@@ -138,7 +139,9 @@ export const States: Story = {
     <div className="grid w-[640px] max-w-full gap-5 sm:grid-cols-2">
       {["Enabled", "Hover", "Focus", "Disabled"].map((state) => (
         <section key={state} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold">{state}</h3>
+          <h3 className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            {state}
+          </h3>
           <Sample
             {...args}
             value={2}
@@ -168,7 +171,9 @@ export const V1VsV2: Story = {
       <div className="grid w-[640px] max-w-full gap-6 sm:grid-cols-2">
         {[V1, NumberStepField].map((Component, i) => (
           <section key={i} className="space-y-3">
-            <h3 className="m-0 text-base font-semibold">{i ? "v2" : "v1"}</h3>
+            <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+              {i ? "v2" : "v1"}
+            </h3>
             <Component
               {...args}
               onValueChange={(value) => {
@@ -194,8 +199,10 @@ function Retry(args: NumberStepFieldProps) {
       }}
     >
       <div>
-        <h3 className="m-0 text-base font-semibold">Retry delay</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Retry delay
+        </h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Choose a delay and save it locally.
         </p>
       </div>
@@ -207,7 +214,10 @@ function Retry(args: NumberStepFieldProps) {
       <Button type="submit" disabled={args.disabled}>
         Save delay
       </Button>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {saved === undefined
           ? "No delay saved yet."
           : `Saved ${saved} ${args.suffix}.`}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { Webhook, Plus, Info, Settings } from "lucide-react";
 import { PageHeader, type PageHeaderProps } from "./page-header";
 import { PageHeader as PageHeaderV1 } from "../page-header";
@@ -254,7 +254,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       <div className="rounded-lg border border-semantic-border-layout">
@@ -336,7 +336,7 @@ function WebhookExample({ args }: { args: Args }) {
         }}
       />
       <div className="p-5">
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           Actions below run locally. Add webhook opens a form and saves a new
           list item.
         </p>
@@ -355,7 +355,7 @@ function WebhookExample({ args }: { args: Args }) {
             <div className="min-w-[220px] flex-1">
               <label
                 htmlFor="header-webhook-name"
-                className="mb-2 block text-sm font-medium"
+                className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
               >
                 Webhook name
               </label>
@@ -378,14 +378,14 @@ function WebhookExample({ args }: { args: Args }) {
           {items.map((item, index) => (
             <li
               key={item + index}
-              className="border-b border-semantic-border-layout py-3 text-sm text-semantic-text-primary"
+              className="border-b border-semantic-border-layout py-3 text-sm text-[var(--v2-text-primary,#484848)]"
             >
               {item}
             </li>
           ))}
         </ul>
         {action && (
-          <p className="m-0 mt-4 text-xs text-semantic-text-muted">
+          <p className="m-0 mt-4 text-xs text-[var(--v2-text-muted,#707070)]">
             Last action: {action}
           </p>
         )}
@@ -423,5 +423,72 @@ export const Accessibility: Story = {
           "Back navigation keeps its accessible Back label. Action buttons retain their own names. Use keyboard Tab and Enter/Space to exercise buttons; the expandable overflow trigger exposes aria-expanded.",
       },
     },
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    layout: "vertical",
+    showBackButton: true,
+    actionCount: 4,
+    mobileOverflowLimit: 2,
+    actionDisabled: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Uses the vertical layout so the overflow behaviour does not depend on the viewport. Plays the back button, the visible actions and the expandable overflow row. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const back = canvas.getByRole("button", { name: "Go back" });
+    const more = canvas.getByRole("button", { name: "More actions" });
+
+    await step("Back responds to click, Enter and Space", async () => {
+      await userEvent.click(back);
+      await expect(args.onBackClick).toHaveBeenCalledTimes(1);
+      back.focus();
+      await userEvent.keyboard("{Enter}");
+      await userEvent.keyboard(" ");
+      await expect(args.onBackClick).toHaveBeenCalledTimes(3);
+    });
+
+    await step("Visible actions report their own label", async () => {
+      await userEvent.click(
+        canvas.getByRole("button", { name: "Add webhook" })
+      );
+      await expect(args.onAction).toHaveBeenLastCalledWith("Add webhook");
+      await userEvent.click(canvas.getByRole("button", { name: "Settings" }));
+      await expect(args.onAction).toHaveBeenLastCalledWith("Settings");
+      await expect(args.onAction).toHaveBeenCalledTimes(2);
+    });
+
+    await step("Overflow actions appear only when expanded", async () => {
+      await expect(more).toHaveAttribute("aria-expanded", "false");
+      await expect(
+        canvas.queryByRole("button", { name: "Archive" })
+      ).not.toBeInTheDocument();
+      await userEvent.click(more);
+      await expect(more).toHaveAttribute("aria-expanded", "true");
+      await expect(more).toHaveAccessibleName("Show less");
+      await userEvent.click(canvas.getByRole("button", { name: "Archive" }));
+      await expect(args.onAction).toHaveBeenLastCalledWith("Archive");
+      await expect(args.onAction).toHaveBeenCalledTimes(3);
+    });
+
+    await step("The toggle collapses them from the keyboard", async () => {
+      more.focus();
+      await userEvent.keyboard("{Enter}");
+      await expect(more).toHaveAttribute("aria-expanded", "false");
+      await expect(more).toHaveAccessibleName("More actions");
+      await expect(
+        canvas.queryByRole("button", { name: "Export" })
+      ).not.toBeInTheDocument();
+    });
   },
 };

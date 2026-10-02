@@ -87,7 +87,7 @@ const meta: Meta<typeof Badge> = {
               "#E9EAEB",
               "#E9EAEB",
             ],
-            ["Default text", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Default text", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Info surface", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Info text", "--semantic-info-text", "#2F5398", "#2F5398"],
             ["Info border", "--color-black", "#000000", "#000000"],
@@ -216,7 +216,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {LABELS[variant]}
           </span>
           <Badge {...args} variant={variant} />
@@ -235,7 +235,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-wrap items-end gap-8">
       {SIZES.map((size) => (
         <div key={size} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {size} · {size === "sm" ? 20 : size === "lg" ? 30 : 24}px
           </span>
           <Badge {...args} size={size} />
@@ -265,14 +265,14 @@ export const VariantsAndSizes: Story = {
         {["Small · 20px", "Default · 24px", "Large · 30px"].map((label) => (
           <div
             key={label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {label}
           </div>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {LABELS[variant]}
             </div>
             {SIZES.map((size) => (
@@ -306,15 +306,15 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[820px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
         <div />
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 (ui/badge)
         </div>
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/badge)
         </div>
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-semibold text-semantic-text-secondary">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {LABELS[variant]}
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -341,10 +341,10 @@ export const Usage: Story = {
   render: (args) => (
     <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           AI bots
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Status at a glance across your workspace.
         </p>
       </div>
@@ -373,10 +373,10 @@ export const Usage: Story = {
           className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4"
         >
           <div className="min-w-0">
-            <p className="m-0 text-sm font-semibold text-semantic-text-primary">
+            <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
               {bot.name}
             </p>
-            <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
               {bot.type}
             </p>
           </div>

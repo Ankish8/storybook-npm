@@ -33,7 +33,7 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full box-border rounded-lg bg-semantic-bg-primary px-4 py-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal leading-6 text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:text-base file:font-semibold file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
+  "h-10 w-full box-border rounded-lg bg-semantic-bg-primary px-4 py-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal leading-6 text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:text-base file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
   {
     variants: {
       state: {

@@ -37,7 +37,7 @@ function tooltipCopy(args: TooltipStoryArgs) {
   return (
     <div className="flex max-w-full flex-col gap-1.5">
       {args.rich && (
-        <p className="m-0 text-xs font-semibold text-semantic-text-primary">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-primary,#484848)]">
           {args.title}
         </p>
       )}
@@ -57,7 +57,7 @@ function InlineTooltip({
     <div
       className={
         version === "v2"
-          ? "relative max-w-xs whitespace-normal rounded-md bg-semantic-info-surface px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal text-semantic-text-secondary shadow-[0_1px_3px_0_rgba(10,13,18,0.1),0_1px_2px_-1px_rgba(10,13,18,0.1)]"
+          ? "relative max-w-xs whitespace-normal rounded-md bg-semantic-info-surface px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_3px_0_rgba(10,13,18,0.1),0_1px_2px_-1px_rgba(10,13,18,0.1)]"
           : "relative max-w-xs whitespace-normal rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md"
       }
       data-v2-component={version === "v2" ? "tooltip" : undefined}
@@ -190,7 +190,7 @@ const meta: Meta<TooltipStoryArgs> = {
             [
               "Typography",
               "Inherited 12px",
-              "Inter 12px regular; optional title 12px semibold",
+              "Inter 12px regular; optional title 12px medium",
             ],
             ["Corners", "6px", "6px"],
             ["Maximum width", "320px", "320px"],
@@ -204,7 +204,7 @@ const meta: Meta<TooltipStoryArgs> = {
             ["Surface", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Text", "--semantic-text-secondary", "#343E55", "#343E55"],
             ["Title", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Font", "--font-v2", "Inter 400 / 600"],
+            ["Font", "--font-v2", "Inter 400 / 500"],
             ["Corners", "6px literal", "6px"],
             [
               "Shadow",
@@ -266,7 +266,10 @@ const meta: Meta<TooltipStoryArgs> = {
             {args.showArrow && <TooltipArrow />}
           </TooltipContent>
         </Tooltip>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           Tooltip is {args.open ? "open" : "closed"}
         </p>
       </div>
@@ -388,7 +391,7 @@ export const AllVariants: Story = {
       <div className="grid min-w-[720px] grid-cols-2 items-start gap-8">
         {[false, true].map((rich) => (
           <div key={String(rich)} className="flex flex-col items-center gap-4">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {rich ? "Title and description" : "Plain help"}
             </span>
             <InlineTooltip {...args} rich={rich} />
@@ -414,14 +417,14 @@ export const AllPositions: Story = {
         {SIDES.map((side) => (
           <span
             key={side}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-normal text-[var(--v2-text-muted,#707070)]"
           >
             {side}
           </span>
         ))}
         {OFFSETS.map((sideOffset) => (
           <React.Fragment key={sideOffset}>
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {sideOffset}px
             </span>
             {SIDES.map((side) => (
@@ -451,7 +454,7 @@ export const States: Story = {
       <div className="grid min-w-[1100px] grid-cols-4 items-center gap-8">
         {["Closed", "Visible", "Hover", "Keyboard focus"].map((visualState) => (
           <div key={visualState} className="flex flex-col items-center gap-4">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {visualState}
             </span>
             <InlineTooltip {...args} visualState={visualState} />
@@ -475,7 +478,7 @@ export const V1VsV2: Story = {
       <div className="grid min-w-[720px] grid-cols-2 items-start gap-8">
         {(["v1", "v2"] as const).map((version) => (
           <div key={version} className="flex flex-col items-center gap-4">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {version} · {version === "v1" ? "ui/tooltip" : "ui/v2/tooltip"}
             </span>
             <InlineTooltip {...args} version={version} />
@@ -503,10 +506,10 @@ function TourExample({
   return (
     <div className="flex w-[520px] max-w-full flex-col items-center gap-6 rounded-xl border border-solid border-semantic-border-layout p-16 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1 text-center">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Inbox tour
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           A local three-step guide with working navigation.
         </p>
       </div>
@@ -540,12 +543,12 @@ function TourExample({
           <div className="flex flex-col gap-1.5">
             <p
               id={titleId}
-              className="m-0 text-xs font-semibold text-semantic-text-primary"
+              className="m-0 text-xs font-medium text-[var(--v2-text-primary,#484848)]"
             >
               {args.title}
             </p>
             <p className="m-0 text-xs leading-4">{args.tooltipText}</p>
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               Step {step} of 3
             </p>
           </div>
@@ -579,7 +582,10 @@ function TourExample({
           {args.showArrow && <TooltipArrow />}
         </TooltipContent>
       </Tooltip>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {result}
       </p>
     </div>

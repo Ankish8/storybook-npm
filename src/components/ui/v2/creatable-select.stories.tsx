@@ -69,7 +69,11 @@ function Example({
       {label && (
         <p
           id={`${id}-label`}
-          className="m-0 text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "m-0 text-sm font-medium text-semantic-text-secondary"
+              : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+          }
         >
           {label}
         </p>
@@ -95,13 +99,22 @@ function Example({
       {hint && (
         <p
           id={`${id}-hint`}
-          className={`m-0 text-xs ${props.state === "error" && !props.disabled ? "text-semantic-error-text" : "text-semantic-text-muted"}`}
+          className={
+            props.state === "error" && !props.disabled
+              ? "m-0 text-xs text-semantic-error-text"
+              : version === "v1"
+                ? "m-0 text-xs text-semantic-text-muted"
+                : "m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+          }
         >
           {hint}
         </p>
       )}
       {showSelection && (
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p
+          role="status"
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           Selected: {props.value || "None"}
         </p>
       )}
@@ -177,7 +190,7 @@ const meta: Meta<Args> = {
             [
               "Host label / helper",
               "Host styling",
-              "14px / 600 label; 12px helper",
+              "14px / 500 label; 12px helper",
             ],
             ["Hover", "Thin stroke", "C0C3CA border"],
             ["Focus", "Teal stroke", "27ABB8 border and soft 4px halo"],
@@ -196,8 +209,8 @@ const meta: Meta<Args> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
@@ -320,17 +333,17 @@ export const AllVariants: Story = {
   render: (args) => (
     <div className="w-full max-w-[920px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Validation variants
         </p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Labels and hints stay aligned with the field.
         </p>
       </header>
       <div className="grid gap-6 md:grid-cols-2">
         {VARIANTS.map((state) => (
           <section key={state} className="space-y-3">
-            <p className="m-0 text-xs font-semibold uppercase tracking-wide text-semantic-text-muted">
+            <p className="m-0 text-xs font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
               {state}
             </p>
             <Preview {...args} key={`${state}-${args.value}`} state={state} />
@@ -349,15 +362,17 @@ export const HeightAndWidth: Story = {
   render: (args) => (
     <div className="w-full max-w-[820px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Field proportions</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Field proportions
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           40px high at both widths, with 8px corners.
         </p>
       </header>
       <div className="flex flex-wrap items-start gap-6">
         {[420, 280].map((width) => (
           <section key={width} className="space-y-3">
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               {width}px wide · 40px high
             </p>
             <Preview {...args} key={`${width}-${args.value}`} width={width} />
@@ -378,8 +393,10 @@ export const States: Story = {
   render: (args) => (
     <div className="w-full space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Interaction states</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Interaction states
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Disabled overrides the error halo. The table scrolls within this
           canvas.
         </p>
@@ -394,7 +411,7 @@ export const States: Story = {
             {COLUMNS.map((column) => (
               <p
                 key={column.label}
-                className="m-0 text-xs font-semibold text-semantic-text-muted"
+                className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
               >
                 {column.label}
               </p>
@@ -402,7 +419,9 @@ export const States: Story = {
           </>
           {VARIANTS.map((state) => (
             <React.Fragment key={state}>
-              <p className="m-0 pt-6 text-sm font-semibold">{state}</p>
+              <p className="m-0 pt-6 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+                {state}
+              </p>
               {COLUMNS.map((column) => (
                 <Preview
                   {...args}
@@ -433,8 +452,10 @@ export const V1VsV2: Story = {
   render: (args) => (
     <div className="w-full space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">v1 and v2</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          v1 and v2
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Same options and behaviors, with the v2 field language.
         </p>
       </header>
@@ -444,12 +465,16 @@ export const V1VsV2: Story = {
           style={{ width: 870 }}
         >
           <span />
-          <p className="m-0 text-sm font-semibold">v1</p>
-          <p className="m-0 text-sm font-semibold">v2</p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v1
+          </p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v2
+          </p>
           {["default", "error", "disabled"].flatMap((treatment) =>
             ["", "sales"].map((value) => (
               <React.Fragment key={`${treatment}-${value}`}>
-                <p className="m-0 pt-6 text-xs text-semantic-text-muted">
+                <p className="m-0 pt-6 text-xs text-[var(--v2-text-muted,#707070)]">
                   {treatment} · {value ? "selected" : "empty"}
                 </p>
                 {(["v1", "v2"] as const).map((version) => (
@@ -511,8 +536,10 @@ function UsageForm(args: Args) {
       }}
     >
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Agent profile</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Agent profile
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Choose the main role for this agent.
         </p>
       </header>

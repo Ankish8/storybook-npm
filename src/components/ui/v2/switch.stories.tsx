@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { gallery, PreviewSwitch } from "../../../storybook/v2-preview";
 import { Switch, type SwitchProps } from "./switch";
 import { Switch as SwitchV1 } from "../switch";
@@ -89,8 +96,8 @@ const meta: Meta<typeof Switch> = {
             ],
             ["Disabled off thumb", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Focus outline", "--semantic-primary", "#343E55", "#343E55"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
-            ["Font", "--font-v2", "Inter 600"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
+            ["Font", "--font-v2", "Inter 500"],
           ],
           guidance:
             "Use Switch for a boolean setting that takes effect when toggled. Use Checkbox for selection within a list or form. Supply a visible `label` or an `aria-label`. Pair `checked` with `onCheckedChange` for controlled usage, or use `defaultChecked` for an uncontrolled initial value.",
@@ -178,7 +185,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-10">
       {[false, true].map((checked) => (
         <div key={String(checked)} className="flex flex-col items-start gap-3">
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {checked ? "On" : "Off"}
           </span>
           <PreviewSwitch {...args} checked={checked} />
@@ -199,7 +206,7 @@ export const AllSizes: Story = {
       <div className="flex max-w-full flex-wrap items-end gap-8">
         {SIZES.map((size) => (
           <div key={size} className="flex flex-col items-start gap-3">
-            <span className="text-xs text-semantic-text-muted">
+            <span className="text-xs text-[var(--v2-text-muted,#707070)]">
               {size} · {DIMENSIONS[size]}px
             </span>
             <Switch
@@ -232,7 +239,7 @@ export const States: Story = {
         {STATE_COLUMNS.map((column) => (
           <div
             key={column.label}
-            className="text-xs font-semibold text-semantic-text-muted"
+            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </div>
@@ -240,7 +247,7 @@ export const States: Story = {
         {SIZES.flatMap((size) =>
           [false, true].map((checked) => (
             <React.Fragment key={size + checked}>
-              <div className="text-xs font-semibold text-semantic-text-secondary">
+              <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
                 {checked ? "On" : "Off"} · {size}
               </div>
               {STATE_COLUMNS.map((column) => (
@@ -294,16 +301,16 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[720px] grid-cols-[150px_1fr_1fr] items-center gap-x-8 gap-y-5">
         <div />
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 (ui/switch)
         </div>
-        <div className="text-xs font-semibold text-semantic-text-muted">
+        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/switch)
         </div>
         {SIZES.flatMap((size) =>
           [false, true].map((checked) => (
             <React.Fragment key={size + checked}>
-              <span className="text-xs text-semantic-text-secondary">
+              <span className="text-xs text-[var(--v2-text-secondary,#5E5E5E)]">
                 {checked ? "On" : "Off"} · {size}
               </span>
               <SwitchV1 {...args} size={size} checked={checked} />
@@ -311,10 +318,14 @@ export const V1VsV2: Story = {
             </React.Fragment>
           ))
         )}
-        <span className="text-xs text-semantic-text-secondary">Focus</span>
+        <span className="text-xs text-[var(--v2-text-secondary,#5E5E5E)]">
+          Focus
+        </span>
         <SwitchV1 {...args} checked className="pseudo-focus-visible" />
         <PreviewSwitch {...args} checked className="pseudo-focus-visible" />
-        <span className="text-xs text-semantic-text-secondary">Disabled</span>
+        <span className="text-xs text-[var(--v2-text-secondary,#5E5E5E)]">
+          Disabled
+        </span>
         <SwitchV1 {...args} checked disabled />
         <PreviewSwitch {...args} checked disabled />
       </div>
@@ -327,10 +338,10 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
   const generatedId = React.useId();
   return (
     <div className="w-[420px] max-w-full rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
-      <p className="m-0 text-base font-semibold text-semantic-text-primary">
+      <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Notification preferences
       </p>
-      <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
         Choose how you hear about new conversations.
       </p>
       <div className="mt-6 flex flex-col gap-5">
@@ -338,13 +349,13 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
           <div>
             <label
               htmlFor={generatedId + "desktop"}
-              className="cursor-pointer text-sm font-semibold text-semantic-text-secondary"
+              className="cursor-pointer text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
             >
               Desktop notifications
             </label>
             <p
               id={generatedId + "desktop-help"}
-              className="m-0 mt-1 text-xs text-semantic-text-muted"
+              className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]"
             >
               Show an alert when a new message arrives.
             </p>
@@ -364,13 +375,13 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
           <div>
             <label
               htmlFor={generatedId + "sound"}
-              className="cursor-pointer text-sm font-semibold text-semantic-text-secondary"
+              className="cursor-pointer text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
             >
               Notification sound
             </label>
             <p
               id={generatedId + "sound-help"}
-              className="m-0 mt-1 text-xs text-semantic-text-muted"
+              className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]"
             >
               Play a sound for new conversations.
             </p>
@@ -388,7 +399,7 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
         </div>
       </div>
       <p
-        className="m-0 mt-6 border-t border-semantic-border-layout pt-4 text-xs text-semantic-text-muted"
+        className="m-0 mt-6 border-t border-semantic-border-layout pt-4 text-xs text-[var(--v2-text-muted,#707070)]"
         role="status"
       >
         Desktop {desktop ? "on" : "off"} · Sound {sound ? "on" : "off"}
@@ -402,4 +413,54 @@ export const Usage: Story = {
     "A working preferences example. Controls update track size and disable both switches; the preferences remain independent."
   ),
   render: (args) => <NotificationPreferences {...args} />,
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // Every args update re-runs Storybook's loaders; the default mock restore
+    // would wipe the spy history in the middle of the play function.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Plays real keyboard, switch and label clicks against the action spy, and ends off again. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const toggle = canvas.getByRole("switch", { name: "Enable notifications" });
+
+    await step("Tab focuses it and Space turns it on", async () => {
+      await userEvent.tab();
+      await expect(toggle).toHaveFocus();
+      await userEvent.keyboard(" ");
+      await expect(args.onCheckedChange).toHaveBeenLastCalledWith(true);
+      await waitFor(() => expect(toggle).toBeChecked());
+      await expect(toggle).toHaveAttribute("data-state", "checked");
+    });
+
+    await step("Enter turns it off", async () => {
+      await userEvent.keyboard("{Enter}");
+      await expect(args.onCheckedChange).toHaveBeenLastCalledWith(false);
+      await waitFor(() => expect(toggle).not.toBeChecked());
+      await expect(toggle).toHaveAttribute("data-state", "unchecked");
+    });
+
+    await step("Clicking the switch turns it on", async () => {
+      await userEvent.click(toggle);
+      await expect(args.onCheckedChange).toHaveBeenLastCalledWith(true);
+      await waitFor(() => expect(toggle).toBeChecked());
+    });
+
+    await step("Clicking the label turns it off", async () => {
+      await userEvent.click(canvas.getByText("Enable notifications"));
+      await expect(args.onCheckedChange).toHaveBeenLastCalledWith(false);
+      await waitFor(() => expect(toggle).not.toBeChecked());
+      await expect(args.onCheckedChange).toHaveBeenCalledTimes(4);
+    });
+  },
 };

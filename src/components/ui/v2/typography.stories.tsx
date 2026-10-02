@@ -43,6 +43,11 @@ const meta: Meta<typeof Typography> = {
           changes: [
             ["Font", "Inherited font", "Inter"],
             ["Titles", "Semibold", "Medium"],
+            [
+              "Default text",
+              "Inherits the surrounding color",
+              "Body: secondary; headings and labels: primary",
+            ],
             ["Labels", "Semibold", "Semibold with recorded letter spacing"],
           ],
           tokens: [
@@ -51,7 +56,7 @@ const meta: Meta<typeof Typography> = {
             ["Muted", "--semantic-text-muted", "717680", "#717680"],
           ],
           guidance:
-            "Choose kind and variant for appearance, then choose tag for the correct document outline. Label htmlFor connects an input. Body text uses regular weight; title, label and headline weights follow the v2 hierarchy.",
+            "Choose kind and variant for appearance, then choose tag for the correct document outline. Label htmlFor connects an input. Body defaults to the softer secondary neutral; display, headline, title and label default to primary. Explicit color Controls override these roles. Body text uses regular weight; title, label and headline weights follow the v2 hierarchy.",
         }),
       },
     },
@@ -60,7 +65,7 @@ const meta: Meta<typeof Typography> = {
     children: "Clear conversations start here",
     kind: "body",
     variant: "medium",
-    color: "primary",
+    color: "secondary",
     align: "left",
     truncate: false,
   },
@@ -93,10 +98,10 @@ const meta: Meta<typeof Typography> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Overview: Story = {};
-export const Display: Story = { args: { kind: "display" } };
-export const Headline: Story = { args: { kind: "headline" } };
-export const Title: Story = { args: { kind: "title" } };
-export const Label: Story = { args: { kind: "label" } };
+export const Display: Story = { args: { kind: "display", color: "primary" } };
+export const Headline: Story = { args: { kind: "headline", color: "primary" } };
+export const Title: Story = { args: { kind: "title", color: "primary" } };
+export const Label: Story = { args: { kind: "label", color: "primary" } };
 export const Body: Story = { args: { kind: "body" } };
 export const AllVariants: Story = {
   parameters: gallery(
@@ -111,7 +116,7 @@ export const AllVariants: Story = {
           className="min-w-0 space-y-2 border-b border-solid border-semantic-border-layout pb-5"
         >
           <p
-            className={`m-0 text-xs ${args.color === "inverted" ? "text-semantic-text-inverted" : "text-semantic-text-muted"}`}
+            className={`m-0 text-xs ${args.color === "inverted" ? "text-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
           >
             {kind}
           </p>
@@ -131,7 +136,7 @@ export const AllSizes: Story = {
       {sizes.map((variant) => (
         <section key={variant} className="min-w-0 space-y-2">
           <p
-            className={`m-0 text-xs ${args.color === "inverted" ? "text-semantic-text-inverted" : "text-semantic-text-muted"}`}
+            className={`m-0 text-xs ${args.color === "inverted" ? "text-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
           >
             {variant}
           </p>
@@ -158,7 +163,7 @@ export const AllColors: Story = {
           }
         >
           <p
-            className={`m-0 text-xs font-semibold capitalize ${color === "inverted" ? "text-semantic-text-inverted" : "text-semantic-text-muted"}`}
+            className={`m-0 text-xs font-normal capitalize ${color === "inverted" ? "text-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
           >
             {color}
           </p>
@@ -222,7 +227,9 @@ export const V1VsV2: Story = {
           key={version}
           className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
         >
-          <h3 className="m-0 text-base font-semibold">{version}</h3>
+          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+            {version}
+          </h3>
           {version === "v1" ? <V1 {...args} /> : <Typography {...args} />}
         </section>
       ))}

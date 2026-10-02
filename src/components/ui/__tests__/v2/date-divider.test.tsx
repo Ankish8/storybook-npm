@@ -50,7 +50,7 @@ describe("DateDivider", () => {
     const textSpan = children[1] as HTMLElement;
     expect(textSpan.tagName).toBe("SPAN");
     expect(textSpan).toHaveClass("text-xs");
-    expect(textSpan).toHaveClass("text-semantic-text-muted");
+    expect(textSpan).toHaveClass("text-[var(--v2-text-muted,#707070)]");
     expect(textSpan.textContent).toBe("Today");
 
     // Third child - right line

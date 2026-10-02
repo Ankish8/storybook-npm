@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { Info, Pencil, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { gallery } from "../../../storybook/v2-preview";
@@ -72,7 +79,11 @@ function dialogSections(args: DialogStoryArgs, version: "v1" | "v2" = "v2") {
         {args.leadingIcon && (
           <Info
             aria-hidden="true"
-            className="size-6 shrink-0 text-semantic-text-secondary"
+            className={
+              version === "v1"
+                ? "size-6 shrink-0 text-semantic-text-secondary"
+                : "size-6 shrink-0 text-[var(--v2-text-secondary,#5E5E5E)]"
+            }
           />
         )}
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -93,14 +104,32 @@ function dialogSections(args: DialogStoryArgs, version: "v1" | "v2" = "v2") {
         }
         data-dialog-section="body"
       >
-        <p className="m-0 text-sm leading-5 text-semantic-text-secondary">
+        <p
+          className={
+            version === "v1"
+              ? "m-0 text-sm leading-5 text-semantic-text-secondary"
+              : "m-0 text-sm leading-5 text-[var(--v2-text-secondary,#5E5E5E)]"
+          }
+        >
           {args.body}
         </p>
         <div className="rounded-lg border border-solid border-semantic-border-layout p-4">
-          <p className="m-0 text-sm font-semibold text-semantic-text-primary">
+          <p
+            className={
+              version === "v1"
+                ? "m-0 text-sm font-semibold text-semantic-text-primary"
+                : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+            }
+          >
             Conversation settings
           </p>
-          <p className="m-0 mt-1 text-xs leading-4 text-semantic-text-muted">
+          <p
+            className={
+              version === "v1"
+                ? "m-0 mt-1 text-xs leading-4 text-semantic-text-muted"
+                : "m-0 mt-1 text-xs leading-4 text-[var(--v2-text-muted,#707070)]"
+            }
+          >
             Changes apply to future conversations in this workspace.
           </p>
         </div>
@@ -146,7 +175,10 @@ function LiveDialog(args: DialogStoryArgs) {
           {dialogSections(args)}
         </DialogContent>
       </Dialog>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         Dialog is {args.open ? "open" : "closed"}
       </p>
     </div>
@@ -172,6 +204,7 @@ function InlineDialog({
         aria-label={version + " " + args.size + " dialog preview"}
         className={cn(
           variants({ size: args.size }),
+          version === "v1" && "text-foreground",
           "relative left-auto top-auto z-auto m-0 h-auto w-full max-h-none max-w-full translate-x-0 translate-y-0 animate-none overflow-visible duration-0"
         )}
         data-v2-component={version === "v2" ? "dialog" : undefined}
@@ -185,7 +218,7 @@ function InlineDialog({
             aria-label="Close preview"
             className={
               version === "v2"
-                ? "absolute right-6 top-6 flex size-6 items-center justify-center rounded-md text-semantic-text-muted transition-colors hover:bg-semantic-bg-ui hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+                ? "absolute right-6 top-6 flex size-6 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors hover:bg-semantic-bg-ui hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
                 : "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             }
           >
@@ -457,7 +490,7 @@ export const AllVariants: Story = {
           },
         ].map((variant) => (
           <div key={variant.label} className="flex min-w-0 flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {variant.label}
             </span>
             <InlineDialog
@@ -487,7 +520,7 @@ export const AllSizes: Story = {
       <div className="grid w-max grid-cols-[384px_512px_672px_896px_896px] items-start gap-6">
         {SIZES.map((size) => (
           <div key={size} className="flex min-w-0 flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {SIZE_LABELS[size]}
             </span>
             <InlineDialog {...args} size={size} />
@@ -515,7 +548,7 @@ export const States: Story = {
           { label: "Corner close hidden", busy: false, hideCloseButton: true },
         ].map((state) => (
           <div key={state.label} className="flex min-w-0 flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {state.label}
             </span>
             <InlineDialog
@@ -544,15 +577,15 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto p-1 pb-8">
       <div className="grid min-w-[960px] grid-cols-[144px_384px_384px] items-start gap-x-6 gap-y-6">
         <div />
-        <span className="text-xs font-semibold text-semantic-text-muted">
+        <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
           v1 · ui/dialog
         </span>
-        <span className="text-xs font-semibold text-semantic-text-muted">
+        <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/dialog
         </span>
         {SIZES.map((size) => (
           <React.Fragment key={size}>
-            <span className="pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <span className="pt-6 text-xs font-normal text-[var(--v2-text-secondary,#5E5E5E)]">
               {SIZE_LABELS[size]}
             </span>
             <InlineDialog {...args} version="v1" size={size} />
@@ -583,19 +616,23 @@ function ProfileExample({
   };
   return (
     <div className="w-[420px] max-w-full rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
-      <p className="m-0 text-base font-semibold text-semantic-text-primary">
+      <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Workspace profile
       </p>
-      <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
         Edit the local example and save to update this card.
       </p>
       <dl className="m-0 my-6 grid grid-cols-[80px_1fr] gap-x-4 gap-y-3 text-sm">
-        <dt className="font-medium text-semantic-text-secondary">Name</dt>
-        <dd className="m-0 break-words text-semantic-text-primary">
+        <dt className="font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
+          Name
+        </dt>
+        <dd className="m-0 break-words text-[var(--v2-text-secondary,#5E5E5E)]">
           {savedProfile.name}
         </dd>
-        <dt className="font-medium text-semantic-text-secondary">Email</dt>
-        <dd className="m-0 break-words text-semantic-text-primary">
+        <dt className="font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
+          Email
+        </dt>
+        <dd className="m-0 break-words text-[var(--v2-text-secondary,#5E5E5E)]">
           {savedProfile.email}
         </dd>
       </dl>
@@ -610,7 +647,7 @@ function ProfileExample({
             {args.leadingIcon && (
               <Info
                 aria-hidden="true"
-                className="size-6 shrink-0 text-semantic-text-secondary"
+                className="size-6 shrink-0 text-[var(--v2-text-secondary,#5E5E5E)]"
               />
             )}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -636,7 +673,7 @@ function ProfileExample({
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor={generatedId + "name"}
-                  className="text-sm font-semibold leading-5 text-semantic-text-secondary"
+                  className="text-sm font-medium leading-5 text-[var(--v2-text-secondary,#5E5E5E)]"
                 >
                   Name
                 </label>
@@ -651,7 +688,7 @@ function ProfileExample({
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor={generatedId + "email"}
-                  className="text-sm font-semibold leading-5 text-semantic-text-secondary"
+                  className="text-sm font-medium leading-5 text-[var(--v2-text-secondary,#5E5E5E)]"
                 >
                   Email
                 </label>
@@ -665,7 +702,7 @@ function ProfileExample({
                     updateArgs({ email: event.target.value })
                   }
                 />
-                <p className="m-0 text-xs leading-4 text-semantic-text-muted">
+                <p className="m-0 text-xs leading-4 text-[var(--v2-text-muted,#707070)]">
                   This example saves only in the preview.
                 </p>
               </div>
@@ -688,7 +725,10 @@ function ProfileExample({
           </form>
         </DialogContent>
       </Dialog>
-      <p className="m-0 mt-4 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 mt-4 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {saved ? "Profile updated in this preview." : "No changes saved yet."}
       </p>
     </div>
@@ -732,5 +772,131 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, updateArgs] = useArgs<DialogStoryArgs>();
     return <ProfileExample args={args} updateArgs={updateArgs} />;
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // This render calls updateArgs, and Storybook restores mocks on every re-render by default, which would wipe the spy history mid-play.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Opens the dialog from its trigger, then dismisses it with Continue, Cancel, the corner close button and an overlay click, checking the open-change and action spies each time. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Open dialog" });
+    const openDialog = async () => {
+      await userEvent.click(trigger);
+      return body.findByRole("dialog", {
+        name: "Update conversation settings",
+      });
+    };
+    const dialogClosed = () =>
+      waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await step("The trigger opens a labelled, described dialog", async () => {
+      const dialog = await openDialog();
+      await expect(dialog).toHaveAccessibleDescription(
+        "Review the change before continuing."
+      );
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+    });
+
+    await step("Continue runs the action and closes the dialog", async () => {
+      await userEvent.click(body.getByRole("button", { name: "Continue" }));
+      await expect(args.onAction).toHaveBeenCalledTimes(1);
+      await dialogClosed();
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+    });
+
+    await step(
+      "Cancel and the corner close button skip the action",
+      async () => {
+        await openDialog();
+        await userEvent.click(body.getByRole("button", { name: "Cancel" }));
+        await dialogClosed();
+        await openDialog();
+        await userEvent.click(body.getByRole("button", { name: "Close" }));
+        await dialogClosed();
+        await expect(args.onAction).toHaveBeenCalledTimes(1);
+      }
+    );
+
+    await step("Clicking the overlay dismisses the dialog", async () => {
+      const dialog = await openDialog();
+      const overlay = dialog.previousElementSibling as HTMLElement;
+      await expect(overlay).toHaveAttribute("data-state", "open");
+      await userEvent.click(overlay);
+      await dialogClosed();
+      await expect(args.onOpenChange).toHaveBeenCalledTimes(8);
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+    });
+  },
+};
+
+export const KeyboardInteraction: Story = {
+  name: "Keyboard interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // See Interaction: keep spy history across the args-driven re-renders.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Opens the dialog with Enter, tabs around its focus trap in both directions, then dismisses it with Escape and checks that focus returns to the trigger.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Open dialog" });
+    const cancel = () => body.getByRole("button", { name: "Cancel" });
+    const proceed = () => body.getByRole("button", { name: "Continue" });
+    const close = () => body.getByRole("button", { name: "Close" });
+
+    await step(
+      "Enter on the trigger opens it and moves focus inside",
+      async () => {
+        trigger.focus();
+        await userEvent.keyboard("{Enter}");
+        await body.findByRole("dialog", {
+          name: "Update conversation settings",
+        });
+        await expect(cancel()).toHaveFocus();
+      }
+    );
+
+    await step("Tab and Shift+Tab loop within the dialog", async () => {
+      await userEvent.tab();
+      await expect(proceed()).toHaveFocus();
+      await userEvent.tab();
+      await expect(close()).toHaveFocus();
+      await userEvent.tab();
+      await expect(cancel()).toHaveFocus();
+      await userEvent.tab({ shift: true });
+      await expect(close()).toHaveFocus();
+    });
+
+    await step(
+      "Escape closes it and returns focus to the trigger",
+      async () => {
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() =>
+          expect(body.queryByRole("dialog")).not.toBeInTheDocument()
+        );
+        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(trigger).toHaveFocus());
+      }
+    );
   },
 };

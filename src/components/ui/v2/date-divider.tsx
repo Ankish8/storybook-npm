@@ -31,7 +31,7 @@ const DateDivider = React.forwardRef(
       {...props}
     >
       <div className="flex-1 h-px bg-semantic-border-layout" />
-      <span className="text-xs text-semantic-text-muted shrink-0">
+      <span className="text-xs text-[var(--v2-text-muted,#707070)] shrink-0">
         {children}
       </span>
       <div className="flex-1 h-px bg-semantic-border-layout" />

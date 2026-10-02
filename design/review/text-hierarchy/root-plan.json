@@ -1,0 +1,452 @@
+[
+  {
+    "component": "button",
+    "views": [
+      {
+        "id": "v2-components-button--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-button--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-button--all-variants",
+        "type": "story",
+        "name": "All variants"
+      },
+      {
+        "id": "v2-components-button--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-button--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "button-group",
+    "views": [
+      {
+        "id": "v2-components-buttongroup--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-buttongroup--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-buttongroup--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-buttongroup--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-buttongroup--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "badge",
+    "views": [
+      {
+        "id": "v2-components-badge--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-badge--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-badge--all-variants",
+        "type": "story",
+        "name": "All variants"
+      },
+      {
+        "id": "v2-components-badge--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "tag",
+    "views": [
+      {
+        "id": "v2-components-tag--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-tag--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-tag--all-variants",
+        "type": "story",
+        "name": "All variants"
+      },
+      {
+        "id": "v2-components-tag--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "checkbox",
+    "views": [
+      {
+        "id": "v2-components-checkbox--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-checkbox--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-checkbox--all-variants",
+        "type": "story",
+        "name": "All variants"
+      },
+      {
+        "id": "v2-components-checkbox--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-checkbox--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "switch",
+    "views": [
+      {
+        "id": "v2-components-switch--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-switch--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-switch--all-variants",
+        "type": "story",
+        "name": "All variants"
+      },
+      {
+        "id": "v2-components-switch--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-switch--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "radio",
+    "views": [
+      {
+        "id": "v2-components-radio--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-radio--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-radio--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-radio--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-radio--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "breadcrumbs",
+    "views": [
+      {
+        "id": "v2-components-breadcrumbs--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-breadcrumbs--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-breadcrumbs--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-breadcrumbs--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "stepper",
+    "views": [
+      {
+        "id": "v2-components-stepper--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-stepper--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-stepper--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-stepper--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-stepper--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "progress-indicator",
+    "views": [
+      {
+        "id": "v2-components-progressindicator--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-progressindicator--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-progressindicator--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-progressindicator--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-progressindicator--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "file-upload",
+    "views": [
+      {
+        "id": "v2-components-fileupload--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-fileupload--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-fileupload--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-fileupload--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-fileupload--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "scrollbar",
+    "views": [
+      {
+        "id": "v2-components-scrollbar--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-scrollbar--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-scrollbar--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-scrollbar--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-scrollbar--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "shimmering-text",
+    "views": [
+      {
+        "id": "v2-components-shimmeringtext--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-shimmeringtext--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-shimmeringtext--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-shimmeringtext--states",
+        "type": "story",
+        "name": "States"
+      },
+      {
+        "id": "v2-components-shimmeringtext--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "spinner",
+    "views": [
+      {
+        "id": "v2-components-spinner--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-spinner--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-spinner--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-spinner--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "skeleton",
+    "views": [
+      {
+        "id": "v2-components-skeleton--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-skeleton--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-skeleton--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-skeleton--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  },
+  {
+    "component": "bouncing-loader",
+    "views": [
+      {
+        "id": "v2-components-bouncingloader--docs",
+        "type": "docs",
+        "name": "Docs"
+      },
+      {
+        "id": "v2-components-bouncingloader--overview",
+        "type": "story",
+        "name": "Overview"
+      },
+      {
+        "id": "v2-components-bouncingloader--all-variants",
+        "type": "story",
+        "name": "All Variants"
+      },
+      {
+        "id": "v2-components-bouncingloader--usage",
+        "type": "story",
+        "name": "Usage"
+      }
+    ]
+  }
+]

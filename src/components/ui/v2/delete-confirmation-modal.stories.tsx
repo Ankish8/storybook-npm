@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { gallery } from "../../../storybook/v2-preview";
@@ -105,7 +112,9 @@ function InlineDelete({
         data-presentation="inline"
         data-version={version}
         className={cn(
-          "flex w-96 max-w-full flex-col overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]",
+          version === "v1"
+            ? "flex w-96 max-w-full flex-col overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]"
+            : "flex w-96 max-w-full flex-col overflow-hidden border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_24px_-4px_rgba(10,13,18,.08),0_8px_8px_-4px_rgba(10,13,18,.03),0_3px_3px_-1.5px_rgba(10,13,18,.04)]",
           version === "v2"
             ? "gap-0 rounded-xl p-0 font-[family-name:var(--font-v2,Inter,sans-serif)]"
             : "gap-4 rounded-lg p-6"
@@ -122,7 +131,7 @@ function InlineDelete({
             <button
               aria-label="Close preview"
               type="button"
-              className="flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-semantic-text-muted"
+              className="flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-[var(--v2-text-muted,#707070)]"
               onClick={() => args.onOpenChange?.(false)}
             >
               <X className="size-3" />
@@ -142,7 +151,7 @@ function InlineDelete({
             htmlFor={id}
             className={
               version === "v2"
-                ? "text-sm font-semibold text-semantic-text-secondary"
+                ? "text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
                 : "text-sm text-semantic-text-muted"
             }
           >
@@ -228,7 +237,7 @@ const meta: Meta<DeleteArgs> = {
             [
               "Body",
               "14px label / legacy input",
-              "14px semibold label / v2 input; recorded 0px / 24px padding",
+              "14px medium label / v2 input; recorded 0px / 24px padding",
             ],
             [
               "Footer",
@@ -359,7 +368,7 @@ export const AllVariants: Story = {
           { label: "No description", title: args.title, description: "" },
         ].map(({ label, ...fixed }) => (
           <div key={label} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {label}
             </span>
             <InlineDelete args={{ ...args, ...fixed }} />
@@ -391,7 +400,7 @@ export const States: Story = {
           { label: "Loading", value: args.confirmText, loading: true },
         ].map(({ label, value, loading }) => (
           <div key={label} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {label}
             </span>
             <InlineDelete args={{ ...args, loading }} value={value} />
@@ -430,7 +439,7 @@ export const V1VsV2: Story = {
       <div className="grid min-w-[808px] grid-cols-2 items-start gap-6">
         {(["v1", "v2"] as const).map((version) => (
           <div key={version} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {version} ·{" "}
               {version === "v1"
                 ? "ui/delete-confirmation-modal"
@@ -455,15 +464,15 @@ function WebhookExample({
   return (
     <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Customer support webhook
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           A local example of a typed destructive confirmation.
         </p>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <span className="text-sm text-semantic-text-primary">
+        <span className="text-sm text-[var(--v2-text-primary,#484848)]">
           {exists
             ? "Workspace event notifications"
             : "Webhook removed from the preview"}
@@ -489,7 +498,10 @@ function WebhookExample({
           </Button>
         )}
       </div>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {result}
       </p>
     </section>
@@ -507,5 +519,173 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, updateArgs] = useArgs<DeleteArgs>();
     return <WebhookExample args={args} updateArgs={updateArgs} />;
+  },
+};
+
+const DELETE_TITLE = "Are you sure you want to delete this webhook?";
+const DELETE_FIELD = 'Enter "DELETE" in uppercase to confirm';
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // This render calls updateArgs, and Storybook restores mocks on every re-render by default, which would wipe the spy history mid-play.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Types into the confirmation field to check that only the exact phrase enables Delete, then confirms and dismisses the modal in several ways, checking that the typed text is discarded each time. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Delete webhook" });
+    const openModal = async () => {
+      await userEvent.click(trigger);
+      const dialog = await body.findByRole("dialog", { name: DELETE_TITLE });
+      return {
+        dialog,
+        field: within(dialog).getByRole("textbox", { name: DELETE_FIELD }),
+        remove: within(dialog).getByRole("button", { name: "Delete webhook" }),
+      };
+    };
+    const clickOverlay = async () => {
+      const dialog = body.getByRole("dialog");
+      const overlay = dialog.previousElementSibling as HTMLElement;
+      await expect(overlay).toHaveAttribute("data-state", "open");
+      await userEvent.click(overlay);
+    };
+    const modalClosed = () =>
+      waitFor(() => expect(body.queryByRole("dialog")).not.toBeInTheDocument());
+
+    await step(
+      "Opening focuses the field and keeps Delete disabled",
+      async () => {
+        const { dialog, field, remove } = await openModal();
+        await expect(dialog).toHaveAccessibleDescription(
+          "This removes the webhook from the workspace. This action cannot be undone."
+        );
+        await expect(field).toHaveFocus();
+        await expect(remove).toBeDisabled();
+      }
+    );
+
+    await step(
+      "Only the exact phrase enables Delete, which confirms",
+      async () => {
+        const field = body.getByRole("textbox", { name: DELETE_FIELD });
+        const remove = body.getByRole("button", { name: "Delete webhook" });
+        await userEvent.type(field, "delete");
+        await expect(remove).toBeDisabled();
+        await userEvent.clear(field);
+        await userEvent.type(field, "DELET");
+        await expect(remove).toBeDisabled();
+        await userEvent.type(field, "E");
+        await expect(remove).toBeEnabled();
+        await userEvent.click(remove);
+        await modalClosed();
+        await expect(args.onConfirm).toHaveBeenCalledTimes(1);
+      }
+    );
+
+    await step(
+      "Cancel, the corner close button and the overlay discard the text",
+      async () => {
+        const dismissals = [
+          () => userEvent.click(body.getByRole("button", { name: "Cancel" })),
+          () => userEvent.click(body.getByRole("button", { name: "Close" })),
+          clickOverlay,
+        ];
+        for (const dismiss of dismissals) {
+          const { field } = await openModal();
+          await expect(field).toHaveValue("");
+          await userEvent.type(field, "DEL");
+          await dismiss();
+          await modalClosed();
+        }
+        const { field, remove } = await openModal();
+        await expect(field).toHaveValue("");
+        await expect(remove).toBeDisabled();
+        await userEvent.click(body.getByRole("button", { name: "Cancel" }));
+        await modalClosed();
+        await expect(args.onCancel).toHaveBeenCalledTimes(2);
+        await expect(args.onConfirm).toHaveBeenCalledTimes(1);
+      }
+    );
+  },
+};
+
+export const KeyboardInteraction: Story = {
+  name: "Keyboard interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // See Interaction: keep spy history across the args-driven re-renders.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Opens the modal with Enter, types the phrase straight into the focused field, tabs to Delete and confirms with Enter, then shows that Escape discards the text and returns focus to the trigger.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const body = within(canvasElement.ownerDocument.body);
+    const trigger = canvas.getByRole("button", { name: "Delete webhook" });
+    const field = () => body.getByRole("textbox", { name: DELETE_FIELD });
+    const openWithEnter = async () => {
+      trigger.focus();
+      await userEvent.keyboard("{Enter}");
+      await body.findByRole("dialog", { name: DELETE_TITLE });
+      await expect(field()).toHaveFocus();
+    };
+
+    await step(
+      "Enter opens it and typing goes straight into the field",
+      async () => {
+        await openWithEnter();
+        await userEvent.keyboard("DELETE");
+        await expect(field()).toHaveValue("DELETE");
+      }
+    );
+
+    await step("Tab reaches Delete and Enter confirms", async () => {
+      await userEvent.tab();
+      await expect(body.getByRole("button", { name: "Cancel" })).toHaveFocus();
+      await userEvent.tab();
+      const remove = body.getByRole("button", { name: "Delete webhook" });
+      await expect(remove).toHaveFocus();
+      await expect(remove).toBeEnabled();
+      await userEvent.keyboard("{Enter}");
+      await waitFor(() =>
+        expect(body.queryByRole("dialog")).not.toBeInTheDocument()
+      );
+      await expect(args.onConfirm).toHaveBeenCalledTimes(1);
+    });
+
+    await step(
+      "Escape discards the text and returns focus to the trigger",
+      async () => {
+        await waitFor(() => expect(trigger).toHaveFocus());
+        await openWithEnter();
+        await userEvent.keyboard("DEL");
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() =>
+          expect(body.queryByRole("dialog")).not.toBeInTheDocument()
+        );
+        await waitFor(() => expect(trigger).toHaveFocus());
+        await openWithEnter();
+        await expect(field()).toHaveValue("");
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() =>
+          expect(body.queryByRole("dialog")).not.toBeInTheDocument()
+        );
+        await expect(args.onConfirm).toHaveBeenCalledTimes(1);
+      }
+    );
   },
 };

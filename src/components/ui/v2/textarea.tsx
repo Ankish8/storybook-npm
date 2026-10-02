@@ -25,7 +25,7 @@ const countNonWhitespaceChars = (value: string): number =>
  * Textarea variants for different visual states
  */
 const textareaVariants = cva(
-  "w-full max-w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none",
+  "w-full max-w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none",
   {
     variants: {
       state: {
@@ -240,7 +240,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           <label
             htmlFor={textareaId}
             className={cn(
-              "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] text-semantic-text-secondary",
+              "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -298,7 +298,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 </span>
               )
             ) : helperText ? (
-              <span id={helperId} className="text-xs text-semantic-text-muted">
+              <span
+                id={helperId}
+                className="text-xs text-[var(--v2-text-muted,#707070)]"
+              >
                 {helperText}
               </span>
             ) : (
@@ -310,7 +313,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                   "text-xs",
                   charCount > maxLength
                     ? "text-semantic-error-text"
-                    : "text-semantic-text-muted"
+                    : "text-[var(--v2-text-muted,#707070)]"
                 )}
               >
                 {charCount}/{maxLength}

@@ -63,7 +63,7 @@ const MONTH_LONG_NAMES = [
 ];
 
 const dateRangePickerTriggerVariants = cva(
-  "flex h-10 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-base font-normal text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-10 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
   {
     variants: {
       state: {
@@ -601,7 +601,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           aria-modal="false"
           aria-labelledby={`${triggerId}-calendar-heading`}
           className={cn(
-            "flex flex-col rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "flex flex-col rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
@@ -633,7 +633,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                       type="button"
                       disabled={presetDisabled}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded px-2 py-2 text-left text-sm text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:w-full sm:py-1.5",
+                        "shrink-0 whitespace-nowrap rounded px-2 py-2 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-colors hover:bg-semantic-bg-hover max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:w-full sm:py-1.5",
                         presetDisabled &&
                           "cursor-not-allowed opacity-40 hover:bg-transparent"
                       )}
@@ -651,7 +651,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                 <button
                   type="button"
                   aria-label="Previous month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
                   onClick={() =>
                     setVisibleMonth((month) => addMonths(month, -1))
                   }
@@ -682,7 +682,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         data-calendar-menu="month"
                         onPointerDown={(event) => event.preventDefault()}
                         onClick={() => toggleCalendarMenu("month")}
-                        className="rounded border border-solid border-semantic-border-layout px-3 py-1.5 text-sm font-semibold text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover"
+                        className="rounded border border-solid border-semantic-border-layout px-3 py-1.5 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors hover:bg-semantic-bg-hover"
                       >
                         {MONTH_LONG_NAMES[visibleMonth.getMonth()]}
                       </button>
@@ -746,11 +746,11 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         data-calendar-menu="year"
                         onPointerDown={(event) => event.preventDefault()}
                         onClick={() => toggleCalendarMenu("year")}
-                        className="flex items-center gap-1 rounded border border-solid border-semantic-border-layout px-3 py-1.5 text-sm font-semibold text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover"
+                        className="flex items-center gap-1 rounded border border-solid border-semantic-border-layout px-3 py-1.5 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors hover:bg-semantic-bg-hover"
                       >
                         {visibleMonth.getFullYear()}
                         <ChevronDown
-                          className="size-3.5 text-semantic-text-muted"
+                          className="size-3.5 text-[var(--v2-text-muted,#707070)]"
                           aria-hidden="true"
                         />
                       </button>
@@ -787,7 +787,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                 <button
                   type="button"
                   aria-label="Next month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-semantic-text-secondary transition-colors"
+                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
                   onClick={() =>
                     setVisibleMonth((month) => addMonths(month, 1))
                   }
@@ -800,7 +800,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="flex h-9 items-center justify-center text-xs font-medium text-semantic-text-muted sm:h-8"
+                    className="flex h-9 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)] sm:h-8"
                   >
                     {day}
                   </div>
@@ -850,10 +850,10 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         className={cn(
                           "relative flex h-9 w-full max-w-9 items-center justify-center rounded-full text-xs transition-colors sm:h-8 sm:max-w-8",
                           isSelectedEdge
-                            ? "bg-semantic-primary text-semantic-text-inverted font-semibold"
+                            ? "bg-semantic-primary text-semantic-text-inverted font-medium"
                             : isCurrentMonth
-                              ? "text-semantic-text-primary hover:bg-semantic-bg-hover"
-                              : "text-semantic-text-muted hover:bg-semantic-bg-hover",
+                              ? "text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
+                              : "text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover",
                           isDisabled &&
                             "opacity-40 cursor-not-allowed pointer-events-none"
                         )}
@@ -909,13 +909,13 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             open &&
               state !== "error" &&
               "border-[var(--color-secondary-600,#27ABB8)] shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
-            !displayValue && "text-semantic-text-placeholder",
+            !displayValue && "text-[var(--v2-text-placeholder,#707070)]",
             showClear && "pr-9",
             triggerClassName
           )}
           onClick={() => setOpen(!open)}
         >
-          <FigmaCalendarIcon className="size-[18px] shrink-0 text-semantic-text-secondary" />
+          <FigmaCalendarIcon className="size-[18px] shrink-0 text-[var(--v2-text-secondary,#5E5E5E)]" />
           <span
             className={cn(
               "min-w-0 flex-1 truncate",
@@ -931,7 +931,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           <button
             type="button"
             aria-label={clearLabel}
-            className="absolute right-3 top-1/2 flex size-4 -translate-y-1/2 items-center justify-center rounded-sm text-semantic-text-secondary outline-none transition-colors hover:text-semantic-text-primary focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
+            className="absolute right-3 top-1/2 flex size-4 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
             onClick={handleClear}
           >
             <X className="size-4" />

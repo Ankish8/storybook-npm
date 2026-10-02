@@ -32,7 +32,9 @@ function Items({
           className={`flex rounded-lg border border-solid border-semantic-border-layout p-3 text-left text-sm hover:bg-semantic-bg-hover ${orientation === "horizontal" ? "w-40 shrink-0 flex-col gap-2" : "w-full items-center justify-between"}`}
         >
           <span>Contact {i + 1}</span>
-          <span className="text-xs text-semantic-text-muted">Available</span>
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
+            Available
+          </span>
         </button>
       ))}
     </div>
@@ -59,7 +61,10 @@ function ScrollExample(args: Args) {
           onSelect={setSelected}
         />
       </Scrollbar>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {selected === undefined
           ? "Scroll or use the arrow controls, then select a contact."
           : `Selected contact ${selected + 1}`}
@@ -140,7 +145,7 @@ export const AllVariants: Story = {
     <div className="grid w-[980px] max-w-full gap-6 lg:grid-cols-2">
       {(["dark", "subtle"] as const).map((variant) => (
         <section key={variant} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-base font-semibold capitalize">{variant}</h3>
+          <h3 className="m-0 text-base font-medium capitalize">{variant}</h3>
           <ScrollExample {...args} variant={variant} />
         </section>
       ))}
@@ -156,7 +161,7 @@ export const States: Story = {
     <div className="grid w-[980px] max-w-full gap-6 lg:grid-cols-2">
       {[12, 1].map((itemCount) => (
         <section key={itemCount} className="space-y-3">
-          <h3 className="m-0 text-base font-semibold">
+          <h3 className="m-0 text-base font-medium">
             {itemCount === 1 ? "Fits in the viewport" : "Scrollable content"}
           </h3>
           <ScrollExample {...args} itemCount={itemCount} />
@@ -170,8 +175,8 @@ function Directory(args: Args & { onCountChange: (count: number) => void }) {
   return (
     <section className="w-[460px] max-w-full space-y-4">
       <div>
-        <h3 className="m-0 text-base font-semibold">Team directory</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium">Team directory</h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Loading more items updates the thumb size.
         </p>
       </div>

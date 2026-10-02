@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { Check } from "lucide-react";
 import { gallery } from "../../../storybook/v2-preview";
 import * as V2 from "./select";
@@ -91,7 +98,11 @@ function SelectExample({
       {label && (
         <label
           htmlFor={id}
-          className="text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "text-sm font-medium text-semantic-text-secondary"
+              : "text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+          }
         >
           {label}
         </label>
@@ -223,7 +234,7 @@ const meta: Meta<SelectExampleArgs> = {
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             [
               "Placeholder",
               "--semantic-text-placeholder",
@@ -410,7 +421,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {STATES.map((state) => (
         <section key={state} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {state === "error" ? "Error" : "Default"}
           </p>
           <PreviewSelect
@@ -433,7 +444,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             40px height · {width}px container
           </p>
           <PreviewSelect {...args} key={String(args.value)} width={width} />
@@ -457,14 +468,14 @@ export const States: Story = {
         {COLUMNS.map((column) => (
           <p
             key={column.label}
-            className="m-0 text-xs font-semibold text-semantic-text-muted"
+            className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {column.label}
           </p>
         ))}
         {STATES.map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state === "error" ? "Error" : "Default"}
             </p>
             {COLUMNS.map((column) => (
@@ -499,10 +510,10 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[850px] grid-cols-[120px_minmax(320px,1fr)_minmax(320px,1fr)] items-center gap-x-6 gap-y-5">
         <div />
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 · ui/select
         </p>
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/select
         </p>
         {["default", "error", "disabled"].flatMap((state) =>
@@ -511,9 +522,9 @@ export const V1VsV2: Story = {
             Array.isArray(args.options) ? args.options[0]?.value || "" : "",
           ].map((value, i) => (
             <React.Fragment key={state + i}>
-              <p className="m-0 text-xs font-semibold text-semantic-text-secondary">
+              <p className="m-0 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
                 {state}
-                <span className="mt-1 block font-normal text-semantic-text-muted">
+                <span className="mt-1 block font-normal text-[var(--v2-text-muted,#707070)]">
                   {i ? "Selected" : "Placeholder"}
                 </span>
               </p>
@@ -560,10 +571,10 @@ function AuthenticationForm(args: SelectExampleArgs) {
       className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Webhook authentication
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Choose a method for this local example.
         </p>
       </div>
@@ -584,7 +595,10 @@ function AuthenticationForm(args: SelectExampleArgs) {
         </p>
       )}
       <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
-        <span role="status" className="text-xs text-semantic-text-muted">
+        <span
+          role="status"
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {savedValue && savedValue === args.value ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />
@@ -626,4 +640,79 @@ export const Usage: Story = {
 export const AuthenticationExample: Story = {
   ...Usage,
   name: "Authentication example",
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    options: [
+      ...OPTIONS,
+      { value: "sso", label: "Single sign-on · unavailable", disabled: true },
+    ],
+  },
+  parameters: {
+    // Live-synced args re-render the story, and every render resets the spies.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Opens the list with a click, picks an option, then reopens it to pick another while a disabled option stays unavailable. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const t0 = performance.now();
+    clearAllMocks();
+    const trigger = within(canvasElement).getByRole("combobox", {
+      name: "Authentication",
+    });
+    const body = within(canvasElement.ownerDocument.body);
+    const user = userEvent.setup();
+
+    await step("A click opens the list", async () => {
+      await user.pointer({ keys: "[MouseLeft>]", target: trigger });
+      await expect(await body.findAllByRole("option")).toHaveLength(6);
+      await user.pointer({ keys: "[/MouseLeft]" });
+      await expect(trigger).toHaveAttribute("aria-expanded", "true");
+      await expect(args.onOpenChange).toHaveBeenCalledTimes(1);
+      await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+    });
+
+    await step(
+      "Choosing an option commits it and closes the list",
+      async () => {
+        await userEvent.click(
+          body.getByRole("option", { name: "Bearer Token" })
+        );
+        await expect(args.onValueChange).toHaveBeenCalledTimes(1);
+        await expect(args.onValueChange).toHaveBeenLastCalledWith("bearer");
+        await waitFor(() =>
+          expect(body.queryByRole("listbox")).not.toBeInTheDocument()
+        );
+        await expect(trigger).toHaveTextContent("Bearer Token");
+        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+      }
+    );
+
+    await step(
+      "The chosen option is marked; a disabled one is unavailable",
+      async () => {
+        await user.pointer({ keys: "[MouseLeft>]", target: trigger });
+        await body.findByRole("listbox");
+        await user.pointer({ keys: "[/MouseLeft]" });
+        const chosen = await body.findByRole("option", {
+          name: "Bearer Token",
+        });
+        await expect(chosen).toHaveAttribute("data-state", "checked");
+        const unavailable = body.getByRole("option", { name: /unavailable/ });
+        await expect(unavailable).toHaveAttribute("aria-disabled", "true");
+        await userEvent.click(body.getByRole("option", { name: "OAuth 2.0" }));
+        await expect(args.onValueChange).toHaveBeenCalledTimes(2);
+        await expect(args.onValueChange).toHaveBeenLastCalledWith("oauth2");
+        await waitFor(() => expect(trigger).toHaveTextContent("OAuth 2.0"));
+      }
+    );
+    console.warn("PLAYMS " + Math.round(performance.now() - t0));
+  },
 };

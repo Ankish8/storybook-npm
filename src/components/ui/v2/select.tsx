@@ -6,10 +6,13 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * SelectTrigger variants matching TextField styling
+ * SelectTrigger variants matching TextField styling. Radix exposes the
+ * placeholder state on this trigger and discards classes on SelectValue.
+ * A local color variable keeps caller text-color classes able to override
+ * both empty and selected values.
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-4 py-2 text-left text-base font-normal text-semantic-text-primary font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-10 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-4 py-2 text-left text-base font-normal text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
@@ -49,7 +52,7 @@ const SelectValue = React.forwardRef(
     <SelectPrimitive.Value
       ref={ref}
       className={cn(
-        "[&[data-placeholder]]:text-semantic-text-placeholder",
+        "[&[data-placeholder]]:text-[var(--v2-text-placeholder,#707070)]",
         className
       )}
       {...props}
@@ -75,7 +78,7 @@ const SelectTrigger = React.forwardRef(
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 shrink-0 text-semantic-text-muted opacity-70" />
+        <ChevronDown className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)] opacity-70" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -98,7 +101,7 @@ const SelectScrollUpButton = React.forwardRef(
       )}
       {...props}
     >
-      <ChevronUp className="size-4 text-semantic-text-muted" />
+      <ChevronUp className="size-4 text-[var(--v2-text-muted,#707070)]" />
     </SelectPrimitive.ScrollUpButton>
   )
 );
@@ -120,7 +123,7 @@ const SelectScrollDownButton = React.forwardRef(
       )}
       {...props}
     >
-      <ChevronDown className="size-4 text-semantic-text-muted" />
+      <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)]" />
     </SelectPrimitive.ScrollDownButton>
   )
 );
@@ -316,7 +319,7 @@ const SelectLabel = React.forwardRef(
     <SelectPrimitive.Label
       ref={ref}
       className={cn(
-        "px-4 py-1.5 text-xs font-semibold text-semantic-text-muted",
+        "px-4 py-1.5 text-xs font-medium text-[var(--v2-text-muted,#707070)]",
         className
       )}
       {...props}
@@ -347,8 +350,8 @@ const SelectItem = React.forwardRef(
       <SelectPrimitive.Item
         ref={ref}
         className={cn(
-          "relative flex w-full cursor-pointer select-none items-start rounded-md font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
-          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+          "relative flex w-full cursor-pointer select-none items-start rounded-md font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
+          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:font-medium data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
         )}

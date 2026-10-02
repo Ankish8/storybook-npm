@@ -1,5 +1,8 @@
 # V2 Storybook story standard
 
+**Text hierarchy update, 2026-10-02:** Use the additive v2 neutral roles from [V2-TEXT-HIERARCHY-REVIEW.md](V2-TEXT-HIERARCHY-REVIEW.md): primary `484848`, secondary `5E5E5E`, muted/placeholder `707070`. Ordinary component/example headings, form labels and neutral actions use 500; body, hints, counts and metadata use 400. Tabs use 500 in both active and inactive states. Keep deliberate emphasis for filled primary/status actions and explicit headline variants. Preserve legacy colors/weights in v1 comparison branches. These user-directed values supersede earlier neutral text/ordinary weight recommendations. Verify computed browser styles; native `dt` and `strong` defaults can introduce unintended bold text.
+
+
 Use this alongside V2-HANDOFF.md. Worktree: `/Users/ankish/Downloads/Code/storybook-npm-v2`, branch `feat/v2`.
 
 ## What changed in this pass
@@ -20,7 +23,7 @@ These six components were manually reviewed: Docs tables, Overview controls, ind
 ## Visual hierarchy and docs
 
 - Follow the reviewed Button pattern: brief description, CLI install, import, v1 changes and design tokens with swatches.
-- Keep headings, body text, captions and actual component labels distinct. Example cards use a 16px semibold title, 14px main labels and 12px supporting text. Component sizes/typography still follow the recorded spec.
+- Keep headings, body text, captions and actual component labels distinct. Example cards use a 16px medium title, 14px main labels and 12px supporting text. Keep the recorded component sizes; use the current user-directed neutral colors and ordinary weights above.
 - Use modest gaps and consistent alignment. Cards should fit the preview (`max-w-full`); wide grids need an `overflow-x-auto` parent and a readable minimum width.
 - Escape a leading `#` in docs table text (`value.replace(/^#/, "\\#")`), as in `story-docs.ts`. Check both the change table and token table. No heading elements should appear inside table cells.
 - Every paragraph in JSX needs `m-0` to prevent Bootstrap margins.

@@ -44,10 +44,10 @@ function ReplyQuoteInner({
           thumb ? "flex-1" : "w-full"
         )}
       >
-        <p className="m-0 min-w-0 shrink-0 truncate text-[14px] font-semibold leading-5 tracking-[0.014px] text-[var(--semantic-text-primary,#181D27)]">
+        <p className="m-0 min-w-0 shrink-0 truncate text-[14px] font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]">
           {sender}
         </p>
-        <p className="m-0 min-w-0 line-clamp-1 text-[14px] leading-5 text-[var(--semantic-text-muted,#717680)]">
+        <p className="m-0 min-w-0 line-clamp-1 text-[14px] leading-5 text-[var(--v2-text-secondary,#5E5E5E)]">
           {message}
         </p>
       </div>

@@ -28,12 +28,12 @@ const ToastViewport = React.forwardRef(
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full flex-col items-stretch overflow-hidden rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full flex-col items-stretch overflow-hidden rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
         default:
-          "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
+          "border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)]",
         success:
           "border-[var(--color-success-200)] bg-semantic-success-surface text-semantic-success-text",
         error:
@@ -84,7 +84,7 @@ const ToastAction = React.forwardRef(
     <ToastPrimitives.Action
       ref={ref}
       className={cn(
-        "inline-flex h-8 shrink-0 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-semibold tracking-[0.06px] text-semantic-text-secondary shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)] transition-colors hover:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-8 shrink-0 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)] transition-colors hover:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
@@ -104,7 +104,7 @@ const ToastClose = React.forwardRef(
     <ToastPrimitives.Close
       ref={ref}
       className={cn(
-        "inline-flex size-6 shrink-0 items-center justify-center rounded-md p-0 text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus:outline-none focus:ring-2 focus:ring-semantic-border-focus",
+        "inline-flex size-6 shrink-0 items-center justify-center rounded-md p-0 text-[var(--v2-text-muted,#707070)] transition-colors hover:text-[var(--v2-text-primary,#484848)] focus:outline-none focus:ring-2 focus:ring-semantic-border-focus",
         className
       )}
       toast-close=""
@@ -127,7 +127,7 @@ const ToastTitle = React.forwardRef(
     <ToastPrimitives.Title
       ref={ref}
       className={cn(
-        "m-0 text-base font-medium text-semantic-text-primary",
+        "m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]",
         className
       )}
       {...props}
@@ -147,7 +147,7 @@ const ToastDescription = React.forwardRef(
     <ToastPrimitives.Description
       ref={ref}
       className={cn(
-        "m-0 text-xs tracking-[0.048px] text-semantic-text-muted group-data-[v2-toast-variant=success]:text-semantic-success-text group-data-[v2-toast-variant=error]:text-semantic-error-text group-data-[v2-toast-variant=destructive]:text-semantic-error-text group-data-[v2-toast-variant=warning]:text-semantic-warning-text group-data-[v2-toast-variant=info]:text-semantic-info-text",
+        "m-0 text-xs tracking-[0.048px] text-[var(--v2-text-muted,#707070)] group-data-[v2-toast-variant=success]:text-semantic-success-text group-data-[v2-toast-variant=error]:text-semantic-error-text group-data-[v2-toast-variant=destructive]:text-semantic-error-text group-data-[v2-toast-variant=warning]:text-semantic-warning-text group-data-[v2-toast-variant=info]:text-semantic-info-text",
         className
       )}
       {...props}

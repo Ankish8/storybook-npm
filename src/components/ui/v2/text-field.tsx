@@ -58,7 +58,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui disabled:shadow-none",
+  "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui disabled:shadow-none",
   {
     variants: {
       state: {
@@ -267,7 +267,7 @@ const TextField = React.forwardRef(
         className={cn(
           hasAddons
             ? cn(
-                "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed",
+                "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed",
                 size === "sm"
                   ? "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs"
                   : "text-base"
@@ -344,7 +344,7 @@ const TextField = React.forwardRef(
           <label
             htmlFor={inputId}
             className={cn(
-              "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] text-semantic-text-secondary",
+              "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -372,21 +372,21 @@ const TextField = React.forwardRef(
             )}
           >
             {prefix && (
-              <span className="text-base text-semantic-text-muted mr-2 select-none">
+              <span className="text-base text-[var(--v2-text-muted,#707070)] mr-2 select-none">
                 {prefix}
               </span>
             )}
             {leftIcon && (
-              <span className="mr-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
+              <span className="mr-2 text-[var(--v2-text-muted,#707070)] [&_svg]:size-4 flex-shrink-0">
                 {leftIcon}
               </span>
             )}
             {inputElement}
             {loading && (
-              <Loader2 className="animate-spin size-4 text-semantic-text-muted ml-2 flex-shrink-0" />
+              <Loader2 className="animate-spin size-4 text-[var(--v2-text-muted,#707070)] ml-2 flex-shrink-0" />
             )}
             {!loading && rightIcon && (
-              <span className="ml-2 text-semantic-text-muted [&_svg]:size-4 flex-shrink-0">
+              <span className="ml-2 text-[var(--v2-text-muted,#707070)] [&_svg]:size-4 flex-shrink-0">
                 {rightIcon}
               </span>
             )}
@@ -394,7 +394,7 @@ const TextField = React.forwardRef(
               <button
                 type="button"
                 onClick={handleClear}
-                className="ml-2 text-semantic-text-muted hover:text-semantic-text-primary flex-shrink-0 cursor-pointer"
+                className="ml-2 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] flex-shrink-0 cursor-pointer"
                 aria-label="Clear input"
                 tabIndex={-1}
               >
@@ -402,7 +402,7 @@ const TextField = React.forwardRef(
               </button>
             )}
             {suffix && (
-              <span className="text-base text-semantic-text-muted ml-2 select-none">
+              <span className="text-base text-[var(--v2-text-muted,#707070)] ml-2 select-none">
                 {suffix}
               </span>
             )}
@@ -424,7 +424,7 @@ const TextField = React.forwardRef(
             ) : helperText ? (
               <span
                 id={helperId}
-                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-text-muted"
+                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 {helperText}
               </span>
@@ -437,7 +437,7 @@ const TextField = React.forwardRef(
                   "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs",
                   charCount > maxLength
                     ? "text-semantic-error-text"
-                    : "text-semantic-text-muted"
+                    : "text-[var(--v2-text-muted,#707070)]"
                 )}
               >
                 {charCount}/{maxLength}

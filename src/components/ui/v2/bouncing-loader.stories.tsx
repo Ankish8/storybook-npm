@@ -65,7 +65,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-wrap items-center gap-8">
       {[6, 8, 12, 16].map((size) => (
         <section key={size} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold">{size}px</h3>
+          <h3 className="m-0 text-sm font-medium">{size}px</h3>
           <BouncingLoader {...args} size={size} />
         </section>
       ))}
@@ -81,7 +81,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap gap-8">
       {["placeholder", "muted", "secondary"].map((color) => (
         <section key={color} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold capitalize">{color}</h3>
+          <h3 className="m-0 text-sm font-medium capitalize">{color}</h3>
           <BouncingLoader {...args} color={`var(--semantic-text-${color})`} />
         </section>
       ))}
@@ -92,7 +92,7 @@ function LoadingExample(args: Parameters<typeof BouncingLoader>[0]) {
   const [loading, setLoading] = useState(true);
   return (
     <section className="w-[360px] max-w-full space-y-4">
-      <h3 className="m-0 text-base font-semibold">Assistant response</h3>
+      <h3 className="m-0 text-base font-medium">Assistant response</h3>
       <div className="rounded-lg bg-semantic-bg-ui p-4">
         {loading ? (
           <BouncingLoader {...args} />
@@ -116,7 +116,7 @@ export const V1VsV2: Story = {
           key={version}
           className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
         >
-          <h3 className="m-0 text-base font-semibold">{version}</h3>
+          <h3 className="m-0 text-base font-medium">{version}</h3>
           {version === "v1" ? <V1 {...args} /> : <BouncingLoader {...args} />}
         </section>
       ))}

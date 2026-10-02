@@ -132,7 +132,7 @@ describe("PaginationLink", () => {
     );
     const link = screen.getByTestId("link");
     // ghost variant classes from buttonVariants
-    expect(link).toHaveClass("text-semantic-text-muted");
+    expect(link).toHaveClass("text-[var(--v2-text-muted,#707070)]");
   });
 
   it("applies outline variant when isActive", () => {

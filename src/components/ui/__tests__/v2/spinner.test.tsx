@@ -34,8 +34,8 @@ describe("Spinner", () => {
 
   it.each([
     ["default", "text-semantic-primary"],
-    ["secondary", "text-semantic-text-secondary"],
-    ["muted", "text-semantic-text-muted"],
+    ["secondary", "text-[var(--v2-text-secondary,#5E5E5E)]"],
+    ["muted", "text-[var(--v2-text-muted,#707070)]"],
     ["inverted", "text-semantic-text-inverted"],
     ["current", "text-current"],
   ] as const)(
@@ -136,7 +136,7 @@ describe("Spinner", () => {
         <Spinner variant="muted" size="lg" data-testid="spinner" />
       );
       const svg = container.querySelector("svg");
-      expect(svg).toHaveClass("text-semantic-text-muted");
+      expect(svg).toHaveClass("text-[var(--v2-text-muted,#707070)]");
       expect(svg).toHaveClass("size-8");
     });
   });

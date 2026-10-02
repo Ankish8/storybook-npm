@@ -1,5 +1,10 @@
 # V2 completion — 2026-10-01
 
+**Repository snapshot update, 2026-10-02:** The user authorized a GitHub backup on `codex/ui-v2-review-2026-10-02`. The newer text-hierarchy review records the current 772-story build. Earlier local-only descriptions and 747-story counts below describe the previous completion pass. See [V2-REPOSITORIES.md](V2-REPOSITORIES.md) for the paired repositories and revisions.
+
+**Text hierarchy update, 2026-10-02:** The user requested softer neutral text and less unnecessary font weight across all 56 v2 components. The current palette and weight decisions, browser evidence and preservation checks are in [V2-TEXT-HIERARCHY-REVIEW.md](V2-TEXT-HIERARCHY-REVIEW.md). This update supersedes the original neutral text colors and ordinary label/title weights; use the recorded specs for the remaining design values. This correction remains local.
+
+
 Workspace: `/Users/ankish/Downloads/Code/storybook-npm-v2`, branch **feat/v2**, baseline `e98903e`. Changes remain local; nothing has been committed, pushed, published or deployed.
 
 **All 56 components are implemented with Docs, editable stories, comparison/state or composition galleries, Usage and tests.** The frozen production index contains **747 stories, 56 component Docs pages and three v2 guides**. It covers the 47 components in the Figma inventory plus the remaining library primitives/compositions; no component in this inventory is left unbuilt.

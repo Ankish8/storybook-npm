@@ -1,6 +1,29 @@
 type Token = [label: string, variable: string, value: string, swatch?: string];
 type Change = [aspect: string, v1: string, v2: string];
 
+const neutralTokens: Token[] = [
+  ["Heading and selected text", "--v2-text-primary", "#484848", "#484848"],
+  ["Body and field values", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+  ["Supporting text", "--v2-text-muted", "#707070", "#707070"],
+  ["Placeholder text", "--v2-text-placeholder", "#707070", "#707070"],
+];
+
+function textTokens(tokens: Token[]): Token[] {
+  const updated = tokens.map((token) => {
+    const role = token[1].replace(/^--(?:semantic|v2)-text-/, "");
+    const neutral = neutralTokens.find(
+      (entry) => entry[1] === "--v2-text-" + role
+    );
+    return neutral ? ([token[0], ...neutral.slice(1)] as Token) : token;
+  });
+  return [
+    ...updated,
+    ...neutralTokens.filter(
+      (token) => !updated.some((entry) => entry[1] === token[1])
+    ),
+  ];
+}
+
 const cell = (value: string) =>
   // Storybook parses Markdown inside HTML cells. A leading color hash must
   // remain text instead of becoming an ATX heading.
@@ -10,7 +33,7 @@ const header = (labels: string[]) =>
   labels
     .map(
       (label) =>
-        '<th style="padding:12px 16px;text-align:left;font-weight:600">' +
+        '<th style="padding:12px 16px;text-align:left;font-weight:500">' +
         label +
         "</th>"
     )
@@ -72,10 +95,10 @@ export function v2ComponentDocs({
           "</tr>"
       )
     ) +
-    "\n\n## Design Tokens\n\n" +
+    "\n\n## Text hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\n## Design Tokens\n\n" +
     table(
       ["Token", "CSS Variable", "Value", "Preview"],
-      tokens.map(
+      textTokens(tokens).map(
         ([label, variable, value, swatch]) =>
           '<tr style="border-bottom:1px solid #E9EAEB">' +
           cell(label) +

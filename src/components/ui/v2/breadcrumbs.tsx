@@ -42,7 +42,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
         ]
       : items.map((_, i) => i);
     const labelClass =
-      "inline-flex min-h-[34px] items-center gap-2 rounded-lg p-2 text-sm font-normal leading-[18px] text-semantic-text-secondary [&_svg]:size-[18px]";
+      "inline-flex min-h-[34px] items-center gap-2 rounded-lg p-2 text-sm font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] [&_svg]:size-[18px]";
     return (
       <nav
         ref={ref}
@@ -58,7 +58,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
             <React.Fragment key={index}>
               {position > 0 && (
                 <li aria-hidden="true">
-                  <ChevronRight className="size-3 text-semantic-text-muted" />
+                  <ChevronRight className="size-3 text-[var(--v2-text-muted,#707070)]" />
                 </li>
               )}
               {collapsed && position === 1 && (
@@ -98,7 +98,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
                     </DropdownMenu>
                   </li>
                   <li aria-hidden="true">
-                    <ChevronRight className="size-3 text-semantic-text-muted" />
+                    <ChevronRight className="size-3 text-[var(--v2-text-muted,#707070)]" />
                   </li>
                 </>
               )}
@@ -106,7 +106,10 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
                 {index === items.length - 1 ? (
                   <span
                     aria-current="page"
-                    className={cn(labelClass, "text-semantic-text-primary")}
+                    className={cn(
+                      labelClass,
+                      "text-[var(--v2-text-primary,#484848)]"
+                    )}
                   >
                     {items[index].icon}
                     {items[index].label}

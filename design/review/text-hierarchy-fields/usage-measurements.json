@@ -1,0 +1,452 @@
+[
+  {
+    "component": "Input Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(112, 112, 112)",
+        "role": null,
+        "tag": "INPUT",
+        "text": "",
+        "value": "Support workspace",
+        "weight": "400"
+      }
+    ],
+    "headings": [],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Workspace name",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Saved in this example",
+        "weight": "400"
+      }
+    ],
+    "text": "Workspace detailsUpdate the name used in your workspace.Workspace nameUse a name your team can recognize.Saved in this exampleSave"
+  },
+  {
+    "component": "Textarea Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(112, 112, 112)",
+        "role": null,
+        "tag": "TEXTAREA",
+        "text": "The customer requested a callback tomorrow morning.",
+        "value": "The customer requested a callback tomorrow morning.",
+        "weight": "400"
+      }
+    ],
+    "headings": [],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Notes",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Saved in this example",
+        "weight": "400"
+      }
+    ],
+    "text": "Conversation notesLeave useful context for your team.NotesThe customer requested a callback tomorrow morning.Keep it brief.51/200Saved in this exampleSave note"
+  },
+  {
+    "component": "Select Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(94, 94, 94)",
+        "role": "combobox",
+        "tag": "BUTTON",
+        "text": "API Key",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Authentication",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Saved in this example",
+        "weight": "400"
+      }
+    ],
+    "text": "Webhook authenticationChoose a method for this local example.AuthenticationAPI KeyNoneBasic AuthBearer TokenAPI KeyOAuth 2.0Saved in this exampleSave"
+  },
+  {
+    "component": "Select placeholder correction",
+    "emptyColor": "rgb(112,112,112)",
+    "selected": {
+      "color": "rgb(94, 94, 94)",
+      "empty": false,
+      "text": "API Key",
+      "valueSpan": [
+        {
+          "color": "rgb(94, 94, 94)",
+          "text": "API Key"
+        }
+      ],
+      "weight": "400"
+    }
+  },
+  {
+    "component": "SelectField empty placeholder correction",
+    "color": "rgb(112, 112, 112)",
+    "empty": true,
+    "text": "Select a method",
+    "valueSpan": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Select a method"
+      }
+    ],
+    "weight": "400"
+  },
+  {
+    "component": "SelectField Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(94, 94, 94)",
+        "role": "combobox",
+        "tag": "BUTTON",
+        "text": "Basic Auth",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Authentication*",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Saved in this example",
+        "weight": "400"
+      }
+    ],
+    "text": "Webhook authenticationChoose a method for this local example.Authentication*Basic AuthNoneBasic AuthBearer TokenAPI KeyOAuth 2.0Choose how this webhook authenticates.Saved in this exampleClearSave"
+  },
+  {
+    "component": "PhoneInput Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(112, 112, 112)",
+        "role": null,
+        "tag": "INPUT",
+        "text": "",
+        "value": "<redacted>",
+        "weight": "400"
+      }
+    ],
+    "headings": [],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Phone number*",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Saved in this example",
+        "weight": "400"
+      }
+    ],
+    "text": "Contact phone numberSave a number in this local example.Phone number*+91Include the number without the country code.Saved in this exampleClearSave"
+  },
+  {
+    "component": "MultiSelect Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(94, 94, 94)",
+        "role": "combobox",
+        "tag": "BUTTON",
+        "text": "React",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Skills*",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Saved in this example",
+        "weight": "400"
+      }
+    ],
+    "text": "Team skillsChoose skills for this local example.Skills*ReactChoose the skills this team uses.Saved in this exampleClearSave"
+  },
+  {
+    "component": "CreatableSelect Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(94, 94, 94)",
+        "role": null,
+        "tag": "BUTTON",
+        "text": "Escalation specialist",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Agent profile",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Choose the main role for this agent.",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(6, 118, 71)",
+        "text": "Saved role: Escalation specialist",
+        "weight": "400"
+      }
+    ],
+    "text": "Agent profileChoose the main role for this agent.Primary roleEscalation specialistChoose a preset or type your own role.Save roleClear selectionSaved role: Escalation specialist"
+  },
+  {
+    "component": "CreatableMultiSelect Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "role": "combobox",
+        "tag": "INPUT",
+        "text": "",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Agent voice",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Set the tones for this agent’s conversations.",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [],
+    "text": "Agent voiceSet the tones for this agent’s conversations.Conversation tonesCalm0/20Type to create a custom toneEnter ↵Max selections allowed: 5ProfessionalFriendlyEmpatheticDirectEnthusiasticSave tonesClear selection"
+  },
+  {
+    "component": "CreatableMultiSelect Usage final save",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "role": "combobox",
+        "tag": "DIV",
+        "text": "Calm",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Agent voice",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Set the tones for this agent’s conversations.",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(6, 118, 71)",
+        "text": "Saved tones: Calm",
+        "weight": "400"
+      }
+    ],
+    "text": "Agent voiceSet the tones for this agent’s conversations.Conversation tonesCalmChoose the tones this agent should use.Save tonesClear selectionSaved tones: Calm"
+  },
+  {
+    "component": "DateRangePicker Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": null,
+        "placeholder": "rgb(94, 94, 94)",
+        "role": null,
+        "tag": "BUTTON",
+        "text": "26 Sep 2026 - 2 Oct 2026",
+        "value": "",
+        "weight": "400"
+      }
+    ],
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Export a report",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Choose the reporting period for this local example.",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(6, 118, 71)",
+        "text": "Report period saved: 2026-09-26 to 2026-10-02",
+        "weight": "400"
+      }
+    ],
+    "text": "Export a reportChoose the reporting period for this local example.Report period26 Sep 2026 - 2 Oct 2026Choose the period to include in the report.Save periodClearReport period saved: 2026-09-26 to 2026-10-02"
+  },
+  {
+    "component": "DateTimePicker Usage",
+    "fields": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "role": null,
+        "tag": "INPUT",
+        "text": "",
+        "value": "07/10/2026 10:30 AM",
+        "weight": "400"
+      }
+    ],
+    "headings": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Schedule a call",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "text": "Set an appointment in this local example.",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Appointment*",
+        "weight": "500"
+      }
+    ],
+    "page": {
+      "client": 1620,
+      "scroll": 1620
+    },
+    "scrollers": [],
+    "status": [
+      {
+        "color": "rgb(6, 118, 71)",
+        "text": "Appointment saved: 2026-10-07 10:30:00",
+        "weight": "400"
+      }
+    ],
+    "text": "Schedule a callSet an appointment in this local example.Appointment*Choose a date and start time.Save appointmentClearAppointment saved: 2026-10-07 10:30:00"
+  }
+]

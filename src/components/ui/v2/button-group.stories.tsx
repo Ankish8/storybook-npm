@@ -124,7 +124,7 @@ export const AllVariants: Story = {
     <div className="max-w-full space-y-6">
       {(["default", "primary", "toggle"] as const).map((variant) => (
         <section key={variant}>
-          <h3 className="m-0 mb-3 text-base font-semibold capitalize">
+          <h3 className="m-0 mb-3 text-base font-medium capitalize">
             {variant}
           </h3>
           <Sample key={variant + args.value} {...args} variant={variant} />
@@ -142,7 +142,7 @@ export const States: Story = {
     <div className="max-w-full space-y-6">
       {[false, true].map((disabled) => (
         <section key={String(disabled)}>
-          <h3 className="m-0 mb-3 text-base font-semibold">
+          <h3 className="m-0 mb-3 text-base font-medium">
             {disabled ? "Disabled" : "Enabled"}
           </h3>
           <Sample
@@ -160,8 +160,8 @@ function ViewChooser(args: ButtonGroupProps) {
   return (
     <section className="w-[520px] max-w-full space-y-4">
       <div>
-        <h3 className="m-0 text-base font-semibold">Your conversations</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium">Your conversations</h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Choose a view for this example.
         </p>
       </div>

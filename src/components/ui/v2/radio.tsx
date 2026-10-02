@@ -130,10 +130,10 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
               <label
                 htmlFor={inputId}
                 className={cn(
-                  "m-0 block text-sm font-semibold leading-5 tracking-[0.014px]",
+                  "m-0 block text-sm font-medium leading-5 tracking-[0.014px]",
                   isDisabled
-                    ? "text-semantic-text-muted"
-                    : "text-semantic-text-secondary"
+                    ? "text-[var(--v2-text-muted,#707070)]"
+                    : "text-[var(--v2-text-primary,#484848)]"
                 )}
               >
                 {label}
@@ -142,7 +142,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
             {description && (
               <p
                 id={inputId + "-description"}
-                className="m-0 mt-1 text-xs text-semantic-text-muted"
+                className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 {description}
               </p>

@@ -276,7 +276,7 @@ describe("DateTimePicker", () => {
     expect(trigger).toHaveClass("py-2");
     expect(trigger).toHaveClass("text-base");
     expect(trigger).toHaveClass("border-semantic-border-input");
-    expect(trigger).toHaveClass("text-semantic-text-placeholder");
+    expect(trigger).toHaveClass("text-[var(--v2-text-placeholder,#707070)]");
   });
 
   it("selects a day and reports value changes", () => {
@@ -1004,7 +1004,10 @@ describe("DateTimePicker", () => {
 
     const label = screen.getByText("Event date");
     expect(label.tagName).toBe("LABEL");
-    expect(label).toHaveClass("font-semibold", "text-semantic-text-secondary");
+    expect(label).toHaveClass(
+      "font-medium",
+      "text-[var(--v2-text-primary,#484848)]"
+    );
     expect(label).toHaveAttribute("for", "event-date");
   });
 
@@ -1177,7 +1180,7 @@ describe("DateTimePicker", () => {
 
     const helper = screen.getByText("Pick a slot in business hours");
 
-    expect(helper).toHaveClass("text-semantic-text-muted");
+    expect(helper).toHaveClass("text-[var(--v2-text-muted,#707070)]");
     expect(screen.getByLabelText("Date and time")).toHaveAttribute(
       "aria-describedby",
       helper.id

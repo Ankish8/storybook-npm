@@ -41,7 +41,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
         ref={ref}
         aria-label="Progress steps"
         className={cn(
-          "m-0 flex max-w-full list-none p-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary",
+          "m-0 flex max-w-full list-none p-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-primary,#484848)]",
           vertical ? "flex-col gap-1" : "items-start gap-3",
           className
         )}
@@ -57,9 +57,17 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                 small ? "text-xs leading-[15px]" : "text-sm leading-5"
               )}
             >
-              <span className="font-semibold">{step.title}</span>
+              <span
+                className={cn(
+                  "font-medium text-[var(--v2-text-secondary,#5E5E5E)]",
+                  index === currentStep &&
+                    "font-medium text-[var(--v2-text-primary,#484848)]"
+                )}
+              >
+                {step.title}
+              </span>
               {step.description && (
-                <span className="font-normal text-semantic-text-muted">
+                <span className="font-normal text-[var(--v2-text-muted,#707070)]">
                   {step.description}
                 </span>
               )}

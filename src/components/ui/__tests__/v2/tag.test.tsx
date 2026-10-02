@@ -46,7 +46,7 @@ describe("Tag (v2)", () => {
       </Tag>
     );
     expect(screen.getByText("Started").parentElement).toHaveClass("h-9");
-    expect(screen.getByText("Event:")).toHaveClass("font-semibold");
+    expect(screen.getByText("Event:")).toHaveClass("font-medium");
     expect(screen.getByText("Started")).toHaveClass("font-normal");
   });
   it("forwards refs and native attributes", () => {

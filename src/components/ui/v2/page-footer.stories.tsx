@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
+import { expect, userEvent, within } from "storybook/test";
 import { PageFooter, type PageFooterProps } from "./page-footer";
 import { Button } from "./button";
 import { Textarea } from "./textarea";
@@ -41,7 +42,10 @@ function FooterExample(args: Args) {
           />
         }
       />
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {status || "Choose an action to see its result."}
       </p>
     </div>
@@ -141,7 +145,9 @@ export const AllVariants: Story = {
               : "max-w-full space-y-3"
           }
         >
-          <h3 className="m-0 text-base font-semibold capitalize">{layout}</h3>
+          <h3 className="m-0 text-base font-medium capitalize text-[var(--v2-text-primary,#484848)]">
+            {layout}
+          </h3>
           <FooterExample {...args} layout={layout} />
         </section>
       ))}
@@ -157,7 +163,7 @@ export const States: Story = {
     <div className="w-[820px] max-w-full space-y-6">
       {[false, true].map((disabled) => (
         <section key={String(disabled)} className="space-y-3">
-          <h3 className="m-0 text-base font-semibold">
+          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
             {disabled ? "Disabled" : "Enabled"}
           </h3>
           <FooterExample {...args} disabled={disabled} />
@@ -175,7 +181,9 @@ function Editor(args: Args) {
   return (
     <section className="w-[720px] max-w-full overflow-hidden rounded-lg border border-solid border-semantic-border-layout">
       <div className="space-y-4 p-5">
-        <h3 className="m-0 text-base font-semibold">Notification settings</h3>
+        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Notification settings
+        </h3>
         <Textarea
           label="Message"
           value={draft}
@@ -185,7 +193,10 @@ function Editor(args: Args) {
             setStatus("");
           }}
         />
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p
+          role="status"
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {status ||
             (draft === saved ? "No unsaved changes" : "Unsaved changes")}
         </p>
@@ -211,3 +222,57 @@ function Editor(args: Args) {
   );
 }
 export const Usage: Story = { render: (args) => <Editor {...args} /> };
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    description: "Configure and manage your webhook integrations",
+    layout: "desktop",
+    disabled: false,
+    primaryLabel: "Save changes",
+    secondaryLabel: "Cancel",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Activates both footer actions with the mouse and the keyboard and checks the result each one reports. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const cancel = canvas.getByRole("button", { name: "Cancel" });
+    const save = canvas.getByRole("button", { name: "Save changes" });
+    const status = canvas.getByRole("status");
+
+    await step("Shows the supporting text and both actions", async () => {
+      await expect(
+        canvas.getByText("Configure and manage your webhook integrations")
+      ).toBeVisible();
+      await expect(status).toHaveTextContent(
+        "Choose an action to see its result."
+      );
+    });
+
+    await step("Each click reports its own result", async () => {
+      await userEvent.click(save);
+      await expect(status).toHaveTextContent("Changes saved in this example.");
+      await userEvent.click(cancel);
+      await expect(status).toHaveTextContent("Changes discarded.");
+    });
+
+    await step("Tab order, Enter and Space follow the layout", async () => {
+      cancel.focus();
+      await userEvent.tab();
+      await expect(save).toHaveFocus();
+      await userEvent.keyboard("{Enter}");
+      await expect(status).toHaveTextContent("Changes saved in this example.");
+      await userEvent.tab({ shift: true });
+      await expect(cancel).toHaveFocus();
+      await userEvent.keyboard(" ");
+      await expect(status).toHaveTextContent("Changes discarded.");
+    });
+  },
+};

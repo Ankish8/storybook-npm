@@ -111,7 +111,7 @@ export const AllVariants: Story = {
         [...items, { label: "Integrations" }, { label: "Webhooks" }],
       ].map((example, i) => (
         <section key={i} className="space-y-2">
-          <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
             {["Default", "With icons", "More pages"][i]}
           </h3>
           <Breadcrumbs
@@ -131,7 +131,7 @@ function Navigate(args: Parameters<NonNullable<Story["render"]>>[0]) {
   const [current, setCurrent] = useState(args.items.length - 1);
   return (
     <div className="w-[640px] max-w-full space-y-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Workspace settings
       </h3>
       <Breadcrumbs
@@ -143,7 +143,7 @@ function Navigate(args: Parameters<NonNullable<Story["render"]>>[0]) {
           notifyNavigate(args.onNavigate, item, index);
         }}
       />
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         Current page:{" "}
         {args.items[Math.min(current, args.items.length - 1)]?.label || "None"}
       </p>

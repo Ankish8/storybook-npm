@@ -196,7 +196,7 @@ describe("DropdownMenuItem description and suffix", () => {
     expect(screen.getByText("Secondary text")).toBeInTheDocument();
     expect(screen.getByText("Secondary text")).toHaveClass(
       "text-xs",
-      "text-semantic-text-muted"
+      "text-[var(--v2-text-muted,#707070)]"
     );
   });
 

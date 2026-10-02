@@ -72,7 +72,11 @@ function Example({
       {label && (
         <p
           id={`${id}-label`}
-          className="m-0 text-sm font-semibold text-semantic-text-secondary"
+          className={
+            version === "v1"
+              ? "m-0 text-sm font-medium text-semantic-text-secondary"
+              : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+          }
         >
           {label}
         </p>
@@ -102,7 +106,10 @@ function Example({
         </p>
       )}
       {showSelection && (
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p
+          role="status"
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           Selected: {valuesFor(props.value).join(", ") || "None"}
         </p>
       )}
@@ -184,12 +191,12 @@ const meta: Meta<Args> = {
             [
               "Type",
               "Inherited type",
-              "Inter 16px values; host label 14px / 600; helper 12px",
+              "Inter 16px values; host label 14px / 500; helper 12px",
             ],
             [
               "Selected chips",
               "4px corners / regular text",
-              "8px corners, subtle border, 14px semibold",
+              "8px corners, subtle border, 14px medium",
             ],
             ["Hover", "Thin stroke", "C0C3CA border"],
             ["Focus", "Outer focus ring", "27ABB8 border and soft 4px halo"],
@@ -213,8 +220,8 @@ const meta: Meta<Args> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
@@ -349,15 +356,17 @@ export const AllVariants: Story = {
   render: (args) => (
     <div className="w-full max-w-[920px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Validation variants</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Validation variants
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           The error message is linked to the field.
         </p>
       </header>
       <div className="grid gap-6 md:grid-cols-2">
         {VARIANTS.map((state) => (
           <section key={state} className="space-y-3">
-            <p className="m-0 text-xs font-semibold uppercase tracking-wide text-semantic-text-muted">
+            <p className="m-0 text-xs font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
               {state}
             </p>
             <Preview
@@ -380,8 +389,10 @@ export const HeightAndWidth: Story = {
   render: (args) => (
     <div className="w-full max-w-[820px] space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Field proportions</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Field proportions
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Empty and one-line fields are 40px high. Wrapping chips can increase
           height.
         </p>
@@ -389,7 +400,7 @@ export const HeightAndWidth: Story = {
       <div className="flex flex-wrap items-start gap-6">
         {[420, 280].map((width) => (
           <section key={width} className="space-y-3">
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               {width}px wide · 40px minimum
             </p>
             <Preview
@@ -414,8 +425,10 @@ export const States: Story = {
   render: (args) => (
     <div className="w-full space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Interaction states</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Interaction states
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           The comparison grid scrolls inside its canvas.
         </p>
       </header>
@@ -428,14 +441,16 @@ export const States: Story = {
           {COLUMNS.map((column) => (
             <p
               key={column.label}
-              className="m-0 text-xs font-semibold text-semantic-text-muted"
+              className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
             >
               {column.label}
             </p>
           ))}
           {VARIANTS.map((state) => (
             <React.Fragment key={state}>
-              <p className="m-0 pt-6 text-sm font-semibold">{state}</p>
+              <p className="m-0 pt-6 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+                {state}
+              </p>
               {COLUMNS.map((column) => (
                 <Preview
                   {...args}
@@ -466,8 +481,10 @@ export const V1VsV2: Story = {
   render: (args) => (
     <div className="w-full space-y-5">
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">v1 and v2</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          v1 and v2
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Preset IDs, draft limits and selection behaviors are preserved.
         </p>
       </header>
@@ -477,12 +494,16 @@ export const V1VsV2: Story = {
           className="grid grid-cols-[160px_320px_320px] gap-6"
         >
           <span />
-          <p className="m-0 text-sm font-semibold">v1</p>
-          <p className="m-0 text-sm font-semibold">v2</p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v1
+          </p>
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            v2
+          </p>
           {["default", "error", "disabled"].flatMap((treatment) =>
             [[], ["professional"]].map((value) => (
               <React.Fragment key={`${treatment}-${value.length}`}>
-                <p className="m-0 pt-6 text-xs text-semantic-text-muted">
+                <p className="m-0 pt-6 text-xs text-[var(--v2-text-muted,#707070)]">
                   {treatment} · {value.length ? "selected" : "empty"}
                 </p>
                 {(["v1", "v2"] as const).map((version) => (
@@ -544,8 +565,10 @@ function UsageForm(args: Args) {
       }}
     >
       <header className="space-y-1">
-        <p className="m-0 text-base font-semibold">Agent voice</p>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Agent voice
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           Set the tones for this agent’s conversations.
         </p>
       </header>

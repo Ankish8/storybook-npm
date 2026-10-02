@@ -150,7 +150,14 @@ function TableExample({
                 className={rowState === "hover" ? "pseudo-hover" : undefined}
                 data-state={rowState === "selected" ? "selected" : undefined}
               >
-                <UI.TableCell sticky={sticky} className="font-medium">
+                <UI.TableCell
+                  sticky={sticky}
+                  className={
+                    version === "v1"
+                      ? "font-medium"
+                      : "font-medium text-[var(--v2-text-primary,#484848)]"
+                  }
+                >
                   {row.name}
                 </UI.TableCell>
                 <UI.TableCell>
@@ -239,7 +246,10 @@ function TableExample({
         </UI.TableBody>
       </UI.Table>
       {notice && (
-        <p className="m-0 mt-3 text-xs text-semantic-text-muted" role="status">
+        <p
+          className="m-0 mt-3 text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           {notice}
         </p>
       )}
@@ -305,8 +315,13 @@ const meta: Meta<ExampleArgs> = {
           ],
           tokens: [
             ["Header", "--semantic-primary-surface", "#EBECEE", "#EBECEE"],
-            ["Text", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Header text", "--semantic-text-secondary", "#535862", "#535862"],
+            ["Body text", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            [
+              "Header / emphasized cell",
+              "--v2-text-primary",
+              "#484848",
+              "#484848",
+            ],
             ["Divider", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
             ["Highlight", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Hover / selected", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
@@ -460,10 +475,10 @@ function ExampleCard({
 }) {
   return (
     <section className="min-w-0 max-w-full rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
         {description}
       </p>
       {children}
@@ -692,10 +707,10 @@ function CampaignManagement({
     <div className="max-w-full rounded-lg border border-semantic-border-layout p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
             Campaigns
           </h3>
-          <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+          <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
             Select campaigns, sort their names and update their enabled state.
           </p>
         </div>
@@ -730,7 +745,10 @@ function CampaignManagement({
             onChange={(event) => updateArgs({ query: event.target.value })}
           />
         </div>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+          role="status"
+        >
           {visibleSelected} of {data.length} visible campaigns selected
         </p>
       </div>
@@ -875,7 +893,10 @@ function CampaignManagement({
           )}
         </V2.TableBody>
       </V2.Table>
-      <p className="m-0 mt-4 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 mt-4 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {message ||
           "This example uses local data; actions affect only this preview."}
       </p>

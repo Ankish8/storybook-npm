@@ -79,7 +79,7 @@ describe("TextField", () => {
       screen.getByText("We will never share your email")
     ).toBeInTheDocument();
     expect(screen.getByText("We will never share your email")).toHaveClass(
-      "text-semantic-text-muted"
+      "text-[var(--v2-text-muted,#707070)]"
     );
   });
 

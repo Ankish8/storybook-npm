@@ -34,6 +34,10 @@ developer-api-demo
 temp
 playground
 docs
+# Authored v2 Storybook guides are source files, not generated docs output.
+!src/docs/
+!src/docs/v2/
+!src/docs/v2/**
 myoperator-plugins
 COMPONENT-POLISH-TRACKER.md
 onboarding

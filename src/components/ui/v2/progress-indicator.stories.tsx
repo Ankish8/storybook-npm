@@ -77,12 +77,12 @@ export const AllVariants: Story = {
   render: (args) => (
     <div className="grid w-[740px] max-w-full gap-8 sm:grid-cols-2">
       <section className="space-y-4 sm:col-span-2">
-        <h3 className="m-0 text-base font-semibold">Linear progress</h3>
+        <h3 className="m-0 text-base font-medium">Linear progress</h3>
         <ProgressIndicator {...args} variant="bar" />
       </section>
       {variants.slice(1).map((variant) => (
         <section key={variant} className="space-y-4">
-          <h3 className="m-0 text-base font-semibold capitalize">
+          <h3 className="m-0 text-base font-medium capitalize">
             {variant.replace("-", " ")}
           </h3>
           <ProgressIndicator {...args} variant={variant} />
@@ -100,7 +100,7 @@ export const States: Story = {
     <div className="grid w-[700px] max-w-full gap-6 sm:grid-cols-2">
       {[0, 30, 100, -1].map((value) => (
         <section key={value} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold">
+          <h3 className="m-0 text-sm font-medium">
             {value < 0
               ? "Indeterminate"
               : value === 100
@@ -126,8 +126,8 @@ function UploadExample(
   return (
     <section className="w-[440px] max-w-full space-y-5">
       <div>
-        <h3 className="m-0 text-base font-semibold">Import contacts</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium">Import contacts</h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Each action advances this local example by 25%.
         </p>
       </div>
@@ -147,7 +147,10 @@ function UploadExample(
           Reset
         </Button>
       </div>
-      <p role="status" className="m-0 text-sm text-semantic-text-secondary">
+      <p
+        role="status"
+        className="m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+      >
         {value === 100
           ? "Contacts imported."
           : `${value}% of contacts imported.`}

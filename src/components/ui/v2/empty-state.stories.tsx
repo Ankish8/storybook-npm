@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 import { PhoneCall, FileText, Search, Inbox } from "lucide-react";
 import { EmptyState, type EmptyStateProps } from "./empty-state";
 import { EmptyState as EmptyStateV1 } from "../empty-state";
@@ -121,7 +121,7 @@ const meta: Meta<Args> = {
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Icon surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Title", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Description", "--semantic-text-muted", "#717680", "#717680"],
+            ["Description", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
           ],
           guidance:
             "Explain why a view is empty and offer a useful next action. Icon and action controls configure ReactNode slots. EmptyState itself has no search or data-fetch behavior; Usage demonstrates local application state.",
@@ -219,7 +219,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       {children}
@@ -303,14 +303,17 @@ function SearchExample({
   );
   return (
     <section className="p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Contacts
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
         Filter a local list. Query typing and Controls stay synchronized;
         clearing restores contacts.
       </p>
-      <label htmlFor={id} className="mb-2 block text-sm font-medium">
+      <label
+        htmlFor={id}
+        className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+      >
         Search contacts
       </label>
       <Input
@@ -362,5 +365,61 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, update] = useArgs<Args>();
     return <SearchExample args={args} update={update} />;
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    title: "Setup Calling API",
+    actionCount: 2,
+    primaryLabel: "Generate credentials",
+    secondaryLabel: "Setup guide",
+    disabled: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Clicks and keyboard-activates each action and checks which label it reports. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const primary = canvas.getByRole("button", {
+      name: "Generate credentials",
+    });
+    const secondary = canvas.getByRole("button", { name: "Setup guide" });
+
+    await step("Shows the message and both actions", async () => {
+      await expect(canvas.getByText("Setup Calling API")).toBeVisible();
+      await expect(canvas.getAllByRole("button")).toHaveLength(2);
+    });
+
+    await step("Each click reports its own action", async () => {
+      await userEvent.click(primary);
+      await expect(args.onAction).toHaveBeenLastCalledWith(
+        "Generate credentials"
+      );
+      await userEvent.click(secondary);
+      await expect(args.onAction).toHaveBeenLastCalledWith("Setup guide");
+      await expect(args.onAction).toHaveBeenCalledTimes(2);
+    });
+
+    await step("Tab, Enter and Space work from the keyboard", async () => {
+      primary.focus();
+      await userEvent.keyboard("{Enter}");
+      await expect(args.onAction).toHaveBeenNthCalledWith(
+        3,
+        "Generate credentials"
+      );
+      await userEvent.tab();
+      await expect(secondary).toHaveFocus();
+      await userEvent.keyboard(" ");
+      await expect(args.onAction).toHaveBeenNthCalledWith(4, "Setup guide");
+      await expect(args.onAction).toHaveBeenCalledTimes(4);
+    });
   },
 };

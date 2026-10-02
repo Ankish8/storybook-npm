@@ -1,0 +1,2435 @@
+[
+  {
+    "component": "TextField",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Focus",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(94, 94, 94)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 38,
+        "name": "default Loading",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "total": 18,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "TextField",
+    "status": "Saved in this example",
+    "title": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "weight": "500"
+      }
+    ],
+    "view": "Usage"
+  },
+  {
+    "component": "Input",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Focus",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "total": 10,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "Textarea",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 102,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 102,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 102,
+        "name": "error Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 102,
+        "name": "error Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      "rgb(72, 72, 72)/500"
+    ],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 102,
+        "name": "default Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 102,
+        "name": "default Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 102,
+        "name": "default Focus",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 102,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 102,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 102,
+        "name": "error Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "total": 10,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "Select",
+    "label": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "weight": "500"
+      }
+    ],
+    "options": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "state": "unchecked",
+        "text": "None",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "state": "unchecked",
+        "text": "Basic Auth",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "state": "unchecked",
+        "text": "Bearer Token",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "state": "unchecked",
+        "text": "API Key",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "state": "unchecked",
+        "text": "OAuth 2.0",
+        "weight": "400"
+      }
+    ],
+    "view": "Overview open portal"
+  },
+  {
+    "color": "rgb(72, 72, 72)",
+    "component": "Select",
+    "state": "checked",
+    "view": "Selected Basic Auth",
+    "weight": "500"
+  },
+  {
+    "component": "Select",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Default",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Hover",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      "rgb(72, 72, 72)/500"
+    ],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Default",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Hover",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "default Focus",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "error Default",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 10,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "Select",
+    "items": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "opacity": "1",
+        "text": "None",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "opacity": "1",
+        "text": "Basic Auth",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "opacity": "1",
+        "text": "Bearer Token",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "opacity": "1",
+        "text": "API Key",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "opacity": "1",
+        "text": "OAuth 2.0",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "opacity": "0.5",
+        "text": "Single sign-on · unavailable",
+        "weight": "400"
+      }
+    ],
+    "view": "With disabled items open"
+  },
+  {
+    "component": "SelectField",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      "rgb(72, 72, 72)/500"
+    ],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select a method",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 12,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "PhoneInput",
+    "disabled": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 46,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 46,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 46,
+        "name": "error Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 46,
+        "name": "error Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      "rgb(72, 72, 72)/500"
+    ],
+    "samples": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 46,
+        "name": "default Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 46,
+        "name": "default Hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 46,
+        "name": "default Focus",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 46,
+        "name": "default Disabled",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 46,
+        "name": "default Disabled + hover",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 46,
+        "name": "empty Default",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "total": 15,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "MultiSelect",
+    "options": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "selected": "false",
+        "text": "React",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "selected": "false",
+        "text": "TypeScript",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "selected": "false",
+        "text": "Node.js",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "selected": "false",
+        "text": "Python",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "selected": "false",
+        "text": "Product design",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "selected": "false",
+        "text": "User research",
+        "weight": "400"
+      }
+    ],
+    "view": "Overview portaled list"
+  },
+  {
+    "chip": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "weight": "500"
+      }
+    ],
+    "component": "MultiSelect",
+    "option": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "selected": "true",
+        "weight": "500"
+      }
+    ],
+    "view": "Overview selected React"
+  },
+  {
+    "component": "MultiSelect",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      "rgb(72, 72, 72)/500"
+    ],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select skills",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 12,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "CreatableSelect",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create a role",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 10,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "CreatableSelect Overview selected",
+    "selected": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Technical Support",
+        "weight": "500"
+      }
+    ]
+  },
+  {
+    "component": "CreatableMultiSelect",
+    "disabled": [],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(39, 171, 184)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 40,
+        "name": "Select or create tones",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 10,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "DateRangePicker",
+    "disabled": [],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [],
+    "labels": [],
+    "samples": [],
+    "total": 0,
+    "view": "States",
+    "weights": []
+  },
+  {
+    "component": "DateRangePicker Overview portal",
+    "samples": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "label": null,
+        "selected": null,
+        "text": "Last 7 days",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "label": null,
+        "selected": null,
+        "text": "October",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "label": null,
+        "selected": null,
+        "text": "2026",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "label": "September 30, 2026",
+        "selected": "false",
+        "text": "30",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "October 1, 2026",
+        "selected": "true",
+        "text": "1",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "label": "October 2, 2026",
+        "selected": "false",
+        "text": "2",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "October 7, 2026",
+        "selected": "true",
+        "text": "7",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "label": "October 15, 2026",
+        "selected": "false",
+        "text": "15",
+        "weight": "400"
+      }
+    ]
+  },
+  {
+    "component": "DateTimePicker",
+    "disabled": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "labels": [
+      "rgb(72, 72, 72)/500"
+    ],
+    "samples": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(229, 231, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 24,
+        "name": "Date and time",
+        "placeholder": "rgb(112, 112, 112)",
+        "weight": "400"
+      }
+    ],
+    "total": 30,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "DateTimePicker Overview calendar",
+    "samples": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "label": null,
+        "role": null,
+        "selected": null,
+        "tag": "LABEL",
+        "text": "Month",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "label": "Month",
+        "role": "combobox",
+        "selected": null,
+        "tag": "BUTTON",
+        "text": "Oct",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "label": null,
+        "role": null,
+        "selected": null,
+        "tag": "LABEL",
+        "text": "Year",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "label": "Year",
+        "role": "combobox",
+        "selected": null,
+        "tag": "BUTTON",
+        "text": "2026",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "October 7, 2026",
+        "role": null,
+        "selected": "true",
+        "tag": "BUTTON",
+        "text": "7",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "label": "October 15, 2026",
+        "role": null,
+        "selected": "false",
+        "tag": "BUTTON",
+        "text": "15",
+        "weight": "400"
+      }
+    ]
+  },
+  {
+    "component": "DateTimePicker month options",
+    "options": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Jan",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Feb",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Mar",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Apr",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "May",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Jun",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Jul",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Aug",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Sep",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "selected": "true",
+        "text": "Oct",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Nov",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "Dec",
+        "weight": "400"
+      }
+    ]
+  },
+  {
+    "component": "DateTimePicker time options",
+    "options": []
+  },
+  {
+    "component": "DateTimePicker time options final",
+    "options": [
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "01",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "02",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "03",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "04",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "05",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "06",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "07",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "08",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "09",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "selected": "true",
+        "text": "10",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "11",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "12",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "00",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "05",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "10",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "15",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "20",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "25",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "selected": "true",
+        "text": "30",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "35",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "40",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "45",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "50",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "55",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "selected": "true",
+        "text": "AM",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "selected": "false",
+        "text": "PM",
+        "weight": "400"
+      }
+    ]
+  },
+  {
+    "component": "OtpInput",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 60,
+        "name": "Digit 1 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 60,
+        "name": "Digit 2 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 1 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(240, 68, 56)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 2 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "labels": [],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 1 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 2 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 3 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 4 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 1 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(192, 195, 202)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 60,
+        "name": "Digit 2 of 4",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 20,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "OtpInput Usage",
+    "typed": "1234",
+    "result": "Verify your phone\n\nPaste a code or enter one digit at a time.\n\nEnter the code sent to your phone\n\nVerify code\nRequest new code\n\nCode submitted for verification."
+  },
+  {
+    "component": "NumberStepField",
+    "disabled": [
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 38,
+        "name": "Disabled",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "documentScrollWidth": 1620,
+    "documentWidth": 1620,
+    "error": [],
+    "labels": [],
+    "samples": [
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 38,
+        "name": "Enabled",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 38,
+        "name": "Hover",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": false,
+        "height": 38,
+        "name": "Focus",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      },
+      {
+        "background": "rgb(245, 245, 245)",
+        "border": "rgb(233, 234, 235)",
+        "color": "rgb(94, 94, 94)",
+        "disabled": true,
+        "height": 38,
+        "name": "Disabled",
+        "placeholder": "rgb(94, 94, 94)",
+        "weight": "400"
+      }
+    ],
+    "total": 4,
+    "view": "States",
+    "weights": [
+      "400"
+    ]
+  },
+  {
+    "component": "NumberStepField Overview",
+    "clicked": "Increase value",
+    "control": "2",
+    "rendered": {
+      "color": "rgb(94, 94, 94)",
+      "value": "2",
+      "weight": "400"
+    }
+  },
+  {
+    "component": "NumberStepField Usage",
+    "samples": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "role": null,
+        "text": "Retry delay",
+        "value": "",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(94, 94, 94)",
+        "role": null,
+        "text": "",
+        "value": "1",
+        "weight": "400"
+      },
+      {
+        "color": "rgb(112, 112, 112)",
+        "role": "status",
+        "text": "Saved 1 hours.",
+        "value": "",
+        "weight": "400"
+      }
+    ]
+  },
+  {
+    "component": "TextField Docs final",
+    "docs": {
+      "client": 1620,
+      "headingInCells": 0,
+      "headings": [
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "TextField",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Import",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Unprefixed Tailwind",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "What changes from v1",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Text hierarchy",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Design Tokens",
+          "weight": "500"
+        }
+      ],
+      "scroll": 1620,
+      "tables": 3,
+      "tokenRows": [
+        "Value--v2-text-secondary#5E5E5E",
+        "Label--v2-text-primary#484848",
+        "Helper / prefix / suffix--v2-text-muted#707070",
+        "Placeholder--v2-text-placeholder#707070"
+      ]
+    }
+  },
+  {
+    "component": "NumberStepField Docs final",
+    "docs": {
+      "client": 1620,
+      "headingInCells": 0,
+      "headings": [
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "NumberStepField",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Import",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Unprefixed Tailwind",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "What changes from v1",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Text hierarchy",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Design Tokens",
+          "weight": "500"
+        }
+      ],
+      "scroll": 1620,
+      "tables": 3,
+      "tokenRows": [
+        "Value--v2-text-secondary#5E5E5E",
+        "Heading and selected text--v2-text-primary#484848",
+        "Supporting text--v2-text-muted#707070",
+        "Placeholder text--v2-text-placeholder#707070"
+      ]
+    }
+  },
+  {
+    "component": "DateTimePicker Docs final",
+    "docs": {
+      "client": 1620,
+      "headingInCells": 0,
+      "headings": [
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "DateTimePicker",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Import",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Unprefixed Tailwind",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "What changes from v1",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Text hierarchy",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Design Tokens",
+          "weight": "500"
+        }
+      ],
+      "scroll": 1620,
+      "tables": 3,
+      "tokenRows": [
+        "Value--v2-text-secondary#5E5E5E",
+        "Label--v2-text-primary#484848",
+        "Helper--v2-text-muted#707070",
+        "Placeholder text--v2-text-placeholder#707070"
+      ]
+    }
+  },
+  {
+    "component": "OtpInput Docs final",
+    "docs": {
+      "client": 1620,
+      "headingInCells": 0,
+      "headings": [
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "OtpInput",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Import",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Unprefixed Tailwind",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Design specification",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Text hierarchy",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Design Tokens",
+          "weight": "500"
+        }
+      ],
+      "scroll": 1620,
+      "tables": 3,
+      "tokenRows": [
+        "Value--v2-text-secondary#5E5E5E",
+        "Heading and selected text--v2-text-primary#484848",
+        "Supporting text--v2-text-muted#707070",
+        "Placeholder text--v2-text-placeholder#707070"
+      ]
+    }
+  },
+  {
+    "component": "CreatableMultiSelect Overview final",
+    "selected": [
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Friendly",
+        "weight": "500"
+      },
+      {
+        "color": "rgb(72, 72, 72)",
+        "text": "Friendly",
+        "weight": "500"
+      }
+    ],
+    "control": "value\t\nEdit JSON\nvalue :[\n0 : \"friendly\"\n]"
+  },
+  {
+    "component": "TextField Overview final",
+    "measure": {
+      "helper": [],
+      "input": [
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 40,
+          "placeholder": "rgb(112, 112, 112)",
+          "value": "Softer hierarchy",
+          "weight": "400"
+        }
+      ],
+      "label": [
+        {
+          "color": "rgb(72, 72, 72)",
+          "text": "Workspace name",
+          "weight": "500"
+        }
+      ]
+    },
+    "typedControl": "Softer hierarchy"
+  },
+  {
+    "component": "TextField Docs token table",
+    "rows": [
+      {
+        "cells": [
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          }
+        ],
+        "text": "Value--v2-text-secondary#5E5E5E"
+      },
+      {
+        "cells": [
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          }
+        ],
+        "text": "Label--v2-text-primary#484848"
+      },
+      {
+        "cells": [
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          }
+        ],
+        "text": "Helper / prefix / suffix--v2-text-muted#707070"
+      },
+      {
+        "cells": [
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          },
+          {
+            "color": "rgb(94, 94, 94)",
+            "size": "14px",
+            "weight": "400"
+          }
+        ],
+        "text": "Placeholder--v2-text-placeholder#707070"
+      }
+    ]
+  },
+  {
+    "component": "TextField v1 vs v2 final",
+    "compare": {
+      "labels": [
+        {
+          "color": "rgb(52, 62, 85)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(52, 62, 85)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(52, 62, 85)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(52, 62, 85)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(52, 62, 85)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "500"
+        },
+        {
+          "color": "rgb(52, 62, 85)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "600"
+        },
+        {
+          "color": "rgb(72, 72, 72)",
+          "size": "14px",
+          "text": "Workspace name",
+          "weight": "500"
+        }
+      ],
+      "page": {
+        "client": 1620,
+        "scroll": 1620
+      },
+      "scrollers": [],
+      "values": [
+        {
+          "color": "rgb(24, 29, 39)",
+          "height": 42,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 40,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(24, 29, 39)",
+          "height": 36,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 36,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(24, 29, 39)",
+          "height": 42,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 40,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(24, 29, 39)",
+          "height": 36,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 36,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(24, 29, 39)",
+          "height": 42,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 40,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(24, 29, 39)",
+          "height": 36,
+          "weight": "400"
+        },
+        {
+          "color": "rgb(94, 94, 94)",
+          "height": 36,
+          "weight": "400"
+        }
+      ]
+    }
+  },
+  {
+    "component": "TextField Overview clean final",
+    "controlToRender": "Quiet workspace",
+    "typingToControl": "Softer hierarchy",
+    "newFieldErrors": 0
+  }
+]

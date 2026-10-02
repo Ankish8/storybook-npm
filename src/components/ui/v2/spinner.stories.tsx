@@ -93,7 +93,7 @@ export const AllVariants: Story = {
               : "space-y-3 p-4"
           }
         >
-          <h3 className="m-0 text-sm font-semibold capitalize">{variant}</h3>
+          <h3 className="m-0 text-sm font-medium capitalize">{variant}</h3>
           <Spinner {...args} variant={variant} />
         </section>
       ))}
@@ -109,7 +109,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-wrap items-center gap-8">
       {sizes.map((size) => (
         <section key={size} className="space-y-3">
-          <h3 className="m-0 text-sm font-semibold">{size}</h3>
+          <h3 className="m-0 text-sm font-medium">{size}</h3>
           <Spinner {...args} size={size} />
         </section>
       ))}
@@ -120,7 +120,7 @@ function LoadingExample(args: Parameters<typeof Spinner>[0]) {
   const [loading, setLoading] = useState(true);
   return (
     <section className="w-[360px] max-w-full space-y-4">
-      <h3 className="m-0 text-base font-semibold">Conversation list</h3>
+      <h3 className="m-0 text-base font-medium">Conversation list</h3>
       <div className="flex min-h-[96px] items-center gap-3 rounded-lg border border-solid border-semantic-border-layout p-4">
         {loading ? (
           <>
@@ -147,7 +147,7 @@ export const V1VsV2: Story = {
           key={version}
           className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
         >
-          <h3 className="m-0 text-base font-semibold">{version}</h3>
+          <h3 className="m-0 text-base font-medium">{version}</h3>
           {version === "v1" ? <V1 {...args} /> : <Spinner {...args} />}
         </section>
       ))}

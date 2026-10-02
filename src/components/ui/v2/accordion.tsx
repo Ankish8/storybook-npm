@@ -42,7 +42,7 @@ const accordionItemVariants = cva("", {
  * Accordion trigger variants
  */
 const accordionTriggerVariants = cva(
-  "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-semantic-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-semantic-text-muted",
+  "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-[var(--v2-text-primary,#484848)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-[var(--v2-text-muted,#707070)]",
   {
     variants: {
       variant: {
@@ -60,7 +60,7 @@ const accordionTriggerVariants = cva(
  * Accordion content variants
  */
 const accordionContentVariants = cva(
-  "overflow-hidden text-sm text-semantic-text-secondary transition-all duration-300 ease-in-out",
+  "overflow-hidden text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-all duration-300 ease-in-out",
   {
     variants: {
       variant: {
@@ -294,7 +294,7 @@ const AccordionTrigger = React.forwardRef(
         {showChevron && (
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-semantic-text-primary transition-transform duration-300",
+              "h-4 w-4 shrink-0 text-[var(--v2-text-primary,#484848)] transition-transform duration-300",
               isOpen && "rotate-180"
             )}
           />

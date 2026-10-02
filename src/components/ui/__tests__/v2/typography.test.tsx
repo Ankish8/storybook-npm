@@ -120,10 +120,10 @@ describe("Typography", () => {
 
   describe("Color Prop", () => {
     const colorTestCases: Array<[Color, string]> = [
-      ["primary", "text-semantic-text-primary"],
-      ["secondary", "text-semantic-text-secondary"],
-      ["muted", "text-semantic-text-muted"],
-      ["placeholder", "text-semantic-text-placeholder"],
+      ["primary", "text-[var(--v2-text-primary,#484848)]"],
+      ["secondary", "text-[var(--v2-text-secondary,#5E5E5E)]"],
+      ["muted", "text-[var(--v2-text-muted,#707070)]"],
+      ["placeholder", "text-[var(--v2-text-placeholder,#707070)]"],
       ["link", "text-semantic-text-link"],
       ["inverted", "text-semantic-text-inverted"],
       ["error", "text-semantic-error-primary"],
@@ -142,12 +142,11 @@ describe("Typography", () => {
       }
     );
 
-    it("does not apply color class when color is not specified", () => {
+    it("defaults body text to secondary when color is not specified", () => {
       render(<Typography data-testid="typography">Test</Typography>);
       const element = screen.getByTestId("typography");
-      Object.values(mapColorClassName).forEach((colorClass) => {
-        expect(element).not.toHaveClass(colorClass);
-      });
+      expect(element).toHaveClass(mapColorClassName.secondary);
+      expect(element).not.toHaveClass(mapColorClassName.primary);
     });
   });
 

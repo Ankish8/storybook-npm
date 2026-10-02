@@ -1,0 +1,54 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="V2/Migration" />
+
+<div className="v2-docs">
+
+# Move a screen to v2
+
+## 1. Configure an unprefixed Tailwind build
+
+v2 needs a Tailwind build with an empty prefix, the library's semantic colors and the Inter font. Additive v2 tokens include the font, border and four neutral text roles; existing v1 token values remain unchanged. Text utilities also provide their own fallback colors.
+
+```css
+:root {
+  --font-v2: 'Inter', sans-serif;
+  --v2-text-primary: #484848;
+  --v2-text-secondary: #5E5E5E;
+  --v2-text-muted: #707070;
+  --v2-text-placeholder: #707070;
+  --border-skeuomorphic: rgba(255, 255, 255, 0.12);
+}
+```
+
+The Storybook preview loads Inter from Google Fonts. Applications can use their own font hosting.
+
+## 2. Install the components used on that screen
+
+```bash
+npx myoperator-ui add v2-button v2-text-field v2-select v2-dialog
+```
+
+The CLI installs each component's dependencies into the same namespace. Installing in a prefixed project prints the unprefixed-build requirement.
+
+## 3. Change imports and review the screen
+
+```tsx
+// Existing version
+import { Button } from '@/components/ui/button';
+
+// Redesigned version
+import { Button } from '@/components/ui/v2/button';
+```
+
+For shared primitives, keep the existing props and callbacks. Review layout, focus, disabled/loading states, validation and responsive behavior after switching imports. Custom compositions still need a screen-level check.
+
+## Bootstrap hosts
+
+Bootstrap and unprefixed Tailwind share utility names. A globally loaded Bootstrap stylesheet can change v2 spacing, borders or layout. The existing web-panel integration strategy is still an open decision; this library rollout does not resolve it. Choose an isolated v2 screen or a project without those global conflicts before product migration.
+
+## Rollback and retirement
+
+Changing the import back restores the previous component. Keep v1 available while screens migrate. Retire it only after every consumer has migrated and the owner approves a breaking release.
+
+</div>

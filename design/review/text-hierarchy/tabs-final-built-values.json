@@ -1,0 +1,33 @@
+{
+  "panel": [
+    {
+      "color": "rgb(94, 94, 94)",
+      "text": "Conversations waiting for a reply.",
+      "weight": "400"
+    },
+    {
+      "color": "rgb(112, 112, 112)",
+      "text": "Use arrow keys to move between tabs. The focused tab activates automatically.",
+      "weight": "400"
+    }
+  ],
+  "scrollWidth": 1280,
+  "tabs": [
+    {
+      "color": "rgb(72, 72, 72)",
+      "text": "Open12",
+      "weight": "500"
+    },
+    {
+      "color": "rgb(112, 112, 112)",
+      "text": "Assigned10",
+      "weight": "500"
+    },
+    {
+      "color": "rgb(112, 112, 112)",
+      "text": "Resolved8",
+      "weight": "500"
+    }
+  ],
+  "width": 1280
+}

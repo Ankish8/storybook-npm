@@ -54,11 +54,11 @@ export const AllVariants: Story = {
     <div className="grid w-[600px] max-w-full gap-6 sm:grid-cols-2">
       {[true, false].map((active) => (
         <section key={String(active)} className="space-y-3">
-          <h3 className="m-0 text-base font-semibold">
+          <h3 className="m-0 text-base font-medium">
             {active ? "Animated" : "Static"}
           </h3>
           <ShimmeringText {...args} active={active} />
-          <p className="m-0 text-xs text-semantic-text-muted">
+          <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
             {active
               ? "Motion follows the user's preference."
               : "The same status without the highlight."}
@@ -74,15 +74,18 @@ function ImportExample(args: ShimmeringTextProps) {
   return (
     <section className="w-80 max-w-full space-y-4">
       <div>
-        <h3 className="m-0 text-base font-semibold">Contact import</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium">Contact import</h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Start and complete the import locally.
         </p>
       </div>
       {stage === "loading" ? (
         <ShimmeringText {...args} />
       ) : (
-        <p role="status" className="m-0 text-sm text-semantic-text-secondary">
+        <p
+          role="status"
+          className="m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+        >
           {stage === "complete" ? "Contacts imported." : "Ready to import."}
         </p>
       )}

@@ -1,7 +1,7 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import { clearAllMocks, expect, fn, userEvent, within } from "storybook/test";
 import { ReplyQuote, type ReplyQuoteProps } from "./reply-quote";
 import { ReplyQuote as QuoteV1 } from "../reply-quote";
 import { gallery } from "../../../storybook/v2-preview";
@@ -63,7 +63,7 @@ const meta: Meta<Args> = {
           tokens: [
             ["Surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Accent border", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
-            ["Message text", "--semantic-text-muted", "#717680", "#717680"],
+            ["Message text", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Geometry", "height / border / thumbnail", "56px / 3px / 44px"],
           ],
           guidance:
@@ -114,7 +114,7 @@ const meta: Meta<Args> = {
           }
         />
         {args.activated && args.interactive && (
-          <p className="m-0 mt-2 text-xs text-semantic-text-muted">
+          <p className="m-0 mt-2 text-xs text-[var(--v2-text-muted,#707070)]">
             Quote activated
           </p>
         )}
@@ -143,7 +143,9 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-3 text-base font-semibold">{title}</h3>
+      <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -237,8 +239,10 @@ export const Usage: Story = {
     const [, update] = useArgs<Args>();
     return (
       <section className="max-w-xl rounded-lg border border-semantic-border-layout p-4">
-        <h3 className="m-0 text-base font-semibold">Reply to a message</h3>
-        <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Reply to a message
+        </h3>
+        <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
           Activate the quote to reveal the original message.
         </p>
         <ReplyQuote
@@ -257,7 +261,7 @@ export const Usage: Story = {
         </div>
         {args.activated && (
           <div className="mt-4 rounded-lg border border-semantic-border-accent p-3">
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               Original message
             </p>
             <p className="m-0 mt-2 text-sm font-medium">{args.sender}</p>
@@ -266,5 +270,54 @@ export const Usage: Story = {
         )}
       </section>
     );
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    sender: "Mira Shah",
+    message: "Could you send the delivery receipt?",
+    interactive: true,
+    withThumbnail: false,
+  },
+  parameters: {
+    // Activating the quote updates Controls, which re-renders the story; keep the spy history through that.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Plays a real click and Enter/Space activation against the action spy. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const quote = canvas.getByRole("button", {
+      name: "Quoted reply from Mira Shah: Could you send the delivery receipt?",
+    });
+
+    await step("An interactive quote is a labelled native button", async () => {
+      await expect(quote.tagName).toBe("BUTTON");
+      await expect(quote).toHaveAttribute("type", "button");
+      await expect(canvas.getByText("Mira Shah")).toBeVisible();
+    });
+
+    await step("A click activates it", async () => {
+      await userEvent.click(quote);
+      await expect(args.onClick).toHaveBeenCalledTimes(1);
+      await expect(await canvas.findByText("Quote activated")).toBeVisible();
+    });
+
+    await step("Enter and Space activate it; other keys do not", async () => {
+      quote.focus();
+      await userEvent.keyboard("a{Escape}");
+      await expect(args.onClick).toHaveBeenCalledTimes(1);
+      await userEvent.keyboard("{Enter}");
+      await userEvent.keyboard(" ");
+      await expect(args.onClick).toHaveBeenCalledTimes(3);
+    });
   },
 };

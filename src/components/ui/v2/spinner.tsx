@@ -17,8 +17,8 @@ const spinnerVariants = cva("animate-spin motion-reduce:animate-none", {
     },
     variant: {
       default: "text-semantic-primary",
-      secondary: "text-semantic-text-secondary",
-      muted: "text-semantic-text-muted",
+      secondary: "text-[var(--v2-text-secondary,#5E5E5E)]",
+      muted: "text-[var(--v2-text-muted,#707070)]",
       inverted: "text-semantic-text-inverted",
       current: "text-current",
     },

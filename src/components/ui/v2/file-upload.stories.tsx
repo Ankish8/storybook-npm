@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fireEvent,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import { useState } from "react";
 import { FileUpload, type FileUploadProps } from "./file-upload";
 import { Button } from "./button";
@@ -149,7 +157,7 @@ export const AllVariants: Story = {
     <div className="grid w-[940px] max-w-full gap-6 lg:grid-cols-2">
       {[false, true].map((multiple) => (
         <section key={String(multiple)} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-base font-semibold">
+          <h3 className="m-0 text-base font-medium">
             {multiple ? "Multiple files" : "Single file"}
           </h3>
           <Sample {...args} value={[]} multiple={multiple} />
@@ -167,7 +175,7 @@ export const States: Story = {
     <div className="grid w-[940px] max-w-full gap-6 lg:grid-cols-2">
       {["Default", "Selected", "Error", "Disabled"].map((state) => (
         <section key={state} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-base font-semibold">{state}</h3>
+          <h3 className="m-0 text-base font-medium">{state}</h3>
           <Sample
             {...args}
             value={state === "Selected" ? [sample()] : []}
@@ -191,8 +199,8 @@ function Import(args: FileUploadProps) {
       }}
     >
       <div>
-        <h3 className="m-0 text-base font-semibold">Import contacts</h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <h3 className="m-0 text-base font-medium">Import contacts</h3>
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Choose a file or load the example, then import locally.
         </p>
       </div>
@@ -223,7 +231,10 @@ function Import(args: FileUploadProps) {
           Import
         </Button>
       </div>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
         {saved
           ? `${files.length} file imported in this example.`
           : "No upload is sent to a server."}
@@ -237,4 +248,70 @@ export const Usage: Story = {
     "A local file import. File rules and labels are passed through; selections are local to this example."
   ),
   render: (args) => <Import {...args} />,
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  parameters: {
+    // Every change calls updateArgs, which re-renders the story, and Storybook
+    // restores (clears) all spies on each render. Keep their history instead.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Chooses, drops and removes real File objects against the action spies. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const input = canvas.getByLabelText("Contact list");
+
+    await step("Choosing a CSV adds it to the list", async () => {
+      await userEvent.upload(input, sample());
+      await expect(args.onFilesChange).toHaveBeenCalledTimes(1);
+      await expect(args.onFilesChange).toHaveBeenLastCalledWith([
+        expect.objectContaining({ name: "contacts.csv" }),
+      ]);
+      await expect(await canvas.findByText("contacts.csv")).toBeVisible();
+    });
+
+    await step("A dropped file of the wrong type is rejected", async () => {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(
+        new File(["png"], "logo.png", { type: "image/png" })
+      );
+      const drop = new DragEvent("drop", { bubbles: true, dataTransfer });
+      const zone = canvas.getByRole("button", { name: "Choose contact list" });
+      await fireEvent(zone, drop);
+      await expect(args.onReject).toHaveBeenCalledWith(
+        "File type not accepted: logo.png",
+        expect.objectContaining({ name: "logo.png" })
+      );
+      await expect(await canvas.findByRole("alert")).toHaveTextContent(
+        "logo.png"
+      );
+      await expect(input).toBeInvalid();
+      await expect(args.onFilesChange).toHaveBeenCalledTimes(1);
+    });
+
+    await step("A new single selection replaces the old one", async () => {
+      const leads = new File(["id"], "leads.csv", { type: "text/csv" });
+      await userEvent.upload(input, leads);
+      await expect(await canvas.findByText("leads.csv")).toBeVisible();
+      await expect(canvas.queryByText("contacts.csv")).not.toBeInTheDocument();
+      await expect(canvas.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
+    await step("Remove empties the list", async () => {
+      const remove = canvas.getByRole("button", { name: "Remove leads.csv" });
+      await userEvent.click(remove);
+      await expect(args.onFilesChange).toHaveBeenLastCalledWith([]);
+      await waitFor(() =>
+        expect(canvas.queryByText("leads.csv")).not.toBeInTheDocument()
+      );
+    });
+  },
 };

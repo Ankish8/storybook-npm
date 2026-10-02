@@ -1,0 +1,47 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="V2/Foundations" />
+
+<div className="v2-docs">
+
+# v2 foundations
+
+v2 uses softer neutral text, with clear roles for headings, body copy and supporting details. Brand actions and status colors keep the existing semantic palette. V2 text variables are separate from v1, so both versions can appear on the same page.
+
+## Typography
+
+<table>
+  <thead><tr><th>Purpose</th><th>Font</th><th>Size / weight</th></tr></thead>
+  <tbody>
+    <tr><td>Component title</td><td>Inter</td><td>16px / 500 where recorded</td></tr>
+    <tr><td>Form label</td><td>Inter</td><td>14px / 500</td></tr>
+    <tr><td>Field value</td><td>Inter</td><td>16px / 400</td></tr>
+    <tr><td>Supporting text</td><td>Inter</td><td>12px / 400</td></tr>
+  </tbody>
+</table>
+
+Filled primary and status actions retain 600 weight. Neutral buttons, tabs, form labels and ordinary titles use 500; body text and supporting copy use 400. Individual component specs determine exact line height, weight and size. For example, EmptyState's default headline is 24px/32px, while badges are 12px regular.
+
+## Text and semantic colors
+
+<table>
+  <thead><tr><th>Purpose</th><th>Variable</th><th>Value</th><th>Swatch</th></tr></thead>
+  <tbody>
+    <tr><td>Primary text</td><td>--v2-text-primary</td><td>484848</td><td><span style={{display:'inline-block',width:24,height:24,background:'#484848',borderRadius:4}} /></td></tr>
+    <tr><td>Secondary text</td><td>--v2-text-secondary</td><td>5E5E5E</td><td><span style={{display:'inline-block',width:24,height:24,background:'#5E5E5E',borderRadius:4}} /></td></tr>
+    <tr><td>Muted text</td><td>--v2-text-muted</td><td>707070</td><td><span style={{display:'inline-block',width:24,height:24,background:'#707070',borderRadius:4}} /></td></tr>
+    <tr><td>Layout border</td><td>--semantic-border-layout</td><td>E9EAEB</td><td><span style={{display:'inline-block',width:24,height:24,background:'#E9EAEB',borderRadius:4}} /></td></tr>
+    <tr><td>Focus/accent</td><td>--semantic-border-accent</td><td>27ABB8</td><td><span style={{display:'inline-block',width:24,height:24,background:'#27ABB8',borderRadius:4}} /></td></tr>
+    <tr><td>Info</td><td>--semantic-info-primary</td><td>4275D6</td><td><span style={{display:'inline-block',width:24,height:24,background:'#4275D6',borderRadius:4}} /></td></tr>
+  </tbody>
+</table>
+
+## Spacing and shape
+
+Common field and action corners are 8px; dialog and card corners are 12px. Standard fields are 40px high. Spacing follows the recorded component values, usually 8px, 12px, 16px or 24px. Component Docs show the values that apply to each primitive.
+
+## States and motion
+
+Interactive components distinguish hover, focus, pressed, disabled, loading and error where supported. Keep focus indicators visible. Loading effects and transitions respect reduced-motion preferences; status text remains readable when animation is disabled.
+
+</div>

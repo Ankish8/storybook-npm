@@ -238,12 +238,12 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited font",
-              "Inter 16px value; 14px semibold label; 12px helper/error",
+              "Inter 16px value; 14px medium label; 12px helper/error",
             ],
             [
               "Selected chips",
               "Small corners",
-              "8px radius, 0.4px border and semibold text",
+              "8px radius, 0.4px border and medium text",
             ],
             [
               "Hover / focus",
@@ -264,8 +264,8 @@ const meta: Meta<Args> = {
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Value", "--semantic-text-primary", "#181D27", "#181D27"],
-            ["Label", "--semantic-text-secondary", "#343E55", "#343E55"],
+            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Label", "--v2-text-primary", "#484848", "#484848"],
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
@@ -471,7 +471,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {["default", "error"].map((state) => (
         <section key={state} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             {state === "error" ? "Error" : "Default"}
           </p>
           <PreviewMulti
@@ -499,7 +499,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-col gap-6">
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
-          <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+          <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
             40px minimum · {width}px container
           </p>
           <PreviewMulti
@@ -527,14 +527,14 @@ export const States: Story = {
         {COLUMNS.map((c) => (
           <p
             key={c.label}
-            className="m-0 text-xs font-semibold text-semantic-text-muted"
+            className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]"
           >
             {c.label}
           </p>
         ))}
         {["default", "error"].map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state}
             </p>
             {COLUMNS.map((c) => (
@@ -568,15 +568,15 @@ export const V1VsV2: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[870px] grid-cols-[110px_1fr_1fr] items-start gap-x-8 gap-y-6">
         <div />
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v1 · ui/multi-select
         </p>
-        <p className="m-0 text-xs font-semibold text-semantic-text-muted">
+        <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 · ui/v2/multi-select
         </p>
         {["default", "error", "disabled", "loading"].map((state) => (
           <React.Fragment key={state}>
-            <p className="m-0 pt-6 text-xs font-semibold text-semantic-text-secondary">
+            <p className="m-0 pt-6 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {state}
             </p>
             {(["v1", "v2"] as const).map((version) => (
@@ -617,10 +617,10 @@ function UsageForm(args: Args) {
       }}
     >
       <div>
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Team skills
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
           Choose skills for this local example.
         </p>
       </div>
@@ -634,7 +634,10 @@ function UsageForm(args: Args) {
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">
-        <span role="status" className="text-xs text-semantic-text-muted">
+        <span
+          role="status"
+          className="text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {saved === current ? (
             <span className="inline-flex items-center gap-1.5">
               <Check className="size-3.5" />
@@ -748,7 +751,10 @@ function PagingExample(args: Args) {
         onScrollEnd={load}
       />
       <div className="flex items-center justify-between gap-4">
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p
+          role="status"
+          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        >
           {Math.min(count, options.length)} of {options.length} options loaded
         </p>
         <Button
@@ -760,7 +766,7 @@ function PagingExample(args: Args) {
           {pending ? "Loading…" : "Load next page"}
         </Button>
       </div>
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         Scroll to the end of the popup or load a page here. Data stays local.
       </p>
     </div>

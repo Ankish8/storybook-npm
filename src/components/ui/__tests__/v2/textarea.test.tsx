@@ -57,7 +57,7 @@ describe("Textarea", () => {
     render(<Textarea helperText="Maximum 500 characters" />);
     expect(screen.getByText("Maximum 500 characters")).toBeInTheDocument();
     expect(screen.getByText("Maximum 500 characters")).toHaveClass(
-      "text-semantic-text-muted"
+      "text-[var(--v2-text-muted,#707070)]"
     );
   });
 
@@ -336,6 +336,6 @@ describe("Textarea", () => {
     const label = screen.getByText("My Label");
     expect(label).toHaveClass("my-label-class");
     expect(label).toHaveClass("text-sm");
-    expect(label).toHaveClass("font-semibold");
+    expect(label).toHaveClass("font-medium");
   });
 });

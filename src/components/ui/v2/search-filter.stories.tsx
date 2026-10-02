@@ -111,7 +111,8 @@ const meta: Meta<SearchFilterProps> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Label", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Selected label", "--v2-text-primary", "#484848", "#484848"],
+            ["Choice labels", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             [
               "Selected check",
               "--semantic-border-accent",
@@ -249,7 +250,7 @@ export const AllSizes: Story = {
       <div className="grid min-w-[1148px] grid-cols-[320px_360px_420px] items-start gap-6">
         {(["sm", "default", "lg"] as const).map((size) => (
           <div key={size} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {size} ·{" "}
               {size === "sm" ? "320" : size === "default" ? "360" : "420"}px
             </span>
@@ -273,7 +274,7 @@ export const SearchModes: Story = {
       <div className="grid min-w-[748px] grid-cols-2 gap-6">
         {(["numeric", "text"] as const).map((searchMode) => (
           <div key={searchMode} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {searchMode}
             </span>
             <PreviewFilter args={{ ...args, searchMode }} />
@@ -333,7 +334,7 @@ export const States: Story = {
           },
         ].map(({ label, ...state }) => (
           <div key={label} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {label}
             </span>
             <PreviewFilter args={{ ...args, ...state }} />
@@ -357,7 +358,7 @@ export const V1VsV2: Story = {
       <div className="grid min-w-[748px] grid-cols-2 items-start gap-6">
         {(["v1", "v2"] as const).map((version) => (
           <div key={version} className="flex flex-col gap-3">
-            <span className="text-xs font-semibold text-semantic-text-muted">
+            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
               {version} ·{" "}
               {version === "v1" ? "ui/search-filter" : "ui/v2/search-filter"}
             </span>
@@ -406,15 +407,18 @@ function QueueExample({
   return (
     <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-semibold text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Conversation queue
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
           Select a team to filter this local example.
         </p>
       </div>
       <LiveFilter args={args} updateArgs={updateArgs} />
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+        role="status"
+      >
         {label ? `Showing ${label}` : "Showing all teams"} · {filtered.length}{" "}
         conversations
       </p>
@@ -424,17 +428,17 @@ function QueueExample({
             key={row.name}
             className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0"
           >
-            <span className="text-sm font-medium text-semantic-text-primary">
+            <span className="text-sm font-medium text-[var(--v2-text-primary,#484848)]">
               {row.name}
             </span>
-            <span className="text-xs text-semantic-text-muted">
+            <span className="text-xs text-[var(--v2-text-muted,#707070)]">
               {row.preview}
             </span>
           </li>
         ))}
       </ul>
       {!filtered.length && (
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
           No conversations for this team.
         </p>
       )}

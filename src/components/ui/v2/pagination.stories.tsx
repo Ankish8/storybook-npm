@@ -330,7 +330,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
       <div className="max-w-full overflow-x-auto">
@@ -444,16 +444,16 @@ function Contacts({
   const visible = filtered.slice((current - 1) * pageSize, current * pageSize);
   return (
     <section className="max-w-[950px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Contacts
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
         Page a local list or filter it. Selection and query stay synchronized
         with Controls.
       </p>
       <label
         htmlFor="pagination-search"
-        className="mb-2 block text-sm font-medium"
+        className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
       >
         Search contacts
       </label>
@@ -466,13 +466,13 @@ function Contacts({
         {visible.map((name) => (
           <li
             key={name}
-            className="border-b border-semantic-border-layout py-3 text-sm text-semantic-text-primary"
+            className="border-b border-semantic-border-layout py-3 text-sm text-[var(--v2-text-primary,#484848)]"
           >
             {name}
           </li>
         ))}
         {visible.length === 0 && (
-          <li className="py-5 text-sm text-semantic-text-muted">
+          <li className="py-5 text-sm text-[var(--v2-text-muted,#707070)]">
             No matching contacts.
           </li>
         )}

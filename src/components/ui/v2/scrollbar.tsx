@@ -114,7 +114,7 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
         }
         onClick={() => step(direction)}
         className={cn(
-          "flex shrink-0 items-center justify-center text-semantic-text-muted hover:bg-semantic-bg-hover disabled:opacity-40",
+          "flex shrink-0 items-center justify-center text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover disabled:opacity-40",
           vertical ? "h-8 w-4" : "h-4 w-8"
         )}
       >

@@ -1,7 +1,14 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
-import { fn } from "storybook/test";
+import {
+  clearAllMocks,
+  expect,
+  fn,
+  userEvent,
+  waitFor,
+  within,
+} from "storybook/test";
 import {
   ContactListItem,
   type ContactListItemProps,
@@ -130,7 +137,9 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-3 text-base font-semibold">{title}</h3>
+      <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        {title}
+      </h3>
       {children}
     </section>
   );
@@ -227,11 +236,16 @@ function Directory({
   );
   return (
     <section className="max-w-3xl rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 text-base font-semibold">Contact directory</h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        Contact directory
+      </h3>
+      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
         Search locally, then click a row or use Enter/Space to select it.
       </p>
-      <label htmlFor={id} className="mb-2 block text-sm font-medium">
+      <label
+        htmlFor={id}
+        className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+      >
         Search contacts
       </label>
       <Input
@@ -254,13 +268,13 @@ function Directory({
             />
           ))}
           {!filtered.length && (
-            <p className="m-0 p-4 text-sm text-semantic-text-muted">
+            <p className="m-0 p-4 text-sm text-[var(--v2-text-muted,#707070)]">
               No matching contacts
             </p>
           )}
         </div>
         <div className="rounded-lg bg-semantic-bg-ui p-4">
-          <p className="m-0 text-xs text-semantic-text-muted">
+          <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
             Selected contact
           </p>
           <p className="m-0 mt-2 text-sm font-medium">{selected}</p>
@@ -274,5 +288,61 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, update] = useArgs<Args>();
     return <Directory args={args} update={update} />;
+  },
+};
+
+export const Interaction: Story = {
+  name: "Interaction test",
+  tags: ["!autodocs"],
+  args: {
+    name: "Aditi Kumar",
+    subtitle: "aditi@example.com",
+    trailing: "MY01",
+    avatarSrc: "",
+    isSelected: false,
+  },
+  parameters: {
+    // Every activation updates Controls, which re-renders the story; keep the spy history through that.
+    test: { restoreMocks: false },
+    docs: {
+      description: {
+        story:
+          "Plays real clicks and Enter/Space activation against the action spy. Each activation toggles the selected surface through Controls and the play ends where it started, so it can be replayed. Open the Interactions panel to step through it.",
+      },
+    },
+  },
+  play: async ({ args, canvasElement, step }) => {
+    clearAllMocks();
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole("button", { name: /aditi@example\.com/ });
+    const selectedSurface = "bg-semantic-bg-ui";
+
+    await step("Renders one focusable row with the contact", async () => {
+      await expect(row).toHaveAttribute("tabindex", "0");
+      await expect(within(row).getByText("MY01")).toBeVisible();
+      await expect(
+        within(row).getByRole("img", { name: "Aditi Kumar" })
+      ).toHaveTextContent("AK");
+      await expect(row).not.toHaveClass(selectedSurface);
+    });
+
+    await step("Clicks select and clear the row", async () => {
+      await userEvent.click(row);
+      await waitFor(() => expect(row).toHaveClass(selectedSurface));
+      await userEvent.click(row);
+      await waitFor(() => expect(row).not.toHaveClass(selectedSurface));
+      await expect(args.onClick).toHaveBeenCalledTimes(2);
+    });
+
+    await step("Enter and Space activate it; other keys do not", async () => {
+      row.focus();
+      await userEvent.keyboard("a{Escape}");
+      await expect(args.onClick).toHaveBeenCalledTimes(2);
+      await userEvent.keyboard("{Enter}");
+      await waitFor(() => expect(row).toHaveClass(selectedSurface));
+      await userEvent.keyboard(" ");
+      await waitFor(() => expect(row).not.toHaveClass(selectedSurface));
+      await expect(args.onClick).toHaveBeenCalledTimes(4);
+    });
   },
 };

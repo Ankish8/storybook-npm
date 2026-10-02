@@ -4,7 +4,7 @@ import { CheckCircle2, XCircle, AlertTriangle, Info, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-semantic-text-primary",
+  "relative w-full rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,#5E5E5E)]",
   {
     variants: {
       variant: {
@@ -37,7 +37,7 @@ const defaultIcons: Record<string, React.ReactNode> = {
   info: <Info className="size-5" />,
 };
 const iconColors = {
-  default: "text-semantic-text-primary",
+  default: "text-[var(--v2-text-primary,#484848)]",
   success: "text-semantic-success-primary",
   error: "text-semantic-error-primary",
   destructive: "text-semantic-error-primary",
@@ -115,7 +115,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         type="button"
         onClick={handleClose}
         aria-label="Close alert"
-        className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-semantic-text-muted transition-colors hover:text-semantic-text-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+        className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-[var(--v2-text-muted,#707070)] transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
       >
         <X className="size-5" />
       </button>
@@ -194,7 +194,7 @@ const AlertTitle = React.forwardRef<
   <h5
     ref={ref}
     className={cn(
-      "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-semantic-text-primary",
+      "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-[var(--v2-text-primary,#484848)]",
       className
     )}
     {...props}
@@ -208,7 +208,7 @@ const AlertDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      "m-0 mt-1 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-[normal] text-semantic-text-primary",
+      "m-0 mt-1 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-[normal] text-[var(--v2-text-secondary,#5E5E5E)]",
       className
     )}
     {...props}

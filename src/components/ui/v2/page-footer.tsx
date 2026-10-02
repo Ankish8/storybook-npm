@@ -13,7 +13,7 @@ const PageFooter = React.forwardRef<HTMLElement, PageFooterProps>(
     <footer
       ref={ref}
       className={cn(
-        "flex gap-3 border-t border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-secondary",
+        "flex gap-3 border-t border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)]",
         layout === "mobile"
           ? "flex-col items-stretch py-4"
           : "flex-wrap items-center justify-end py-2.5",
