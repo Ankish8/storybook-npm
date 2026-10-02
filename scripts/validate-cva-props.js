@@ -39,47 +39,55 @@ const CVA_VARIANT_KEYS = ['variant', 'size', 'state']
 function extractCvaVariantKeys(content, fileName) {
   const variantKeys = new Set()
 
-  // Find the start of variants: {
-  const variantsStart = content.indexOf('variants:')
-  if (variantsStart === -1) {
-    return variantKeys
-  }
+  // A file can define several cva() recipes (for example a root and a trigger), so
+  // collect the keys of EVERY `variants:` block, not just the first one.
+  let from = 0
+  for (;;) {
+    const variantsStart = content.indexOf('variants:', from)
+    if (variantsStart === -1) break
+    from = variantsStart + 'variants:'.length
 
-  // Find the opening brace after "variants:"
-  const braceStart = content.indexOf('{', variantsStart)
-  if (braceStart === -1) {
-    return variantKeys
-  }
+    // Find the opening brace after "variants:"
+    const braceStart = content.indexOf('{', variantsStart)
+    if (braceStart === -1) break
 
-  // Extract the variants block by counting braces
-  let braceCount = 1
-  let pos = braceStart + 1
-  let variantsBlock = ''
+    // Extract the variants block by counting braces
+    let braceCount = 1
+    let pos = braceStart + 1
+    let variantsBlock = ''
 
-  while (pos < content.length && braceCount > 0) {
-    const char = content[pos]
-    if (char === '{') braceCount++
-    if (char === '}') braceCount--
-    if (braceCount > 0) variantsBlock += char
-    pos++
-  }
+    while (pos < content.length && braceCount > 0) {
+      const char = content[pos]
+      if (char === '{') braceCount++
+      if (char === '}') braceCount--
+      if (braceCount > 0) variantsBlock += char
+      pos++
+    }
 
-  // Check for empty variants block (just whitespace)
-  if (variantsBlock.trim() === '') {
-    return variantKeys // Empty variants
-  }
+    // An empty variants block (just whitespace) defines nothing
+    if (variantsBlock.trim() === '') continue
 
-  // Find each variant key definition at the top level of variants block
-  // We need to find keys followed by : { at depth 0
-  for (const key of CVA_VARIANT_KEYS) {
-    // Match pattern: variant: { or size: { at the start of a line or after comma/whitespace
-    const keyPattern = new RegExp(`(?:^|[,\\s])${key}\\s*:\\s*\\{`, 'm')
-    if (keyPattern.test(variantsBlock)) {
-      variantKeys.add(key)
+    // Find each variant key definition at the top level of variants block
+    // We need to find keys followed by : { at depth 0
+    for (const key of CVA_VARIANT_KEYS) {
+      // Match pattern: variant: { or size: { at the start of a line or after comma/whitespace
+      const keyPattern = new RegExp(`(?:^|[,\\s])${key}\\s*:\\s*\\{`, 'm')
+      if (keyPattern.test(variantsBlock)) {
+        variantKeys.add(key)
+      }
     }
   }
 
   return variantKeys
+}
+
+/**
+ * True when the props interface types `prop` itself (`size?: number | string;`).
+ * Such a prop does not come from VariantProps, so consumers get a real type for it
+ * even though no cva variant has that name.
+ */
+function declaresPropExplicitly(content, prop) {
+  return new RegExp(`^\\s*${prop}\\??\\s*:\\s*[^;{\\n]+;`, 'm').test(content)
 }
 
 /**
@@ -193,7 +201,7 @@ function validateComponent(filePath) {
   // Check 2: Component destructures variant key but CVA doesn't define it
   // THIS IS THE CRITICAL BUG WE'RE CATCHING
   for (const prop of cvaRelatedDestructured) {
-    if (!cvaKeys.has(prop)) {
+    if (!cvaKeys.has(prop) && !declaresPropExplicitly(content, prop)) {
       errors.push(
         `Component destructures '${prop}' but CVA doesn't define it in variants. ` +
         `This will cause TypeScript errors for consumers trying to use <${componentName} ${prop}="...">. ` +
